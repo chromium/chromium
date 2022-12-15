@@ -320,8 +320,6 @@ DeviceActivityClient::GetSaveStatusRequest() {
             private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY);
         status.set_last_ping_utc_date(last_ping_utc_date);
         break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_7DAY_ACTIVE:
-        break;
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE:
         break;
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
@@ -780,6 +778,13 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf(
 
   // Report UMA histogram for transitioning state to |kCheckingMembershipOprf|.
   RecordStateCountMetric(state_);
+
+  std::vector<psm_rlwe::RlwePlaintextId> psm_ids =
+      current_use_case->GetPsmIdentifiersToQuery();
+
+  // Initializes the PSM rlwe client with the appropriate psm id values that we
+  // want to check membership for. This varies by fixed and n-day use cases.
+  current_use_case->SetPsmRlweClient(psm_ids);
 
   // Generate PSM Oprf request body.
   const auto status_or_oprf_request =

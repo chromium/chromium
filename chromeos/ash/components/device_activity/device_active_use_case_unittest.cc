@@ -15,7 +15,6 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
-#include "private_membership_rlwe.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -100,7 +99,11 @@ TEST_F(DeviceActiveUseCaseTest, ClearSavedState) {
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
-    EXPECT_FALSE(use_case->SetWindowIdentifier(new_ts));
+    EXPECT_TRUE(use_case->SetWindowIdentifier(new_ts));
+
+    EXPECT_TRUE(use_case->GetWindowIdentifier().has_value());
+    EXPECT_TRUE(use_case->GetPsmIdentifier().has_value());
+    EXPECT_THAT(use_case->GetPsmRlweClient(), testing::IsNull());
 
     use_case->ClearSavedState();
 

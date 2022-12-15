@@ -49,6 +49,10 @@ void DeviceActiveUseCase::ClearSavedState() {
 
   psm_id_ = absl::nullopt;
 
+  psm_id_to_date_.clear();
+
+  psm_ids_to_query_.clear();
+
   psm_rlwe_client_.reset();
 }
 
@@ -86,26 +90,74 @@ bool DeviceActiveUseCase::SetWindowIdentifier(base::Time ts) {
     return false;
   }
 
-  std::vector<psm_rlwe::RlwePlaintextId> psm_rlwe_ids = {psm_id_.value()};
-  auto status_or_client =
-      psm_delegate_->CreatePsmClient(GetPsmUseCase(), psm_rlwe_ids);
-
-  if (!status_or_client.ok()) {
-    LOG(ERROR) << "Failed to initialize PSM client.";
+  if (!SavePsmIdToDateMap(ts)) {
+    LOG(ERROR) << "Failed to save PSM identifiers date map for ts = " << ts;
     return false;
   }
 
-  // Set the PSM RLWE client and window identifier if
-  // the |psm_id_| is generated successfully.
-  SetPsmRlweClient(std::move(status_or_client.value()));
-  window_id_ = window_id;
+  SetPsmIdentifiersToQuery();
 
+  if (!SetPsmIdentifiersToImport(ts)) {
+    LOG(ERROR) << "Failed to set PSM identifiers to import for ts = " << ts;
+    return false;
+  }
+
+  window_id_ = window_id;
   return true;
 }
 
 absl::optional<psm_rlwe::RlwePlaintextId>
 DeviceActiveUseCase::GetPsmIdentifier() const {
   return psm_id_;
+}
+
+bool DeviceActiveUseCase::SavePsmIdToDateMap(base::Time ts) {
+  DCHECK(psm_id_.has_value());
+  psm_id_to_date_.clear();
+  psm_id_to_date_.insert({psm_id_.value().sensitive_id(), ts.UTCMidnight()});
+  return true;
+}
+
+void DeviceActiveUseCase::SetPsmIdentifiersToQuery() {
+  // Clear previous values of id's to query.
+  psm_ids_to_query_.clear();
+
+  // Uses |psm_id_to_date_| keys to generate the psm id's to query.
+  for (auto kv : psm_id_to_date_) {
+    psm_rlwe::RlwePlaintextId psm_rlwe_id;
+    psm_rlwe_id.set_sensitive_id(kv.first);
+    psm_ids_to_query_.push_back(psm_rlwe_id);
+  }
+}
+
+bool DeviceActiveUseCase::SetPsmIdentifiersToImport(base::Time ts) {
+  DCHECK(psm_id_.has_value());
+
+  // Clear previous values of id's to import.
+  new_import_data_.clear();
+
+  std::string window_id = GenerateUTCWindowIdentifier(ts);
+  FresnelImportData import_data = FresnelImportData();
+  import_data.set_window_identifier(window_id);
+  import_data.set_plaintext_id(psm_id_.value().sensitive_id());
+
+  return true;
+}
+
+std::vector<private_membership::rlwe::RlwePlaintextId>
+DeviceActiveUseCase::GetPsmIdentifiersToQuery() const {
+  return psm_ids_to_query_;
+}
+
+std::vector<FresnelImportData> DeviceActiveUseCase::GetImportData() const {
+  return new_import_data_;
+}
+
+base::Time DeviceActiveUseCase::RetrievePsmIdDate(
+    private_membership::rlwe::RlwePlaintextId id) {
+  if (psm_id_to_date_.find(id.sensitive_id()) == psm_id_to_date_.end())
+    return base::Time::UnixEpoch();
+  return psm_id_to_date_.at(id.sensitive_id());
 }
 
 std::string DeviceActiveUseCase::GetDigestString(
@@ -139,6 +191,22 @@ bool DeviceActiveUseCase::IsDevicePingRequired(base::Time new_ping_ts) const {
          prev_ping_window_id != new_ping_window_id;
 }
 
+void DeviceActiveUseCase::SetPsmRlweClient(
+    std::vector<psm_rlwe::RlwePlaintextId> psm_ids) {
+  DCHECK(!psm_ids.empty());
+
+  auto status_or_client =
+      psm_delegate_->CreatePsmClient(GetPsmUseCase(), psm_ids);
+
+  if (!status_or_client.ok()) {
+    LOG(ERROR) << "Failed to initialize PSM client.";
+    return;
+  }
+
+  // Re-assigning the unique_ptr will reset the old unique_ptr.
+  psm_rlwe_client_ = std::move(status_or_client.value());
+}
+
 bool DeviceActiveUseCase::EncryptPsmValueAsCiphertext(base::Time ts) {
   (void)ts;
   NOTREACHED();
@@ -162,6 +230,37 @@ std::string DeviceActiveUseCase::FormatUTCDateString(base::Time ts) {
                             /* minute */ 0,
                             /* second */ 0,
                             /* millisecond */ 0);
+}
+
+absl::optional<psm_rlwe::RlwePlaintextId>
+DeviceActiveUseCase::GeneratePsmIdentifier(
+    absl::optional<std::string> window_id) const {
+  const std::string psm_use_case = psm_rlwe::RlweUseCase_Name(GetPsmUseCase());
+  if (psm_device_active_secret_.empty() || psm_use_case.empty() ||
+      !window_id.has_value()) {
+    VLOG(1) << "Can not generate PSM id without the psm device secret, use "
+               "case, and window id being defined.";
+    return absl::nullopt;
+  }
+
+  std::string unhashed_psm_id =
+      base::JoinString({psm_use_case, window_id.value()}, "|");
+
+  // |psm_id_str| represents a 64 byte hex encoded value by default.
+  // However for the first active use case, this value is a 32 byte string.
+  std::string psm_id_str =
+      GetDigestString(psm_device_active_secret_, unhashed_psm_id);
+
+  if (!psm_id_str.empty()) {
+    psm_rlwe::RlwePlaintextId psm_rlwe_id;
+    psm_rlwe_id.set_sensitive_id(psm_id_str);
+
+    return psm_rlwe_id;
+  }
+
+  // Failed HMAC-SHA256 hash on PSM id.
+  VLOG(1) << "Failed to calculate HMAC-256 has on PSM id.";
+  return absl::nullopt;
 }
 
 std::string DeviceActiveUseCase::GetFullHardwareClass() const {
@@ -204,45 +303,6 @@ const std::string& DeviceActiveUseCase::GetPsmDeviceActiveSecret() const {
   }
 
   return psm_device_active_secret_;
-}
-
-absl::optional<psm_rlwe::RlwePlaintextId>
-DeviceActiveUseCase::GeneratePsmIdentifier(
-    absl::optional<std::string> window_id) const {
-  const std::string psm_use_case = psm_rlwe::RlweUseCase_Name(GetPsmUseCase());
-  if (psm_device_active_secret_.empty() || psm_use_case.empty() ||
-      !window_id.has_value()) {
-    VLOG(1) << "Can not generate PSM id without the psm device secret, use "
-               "case, and window id being defined.";
-    return absl::nullopt;
-  }
-
-  std::string unhashed_psm_id =
-      base::JoinString({psm_use_case, window_id.value()}, "|");
-
-  // |psm_id_str| represents a 64 byte hex encoded value by default.
-  // However for the first active use case, this value is a 32 byte string.
-  std::string psm_id_str =
-      GetDigestString(psm_device_active_secret_, unhashed_psm_id);
-
-  if (!psm_id_str.empty()) {
-    psm_rlwe::RlwePlaintextId psm_rlwe_id;
-    psm_rlwe_id.set_sensitive_id(psm_id_str);
-
-    return psm_rlwe_id;
-  }
-
-  // Failed HMAC-SHA256 hash on PSM id.
-  VLOG(1) << "Failed to calculate HMAC-256 has on PSM id.";
-  return absl::nullopt;
-}
-
-void DeviceActiveUseCase::SetPsmRlweClient(
-    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client) {
-  DCHECK(psm_rlwe_client);
-
-  // Re-assigning the unique_ptr will reset the old unique_ptr.
-  psm_rlwe_client_ = std::move(psm_rlwe_client);
 }
 
 }  // namespace ash::device_activity

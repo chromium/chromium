@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_
 #define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_
 
+#include <unordered_map>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
@@ -98,14 +101,41 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   absl::optional<std::string> GetWindowIdentifier() const;
 
-  // Updates the window identifier, which updates the |psm_id_| and
-  // |psm_rlwe_client_|.
+  // Updates the window identifier, which updates the |psm_id_|,
+  // |psm_id_to_date_|, and |psm_ids_to_query_| fields.
   bool SetWindowIdentifier(base::Time ts);
 
   // This method will return nullopt if this method is called before the window
   // identifier was set successfully.
   absl::optional<private_membership::rlwe::RlwePlaintextId> GetPsmIdentifier()
       const;
+
+  // Compute the psm identifiers to date pairs for the use case object.
+  // This is used to determine when the last sent psm id and its date is.
+  // Date is rounded to nearest UTC midnight for simplicity.
+  //
+  // For example, the 28 day lookback queries on 01/28/2022 will generate the
+  // vector of psm ids for days 01, 02, 03, 04, 05, 06, ..., 28 of January 2022.
+  virtual bool SavePsmIdToDateMap(base::Time ts);
+
+  // Generates the |psm_ids_to_query_| using the |psm_id_to_date_| map.
+  virtual void SetPsmIdentifiersToQuery();
+
+  // Generates the |psm_ids_to_import_| from the ts.
+  // For example, the 28 day ping ahead imports on 01/01/2022 will generate the
+  // vector of psm ids for days 01, 02, 03, 04, 05, 06, ..., 28 of January 2022.
+  virtual bool SetPsmIdentifiersToImport(base::Time ts);
+
+  // Return vector of generated ids.
+  std::vector<private_membership::rlwe::RlwePlaintextId>
+  GetPsmIdentifiersToQuery() const;
+
+  // Return vector of generated import data.
+  std::vector<FresnelImportData> GetImportData() const;
+
+  // Return the date that the psm id represents, or empty string if it
+  // doesn't exist.
+  base::Time RetrievePsmIdDate(private_membership::rlwe::RlwePlaintextId id);
 
   // Calculates an HMAC of |message| using |key|, encoded as a hexadecimal
   // string. Return empty string if HMAC fails.
@@ -124,6 +154,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // identifier is constant.
   virtual bool IsDevicePingRequired(base::Time new_ping_ts) const;
 
+  // Regenerated when the state machine enters check membership Oprf state.
+  // Client Generates protos used in request body of Oprf and Query requests.
+  void SetPsmRlweClient(
+      std::vector<private_membership::rlwe::RlwePlaintextId> psm_ids);
+
   // Generates the AES-256 encrypted ciphertext, which is used to store
   // the timestamp for only the first active use case.
   // The device stable secret (only known to the chromebook itself) is needed to
@@ -140,6 +175,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Method is used to store and read the last ping timestamp as a string
   // when interacting with preserved files over private_computingd dbus.
   std::string FormatUTCDateString(base::Time ts);
+
+  // Uniquely identifies a window of time for device active counting.
+  //
+  // Generated on demand each time the |window_id_| is regenerated.
+  // This field is used apart of PSM Oprf, Query, and Import requests.
+  absl::optional<private_membership::rlwe::RlwePlaintextId>
+  GeneratePsmIdentifier(absl::optional<std::string> window_id) const;
 
  protected:
   // Retrieve full hardware class from MachineStatistics.
@@ -159,20 +201,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Retrieve |psm_device_active_secret_|.
   const std::string& GetPsmDeviceActiveSecret() const;
 
+  // Generated on demand each time the state machine leaves the idle state.
+  // This field is used to know which window the psm id is used for.
+  absl::optional<std::string> window_id_;
+
+  // Generated on demand each time the state machine leaves the idle state.
+  // This field represents the single identifier that is imported for
+  // both fixed and n-day use cases.
+  absl::optional<private_membership::rlwe::RlwePlaintextId> psm_id_;
+
+  // Generates mapping for psm_id to date mapping.
+  // Field acts as a cache to avoid recomputing psm id's every time we need
+  // to determine which window id it represents.
+  std::unordered_map<std::string, base::Time> psm_id_to_date_;
+
+  // Vector of the RlwePlaintextId's to query, stored in |psm_id_to_date_|.
+  // This vector is directly used in the PSM query request body, if needed.
+  std::vector<private_membership::rlwe::RlwePlaintextId> psm_ids_to_query_;
+
+  // Vector of new FresnelImportData, based on the last known import date..
+  std::vector<FresnelImportData> new_import_data_;
+
  private:
-  // Uniquely identifies a window of time for device active counting.
-  //
-  // Generated on demand each time the |window_id_| is regenerated.
-  // This field is used apart of PSM Oprf, Query, and Import requests.
-  absl::optional<private_membership::rlwe::RlwePlaintextId>
-  GeneratePsmIdentifier(absl::optional<std::string> window_id) const;
-
-  // Regenerated each time the state machine leaves the idle state.
-  // Client Generates protos used in request body of Oprf and Query requests.
-  void SetPsmRlweClient(
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          psm_rlwe_client);
-
   // The ChromeOS platform code will provide a derived PSM device active secret
   // via callback.
   //
@@ -204,15 +254,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Singleton lives throughout class lifetime.
   chromeos::system::StatisticsProvider* const statistics_provider_;
-
-  // Generated on demand each time the state machine leaves the idle state.
-  // This field is used to know which window the psm id is used for.
-  absl::optional<std::string> window_id_;
-
-  // Generated on demand each time the state machine leaves the idle state.
-  // It is reused by several states. It is reset to nullopt.
-  // This field is used apart of PSM Oprf, Query, and Import requests.
-  absl::optional<private_membership::rlwe::RlwePlaintextId> psm_id_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // Client Generates protos used in request body of Oprf and Query requests.
