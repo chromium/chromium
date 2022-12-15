@@ -1431,12 +1431,12 @@ void WebViewGuest::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   // Ask the embedder for permission.
-  base::DictionaryValue request_info;
+  base::Value::Dict request_info;
   const GURL& origin =
       requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-  request_info.SetStringKey(webview::kOrigin, origin.spec());
+  request_info.Set(webview::kOrigin, origin.spec());
   web_view_permission_helper_->RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, request_info,
+      WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, std::move(request_info),
       base::BindOnce(&WebViewGuest::OnFullscreenPermissionDecided,
                      weak_ptr_factory_.GetWeakPtr()),
       false /* allowed_by_default */);
@@ -1540,23 +1540,23 @@ void WebViewGuest::RequestNewWindowPermission(
 
   const int guest_instance_id = new_guest->guest_instance_id();
 
-  base::DictionaryValue request_info;
-  request_info.SetIntKey(webview::kInitialHeight, initial_bounds.height());
-  request_info.SetIntKey(webview::kInitialWidth, initial_bounds.width());
-  request_info.SetStringKey(webview::kTargetURL, new_window_info.url.spec());
-  request_info.SetStringKey(webview::kName, new_window_info.name);
-  request_info.SetIntKey(webview::kWindowID, guest_instance_id);
+  base::Value::Dict request_info;
+  request_info.Set(webview::kInitialHeight, initial_bounds.height());
+  request_info.Set(webview::kInitialWidth, initial_bounds.width());
+  request_info.Set(webview::kTargetURL, new_window_info.url.spec());
+  request_info.Set(webview::kName, new_window_info.name);
+  request_info.Set(webview::kWindowID, guest_instance_id);
   // We pass in partition info so that window-s created through newwindow
   // API can use it to set their partition attribute.
-  request_info.SetStringKey(webview::kStoragePartitionId, storage_partition_id);
-  request_info.SetStringKey(webview::kWindowOpenDisposition,
-                            WindowOpenDispositionToString(disposition));
+  request_info.Set(webview::kStoragePartitionId, storage_partition_id);
+  request_info.Set(webview::kWindowOpenDisposition,
+                   WindowOpenDispositionToString(disposition));
 
   GuestViewManager::FromBrowserContext(browser_context())
       ->ManageOwnership(std::move(new_guest));
 
   web_view_permission_helper_->RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW, request_info,
+      WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW, std::move(request_info),
       base::BindOnce(&WebViewGuest::OnWebViewNewWindowResponse,
                      weak_ptr_factory_.GetWeakPtr(), guest_instance_id),
       false /* allowed_by_default */);

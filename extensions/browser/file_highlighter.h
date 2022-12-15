@@ -9,10 +9,6 @@
 
 #include <string>
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 
 // The FileHighlighter class is used in order to isolate and highlight a portion
@@ -38,10 +34,6 @@ class FileHighlighter {
   // Get the portion of the manifest which should not be highlighted and is
   // after the feature.
   std::string GetAfterFeature() const;
-
-  // Populate a DictionaryValue with the highlighted portions (in UTF16) of the
-  // source file.
-  void SetHighlightedRegions(base::DictionaryValue* dict) const;
 
  protected:
   explicit FileHighlighter(const std::string& contents);

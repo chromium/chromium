@@ -206,44 +206,43 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id_input) {
-    std::unique_ptr<base::DictionaryValue> manifest =
-        DictionaryBuilder()
-            .Set("name", "extension")
-            .Set("description", "an extension")
-            .Set("manifest_version", 2)
-            .Set("version", "0.1")
-            .Build();
+    base::Value::Dict manifest = DictionaryBuilder()
+                                     .Set("name", "extension")
+                                     .Set("description", "an extension")
+                                     .Set("manifest_version", 2)
+                                     .Set("version", "0.1")
+                                     .BuildDict();
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreateTheme(const std::string& id_input) {
-    std::unique_ptr<base::DictionaryValue> manifest =
+    base::Value::Dict manifest =
         DictionaryBuilder()
             .Set("name", "theme")
             .Set("description", "a theme")
-            .Set("theme", DictionaryBuilder().Build())
+            .Set("theme", DictionaryBuilder().BuildDict())
             .Set("manifest_version", 2)
             .Set("version", "0.1")
-            .Build();
+            .BuildDict();
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreatePlatformApp(
       const std::string& id_input) {
-    std::unique_ptr<base::Value> background =
+    base::Value::Dict background =
         DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").Build())
-            .Build();
-    std::unique_ptr<base::DictionaryValue> manifest =
+            .Set("scripts", ListBuilder().Append("background.js").BuildList())
+            .BuildDict();
+    base::Value::Dict manifest =
         DictionaryBuilder()
             .Set("name", "platform_app")
             .Set("description", "a platform app")
             .Set("app", DictionaryBuilder()
                             .Set("background", std::move(background))
-                            .Build())
+                            .BuildDict())
             .Set("manifest_version", 2)
             .Set("version", "0.1")
-            .Build();
+            .BuildDict();
     return CreateExtension(id_input, std::move(manifest));
   }
 
@@ -284,9 +283,8 @@ class RendererStartupHelperTest : public ExtensionsTest {
   scoped_refptr<const Extension> extension_;
 
  private:
-  scoped_refptr<const Extension> CreateExtension(
-      const std::string& id_input,
-      std::unique_ptr<base::DictionaryValue> manifest) {
+  scoped_refptr<const Extension> CreateExtension(const std::string& id_input,
+                                                 base::Value::Dict manifest) {
     return ExtensionBuilder()
         .SetManifest(std::move(manifest))
         .SetID(crx_file::id_util::GenerateId(id_input))

@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
 
-using base::DictionaryValue;
 using base::Value;
 
 namespace extensions {
@@ -118,13 +117,12 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
 scoped_refptr<const Extension> CreateExtension(bool component,
                                                bool persistent) {
   ExtensionBuilder builder;
-  std::unique_ptr<base::DictionaryValue> manifest =
-      std::make_unique<base::DictionaryValue>();
-  manifest->SetStringKey("name", "foo");
-  manifest->SetStringKey("version", "1.0.0");
-  manifest->SetIntKey("manifest_version", 2);
-  manifest->SetStringPath("background.page", "background.html");
-  manifest->SetBoolPath("background.persistent", persistent);
+  base::Value::Dict manifest;
+  manifest.Set("name", "foo");
+  manifest.Set("version", "1.0.0");
+  manifest.Set("manifest_version", 2);
+  manifest.SetByDottedPath("background.page", "background.html");
+  manifest.SetByDottedPath("background.persistent", persistent);
   builder.SetManifest(std::move(manifest));
   if (component)
     builder.SetLocation(mojom::ManifestLocation::kComponent);
@@ -134,11 +132,11 @@ scoped_refptr<const Extension> CreateExtension(bool component,
 
 scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   ExtensionBuilder builder;
-  auto manifest = std::make_unique<base::DictionaryValue>();
-  manifest->SetStringKey("name", "foo");
-  manifest->SetStringKey("version", "1.0.0");
-  manifest->SetIntKey("manifest_version", 2);
-  manifest->SetStringPath("background.service_worker", "worker.js");
+  base::Value::Dict manifest;
+  manifest.Set("name", "foo");
+  manifest.Set("version", "1.0.0");
+  manifest.Set("manifest_version", 2);
+  manifest.SetByDottedPath("background.service_worker", "worker.js");
   builder.SetManifest(std::move(manifest));
   return builder.Build();
 }
@@ -607,7 +605,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
                              .Set("name", "Test app")
                              .Set("version", "1.0")
                              .Set("manifest_version", 2)
-                             .Build())
+                             .BuildDict())
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
   };

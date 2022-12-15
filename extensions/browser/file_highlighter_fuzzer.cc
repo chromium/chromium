@@ -34,11 +34,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK_EQ(highlighter->GetBeforeFeature() + highlighter->GetFeature() +
                highlighter->GetAfterFeature(),
            contents);
-  if (base::IsStringUTF8(contents)) {
-    // `base::Value` only supports valid UTF-8 strings.
-    base::DictionaryValue dict;
-    highlighter->SetHighlightedRegions(&dict);
-  }
 
   return 0;
 }

@@ -6,16 +6,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack.h"
-#include "base/values.h"
 
 namespace extensions {
 
 namespace {
-
-// Keys for a highlighted dictionary.
-const char kBeforeHighlightKey[] = "beforeHighlight";
-const char kHighlightKey[] = "highlight";
-const char kAfterHighlightKey[] = "afterHighlight";
 
 // Increment |index| to the position of the next quote ('"') in |str|, skipping
 // over any escaped quotes. If no next quote is found, |index| is set to
@@ -111,20 +105,6 @@ std::string FileHighlighter::GetFeature() const {
 
 std::string FileHighlighter::GetAfterFeature() const {
   return contents_.substr(end_);
-}
-
-void FileHighlighter::SetHighlightedRegions(base::DictionaryValue* dict) const {
-  std::string before_feature = GetBeforeFeature();
-  if (!before_feature.empty())
-    dict->SetStringKey(kBeforeHighlightKey, before_feature);
-
-  std::string feature = GetFeature();
-  if (!feature.empty())
-    dict->SetStringKey(kHighlightKey, feature);
-
-  std::string after_feature = GetAfterFeature();
-  if (!after_feature.empty())
-    dict->SetStringKey(kAfterHighlightKey, after_feature);
 }
 
 ManifestHighlighter::ManifestHighlighter(const std::string& manifest,

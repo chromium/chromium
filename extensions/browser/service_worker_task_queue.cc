@@ -602,11 +602,11 @@ void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfo(
   if (browser_context_->IsOffTheRecord()) {
     off_the_record_registrations_[extension_id] = version;
   } else {
-    auto info = std::make_unique<base::DictionaryValue>();
-    info->SetStringKey(kServiceWorkerVersion, version.GetString());
+    base::Value::Dict info;
+    info.Set(kServiceWorkerVersion, version.GetString());
     ExtensionPrefs::Get(browser_context_)
         ->UpdateExtensionPref(extension_id, kPrefServiceWorkerRegistrationInfo,
-                              std::move(info));
+                              std::make_unique<base::Value>(std::move(info)));
   }
 }
 

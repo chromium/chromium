@@ -179,10 +179,10 @@ void WebViewPermissionHelper::RequestMediaAccessPermission(
     content::WebContents* source,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  base::DictionaryValue request_info;
-  request_info.SetStringKey(guest_view::kUrl, request.security_origin.spec());
+  base::Value::Dict request_info;
+  request_info.Set(guest_view::kUrl, request.security_origin.spec());
   RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_MEDIA, request_info,
+      WEB_VIEW_PERMISSION_TYPE_MEDIA, std::move(request_info),
       base::BindOnce(&WebViewPermissionHelper::OnMediaPermissionResponse,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)),
       default_media_access_permission_);
@@ -266,7 +266,7 @@ void WebViewPermissionHelper::RequestFileSystemPermission(
 
 int WebViewPermissionHelper::RequestPermission(
     WebViewPermissionType permission_type,
-    const base::DictionaryValue& request_info,
+    base::Value::Dict request_info,
     PermissionResponseCallback callback,
     bool allowed_by_default) {
   // If there are too many pending permission requests then reject this request.
@@ -286,7 +286,7 @@ int WebViewPermissionHelper::RequestPermission(
   pending_permission_requests_[request_id] = PermissionResponseInfo(
       std::move(callback), permission_type, allowed_by_default);
   base::Value::Dict args;
-  args.Set(webview::kRequestInfo, request_info.Clone());
+  args.Set(webview::kRequestInfo, std::move(request_info));
   args.Set(webview::kRequestId, request_id);
   switch (permission_type) {
     case WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW: {
