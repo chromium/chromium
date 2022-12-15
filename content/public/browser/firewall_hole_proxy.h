@@ -25,27 +25,19 @@ class CONTENT_EXPORT FirewallHoleProxy {
   virtual ~FirewallHoleProxy() = default;
 };
 
-// Describes an interface for opening holes in the ChromeOS system firewall.
-class CONTENT_EXPORT FirewallHoleProxyFactory {
- public:
-  using OpenCallback = FirewallHoleProxy::OpenCallback;
+// Opens a TCP port on the system firewall for the given |interface|
+// (or all interfaces if |interface| is ""). On success invokes the callback
+// with a valid FirewallHoleProxy; on failure supplies nullptr.
+CONTENT_EXPORT void OpenTCPFirewallHole(const std::string& interface,
+                         uint16_t port,
+                         FirewallHoleProxy::OpenCallback callback);
 
-  virtual ~FirewallHoleProxyFactory() = default;
-
-  // Opens a TCP port on the system firewall for the given |interface|
-  // (or all interfaces if |interface| is ""). On success invokes the callback
-  // with a valid FirewallHoleProxy; on failure supplies nullptr.
-  virtual void OpenTCPFirewallHole(const std::string& interface,
-                                   uint16_t port,
-                                   OpenCallback callback) = 0;
-
-  // Opens a UDP port on the system firewall for the given |interface|
-  // (or all interfaces if |interface| is ""). On success invokes the callback
-  // with a valid FirewallHoleProxy; on failure supplies nullptr.
-  virtual void OpenUDPFirewallHole(const std::string& interface,
-                                   uint16_t port,
-                                   OpenCallback callback) = 0;
-};
+// Opens a UDP port on the system firewall for the given |interface|
+// (or all interfaces if |interface| is ""). On success invokes the callback
+// with a valid FirewallHoleProxy; on failure supplies nullptr.
+CONTENT_EXPORT void OpenUDPFirewallHole(const std::string& interface,
+                         uint16_t port,
+                         FirewallHoleProxy::OpenCallback callback);
 
 }  // namespace content
 

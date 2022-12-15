@@ -449,7 +449,6 @@
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#include "chrome/browser/renderer_host/pepper/chrome_firewall_hole_proxy.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chromeos/services/network_health/public/cpp/network_health_helper.h"
 #include "components/crash/core/app/breakpad_linux.h"
@@ -4349,17 +4348,6 @@ ChromeContentBrowserClient::GetVpnServiceProxy(
   return nullptr;
 #endif
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-content::FirewallHoleProxyFactory*
-ChromeContentBrowserClient::GetFirewallHoleProxyFactory() {
-  if (!firewall_hole_proxy_factory_) {
-    firewall_hole_proxy_factory_ =
-        std::make_unique<ChromeFirewallHoleProxyFactory>();
-  }
-  return firewall_hole_proxy_factory_.get();
-}
-#endif
 
 std::unique_ptr<ui::SelectFilePolicy>
 ChromeContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {

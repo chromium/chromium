@@ -5815,8 +5815,6 @@ static_library("browser") {
       "policy/system_features_disable_list_policy_handler.h",
       "renderer_context_menu/quick_answers_menu_observer.cc",
       "renderer_context_menu/quick_answers_menu_observer.h",
-      "renderer_host/pepper/chrome_firewall_hole_proxy.cc",
-      "renderer_host/pepper/chrome_firewall_hole_proxy.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
       "webshare/chromeos/sharesheet_client.cc",

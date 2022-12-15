@@ -52,11 +52,13 @@ bool CanUseSocketAPIs(bool external_plugin,
 
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return false;
+  }
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
-  if (!site_instance)
+  if (!site_instance) {
     return false;
+  }
   if (!GetContentClient()->browser()->AllowPepperSocketAPI(
           site_instance->GetBrowserContext(), site_instance->GetSiteURL(),
           private_api, params)) {
@@ -92,10 +94,8 @@ void OpenTCPFirewallHole(const net::IPEndPoint& address,
     std::move(callback).Run(nullptr);
     return;
   }
-  GetContentClient()
-      ->browser()
-      ->GetFirewallHoleProxyFactory()
-      ->OpenTCPFirewallHole(std::string(), address.port(), std::move(callback));
+  content::OpenTCPFirewallHole(std::string(), address.port(),
+                               std::move(callback));
 }
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
@@ -104,10 +104,8 @@ void OpenUDPFirewallHole(const net::IPEndPoint& address,
     std::move(callback).Run(nullptr);
     return;
   }
-  GetContentClient()
-      ->browser()
-      ->GetFirewallHoleProxyFactory()
-      ->OpenUDPFirewallHole(std::string(), address.port(), std::move(callback));
+  content::OpenUDPFirewallHole(std::string(), address.port(),
+                               std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

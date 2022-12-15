@@ -2380,8 +2380,10 @@ source_set("browser") {
       "lock_screen/lock_screen_storage_impl.h",
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
+      "renderer_host/pepper/firewall_hole_proxy.cc",
     ]
     deps += [
+      "//chromeos/crosapi/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//components/value_store",

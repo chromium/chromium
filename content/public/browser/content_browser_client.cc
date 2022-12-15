@@ -708,12 +708,6 @@ std::unique_ptr<VpnServiceProxy> ContentBrowserClient::GetVpnServiceProxy(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-FirewallHoleProxyFactory* ContentBrowserClient::GetFirewallHoleProxyFactory() {
-  return nullptr;
-}
-#endif
-
 std::unique_ptr<ui::SelectFilePolicy>
 ContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {
   return nullptr;
