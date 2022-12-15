@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,6 +60,16 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
           {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
           {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_SPACE,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_SPACE)},
+          {ui::KeyboardCode::VKEY_TAB,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB)},
+          {ui::KeyboardCode::VKEY_ESCAPE,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE)},
+          {ui::KeyboardCode::VKEY_RETURN,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN)},
+          {ui::KeyboardCode::VKEY_BACK,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE)},
       }));
   return *key_display_map;
 }
@@ -66,7 +77,7 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
 mojom::DefaultAcceleratorPropertiesPtr CreateDefaultAcceleratorProps(
     const ui::Accelerator& accelerator) {
   return mojom::DefaultAcceleratorProperties::New(
-      accelerator, KeycodeToKeyString(accelerator.key_code()));
+      accelerator, shortcut_ui::GetKeyDisplay(accelerator.key_code()));
 }
 
 std::u16string LookupAcceleratorDescription(mojom::AcceleratorSource source,
@@ -429,20 +440,15 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
 }
 
 std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
-  // TODO(cambickel): All key_displays should be lowercase
-  const std::u16string key_display = KeycodeToKeyString(key_code);
-  if (key_display.empty()) {
-    // If key_display is empty and there's an entry for this key_code in our
-    // map, return that entry's value.
-    auto it = GetKeyDisplayMap().find(key_code);
-    if (it != GetKeyDisplayMap().end()) {
-      return it->second;
-    }
-  } else if (key_display == u" ") {
-    // If key_display is a space character, instead return the string "Space".
-    return l10n_util::GetStringUTF16(IDS_KSV_KEY_SPACE);
+  // If there's an entry for this key_code in our
+  // map, return that entry's value.
+  auto it = GetKeyDisplayMap().find(key_code);
+  if (it != GetKeyDisplayMap().end()) {
+    return it->second;
+  } else {
+    // Otherwise, get the key_display from a util function.
+    return KeycodeToKeyString(key_code);
   }
-  return key_display;
 }
 
 }  // namespace shortcut_ui

@@ -103,7 +103,7 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
       expected_accelerator ==
       actual_info->layout_properties->get_default_accelerator()->accelerator;
   const bool key_display_equals =
-      KeycodeToKeyString(expected_accelerator.key_code()) ==
+      shortcut_ui::GetKeyDisplay(expected_accelerator.key_code()) ==
       actual_info->layout_properties->get_default_accelerator()->key_display;
   return accelerator_equals && key_display_equals;
 }
@@ -598,11 +598,14 @@ TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
 
 TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"c", GetKeyDisplay(ui::VKEY_C));
-  EXPECT_EQ(u"Tab", GetKeyDisplay(ui::VKEY_TAB));
   EXPECT_EQ(u"MicrophoneMuteToggle",
             GetKeyDisplay(ui::VKEY_MICROPHONE_MUTE_TOGGLE));
   EXPECT_EQ(u"ToggleWifi", GetKeyDisplay(ui::VKEY_WLAN));
-  EXPECT_EQ(u"Space", GetKeyDisplay(ui::VKEY_SPACE));
+  EXPECT_EQ(u"tab", GetKeyDisplay(ui::VKEY_TAB));
+  EXPECT_EQ(u"esc", GetKeyDisplay(ui::VKEY_ESCAPE));
+  EXPECT_EQ(u"backspace", GetKeyDisplay(ui::VKEY_BACK));
+  EXPECT_EQ(u"enter", GetKeyDisplay(ui::VKEY_RETURN));
+  EXPECT_EQ(u"space", GetKeyDisplay(ui::VKEY_SPACE));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TextAcceleratorParsing) {

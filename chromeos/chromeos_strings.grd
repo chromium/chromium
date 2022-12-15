@@ -3673,6 +3673,11 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL" desc="Subcategory named 'General' shown within main shortcuts section" translateable="false">General</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_APPS" desc="Subcategory named 'System Apps' shown within main shortcuts section" translateable="false">System Apps</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_CONTROLS" desc="Subcategory named 'System Controls' shown within main shortcuts section" translateable="false">System Controls</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_SPACE" desc="Lowercase name of the keyboard key 'Space'" translateable="false">space</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB" desc="Lowercase name of the keyboard key 'Tab'" translateable="false">tab</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE" desc="Lowercase name of the keyboard key 'Escape', abbreviated if possible" translateable="false">esc</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN" desc="Lowercase name of the keyboard key 'Enter'" translateable="false">enter</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE" desc="Lowercase name of the keyboard key 'Backspace'" translateable="false">backspace</message>
         <!-- End of Shortcut Customization -->
 
         <!-- APN -->
