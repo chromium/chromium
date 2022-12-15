@@ -34,7 +34,7 @@ BASE_FEATURE(kCrowLaunchTab,
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDesktopSharePreview,
              "DesktopSharePreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 extern const char kDesktopSharePreviewVariant16[] = "16";
 extern const char kDesktopSharePreviewVariant40[] = "40";
 extern const char kDesktopSharePreviewVariant72[] = "72";
