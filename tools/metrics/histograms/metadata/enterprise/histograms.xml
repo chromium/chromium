@@ -1720,8 +1720,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-oac@google.com</owner>
   <summary>
     Events related to Chrome OS enterprise enrollment recovery. Note that this
-    only covers cases in which prior to recovery, the &quot;private owner&quot;
-    of the device had UMA stats enabled.
+    only covers cases in which prior to recovery, UMA stats are enabled by
+    policy.
   </summary>
 </histogram>
 

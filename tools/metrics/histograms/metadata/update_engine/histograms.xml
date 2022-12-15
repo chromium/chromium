@@ -312,8 +312,7 @@ chromium-metrics-reviews@google.com.
     Example value: 10323 (meaning M65 stable).
 
     This is reported on every update check if the TargetVersionPrefix device
-    policy is set and the value of the RollbackToTargetVersion device policy is
-    one of the values allowing rollback.
+    policy is set and rollback is enabled.
 
     This metric is specific to ChromeOS.
   </summary>
