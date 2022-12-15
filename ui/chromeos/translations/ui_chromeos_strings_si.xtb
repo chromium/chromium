@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ජාලය, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">බොකෙහ්</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ගොනුව</translation>
-<translation id="457386861538956877">තව...</translation>
 <translation id="4579744207439506346">තේරීමට <ph name="ENTRY_NAME" /> එක් කළා.</translation>
 <translation id="4583436353463424810">මෑත ලේඛන නැත</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> සඳහා වන ප්‍රතිඵල පෙන්වනු ලැබේ.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">අතථ්‍ය යන්ත්‍රය</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
 <translation id="5583664733673201137">විරාම ලකුණු පළල පිරී ඇත</translation>
+<translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5602622065581044566">ශබ්දිම යතුරුපුවරුව සමග බල්ගේරියානු</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">මෙම ගොනුව Macintosh මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය ChromeOS ධාවනය වන ඔබගේ උපාංගය සමග නොගැළපෙයි. ChromeOS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>

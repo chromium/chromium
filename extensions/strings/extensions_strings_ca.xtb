@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">El paquet no és vàlid. Detalls: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> sol·licita accés a un dels teus dispositius:</translation>
 <translation id="8885905466771744233">Ja existeix una clau privada per a l'extensió especificada. Torneu a utilitzar-la o suprimiu-la primer.</translation>
+<translation id="9039223174332979184">L'administrador d'aquesta màquina requereix que <ph name="EXTENSION_NAME" /> tingui, com a mínim, la versió 3 del fitxer de manifest.</translation>
 <translation id="907841381057066561">No s'ha pogut crear el fitxer ZIP temporal durant l'empaquetament.</translation>
 <translation id="941543339607623937">Clau privada no vàlida.</translation>
 </translationbundle>

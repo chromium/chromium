@@ -1389,6 +1389,7 @@
 <translation id="2246480341630108201">உங்கள் பெற்றோர் இன்னும் அனுமதிக்கவில்லை</translation>
 <translation id="2246549592927364792">பட விவரங்களை Googleளிலிருந்து பெற வேண்டுமா?</translation>
 <translation id="2247738527273549923">உங்கள் சாதனத்தை உங்கள் நிறுவனம் நிர்வகிக்கிறது</translation>
+<translation id="2247870315273396641">குரலின் மாதிரி</translation>
 <translation id="2249111429176737533">தாவலாக்கப்பட்ட சாளரமாகத் திற</translation>
 <translation id="2249605167705922988">எ.கா. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">சிஸ்டம் வியூவருடன் திற</translation>
@@ -1834,7 +1835,6 @@
 <translation id="2635276683026132559">உள்நுழைகிறது</translation>
 <translation id="2637313651144986786">உலாவிப் பக்கங்களைத் தேடுக...</translation>
 <translation id="2637400434494156704">தவறான பின். இன்னும் ஒருமுறை முயலலாம்.</translation>
-<translation id="2638286699381354126">புதுப்பி...</translation>
 <translation id="2638662041295312666">உள்நுழைவுப் படம்</translation>
 <translation id="2640299212685523844">GTKயைப் பயன்படுத்து</translation>
 <translation id="264083724974021997">உங்கள் மொபைலுடன் இணைக்கவும் - உரையாடல்</translation>
@@ -1843,6 +1843,7 @@
 <translation id="2645047101481282803">உங்கள் சாதனத்தை <ph name="PROFILE_NAME" /> நிர்வகிக்கிறது</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-குறியேற்றப்பட்ட ASCII, சான்றிதழ் சங்கிலி</translation>
+<translation id="265156376773362237">இயல்பான முன்கூட்டிய ஏற்றுதல்</translation>
 <translation id="2652129567809778422">கடவுச்சொல்லைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="2653033005692233957">தேட முடியவில்லை</translation>
 <translation id="2653266418988778031">நீங்கள் ஒரு சான்றளிக்கும் மைய(CA) சான்றிதழை நீக்கினால், அந்த CA வழங்கிய எந்த சான்றிதழையும் உங்கள் உலாவி இதன் பின்னர் நம்பாது.</translation>
@@ -2102,6 +2103,7 @@
 <translation id="2868746137289129307">இந்த நீட்டிப்பு காலாவதியானது, நிறுவனக் கொள்கையால் முடக்கப்பட்டுள்ளது. புதிய பதிப்புக் கிடைக்கும் போது தானாகவே இயக்கப்பட வாய்ப்புள்ளது.</translation>
 <translation id="2870560284913253234">தளம்</translation>
 <translation id="2870909136778269686">புதுப்பிக்கிறது...</translation>
+<translation id="2871733351037274014">பக்கங்களை முன்கூட்டியே ஏற்றுதல்</translation>
 <translation id="2871813825302180988">இந்தச் சாதனத்தில் ஏற்கனவே இந்தக் கணக்கு பயன்படுத்தப்படுகிறது.</translation>
 <translation id="287205682142673348">போர்ட் அனுப்புதல்</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ஐச் சேர்...</translation>
@@ -2282,6 +2284,7 @@
 <translation id="3023464535986383522">பேசும் திரை</translation>
 <translation id="3024374909719388945">24-மணிநேர கடிகாரத்தைப் பயன்படுத்து</translation>
 <translation id="3027296729579831126">'அருகிலுள்ளவற்றுடன் பகிர்தல்' அம்சத்தை இயக்கு</translation>
+<translation id="3029276696788198026">பக்கங்களை முன்கூட்டியே ஏற்றாதே</translation>
 <translation id="3029466929721441205">ஸ்டைலஸ் கருவிகளை ஷெல்ஃபில் காட்டுதல்</translation>
 <translation id="3029808567601324798">பூட்ட வேண்டிய நேரம்</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ஐப் பயன்படுத்த, புதுப்பிப்பை இன்றே பதிவிறக்க வேண்டும். நீங்கள் சாதனத்தை இணையத்துடன் இணைக்கும்போது இந்தப் புதுப்பிப்பு தானாகப் பதிவிறக்கப்படும்.}other{<ph name="MANAGER" />ஐப் பயன்படுத்த, காலக்கெடுவிற்கு முன் புதுப்பிப்பைப் பதிவிறக்க வேண்டும். நீங்கள் சாதனத்தை இணையத்துடன் இணைக்கும்போது இந்தப் புதுப்பிப்பு தானாகப் பதிவிறக்கப்படும்.}}</translation>
@@ -2647,6 +2650,7 @@
 <translation id="3406290648907941085">விர்ச்சுவல் ரியாலிட்டியையும் தரவையும் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3406396172897554194">மொழி அல்லது உள்ளீட்டு முறையின் பெயர் மூலம் தேடலாம்</translation>
 <translation id="3406605057700382950">புக்மார்க்ஸ் பட்டியைக் &amp;காட்டு</translation>
+<translation id="3407392651057365886">இன்னும் அதிகமான பக்கங்களை முன்கூட்டியே ஏற்றும். பிற தளங்கள் கோரும்போது Google சேவையகங்கள் மூலம் பக்கங்கள் முன்கூட்டியே ஏற்றப்படக்கூடும்.</translation>
 <translation id="3407967630066378878">கைரேகையை அமைக்க இந்த <ph name="DEVICE_TYPE" /> இன் இடதுபக்கமுள்ள கைரேகை சென்சாரைத் தொடுமாறு உங்கள் பிள்ளையிடம் கூறவும். உங்கள் பிள்ளையின் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும்.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> கணக்கிற்கான 1 கடவுச்சொல் Google Password Managerரில் ஏற்றப்பட்டது}other{<ph name="USER_EMAIL" /> கணக்கிற்கான {NUM_PASSWORDS} கடவுச்சொற்கள் Google Password Managerரில் ஏற்றப்பட்டன}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2692,7 +2696,6 @@
 <translation id="3445047461171030979">Google Assistant விரைவான பதில்கள்</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="344537926140058498">பாதுகாக்கவேண்டிய உள்ளடக்கமோ ஆபத்தான உள்ளடக்கமோ இருப்பதால் உங்கள் நிறுவனம் இந்த ஃபைலைத் தடுத்துள்ளது. அதைச் சரிசெய்யுமாறு அதன் உரிமையாளரிடம் கேட்கவும்.</translation>
-<translation id="344546372406570257">{NUM_SITES,plural, =1{சமீபத்தில் நீங்கள் பார்வையிடாத <ph name="BEGIN_BOLD" />1 தளத்தில்<ph name="END_BOLD" /> இருந்து அனுமதிகள் அகற்றப்பட்டன}other{சமீபத்தில் நீங்கள் பார்வையிடாத <ph name="BEGIN_BOLD" />{NUM_SITES} தளங்களில்<ph name="END_BOLD" /> இருந்து அனுமதிகள் அகற்றப்பட்டன}}</translation>
 <translation id="3445925074670675829">USB-C சாதனம்</translation>
 <translation id="3446274660183028131">Windowsஸை நிறுவ, Parallels Desktopபைத் துவக்கவும்.</translation>
 <translation id="344630545793878684">பல இணையதளங்களில் உங்கள் தரவைப் படித்தல்</translation>
@@ -6479,6 +6482,7 @@
 <translation id="6991665348624301627">இலக்கைத் தேர்ந்தெடு</translation>
 <translation id="6992554835374084304">'மேம்பட்ட எழுத்துப் பிழை சரிபார்க்கும்' அம்சத்தை இயக்கு</translation>
 <translation id="6993000214273684335">பெயரிடப்படாத இந்தக் குழுவிலிருந்து தாவல் அகற்றப்பட்டது - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome உலாவியைப் புதுப்பிக்கிறது</translation>
 <translation id="6995899638241819463">தரவு மீறலினால் கடவுச்சொற்கள் வெளியாகியிருந்தால் அதுகுறித்து எச்சரி</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - செயல்பாட்டுப் பதிவு</translation>
 <translation id="6997707937646349884">உங்கள் சாதனங்களில்:</translation>
@@ -6945,6 +6949,7 @@
 <translation id="7454548535253569100">போர்ட்டல்: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">கூடுதல் கண்டெய்னர்களை நிர்வகித்தல்</translation>
 <translation id="7456142309650173560">dev</translation>
+<translation id="7456774706094330779">நீட்டிக்கப்பட்ட முன்கூட்டிய ஏற்றுதல்</translation>
 <translation id="7456847797759667638">இருப்பிடத்தைத் திற...</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{ஓர் இணைப்பை}other{# இணைப்புகளை}}</translation>
 <translation id="7458168200501453431">Google தேடலில் பயன்படுத்தப்படும் அதே பிழைத்திருத்தியைப் பயன்படுத்தும். உலாவியில் நீங்கள் உள்ளிடும் உரை Googleளுக்கு அனுப்பப்படும்.</translation>
@@ -7369,7 +7374,6 @@
 <translation id="7839051173341654115">மீடியாவைக் காட்டு/காப்புப்பிரதி எடு</translation>
 <translation id="7839192898639727867">சான்றிதழ் பொருள் விசை ID</translation>
 <translation id="7842062217214609161">ஷார்ட்கட் இல்லை</translation>
-<translation id="7842115774595115751">வழிசெலுத்தல் கட்டுப்பாடுகளை இயக்கு</translation>
 <translation id="7842692330619197998">புதிய கணக்கை உருவாக்க g.co/ChromeEnterpriseAccount என்பதற்குச் செல்லவும்.</translation>
 <translation id="784273751836026224">Linuxஸை நிறுவல் நீக்கு</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" /> இல் உள்நுழைக</translation>
@@ -7450,7 +7454,6 @@
 <translation id="79113168483292735">உலாவிப்பக்கத் தேடல் அம்சத்தில் மீடியா உலாவிப் பக்கங்கள் பிரிவு</translation>
 <translation id="7912080627461681647">சேவையகத்தில் உங்கள் கடவுச்சொல் மாற்றப்பட்டது. வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
 <translation id="7912974581251770345">மொழிபெயர்ப்பு</translation>
-<translation id="7914870167134465181">தனிப்படுத்திக் காட்டுதல்</translation>
 <translation id="7915457674565721553">பெற்றோர் கட்டுப்பாடுகளை அமைக்க இணையத்துடன் இணைக்கவும்</translation>
 <translation id="7918257978052780342">பதிவுபெறுக</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>
@@ -7748,6 +7751,7 @@
 <translation id="8174047975335711832">சாதனத் தகவல்</translation>
 <translation id="8174876712881364124">Google இயக்ககத்திற்குக் காப்புப் பிரதி எடுக்கும். இதனால் உங்கள் தரவை எளிதாக மீட்டெடுக்கலாம் அல்லது எப்போது வேண்டுமானாலும் சாதனத்தை மாற்றலாம். காப்புப் பிரதியில் ஆப்ஸ் தரவும் உள்ளடங்கும். காப்புப் பிரதிகள் Googleளுக்குப் பதிவேற்றப்பட்டு, உங்கள் பிள்ளையின் Google கணக்கின் கடவுச்சொல்லைப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்படும். <ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">இளஞ்சிவப்பு &amp; வெள்ளை</translation>
+<translation id="8176529144855282213">மைக்ரோஃபோன் அணுகலை இயக்க, உங்கள் சாதனத்தில் இருக்கும் மைக்ரோஃபோன் சுவிட்ச்சை இயக்கும்</translation>
 <translation id="8177196903785554304">நெட்வொர்க் விவரங்கள்</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{தாவலைப் புதிய சாளரத்திற்கு நகர்த்து}other{தாவல்களைப் புதிய சாளரத்திற்கு நகர்த்து}}</translation>
 <translation id="8179188928355984576">Android ஆப்ஸிற்குப் பயன்படுத்தப்படவில்லை</translation>
@@ -7921,6 +7925,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ஆதரிக்கப்படும் ஃபைல் வகை: <ph name="FILE_TYPE1" />}=2{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ஆதரிக்கப்படும் ஃபைல் வகைகள்: ,<ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{ஆதரிக்கப்படும் ஃபைல் வகைகள்: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />மேலும் {OVERFLOW_COUNT} <ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">உங்கள் குழுவிற்குப் பெயரிட்டு, வண்ணத்தைத் தேர்வுசெய்த பின் Esc பட்டனை அழுத்தவும்</translation>
 <translation id="833256022891467078">Crostini பகிர்ந்த ஃபோல்டர்கள்</translation>
+<translation id="833262891116910667">தனிப்படுத்தும்</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" /> வரை மட்டுமே புதுப்பிப்புகளைப் பெற முடியும்</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
@@ -8238,6 +8243,7 @@
 <translation id="8646209145740351125">ஒத்திசைவை முடக்குதல்</translation>
 <translation id="8646340610303779673">PPDயைக் காட்ட முடியவில்லை.</translation>
 <translation id="864637694230589560">வழக்கமாக, முக்கியச் செய்திகள் அல்லது அரட்டை மெசேஜ்கள் குறித்து உங்களுக்குத் தெரியப்படுத்த அறிவிப்புகளைத் தளங்கள் அனுப்பும்</translation>
+<translation id="8646467750715887511">பக்கங்களை நீங்கள் திறந்த பிறகே அவை ஏற்றப்படும்.</translation>
 <translation id="8647385344110255847">உங்கள் அனுமதியுடன் Google Playயில் இருந்து ஆப்ஸை உங்கள் பிள்ளை நிறுவலாம்</translation>
 <translation id="8647834505253004544">சரியான இணைய முகவரி அல்ல</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> அல்லது <ph name="RE_SCAN_LINK" /></translation>
@@ -8297,7 +8303,6 @@
 <translation id="8698269656364382265">முந்தைய திரைக்குச் செல்வதற்கு இடதுபக்கத்தில் இருந்து ஸ்வைப் செய்யவும்.</translation>
 <translation id="869884720829132584">ஆப்ஸ் மெனு</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
-<translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" />க்கான PPD</translation>
 <translation id="8702825062053163569">உங்கள் <ph name="DEVICE_TYPE" /> பூட்டப்பட்டது.</translation>
 <translation id="8703346390800944767">விளம்பரத்தைத் தவிர்</translation>
@@ -8454,6 +8459,7 @@
 <translation id="8838770651474809439">ஹம்பர்கர்</translation>
 <translation id="8838778928843281408">ஃபோன்களை நிர்வகியுங்கள்</translation>
 <translation id="883924185304953854">படத்தின்படி தேடும்</translation>
+<translation id="8839587819996519780">ஆப்ஸ் ஐகானில் அறிவிப்புப் புள்ளியைக் காட்டும்</translation>
 <translation id="8841843049738266382">ஏற்புப் பட்டியலில் உள்ள பயனர் கணக்குகளைப் படிக்கலாம் மாற்றலாம்</translation>
 <translation id="8842594465773264717">இந்தக் கைரேகையை நீக்கு</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>

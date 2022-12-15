@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> നെറ്റ്‍വർക്ക്, സിഗ്‍നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ബൊക്കെ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ഫയൽ</translation>
-<translation id="457386861538956877">കൂടുതൽ‍‌...</translation>
 <translation id="4579744207439506346">തിരഞ്ഞെടുക്കലിലേക്ക് <ph name="ENTRY_NAME" /> ചേർത്തു.</translation>
 <translation id="4583436353463424810">അടുത്തിടെയുള്ള ഡോക്യുമെന്റുകളൊന്നുമില്ല</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> എന്നതിനുള്ള ഫലങ്ങൾ കാണിക്കുന്നു.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">വെർച്വൽ മെഷീൻ</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="5583664733673201137">ചിഹ്നം പൂർണ്ണ വീതിയിലാണ്</translation>
+<translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5602622065581044566">ഫൊണറ്റിക് കീബോർഡ് ഉള്ള ബൾഗേറിയൻ</translation>
 <translation id="5605830556594064952">യുകെ ദ്വരോക്ക്</translation>
 <translation id="5618330573454123917">Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന കമ്പ്യൂട്ടറിന് വേണ്ടി രൂപകൽപ്പന ചെയ്ത ഫയൽ ആണിത്. ChromeOS റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിൽ ഇതിന് പിന്തുണയില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>

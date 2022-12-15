@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Rețea <ph name="NETWORK_TYPE" />, puterea semnalului <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fișier <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Mai multe...</translation>
 <translation id="4579744207439506346">S-a adăugat <ph name="ENTRY_NAME" /> la selecție.</translation>
 <translation id="4583436353463424810">Niciun document recent</translation>
 <translation id="4594543368593301662">Se afișează rezultate pentru <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">mașina virtuală</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Lățimea pentru punctuație este completă</translation>
+<translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
 <translation id="5618330573454123917">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>

@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Тып сеткі – <ph name="NETWORK_TYPE" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Эфект баке</translation>
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Яшчэ...</translation>
 <translation id="4579744207439506346">Дададзена да выбранага: <ph name="ENTRY_NAME" />.</translation>
 <translation id="4583436353463424810">Няма нядаўніх дакументаў</translation>
 <translation id="4594543368593301662">Паказваюцца вынікі па запыце "<ph name="SEARCH_TERM" />".</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">віртуальная машына</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Шырыня знакаў пунктуацыі – поўная</translation>
+<translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
 <translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
 <translation id="5618330573454123917">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>

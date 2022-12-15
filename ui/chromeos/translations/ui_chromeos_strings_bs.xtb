@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Mreža <ph name="NETWORK_TYPE" />, jačina signala <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Boke</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fajl</translation>
-<translation id="457386861538956877">Više...</translation>
 <translation id="4579744207439506346">Unos <ph name="ENTRY_NAME" /> je dodan u odabir.</translation>
 <translation id="4583436353463424810">Nema nedavnih dokumenata</translation>
 <translation id="4594543368593301662">Prikazuju se rezultati za <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">virtuelna mašina</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5583664733673201137">Interpunkcija je u punoj širini</translation>
+<translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
 <translation id="5618330573454123917">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>

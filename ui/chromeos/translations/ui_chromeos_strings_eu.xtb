@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> sarea. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4559767610552730302">Bokeh efektua</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fitxategia</translation>
-<translation id="457386861538956877">Gehiago…</translation>
 <translation id="4579744207439506346">Gehitu da <ph name="ENTRY_NAME" /> hautapenean.</translation>
 <translation id="4583436353463424810">Ez dago azkenaldiko dokumenturik</translation>
 <translation id="4594543368593301662">"<ph name="SEARCH_TERM" />" bilaketaren emaitzak daude ikusgai.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">makina birtuala</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5583664733673201137">Puntuazio-zabalera osoa da</translation>
+<translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
 <translation id="5605830556594064952">Dvorak estatubatuarra</translation>
 <translation id="5618330573454123917">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>

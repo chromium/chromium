@@ -125,6 +125,7 @@
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1891796056033961979">保存したブックマーク、パスワード、設定などにこの画面からアクセスできます。</translation>
+<translation id="1894023287452300670">ここで価格をトラッキングできます</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">1 時間以内</translation>
 <translation id="1930989359703290198">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -286,6 +287,7 @@
 <translation id="3130863904455712965">履歴、その他</translation>
 <translation id="3131206671572504478">すべてブロック</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
+<translation id="3146109040683991651">Chrome を既定のブラウザに設定する</translation>
 <translation id="3153862085237805241">カードを保存</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157684681743766797">すべてマーク...</translation>

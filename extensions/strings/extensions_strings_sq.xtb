@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paketa është e pavlefshme. Detajet: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" po kërkon qasje te një nga pajisjet e tua:</translation>
 <translation id="8885905466771744233">Ekziston tashmë një çelës privat për shtesën e specifikuar. Ripërdore atë çelës ose fshije në fillim.</translation>
+<translation id="9039223174332979184">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë minimumi versionin 3 të manifestit.</translation>
 <translation id="907841381057066561">Krijimi i një skedari të përkohshëm zip gjatë paketimit dështoi.</translation>
 <translation id="941543339607623937">Çelës privat i pavlefshëm.</translation>
 </translationbundle>

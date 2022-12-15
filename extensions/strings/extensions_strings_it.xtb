@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Il pacchetto non è valido. Dettagli: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" richiede l'accesso a un dispositivo:</translation>
 <translation id="8885905466771744233">Esiste già una chiave privata per l'estensione specificata. Riutilizza tale chiave o prima eliminala.</translation>
+<translation id="9039223174332979184">L'amministratore di questa macchina richiede che <ph name="EXTENSION_NAME" /> abbia una versione minima del manifest di 3.</translation>
 <translation id="907841381057066561">Operazione di creazione di un file zip temporaneo durante la creazione del pacchetto non riuscita.</translation>
 <translation id="941543339607623937">Chiave privata non valida.</translation>
 </translationbundle>

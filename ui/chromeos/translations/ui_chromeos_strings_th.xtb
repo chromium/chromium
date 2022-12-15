@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">เครือข่าย <ph name="NETWORK_TYPE" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ชัดตื้น</translation>
 <translation id="4572815280350369984">ไฟล์ <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">เพิ่มเติม...</translation>
 <translation id="4579744207439506346">เพิ่ม <ph name="ENTRY_NAME" /> ไปยังรายการที่เลือกแล้ว</translation>
 <translation id="4583436353463424810">ไม่มีเอกสารล่าสุด</translation>
 <translation id="4594543368593301662">กำลังแสดงผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">เครื่องเสมือน</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">ความกว้างเครื่องหมายวรรคตอนเป็นแบบเต็ม</translation>
+<translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5602622065581044566">บัลแกเรียด้วยแป้นพิมพ์ตามการออกเสียง</translation>
 <translation id="5605830556594064952">ดีโวรักสหรัฐอเมริกา</translation>
 <translation id="5618330573454123917">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงไม่สามารถใช้ร่วมกับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>

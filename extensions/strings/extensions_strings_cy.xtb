@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Mae'r pecyn yn annilys. Manylion: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Mae "<ph name="APP_NAME" />" yn gofyn am fynediad at un o'ch dyfeisiau:</translation>
 <translation id="8885905466771744233">Mae allwedd breifat ar gyfer yr estyniad dan sylw eisoes yn bodoli. Ailddefnyddiwch yr allwedd honno neu ei dileu'n gyntaf.</translation>
+<translation id="9039223174332979184">Mae gweinyddwr y peiriant hwn yn gofyn bod gan <ph name="EXTENSION_NAME" /> fersiwn maniffest leiaf o 3.</translation>
 <translation id="907841381057066561">Wedi methu â chreu ffeil sip dros dro wrth becynnu.</translation>
 <translation id="941543339607623937">Allwedd breifat annilys.</translation>
 </translationbundle>

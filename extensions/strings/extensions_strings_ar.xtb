@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">الحزمة غير صالحة. التفاصيل: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز من أجهزتك:</translation>
 <translation id="8885905466771744233">يوجد مفتاح خاص للإضافة المحددة. أعد استخدام هذا المفتاح أو احذفه أولاً.</translation>
+<translation id="9039223174332979184">يطلب مشرف هذا الجهاز أن تتضمّن الإضافة "<ph name="EXTENSION_NAME" />" الإصدار 3 من ملف البيان على الأقل.</translation>
 <translation id="907841381057066561">تعذّر إنشاء ملف مضغوط مؤقت أثناء إنشاء الحزمة.</translation>
 <translation id="941543339607623937">المفتاح الخاص غير صالح.</translation>
 </translationbundle>

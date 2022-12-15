@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-netwerk, seinsterkte <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-lêer</translation>
-<translation id="457386861538956877">Nog meer …</translation>
 <translation id="4579744207439506346">Het <ph name="ENTRY_NAME" /> by seleksie gevoeg.</translation>
 <translation id="4583436353463424810">Geen onlangse dokumente nie</translation>
 <translation id="4594543368593301662">Wys tans resultate vir <ph name="SEARCH_TERM" />.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">virtuele masjien</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Leestekenbreedte is vol</translation>
+<translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5602622065581044566">Bulgaars met fonetiese sleutelbord</translation>
 <translation id="5605830556594064952">VSA Dvorak</translation>
 <translation id="5618330573454123917">Hierdie lêer is ontwerp vir ’n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>

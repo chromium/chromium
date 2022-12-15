@@ -1379,6 +1379,7 @@
 <translation id="2246480341630108201">Твой родитель пока не одобрил этот сайт</translation>
 <translation id="2246549592927364792">Получать от Google описания изображений?</translation>
 <translation id="2247738527273549923">Этим устройством управляет ваша организация.</translation>
+<translation id="2247870315273396641">Предварительное прослушивание голоса</translation>
 <translation id="2249111429176737533">Открыть в окне с вкладками</translation>
 <translation id="2249605167705922988">Например: 1–5, 8, 11–13</translation>
 <translation id="2251218783371366160">Открыть в программе просмотра по умолчанию</translation>
@@ -1821,7 +1822,6 @@
 <translation id="2635276683026132559">Подпись</translation>
 <translation id="2637313651144986786">Поиск по вкладкам</translation>
 <translation id="2637400434494156704">Неверный PIN-код. Осталась одна попытка.</translation>
-<translation id="2638286699381354126">Обновить</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640299212685523844">Использовать тему GTK</translation>
 <translation id="264083724974021997">Подключение к телефону – диалоговое окно</translation>
@@ -1830,6 +1830,7 @@
 <translation id="2645047101481282803">Вашим устройством управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII с кодировкой Base64, цепочка сертификатов</translation>
+<translation id="265156376773362237">Стандартная предзагрузка</translation>
 <translation id="2652129567809778422">Выберите пароль</translation>
 <translation id="2653033005692233957">Ошибка поиска</translation>
 <translation id="2653266418988778031">Если удалить сертификат Центра сертификации, ваш браузер не сможет доверять сертификатам, выпущенным этим Центром сертификации.</translation>
@@ -2089,6 +2090,7 @@
 <translation id="2868746137289129307">Это устаревшее расширение отключено в соответствии с корпоративной политикой. Когда появится новая версия, оно может включиться автоматически.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2870909136778269686">Обновление...</translation>
+<translation id="2871733351037274014">Предзагрузка страниц</translation>
 <translation id="2871813825302180988">Аккаунт уже используется на этом мобильном устройстве.</translation>
 <translation id="287205682142673348">Переадресация портов</translation>
 <translation id="287286579981869940">Добавить сеть <ph name="PROVIDER_NAME" />...</translation>
@@ -2269,6 +2271,7 @@
 <translation id="3023464535986383522">Озвучивание при нажатии</translation>
 <translation id="3024374909719388945">Использовать 24-часовой формат</translation>
 <translation id="3027296729579831126">Включить Обмен с окружением</translation>
+<translation id="3029276696788198026">Без предзагрузки</translation>
 <translation id="3029466929721441205">Показывать инструменты стилуса на панели запуска</translation>
 <translation id="3029808567601324798">Время блокировки</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно установить обновление сегодня. Оно скачается автоматически при подключении к Интернету.}one{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно установить обновление до истечения срока. Оно скачается автоматически при подключении к Интернету.}few{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно установить обновление до истечения срока. Оно скачается автоматически при подключении к Интернету.}many{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно установить обновление до истечения срока. Оно скачается автоматически при подключении к Интернету.}other{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно установить обновление до истечения срока. Оно скачается автоматически при подключении к Интернету.}}</translation>
@@ -2634,6 +2637,7 @@
 <translation id="3406290648907941085">Разрешить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="3406396172897554194">Укажите язык или способ ввода</translation>
 <translation id="3406605057700382950">Показывать панель &amp;закладок</translation>
+<translation id="3407392651057365886">Предзагружается больше страниц. Этот процесс может выполняться через серверы Google по запросу других сайтов.</translation>
 <translation id="3407967630066378878">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков на левой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{В Google Менеджер паролей импортирован 1 пароль для <ph name="USER_EMAIL" />.}one{В Google Менеджер паролей импортирован {NUM_PASSWORDS} пароль для <ph name="USER_EMAIL" />.}few{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}many{В Google Менеджер паролей импортировано {NUM_PASSWORDS} паролей для <ph name="USER_EMAIL" />.}other{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}}</translation>
 <translation id="3409785640040772790">Карты</translation>
@@ -2679,7 +2683,6 @@
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="344537926140058498">Ваша организация заблокировала файл, так как он содержит конфиденциальный или опасный контент. Попросите владельца его исправить.</translation>
-<translation id="344546372406570257">{NUM_SITES,plural, =1{Разрешения отозваны у <ph name="BEGIN_BOLD" />1 сайта<ph name="END_BOLD" />, который вы давно не посещали}one{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали}few{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали}many{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали}other{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали}}</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
 <translation id="344630545793878684">Просмотр данных на нескольких сайтах</translation>
@@ -6470,6 +6473,7 @@
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Обновление браузера Chrome</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
 <translation id="6997707937646349884">На ваших устройствах:</translation>
@@ -6936,6 +6940,7 @@
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Управление дополнительными контейнерами</translation>
 <translation id="7456142309650173560">для разработчиков</translation>
+<translation id="7456774706094330779">Расширенная предзагрузка</translation>
 <translation id="7456847797759667638">Открыть адрес...</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
 <translation id="7458168200501453431">Используется та же технология проверки правописания, что и в Google Поиске. Текст, который вы введете в браузере, будет отправлен в Google.</translation>
@@ -7360,7 +7365,6 @@
 <translation id="7839051173341654115">Просмотреть/сохранить медиафайлы</translation>
 <translation id="7839192898639727867">Идентификатор ключа субъекта сертификата</translation>
 <translation id="7842062217214609161">Без быстрых клавиш</translation>
-<translation id="7842115774595115751">Показывать элементы навигации</translation>
 <translation id="7842692330619197998">Чтобы создать аккаунт, перейдите на страницу g.co/ChromeEnterpriseAccount.</translation>
 <translation id="784273751836026224">Удалить Linux</translation>
 <translation id="7843786652787044762">Войти в сервис "<ph name="WEB_DRIVE" />"</translation>
@@ -7441,7 +7445,6 @@
 <translation id="79113168483292735">Раздел вкладок с медиаконтентом в поиске по вкладкам</translation>
 <translation id="7912080627461681647">Пароль был изменен на сервере. Выйдите из аккаунта и войдите снова.</translation>
 <translation id="7912974581251770345">Перевод</translation>
-<translation id="7914870167134465181">Выделение</translation>
 <translation id="7915457674565721553">Чтобы настроить родительский контроль, подключитесь к Интернету.</translation>
 <translation id="7918257978052780342">Зарегистрироваться</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
@@ -7739,6 +7742,7 @@
 <translation id="8174047975335711832">Сведения об устройстве</translation>
 <translation id="8174876712881364124">Резервное копирование на Google Диск. Позволяет в любой момент восстановить данные (в том числе данные приложений) или перенести их на новое устройство. Резервные копии загружаются в Google и шифруются с помощью пароля аккаунта вашего ребенка. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Розовый с белым</translation>
+<translation id="8176529144855282213">Чтобы предоставить доступ к микрофону, используйте специальный физический переключатель на устройстве</translation>
 <translation id="8177196903785554304">Сведения о сети</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
 <translation id="8179188928355984576">Не используется в приложениях для Android</translation>
@@ -7912,6 +7916,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддерживается тип файлов: <ph name="FILE_TYPE1" />}=2{Поддерживаются типы файлов: <ph name="FILE_TYPE1" /> и <ph name="FILE_TYPE2" />}=3{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> и <ph name="FILE_TYPE3" />}=4{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> и <ph name="FILE_TYPE4" />}one{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">Укажите название группы, выберите цвет, затем нажмите Esc.</translation>
 <translation id="833256022891467078">Общие папки Crostini</translation>
+<translation id="833262891116910667">Выделить</translation>
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
 <translation id="8336407002559723354">Прекращение автоматического обновления: <ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
@@ -8229,6 +8234,7 @@
 <translation id="8646209145740351125">Отключение синхронизации</translation>
 <translation id="8646340610303779673">Не удалось получить PPD-файл</translation>
 <translation id="864637694230589560">Обычно сайты показывают уведомления, чтобы оповестить вас о сообщениях в чате или срочных новостях.</translation>
+<translation id="8646467750715887511">Страницы загружаются только после того, как вы их откроете.</translation>
 <translation id="8647385344110255847">С вашего разрешения ребенок может устанавливать приложения из Google Play.</translation>
 <translation id="8647834505253004544">Недопустимый веб-адрес</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> или <ph name="RE_SCAN_LINK" /></translation>
@@ -8288,7 +8294,6 @@
 <translation id="8698269656364382265">Чтобы вернуться на предыдущий экран, проведите слева направо.</translation>
 <translation id="869884720829132584">Меню приложений</translation>
 <translation id="869891660844655955">Срок действия</translation>
-<translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
 <translation id="8699188901396699995">PPD-файл для принтера "<ph name="PRINTER_NAME" />"</translation>
 <translation id="8702825062053163569">Устройство <ph name="DEVICE_TYPE" /> заблокировано</translation>
 <translation id="8703346390800944767">Пропустить</translation>
@@ -8448,6 +8453,7 @@
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="8838778928843281408">Управление смартфонами</translation>
 <translation id="883924185304953854">Поиск по картинке</translation>
+<translation id="8839587819996519780">Показывать значок уведомления на значке приложения</translation>
 <translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
 <translation id="8842594465773264717">Удалить этот отпечаток пальца</translation>
 <translation id="8845001906332463065">Справка</translation>

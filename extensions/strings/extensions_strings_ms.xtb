@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakej adalah tidak sah. Butiran: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses kepada salah satu peranti anda:</translation>
 <translation id="8885905466771744233">Kunci persendirian untuk sambungan yang dinyatakan telah wujud. Gunakan semula kunci tersebut atau padamkannya dahulu.</translation>
+<translation id="9039223174332979184">Pentadbir mesin ini menghendaki <ph name="EXTENSION_NAME" /> mempunyai versi manifes minimum 3.</translation>
 <translation id="907841381057066561">Gagal untuk mencipta fail zip sementara semasa pembungkusan.</translation>
 <translation id="941543339607623937">Kunci persendirian tidak sah.</translation>
 </translationbundle>

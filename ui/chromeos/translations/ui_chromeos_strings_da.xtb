@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-netværk, signalstyrke <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
-<translation id="457386861538956877">Flere...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> blev føjet til det valgte.</translation>
 <translation id="4583436353463424810">Du har ikke åbnet nogen dokumenter for nylig</translation>
 <translation id="4594543368593301662">Viser resultater for <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
+<translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
 <translation id="5605830556594064952">Amerikansk (Dvorak)</translation>
 <translation id="5618330573454123917">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører ChromeOS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>

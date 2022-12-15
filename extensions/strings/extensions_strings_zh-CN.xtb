@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">程序包无效。详细信息：“<ph name="ERROR_MESSAGE" />”。</translation>
 <translation id="8761756413268424715">“<ph name="APP_NAME" />”请求访问您的其中一台设备：</translation>
 <translation id="8885905466771744233">指定扩展程序的私有密钥已存在。请重复使用该密钥，或者先删除它。</translation>
+<translation id="9039223174332979184">此计算机的管理员要求“<ph name="EXTENSION_NAME" />”的最低清单版本为 3。</translation>
 <translation id="907841381057066561">无法在打包时创建临时 zip 文件</translation>
 <translation id="941543339607623937">私有密钥无效。</translation>
 </translationbundle>

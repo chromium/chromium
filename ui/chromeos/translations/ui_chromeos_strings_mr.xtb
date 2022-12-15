@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
-<translation id="457386861538956877">अधिक...</translation>
 <translation id="4579744207439506346">निवडीमध्ये <ph name="ENTRY_NAME" /> जोडली/ले.</translation>
 <translation id="4583436353463424810">अलीकडील कोणतेही दस्तऐवज नाहीत</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> साठी परिणाम दाखवत आहे.</translation>
@@ -561,6 +560,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5580591966435005537">व्हर्च्युअल मशीन</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">विरामचिन्हाची रुंदी पूर्ण आहे</translation>
+<translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5602622065581044566">फोनेटिक कीबोर्डसह बल्गेरियन</translation>
 <translation id="5605830556594064952">येएस द्वोराक</translation>
 <translation id="5618330573454123917">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या ChromeOS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. ChromeOS वर फाइल उघडण्याविषयी <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>

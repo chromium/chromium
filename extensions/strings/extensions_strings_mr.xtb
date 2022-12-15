@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> तुमच्या एका डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
 <translation id="8885905466771744233">नमूद एक्स्टेंशनसाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
+<translation id="9039223174332979184">या मशीनच्या अ‍ॅडमिनिस्ट्रेटरकडे <ph name="EXTENSION_NAME" /> ची किमान मॅनिफेस्ट आवृत्ती ३ असणे आवश्यक आहे.</translation>
 <translation id="907841381057066561">पॅकेजिंग दरम्यान तात्पुरती zip फाइल तयार करण्यात अयशस्वी.</translation>
 <translation id="941543339607623937">चुकीची खासगी की.</translation>
 </translationbundle>

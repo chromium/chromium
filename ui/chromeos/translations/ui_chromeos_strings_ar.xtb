@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">شبكة <ph name="NETWORK_TYPE" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">‏تأثير Bokeh</translation>
 <translation id="4572815280350369984">ملف <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">المزيد...</translation>
 <translation id="4579744207439506346">تمت إضافة <ph name="ENTRY_NAME" /> إلى الاختيار.</translation>
 <translation id="4583436353463424810">ما مِن مستندات حديثة.</translation>
 <translation id="4594543368593301662">يتم عرض نتائج عن <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">جهاز افتراضي</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض علامات الترقيم هو عرض بالكامل</translation>
+<translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
 <translation id="5618330573454123917">‏هذا الملف غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome لأنّه مُصمّم لأجهزة الكمبيوتر التي تستخدم نظام التشغيل Macintosh. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>

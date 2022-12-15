@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">“<ph name="NETWORK_TYPE" />”类型的网络，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">焦外成像</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 文件</translation>
-<translation id="457386861538956877">更多...</translation>
 <translation id="4579744207439506346">已将<ph name="ENTRY_NAME" />增加到已选项。</translation>
 <translation id="4583436353463424810">没有任何近期文档</translation>
 <translation id="4594543368593301662">目前显示的是与“<ph name="SEARCH_TERM" />”相符的搜索结果。</translation>
@@ -556,6 +555,7 @@
 <translation id="5580591966435005537">虚拟机</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5583664733673201137">标点符号宽度为全角</translation>
+<translation id="5596627076506792578">更多选项</translation>
 <translation id="5602622065581044566">保加利亚语注音键盘</translation>
 <translation id="5605830556594064952">美国英语(Dvorak)</translation>
 <translation id="5618330573454123917">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>

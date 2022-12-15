@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Mtandao wa <ph name="NETWORK_TYPE" />, uthabiti wa mtandao <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Faili ya <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Zaidi...</translation>
 <translation id="4579744207439506346">Umeongeza <ph name="ENTRY_NAME" /> kwenye vipengee ulivyochagua.</translation>
 <translation id="4583436353463424810">Hakuna hati za hivi karibuni</translation>
 <translation id="4594543368593301662">Inaonyesha matokeo ya <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">mashine pepe</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Upana wa uakifishaji Umejaa</translation>
+<translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5602622065581044566">Kibulgaria kwenye kibodi ya Fonetiki</translation>
 <translation id="5605830556594064952">Dvorak ya Marekani</translation>
 <translation id="5618330573454123917">Faili hii imeundwa mahususi kwa ajili ya kompyuta inayotumia programu ya Macintosh. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>

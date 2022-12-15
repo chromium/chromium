@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paketeak ez du balio. Xehetasunak: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Gailuetako baterako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
 <translation id="8885905466771744233">Adierazitako luzapenak gako pribatua zuen lehendik ere. Jarraitzeko, berrerabili edo ezabatu gako hori.</translation>
+<translation id="9039223174332979184">Gailu honen administratzailearen eskakizunen arabera, <ph name="EXTENSION_NAME" /> luzapenak 3. bertsioko manifestua gutxienez eduki behar du.</translation>
 <translation id="907841381057066561">Ezin izan da sortu behin behineko zip fitxategia paketatu bitartean</translation>
 <translation id="941543339607623937">Gako pribatu baliogabea.</translation>
 </translationbundle>

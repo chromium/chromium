@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> мрежа, сила на сигнала <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984">Файл от тип <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Още...</translation>
 <translation id="4579744207439506346">Добавихте <ph name="ENTRY_NAME" /> към избраните.</translation>
 <translation id="4583436353463424810">Няма скорошни документи</translation>
 <translation id="4594543368593301662">Показани са резултати за „<ph name="SEARCH_TERM" />“.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">виртуална машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Ширината на препинателните знаци е пълна</translation>
+<translation id="5596627076506792578">Още опции</translation>
 <translation id="5602622065581044566">Български с фонетична клавиатура</translation>
 <translation id="5605830556594064952">Американска (Дворак) клавиатура</translation>
 <translation id="5618330573454123917">Този файл е предназначен за компютри със софтуер за Macintosh. Той не е съвместим с устройството ви с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>

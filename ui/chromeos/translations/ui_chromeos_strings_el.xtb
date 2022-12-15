@@ -420,7 +420,6 @@
 <translation id="4552759165874948005">Δίκτυο <ph name="NETWORK_TYPE" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Εφέ Bokeh</translation>
 <translation id="4572815280350369984">Αρχείο <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Περισσότερα...</translation>
 <translation id="4579744207439506346">Το <ph name="ENTRY_NAME" /> προστέθηκε στην επιλογή.</translation>
 <translation id="4583436353463424810">Δεν υπάρχουν πρόσφατα έγγραφα</translation>
 <translation id="4594543368593301662">Εμφάνιση αποτελεσμάτων για <ph name="SEARCH_TERM" />.</translation>
@@ -574,6 +573,7 @@
 <translation id="5580591966435005537">εικονική μηχανή</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5583664733673201137">Το εύρος στίξης είναι Πλήρες</translation>
+<translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5605830556594064952">Dvorak ΗΠΑ</translation>
 <translation id="5618330573454123917">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>

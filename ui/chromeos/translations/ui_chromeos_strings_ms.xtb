@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Rangkaian <ph name="NETWORK_TYPE" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fail <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Lagi...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" />ditambahkan pada pilihan.</translation>
 <translation id="4583436353463424810">Tiada dokumen baru-baru ini</translation>
 <translation id="4594543368593301662">Menunjukkan hasil untuk <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">mesin maya</translation>
 <translation id="5583640892426849032">Undur ruang</translation>
 <translation id="5583664733673201137">Lebar tanda baca ialah Penuh</translation>
+<translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5602622065581044566">Bulgaria dengan papan kekunci Fonetik</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
 <translation id="5618330573454123917">Fail ini direka untuk komputer yang menggunakan perisian Macintosh. Fail ini tidak serasi dengan peranti anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada Chrome OS.</translation>

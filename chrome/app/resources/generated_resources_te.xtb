@@ -1388,6 +1388,7 @@
 <translation id="2246480341630108201">మీ తల్లి/తండ్రి ఈ సైట్‌ను యాక్సెస్ చేయడానికి ఇంకా అనుమతి ఇవ్వలేదు</translation>
 <translation id="2246549592927364792">Google నుండి చిత్ర వివరణలను పొందాలా?</translation>
 <translation id="2247738527273549923">మీ పరికరం మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది.</translation>
+<translation id="2247870315273396641">వాయిస్ ప్రివ్యూ</translation>
 <translation id="2249111429176737533">ట్యాబ్ చేసిన విండో లాగా తెరువు</translation>
 <translation id="2249605167705922988">ఉదా. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
@@ -1833,7 +1834,6 @@
 <translation id="2635276683026132559">సంతకం చేస్తోంది</translation>
 <translation id="2637313651144986786">ట్యాబ్‌లలో సెర్చ్ చేయండి...</translation>
 <translation id="2637400434494156704">పిన్ తప్పు. మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
-<translation id="2638286699381354126">అప్‌డేట్‌...</translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
 <translation id="2640299212685523844">GTKని ఉపయోగించండి</translation>
 <translation id="264083724974021997">మీ ఫోన్‌కు కనెక్ట్ చేయండి - డైలాగ్</translation>
@@ -1842,6 +1842,7 @@
 <translation id="2645047101481282803">మీ పరికరం <ph name="PROFILE_NAME" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-ఎన్‌కోడ్ చేసిన ASCII, సర్టిఫికెట్ చైన్</translation>
+<translation id="265156376773362237">స్టాండర్డ్ ప్రీ - లోడింగ్</translation>
 <translation id="2652129567809778422">పాస్‌వర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="2653033005692233957">శోధన విఫలమైంది</translation>
 <translation id="2653266418988778031">మీరు స‌ర్టిఫికెట్‌ అధికారి (CA) స‌ర్టిఫికెట్‌ను తొలగిస్తే, మీ బ్రౌజర్ CA ద్వారా జారీ చేయబడిన ఏ స‌ర్టిఫికెట్‌లను ఇకపై నమ్మదు.</translation>
@@ -2101,6 +2102,7 @@
 <translation id="2868746137289129307">ఈ ఎక్స్‌టెన్షన్ చాలా పాతది, బిజినెస్ విధానం కారణంగా నిలిపివేయబడింది. అయితే, కొత్త వెర్షన్ అందుబాటులో ఉన్నప్పుడు ఇది ఆటోమేటిక్‌గా ప్రారంభించబడవచ్చు.</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2870909136778269686">అప్‌డేట్ చేస్తోంది...</translation>
+<translation id="2871733351037274014">పేజీలను ప్రీ - లోడ్ చేయండి</translation>
 <translation id="2871813825302180988">ఈ ఖాతా ఈ పరికరంలో ఇప్పటికే ఉపయోగించబడుతోంది.</translation>
 <translation id="287205682142673348">పోర్ట్ ఫార్వర్డింగ్</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ని జోడించండి...</translation>
@@ -2281,6 +2283,7 @@
 <translation id="3023464535986383522">వినడానికి ఎంచుకోండి</translation>
 <translation id="3024374909719388945">24-గంటల గడియారాన్ని ఉపయోగించండి</translation>
 <translation id="3027296729579831126">సమీప షేరింగ్‌ను ఆన్ చేయండి</translation>
+<translation id="3029276696788198026">ప్రీ - లోడింగ్ అందుబాటులో లేదు</translation>
 <translation id="3029466929721441205">స్టైలస్ టూల్స్‌ను షెల్ఫ్‌లో చూపించండి</translation>
 <translation id="3029808567601324798">లాక్ చేయాల్సిన సమయం</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీరు ఈరోజే అప్‌డేట్‌ను డౌన్‌లోడ్ చేయాల్సి ఉంటుంది. మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేసినప్పుడు ఆటోమేటిక్‌గా అప్‌డేట్ డౌన్‌లోడ్ అవుతుంది.}other{<ph name="MANAGER" /> కోసం మీరు గడువు తేదీలోపు అప్‌డేట్‌ను డౌన్‌లోడ్ చేసుకోవాల్సి ఉంటుంది. మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేసినప్పుడు ఆటోమేటిక్‌గా అప్‌డేట్ డౌన్‌లోడ్ అవుతుంది.}}</translation>
@@ -2646,6 +2649,7 @@
 <translation id="3406290648907941085">వర్చువల్ రియాలిటీ పరికరాలను, అలాగే డేటాను ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="3406396172897554194">భాష లేదా ఇన్‌పుట్ పేరు ఆధారంగా సెర్చ్ చేయండి</translation>
 <translation id="3406605057700382950"> &amp;బుక్‌మార్క్‌ల బార్‌ను చూపు</translation>
+<translation id="3407392651057365886">మరిన్ని పేజీలు ప్రీ - లోడ్ చేయబడ్డాయి. ఇతర సైట్‌లు ద్వారా రిక్వెస్ట్ చేసినప్పుడు పేజీలు Google సర్వర్‌ల ద్వారా ప్రీ - లోడ్ చేయబడవచ్చు.</translation>
 <translation id="3407967630066378878">వేలిముద్రను సెటప్ చేయడానికి, ఈ <ph name="DEVICE_TYPE" />‌కు ఎడమ వైపున ఉన్న వేలిముద్ర సెన్సార్‌ను మీ చిన్నారి వేలితో తాకించండి. మీ చిన్నారి వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ ఈ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> కోసం Google Password Managerకు 1 పాస్‌వర్డ్ దిగుమతి చేయబడింది}other{<ph name="USER_EMAIL" /> కోసం Google Password Managerకు {NUM_PASSWORDS} పాస్‌వర్డ్‌లు దిగుమతి చేయబడ్డాయి}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2691,7 +2695,6 @@
 <translation id="3445047461171030979">Google Assistant త్వరిత సమాధానాలు</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> నిమి</translation>
 <translation id="344537926140058498">ఈ ఫైల్‌లో గోప్యమైన లేదా ప్రమాదకరమైన కంటెంట్ ఉంది, కాబట్టి మీ సంస్థ దీన్ని బ్లాక్ చేసింది. పరిష్కరించమని ఫైల్ ఓనర్‌ను అడగండి.</translation>
-<translation id="344546372406570257">{NUM_SITES,plural, =1{మీరు ఇటీవల సందర్శించని <ph name="BEGIN_BOLD" />1 సైట్<ph name="END_BOLD" /> నుండి అనుమతులు తీసివేయబడ్డాయి}other{మీరు ఇటీవల సందర్శించని <ph name="BEGIN_BOLD" />{NUM_SITES} సైట్‌ల<ph name="END_BOLD" /> నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
 <translation id="3445925074670675829">USB-C పరికరం</translation>
 <translation id="3446274660183028131">Windowsను ఇన్‌స్టాల్ చేయడానికి, దయచేసి parallels desktopను ప్రారంభించండి.</translation>
 <translation id="344630545793878684">అనేక వెబ్‌సైట్‌ల్లోని మీ డేటాను చదవండి</translation>
@@ -6477,6 +6480,7 @@
 <translation id="6991665348624301627">గమ్యస్థానాన్ని ఎంచుకోండి</translation>
 <translation id="6992554835374084304">మెరుగైన స్పెల్ చెక్‌ను ఆన్ చేయండి</translation>
 <translation id="6993000214273684335">పేరులేని గ్రూప్ నుండి ట్యాబ్ తొలగించబడింది - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome బ్రౌజర్‌ను అప్‌డేట్ చేస్తోంది</translation>
 <translation id="6995899638241819463">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - యాక్టివిటీ లాగ్</translation>
 <translation id="6997707937646349884">మీ పరికరాలలో:</translation>
@@ -6943,6 +6947,7 @@
 <translation id="7454548535253569100">పోర్టల్: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">అదనపు కంటైనర్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7456142309650173560">డెవలపర్</translation>
+<translation id="7456774706094330779">పొడిగించిన ప్రీ - లోడింగ్</translation>
 <translation id="7456847797759667638">స్థానాన్ని తెరువు...</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{లింక్}other{# లింక్‌లు}}</translation>
 <translation id="7458168200501453431">Google Searchలో ఉపయోగించే స్పెల్ చెకర్‌నే ఇక్కడ ఉపయోగిస్తుంది. మీరు బ్రౌజర్‌లో టైప్ చేసే టెక్స్ట్‌ను Googleకు పంపుతుంది.</translation>
@@ -7366,7 +7371,6 @@
 <translation id="7839051173341654115">మీడియాను చూడండి/బ్యాకప్ చేయండి</translation>
 <translation id="7839192898639727867">సర్టిఫికెట్ విషయం కీ ID</translation>
 <translation id="7842062217214609161">షార్ట్‌కట్‌ లేదు</translation>
-<translation id="7842115774595115751">నావిగేట్ కంట్రోల్‌లను ఎనేబుల్ చేయండి</translation>
 <translation id="7842692330619197998">మీరు కొత్త ఖాతాను సృష్టించాలనుకుంటే g.co/ChromeEnterpriseAccount లింక్‌ను సందర్శించండి.</translation>
 <translation id="784273751836026224">Linuxను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" />కు సైన్ ఇన్ చేయండి</translation>
@@ -7447,7 +7451,6 @@
 <translation id="79113168483292735">ట్యాబ్ సెర్చ్‌లో మీడియా ట్యాబ్‌ల విభాగం</translation>
 <translation id="7912080627461681647">సర్వర్‌లో మీ పాస్‌వర్డ్ మార్చబడింది. దచయేసి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేయండి.</translation>
 <translation id="7912974581251770345">అనువాదం</translation>
-<translation id="7914870167134465181">హైలైటింగ్</translation>
 <translation id="7915457674565721553">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయడానికి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="7918257978052780342">నమోదు చేయి</translation>
 <translation id="7919123827536834358">ఈ భాషలను ఆటోమేటిక్‌గా అనువదించు</translation>
@@ -7916,6 +7919,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{సపోర్ట్ కలిగిన ఫైల్ రకం: <ph name="FILE_TYPE1" />}=2{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />మరియు, మరో {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">మీ గ్రూప్‌నకు పేరు, రంగును ఎంచుకొని, Escను నొక్కండి</translation>
 <translation id="833256022891467078">Crostini షేర్ చేసిన ఫోల్డర్‌లు</translation>
+<translation id="833262891116910667">హైలైట్ చేస్తుంది</translation>
 <translation id="8335587457941836791">అర నుండి అన్‌పిన్ చేయండి</translation>
 <translation id="8336407002559723354">అప్‌డేట్‌లు <ph name="MONTH_AND_YEAR" />తో ముగుస్తాయి</translation>
 <translation id="8336739000755212683">పరికరం ఖాతా చిత్రాన్ని మార్చండి</translation>
@@ -8233,6 +8237,7 @@
 <translation id="8646209145740351125">సింక్‌ను డిజేబుల్ చేయండి</translation>
 <translation id="8646340610303779673">PPDని తిరిగి పొందడం సాధ్యం కాలేదు.</translation>
 <translation id="864637694230589560">సైట్‌లు సాధారణంగా, తాజా వార్తలు లేదా చాట్ మెసేజ్‌ల గురించి మీకు తెలియజేయడానికి నోటిఫికేషన్‌లను పంపుతాయి</translation>
+<translation id="8646467750715887511">మీరు పేజీలను తెరిచిన తర్వాత మాత్రమే అవి లోడ్ అవుతాయి.</translation>
 <translation id="8647385344110255847">మీ అనుమతితో, యాప్‌లను ఇన్‌స్టాల్ చేయడానికి మీ చిన్నారి Google Playను ఉపయోగించవచ్చు</translation>
 <translation id="8647834505253004544">వెబ్ అడ్రస్‌ చెల్లదు</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> లేదా <ph name="RE_SCAN_LINK" /></translation>
@@ -8292,7 +8297,6 @@
 <translation id="8698269656364382265">మునుపటి స్క్రీన్‌కు తిరిగి వెళ్లడానికి, ఎడమ వైపు నుండి స్వైప్ చేయండి.</translation>
 <translation id="869884720829132584">అప్లికేషన్‌ల మెనూ</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>
-<translation id="8699120352855309748">ఈ భాషలను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" />‌కు సంబంధించిన PPD</translation>
 <translation id="8702825062053163569">మీ <ph name="DEVICE_TYPE" /> లాక్ చేయబడింది.</translation>
 <translation id="8703346390800944767">ప్రకటనను దాటవేయి</translation>

@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ქსელი, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ბოკე</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ფაილი</translation>
-<translation id="457386861538956877">მეტი…</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> დაემატა არჩეულს.</translation>
 <translation id="4583436353463424810">ბოლოდროინდელი დოკუმენტები არ არის</translation>
 <translation id="4594543368593301662">ნაჩვენებია შედეგები მოთხოვნაზე „<ph name="SEARCH_TERM" />“.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">ვირტუალური მოწყობილობა</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
 <translation id="5583664733673201137">პუნქტუაციის სიგანე სავსეა</translation>
+<translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5602622065581044566">ბულგარული ფონეტიკური კლავიატურით</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის არ არის თავსებადი თქვენს მოწყობილობასთან, რომელზეც გაშვებულია ChromeOS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> ChromeOS-ზე ფაილების გახსნის შესახებ.</translation>

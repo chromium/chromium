@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ネットワーク、信号強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ピンぼけ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ファイル</translation>
-<translation id="457386861538956877">その他...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> を選択範囲に追加しました。</translation>
 <translation id="4583436353463424810">最近使用したドキュメントはありません</translation>
 <translation id="4594543368593301662">「<ph name="SEARCH_TERM" />」の検索結果を表示しています。</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">仮想マシン</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">句読点幅は全角です</translation>
+<translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
 <translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>

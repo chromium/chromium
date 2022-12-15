@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-võrk, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh-efekt</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-file</translation>
-<translation id="457386861538956877">Rohkem ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> lisati valikusse.</translation>
 <translation id="4583436353463424810">Hiljutisi dokumente pole</translation>
 <translation id="4594543368593301662">Kuvatakse otsingu <ph name="SEARCH_TERM" /> tulemusi.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">Virtuaalmasin</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
 <translation id="5583664733673201137">Kirjavahemärkide laius on täislaius</translation>
+<translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5602622065581044566">bulgaaria, foneetilise klaviatuuriga</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
 <translation id="5618330573454123917">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>

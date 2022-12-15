@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">El paquete no es válido. Detalles: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" solicita acceso a uno de tus dispositivos:</translation>
 <translation id="8885905466771744233">Ya existe una clave privada para la extensión especificada. Volver a utilizar esa clave o eliminarla primero.</translation>
+<translation id="9039223174332979184">El administrador de esta máquina requiere que <ph name="EXTENSION_NAME" /> tenga una versión del manifiesto mínima de 3.</translation>
 <translation id="907841381057066561">Error al crear el archivo zip temporal durante el empaquetado.</translation>
 <translation id="941543339607623937">Clave privada no válida</translation>
 </translationbundle>

@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Мрежа со <ph name="NETWORK_TYPE" />, јачина на сигнал <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> датотека</translation>
-<translation id="457386861538956877">Повеќе…</translation>
 <translation id="4579744207439506346">Го додадовте <ph name="ENTRY_NAME" /> во изборот.</translation>
 <translation id="4583436353463424810">Нема неодамнешни документи</translation>
 <translation id="4594543368593301662">Се прикажуваат резултати за <ph name="SEARCH_TERM" />.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">виртуелна машина</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
 <translation id="5583664733673201137">Ширината на интерпункцијата е полна</translation>
+<translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5618330573454123917">Датотекава е создадена за компјутер што користи софтвер на Macintosh. Таа не е компатибилна со вашиот уред што извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>

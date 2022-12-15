@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">ବୋକେ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍</translation>
-<translation id="457386861538956877">ଅଧିକ...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" />କୁ ବଛାଯାଇଛି।</translation>
 <translation id="4583436353463424810">ବର୍ତ୍ତମାନର କୌଣସି ଡକ୍ୟୁମେଣ୍ଟ ନାହିଁ</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ପାଇଁ ଫଳାଫଳ ଦେଖାଉଛି।</translation>
@@ -555,6 +554,7 @@
 <translation id="5580591966435005537">ଭର୍ଚୁଆଲ ମେସିନ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
 <translation id="5583664733673201137">ବିରାମ ଚିହ୍ନର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
+<translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5602622065581044566">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ବୁଲଗେରିଆନ୍</translation>
 <translation id="5605830556594064952">US ଡିଭୋରାକ୍</translation>
 <translation id="5618330573454123917">Macintosh ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ କମ୍ପ୍ୟୁଟର ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ChromeOSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>

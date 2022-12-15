@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> 네트워크, 신호 강도 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">흐리게 처리</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 파일</translation>
-<translation id="457386861538956877">더보기...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="4583436353463424810">최근 문서 없음</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />에 관한 검색결과를 표시합니다.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">가상 머신</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">구두점 폭을 최대로 설정</translation>
+<translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5602622065581044566">불가리아어(표음 키보드)</translation>
 <translation id="5605830556594064952">영어(미국) 드보락</translation>
 <translation id="5618330573454123917">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 ChromeOS를 실행하는 기기와는 호환되지 않습니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>

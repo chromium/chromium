@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Vale pakett. Üksikasjad: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715">Rakendus „<ph name="APP_NAME" />” taotleb juurdepääsu ühele teie seadmele:</translation>
 <translation id="8885905466771744233">Määratud laiendusel on juba privaatvõti. Kasutage uuesti seda võtit või kustutage see kõigepealt.</translation>
+<translation id="9039223174332979184">Seadme administraator nõuab, et laienduse <ph name="EXTENSION_NAME" /> manifesti versioon oleks vähemalt 3.</translation>
 <translation id="907841381057066561">Pakkimisel ei õnnestunud luua ajutist ZIP-faili.</translation>
 <translation id="941543339607623937">Vale privaatvõti.</translation>
 </translationbundle>

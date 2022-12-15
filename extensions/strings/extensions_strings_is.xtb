@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakkinn er ógildur. Upplýsingar: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ biður um aðgang að einu af tækjunum þínum:</translation>
 <translation id="8885905466771744233">Einkalykill fyrir tilgreinda viðbót er þegar fyrir hendi. Endurnýttu þann lykil eða eyddu honum fyrst.</translation>
+<translation id="9039223174332979184">Kerfisstjóri vélarinnar krefst þess að upplýsingaskrá fyrir <ph name="EXTENSION_NAME" /> sé að minnsta kosti í útgáfu 3.</translation>
 <translation id="907841381057066561">Mistókst að búa til tímabundna zip-skrá við pökkun.</translation>
 <translation id="941543339607623937">Ógildur einkalykill.</translation>
 </translationbundle>

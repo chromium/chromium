@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">パッケージが無効です。詳細: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」が次のデバイスへのアクセスをリクエストしています:</translation>
 <translation id="8885905466771744233">指定した拡張機能の秘密鍵は既に存在します。その鍵を再利用するか、先に削除してください。</translation>
+<translation id="9039223174332979184">このマシンの管理者は、<ph name="EXTENSION_NAME" /> に対してバージョン 3 以上のマニフェストの使用を要件として指定しています。</translation>
 <translation id="907841381057066561">パッケージ化の処理中に一時的な zip ファイルを作成できませんでした。</translation>
 <translation id="941543339607623937">秘密鍵が無効です。</translation>
 </translationbundle>

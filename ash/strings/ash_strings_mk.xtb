@@ -217,7 +217,6 @@
 <translation id="2064048859448024834">Вклучен е преглед на камерата</translation>
 <translation id="2067602449040652523">Осветленост на тастатурата</translation>
 <translation id="2078034614700056995">Повлечете надесно со четири прста за да се префрлите на следната работна површина</translation>
-<translation id="2079504693865562705">Сокриј ги апликациите од полицата</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2083190527011054446">Добра ноќ <ph name="GIVEN_NAME" />,</translation>
 <translation id="2088116547584365419">игри</translation>
@@ -1195,7 +1194,6 @@
 <translation id="761736749114493194">Вклучете врамување на камера. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>
-<translation id="7641938616688887143">Снимајте</translation>
 <translation id="7642106959537987271">режим за инверзија на боите</translation>
 <translation id="7642647758716480637">Отвори ги поставките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
@@ -1218,7 +1216,6 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известување}one{# известување}other{# известувања}}</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7742327441377685481">Нема известувања</translation>
-<translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="776344839111254542">Кликнете за да ги погледнете деталите за ажурирањето</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>

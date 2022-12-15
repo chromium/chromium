@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> inethiwekhi, amandla wesignali <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">I-Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ifayela</translation>
-<translation id="457386861538956877">Okuningi...</translation>
 <translation id="4579744207439506346">Kungezwe i-<ph name="ENTRY_NAME" /> kukhetho.</translation>
 <translation id="4583436353463424810">Awekho amadokhumenti akamuva</translation>
 <translation id="4594543368593301662">Ibonisa imiphumela ye-<ph name="SEARCH_TERM" />.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">umshini we-virtual</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
 <translation id="5583664733673201137">Ububanzi bezimpawu zokubhala Bugcwele</translation>
+<translation id="5596627076506792578">Izinketho eziningi</translation>
 <translation id="5602622065581044566">Isi-Bulgarian esinekhibhodi ye-Phonetic</translation>
 <translation id="5605830556594064952">I-US Dvorak</translation>
 <translation id="5618330573454123917">Leli fayela lidizayinelwe ikhompuyutha esebenzisa isofthiwe ye-Macintosh. Lokhu akuhambelani nedivayisi yakho esebenzisa i-ChromeOS. <ph name="BEGIN_LINK_HELP" />Funda Kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-ChromeOS.</translation>

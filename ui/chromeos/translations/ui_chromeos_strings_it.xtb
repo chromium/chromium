@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Rete <ph name="NETWORK_TYPE" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">File <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Altro...</translation>
 <translation id="4579744207439506346">Elemento <ph name="ENTRY_NAME" /> aggiunto alla selezione,</translation>
 <translation id="4583436353463424810">Nessun documento recente</translation>
 <translation id="4594543368593301662">Risultati visualizzati per <ph name="SEARCH_TERM" />.</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">macchina virtuale</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">La larghezza della punteggiatura è piena</translation>
+<translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5602622065581044566">Bulgaro con tastiera fonetica</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>
 <translation id="5618330573454123917">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo, che esegue ChromeOS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in ChromeOS.</translation>

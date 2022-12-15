@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Tarmoq: <ph name="NETWORK_TYPE" />, signal darajasi: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Boke</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fayl</translation>
-<translation id="457386861538956877">Yana...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> tanlamaga kiritildi.</translation>
 <translation id="4583436353463424810">Oxirgi hujjatlar yoʻq</translation>
 <translation id="4594543368593301662">Natijalarini chiqarish: <ph name="SEARCH_TERM" /></translation>
@@ -560,6 +559,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5580591966435005537">virtual mashina</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Toʻliq enli imlo tekshiruvi</translation>
+<translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5602622065581044566">Bolgar (fonetik klaviatura)</translation>
 <translation id="5605830556594064952">AQSH (Dvorak)</translation>
 <translation id="5618330573454123917">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmadagi Chrome OS tizimida ishga tushmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>

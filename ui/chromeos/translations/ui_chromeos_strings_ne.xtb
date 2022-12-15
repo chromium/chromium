@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
-<translation id="457386861538956877">थप...</translation>
 <translation id="4579744207439506346">चयनमा <ph name="ENTRY_NAME" /> थपियो।</translation>
 <translation id="4583436353463424810">हालसालै कुनै पनि डकुमेन्ट हेरिएको छैन</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> का परिणामहरू देखाउँदै।</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">भर्चुअल मेसिन</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
 <translation id="5583664733673201137">विरामको चौडाइ पूर्ण छ</translation>
+<translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5602622065581044566">बुल्गेरियन फोनेटिक किबोर्ड</translation>
 <translation id="5605830556594064952">युएस ड्भोराक</translation>
 <translation id="5618330573454123917">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>

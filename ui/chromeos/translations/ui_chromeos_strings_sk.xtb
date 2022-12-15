@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">Sieť: <ph name="NETWORK_TYPE" />. Sila signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4559767610552730302">Rozostrenie</translation>
 <translation id="4572815280350369984">Súbor <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">Viac...</translation>
 <translation id="4579744207439506346">Položka <ph name="ENTRY_NAME" /> bola pridaná do výberu.</translation>
 <translation id="4583436353463424810">Žiadne nedávne dokumenty</translation>
 <translation id="4594543368593301662">Zobrazujú sa výsledky pre dopyt <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5580591966435005537">virtuálne zariadenie</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šírka interpunkcie je Plná</translation>
+<translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5602622065581044566">Bulharská fonetická klávesnica</translation>
 <translation id="5605830556594064952">Americká klávesnica s rozložením klávesov Dvorak</translation>
 <translation id="5618330573454123917">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>

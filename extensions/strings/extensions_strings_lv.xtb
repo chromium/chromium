@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Pakotne nav derīga. Detaļas: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715">Lietotne <ph name="APP_NAME" /> pieprasa piekļuvi kādai jūsu ierīcei:</translation>
 <translation id="8885905466771744233">Norādītajam paplašinājumam jau eksistē privāta atslēga. Atkārtoti izmantojiet šo atslēgu vai vispirms to izdzēsiet.</translation>
+<translation id="9039223174332979184">Šīs ierīces administrators pieprasa, lai paplašinājuma <ph name="EXTENSION_NAME" /> manifesta versijas numurs būtu vismaz 3.</translation>
 <translation id="907841381057066561">Pakošanas laikā neizdevās izveidot pagaidu zip failu.</translation>
 <translation id="941543339607623937">Nederīga privātā atslēga.</translation>
 </translationbundle>

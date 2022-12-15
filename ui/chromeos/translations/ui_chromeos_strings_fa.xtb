@@ -412,7 +412,6 @@
 <translation id="4552759165874948005">شبکه <ph name="NETWORK_TYPE" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4559767610552730302">بوکه</translation>
 <translation id="4572815280350369984">فایل <ph name="FILE_TYPE" /></translation>
-<translation id="457386861538956877">بیشتر...</translation>
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> به موارد انتخابی اضافه شد.</translation>
 <translation id="4583436353463424810">هیچ سندی در موارد اخیر وجود ندارد</translation>
 <translation id="4594543368593301662">درحال نمایش نتایج برای <ph name="SEARCH_TERM" />.</translation>
@@ -561,6 +560,7 @@
 <translation id="5580591966435005537">ماشین مجازی</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض سجاوندی روی «کامل» تنظیم شده است</translation>
+<translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5602622065581044566">بلغاری با صفحه‌کلید آوایی</translation>
 <translation id="5605830556594064952">دووراک آمریکایی</translation>
 <translation id="5618330573454123917">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>

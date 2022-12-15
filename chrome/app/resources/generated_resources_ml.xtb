@@ -1376,6 +1376,7 @@
 <translation id="2246480341630108201">നിങ്ങളുടെ രക്ഷിതാവ് ഇതുവരെ അനുമതി നൽകിയിട്ടില്ല</translation>
 <translation id="2246549592927364792">Google-ൽ നിന്ന് ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="2247738527273549923">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്</translation>
+<translation id="2247870315273396641">ശബ്‌ദ പ്രിവ്യു</translation>
 <translation id="2249111429176737533">ടാബ് ചെയ്‌ത വിന്‍ഡോ ആയി തുറക്കുക</translation>
 <translation id="2249605167705922988">ഉദാ. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">സിസ്റ്റം വ്യൂവർ ഉപയോഗിച്ച് തുറക്കുക</translation>
@@ -1818,7 +1819,6 @@
 <translation id="2635276683026132559">സൈന്‍‌ ചെയ്യുന്നു</translation>
 <translation id="2637313651144986786">ടാബുകൾ തിരയുക...</translation>
 <translation id="2637400434494156704">പിൻ തെറ്റാണ്. ഒരു ശ്രമം ശേഷിക്കുന്നു.</translation>
-<translation id="2638286699381354126">അപ്ഡേറ്റ് ചെയ്യുക...</translation>
 <translation id="2638662041295312666">സൈൻ ഇൻ ചിത്രം</translation>
 <translation id="2640299212685523844">GTK ഉപയോഗിക്കുക</translation>
 <translation id="264083724974021997">നിങ്ങളുടെ ഫോണിലേക്ക് കണക്റ്റ് ചെയ്യുക - ഡയലോഗ്</translation>
@@ -1827,6 +1827,7 @@
 <translation id="2645047101481282803">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_NAME" /> ആണ്</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-എന്‍‌കോഡ് ചെയ്‌ത ASCII, സര്‍‌ട്ടിഫിക്കറ്റ് ചെയിന്‍‌</translation>
+<translation id="265156376773362237">സാധാരണ മുൻകൂട്ടി ലോഡ് ചെയ്യൽ</translation>
 <translation id="2652129567809778422">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2653033005692233957">തിരയൽ പരാജയപ്പെട്ടു</translation>
 <translation id="2653266418988778031">നിങ്ങളൊരു സര്‍ട്ടിഫിക്കേഷന്‍ അതോറിറ്റി (CA) ഇല്ലാതാക്കുകയാണെങ്കില്‍, നിങ്ങളുടെ ബ്രൌസര്‍ ഇനിമുതല്‍ ആ CA നല്‍കുന്ന സർട്ടിഫിക്കറ്റുകളൊന്നും വിശ്വസിക്കില്ല.</translation>
@@ -2086,6 +2087,7 @@
 <translation id="2868746137289129307">ഈ വിപുലീകരണം എന്റർപ്രൈസ്‌ നയം ഉപയോഗിച്ച് കാലഹരണപ്പെടുത്തുകയും പ്രവർത്തനരഹിതമാക്കുകയും ചെയ്‌തു. പുതിയ പതിപ്പ് ലഭ്യമാകുമ്പോൾ അത് സ്വയമേവ പ്രവർത്തനക്ഷമമായേക്കാം.</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2870909136778269686">അപ്‌ഡേറ്റ് ചെയ്യുന്നു...</translation>
+<translation id="2871733351037274014">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="2871813825302180988">ഈ അക്കൗണ്ട് ഇതേ ഉപകരണത്തിൽ ഇപ്പോൾ തന്നെ ഉപയോഗിക്കുന്നുണ്ട്.</translation>
 <translation id="287205682142673348">പോർട്ട് ഫോർവേഡിങ്</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> ചേർക്കുക...</translation>
@@ -2266,6 +2268,7 @@
 <translation id="3023464535986383522">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3024374909719388945">24 മണിക്കൂര്‍ ക്ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="3027296729579831126">സമീപമുള്ള പങ്കിടൽ ഓണാക്കുക</translation>
+<translation id="3029276696788198026">മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നില്ല</translation>
 <translation id="3029466929721441205">ഷെൽഫിലെ സ്റ്റൈലസ് ടൂളുകൾ കാണിക്കുക</translation>
 <translation id="3029808567601324798">ലോക്ക് ചെയ്യാനുള്ള സമയം</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{ഇന്ന് തന്നെ ഒരു അപ്ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങൾ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുമ്പോൾ അപ്ഡേറ്റ് സ്വയമേവ ഡൗൺലോഡാകും.}other{സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് അപ്ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങൾ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുമ്പോൾ അപ്ഡേറ്റ് സ്വയമേവ ഡൗൺലോഡാകും.}}</translation>
@@ -2631,6 +2634,7 @@
 <translation id="3406290648907941085">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="3406396172897554194">ഭാഷയോ ഇന്‍‌പുട്ട് പേരോ പ്രകാരം തിരയുക</translation>
 <translation id="3406605057700382950">ബുക്ക്മാർക്കുകൾ ബാർ &amp;കാണിക്കുക</translation>
+<translation id="3407392651057365886">കൂടുതൽ പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തു. മറ്റ് സൈറ്റുകൾ അഭ്യർത്ഥിക്കുമ്പോൾ, Google സെർവറുകൾ മുഖേന പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തേക്കാം.</translation>
 <translation id="3407967630066378878">ഫിംഗർപ്രിന്റ് സജ്ജീകരിക്കാൻ, ഈ <ph name="DEVICE_TYPE" /> എന്നതിൽ ഇടത് വശത്തുള്ള ഫിംഗർപ്രിന്റ് സെൻസറിൽ സ്‌പർശിക്കാൻ നിങ്ങളുടെ കുട്ടിയോട് ആവശ്യപ്പെടുക. നിങ്ങളുടെ കുട്ടിയുടെ ഫിംഗർപ്രിന്റ് ഡാറ്റ <ph name="DEVICE_TYPE" /> എന്നതിൽ സുരക്ഷിതമായി സംഭരിക്കുന്നു, ഒരിക്കലും അതിൽ നിന്ന് പുറത്ത് പോകില്ല.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> എന്നതിനുള്ള Google Password Manager-ലേക്ക് 1 പാസ്‌വേഡ് ഇമ്പോർട്ട് ചെയ്തു}other{<ph name="USER_EMAIL" /> എന്നതിനുള്ള Google Password Manager-ലേക്ക് {NUM_PASSWORDS} പാസ്‍വേഡുകൾ ഇമ്പോർട്ട് ചെയ്തു}}</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -2676,7 +2680,6 @@
 <translation id="3445047461171030979">Google Assistant ദ്രുത ഉത്തരങ്ങൾ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="344537926140058498">സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ അപകടകരമായതോ ആയ ഉള്ളടക്കം അടങ്ങുന്നതിനാൽ നിങ്ങളുടെ സ്ഥാപനം ഈ ഫയൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു. പരിഹരിക്കാൻ ഇതിന്റെ ഉടമയോട് ആവശ്യപ്പെടുക.</translation>
-<translation id="344546372406570257">{NUM_SITES,plural, =1{നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത <ph name="BEGIN_BOLD" />1 സൈറ്റിൽ<ph name="END_BOLD" /> നിന്ന് അനുമതികൾ നീക്കം ചെയ്തു}other{നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത <ph name="BEGIN_BOLD" />{NUM_SITES}<ph name="END_BOLD" /> സൈറ്റുകളിൽ നിന്ന് അനുമതികൾ നീക്കം ചെയ്തു}}</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
 <translation id="3446274660183028131">Windows ഇൻസ്‌റ്റാൾ ചെയ്യാൻ Parallels Desktop ലോഞ്ച് ചെയ്യുക.</translation>
 <translation id="344630545793878684">നിരവധി വെബ്‌സൈറ്റുകളിലെ നിങ്ങളുടെ വിവരം വായിക്കുക</translation>
@@ -6462,6 +6465,7 @@
 <translation id="6991665348624301627">ഒരു ലക്ഷ്യസ്ഥാനം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6992554835374084304">മെച്ചപ്പെട്ട സ്പെൽ ചെക്ക് ഓണാക്കുക</translation>
 <translation id="6993000214273684335">പേരില്ലാത്ത ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome ബ്രൗസർ അപ്ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="6995899638241819463">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ആക്‌റ്റിവിറ്റി ലോഗ്</translation>
 <translation id="6997707937646349884">നിങ്ങളുടെ ഉപകരണങ്ങളിൽ:</translation>
@@ -6928,6 +6932,7 @@
 <translation id="7454548535253569100">പോർട്ടൽ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">അധിക കണ്ടെയ്‌നറുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7456142309650173560">ഡെവലപ്പർ</translation>
+<translation id="7456774706094330779">വിപുലീകരിച്ച മുൻകൂട്ടി ലോഡ് ചെയ്യൽ</translation>
 <translation id="7456847797759667638">സ്ഥാനം തുറക്കുക...</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{ഒരു ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="7458168200501453431">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്‌പെൽ ചെക്കർ ഉപയോഗിക്കുന്നു. നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു.</translation>
@@ -7352,7 +7357,6 @@
 <translation id="7839051173341654115">മീഡിയ കാണുക/ബാക്കപ്പ് ചെയ്യുക</translation>
 <translation id="7839192898639727867">സര്‍‌ട്ടിഫിക്കറ്റ് സബ്‌ജക്റ്റ് കീ ഐഡി</translation>
 <translation id="7842062217214609161">കുറുക്കുവഴിയില്ല</translation>
-<translation id="7842115774595115751">നാവിഗേഷൻ നിയന്ത്രണങ്ങൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7842692330619197998">നിങ്ങൾക്ക് ഒരു പുതിയ അക്കൗണ്ട് സൃഷ്‌ടിക്കണമെങ്കിൽ, g.co/ChromeEnterpriseAccount സന്ദർശിക്കുക.</translation>
 <translation id="784273751836026224">Linux അൺഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -7433,7 +7437,6 @@
 <translation id="79113168483292735">ടാബ് തിരയലിലെ മീഡിയ ടാബുകൾ വിഭാഗം</translation>
 <translation id="7912080627461681647">സെർവറിൽ നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റിയിരിക്കുന്നു. സൈൻ ഔട്ട് ചെയ്യുക, തുടർന്ന് വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="7912974581251770345">വിവർത്തനം</translation>
-<translation id="7914870167134465181">ഹൈലൈറ്റ് ചെയ്യുന്നു</translation>
 <translation id="7915457674565721553">രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ സജ്ജീകരിക്കാൻ ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="7918257978052780342">എൻറോൾ ചെയ്യുക</translation>
 <translation id="7919123827536834358">ഈ ഭാഷകൾ സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
@@ -7905,6 +7908,7 @@
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരം: <ph name="FILE_TYPE1" />}=2{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{പിന്തുണയ്ക്കുന്ന ഫയല്‍ തരങ്ങൾ: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" /> എന്നതും മറ്റ് {OVERFLOW_COUNT} എണ്ണവും കൂടി<ph name="END_LINK" />)}}</translation>
 <translation id="8331822764922665615">നിങ്ങളുടെ ഗ്രൂപ്പിന് പേര് നൽകുക, ഒരു നിറം തിരഞ്ഞെടുക്കുക, തുടർന്ന് Esc അമർത്തുക</translation>
 <translation id="833256022891467078">Crostini-യിൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
+<translation id="833262891116910667">ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8335587457941836791">ഷെൽഫിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="8336407002559723354">അപ്ഡേറ്റുകൾ <ph name="MONTH_AND_YEAR" />-ന് അവസാനിക്കുന്നു</translation>
 <translation id="8336739000755212683">ഉപകരണ അക്കൗണ്ട് ചിത്രം മാറ്റുക</translation>
@@ -8222,6 +8226,7 @@
 <translation id="8646209145740351125">സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="8646340610303779673">PPD വീണ്ടെടുക്കാനാകുന്നില്ല.</translation>
 <translation id="864637694230589560">ബ്രേക്കിംഗ് ന്യൂസുകളെകളെയോ ചാറ്റ് സന്ദേശങ്ങളെയോ കുറിച്ച് നിങ്ങളെ അറിയിക്കാൻ സൈറ്റുകൾ സാധാരണയായി അറിയിപ്പുകൾ അയയ്ക്കും</translation>
+<translation id="8646467750715887511">നിങ്ങൾ പേജുകൾ തുറന്നതിന് ശേഷം മാത്രമേ അവ ലോഡ് ചെയ്യൂ.</translation>
 <translation id="8647385344110255847">നിങ്ങളുടെ അനുമതിയോടെ, നിങ്ങളുടെ കുട്ടിക്ക് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ Google Play ഉപയോഗിക്കാം</translation>
 <translation id="8647834505253004544">ശരിയായ വെബ് വിലാസമല്ല</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> അല്ലെങ്കിൽ <ph name="RE_SCAN_LINK" /></translation>
@@ -8281,7 +8286,6 @@
 <translation id="8698269656364382265">മുമ്പത്തെ സ്ക്രീനിലേക്ക് മടങ്ങാൻ ഇടതുവശത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="869884720829132584">അപ്ലിക്കേഷനുക‌ള്‍‌ മെനു</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
-<translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> എന്നതിനുള്ള PPD</translation>
 <translation id="8702825062053163569">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="8703346390800944767">പരസ്യം ഒഴിവാക്കുക</translation>

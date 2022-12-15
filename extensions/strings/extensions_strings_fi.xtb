@@ -61,6 +61,7 @@
 <translation id="8636666366616799973">Paketti on virheellinen. Tietoja: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> pyytää oikeutta käyttää yhtä laitteistasi:</translation>
 <translation id="8885905466771744233">Kyseiselle laajennukselle on jo olemassa yksityinen avain. Käytä tätä avainta tai poista se ensin.</translation>
+<translation id="9039223174332979184">Laitteen järjestelmänvalvoja edellyttää, että manifestin versio (<ph name="EXTENSION_NAME" />) on vähintään 3.</translation>
 <translation id="907841381057066561">Väliaikaisen zip-tiedoston luominen pakkauksen aikana epäonnistui.</translation>
 <translation id="941543339607623937">Virheellinen yksityinen avain.</translation>
 </translationbundle>

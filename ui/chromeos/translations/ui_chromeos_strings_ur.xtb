@@ -412,7 +412,6 @@
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> نیٹ ورک، سگنل کی مظبوطی <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4559767610552730302">بوکیہ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> فائل</translation>
-<translation id="457386861538956877">مزید…</translation>
 <translation id="4579744207439506346">انتخاب میں <ph name="ENTRY_NAME" /> شامل کیا گیا۔</translation>
 <translation id="4583436353463424810">حالیہ کوئی دستاویز نہیں ہے</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> کے لیے نتائج دکھائے جا رہے ہیں۔</translation>
@@ -560,6 +559,7 @@
 <translation id="5580591966435005537">ورچوئل مشین</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5583664733673201137">رموز اوقاف کی چوڑائی پوری ہے</translation>
+<translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5602622065581044566">فونیٹک کی بورڈ کے ساتھ بلغاریائی</translation>
 <translation id="5605830556594064952">‏US ڈوراک</translation>
 <translation id="5618330573454123917">‏یہ فائل Macintosh سافٹ ویئر استعمال کر رہے کمپیوٹر کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ موافق نہیں ہے جو ChromeOS چلاتا ہے۔ ChromeOS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>
