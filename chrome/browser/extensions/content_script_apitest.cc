@@ -55,6 +55,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/page_transition_types.h"
@@ -2146,10 +2147,18 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
 
 class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
  public:
-  ContentScriptApiPrerenderingTest() = default;
+  ContentScriptApiPrerenderingTest() {
+    feature_list_.InitWithFeatures(
+        {
+            network::features::kPrerender2ContentSecurityPolicyExtensions,
+            extensions_features::kMinimumMV3CSPWithInlineSpeculationRules,
+        },
+        {});
+  }
 
  private:
   content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/1344548): Re-enable this test
@@ -2157,6 +2166,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
                        DISABLED_Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
+}
+
+// Checks if injecting inline speculation rules are permitted in the manifest v3
+// content_scripts.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, SpeculationRules) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/speculation_rules"))
+      << message_;
 }
 
 class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {

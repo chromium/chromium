@@ -50,6 +50,8 @@ BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 
 BASE_DECLARE_FEATURE(kExtensionsManifestV3Only);
 
+BASE_DECLARE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

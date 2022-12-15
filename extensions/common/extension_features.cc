@@ -140,4 +140,11 @@ BASE_FEATURE(kExtensionsManifestV3Only,
              "kExtensionsManifestV3Only",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the minimum MV3 Content-Security-Policy will include
+// 'inline-speculation-rules' source in the script-src.
+// See https://crbug.com/1382361 to track the launch status.
+BASE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules,
+             "MinimumMV3CSPWithInlineSpeculationRules",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

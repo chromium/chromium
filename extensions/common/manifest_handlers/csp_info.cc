@@ -50,6 +50,14 @@ static const char kMinimumUnpackedMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval' http://localhost:* "
     "http://127.0.0.1:*; object-src 'self';";
 
+// Variants to support inline-specluation-rules. See https://crbug.com/1382361.
+static const char kMinimumMV3CSPWithInlineSpeculationRules[] =
+    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; "
+    "object-src 'self';";
+static const char kMinimumUnpackedMV3CSPWithInlineSpeculationRules[] =
+    "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+    "http://localhost:* http://127.0.0.1:*; object-src 'self';";
+
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
 // clang-format off
@@ -116,9 +124,16 @@ const char* GetDefaultExtensionPagesCSP(Extension* extension) {
 const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
   DCHECK_GE(extension.manifest_version(), 3);
 
-  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
+  static const base::NoDestructor<std::string> default_csp(
+      base::FeatureList::IsEnabled(
+          extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
+          ? kMinimumMV3CSPWithInlineSpeculationRules
+          : kMinimumMV3CSP);
   static const base::NoDestructor<std::string> default_unpacked_csp(
-      kMinimumUnpackedMV3CSP);
+      base::FeatureList::IsEnabled(
+          extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
+          ? kMinimumUnpackedMV3CSPWithInlineSpeculationRules
+          : kMinimumUnpackedMV3CSP);
 
   return Manifest::IsUnpackedLocation(extension.location())
              ? default_unpacked_csp.get()
