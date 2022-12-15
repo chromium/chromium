@@ -41,6 +41,7 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -96,6 +97,7 @@ void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
 // for this mode of install was dropped from ToT in December 2016. Remove any
 // stray bits in the registry leftover from such installs.
 void RemoveBinariesVersionKey(const InstallerState& installer_state) {
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::wstring path(install_static::GetClientsKeyPath(
       L"{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}"));
@@ -105,6 +107,7 @@ void RemoveBinariesVersionKey(const InstallerState& installer_state) {
 #endif
   installer::DeleteRegistryKey(installer_state.root_key(), path,
                                KEY_WOW64_32KEY);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 }
 
 void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {

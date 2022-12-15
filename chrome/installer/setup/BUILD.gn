@@ -105,6 +105,7 @@ if (is_win) {
 
     deps = [
       "//build:branding_buildflags",
+      "//chrome/browser/chrome_for_testing:buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",
       "//chrome/install_static:buildflags",
@@ -164,6 +165,7 @@ if (is_win) {
       "//base/allocator:buildflags",
       "//base/test:test_support",
       "//build:branding_buildflags",
+      "//chrome/browser/chrome_for_testing:buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",
       "//chrome/install_static:buildflags",

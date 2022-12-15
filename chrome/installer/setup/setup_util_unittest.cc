@@ -33,6 +33,7 @@
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -883,12 +884,14 @@ class LegacyCleanupsTest : public ::testing::Test {
     installer_state_ =
         std::make_unique<FakeInstallerState>(temp_dir_.GetPath());
     // Create the state to be cleared.
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
     ASSERT_TRUE(base::win::RegKey(HKEY_CURRENT_USER, kBinariesClientsKeyPath,
                                   KEY_WRITE | KEY_WOW64_32KEY)
                     .Valid());
     ASSERT_TRUE(base::win::RegKey(HKEY_CURRENT_USER, kCommandExecuteImplClsid,
                                   KEY_WRITE)
                     .Valid());
+#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     ASSERT_TRUE(base::win::RegKey(HKEY_CURRENT_USER, kAppLauncherClientsKeyPath,
                                   KEY_WRITE | KEY_WOW64_32KEY)
@@ -953,8 +956,10 @@ class LegacyCleanupsTest : public ::testing::Test {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   static const wchar_t kBinariesClientsKeyPath[];
   static const wchar_t kCommandExecuteImplClsid[];
+#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static const wchar_t kAppLauncherClientsKeyPath[];
 #endif
@@ -973,7 +978,7 @@ const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
 const wchar_t LegacyCleanupsTest::kAppLauncherClientsKeyPath[] =
     L"SOFTWARE\\Google\\Update\\Clients\\"
     L"{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}";
-#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#elif BUILDFLAG(CHROMIUM_BRANDING)
 const wchar_t LegacyCleanupsTest::kBinariesClientsKeyPath[] =
     L"SOFTWARE\\Chromium Binaries";
 const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
@@ -982,22 +987,26 @@ const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
 
 TEST_F(LegacyCleanupsTest, NoOpOnFailedUpdate) {
   DoLegacyCleanups(installer_state(), INSTALL_FAILED);
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   EXPECT_TRUE(HasBinariesVersionKey());
   EXPECT_TRUE(HasCommandExecuteImplClassKey());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(HasAppLauncherVersionKey());
   EXPECT_TRUE(HasInstallExtensionCommand());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 }
 
 TEST_F(LegacyCleanupsTest, Do) {
   DoLegacyCleanups(installer_state(), NEW_VERSION_UPDATED);
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   EXPECT_FALSE(HasBinariesVersionKey());
   EXPECT_FALSE(HasCommandExecuteImplClassKey());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_FALSE(HasAppLauncherVersionKey());
   EXPECT_FALSE(HasInstallExtensionCommand());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 }
 
 }  // namespace installer
