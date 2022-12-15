@@ -84,6 +84,10 @@ message FresnelImportData {
   // For example, this can be the cohort active status history byte for Churn
   // use case.
   optional bytes value = 3;
+
+  // Boolean used to indicate whether client is sending UTC (false) or PT
+  // (true) timezone for the window_identifier.
+  optional bool is_pt_window_identifier = 4;
 }
 
 // This proto will represent the data sent to Fresnel used to generate a PSM
