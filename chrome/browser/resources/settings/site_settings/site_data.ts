@@ -27,6 +27,13 @@ class SettingsSiteDataElement extends PolymerElement {
         type: Object,
         notify: true,
       },
+
+      /** Current search term. */
+      searchTerm: {
+        type: String,
+        notify: true,
+        value: '',
+      },
     };
   }
 }
