@@ -129,7 +129,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 
 // Tests that three seed-driven crashes trigger variations safe mode.
 //
-// Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
+// Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 // in variations_safe_mode_browsertest.cc.
 - (void)testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
