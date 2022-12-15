@@ -25,11 +25,14 @@
 namespace {
 const CGFloat kVerticalOffset = 6;
 const CGFloat kPopoutOmniboxSideInsets = -8;
+const CGFloat kPopupBottomPaddingTablet = 80;
 }  // namespace
 
 @interface OmniboxPopupPresenter ()
-/// Constraint for the bottom anchor of the popup.
-@property(nonatomic, strong) NSLayoutConstraint* bottomConstraint;
+/// Constraint for the bottom anchor of the popup when form factor is phone.
+@property(nonatomic, strong) NSLayoutConstraint* bottomConstraintPhone;
+/// Constraint for the bottom anchor of the popup when form factor is tablet.
+@property(nonatomic, strong) NSLayoutConstraint* bottomConstraintTablet;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
@@ -135,10 +138,11 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
   if (!popupHasContent && popupIsOnscreen) {
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-        IsSwiftUIPopupEnabled()) {
-      self.bottomConstraint.active = NO;
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      self.bottomConstraintPhone.active = NO;
       self.bottomSeparator.hidden = YES;
+    } else if (!IsIpadPopoutOmniboxEnabled()) {
+      self.bottomConstraintTablet.active = NO;
     }
 
     [self.viewController willMoveToParentViewController:nil];
@@ -158,10 +162,11 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
 
     [self initialLayout];
 
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-        IsSwiftUIPopupEnabled()) {
-      self.bottomConstraint.active = YES;
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      self.bottomConstraintPhone.active = YES;
       self.bottomSeparator.hidden = NO;
+    } else if (!IsIpadPopoutOmniboxEnabled()) {
+      self.bottomConstraintTablet.active = YES;
     }
 
     self.open = YES;
@@ -189,9 +194,8 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
   // Re-add necessary constraints.
   [self initialLayout];
 
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-      IsSwiftUIPopupEnabled()) {
-    self.bottomConstraint.active = YES;
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
   }
 }
@@ -202,12 +206,15 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
 - (void)initialLayout {
   UIView* popup = self.popupContainerView;
   // Creates the constraints if the view is newly added to the view hierarchy.
-  // On iPad the height of the popup is fixed.
 
-  // This constraint will only be activated on iPhone as the popup is taking
-  // the full height.
-  self.bottomConstraint = [popup.bottomAnchor
-      constraintEqualToAnchor:[popup superview].bottomAnchor];
+  // On phone form factor the popup is taking the full height.
+  self.bottomConstraintPhone =
+      [popup.bottomAnchor constraintEqualToAnchor:popup.superview.bottomAnchor];
+  // On tablet form factor the popup is padded on the bottom to allow the user
+  // to defocus the omnibox.
+  self.bottomConstraintTablet = [popup.superview.bottomAnchor
+      constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
+                                  constant:kPopupBottomPaddingTablet];
 
   // Position the top anchor of the popup relatively to the layout guide
   // positioned on the omnibox.
