@@ -24,16 +24,25 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
     ApplyEnterprisePolicyOverrides();
   }
 
-  {% for feature in overridable_features %}
-  bool Is{{feature.name}}ForceDisabled();
+  void ApplyOverrideValuesFromParams(
+      const base::flat_map<mojom::RuntimeFeatureState, bool>&
+          values_from_params);
 
-  bool Is{{feature.name}}ForceEnabled();
+  {% for feature in overridable_features %}
+  bool Is{{feature.name}}ForceDisabled() const;
+
+  bool Is{{feature.name}}ForceEnabled() const;
 
   void Set{{feature.name}}ForceDisabled();
 
   void Set{{feature.name}}ForceEnabled();
 
   {% endfor %}
+
+  const base::flat_map<blink::mojom::RuntimeFeatureState, bool>& GetOverrideValuesForTesting() const {
+    return override_values_;
+  }
+
   void Trace(Visitor*) const {}
 
  private:

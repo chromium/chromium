@@ -1,5 +1,6 @@
 include_rules = [
     "+base/containers/span.h",
+    "+base/containers/flat_map.h",
     "+base/files/file_path.h",
     "+base/i18n/rtl.h",
     "+base/observer_list_types.h",

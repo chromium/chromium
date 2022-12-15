@@ -1764,6 +1764,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/loader/frame_loader.cc',
+        ],
+        'allowed': [
+            'base::flat_map',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/webdatabase/dom_window_web_database.cc',
         ],
         'allowed': [

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -514,6 +516,12 @@ struct BLINK_EXPORT WebNavigationParams {
   // components associated with the winning bid in an auction.
   absl::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties;
+
+  // Maps the blink runtime-enabled features modified in the browser process to
+  // their new enabled/disabled status:
+  // <enum_representing_runtime_enabled_feature, enabled/disabled>
+  base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
+      modified_runtime_features;
 };
 
 }  // namespace blink

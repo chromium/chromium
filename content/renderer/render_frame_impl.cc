@@ -1017,6 +1017,11 @@ void FillMiscNavigationParams(
   if (commit_params.http_response_code != -1)
     navigation_params->http_status_code = commit_params.http_response_code;
 
+  // Copy the modified runtime features from `commit_params` to send to the
+  // Blink renderer class WebLocalFrameImpl.
+  navigation_params->modified_runtime_features =
+      commit_params.modified_runtime_features;
+
   // Populate the arrays of non-current entries for the window.navigation API.
   auto& entry_arrays = commit_params.navigation_api_history_entry_arrays;
   navigation_params->navigation_api_back_entries.reserve(

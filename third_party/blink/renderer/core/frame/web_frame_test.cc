@@ -200,6 +200,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -14434,6 +14435,46 @@ TEST_F(WebFrameSimTest, RenderBlockingPromotesResource) {
             script->GetResourceRequest().Priority());
 
   script_request.Complete();
+}
+
+// Verify that modified_runtime_features is correctly set in the
+// RuntimeFeatureStateOverrideContext when a navigation is committed.
+TEST_F(WebFrameSimTest, SetModifiedFeaturesInOverrideContext) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
+
+  auto params = std::make_unique<WebNavigationParams>();
+  // The url isn't important, just pick something.
+  params->url = url_test_helpers::ToKURL("http://www.example.com");
+
+  // Create a modified features value map and give it a value that we can check.
+  auto modified_features =
+      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
+  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = true;
+  params->modified_runtime_features = modified_features;
+
+  // Commit the navigation
+  frame->CommitNavigation(std::move(params), nullptr);
+
+  // Get the override context and compare the override values map with the
+  // modified features map.
+  RuntimeFeatureStateOverrideContext* override_context =
+      frame->GetFrame()->DomWindow()->GetRuntimeFeatureStateOverrideContext();
+  EXPECT_EQ(override_context->GetOverrideValuesForTesting(), modified_features);
+
+  // Do the same thing for a value of "false"
+  params = std::make_unique<WebNavigationParams>();
+  params->url = url_test_helpers::ToKURL("http://www.example2.com");
+  modified_features =
+      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
+  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = false;
+  params->modified_runtime_features = modified_features;
+  frame->CommitNavigation(std::move(params), nullptr);
+  override_context =
+      frame->GetFrame()->DomWindow()->GetRuntimeFeatureStateOverrideContext();
+  EXPECT_EQ(override_context->GetOverrideValuesForTesting(), modified_features);
 }
 
 }  // namespace blink
