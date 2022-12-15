@@ -413,6 +413,9 @@ bool EventTarget::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
     const AddEventListenerOptionsResolved* options) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("EventTarget::AddEventListenerInternal");
+
   if (!listener) {
     return false;
   }
