@@ -2404,6 +2404,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityReentrantAddChildren) {
+  RunRegressionTest(FILE_PATH_LITERAL("reentrant-add-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityScrollableTextarea) {
   RunHtmlTest(FILE_PATH_LITERAL("scrollable-textarea.html"));
 }
