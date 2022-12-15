@@ -46,11 +46,10 @@ class BrokerPermissionList {
   // If |file_to_open| is not NULL, a pointer to the path will be returned.
   // In the case of a recursive match, this will be the requested_filename,
   // otherwise it will return the matching pointer from the
-  // allowlist. For paranoia a caller should then use |file_to_access|. See
-  // GetFileNameIfAllowedToOpen() for more explanation.
-  // return true if calling access() on this file should be allowed, false
-  // otherwise.
-  // Async signal safe if and only if |file_to_access| is NULL.
+  // allowlist. A caller should then use |file_to_access|. See
+  // GetFileNameIfAllowedToOpen() for more explanation. return true if calling
+  // access() on this file should be allowed, false otherwise. Async signal safe
+  // if and only if |file_to_access| is NULL.
   bool GetFileNameIfAllowedToAccess(const char* requested_filename,
                                     int requested_mode,
                                     const char** file_to_access) const;
@@ -59,8 +58,8 @@ class BrokerPermissionList {
   // If |file_to_open| is not NULL, a pointer to the path will be returned.
   // In the case of a recursive match, this will be the requested_filename,
   // otherwise it will return the matching pointer from the
-  // allowlist. For paranoia, a caller should then use |file_to_open| rather
-  // than |requested_filename|, so that it never attempts to open an
+  // allowlist. A caller should then use |file_to_open| rather than
+  // |requested_filename|, so that it never attempts to open an
   // attacker-controlled file name, even if an attacker managed to fool the
   // string comparison mechanism.
   // |unlink_after_open| if not NULL will be set to point to true if the
@@ -77,10 +76,24 @@ class BrokerPermissionList {
   // similar to GetFileNameIfAllowedToAccess(), except that if we have
   // create permission on file, we permit stat() on all its leading
   // components, otherwise checking for missing intermediate directories
-  // can't happen proplery during a base::CreateDirectory() call.
-  // Async signal safe if and only if |file_to_open| is NULL.
+  // can't happen properly during a base::CreateDirectory() call.
+  // Async signal safe if and only if |file_to_access| is NULL.
   bool GetFileNameIfAllowedToStat(const char* requested_filename,
                                   const char** file_to_access) const;
+
+  // Check if |requested_filename| can be watched with mask |mask|.
+  // If |file_to_inotify_add_watch| is not NULL, a pointer to the validated path
+  // will be returned. In the case of a recursive match, this will be the
+  // requested_filename, otherwise it will return the matching pointer from the
+  // allowlist. A caller should then use |file_to_inotify_add_watch| rather than
+  // |requested_filename|, so that it never attempts to open an
+  // attacker-controlled file name, even if an attacker managed to fool the
+  // string comparison mechanism. Async signal safe if and only if
+  // |file_to_inotify_add_watch| is NULL.
+  bool GetFileNameIfAllowedToInotifyAddWatch(
+      const char* requested_filename,
+      uint32_t mask,
+      const char** file_to_inotify_add_watch) const;
 
   int denied_errno() const { return denied_errno_; }
 

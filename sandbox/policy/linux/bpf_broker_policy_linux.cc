@@ -5,6 +5,7 @@
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 using sandbox::bpf_dsl::Allow;
@@ -142,6 +143,14 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
       // NOTE: Open() uses unlink() to make "temporary" files.
       if (allowed_command_set_.test(syscall_broker::COMMAND_OPEN) ||
           allowed_command_set_.test(syscall_broker::COMMAND_UNLINK)) {
+        return Allow();
+      }
+      break;
+#endif
+#if defined(__NR_inotify_add_watch)
+    case __NR_inotify_add_watch:
+      if (allowed_command_set_.test(
+              syscall_broker::COMMAND_INOTIFY_ADD_WATCH)) {
         return Allow();
       }
       break;

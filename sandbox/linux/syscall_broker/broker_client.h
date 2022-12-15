@@ -68,6 +68,9 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
              bool follow_links,
              struct kernel_stat64* sb) const override;
   int Unlink(const char* unlink) const override;
+  int InotifyAddWatch(int fd,
+                      const char* pathname,
+                      uint32_t mask) const override;
 
   const BrokerSandboxConfig& policy() const { return *policy_; }
 

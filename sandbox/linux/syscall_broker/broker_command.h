@@ -42,9 +42,10 @@ enum BrokerCommand {
   COMMAND_STAT,
   COMMAND_STAT64,
   COMMAND_UNLINK,
+  COMMAND_INOTIFY_ADD_WATCH,
 
   // NOTE: update when adding new commands.
-  COMMAND_MAX = COMMAND_UNLINK
+  COMMAND_MAX = COMMAND_INOTIFY_ADD_WATCH
 };
 
 using BrokerCommandSet = std::bitset<COMMAND_MAX + 1>;
@@ -105,6 +106,12 @@ bool CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
                          const BrokerPermissionList& policy,
                          const char* requested_filename,
                          const char** filename_to_use);
+
+bool CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
+                                  const BrokerPermissionList& policy,
+                                  const char* requested_filename,
+                                  uint32_t mask,
+                                  const char** filename_to_use);
 
 }  // namespace syscall_broker
 }  // namespace sandbox

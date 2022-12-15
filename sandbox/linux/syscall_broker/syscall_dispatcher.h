@@ -53,6 +53,11 @@ class SANDBOX_EXPORT SyscallDispatcher {
   // Emulates unlink()/unlinkat().
   virtual int Unlink(const char* unlink) const = 0;
 
+  // Emulates inotify_add_watch().
+  virtual int InotifyAddWatch(int fd,
+                              const char* pathname,
+                              uint32_t mask) const = 0;
+
   // Different architectures use a different syscall from the stat family by
   // default in glibc. E.g. 32-bit systems use *stat*64() and fill out struct
   // kernel_stat64, whereas 64-bit systems use *stat*() and fill out struct
