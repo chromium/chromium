@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/const_csp_checker.h"
@@ -120,19 +121,11 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // back via domAutomationController.
   void InstallPaymentAppInScopeForMethod(const std::string& scope,
                                          const std::string& method_name) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), alicepay_.GetURL("alicepay.test", scope)));
-    std::string contents;
-    std::string script = "install('" + method_name + "');";
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), script,
-        &contents))
-        << "Script execution failed: " << script;
-    ASSERT_NE(std::string::npos,
-              contents.find("Payment app for \"" + method_name +
-                            "\" method installed."))
-        << method_name << " method install message not found in:\n"
-        << contents;
+    ASSERT_TRUE(
+        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+            *browser()->tab_strip_model()->GetActiveWebContents(),
+            alicepay_.GetURL("alicepay.test", scope + "app.js"), method_name,
+            PaymentAppInstallUtil::IconInstall::kWithIcon));
   }
 
   // Retrieves all valid payment apps that can handle the methods in
@@ -298,8 +291,9 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   bool StartTestServer(const std::string& hostname,
                        net::EmbeddedTestServer* test_server) {
     host_resolver()->AddRule(hostname, "127.0.0.1");
-    if (!test_server->InitializeAndListen())
+    if (!test_server->InitializeAndListen()) {
       return false;
+    }
     test_server->ServeFilesFromSourceDirectory(
         "components/test/data/payments/" + hostname);
     test_server->StartAcceptingConnections();
@@ -894,8 +888,9 @@ class ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest
   }
 
   void MaybeInvalidateCSPCheckerWeakPtrs() {
-    if (number_of_lookups_ >= GetNumberOfLookupsBeforeCSPCheckerReset())
+    if (number_of_lookups_ >= GetNumberOfLookupsBeforeCSPCheckerReset()) {
       ConstCSPChecker::InvalidateWeakPtrsForTesting();
+    }
   }
 
   int number_of_lookups_ = 0;
