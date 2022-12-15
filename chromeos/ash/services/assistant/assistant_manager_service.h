@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // If any value is added, please update enums.xml
+  // `AssistantServiceState`.
   // Enumeration of possible assistant manager service states.
   enum State {
     // Initial state, the service is created but not started yet.

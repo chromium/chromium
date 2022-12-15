@@ -5178,6 +5178,15 @@ others/histograms.xml -->
   <int value="14" label="kBloom"/>
 </enum>
 
+<enum name="AssistantServiceState">
+  <int value="0" label="kStopped"/>
+  <int value="1" label="kStarting"/>
+  <int value="2" label="kStarted"/>
+  <int value="3" label="kRunning"/>
+  <int value="4" label="kStopping"/>
+  <int value="5" label="kDisconnected"/>
+</enum>
+
 <enum name="AsyncDNSConfigParsePosix">
   <obsolete>
     Removed 2021-01.

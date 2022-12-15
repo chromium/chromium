@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
   <summary>Amount of time spent in starting Assistant service.</summary>
 </histogram>
 
-<histogram name="Assistant.ServiceState" enum="State"
+<histogram name="Assistant.ServiceState" enum="AssistantServiceState"
     expires_after="2023-10-31">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
