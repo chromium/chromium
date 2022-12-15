@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -24,9 +23,9 @@ namespace media {
 struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
   // for large buffers.
-  std::unique_ptr<uint8_t, base::FreeDeleter> data;
+  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> data;
   size_t data_size = 0u;
-  std::unique_ptr<uint8_t, base::FreeDeleter> alpha_data;
+  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> alpha_data;
   size_t alpha_data_size = 0u;
   bool held_by_library = false;
   // Needs to be a counter since a frame buffer might be used multiple times.
