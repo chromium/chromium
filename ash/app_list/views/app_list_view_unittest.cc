@@ -671,6 +671,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result->set_display_score(score);
     result->SetTitle(ASCIIToUTF16(title));
     result->set_best_match(true);
+    result->SetCategory(ash::AppListSearchResultCategory::kWeb);
     GetSearchModel()->results()->Add(std::move(result));
     base::RunLoop().RunUntilIdle();
   }
@@ -1002,8 +1003,8 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   TestFocusTraversal(backward_view_list, ui::VKEY_UP, false);
 }
 
-// Tests that focus changes update the search box text.
-TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
+// Tests that focus changes does not update the search box text.
+TEST_F(AppListViewFocusTest, SearchBoxTextDoesNotUpdateOnResultFocus) {
   Show();
   views::Textfield* search_box = search_box_view()->search_box();
   search_box->InsertText(
@@ -1019,18 +1020,24 @@ TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
   // Change focus to the next result
   SimulateKeyPress(ui::VKEY_TAB, false);
 
-  EXPECT_EQ(search_box->GetText(), u"TestResult2");
+  EXPECT_EQ(search_box->GetText(), u"TestText");
+  EXPECT_EQ(search_box_view()->GetSearchBoxGhostTextForTest(),
+            "TestResult2 - Websites");
 
   SimulateKeyPress(ui::VKEY_TAB, true);
 
-  EXPECT_EQ(search_box->GetText(), u"TestResult1");
+  EXPECT_EQ(search_box->GetText(), u"TestText");
+  EXPECT_EQ(search_box_view()->GetSearchBoxGhostTextForTest(),
+            "TestResult1 - Websites");
 
   SimulateKeyPress(ui::VKEY_TAB, false);
 
   // Change focus to the final result
   SimulateKeyPress(ui::VKEY_TAB, false);
 
-  EXPECT_EQ(search_box->GetText(), u"TestResult3");
+  EXPECT_EQ(search_box->GetText(), u"TestText");
+  EXPECT_EQ(search_box_view()->GetSearchBoxGhostTextForTest(),
+            "TestResult3 - Websites");
 }
 
 // Tests that ctrl-A selects all text in the searchbox when the SearchBoxView is

@@ -251,7 +251,7 @@ BASE_FEATURE(kAutoScreenBrightness,
 // Enables or disables extended autocomplete results.
 BASE_FEATURE(kAutocompleteExtendedSuggestions,
              "AutocompleteExtendedSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables params tuning experiment for autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectParamsTuning,
