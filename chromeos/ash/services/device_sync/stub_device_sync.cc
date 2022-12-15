@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/multidevice/stub_multidevice_util.h"
 #include "chromeos/ash/services/device_sync/device_sync_base.h"
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,6 +81,18 @@ class StubDeviceSync : public DeviceSyncBase {
 
   void ForceSyncNow(ForceSyncNowCallback callback) override {
     std::move(callback).Run(/*success=*/true);
+  }
+
+  void GetBetterTogetherMetadataStatus(
+      GetBetterTogetherMetadataStatusCallback callback) override {
+    std::move(callback).Run(/*result=*/BetterTogetherMetadataStatus::
+                                kWaitingToProcessDeviceMetadata);
+  }
+
+  void GetGroupPrivateKeyStatus(
+      GetGroupPrivateKeyStatusCallback callback) override {
+    std::move(callback).Run(
+        /*result=*/GroupPrivateKeyStatus::kWaitingForGroupPrivateKey);
   }
 
   void GetLocalDeviceMetadata(

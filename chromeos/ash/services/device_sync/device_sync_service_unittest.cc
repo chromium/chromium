@@ -46,6 +46,7 @@
 #include "chromeos/ash/services/device_sync/fake_device_sync_observer.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_provider.h"
 #include "chromeos/ash/services/device_sync/fake_software_feature_manager.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
@@ -1178,6 +1179,15 @@ class DeviceSyncServiceTest
     // initialization.
     EXPECT_FALSE(CallGetLocalDeviceMetadata());
 
+    // GetGroupPrivateKeyStatus() and GetBetterTogetherMetadataStatus() both
+    // should return kStatusUnavailableBecauseDeviceSyncIsNotInitialized.
+    EXPECT_EQ(GroupPrivateKeyStatus::
+                  kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+              CallGetGroupPrivateKeyStatus());
+    EXPECT_EQ(BetterTogetherMetadataStatus::
+                  kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+              CallGetBetterTogetherMetadataStatus());
+
     if (features::ShouldUseV1DeviceSync()) {
       // SetSoftwareFeatureState() should return a struct with the special
       // kErrorNotInitialized error code.
@@ -1284,6 +1294,24 @@ class DeviceSyncServiceTest
     }
 
     return last_force_sync_now_result_;
+  }
+
+  GroupPrivateKeyStatus CallGetGroupPrivateKeyStatus() {
+    base::RunLoop run_loop;
+    device_sync_->GetGroupPrivateKeyStatus(base::BindOnce(
+        &DeviceSyncServiceTest::OnGetGroupPrivateKeyStatusCompleted,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    return last_group_private_key_status_result_;
+  }
+
+  BetterTogetherMetadataStatus CallGetBetterTogetherMetadataStatus() {
+    base::RunLoop run_loop;
+    device_sync_->GetBetterTogetherMetadataStatus(base::BindOnce(
+        &DeviceSyncServiceTest::OnGetBetterTogetherMetadataStatusCompleted,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    return last_better_together_metadata_status_result_;
   }
 
   const absl::optional<multidevice::RemoteDevice>&
@@ -1503,6 +1531,19 @@ class DeviceSyncServiceTest
     std::move(quit_closure).Run();
   }
 
+  void OnGetGroupPrivateKeyStatusCompleted(base::OnceClosure quit_closure,
+                                           GroupPrivateKeyStatus status) {
+    last_group_private_key_status_result_ = status;
+    std::move(quit_closure).Run();
+  }
+
+  void OnGetBetterTogetherMetadataStatusCompleted(
+      base::OnceClosure quit_closure,
+      BetterTogetherMetadataStatus status) {
+    last_better_together_metadata_status_result_ = status;
+    std::move(quit_closure).Run();
+  }
+
   void OnGetLocalDeviceMetadataCompleted(
       base::OnceClosure quit_closure,
       const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
@@ -1625,6 +1666,8 @@ class DeviceSyncServiceTest
   bool device_already_enrolled_in_cryptauth_;
   bool last_force_enrollment_now_result_;
   bool last_force_sync_now_result_;
+  GroupPrivateKeyStatus last_group_private_key_status_result_;
+  BetterTogetherMetadataStatus last_better_together_metadata_status_result_;
   absl::optional<multidevice::RemoteDeviceList> last_synced_devices_result_;
   absl::optional<multidevice::RemoteDevice> last_local_device_metadata_result_;
   std::unique_ptr<mojom::NetworkRequestResult>
@@ -1833,6 +1876,24 @@ TEST_P(DeviceSyncServiceTest, EnrollAgainAfterInitialization) {
   SimulateEnrollment(true /* success */);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, fake_device_sync_observer()->num_enrollment_events());
+}
+
+TEST_P(DeviceSyncServiceTest, GetGroupPrivateKeyStatus) {
+  if (!features::ShouldUseV2DeviceSync())
+    return;
+
+  InitializeServiceSuccessfully();
+  EXPECT_EQ(GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
+            CallGetGroupPrivateKeyStatus());
+}
+
+TEST_P(DeviceSyncServiceTest, GetBetterTogetherMetadataStatus) {
+  if (!features::ShouldUseV2DeviceSync())
+    return;
+
+  InitializeServiceSuccessfully();
+  EXPECT_EQ(BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata,
+            CallGetBetterTogetherMetadataStatus());
 }
 
 TEST_P(DeviceSyncServiceTest, GetLocalDeviceMetadata) {

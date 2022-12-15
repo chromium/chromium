@@ -18,6 +18,19 @@ FakeDeviceSync::FakeDeviceSync() : DeviceSyncBase() {}
 
 FakeDeviceSync::~FakeDeviceSync() = default;
 
+void FakeDeviceSync::InvokePendingGetGroupPrivateKeyStatusCallback(
+    GroupPrivateKeyStatus status) {
+  std::move(get_group_private_key_status_callback_queue_.front()).Run(status);
+  get_group_private_key_status_callback_queue_.pop();
+}
+
+void FakeDeviceSync::InvokePendingGetBetterTogetherMetadataStatusCallback(
+    BetterTogetherMetadataStatus status) {
+  std::move(get_better_together_metadata_status_callback_queue_.front())
+      .Run(status);
+  get_better_together_metadata_status_callback_queue_.pop();
+}
+
 void FakeDeviceSync::InvokePendingGetLocalDeviceMetadataCallback(
     const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
   std::move(get_local_device_metadata_callback_queue_.front())
@@ -81,6 +94,16 @@ void FakeDeviceSync::ForceEnrollmentNow(ForceEnrollmentNowCallback callback) {
 
 void FakeDeviceSync::ForceSyncNow(ForceSyncNowCallback callback) {
   std::move(callback).Run(force_sync_now_completed_success_);
+}
+
+void FakeDeviceSync::GetGroupPrivateKeyStatus(
+    GetGroupPrivateKeyStatusCallback callback) {
+  get_group_private_key_status_callback_queue_.push(std::move(callback));
+}
+
+void FakeDeviceSync::GetBetterTogetherMetadataStatus(
+    GetBetterTogetherMetadataStatusCallback callback) {
+  get_better_together_metadata_status_callback_queue_.push(std::move(callback));
 }
 
 void FakeDeviceSync::GetLocalDeviceMetadata(

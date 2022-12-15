@@ -33,11 +33,20 @@ mojom("mojom") {
           mojom = "ash.device_sync.mojom.CryptAuthService"
           cpp = "cryptauthv2::TargetService"
         },
+        {
+          mojom = "ash.device_sync.mojom.GroupPrivateKeyStatus"
+          cpp = "ash::device_sync::GroupPrivateKeyStatus"
+        },
+        {
+          mojom = "ash.device_sync.mojom.BetterTogetherMetadataStatus"
+          cpp = "ash::device_sync::BetterTogetherMetadataStatus"
+        },
       ]
       traits_headers = [ "device_sync_mojom_traits.h" ]
       traits_sources = [ "device_sync_mojom_traits.cc" ]
       traits_public_deps = [
         "//chromeos/ash/services/device_sync:feature_status_change",
+        "//chromeos/ash/services/device_sync:group_private_key_and_better_together_metadata_status",
         "//chromeos/ash/services/device_sync/proto",
       ]
     },

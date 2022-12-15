@@ -46,6 +46,157 @@ bool EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
   return false;
 }
 
+ash::device_sync::mojom::GroupPrivateKeyStatus
+EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
+           ash::device_sync::GroupPrivateKeyStatus>::
+    ToMojom(ash::device_sync::GroupPrivateKeyStatus input) {
+  switch (input) {
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+    case ash::device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kWaitingForGroupPrivateKey;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kNoEncryptedGroupPrivateKeyReceived:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kNoEncryptedGroupPrivateKeyReceived;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kEncryptedGroupPrivateKeyEmpty:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kEncryptedGroupPrivateKeyEmpty;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kLocalDeviceSyncBetterTogetherKeyMissing:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kLocalDeviceSyncBetterTogetherKeyMissing;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kGroupPrivateKeyDecryptionFailed:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kGroupPrivateKeyDecryptionFailed;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kGroupPrivateKeySuccessfullyDecrypted:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kGroupPrivateKeySuccessfullyDecrypted;
+  }
+
+  NOTREACHED();
+  return ash::device_sync::mojom::GroupPrivateKeyStatus::
+      kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+}
+
+bool EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
+                ash::device_sync::GroupPrivateKeyStatus>::
+    FromMojom(ash::device_sync::mojom::GroupPrivateKeyStatus input,
+              ash::device_sync::GroupPrivateKeyStatus* out) {
+  switch (input) {
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kWaitingForGroupPrivateKey:
+      *out =
+          ash::device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kNoEncryptedGroupPrivateKeyReceived:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kNoEncryptedGroupPrivateKeyReceived;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kEncryptedGroupPrivateKeyEmpty:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kEncryptedGroupPrivateKeyEmpty;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kLocalDeviceSyncBetterTogetherKeyMissing:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kLocalDeviceSyncBetterTogetherKeyMissing;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kGroupPrivateKeyDecryptionFailed:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kGroupPrivateKeyDecryptionFailed;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kGroupPrivateKeySuccessfullyDecrypted:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kGroupPrivateKeySuccessfullyDecrypted;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
+ash::device_sync::mojom::BetterTogetherMetadataStatus
+EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
+           ash::device_sync::BetterTogetherMetadataStatus>::
+    ToMojom(ash::device_sync::BetterTogetherMetadataStatus input) {
+  switch (input) {
+    case ash::device_sync::BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+    case ash::device_sync::BetterTogetherMetadataStatus::
+        kWaitingToProcessDeviceMetadata:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kWaitingToProcessDeviceMetadata;
+    case ash::device_sync::BetterTogetherMetadataStatus::
+        kGroupPrivateKeyMissing:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kGroupPrivateKeyMissing;
+    case ash::device_sync::BetterTogetherMetadataStatus::
+        kEncryptedMetadataEmpty:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kEncryptedMetadataEmpty;
+    case ash::device_sync::BetterTogetherMetadataStatus::kMetadataDecrypted:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kMetadataDecrypted;
+  }
+
+  NOTREACHED();
+  return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+      kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+}
+
+bool EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
+                ash::device_sync::BetterTogetherMetadataStatus>::
+    FromMojom(ash::device_sync::mojom::BetterTogetherMetadataStatus input,
+              ash::device_sync::BetterTogetherMetadataStatus* out) {
+  switch (input) {
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::
+          kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+      return true;
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kWaitingToProcessDeviceMetadata:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::
+          kWaitingToProcessDeviceMetadata;
+      return true;
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kGroupPrivateKeyMissing:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::
+          kGroupPrivateKeyMissing;
+      return true;
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kEncryptedMetadataEmpty:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::
+          kEncryptedMetadataEmpty;
+      return true;
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kMetadataDecrypted:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::kMetadataDecrypted;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 ash::device_sync::mojom::FeatureStatusChange
 EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
            ash::device_sync::FeatureStatusChange>::

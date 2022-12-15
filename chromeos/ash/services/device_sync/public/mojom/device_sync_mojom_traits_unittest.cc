@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync_mojom_traits.h"
 
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -25,6 +26,66 @@ TEST(DeviceSyncMojomTraitsTest, ConnectivityStatus) {
                  ash::device_sync::mojom::ConnectivityStatus,
                  cryptauthv2::ConnectivityStatus>::FromMojom(serialized_status,
                                                              &status_out)));
+    EXPECT_EQ(status_in, status_out);
+  }
+}
+
+TEST(DeviceSyncMojomTraitsTest, GroupPrivateKeyStatus) {
+  static constexpr ash::device_sync::GroupPrivateKeyStatus
+      kTestGroupPrivateKeyStatuses[] = {
+          ash::device_sync::GroupPrivateKeyStatus::
+              kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+          ash::device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kNoEncryptedGroupPrivateKeyReceived,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kEncryptedGroupPrivateKeyEmpty,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kLocalDeviceSyncBetterTogetherKeyMissing,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kGroupPrivateKeyDecryptionFailed,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kGroupPrivateKeySuccessfullyDecrypted};
+
+  for (auto status_in : kTestGroupPrivateKeyStatuses) {
+    ash::device_sync::GroupPrivateKeyStatus status_out;
+
+    ash::device_sync::mojom::GroupPrivateKeyStatus serialized_status =
+        mojo::EnumTraits<
+            ash::device_sync::mojom::GroupPrivateKeyStatus,
+            ash::device_sync::GroupPrivateKeyStatus>::ToMojom(status_in);
+    ASSERT_TRUE(
+        (mojo::EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
+                          ash::device_sync::GroupPrivateKeyStatus>::
+             FromMojom(serialized_status, &status_out)));
+    EXPECT_EQ(status_in, status_out);
+  }
+}
+
+TEST(DeviceSyncMojomTraitsTest, BetterTogetherMetadataStatus) {
+  static constexpr ash::device_sync::BetterTogetherMetadataStatus
+      kTestBetterTogetherMetadataStatuses[] = {
+          ash::device_sync::BetterTogetherMetadataStatus::
+              kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+          ash::device_sync::BetterTogetherMetadataStatus::
+              kWaitingToProcessDeviceMetadata,
+          ash::device_sync::BetterTogetherMetadataStatus::
+              kGroupPrivateKeyMissing,
+          ash::device_sync::BetterTogetherMetadataStatus::
+              kEncryptedMetadataEmpty,
+          ash::device_sync::BetterTogetherMetadataStatus::kMetadataDecrypted};
+
+  for (auto status_in : kTestBetterTogetherMetadataStatuses) {
+    ash::device_sync::BetterTogetherMetadataStatus status_out;
+
+    ash::device_sync::mojom::BetterTogetherMetadataStatus serialized_status =
+        mojo::EnumTraits<
+            ash::device_sync::mojom::BetterTogetherMetadataStatus,
+            ash::device_sync::BetterTogetherMetadataStatus>::ToMojom(status_in);
+    ASSERT_TRUE(
+        (mojo::EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
+                          ash::device_sync::BetterTogetherMetadataStatus>::
+             FromMojom(serialized_status, &status_out)));
     EXPECT_EQ(status_in, status_out);
   }
 }

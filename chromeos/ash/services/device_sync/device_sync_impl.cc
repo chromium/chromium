@@ -35,6 +35,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 #include "chromeos/ash/services/device_sync/device_sync_type_converters.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/proto/device_classifier_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
@@ -486,6 +487,43 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
   std::move(callback).Run(true /* success */);
   RecordForceSyncNowResult(
       ForceCryptAuthOperationResult::kSuccess /* result */);
+}
+
+void DeviceSyncImpl::GetGroupPrivateKeyStatus(
+    GetGroupPrivateKeyStatusCallback callback) {
+  DCHECK(features::ShouldUseV2DeviceSync);
+
+  if (status_ != InitializationStatus::kReady) {
+    PA_LOG(WARNING) << "DeviceSyncImpl::GetGroupPrivateKeyStatus() invoked "
+                       "before initialization was complete. Cannot return "
+                       "group private key status.";
+    std::move(callback).Run(
+        GroupPrivateKeyStatus::
+            kStatusUnavailableBecauseDeviceSyncIsNotInitialized);
+    return;
+  }
+
+  std::move(callback).Run(
+      cryptauth_v2_device_manager_->GetDeviceSyncerGroupPrivateKeyStatus());
+}
+
+void DeviceSyncImpl::GetBetterTogetherMetadataStatus(
+    GetBetterTogetherMetadataStatusCallback callback) {
+  DCHECK(features::ShouldUseV2DeviceSync);
+
+  if (status_ != InitializationStatus::kReady) {
+    PA_LOG(WARNING)
+        << "DeviceSyncImpl::GetBetterTogetherMetadataStatus() invoked "
+           "before initialization was complete. Cannot return "
+           "better together metadata status.";
+    std::move(callback).Run(
+        BetterTogetherMetadataStatus::
+            kStatusUnavailableBecauseDeviceSyncIsNotInitialized);
+    return;
+  }
+
+  std::move(callback).Run(cryptauth_v2_device_manager_
+                              ->GetDeviceSyncerBetterTogetherMetadataStatus());
 }
 
 void DeviceSyncImpl::GetLocalDeviceMetadata(

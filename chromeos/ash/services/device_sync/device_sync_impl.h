@@ -116,6 +116,10 @@ class DeviceSyncImpl : public DeviceSyncBase,
   // device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
+  void GetGroupPrivateKeyStatus(
+      GetGroupPrivateKeyStatusCallback callback) override;
+  void GetBetterTogetherMetadataStatus(
+      GetBetterTogetherMetadataStatusCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;
   void GetSyncedDevices(GetSyncedDevicesCallback callback) override;
   void SetSoftwareFeatureState(

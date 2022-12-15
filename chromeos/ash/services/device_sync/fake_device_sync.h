@@ -37,6 +37,10 @@ class FakeDeviceSync : public DeviceSyncBase {
     force_sync_now_completed_success_ = force_sync_now_completed_success;
   }
 
+  void InvokePendingGetGroupPrivateKeyStatusCallback(
+      GroupPrivateKeyStatus status);
+  void InvokePendingGetBetterTogetherMetadataStatusCallback(
+      BetterTogetherMetadataStatus status);
   void InvokePendingGetLocalDeviceMetadataCallback(
       const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
   void InvokePendingGetSyncedDevicesCallback(
@@ -61,6 +65,10 @@ class FakeDeviceSync : public DeviceSyncBase {
   // device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
+  void GetGroupPrivateKeyStatus(
+      GetGroupPrivateKeyStatusCallback callback) override;
+  void GetBetterTogetherMetadataStatus(
+      GetBetterTogetherMetadataStatusCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;
   void GetSyncedDevices(GetSyncedDevicesCallback callback) override;
   void SetSoftwareFeatureState(
@@ -87,6 +95,10 @@ class FakeDeviceSync : public DeviceSyncBase {
   bool force_enrollment_now_completed_success_ = true;
   bool force_sync_now_completed_success_ = true;
 
+  std::queue<GetGroupPrivateKeyStatusCallback>
+      get_group_private_key_status_callback_queue_;
+  std::queue<GetBetterTogetherMetadataStatusCallback>
+      get_better_together_metadata_status_callback_queue_;
   std::queue<GetLocalDeviceMetadataCallback>
       get_local_device_metadata_callback_queue_;
   std::queue<GetSyncedDevicesCallback> get_synced_devices_callback_queue_;

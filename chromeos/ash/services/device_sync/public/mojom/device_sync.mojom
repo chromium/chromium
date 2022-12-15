@@ -73,6 +73,62 @@ enum ConnectivityStatus {
   kUnknownConnectivity
 };
 
+// Describes the status of the encrypted group private key received in the
+// SyncMetadataResponse.
+enum GroupPrivateKeyStatus {
+  // When Device Sync is not initialized, it cannot access the group private key
+  // status and will return this value.
+  kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+
+  // The CryptAuth SyncMetadata response that includes the encrypted group
+  // private key hasn't been received yet.
+  kWaitingForGroupPrivateKey,
+
+  // The SyncMetadata response was been received, but doesn't include any
+  // encrypted group private key. This is expected when no other user device
+  // uploaded the key or if we already own the key.
+  kNoEncryptedGroupPrivateKeyReceived,
+
+  // The SyncMetadata response was received, but the included encrypted group
+  // private key is empty.
+  kEncryptedGroupPrivateKeyEmpty,
+
+  // This device's CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether key is
+  // missing, so the encrypted group private key cannot be decrypted.
+  kLocalDeviceSyncBetterTogetherKeyMissing,
+
+  // An error occurred when decrypting the group private key.
+  kGroupPrivateKeyDecryptionFailed,
+
+  // The group private key was successfully decrypted. This is the expected
+  // final state of this flow.
+  kGroupPrivateKeySuccessfullyDecrypted
+};
+
+// Describes the status of the better together remote device metadata.
+enum BetterTogetherMetadataStatus {
+  // When Device Sync is not initialized, it cannot access the better together
+  // metadata status and will return this value.
+  kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+
+  // The attempt to process the encrypted device metadata hasn't started yet.
+  // If the device sync attempt finishes and this is still the metadata
+  // status, clients can inspect GroupPrivateKeyStatus to understand why.
+  kWaitingToProcessDeviceMetadata,
+
+  // The group private key required to decrypt the metadata is missing.
+  // Clients can inspect GroupPrivateKeyStatus to understand why the group
+  // private key is missing.
+  kGroupPrivateKeyMissing,
+
+  // CryptAuth didn't send any encrypted metadata.
+  kEncryptedMetadataEmpty,
+
+  // Device metadata was decrypted. This is the expected final state of this
+  // flow.
+  kMetadataDecrypted
+};
+
 struct FindEligibleDevicesResponse {
   array<ash.multidevice.mojom.RemoteDevice> eligible_devices;
   array<ash.multidevice.mojom.RemoteDevice> ineligible_devices;
@@ -135,6 +191,13 @@ interface DeviceSync {
   // retrying.
   [Sync]
   ForceSyncNow() => (bool success);
+
+  // Returns the status of the encrypted group private key received in the
+  // SyncMetadataResponse.
+  GetGroupPrivateKeyStatus() => (GroupPrivateKeyStatus status);
+
+  // Returns the status of the better together remote device metadata.
+  GetBetterTogetherMetadataStatus() => (BetterTogetherMetadataStatus status);
 
   // Returns all synced devices associated with the primary account. If this
   // device has not yet registered with the back-end, no list is provided.
