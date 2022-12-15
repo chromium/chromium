@@ -536,9 +536,7 @@ NSInteger kFeedSymbolPointSize = 17;
         constraintEqualToAnchor:self.view.bottomAnchor],
     [self.container.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
-    [self.container.widthAnchor
-        constraintEqualToConstant:MIN(kDiscoverFeedContentWidth,
-                                      self.view.frame.size.width)],
+    [self.container.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
     [self.menuButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
                        constant:-kButtonHorizontalMargin],
