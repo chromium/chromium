@@ -8,8 +8,6 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.google.android.gms.common.api.ResolvableApiException;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -59,11 +57,6 @@ public class PasswordSettingsUpdaterReceiverBridge {
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
 
-        if (exception instanceof ResolvableApiException) {
-            PasswordManagerAndroidBackendUtil.handleResolvableApiException(
-                    (ResolvableApiException) exception);
-        }
-
         PasswordSettingsUpdaterReceiverBridgeJni.get().onSettingFetchingError(
                 mNativeReceiverBridge, setting, error, apiErrorCode);
     }
@@ -87,11 +80,6 @@ public class PasswordSettingsUpdaterReceiverBridge {
         @AndroidBackendErrorType
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
-
-        if (exception instanceof ResolvableApiException) {
-            PasswordManagerAndroidBackendUtil.handleResolvableApiException(
-                    (ResolvableApiException) exception);
-        }
 
         PasswordSettingsUpdaterReceiverBridgeJni.get().onFailedSettingChange(
                 mNativeReceiverBridge, setting, error, apiErrorCode);

@@ -122,7 +122,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     }
 
     @Test
-    public void testResolutionLaunchedOnResolvableFetchingError()
+    public void testResolutionNotLaunchedOnResolvableFetchingError()
             throws PendingIntent.CanceledException {
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException = new ResolvableApiException(
@@ -131,7 +131,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
         mReceiverBridge.handleFetchingException(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
                 expectedException, mMetricsRecorderMock);
 
-        verify(pendingIntentMock).send();
+        verify(pendingIntentMock, never()).send();
         verify(mReceiverBridgeJniMock)
                 .onSettingFetchingError(sDummyNativePointer,
                         PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
@@ -141,7 +141,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
     }
 
     @Test
-    public void testResolutionLaunchedOnResolvableSettingError()
+    public void testResolutionNotLaunchedOnResolvableSettingError()
             throws PendingIntent.CanceledException {
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
         Exception expectedException = new ResolvableApiException(
@@ -150,7 +150,7 @@ public class PasswordSettingsUpdaterReceiverBridgeTest {
         mReceiverBridge.handleSettingException(PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
                 expectedException, mMetricsRecorderMock);
 
-        verify(pendingIntentMock).send();
+        verify(pendingIntentMock, never()).send();
         verify(mReceiverBridgeJniMock)
                 .onFailedSettingChange(sDummyNativePointer,
                         PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS,
