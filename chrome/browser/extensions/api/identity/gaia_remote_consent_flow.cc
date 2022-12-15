@@ -218,6 +218,10 @@ void GaiaRemoteConsentFlow::SetWebAuthFlowForTesting(
 #endif
 }
 
+WebAuthFlow* GaiaRemoteConsentFlow::GetWebAuthFlowForTesting() const {
+  return web_flow_.get();
+}
+
 void GaiaRemoteConsentFlow::SetAccountsInCookie() {
   // Reset a task that is already in flight because it contains stale
   // information.

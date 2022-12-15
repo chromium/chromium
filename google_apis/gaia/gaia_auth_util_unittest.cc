@@ -5,9 +5,8 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #include "base/base64url.h"
-#include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
+#include "google_apis/gaia/gaia_auth_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace gaia {
@@ -15,25 +14,6 @@ namespace gaia {
 namespace {
 
 const char kGaiaId[] = "fake_gaia_id";
-
-std::string GenerateOAuth2MintTokenConsentResult(
-    absl::optional<bool> approved,
-    const absl::optional<std::string>& encrypted_approval_data,
-    const absl::optional<std::string>& obfuscated_id,
-    base::Base64UrlEncodePolicy encode_policy =
-        base::Base64UrlEncodePolicy::OMIT_PADDING) {
-  OAuth2MintTokenConsentResult consent_result;
-  if (approved.has_value())
-    consent_result.set_approved(approved.value());
-  if (encrypted_approval_data.has_value())
-    consent_result.set_encrypted_approval_data(encrypted_approval_data.value());
-  if (obfuscated_id.has_value())
-    consent_result.set_obfuscated_id(obfuscated_id.value());
-  std::string serialized_consent = consent_result.SerializeAsString();
-  std::string encoded_consent;
-  base::Base64UrlEncode(serialized_consent, encode_policy, &encoded_consent);
-  return encoded_consent;
-}
 
 }  // namespace
 

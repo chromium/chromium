@@ -83,6 +83,7 @@ class GaiaRemoteConsentFlow
   void OnEndBatchOfRefreshTokenStateChanges() override;
 
   void SetWebAuthFlowForTesting(std::unique_ptr<WebAuthFlow> web_auth_flow);
+  WebAuthFlow* GetWebAuthFlowForTesting() const;
 
  private:
   void SetAccountsInCookie();

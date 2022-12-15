@@ -2978,6 +2978,7 @@ if (!is_android) {
         "../browser/extensions/api/gcm/gcm_apitest.cc",
         "../browser/extensions/api/history/history_apitest.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
+        "../browser/extensions/api/identity/gaia_remote_consent_flow_browsertest.cc",
         "../browser/extensions/api/identity/identity_apitest.cc",
         "../browser/extensions/api/identity/identity_private_apitest.cc",
         "../browser/extensions/api/identity/web_auth_flow_browsertest.cc",
@@ -3174,6 +3175,11 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
       ]
+
+      if (is_chromeos_ash && enable_extensions) {
+        deps +=
+            [ "//chromeos/ash/components/network/portal_detector:test_support" ]
+      }
 
       if (enable_background_mode) {
         sources += [ "../browser/extensions/background_app_browsertest.cc" ]
