@@ -18,6 +18,8 @@ namespace {
 class BarrierInfo {
  public:
   BarrierInfo(size_t num_callbacks_left, OnceClosure done_closure);
+  BarrierInfo(const BarrierInfo&) = delete;
+  BarrierInfo& operator=(const BarrierInfo&) = delete;
   void Run();
 
  private:
