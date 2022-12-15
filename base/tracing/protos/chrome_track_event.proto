@@ -984,6 +984,23 @@ message UkmPageLoadTimingUpdate {
   optional double first_contentful_paint_ms = 5;
 }
 
+// A serialisation of v8StackFrame class.
+message V8StackFrame {
+  // Code location (path to the script and line/column number)
+  message ScriptLocation {
+    optional string source_url = 1;
+    optional int64 line_number = 2;
+    optional int64 column_number = 3;
+  }
+
+  // The name of the function that was called
+  optional string function_name = 1;
+
+  // If the function was defined in a script, contains the location within the
+  // script.
+  optional ScriptLocation script_location = 2;
+}
+
 // Serializes the blink::ExecutionContext object.
 message BlinkExecutionContext {
   // Definition of different context types.
@@ -1011,6 +1028,7 @@ message BlinkSourceLocation {
   optional int32 line_number = 4;
   optional int32 column_number = 5;
   optional string stack_trace = 6;
+  repeated V8StackFrame stack_frames = 7;
 }
 // Contains the meta information for high entropy events (like api calls)
 // that are to be traced for debugging in the context of identifiability study.
