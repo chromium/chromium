@@ -26,6 +26,7 @@
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "content/public/common/content_features.h"
+#include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -75,7 +76,7 @@ constexpr NSString* const kGoogleJapaneseInputPrefix =
 // functions.
 class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
  public:
-  explicit DummyHostHelper() {}
+  explicit DummyHostHelper() = default;
 
   DummyHostHelper(const DummyHostHelper&) = delete;
   DummyHostHelper& operator=(const DummyHostHelper&) = delete;
@@ -117,37 +118,32 @@ BOOL EventIsReservedBySystem(NSEvent* event) {
   return content::GetSystemHotkeyMap()->IsEventReserved(event);
 }
 
-// TODO(suzhe): Upstream this function.
-SkColor SkColorFromNSColor(NSColor* color) {
-  CGFloat r, g, b, a;
-  [color getRed:&r green:&g blue:&b alpha:&a];
-
-  return base::clamp(static_cast<int>(lroundf(255.0f * a)), 0, 255) << 24 |
-         base::clamp(static_cast<int>(lroundf(255.0f * r)), 0, 255) << 16 |
-         base::clamp(static_cast<int>(lroundf(255.0f * g)), 0, 255) << 8 |
-         base::clamp(static_cast<int>(lroundf(255.0f * b)), 0, 255);
-}
-
-// Extract underline information from an attributed string. Mostly copied from
-// third_party/WebKit/Source/WebKit/mac/WebView/WebHTMLView.mm
+// Extract underline information from an attributed string. Inspired by
+// `extractUnderlines` in
+// https://github.com/WebKit/WebKit/blob/main/Source/WebKitLegacy/mac/WebView/WebHTMLView.mm
 void ExtractUnderlines(NSAttributedString* string,
                        std::vector<ui::ImeTextSpan>* ime_text_spans) {
-  int length = [[string string] length];
-  int i = 0;
+  NSUInteger length = string.length;
+  NSUInteger i = 0;
   while (i < length) {
     NSRange range;
     NSDictionary* attrs = [string attributesAtIndex:i
                               longestEffectiveRange:&range
                                             inRange:NSMakeRange(i, length - i)];
-    if (NSNumber* style = attrs[NSUnderlineStyleAttributeName]) {
+    if (NSNumber* style_attr = attrs[NSUnderlineStyleAttributeName]) {
       SkColor color = SK_ColorBLACK;
-      if (NSColor* colorAttr = attrs[NSUnderlineColorAttributeName]) {
-        color = SkColorFromNSColor(
-            [colorAttr colorUsingColorSpaceName:NSDeviceRGBColorSpace]);
+      if (NSColor* color_attr = attrs[NSUnderlineColorAttributeName]) {
+        color = skia::NSDeviceColorToSkColor(
+            [color_attr colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace]);
       }
+
+      // `NSUnderlineStyle` is the combination of a type enum with a pattern
+      // style in the higher bits. Fold anything more complicated than a single
+      // unstyled underline down to "thick" rather than "thin".
       ui::ImeTextSpan::Thickness thickness =
-          [style intValue] > 1 ? ui::ImeTextSpan::Thickness::kThick
-                               : ui::ImeTextSpan::Thickness::kThin;
+          style_attr.intValue > NSUnderlineStyleSingle
+              ? ui::ImeTextSpan::Thickness::kThick
+              : ui::ImeTextSpan::Thickness::kThin;
       ui::ImeTextSpan ui_ime_text_span = ui::ImeTextSpan(
           ui::ImeTextSpan::Type::kComposition, range.location,
           NSMaxRange(range), thickness, ui::ImeTextSpan::UnderlineStyle::kSolid,
@@ -155,7 +151,7 @@ void ExtractUnderlines(NSAttributedString* string,
       ui_ime_text_span.underline_color = color;
       ime_text_spans->push_back(ui_ime_text_span);
     }
-    i = range.location + range.length;
+    i = NSMaxRange(range);
   }
 }
 
@@ -2056,10 +2052,10 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     ExtractUnderlines(string, &_ime_text_spans);
   } else {
     // Use a thin black underline by default.
-    _ime_text_spans.push_back(ui::ImeTextSpan(
-        ui::ImeTextSpan::Type::kComposition, 0, length,
-        ui::ImeTextSpan::Thickness::kThin,
-        ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
+    _ime_text_spans.emplace_back(ui::ImeTextSpan::Type::kComposition, 0, length,
+                                 ui::ImeTextSpan::Thickness::kThin,
+                                 ui::ImeTextSpan::UnderlineStyle::kSolid,
+                                 SK_ColorTRANSPARENT);
   }
 
   // If we are handling a key down event and the reconversion is not triggered,
