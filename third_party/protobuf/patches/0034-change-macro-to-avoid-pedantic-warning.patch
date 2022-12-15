@@ -7,10 +7,10 @@ Subject: [PATCH] change macro to avoid pedantic warning
  src/google/protobuf/descriptor.h | 18 +++++++++---------
  1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/third_party/protobuf/src/google/protobuf/descriptor.h b/third_party/protobuf/src/google/protobuf/descriptor.h
+diff --git a/src/google/protobuf/descriptor.h b/src/google/protobuf/descriptor.h
 index 699afd968..653f73443 100644
---- a/third_party/protobuf/src/google/protobuf/descriptor.h
-+++ b/third_party/protobuf/src/google/protobuf/descriptor.h
+--- a/src/google/protobuf/descriptor.h
++++ b/src/google/protobuf/descriptor.h
 @@ -199,7 +199,7 @@ namespace internal {
  //
  
