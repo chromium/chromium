@@ -223,7 +223,10 @@ String KURL::ElidedString() const {
   return GetString().Left(511) + "..." + GetString().Right(510);
 }
 
-KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}
+KURL::KURL()
+    : is_valid_(false),
+      protocol_is_in_http_family_(false),
+      has_idna2008_deviation_character_(false) {}
 
 // Initializes with a string representing an absolute URL. No encoding
 // information is specified. This generally happens when a KURL is converted
@@ -239,6 +242,7 @@ KURL::KURL(const String& url) {
     // empty string, which is what Init() will create.
     is_valid_ = false;
     protocol_is_in_http_family_ = false;
+    has_idna2008_deviation_character_ = false;
   }
 }
 
@@ -267,15 +271,21 @@ KURL::KURL(const AtomicString& canonical_string,
            bool is_valid)
     : is_valid_(is_valid),
       protocol_is_in_http_family_(false),
+      has_idna2008_deviation_character_(false),
       parsed_(parsed),
       string_(canonical_string) {
   InitProtocolMetadata();
   InitInnerURL();
+  // For URLs with non-ASCII hostnames canonical_string will be in punycode.
+  // We can't check has_idna2008_deviation_character_ without decoding punycode.
+  // here.
 }
 
 KURL::KURL(const KURL& other)
     : is_valid_(other.is_valid_),
       protocol_is_in_http_family_(other.protocol_is_in_http_family_),
+      has_idna2008_deviation_character_(
+          other.has_idna2008_deviation_character_),
       protocol_(other.protocol_),
       parsed_(other.parsed_),
       string_(other.string_) {
@@ -288,6 +298,7 @@ KURL::~KURL() = default;
 KURL& KURL::operator=(const KURL& other) {
   is_valid_ = other.is_valid_;
   protocol_is_in_http_family_ = other.protocol_is_in_http_family_;
+  has_idna2008_deviation_character_ = other.has_idna2008_deviation_character_;
   protocol_ = other.protocol_;
   parsed_ = other.parsed_;
   string_ = other.string_;
@@ -320,6 +331,10 @@ bool KURL::ProtocolIsJavaScript() const {
 
 bool KURL::ProtocolIsInHTTPFamily() const {
   return protocol_is_in_http_family_;
+}
+
+bool KURL::HasIDNA2008DeviationCharacter() const {
+  return has_idna2008_deviation_character_;
 }
 
 bool KURL::HasPath() const {
@@ -912,6 +927,15 @@ void KURL::Init(const KURL& base,
   InitProtocolMetadata();
   InitInnerURL();
   DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
+
+  // Check for deviation characters in the string. See
+  // https://unicode.org/reports/tr46/#Table_Deviation_Characters
+  has_idna2008_deviation_character_ =
+      base.has_idna2008_deviation_character_ ||
+      relative.Contains(u"\u00DF") ||  // Sharp-s
+      relative.Contains(u"\u03C2") ||  // Greek final sigma
+      relative.Contains(u"\u200D") ||  // Zero width joiner
+      relative.Contains(u"\u200C");    // Zero width non-joiner
 }
 
 void KURL::InitInnerURL() {

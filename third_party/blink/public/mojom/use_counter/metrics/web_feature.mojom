@@ -3765,6 +3765,8 @@ enum WebFeature {
   kDialogCloseWatcherCloseSignalClosedMultiple = 4424,
   kNoVarySearch = 4425,
   kFedCmUserInfo = 4426,
+  kIDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
+  kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+</script>
+</head>
+<body>
+<!-- Frame with a non-ASCII hostname -->
+<iframe src="http://èxample.test/"></iframe>
+
+<!-- Frame with a hostname containing IDNA 2008 deviation character (Sharp-s) -->
+<iframe src="http://faß.test"></iframe>
+
+<!-- Frame with a hostname containing IDNA 2008 deviation character (Greek Final Sigma). -->
+<iframe src="http://βόλος.test"></iframe>
+
+<!-- Frame with a hostname containing IDNA 2008 deviation character (Zero Width Joiner) -->
+<iframe src="http://ශ්‍රී.test"></iframe>
+
+<!-- Frame with a hostname containing IDNA 2008 deviation character (Zero Width Non-Joiner) -->
+<iframe src="http://نامه‌ای.test"></iframe>
+
+</body>
+</html>

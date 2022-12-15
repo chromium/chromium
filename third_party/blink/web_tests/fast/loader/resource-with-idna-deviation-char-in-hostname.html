@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+</script>
+</head>
+<body>
+<!-- Image with a non-ASCII hostname -->
+<img src="http://èxample.test/image.jpg">
+
+<!-- Image with a hostname containing IDNA 2008 deviation character (Sharp-s) -->
+<img src="http://faß.test/image.jpg">
+
+<!-- Image with a hostname containing IDNA 2008 deviation character (Greek Final Sigma). -->
+<img src="http://βόλος.test/image.jpg">
+
+<!-- Image with a hostname containing IDNA 2008 deviation character (Zero Width Joiner) -->
+<img src="http://ශ්‍රී.test/image.jpg">
+
+<!-- Image with a hostname containing IDNA 2008 deviation character (Zero Width Non-Joiner) -->
+<img src="http://نامه‌ای.test/image.jpg">
+
+</body>
+</html>t

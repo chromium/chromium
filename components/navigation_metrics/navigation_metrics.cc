@@ -20,6 +20,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
+#include "url/url_features.h"
 
 namespace navigation_metrics {
 
@@ -35,11 +36,6 @@ const char kMainFrameHasRTLDomainDifferentPage[] =
 const char kMainFrameProfileType[] = "Navigation.MainFrameProfileType2";
 
 namespace {
-
-// Kill switch for crbug.com/1362507.
-BASE_FEATURE(kStopRecordingIDNA2008Metrics,
-             "StopRecordingIDNA2008Metrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char* const kSchemeNames[] = {
     "unknown",
@@ -176,7 +172,7 @@ void RecordOmniboxURLNavigation(const GURL& url) {
 
 IDNA2008DeviationCharacter RecordIDNA2008Metrics(
     const std::u16string& hostname16) {
-  if (base::FeatureList::IsEnabled(kStopRecordingIDNA2008Metrics)) {
+  if (!url::IsRecordingIDNA2008Metrics()) {
     return IDNA2008DeviationCharacter::kNone;
   }
   if (hostname16.empty()) {

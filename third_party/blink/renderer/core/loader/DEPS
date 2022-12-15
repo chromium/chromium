@@ -20,5 +20,7 @@ include_rules = [
   "+base/containers/flat_map.h",
   "+base/features.h",
   "+base/no_destructor.h",
+  "+base/strings/utf_string_conversions.h",
   "+services/network/public/cpp/client_hints.h",
+  "+url/url_features.h",
 ]

@@ -229,6 +229,8 @@ class PLATFORM_EXPORT KURL {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  bool HasIDNA2008DeviationCharacter() const;
+
  private:
   friend struct WTF::HashTraits<blink::KURL>;
 
@@ -253,6 +255,11 @@ class PLATFORM_EXPORT KURL {
 
   bool is_valid_;
   bool protocol_is_in_http_family_;
+  // Set to true if any part of the URL string contains an IDNA 2008 deviation
+  // character. Only used for logging. The hostname is decoded to IDN and
+  // checked for deviation characters again before logging.
+  // TODO(crbug.com/1396475): Remove once Non-Transitional mode is shipped.
+  bool has_idna2008_deviation_character_;
 
   // Keep a separate string for the protocol to avoid copious copies for
   // protocol().

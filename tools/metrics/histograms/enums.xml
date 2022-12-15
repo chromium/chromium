@@ -41664,6 +41664,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4424" label="DialogCloseWatcherCloseSignalClosedMultiple"/>
   <int value="4425" label="NoVarySearch"/>
   <int value="4426" label="FedCmUserInfo"/>
+  <int value="4427" label="IDNA2008DeviationCharacterInHostnameOfSubresource"/>
+  <int value="4428" label="IDNA2008DeviationCharacterInHostnameOfIFrame"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
