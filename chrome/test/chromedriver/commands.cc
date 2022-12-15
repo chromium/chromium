@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <functional>
 #include <list>
 #include <utility>
 
@@ -86,7 +87,7 @@ namespace {
 
 void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
                   const base::RepeatingClosure& all_get_session_func,
-                  base::ListValue* session_list,
+                  base::Value::List& session_list,
                   const Status& status,
                   std::unique_ptr<base::Value> value,
                   const std::string& session_id,
@@ -101,7 +102,7 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
     session.Set("id", session_id);
     session.Set("capabilities",
                 base::Value::FromUniquePtrValue(std::move(value)));
-    session_list->GetList().Append(std::move(session));
+    session_list.Append(std::move(session));
   }
 
   if (!*session_remaining_count) {
@@ -118,10 +119,12 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
                         const CommandCallback& callback) {
   size_t get_remaining_count = session_thread_map->size();
   base::WeakPtrFactory<size_t> weak_ptr_factory(&get_remaining_count);
-  std::unique_ptr<base::ListValue> session_list(new base::ListValue());
+  base::Value::List session_list;
 
   if (!get_remaining_count) {
-    callback.Run(Status(kOk), std::move(session_list), session_id, false);
+    callback.Run(Status(kOk),
+                 std::make_unique<base::Value>(std::move(session_list)),
+                 session_id, false);
     return;
   }
 
@@ -132,13 +135,15 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
     session_capabilities_command.Run(
         params, iter->first,
         base::BindRepeating(&OnGetSession, weak_ptr_factory.GetWeakPtr(),
-                            run_loop.QuitClosure(), session_list.get()));
+                            run_loop.QuitClosure(), std::ref(session_list)));
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
   run_loop.Run();
 
-  callback.Run(Status(kOk), std::move(session_list), session_id, false);
+  callback.Run(Status(kOk),
+               std::make_unique<base::Value>(std::move(session_list)),
+               session_id, false);
 }
 
 namespace {
