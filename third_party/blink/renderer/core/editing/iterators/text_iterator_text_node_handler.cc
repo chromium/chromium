@@ -5,13 +5,9 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_node_handler.h"
 
 #include <algorithm>
-#include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
-#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
@@ -128,16 +124,6 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
   }
 }
 
-bool TextIteratorTextNodeHandler::ShouldHandleFirstLetter(
-    const LayoutText& layout_text) const {
-  if (handled_first_letter_)
-    return false;
-  if (!layout_text.IsTextFragment())
-    return false;
-  const auto& text_fragment = To<LayoutTextFragment>(layout_text);
-  return offset_ < text_fragment.TextStartOffset();
-}
-
 void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
                                                         unsigned start_offset,
                                                         unsigned end_offset) {
@@ -149,8 +135,6 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
   text_node_ = node;
   offset_ = start_offset;
   end_offset_ = end_offset;
-  handled_first_letter_ = false;
-  first_letter_text_ = nullptr;
   mapping_units_.clear();
 
   const NGOffsetMapping* const mapping =
@@ -182,53 +166,6 @@ void TextIteratorTextNodeHandler::HandleTextNodeEndAt(const Text* node,
 
 void TextIteratorTextNodeHandler::HandleTextNodeWhole(const Text* node) {
   HandleTextNodeStartFrom(node, 0);
-}
-
-void TextIteratorTextNodeHandler::HandleTextNodeFirstLetter(
-    LayoutTextFragment* layout_object) {
-  handled_first_letter_ = true;
-
-  if (!layout_object->IsRemainingTextLayoutObject())
-    return;
-
-  FirstLetterPseudoElement* first_letter_element =
-      layout_object->GetFirstLetterPseudoElement();
-  if (!first_letter_element)
-    return;
-
-  LayoutObject* pseudo_layout_object = first_letter_element->GetLayoutObject();
-  if (pseudo_layout_object->Style()->Visibility() != EVisibility::kVisible &&
-      !IgnoresStyleVisibility())
-    return;
-
-  LayoutObject* first_letter = pseudo_layout_object->SlowFirstChild();
-
-  sorted_text_boxes_.clear();
-  CHECK(first_letter && first_letter->IsText());
-  first_letter_text_ = To<LayoutText>(first_letter);
-}
-
-void TextIteratorTextNodeHandler::EmitChar16Before(UChar code_unit,
-                                                   unsigned offset) {
-  text_state_.EmitChar16Before(code_unit, *text_node_, offset);
-}
-
-void TextIteratorTextNodeHandler::EmitReplacmentCodeUnit(UChar code_unit,
-                                                         unsigned offset) {
-  text_state_.EmitReplacmentCodeUnit(code_unit, *text_node_, offset);
-}
-
-void TextIteratorTextNodeHandler::EmitText(const LayoutText* layout_object,
-                                           unsigned text_start_offset,
-                                           unsigned text_end_offset) {
-  String string = behavior_.EmitsOriginalText() ? layout_object->OriginalText()
-                                                : layout_object->GetText();
-  if (behavior_.EmitsSpaceForNbsp())
-    string.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
-  text_state_.EmitText(*text_node_,
-                       text_start_offset + layout_object->TextStartOffset(),
-                       text_end_offset + layout_object->TextStartOffset(),
-                       string, text_start_offset, text_end_offset);
 }
 
 }  // namespace blink
