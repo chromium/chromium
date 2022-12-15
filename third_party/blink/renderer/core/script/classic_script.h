@@ -68,15 +68,11 @@ class CORE_EXPORT ClassicScript final : public Script {
       ScriptStreamer::NotStreamingReason =
           ScriptStreamer::NotStreamingReason::kInlineScript,
       ScriptCacheConsumer* = nullptr,
-      const String& source_map_url = String(),
-      ScriptResource* resource_keep_alive = nullptr);
+      const String& source_map_url = String());
 
   void Trace(Visitor*) const override;
 
   const ParkableString& SourceText() const { return source_text_; }
-  ScriptResource* ResourceKeepAlive() const {
-    return resource_keep_alive_.Get();
-  }
 
   ScriptSourceLocationType SourceLocationType() const {
     return source_location_type_;
@@ -132,11 +128,6 @@ class CORE_EXPORT ClassicScript final : public Script {
   const Member<ScriptCacheConsumer> cache_consumer_;
 
   const String source_map_url_;
-
-  // Keeps the ScriptResource alive in blink memory cache.
-  // Do not use this pointer for other than keep-alive purpose for
-  // crbug.com/1393246.
-  const Member<ScriptResource> resource_keep_alive_;
 };
 
 }  // namespace blink

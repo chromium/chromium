@@ -121,8 +121,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
     absl::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
         cache_result) {
-  v8::Local<v8::String> code = V8String(isolate, classic_script.SourceText(),
-                                        classic_script.ResourceKeepAlive());
+  v8::Local<v8::String> code = V8String(isolate, classic_script.SourceText());
 
   // TODO(kouhei): Plumb the ScriptState into this function and replace all
   // Isolate->GetCurrentContext in this function with ScriptState->GetContext.

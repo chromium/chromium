@@ -1,7 +1,0 @@
-../resources/dummy.js: in memory cache
-../resources/dummy.js?1: in memory cache
-../resources/dummy.js?2: in memory cache
-../resources/dummy.js?twice: in memory cache
-PASS: must-revalidate-script.php revalidated
-resources/must-revalidate-script.php: in memory cache
-
