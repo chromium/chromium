@@ -314,6 +314,8 @@ class CORE_EXPORT CanvasRenderingContext
     return false;
   }
 
+  bool did_print_in_current_task() const { return did_print_in_current_task_; }
+
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
                          const CanvasContextCreationAttributesCore&,

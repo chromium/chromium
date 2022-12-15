@@ -925,18 +925,17 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // display list rendering: we replay the last full PaintRecord, if Canvas
     // has been redraw since beforeprint happened.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
-      canvas2d_bridge_->FlushRecording();
-      if (canvas2d_bridge_->getLastRecord()) {
-        if (FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
-          context.Canvas()->save();
-          context.Canvas()->translate(r.X(), r.Y());
-          context.Canvas()->scale(r.Width() / Size().width(),
-                                  r.Height() / Size().height());
-          context.Canvas()->drawPicture(canvas2d_bridge_->getLastRecord());
-          context.Canvas()->restore();
-          UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
-          return;
-        }
+      canvas2d_bridge_->FlushRecording(/*printing=*/true);
+      if (canvas2d_bridge_->getLastRecord() &&
+          FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
+        context.Canvas()->save();
+        context.Canvas()->translate(r.X(), r.Y());
+        context.Canvas()->scale(r.Width() / Size().width(),
+                                r.Height() / Size().height());
+        context.Canvas()->drawPicture(canvas2d_bridge_->getLastRecord());
+        context.Canvas()->restore();
+        UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
+        return;
       }
       UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
     }

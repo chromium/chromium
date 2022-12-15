@@ -57,6 +57,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void DiscardResourceProvider();
 
   virtual bool IsPrinting() const { return false; }
+  virtual bool PrintedInCurrentTask() const = 0;
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);

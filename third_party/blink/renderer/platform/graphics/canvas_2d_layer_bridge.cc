@@ -710,7 +710,13 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
   if (!IsValid())
     return false;
 
-  FlushRecording();
+  // The beforeprint event listener is sometimes scheduled in the same task
+  // as BeginFrame, which means that this code may sometimes be called between
+  // the event listener and its associated FinalizeFrame call. So in order to
+  // preserve the display list for printing, FlushRecording needs to know
+  // whether any printing occurred in the current task.
+  FlushRecording(resource_host_->PrintedInCurrentTask() ||
+                 resource_host_->IsPrinting());
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will

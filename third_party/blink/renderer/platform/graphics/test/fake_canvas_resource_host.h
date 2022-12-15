@@ -23,6 +23,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void SetNeedsCompositingUpdate() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override {}
   void UpdateMemoryUsage() override {}
+  bool PrintedInCurrentTask() const override { return false; }
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override {

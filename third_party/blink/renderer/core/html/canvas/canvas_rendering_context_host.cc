@@ -76,6 +76,10 @@ bool CanvasRenderingContextHost::IsPaintable() const {
          IsValidImageSize(Size());
 }
 
+bool CanvasRenderingContextHost::PrintedInCurrentTask() const {
+  return RenderingContext() && RenderingContext()->did_print_in_current_task();
+}
+
 void CanvasRenderingContextHost::RestoreCanvasMatrixClipStack(
     cc::PaintCanvas* canvas) const {
   if (RenderingContext())

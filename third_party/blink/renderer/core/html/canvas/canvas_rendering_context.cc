@@ -83,9 +83,9 @@ void CanvasRenderingContext::DidDraw(
   monitor.CurrentTaskDrawsToContext(this);
   did_draw_in_current_task_ = true;
   // We need to store whether the document is being printed because the
-  // document may exit printing state by the time DidProcessTast is called.
+  // document may exit printing state by the time DidProcessTask is called.
   // This is an issue with beforeprint event listeners.
-  did_print_in_current_task_ = Host()->IsPrinting();
+  did_print_in_current_task_ |= Host()->IsPrinting();
   Thread::Current()->AddTaskObserver(this);
 }
 
