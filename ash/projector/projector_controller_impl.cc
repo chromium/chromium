@@ -237,8 +237,13 @@ void ProjectorControllerImpl::OnTranscription(
 void ProjectorControllerImpl::OnTranscriptionError() {
   is_speech_recognition_on_ = false;
 
-  ProjectorUiController::ShowFailureNotification(
-      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
+  // TODO(b/261093550) Investigate the real reason why
+  // we get a speech recognition error after we notify it to
+  // stop.
+  if (!pending_speech_recognition_stop_) {
+    ProjectorUiController::ShowFailureNotification(
+        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
+  }
 
   auto* capture_mode_controller = CaptureModeController::Get();
   if (capture_mode_controller->is_recording_in_progress()) {
@@ -247,11 +252,13 @@ void ProjectorControllerImpl::OnTranscriptionError() {
   } else {
     MaybeWrapUpRecording();
   }
+
+  pending_speech_recognition_stop_ = false;
 }
 
 void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
   is_speech_recognition_on_ = false;
-
+  pending_speech_recognition_stop_ = false;
   // Try to wrap up recording. This can be no-op if DLP check is not completed.
   MaybeWrapUpRecording();
 }
@@ -495,6 +502,7 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   DCHECK(!is_speech_recognition_on_);
   client_->StartSpeechRecognition();
   is_speech_recognition_on_ = true;
+  pending_speech_recognition_stop_ = false;
 }
 
 void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
@@ -507,6 +515,7 @@ void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
   DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
 
   client_->StopSpeechRecognition();
+  pending_speech_recognition_stop_ = true;
 }
 
 void ProjectorControllerImpl::OnContainerFolderCreated(
