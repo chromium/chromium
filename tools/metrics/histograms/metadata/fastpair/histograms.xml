@@ -91,6 +91,43 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FastPair.{PairingScenario}.Initialization"
+    enum="FastPairInitializePairingProcessEvent" expires_after="2023-06-01">
+  <owner>jackshira@chromium.org</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the flow for the initialization of the GATT connection and the
+    process for grabbing the classic address for the Bluetooth device and
+    validating encryption keys. This flow is common across all three Fast Pair
+    pairing scenarios. Emitted on the following steps: initialization started
+    (when the process is kicked off), already pairing failure (when the device
+    is already pairing when the notification is clicked), passed to pairing
+    dialog (when a V1 device is detected, indicated that the device will not be
+    logging the subsequent metrics in the flow), exhausted retries failure (on
+    failure after three retry attempts), handshake reused (when a GATT handshake
+    already exists, bypassing the GATT handshake flow for this attempt), and
+    initialization complete (after the GATT handshake has completed, and the
+    classic address for the device is known).
+  </summary>
+  <token key="PairingScenario">
+    <variant name="InitialPairing"
+        summary="the first time a user pairs a device via Fast Pair, device
+                 needs to be in pairing mode, account key written to the
+                 device to save it to their account, discovered via BLE
+                 scanning"/>
+    <variant name="RetroactivePairing"
+        summary="user elects to save a device paired via classic Bluetooth
+                 settings to their Google account, account key written to
+                 device"/>
+    <variant name="SubsequentPairing"
+        summary="device is already saved to the user's account and is
+                 discovered via not-discoverable advertisement, which means
+                 the device does not have to be in pairing mode, no account
+                 key saved to device, discovered via BLE scanning"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

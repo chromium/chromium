@@ -116,6 +116,21 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
+// with the FastPairInitializePairingProcessEvent enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+    FastPairInitializePairingProcessEvent {
+      kInitializationStarted = 0,
+      kAlreadyPairingFailure = 1,
+      kPassedToPairingDialog = 2,
+      kExhaustedRetriesFailure = 3,
+      kHandshakeReused = 4,
+      kInitializationComplete = 5,
+      kMaxValue = kInitializationComplete,
+    };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
 // with the FastPairPairingMethod enum in
 // src/tools/metrics/histograms/enums.xml.
 enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) PairingMethod {
@@ -201,6 +216,11 @@ void RecordSubsequentSuccessFunnelFlow(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordRetroactiveSuccessFunnelFlow(
     FastPairRetroactiveSuccessFunnelEvent event);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFastPairInitializePairingProcessEvent(
+    const Device& device,
+    FastPairInitializePairingProcessEvent event);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingTotalUxPairTime(const Device& device,

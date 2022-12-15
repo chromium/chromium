@@ -137,6 +137,9 @@ FastPairPairerImpl::FastPairPairerImpl(
   if (device_->version().value() == DeviceFastPairVersion::kV1) {
     RecordInitialSuccessFunnelFlow(
         FastPairInitialSuccessFunnelEvent::kV1DeviceDetected);
+    RecordFastPairInitializePairingProcessEvent(
+        *device_,
+        FastPairInitializePairingProcessEvent::kPassedToPairingDialog);
     Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
         device_->ble_address);
     return;
@@ -150,6 +153,8 @@ FastPairPairerImpl::FastPairPairerImpl(
     if (fast_pair_handshake_->completed_successfully()) {
       QP_LOG(VERBOSE) << __func__
                       << ": Reusing handshake for retried pair attempt.";
+      RecordFastPairInitializePairingProcessEvent(
+          *device_, FastPairInitializePairingProcessEvent::kHandshakeReused);
       OnHandshakeComplete(device_, /*failure=*/absl::nullopt);
       return;
     }

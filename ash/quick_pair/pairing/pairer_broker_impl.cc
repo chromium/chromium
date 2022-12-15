@@ -90,6 +90,8 @@ void PairerBrokerImpl::StopPairing() {
 void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
   if (base::Contains(fast_pair_pairers_, device->ble_address)) {
     QP_LOG(WARNING) << __func__ << ": Already pairing device" << device;
+    RecordFastPairInitializePairingProcessEvent(
+        *device, FastPairInitializePairingProcessEvent::kAlreadyPairingFailure);
     return;
   }
 

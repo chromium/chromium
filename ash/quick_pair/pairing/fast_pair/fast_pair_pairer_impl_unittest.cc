@@ -105,6 +105,12 @@ constexpr char kProtocolPairingStepInitial[] =
     "FastPair.InitialPairing.Pairing";
 constexpr char kProtocolPairingStepSubsequent[] =
     "FastPair.SubsequentPairing.Pairing";
+constexpr char kInitializePairingProcessInitial[] =
+    "FastPair.InitialPairing.Initialization";
+constexpr char kInitializePairingProcessSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization";
+constexpr char kInitializePairingProcessRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -310,13 +316,20 @@ class FastPairPairerImplTest : public AshTestBase {
       FastPairHandshake::OnCompleteCallback callback) {
     // This is the only place where data_encryptor_unique_ is used. We assume
     // that CreateHandshake is only called once.
-    auto fake = std::make_unique<FakeFastPairHandshake>(
+    auto fake_fast_pair_handshake = std::make_unique<FakeFastPairHandshake>(
         adapter_, device, std::move(callback),
         std::move(data_encryptor_unique_), std::move(gatt_service_client_));
 
-    fake_fast_pair_handshake_ = fake.get();
+    fake_fast_pair_handshake_ = fake_fast_pair_handshake.get();
 
-    return fake;
+    return fake_fast_pair_handshake;
+  }
+
+  void SetReuseHandshake() {
+    FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                   base::DoNothing());
+    fake_fast_pair_handshake_->set_completed_successfully(
+        /*completed_successfully=*/true);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -448,6 +461,7 @@ class FastPairPairerImplTest : public AshTestBase {
     RunWriteAccountKeyCallback();
   }
 
+  bool set_handshake_completed_successfully_ = false;
   absl::optional<PairFailure> failure_ = absl::nullopt;
   std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
   FakeBluetoothDevice* fake_bluetooth_device_ptr_ = nullptr;
@@ -2066,6 +2080,10 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DevicePaired) {
   EXPECT_CALL(pairing_procedure_complete_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kV1, device_->version().value());
   DevicePaired();
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitializePairingProcessInitial,
+                FastPairInitializePairingProcessEvent::kPassedToPairingDialog),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
@@ -2521,6 +2539,60 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
                 kInitialSuccessFunnelMetric,
                 FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
             0);
+}
+
+TEST_F(FastPairPairerImplTest, HandshakeReused_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // Simulate Handshake already created before attempt
+  SetReuseHandshake();
+  SetGetDeviceNullptr();
+  CreatePairer();
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitializePairingProcessInitial,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
+}
+
+TEST_F(FastPairPairerImplTest, HandshakeReused_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+
+  // Simulate Handshake already created before attempt
+  SetReuseHandshake();
+  SetGetDeviceNullptr();
+  CreatePairer();
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitializePairingProcessSubsequent,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
+}
+
+TEST_F(FastPairPairerImplTest, HandshakeReused_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+
+  // Simulate Handshake already created before attempt
+  SetReuseHandshake();
+  SetGetDeviceNullptr();
+  CreatePairer();
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitializePairingProcessRetroactive,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
 }
 
 }  // namespace quick_pair

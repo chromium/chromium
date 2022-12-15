@@ -545,6 +545,12 @@ constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
 constexpr char kRetroactiveSuccessFunnelMetric[] =
     "FastPair.RetroactivePairing";
+constexpr char kInitializePairingProcessInitial[] =
+    "FastPair.InitialPairing.Initialization";
+constexpr char kInitializePairingProcessSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization";
+constexpr char kInitializePairingProcessRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
@@ -612,6 +618,23 @@ void RecordSubsequentSuccessFunnelFlow(
 void RecordRetroactiveSuccessFunnelFlow(
     FastPairRetroactiveSuccessFunnelEvent event) {
   base::UmaHistogramEnumeration(kRetroactiveSuccessFunnelMetric, event);
+}
+
+void RecordFastPairInitializePairingProcessEvent(
+    const Device& device,
+    FastPairInitializePairingProcessEvent event) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramEnumeration(kInitializePairingProcessInitial, event);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramEnumeration(kInitializePairingProcessRetroactive,
+                                    event);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramEnumeration(kInitializePairingProcessSubsequent, event);
+      break;
+  }
 }
 
 void AttemptRecordingTotalUxPairTime(const Device& device,

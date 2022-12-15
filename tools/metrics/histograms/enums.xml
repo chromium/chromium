@@ -36633,6 +36633,15 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Handshake completed successfully"/>
 </enum>
 
+<enum name="FastPairInitializePairingProcessEvent">
+  <int value="0" label="Initialization started"/>
+  <int value="1" label="Already pairing failure"/>
+  <int value="2" label="Passed to pairing dialog"/>
+  <int value="3" label="Exhausted retries failure"/>
+  <int value="4" label="Handshake reused"/>
+  <int value="5" label="Initialization complete"/>
+</enum>
+
 <enum name="FastPairInitialSuccessFunnelEvent">
   <int value="0" label="Notification clicked"/>
   <int value="1" label="V1 device detected"/>

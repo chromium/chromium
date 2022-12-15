@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/feature_status_tracker/fake_bluetooth_adapter.h"
@@ -33,6 +34,12 @@ constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
 
 const char kFastPairRetryCountMetricName[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
+constexpr char kInitializePairingProcessInitial[] =
+    "FastPair.InitialPairing.Initialization";
+constexpr char kInitializePairingProcessSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization";
+constexpr char kInitializePairingProcessRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization";
 
 constexpr char kProtocolPairingStepInitial[] =
     "FastPair.InitialPairing.Pairing";
@@ -280,7 +287,7 @@ TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
-TEST_F(PairerBrokerImplTest, AlreadyPairingDevice) {
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
@@ -294,6 +301,53 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice) {
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_EQ(device_paired_count_, 1);
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessInitial,
+                FastPairInitializePairingProcessEvent::kAlreadyPairingFailure),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Subsequent) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairSubsequent);
+
+  pairer_broker_->PairDevice(device);
+  pairer_broker_->PairDevice(device);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessSubsequent,
+                FastPairInitializePairingProcessEvent::kAlreadyPairingFailure),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Retroactive) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairRetroactive);
+
+  pairer_broker_->PairDevice(device);
+  pairer_broker_->PairDevice(device);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessRetroactive,
+                FastPairInitializePairingProcessEvent::kAlreadyPairingFailure),
+            1);
 }
 
 TEST_F(PairerBrokerImplTest, PairAfterCancelPairing) {

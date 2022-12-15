@@ -27,6 +27,10 @@ class FakeFastPairHandshake : public FastPairHandshake {
   ~FakeFastPairHandshake() override;
 
   void InvokeCallback(absl::optional<PairFailure> failure = absl::nullopt);
+
+  void set_completed_successfully(bool completed_successfully) {
+    completed_successfully_ = completed_successfully;
+  }
 };
 
 }  // namespace quick_pair

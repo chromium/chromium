@@ -201,6 +201,9 @@ void QuickPairMetricsLogger::OnDeviceFound(scoped_refptr<Device> device) {
 }
 
 void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {
+  RecordFastPairInitializePairingProcessEvent(
+      *device, FastPairInitializePairingProcessEvent::kInitializationStarted);
+
   switch (device->protocol) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
@@ -218,6 +221,9 @@ void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {
 }
 
 void QuickPairMetricsLogger::OnHandshakeComplete(scoped_refptr<Device> device) {
+  RecordFastPairInitializePairingProcessEvent(
+      *device, FastPairInitializePairingProcessEvent::kInitializationComplete);
+
   switch (device->protocol) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
