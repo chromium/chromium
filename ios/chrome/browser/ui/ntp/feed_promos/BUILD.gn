@@ -26,6 +26,7 @@ source_set("feed_promos_ui") {
   deps = [
     "resources:sign_in_promo_logo",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",

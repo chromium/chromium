@@ -915,6 +915,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>
+      <message name="IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CANCEL_BUTTON" desc="Text of the cancel button in the feed card sign-in promo UI. [iOS only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CONTINUE_BUTTON" desc="Text of the continue button in the feed card sign-in promo UI. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_FEED_CARD_SIGN_IN_PROMO_DESC" desc="Description of the feed card sign-in promo UI. [iOS only]">
+        To personalize your Discover feed and Chrome, sign in and turn on sync.
+      </message>
+      <message name="IDS_IOS_FEED_CARD_SIGN_IN_PROMO_TITLE" desc="Title of the feed card sign-in promo UI. [iOS only]">
+        Sign in to manage the content you see
+      </message>
       <message name="IDS_IOS_FEED_CUSTOM_SEARCH_ENGINE_LABEL" desc="Message informing users with custom search engines that the feed is provided by Google.">
         Provided by Google
       </message>

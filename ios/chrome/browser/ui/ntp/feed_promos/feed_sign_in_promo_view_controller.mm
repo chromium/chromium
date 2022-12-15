@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,14 +31,14 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
 
-  // TODO(crbug.com/1382615): Add string to the grd file when they are
-  // finalized.
-  self.titleString = @"Sign in to control what you see";
-  self.secondaryTitleString = @"To personalized your Discover feed and Chrome, "
-                              @"sign in and turn on sync";
-
-  self.primaryActionString = @"Continue";
-  self.secondaryActionString = @"Cancel";
+  self.titleString =
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_TITLE);
+  self.secondaryTitleString =
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_DESC);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CONTINUE_BUTTON);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CANCEL_BUTTON);
 
   self.image = [self signInLogo];
 
