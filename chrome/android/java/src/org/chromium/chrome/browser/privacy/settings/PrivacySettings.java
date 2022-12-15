@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitch
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
@@ -100,6 +102,9 @@ public class PrivacySettings
         // Record the launch of PG from the S&P link-row entry point
         privacyGuidePreference.setOnPreferenceClickListener(preference -> {
             RecordUserAction.record("Settings.PrivacyGuide.StartPrivacySettings");
+            RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.EntryExit",
+                    PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY,
+                    PrivacyGuideInteractions.MAX_VALUE);
             return false;
         });
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {

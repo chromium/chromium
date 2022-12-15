@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
@@ -29,11 +30,13 @@ import androidx.test.filters.LargeTest;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,6 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -53,6 +57,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
@@ -67,6 +72,8 @@ public class PrivacySettingsFragmentTest {
     // Index of the Privacy Sandbox row entry in the settings list when PRIVACY_SANDBOX_SETTINGS_4
     // is enabled.
     public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;
+    // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
+    public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
 
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
@@ -84,6 +91,9 @@ public class PrivacySettingsFragmentTest {
 
     @Rule
     public JniMocker mocker = new JniMocker();
+
+    @Rule
+    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
@@ -115,6 +125,12 @@ public class PrivacySettingsFragmentTest {
             }
         }
         return null;
+    }
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     @Before
@@ -265,5 +281,25 @@ public class PrivacySettingsFragmentTest {
         // Verify that the user action is emitted when privacy guide is clicked
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.StartPrivacySettings"));
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
+    public void testPrivacyGuideLinkRowEntryExitHistogram() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(
+                        ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY));
+
+        // Scroll down and open Privacy Guide page.
+        scrollToSetting(withText(R.string.prefs_privacy_guide_title));
+        onView(withText(R.string.prefs_privacy_guide_title)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY));
     }
 }
