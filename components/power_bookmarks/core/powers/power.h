@@ -53,6 +53,9 @@ class Power {
     return power_entity_.get();
   }
 
+  // Used to set fields to PowerEntity.
+  sync_pb::PowerEntity* power_entity() { return power_entity_.get(); }
+
   // Write the properties held in this class to power_bookmark_specifics.proto.
   // `power_bookmark_specifics` will never be nullptr.
   void ToPowerBookmarkSpecifics(

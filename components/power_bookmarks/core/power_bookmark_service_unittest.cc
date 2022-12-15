@@ -40,6 +40,7 @@ std::unique_ptr<Power> MakePower(
     std::unique_ptr<sync_pb::PowerEntity> power_entity) {
   std::unique_ptr<Power> power =
       std::make_unique<Power>(std::move(power_entity));
+  power->set_guid(base::GUID::GenerateRandomV4());
   power->set_url(url);
   power->set_power_type(power_type);
   return power;
@@ -296,7 +297,6 @@ TEST_F(PowerBookmarkServiceTest, ShouldNotCreatePowerIfPresent) {
   EXPECT_CALL(cb, Run(IsTrue()));
   auto power1 = MakePower(GURL("https://google.com"),
                           sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
-  power1->set_guid(base::GUID::GenerateRandomV4());
   auto power2 = power1->Clone();
   service()->CreatePower(std::move(power1), cb.Get());
   RunUntilIdle();
@@ -351,7 +351,6 @@ TEST_F(PowerBookmarkServiceTest, UpdatePower) {
   EXPECT_CALL(cb, Run(IsTrue()));
   auto power1 = MakePower(GURL("https://google.com"),
                           sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
-  power1->set_guid(base::GUID::GenerateRandomV4());
   auto power2 = power1->Clone();
   service()->CreatePower(std::move(power1), cb.Get());
   RunUntilIdle();

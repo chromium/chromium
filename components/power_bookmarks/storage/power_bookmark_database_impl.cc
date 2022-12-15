@@ -419,11 +419,13 @@ bool PowerBookmarkDatabaseImpl::CreatePower(std::unique_ptr<Power> power) {
 bool PowerBookmarkDatabaseImpl::UpdatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!CheckIfPowerWithIdExists(&db_, power->guid())) {
+  auto existing_power = GetPowerForGUID(power->guid().AsLowercaseString());
+  if (!existing_power) {
     DLOG(ERROR)
         << "Failed to update power because the current power does not exist.";
     return false;
   }
+  existing_power->Merge(*power);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
@@ -441,11 +443,12 @@ bool PowerBookmarkDatabaseImpl::UpdatePower(std::unique_ptr<Power> power) {
   sql::Statement save_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdatePowerSaveSql));
 
-  save_statement.BindString(0, power->url().spec());
-  save_statement.BindString(1, url::Origin::Create(power->url()).Serialize());
-  save_statement.BindInt(2, power->power_type());
-  save_statement.BindTime(3, power->time_added());
-  save_statement.BindTime(4, power->time_modified());
+  save_statement.BindString(0, existing_power->url().spec());
+  save_statement.BindString(
+      1, url::Origin::Create(existing_power->url()).Serialize());
+  save_statement.BindInt(2, existing_power->power_type());
+  save_statement.BindTime(3, existing_power->time_added());
+  save_statement.BindTime(4, existing_power->time_modified());
   if (!save_statement.Run())
     return false;
 
@@ -460,11 +463,11 @@ bool PowerBookmarkDatabaseImpl::UpdatePower(std::unique_ptr<Power> power) {
 
   std::string data;
   sync_pb::PowerBookmarkSpecifics specifics;
-  power->ToPowerBookmarkSpecifics(&specifics);
+  existing_power->ToPowerBookmarkSpecifics(&specifics);
   bool success = specifics.SerializeToString(&data);
   DCHECK(success);
   blob_statement.BindBlob(0, data);
-  blob_statement.BindString(1, power->guid().AsLowercaseString());
+  blob_statement.BindString(1, existing_power->guid().AsLowercaseString());
   if (!blob_statement.Run())
     return false;
 
@@ -624,6 +627,7 @@ std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
     const std::string& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  DCHECK(base::IsValidGUID(guid));
   static constexpr char kGetPowerForGUIDSql[] =
       // clang-format off
       "SELECT blobs.id, blobs.specifics, saves.url "

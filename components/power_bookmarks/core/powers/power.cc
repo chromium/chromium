@@ -50,11 +50,12 @@ void Power::Merge(const Power& other) {
   DCHECK(guid_ == other.guid_);
   DCHECK(url_ == other.url_);
   DCHECK(power_type_ == other.power_type_);
-  // Take the latest time modified.
-  if (time_modified_ < other.time_modified_)
+  // Take the power entity of the one with a more recent modified time.
+  if (time_modified_ < other.time_modified_) {
     time_modified_ = other.time_modified_;
-  // TODO(1382835): Powers should be able to customize the merge logic.
-  power_entity_->CopyFrom(*other.power_entity_);
+    // TODO(1382835): Powers should be able to customize the merge logic.
+    power_entity_->CopyFrom(*other.power_entity_);
+  }
 }
 
 std::unique_ptr<Power> Power::Clone() const {
