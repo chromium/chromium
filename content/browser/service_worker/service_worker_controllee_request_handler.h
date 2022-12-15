@@ -45,12 +45,22 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // Only one reason is recorded even if multiple reasons are matched.
+  // The order is following:
+  // 1. kSkippedForEmptyFetchHandler
+  // 2. kMainResourceSkippedDueToOriginTrial
+  // 3. kMainResourceSkippedDueToFeatureFlag
+  // 4. kMainResourceSkippedBecauseMatchedWithAllowedOriginList
   enum class FetchHandlerSkipReason {
     kNoFetchHandler = 0,
     kNotSkipped = 1,
     kSkippedForEmptyFetchHandler = 2,
+    kMainResourceSkippedDueToOriginTrial = 3,
+    kMainResourceSkippedDueToFeatureFlag = 4,
+    kMainResourceSkippedBecauseMatchedWithAllowedOriginList = 5,
 
-    kMaxValue = kSkippedForEmptyFetchHandler,
+    kMaxValue = kMainResourceSkippedBecauseMatchedWithAllowedOriginList,
   };
 
   // If |skip_service_worker| is true, service workers are bypassed for

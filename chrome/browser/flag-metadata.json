@@ -6139,6 +6139,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "service-worker-bypass-fetch-handler-for-main-resource",
+    "owners": [ "sisidovski@google.com", "chrome-worker@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "set-market-url-for-testing",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

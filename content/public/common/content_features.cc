@@ -930,6 +930,16 @@ BASE_FEATURE(kServiceWorkerBypassFetchHandler,
              "ServiceWorkerBypassFetchHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>::Option
+    service_worker_bypass_fetch_handler_strategy_options[] = {
+        {ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn, "optin"},
+        {ServiceWorkerBypassFetchHandlerStrategy::kAllowList, "allowlist"}};
+const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>
+    kServiceWorkerBypassFetchHandlerStrategy{
+        &kServiceWorkerBypassFetchHandler, "strategy",
+        ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn,
+        &service_worker_bypass_fetch_handler_strategy_options};
+
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
     service_worker_bypass_fetch_handler_target_options[] = {{
         ServiceWorkerBypassFetchHandlerTarget::kMainResource,

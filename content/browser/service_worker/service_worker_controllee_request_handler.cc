@@ -102,24 +102,67 @@ const std::vector<url::Origin> FetchHandlerBypassedOrigins() {
 }
 
 bool ShouldBypassFetchHandlerForMainResource(const GURL& stripped_url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler)) {
+    return false;
+  }
+
+  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
+      features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
+    return false;
+  }
+
   // If the feature is enabled, the main resource request bypasses ServiceWorker
   // and starts the worker in parallel for subsequent subresources.
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler) &&
-      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
-          features::ServiceWorkerBypassFetchHandlerTarget::kMainResource) {
-    // When the url is in the allowlist, fetch handlers for the main resource
-    // are bypassed.
-    const static base::NoDestructor<std::vector<url::Origin>> bypassed_origins(
-        FetchHandlerBypassedOrigins());
-    for (const auto& it : *bypassed_origins) {
-      // Skip comparing port numbers because some tests run the mock HTTP server
-      // with a random port number.
-      if (it.scheme() == stripped_url.scheme() &&
-          it.host() == stripped_url.host())
-        return true;
-    }
+  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
+    // kFeatureOptIn means that the feature relies on the manual feature
+    // toggle from about://flags etc, which is triggered by developers. We
+    // bypass fetch handler regardless of the url matching in this case.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
+      RecordSkipReason(
+          ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+              kMainResourceSkippedDueToFeatureFlag);
+      return true;
+    // If kAllowList, the allowlist should be specified. In this case, main
+    // resource fetch handlers are bypassed only when the url's origin is in
+    // the allowlist.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
+      const static base::NoDestructor<std::vector<url::Origin>>
+          bypassed_origins(FetchHandlerBypassedOrigins());
+      for (const auto& it : *bypassed_origins) {
+        // Skip comparing port numbers because some tests run the mock HTTP
+        // server with a random port number.
+        if (it.scheme() == stripped_url.scheme() &&
+            it.host() == stripped_url.host()) {
+          RecordSkipReason(
+              ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+                  kMainResourceSkippedBecauseMatchedWithAllowedOriginList);
+          return true;
+        }
+      }
+      return false;
   }
+
+  NOTREACHED();
+  return false;
+}
+
+bool ShouldBypassFetchHandlerForMainResourceByOriginTrial(
+    ServiceWorkerVersion* version) {
+  if (version->origin_trial_tokens() &&
+      version->origin_trial_tokens()->contains(
+          "ServiceWorkerBypassFetchHandlerForMainResource")) {
+    RecordSkipReason(
+        ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+            kMainResourceSkippedDueToOriginTrial);
+    // The UseCounter for kServiceWorkerBypassFetchHandlerForMainResource should
+    // only capture the usage of this feature invoked by the Origin Trial for
+    // the OT measurement purpose.
+    version->CountFeature(blink::mojom::WebFeature::
+                              kServiceWorkerBypassFetchHandlerForMainResource);
+    return true;
+  }
+
   return false;
 }
 
@@ -511,12 +554,14 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     }
   }
 
-  // If the feature is enabled, the main resource request bypasses ServiceWorker
-  // and starts the worker in parallel for subsequent subresources.
-  if (ShouldBypassFetchHandlerForMainResource(stripped_url_)) {
-    registration->active_version()->CountFeature(
-        blink::mojom::WebFeature::
-            kServiceWorkerBypassFetchHandlerForMainResource);
+  // Check if the fetch handler should bypassed or not.
+  // First, check the origin trial token. If there is no valid origin trial
+  // token, then check the eligibility based on the feature flag and the url.
+  if (ShouldBypassFetchHandlerForMainResourceByOriginTrial(
+          registration->active_version()) ||
+      ShouldBypassFetchHandlerForMainResource(stripped_url_)) {
+    // If true, the main resource request bypasses ServiceWorker and starts the
+    // worker in parallel for subsequent subresources.
     CompleteWithoutLoader();
     if (registration->active_version()->running_status() ==
             EmbeddedWorkerStatus::STARTING ||

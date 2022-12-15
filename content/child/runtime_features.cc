@@ -293,6 +293,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableGetDisplayMediaSet, features::kGetDisplayMediaSet},
     {wf::EnableGetDisplayMediaSetAutoSelectAllScreens,
      features::kGetDisplayMediaSetAutoSelectAllScreens},
+    {wf::EnableServiceWorkerBypassFetchHandler,
+     features::kServiceWorkerBypassFetchHandler},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

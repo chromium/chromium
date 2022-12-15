@@ -62943,6 +62943,7 @@ from previous Chrome versions.
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
+  <int value="1297007123" label="ServiceWorkerBypassFetchHandler:enabled"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
@@ -63572,6 +63573,7 @@ from previous Chrome versions.
   <int value="1685280468" label="AppServiceShelf:enabled"/>
   <int value="1687272287" label="HandwritingLibraryDlc:disabled"/>
   <int value="1687544136" label="AndroidManagedByMenuItem:enabled"/>
+  <int value="1687768359" label="ServiceWorkerBypassFetchHandler:disabled"/>
   <int value="1688075820" label="OmniboxExperimentalKeywordMode:disabled"/>
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>
   <int value="1689123607" label="enable-app-link"/>
@@ -91117,6 +91119,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="No Fetch Handler"/>
   <int value="1" label="Not Skipped"/>
   <int value="2" label="Skipped for Empty Fetch Handler"/>
+  <int value="3" label="Main resource is skipped by origin trial"/>
+  <int value="4" label="Main resource is skipped by feature flag"/>
+  <int value="5" label="Main resource is skipped by allowed origin list"/>
 </enum>
 
 <enum name="ServiceWorkerFetchHandlerType">

@@ -2503,6 +2503,11 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "ServiceWorkerBypassFetchHandler",
+      origin_trial_feature_name: "ServiceWorkerBypassFetchHandlerForMainResource",
+      public: true,
+    },
+    {
       name: "ServiceWorkerClientLifecycleState",
       status: "experimental",
     },

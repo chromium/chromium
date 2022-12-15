@@ -623,6 +623,14 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "eligibility requirements for showing app banners, such as having a "
     "manifest, are met.";
 
+const char kServiceWorkerBypassFetchHandlerForMainResourceName[] =
+    "Bypass Service Worker Fetch Handler for main resource";
+const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[] =
+    "Bypass starting a service worker and its fetch handler for main resource "
+    "requests. The service worker starts after sending a main resource request "
+    "and handles subresources. If the main resource could be handled in the "
+    "fetch handler, the feature may affect the page load.";
+
 const char kCheckOfflineCapabilityName[] = "Check offline capability for PWAs";
 const char kCheckOfflineCapabilityDescription[] =
     "Use advanced offline capability check to decide whether the browser "
