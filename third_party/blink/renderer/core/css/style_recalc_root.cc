@@ -96,10 +96,15 @@ void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
   // next style recalc.
   auto opt_ancestor = FirstFlatTreeAncestorForChildDirty(parent);
   if (!opt_ancestor) {
-    ContainerNode* new_root = IsFlatTreeConnected(parent)
-                                  ? &parent
-                                  : parent.GetDocument().documentElement();
-    Update(new_root, new_root);
+    ContainerNode* common_ancestor = &parent;
+    ContainerNode* new_root = &parent;
+    if (!IsFlatTreeConnected(parent)) {
+      // Fall back to the document root element since the flat tree is in a
+      // state where we do not know what a suitable common ancestor would be.
+      common_ancestor = nullptr;
+      new_root = parent.GetDocument().documentElement();
+    }
+    Update(common_ancestor, new_root);
     DCHECK(!IsSingleRoot());
     DCHECK_EQ(GetRootNode(), new_root);
     return;
