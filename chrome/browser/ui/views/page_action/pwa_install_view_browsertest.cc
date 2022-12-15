@@ -108,12 +108,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   PwaInstallViewBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    base::FieldTrialParams iph_demo_params;
-    iph_demo_params[feature_engagement::kIPHDemoModeFeatureChoiceParam] =
-        feature_engagement::kIPHDesktopPwaInstallFeature.name;
-    base::test::FeatureRefAndParams iph_demo(feature_engagement::kIPHDemoMode,
-                                             iph_demo_params);
-
     // kIPHDemoMode will bypass IPH framework's triggering validation so that
     // we can test PWA specific triggering logic.
     features_.InitWithFeaturesAndParameters(

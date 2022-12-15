@@ -330,10 +330,7 @@ class HighEfficiencyInfoIPHInteractiveTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{feature_engagement::kIPHDemoMode,
-          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
-            feature_engagement::kIPHHighEfficiencyInfoModeFeature.name}}},
-         {feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
+        {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
          {performance_manager::features::kHighEfficiencyModeAvailable,
           {{"default_state", "true"}, {"time_before_discard", "30s"}}}},
         {});
