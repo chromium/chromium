@@ -402,6 +402,7 @@ class CORE_EXPORT DisplayLockContext final
   bool SubtreeHasTopLayerElement() const;
 
   void ScheduleStateChangeEventIfNeeded();
+  void DispatchStateChangeEventIfNeeded();
 
   WeakMember<Element> element_;
   WeakMember<Document> document_;
@@ -558,9 +559,17 @@ class CORE_EXPORT DisplayLockContext final
   // the next frame.
   bool has_pending_clear_has_top_layer_ = false;
 
-  // If ture, we need to check if this subtree has any top layer elements at the
+  // If true, we need to check if this subtree has any top layer elements at the
   // start of the next frame.
   bool has_pending_top_layer_check_ = false;
+
+  // This is set to the last value for which ContentVisibilityAutoStateChange
+  // event has been dispatched (if any).
+  absl::optional<bool> last_notified_skipped_state_;
+
+  // If true, there is a pending task that will dispatch a state change event if
+  // needed.
+  bool state_change_task_pending_ = false;
 };
 
 }  // namespace blink

@@ -556,11 +556,26 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
   if (state_ == EContentVisibility::kAuto &&
-      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangeEventEnabled()) {
-    element_->EnqueueEvent(
-        *ContentVisibilityAutoStateChangeEvent::Create(
-            event_type_names::kContentvisibilityautostatechange, is_locked_),
-        TaskType::kMiscPlatformAPI);
+      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangeEventEnabled() &&
+      !state_change_task_pending_) {
+    document_->GetExecutionContext()
+        ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
+                          WrapPersistent(this)));
+    state_change_task_pending_ = true;
+  }
+}
+
+void DisplayLockContext::DispatchStateChangeEventIfNeeded() {
+  DCHECK(state_change_task_pending_);
+  state_change_task_pending_ = false;
+  if (!last_notified_skipped_state_ ||
+      *last_notified_skipped_state_ != is_locked_) {
+    last_notified_skipped_state_ = is_locked_;
+    element_->DispatchEvent(*ContentVisibilityAutoStateChangeEvent::Create(
+        event_type_names::kContentvisibilityautostatechange, is_locked_));
   }
 }
 
