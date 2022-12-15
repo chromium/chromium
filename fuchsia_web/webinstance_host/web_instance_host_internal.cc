@@ -333,6 +333,10 @@ zx_status_t AppendLaunchArgs(fuchsia::web::CreateContextParams& params,
   }
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  // Use a constexpr instead of the media::IsClearKey() helper, because of the
+  // additional dependencies required.
+  static constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
+
   if (enable_playready) {
     const std::string& key_system = params.playready_key_system();
     if (key_system == kWidevineKeySystem || key_system == kClearKeyKeySystem) {
