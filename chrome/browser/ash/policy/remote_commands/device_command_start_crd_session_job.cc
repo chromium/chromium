@@ -56,10 +56,8 @@ const char kIdlenessCutoffFieldName[] = "idlenessCutoffSec";
 // while a user is currently using the device.
 const char kAckedUserPresenceFieldName[] = "ackedUserPresence";
 
-// True if the admin wants to start a private remote access session where the
-// physical displays are curtained off so the local user can not see what the
-// admin is doing.
-const char kCurtainLocalUserSession[] = "curtainLocalUserSession";
+// The type of CRD session that the admin wants to start.
+const char kCrdSessionTypeFieldName[] = "crdSessionType";
 
 // Result payload fields:
 
@@ -117,6 +115,15 @@ std::string CreateErrorPayload(ResultCode result_code,
 
 DeviceOAuth2TokenService& GetOAuthService() {
   return CHECK_DEREF(DeviceOAuth2TokenServiceFactory::Get());
+}
+
+CrdSessionType ToCrdSessionTypeOrDefault(absl::optional<int> int_value,
+                                         CrdSessionType default_value) {
+  if (!int_value.has_value() ||
+      !enterprise_management::CrdSessionType_IsValid(int_value.value())) {
+    return default_value;
+  }
+  return static_cast<CrdSessionType>(int_value.value());
 }
 
 }  // namespace
@@ -214,6 +221,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
                  << std::quoted(command_payload);
     return false;
   }
+  CRD_DVLOG(1) << "Received remote command with payload "
+               << std::quoted(command_payload);
 
   const base::Value::Dict& root_dict = root->GetDict();
 
@@ -223,8 +232,12 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   acked_user_presence_ =
       root_dict.FindBool(kAckedUserPresenceFieldName).value_or(false);
 
+  CrdSessionType crd_session_type =
+      ToCrdSessionTypeOrDefault(root_dict.FindInt(kCrdSessionTypeFieldName),
+                                CrdSessionType::REMOTE_SUPPORT_SESSION);
+
   curtain_local_user_session_ =
-      root_dict.FindBool(kCurtainLocalUserSession).value_or(false);
+      (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
 
   if (base::FeatureList::IsEnabled(
           remoting::features::kForceCrdAdminRemoteAccess)) {
@@ -235,9 +248,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   if (curtain_local_user_session_ &&
       !base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdAdminRemoteAccess)) {
-    LOG(WARNING)
-        << "Rejecting curtain_local_user_session as CRD remote access feature "
-           "is not enabled";
+    LOG(WARNING) << "Rejecting CRD session type as CRD remote access feature "
+                    "is not enabled";
     return false;
   }
 
@@ -338,8 +350,9 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
 void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
     const std::string& access_code) {
   CRD_LOG(INFO) << "Successfully received CRD access code";
-  if (!succeeded_callback_)
+  if (!succeeded_callback_) {
     return;  // Task was terminated.
+  }
 
   SendResultCodeToUma(ResultCode::SUCCESS);
   SendSessionTypeToUma(GetUmaSessionType());
@@ -355,8 +368,9 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
   CRD_LOG(INFO) << "Not starting CRD session because of error (code "
                 << static_cast<int>(result_code) << ", message '" << message
                 << "')";
-  if (!failed_callback_)
+  if (!failed_callback_) {
     return;  // Task was terminated.
+  }
 
   SendResultCodeToUma(result_code);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -366,8 +380,9 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
 
 void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
   CRD_LOG(INFO) << "Not starting CRD session because device is not idle";
-  if (!failed_callback_)
+  if (!failed_callback_) {
     return;  // Task was terminated.
+  }
 
   SendResultCodeToUma(ResultCode::FAILURE_NOT_IDLE);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -440,8 +455,9 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
-  if (curtain_local_user_session_)
+  if (curtain_local_user_session_) {
     return false;
+  }
 
   switch (GetCurrentUserSessionType()) {
     case UserSessionType::AFFILIATED_USER_SESSION:

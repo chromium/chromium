@@ -51,8 +51,9 @@ enum UserSessionType {
   NO_SESSION = 7;
 }
 
-// The type of the CRD session. This enum is used in the response payload of the
-// `FETCH_CRD_AVAILABILITY_INFO` remote command.
+// The type of the CRD session. This enum is used in:
+//   * the response payload of `FETCH_CRD_AVAILABILITY_INFO`.
+//   * the request payload of `DEVICE_START_CRD_SESSION `.
 enum CrdSessionType {
   CRD_SESSION_TYPE_UNKNOWN = 0;
   // A session where the admin has exclusive control of the remote machine.
