@@ -25,7 +25,7 @@ namespace base {
 class FilteredServiceDirectory;
 }
 
-class WebInstanceHost;
+class WebInstanceHostV1;
 
 // ComponentRunner that runs Cast activities specified via cast/casts URIs.
 class CastRunner final : public fuchsia::component::runner::ComponentRunner,
@@ -48,7 +48,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   // `web_instance_host` is used to create a "main" instance to host Cast apps
   // and serve `FrameHost` instances, and isolated containers for apps that
   // need them.
-  CastRunner(WebInstanceHost& web_instance_host, Options options);
+  CastRunner(WebInstanceHostV1& web_instance_host, Options options);
   ~CastRunner() override;
 
   CastRunner(const CastRunner&) = delete;
@@ -133,7 +133,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   bool WasPersistedCacheErased();
 
   // Passed to WebContentRunners to use to create web_instance Components.
-  const raw_ref<WebInstanceHost> web_instance_host_;
+  const raw_ref<WebInstanceHostV1> web_instance_host_;
 
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;

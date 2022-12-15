@@ -386,7 +386,7 @@ source_set("context_provider") {
     "//base",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
@@ -398,7 +398,7 @@ source_set("context_provider") {
 source_set("switches") {
   visibility += [
     "//fuchsia_web/shell:cast_streaming_shell_exe",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
   ]
   deps = [ "//base" ]
   public_deps = [ "//build:chromecast_buildflags" ]

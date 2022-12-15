@@ -31,7 +31,7 @@
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/runners/cast/cast_runner_v1.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
       resolver_binding(outgoing_directory, &resolver);
 
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
-  WebInstanceHost web_instance_host;
+  WebInstanceHostV1 web_instance_host;
   CastRunner runner(
       web_instance_host,
       {.headless = command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||

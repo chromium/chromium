@@ -29,7 +29,7 @@
 #include "build/build_config.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
 
   // Keep alive in run_loop scope.
   fuchsia::web::ContextProviderPtr web_context_provider;
-  std::unique_ptr<WebInstanceHost> web_instance_host;
+  std::unique_ptr<WebInstanceHostV1> web_instance_host;
   fuchsia::io::DirectoryHandle tmp_directory;
 
   if (use_context_provider) {
@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {
-    web_instance_host = std::make_unique<WebInstanceHost>();
+    web_instance_host = std::make_unique<WebInstanceHostV1>();
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",

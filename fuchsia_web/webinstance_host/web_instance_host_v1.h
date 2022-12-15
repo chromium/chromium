@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_H_
-#define FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_H_
+#ifndef FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_V1_H_
+#define FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_V1_H_
 
 #include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
@@ -30,13 +30,13 @@
 //   * "fuchsia.feedback.CrashReportingProductRegister"
 // * Instantiate the class on a thread with an async_dispatcher.
 // TODO(crbug.com/1211174): Remove these requirements.
-class WebInstanceHost {
+class WebInstanceHostV1 {
  public:
-  WebInstanceHost();
-  ~WebInstanceHost();
+  WebInstanceHostV1();
+  ~WebInstanceHostV1();
 
-  WebInstanceHost(const WebInstanceHost&) = delete;
-  WebInstanceHost& operator=(const WebInstanceHost&) = delete;
+  WebInstanceHostV1(const WebInstanceHostV1&) = delete;
+  WebInstanceHostV1& operator=(const WebInstanceHostV1&) = delete;
 
   // Creates a new web_instance Component and connects |services_request| to it.
   // Returns ZX_OK if |params| were valid, and the Component was launched.
@@ -77,4 +77,4 @@ class WebInstanceHost {
   fuchsia::io::DirectoryHandle tmp_dir_;
 };
 
-#endif  // FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_H_
+#endif  // FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_V1_H_

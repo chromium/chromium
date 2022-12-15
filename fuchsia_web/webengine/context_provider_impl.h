@@ -8,7 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "fuchsia_web/webengine/web_engine_export.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 
 class WEB_ENGINE_EXPORT ContextProviderImpl
     : public fuchsia::web::ContextProvider {
@@ -29,7 +29,7 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
 
  private:
   // Manages an isolated Environment, and the web instances hosted within it.
-  WebInstanceHost web_instance_host_;
+  WebInstanceHostV1 web_instance_host_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_CONTEXT_PROVIDER_IMPL_H_

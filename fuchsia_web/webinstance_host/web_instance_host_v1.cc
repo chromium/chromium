@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/async/default.h>
@@ -364,10 +364,14 @@ std::vector<std::string> GetRequiredServicesForConfig(
   // at:
   //   https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams.service_directory
   std::vector<std::string> services{
-      "fuchsia.buildinfo.Provider",    "fuchsia.device.NameProvider",
-      "fuchsia.fonts.Provider",        "fuchsia.hwinfo.Product",
-      "fuchsia.intl.PropertyProvider", "fuchsia.kernel.VmexResource",
-      "fuchsia.logger.LogSink",        "fuchsia.memorypressure.Provider",
+      "fuchsia.buildinfo.Provider",
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.hwinfo.Product",
+      "fuchsia.intl.PropertyProvider",
+      "fuchsia.kernel.VmexResource",
+      "fuchsia.logger.LogSink",
+      "fuchsia.memorypressure.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
       "fuchsia.sysmem.Allocator",
@@ -470,15 +474,15 @@ std::vector<std::string> GetRequiredServicesForConfig(
 
 }  // namespace
 
-WebInstanceHost::WebInstanceHost() {
+WebInstanceHostV1::WebInstanceHostV1() {
   // Ensure WebInstance is registered before launching it.
   // TODO(crbug.com/1211174): Replace with a different mechanism when available.
   RegisterWebInstanceProductData();
 }
 
-WebInstanceHost::~WebInstanceHost() = default;
+WebInstanceHostV1::~WebInstanceHostV1() = default;
 
-zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
+zx_status_t WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs(
     fuchsia::web::CreateContextParams params,
     fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
     base::CommandLine extra_args) {
@@ -733,11 +737,11 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   return ZX_OK;
 }
 
-fuchsia::web::Debug* WebInstanceHost::debug_api() {
+fuchsia::web::Debug* WebInstanceHostV1::debug_api() {
   return &debug_proxy_;
 }
 
-fuchsia::sys::Launcher* WebInstanceHost::IsolatedEnvironmentLauncher() {
+fuchsia::sys::Launcher* WebInstanceHostV1::IsolatedEnvironmentLauncher() {
   if (isolated_environment_launcher_)
     return isolated_environment_launcher_.get();
 

@@ -17,7 +17,7 @@
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 
 namespace {
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
   LogComponentStartWithVersion("web_runner");
 
-  WebInstanceHost web_instance_host;
+  WebInstanceHostV1 web_instance_host;
   WebContentRunner runner(web_instance_host,
                           base::BindRepeating(&GetWebInstanceConfig));
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(

@@ -24,7 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_component.h"
-#include "fuchsia_web/webinstance_host/web_instance_host.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "url/gurl.h"
 
 namespace {
@@ -53,7 +53,7 @@ WebContentRunner::WebInstanceConfig&
 WebContentRunner::WebInstanceConfig::operator=(WebInstanceConfig&&) = default;
 
 WebContentRunner::WebContentRunner(
-    WebInstanceHost& web_instance_host,
+    WebInstanceHostV1& web_instance_host,
     GetWebInstanceConfigCallback get_web_instance_config_callback)
     : web_instance_host_(web_instance_host),
       get_web_instance_config_callback_(
@@ -61,7 +61,7 @@ WebContentRunner::WebContentRunner(
   DCHECK(get_web_instance_config_callback_);
 }
 
-WebContentRunner::WebContentRunner(WebInstanceHost& web_instance_host,
+WebContentRunner::WebContentRunner(WebInstanceHostV1& web_instance_host,
                                    WebInstanceConfig web_instance_config)
     : web_instance_host_(web_instance_host) {
   CreateWebInstanceAndContext(std::move(web_instance_config));

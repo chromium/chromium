@@ -37,7 +37,7 @@ source_set("common") {
     ":buildflags",
     "//base",
     "//fuchsia_web/runners/common/modular",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx/geometry",
     "//url",
@@ -121,7 +121,7 @@ executable("cast_runner_exe") {
     "//build:chromecast_buildflags",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 
@@ -313,7 +313,7 @@ executable("web_runner_exe") {
     "//base",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 }

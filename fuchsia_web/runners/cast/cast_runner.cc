@@ -249,7 +249,7 @@ class FrameHostComponent final
 
 }  // namespace
 
-CastRunner::CastRunner(WebInstanceHost& web_instance_host, Options options)
+CastRunner::CastRunner(WebInstanceHostV1& web_instance_host, Options options)
     : web_instance_host_(web_instance_host),
       is_headless_(options.headless),
       disable_codegen_(options.disable_codegen),
