@@ -133,6 +133,10 @@ message AppProvisioningListAppsResponse {
     // A URL to the web app's manifest in json format. This will always be from
     // the host meltingpot.googleusercontent.com.
     optional string manifest_url = 2;
+
+    // The URL for the original source used to retrieve the contents of the
+    // manifest above. This is needed to resolve the file on the client-side.
+    optional string original_manifest_url = 3;
   }
 
   message App {
