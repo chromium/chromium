@@ -167,12 +167,16 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
 // Make sure the UKM was logged correctly.
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
                        UKMCheckoutEventsRecordedForAppOrigin) {
+  std::string payment_method;
+  InstallPaymentApp("payment-app.com", "/payment_handler_sw.js",
+                    &payment_method);
+
   GURL merchant_url = https_server()->GetURL("/payment_handler.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), merchant_url));
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
-
   ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "launch()"));
+  EXPECT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("launch($1)", payment_method)));
   WaitForObservedEvent();
 
   // UKM for merchant's website origin.
@@ -187,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
       ukm::builders::PaymentApp_CheckoutEvents::kEntryName);
   num_entries = entries.size();
   EXPECT_EQ(1u, num_entries);
-  test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
-                                               https_server()->GetURL("/"));
+  test_ukm_recorder()->ExpectEntrySourceHasUrl(
+      entries[0], https_server()->GetURL("payment-app.com", "/"));
 }
 
 IN_PROC_BROWSER_TEST_F(
