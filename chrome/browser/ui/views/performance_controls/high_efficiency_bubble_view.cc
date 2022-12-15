@@ -32,6 +32,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogOkButton);
 
+namespace {
+// The lower limit of memory usage that we would display to the user in bytes.
+// This value is the equivalent of 10MB.
+constexpr uint64_t kMemoryUsageThresholdInBytes = 10 * 1024 * 1024;
+}  // namespace
+
 // static
 views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
     Browser* browser,
@@ -57,7 +63,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       browser->tab_strip_model()->GetActiveWebContents());
   const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
 
-  if (memory_savings > 0) {
+  if (memory_savings > kMemoryUsageThresholdInBytes) {
     dialog_model_builder.AddParagraph(
         ui::DialogModelLabel::CreateWithReplacements(
             IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,

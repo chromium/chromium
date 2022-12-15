@@ -33,6 +33,7 @@
 #include "ui/views/test/button_test_api.h"
 
 constexpr int kMemorySavingsKilobytes = 100000;
+constexpr int kSmallMemorySavingsKilobytes = 10;
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -244,6 +245,35 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
   EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
                   kMemorySavingsKilobytes * 1024)) != std::string::npos);
+}
+
+//  When the memory savings are lower than 1Mb then they shouldn't be rendered
+//  in the dialog.
+TEST_F(HighEfficiencyChipViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
+  // Add a new tab with small memory savings.
+  AddTab(browser(), GURL("http://bar"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  TabDiscardTabHelper::CreateForWebContents(contents);
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          contents, kSmallMemorySavingsKilobytes);
+
+  // Mark the new tab as discarded.
+  SetTabDiscardState(1, true);
+
+  PageActionIconView* view = GetPageActionIconView();
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  test_api.NotifyClick(e);
+
+  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+  EXPECT_TRUE(
+      label->GetText().find(u"Memory Saver freed up memory for other tasks") !=
+      std::string::npos);
 }
 
 // When the previous page was not previously discarded, the icon should not be
