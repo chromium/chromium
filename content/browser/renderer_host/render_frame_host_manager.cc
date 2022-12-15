@@ -25,6 +25,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
@@ -1114,18 +1115,20 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   } else {
-    RenderFrameHostImpl* dest_rfh = GetFrameHostForNavigation(request);
-    DCHECK(dest_rfh);
-    request->SetAssociatedRFHType(
-        dest_rfh == render_frame_host_.get()
-            ? NavigationRequest::AssociatedRenderFrameHostType::CURRENT
-            : NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+    auto result = GetFrameHostForNavigation(request);
+    if (result.has_value()) {
+      DCHECK(result.value());
+      request->SetAssociatedRFHType(
+          result.value() == render_frame_host_.get()
+              ? NavigationRequest::AssociatedRenderFrameHostType::CURRENT
+              : NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+    }
   }
 }
 
-RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
-    NavigationRequest* request,
-    std::string* reason) {
+base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>
+RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
+                                                  std::string* reason) {
   TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
@@ -1385,8 +1388,10 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // before.
   if (!navigation_rfh->IsRenderFrameLive()) {
     DCHECK(!frame_tree_node_->parent());
-    if (!ReinitializeMainRenderFrame(navigation_rfh))
-      return nullptr;
+    if (!ReinitializeMainRenderFrame(navigation_rfh)) {
+      return base::unexpected(
+          GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame);
+    }
 
     notify_webui_of_rf_creation = true;
 

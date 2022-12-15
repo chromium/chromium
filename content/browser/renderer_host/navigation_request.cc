@@ -2456,9 +2456,20 @@ void NavigationRequest::BeginNavigationImpl() {
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin, net::NetworkAnonymizationKey(site, site));
 
-      // Select an appropriate RenderFrameHost.
-      render_frame_host_ =
-          frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+      if (auto result =
+              frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+                  this);
+          result.has_value()) {
+        render_frame_host_ = result.value();
+      } else {
+        switch (result.error()) {
+          case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
+            // TODO(https://crbug.com/1400535): This was unhandled before and
+            // remains explicitly unhandled. This branch may be removed in the
+            // future.
+            break;
+        }
+      }
 
       CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
           render_frame_host_, GetUrlInfo(),
@@ -3913,8 +3924,19 @@ void NavigationRequest::OnResponseStarted(
     // TODO(https://crbug.com/1181712): Handle the cases when the prerender is
     // cancelled and RFH is destroyed while NavigationRequest is alive.
   } else if (response_should_be_rendered_) {
-    render_frame_host_ =
-        frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+    if (auto result =
+            frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+        result.has_value()) {
+      render_frame_host_ = result.value();
+    } else {
+      switch (result.error()) {
+        case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
+          // TODO(https://crbug.com/1400535): This was unhandled before and
+          // remains explicitly unhandled. This branch may be removed in the
+          // future.
+          break;
+      }
+    }
 
     // Update the associated RenderFrameHost type, which could have changed
     // due to redirects during navigation.
@@ -4150,9 +4172,16 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   // The CrossOriginRedirectAfterEarlyHints variant of
   // Navigation.MainFrame.TimeToReadyToCommit2 histogram tracks the performance
   // impacts.
-  RenderProcessHost* process = frame_tree_node_->render_manager()
-                                   ->GetFrameHostForNavigation(this)
-                                   ->GetProcess();
+  auto result =
+      frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+
+  // Early hints is an optimization; if it is not possible to get a suitable
+  // RenderFrameHost for any reason, just bail out.
+  if (!result.has_value()) {
+    return absl::nullopt;
+  }
+
+  RenderProcessHost* process = result.value()->GetProcess();
 
   // The process is shutting down.
   if (!process->GetBrowserContext())
@@ -4267,8 +4296,20 @@ void NavigationRequest::OnRequestFailedInternal(
       // https://crbug.com/1125106.
       common_params_->navigation_type =
           ConvertToCrossDocumentType(common_params_->navigation_type);
-      render_frame_host =
-          frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+      if (auto result =
+              frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+                  this);
+          result.has_value()) {
+        render_frame_host = result.value();
+      } else {
+        switch (result.error()) {
+          case GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame:
+            // TODO(https://crbug.com/1400535): This was unhandled
+            // before and remains explicitly unhandled. This branch may be
+            // removed in the future.
+            break;
+        }
+      }
       break;
   }
   // Sanity check that we haven't changed the RenderFrameHost picked for the

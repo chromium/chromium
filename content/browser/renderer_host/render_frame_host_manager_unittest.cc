@@ -446,7 +446,7 @@ class RenderFrameHostManagerTest
     // And also simulates the 2nd and final call to GetFrameHostForNavigation
     // that determines the final frame that will commit the navigation.
     TestRenderFrameHost* frame_host = static_cast<TestRenderFrameHost*>(
-        manager->GetFrameHostForNavigation(navigation_request.get()));
+        manager->GetFrameHostForNavigation(navigation_request.get()).value());
     CHECK(frame_host);
 
     frame_host->SetPolicyContainerHost(

@@ -16,6 +16,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -61,6 +62,14 @@ using PageBroadcastMethodCallback =
 
 using RemoteFramesBroadcastMethodCallback =
     base::RepeatingCallback<void(RenderFrameProxyHost*)>;
+
+// Reasons that `GetFrameHostForNavigation()` might fail.
+enum class GetFrameHostForNavigationFailed {
+  // Failed to reinitialize the main frame, for whatever reason.
+  // TODO(https://crbug.com/1400535): This adds a tremendous amount of failure
+  // plumbing *everywhere* and might be unnecessary.
+  kCouldNotReinitializeMainFrame,
+};
 
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a
 // current_frame_host() which is the content currently visible to the user. When
@@ -388,16 +397,22 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void DidCreateNavigationRequest(NavigationRequest* request);
 
   // Called (possibly several times) during a navigation to select or create an
-  // appropriate RenderFrameHost for the provided URL. The returned pointer will
-  // be for the current or the speculative RenderFrameHost and the instance is
-  // owned by this manager.
+  // appropriate RenderFrameHost for the provided URL.
   //
-  // |reason| is an optional out-parameter that will be populated with
+  // On success, returns a non-null pointer to a RenderFrameHost to use for the
+  // navigation. The returned pointer always refers to either the current or the
+  // speculative RenderFrameHost owned by `this`.
+  //
+  // Otherwise, on failure, returns an enum value denoting the reason for
+  // failure.
+  //
+  // `reason` is an optional out-parameter that will be populated with
   // engineer-readable information describing the reason for the method
-  // behavior.  The returned |reason| should fit into
+  // behavior.  The returned `reason` should fit into
   // base::debug::CrashKeySize::Size256.
-  RenderFrameHostImpl* GetFrameHostForNavigation(NavigationRequest* request,
-                                                 std::string* reason = nullptr);
+  base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>
+  GetFrameHostForNavigation(NavigationRequest* request,
+                            std::string* reason = nullptr);
 
   // Discards `speculative_render_frame_host_` if it exists, even if there are
   // NavigationRequests associated with it, including pending commit
