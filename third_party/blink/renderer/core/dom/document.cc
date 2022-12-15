@@ -6405,12 +6405,14 @@ FragmentDirective& Document::fragmentDirective() const {
 ScriptPromise Document::hasTrustToken(ScriptState* script_state,
                                       const String& issuer,
                                       ExceptionState& exception_state) {
-  return hasPrivateStateToken(script_state, issuer, exception_state);
+  return hasPrivateToken(script_state, issuer, "private-state-token",
+                         exception_state);
 }
 
-ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
-                                             const String& issuer,
-                                             ExceptionState& exception_state) {
+ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
+                                        const String& issuer,
+                                        const String& type,
+                                        ExceptionState& exception_state) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
@@ -6425,9 +6427,16 @@ ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
   if (!issuer_url.ProtocolIsInHTTPFamily() ||
       !issuer_origin->IsPotentiallyTrustworthy()) {
     exception_state.ThrowTypeError(
-        "hasPrivateStateToken: Trust token issuer origins must be both HTTP(S) "
-        "and "
-        "secure (\"potentially trustworthy\").");
+        "hasPrivateToken: Private Token issuer origins must be both HTTP(S) "
+        "and secure (\"potentially trustworthy\").");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  if (type != "private-state-token") {
+    exception_state.ThrowTypeError(
+        "hasPrivateToken: Private Token types other than "
+        "private-state-token are unsupported.");
     resolver->Reject(exception_state);
     return promise;
   }
@@ -6440,7 +6449,7 @@ ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
     // case there are other situations in which the top frame origin might be
     // absent.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "hasPrivateStateToken: Cannot execute in "
+                                      "hasPrivateToken: Cannot execute in "
                                       "documents lacking top-frame origins.");
     resolver->Reject(exception_state);
     return promise;
@@ -6451,7 +6460,7 @@ ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
       top_frame_origin->Protocol() != url::kHttpScheme) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "hasPrivateStateToken: Cannot execute in "
+        "hasPrivateToken: Cannot execute in "
         "documents without secure, HTTP(S), top-frame origins.");
     resolver->Reject(exception_state);
     return promise;
@@ -6490,7 +6499,7 @@ ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
               ScriptState::Scope scope(state);
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  "Failed to retrieve hasPrivateStateToken response. (Would "
+                  "Failed to retrieve hasPrivateToken response. (Would "
                   "associating the given issuer with this top-level origin "
                   "have exceeded its number-of-issuers limit?)"));
             }
@@ -6505,6 +6514,7 @@ ScriptPromise Document::hasPrivateStateToken(ScriptState* script_state,
 
 ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
                                             const String& issuer,
+                                            const String& type,
                                             ExceptionState& exception_state) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -6520,9 +6530,16 @@ ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
   if (!issuer_url.ProtocolIsInHTTPFamily() ||
       !issuer_origin->IsPotentiallyTrustworthy()) {
     exception_state.ThrowTypeError(
-        "hasRedemptionRecord: Trust token issuer origins must be both HTTP(S) "
-        "and "
-        "secure (\"potentially trustworthy\").");
+        "hasRedemptionRecord: Private Token issuer origins must be both "
+        "HTTP(S) and secure (\"potentially trustworthy\").");
+    resolver->Reject(exception_state);
+    return promise;
+  }
+
+  if (type != "private-state-token") {
+    exception_state.ThrowTypeError(
+        "hasRedemptionRecord: Private Token types other than "
+        "private-state-token are unsupported.");
     resolver->Reject(exception_state);
     return promise;
   }

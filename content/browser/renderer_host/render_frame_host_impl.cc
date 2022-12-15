@@ -10683,7 +10683,7 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     return;
   }
 
-  // TODO(crbug.com/1145346): Document.hasPrivateStateToken is restricted to
+  // TODO(crbug.com/1145346): Document.hasPrivateToken is restricted to
   // secure contexts, so we could additionally add a check verifying that the
   // bind request "is coming from a secure context"---but there's currently no
   // direct way to perform such a check in the browser.

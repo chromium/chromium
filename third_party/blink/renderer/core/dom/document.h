@@ -1202,15 +1202,16 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
   FragmentDirective& fragmentDirective() const;
 
-  // Sends a query via Mojo to ask whether the user has any private state
+  // Sends a query via Mojo to ask whether the user has any private
   // tokens. This can reject on permissions errors (e.g. associating |issuer|
   // with the top-level origin would exceed the top-level origin's limit on the
   // number of associated issuers) or on other internal errors (e.g. the network
   // service is unavailable).
-  ScriptPromise hasPrivateStateToken(ScriptState* script_state,
-                                     const String& issuer,
-                                     ExceptionState&);
-  // Being renamed to hasPrivateStateToken, will remove after all users have
+  ScriptPromise hasPrivateToken(ScriptState* script_state,
+                                const String& issuer,
+                                const String& type,
+                                ExceptionState&);
+  // Being renamed to hasPrivateToken, will remove after all users have
   // changed to new name.
   ScriptPromise hasTrustToken(ScriptState* script_state,
                               const String& issuer,
@@ -1223,6 +1224,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // is unavailable).
   ScriptPromise hasRedemptionRecord(ScriptState* script_state,
                                     const String& issuer,
+                                    const String& type,
                                     ExceptionState&);
 
   void ariaNotify(const String announcement, const AriaNotificationOptions*);
@@ -2128,7 +2130,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void DisplayNoneChangedForFrame();
 
   // Handles a connection error to |trust_token_query_answerer_| by rejecting
-  // all pending promises created by |hasPrivateStateToken| and
+  // all pending promises created by |hasPrivateToken| and
   // |hasRedemptionRecord|.
   void TrustTokenQueryAnswererConnectionError();
 

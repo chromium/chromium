@@ -3749,7 +3749,7 @@ enum WebFeature {
   kCSSAtRuleOrnaments = 4408,
   kCSSAtRuleAnnotation = 4409,
   kServiceWorkerBypassFetchHandlerForMainResource = 4410,
-  kV8Document_HasPrivateStateToken_Method = 4411,
+  kV8Document_HasPrivateToken_Method = 4411,
   kServiceWorkerSkippedForEmptyFetchHandler = 4412,
   kImageSet = 4413,
   kWindowCloseHistoryLengthOne = 4414,

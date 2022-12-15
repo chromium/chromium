@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   (async () => {
     try {
       await fetch("/issue", {trustToken: {type: 'token-request'}});
-      return await document.hasPrivateStateToken($1);
+      return await document.hasPrivateToken($1, 'private-state-token');
     } catch {
       return false;
     }

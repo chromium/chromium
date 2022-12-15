@@ -1339,8 +1339,9 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccess) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasRedemptionRecord");
 
-  auto promise = document.hasRedemptionRecord(
-      script_state, "https://issuer.example", exception_state);
+  auto promise =
+      document.hasRedemptionRecord(script_state, "https://issuer.example",
+                                   "private-state-token", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1367,8 +1368,9 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccessWithFalseValue) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasTrustToken");
 
-  auto promise = document.hasRedemptionRecord(
-      script_state, "https://issuer.example", exception_state);
+  auto promise =
+      document.hasRedemptionRecord(script_state, "https://issuer.example",
+                                   "private-state-token", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1395,8 +1397,9 @@ TEST_F(DocumentTest, HasRedemptionRecordOperationError) {
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasRedemptionRecord");
 
-  auto promise = document.hasRedemptionRecord(
-      script_state, "https://issuer.example", exception_state);
+  auto promise =
+      document.hasRedemptionRecord(script_state, "https://issuer.example",
+                                   "private-state-token", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1416,9 +1419,9 @@ TEST_F(DocumentTest, HandlesDisconnectDuringHasRedemptionRecord) {
 
   Document& document = scope.GetDocument();
 
-  auto promise = document.hasRedemptionRecord(scope.GetScriptState(),
-                                              "https://issuer.example",
-                                              scope.GetExceptionState());
+  auto promise = document.hasRedemptionRecord(
+      scope.GetScriptState(), "https://issuer.example", "private-state-token",
+      scope.GetExceptionState());
   DocumentTest::SimulateTrustTokenQueryAnswererConnectionError(&document);
 
   ASSERT_TRUE(promise.IsAssociatedWith(scope.GetScriptState()));
@@ -1442,8 +1445,9 @@ TEST_F(DocumentTest,
                                  ExceptionState::kExecutionContext, "Document",
                                  "hasRedemptionRecord");
 
-  auto promise = document.hasRedemptionRecord(
-      script_state, "https://issuer.example", exception_state);
+  auto promise =
+      document.hasRedemptionRecord(script_state, "https://issuer.example",
+                                   "private-state-token", exception_state);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
