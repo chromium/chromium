@@ -4,6 +4,8 @@
 
 #include "ash/capture_mode/recording_type_menu_view.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,12 +20,6 @@
 namespace ash {
 
 namespace {
-
-// The IDs of the options representing the available recording formats.
-enum RecordingTypeOption {
-  kWebM = 0,
-  kGif,
-};
 
 // The padding around the menu options.
 constexpr auto kMenuPadding = gfx::Insets::VH(12, 0);
@@ -49,8 +45,10 @@ gfx::Size GetIdealSize(views::View* contents_view) {
 
 }  // namespace
 
-RecordingTypeMenuView::RecordingTypeMenuView()
-    : CaptureModeMenuGroup(this, kMenuPadding) {
+RecordingTypeMenuView::RecordingTypeMenuView(
+    base::RepeatingClosure on_option_selected_callback)
+    : CaptureModeMenuGroup(this, kMenuPadding),
+      on_option_selected_callback_(std::move(on_option_selected_callback)) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
@@ -61,11 +59,13 @@ RecordingTypeMenuView::RecordingTypeMenuView()
   AddOption(
       &kCaptureModeVideoIcon,
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD),
-      RecordingTypeOption::kWebM);
+      ToInt(RecordingType::kWebM));
   AddOption(&kCaptureGifIcon,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD),
-            RecordingTypeOption::kGif);
+            ToInt(RecordingType::kGif));
 }
+
+RecordingTypeMenuView::~RecordingTypeMenuView() = default;
 
 // static
 gfx::Rect RecordingTypeMenuView::GetIdealScreenBounds(
@@ -78,14 +78,26 @@ gfx::Rect RecordingTypeMenuView::GetIdealScreenBounds(
   return gfx::Rect(gfx::Point(x, y), size);
 }
 
-void RecordingTypeMenuView::OnOptionSelected(int option_id) const {}
+void RecordingTypeMenuView::OnOptionSelected(int option_id) const {
+  CaptureModeController::Get()->SetRecordingType(
+      static_cast<RecordingType>(option_id));
+  on_option_selected_callback_.Run();
+}
 
 bool RecordingTypeMenuView::IsOptionChecked(int option_id) const {
-  return option_id == RecordingTypeOption::kWebM;
+  return option_id == ToInt(CaptureModeController::Get()->recording_type());
 }
 
 bool RecordingTypeMenuView::IsOptionEnabled(int option_id) const {
   return true;
+}
+
+views::View* RecordingTypeMenuView::GetWebMOptionForTesting() {
+  return GetOptionForTesting(ToInt(RecordingType::kWebM));  // IN-TEST
+}
+
+views::View* RecordingTypeMenuView::GetGifOptionForTesting() {
+  return GetOptionForTesting(ToInt(RecordingType::kGif));  // IN-TEST
 }
 
 }  // namespace ash

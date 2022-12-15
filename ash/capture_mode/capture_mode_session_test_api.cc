@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/recording_type_menu_view.h"
 
 namespace ash {
 
@@ -32,6 +33,12 @@ CaptureModeSessionTestApi::GetCaptureModeSettingsView() {
 
 CaptureLabelView* CaptureModeSessionTestApi::GetCaptureLabelView() {
   return session_->capture_label_view_;
+}
+
+RecordingTypeMenuView* CaptureModeSessionTestApi::GetRecordingTypeMenuView() {
+  auto* widget = GetRecordingTypeMenuWidget();
+  DCHECK(widget);
+  return static_cast<RecordingTypeMenuView*>(widget->GetContentsView());
 }
 
 views::Widget* CaptureModeSessionTestApi::GetCaptureModeSettingsWidget() {

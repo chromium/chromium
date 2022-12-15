@@ -492,6 +492,15 @@ void CaptureModeController::SetType(CaptureModeType type) {
     capture_mode_session_->OnCaptureTypeChanged(type_);
 }
 
+void CaptureModeController::SetRecordingType(RecordingType recording_type) {
+  if (recording_type == recording_type_)
+    return;
+
+  recording_type_ = recording_type;
+  if (capture_mode_session_)
+    capture_mode_session_->OnRecordingTypeChanged();
+}
+
 void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   if (capture_mode_session_ || pending_dlp_check_)
     return;

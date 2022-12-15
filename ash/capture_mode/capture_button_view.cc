@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -29,6 +30,36 @@
 namespace ash {
 
 namespace {
+
+// Defines the state of the capture button, which is the ID of the string used
+// as its label, and its icon. These are selected based on the current state of
+// capture mode, whether capture images or videos, and which video format is
+// selected.
+struct CaptureButtonState {
+  const int label_id;
+  const gfx::VectorIcon& vector_icon;
+};
+
+// Based on the current state of capture mode, returns the state with which the
+// capture button should be updated.
+CaptureButtonState GetCaptureButtonState() {
+  const auto* const controller = CaptureModeController::Get();
+  if (controller->type() == CaptureModeType::kImage) {
+    return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE,
+                              kCaptureModeImageIcon};
+  }
+
+  if (controller->recording_type() == RecordingType::kWebM) {
+    return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD,
+                              kCaptureModeVideoIcon};
+  }
+
+  DCHECK(features::IsGifRecordingEnabled());
+  DCHECK_EQ(controller->recording_type(), RecordingType::kGif);
+
+  return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD,
+                            kCaptureGifIcon};
+}
 
 // Sets up the the given `button`'s ink drop style and focus behavior.
 void SetupButton(views::Button* button) {
@@ -88,17 +119,14 @@ void CaptureButtonView::UpdateViewVisuals() {
     drop_down_button_->SetVisible(!is_capturing_image);
   }
 
-  capture_button_->SetText(l10n_util::GetStringUTF16(
-      is_capturing_image ? IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE
-                         : IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD));
+  const auto button_state = GetCaptureButtonState();
+  capture_button_->SetText(l10n_util::GetStringUTF16(button_state.label_id));
 
   const SkColor icon_color =
       GetColorProvider()->GetColor(kColorAshIconColorPrimary);
   capture_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          is_capturing_image ? kCaptureModeImageIcon : kCaptureModeVideoIcon,
-          icon_color));
+      ui::ImageModel::FromVectorIcon(button_state.vector_icon, icon_color));
 }
 
 void CaptureButtonView::OnThemeChanged() {

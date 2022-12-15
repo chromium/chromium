@@ -5,7 +5,9 @@
 #ifndef ASH_CAPTURE_MODE_RECORDING_TYPE_MENU_VIEW_H_
 #define ASH_CAPTURE_MODE_RECORDING_TYPE_MENU_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
+#include "base/functional/callback_forward.h"
 
 namespace gfx {
 class Rect;
@@ -15,13 +17,14 @@ namespace ash {
 
 // Defines a view that will be the contents view of the recording type menu
 // widget, from which users can pick the desired recording format.
-class RecordingTypeMenuView : public CaptureModeMenuGroup,
-                              public CaptureModeMenuGroup::Delegate {
+class ASH_EXPORT RecordingTypeMenuView : public CaptureModeMenuGroup,
+                                         public CaptureModeMenuGroup::Delegate {
  public:
-  RecordingTypeMenuView();
+  explicit RecordingTypeMenuView(
+      base::RepeatingClosure on_option_selected_callback);
   RecordingTypeMenuView(const RecordingTypeMenuView&) = delete;
   RecordingTypeMenuView& operator=(const RecordingTypeMenuView&) = delete;
-  ~RecordingTypeMenuView() override = default;
+  ~RecordingTypeMenuView() override;
 
   // Returns the ideal bounds of the widget hosting this view, relative to the
   // `capture_label_widget_screen_bounds` which hosts the drop down button that
@@ -35,6 +38,15 @@ class RecordingTypeMenuView : public CaptureModeMenuGroup,
   void OnOptionSelected(int option_id) const override;
   bool IsOptionChecked(int option_id) const override;
   bool IsOptionEnabled(int option_id) const override;
+
+  views::View* GetWebMOptionForTesting();
+  views::View* GetGifOptionForTesting();
+
+ private:
+  // A callback that will be triggered after an option has been selected, and
+  // the recording type has been set on the `CaptureModeController`. This is
+  // bound to a function in the `CaptureModeSession` that closes the menu.
+  base::RepeatingClosure on_option_selected_callback_;
 };
 
 }  // namespace ash

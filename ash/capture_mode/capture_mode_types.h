@@ -65,6 +65,17 @@ enum class FineTunePosition {
   kLeftCenter,
 };
 
+// Defines the supported recording formats.
+enum class RecordingType {
+  kWebM,
+  kGif,
+};
+
+// Converts the enum class `RecordingType` to its integer value.
+constexpr int ToInt(RecordingType type) {
+  return static_cast<int>(type);
+}
+
 }  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_TYPES_H_

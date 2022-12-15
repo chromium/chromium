@@ -815,6 +815,13 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   A11yAlertCaptureType();
 }
 
+void CaptureModeSession::OnRecordingTypeChanged() {
+  if (capture_label_view_) {
+    capture_label_view_->UpdateIconAndText();
+    UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kNone);
+  }
+}
+
 void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
   is_waiting_for_dlp_confirmation_ = true;
 
@@ -2873,7 +2880,9 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown) {
             capture_label_widget_->GetWindowBoundsInScreen()),
         "RecordingTypeMenuWidget"));
     recording_type_menu_widget_->SetContentsView(
-        std::make_unique<RecordingTypeMenuView>());
+        std::make_unique<RecordingTypeMenuView>(base::BindRepeating(
+            &CaptureModeSession::SetRecordingTypeMenuShown,
+            weak_ptr_factory_.GetWeakPtr(), /*shown=*/false)));
 
     auto* menu_window = recording_type_menu_widget_->GetNativeWindow();
     parent->StackChildAtTop(menu_window);

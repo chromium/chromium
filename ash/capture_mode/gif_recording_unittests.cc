@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
@@ -18,6 +19,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -43,6 +45,15 @@ class GifRecordingTest : public AshTestBase {
 
   CaptureLabelView* GetCaptureLabelView() {
     return CaptureModeSessionTestApi().GetCaptureLabelView();
+  }
+
+  RecordingTypeMenuView* GetRecordingTypeMenuView() {
+    return CaptureModeSessionTestApi().GetRecordingTypeMenuView();
+  }
+
+  views::LabelButton* GetCaptureButton() {
+    auto* label_view = GetCaptureLabelView();
+    return label_view->capture_button_container()->capture_button();
   }
 
   views::Widget* GetRecordingTypeMenuWidget() {
@@ -159,6 +170,85 @@ TEST_F(GifRecordingTest, ClickingOutsideClosesMenu) {
   generator->ClickLeftButton();
   EXPECT_FALSE(GetRecordingTypeMenuWidget());
   EXPECT_EQ(region, controller->user_capture_region());
+}
+
+TEST_F(GifRecordingTest, ChangingTypeFromMenu) {
+  auto* controller = StartRegionVideoCapture();
+  EXPECT_EQ(RecordingType::kWebM, controller->recording_type());
+  ClickOnDropDownButton();
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+
+  // The WebM option should be selected and marked with a check. Once the GIF
+  // option is clicked, the menu should close, and the recording type in the
+  // controller is updated.
+  auto* recording_type_menu_view = GetRecordingTypeMenuView();
+  EXPECT_TRUE(
+      recording_type_menu_view->IsOptionChecked(ToInt(RecordingType::kWebM)));
+  LeftClickOn(recording_type_menu_view->GetGifOptionForTesting());
+  EXPECT_FALSE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(RecordingType::kGif, controller->recording_type());
+}
+
+TEST_F(GifRecordingTest, MenuIsClosedWhenClickingCheckedOption) {
+  auto* controller = StartRegionVideoCapture();
+  EXPECT_EQ(RecordingType::kWebM, controller->recording_type());
+  ClickOnDropDownButton();
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+
+  // Clicking on the same checked option closes the menu even though there is no
+  // change.
+  auto* recording_type_menu_view = GetRecordingTypeMenuView();
+  LeftClickOn(recording_type_menu_view->GetWebMOptionForTesting());
+  EXPECT_FALSE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(RecordingType::kWebM, controller->recording_type());
+}
+
+TEST_F(GifRecordingTest, CaptureButtonStateUpdatedFromMenuSelection) {
+  // Select GIF from the menu, the capture button label should be updated.
+  StartRegionVideoCapture();
+  ClickOnDropDownButton();
+  LeftClickOn(GetRecordingTypeMenuView()->GetGifOptionForTesting());
+  auto* capture_button = GetCaptureButton();
+  EXPECT_EQ(capture_button->GetText(), u"Record GIF");
+
+  // Select WebM from the menu, and expect the button label to be updated too.
+  ClickOnDropDownButton();
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+  LeftClickOn(GetRecordingTypeMenuView()->GetWebMOptionForTesting());
+  EXPECT_EQ(capture_button->GetText(), u"Record video");
+}
+
+// When the recording type is set programmatically, the capture button should
+// still get updated.
+TEST_F(GifRecordingTest, CaptureButtonStateUpdatedFromController) {
+  auto* controller = StartRegionVideoCapture();
+  controller->SetRecordingType(RecordingType::kGif);
+  auto* capture_button = GetCaptureButton();
+  EXPECT_EQ(capture_button->GetText(), u"Record GIF");
+
+  controller->SetRecordingType(RecordingType::kWebM);
+  EXPECT_EQ(capture_button->GetText(), u"Record video");
+}
+
+// Recording type selection affects future capture sessions.
+TEST_F(GifRecordingTest, FutureCaptureSessionsAffected) {
+  auto* controller = StartRegionVideoCapture();
+  ClickOnDropDownButton();
+  LeftClickOn(GetRecordingTypeMenuView()->GetGifOptionForTesting());
+
+  // Press the ESC key to exit the current session.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(controller->IsActive());
+
+  // Start a new session, and expect that the capture button should be labeled
+  // correctly.
+  StartRegionVideoCapture();
+  EXPECT_EQ(GetCaptureButton()->GetText(), u"Record GIF");
+
+  // When the menu is open, the correct option is marked as checked.
+  ClickOnDropDownButton();
+  EXPECT_TRUE(
+      GetRecordingTypeMenuView()->IsOptionChecked(ToInt(RecordingType::kGif)));
 }
 
 }  // namespace ash

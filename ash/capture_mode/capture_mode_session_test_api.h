@@ -14,6 +14,7 @@ class CaptureModeBarView;
 class CaptureModeSession;
 class CaptureModeSettingsView;
 class MagnifierGlass;
+class RecordingTypeMenuView;
 class UserNudgeController;
 
 // Wrapper for CaptureModeSession that exposes internal state to test functions.
@@ -31,6 +32,8 @@ class CaptureModeSessionTestApi {
   CaptureModeSettingsView* GetCaptureModeSettingsView();
 
   CaptureLabelView* GetCaptureLabelView();
+
+  RecordingTypeMenuView* GetRecordingTypeMenuView();
 
   views::Widget* GetCaptureModeSettingsWidget();
 

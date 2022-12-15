@@ -89,6 +89,7 @@ class ASH_EXPORT CaptureModeController
   }
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
+  RecordingType recording_type() const { return recording_type_; }
   CaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
@@ -113,10 +114,12 @@ class ASH_EXPORT CaptureModeController
   // `AudioCaptureAllowed` policy.
   bool IsAudioCaptureDisabledByPolicy() const;
 
-  // Sets the capture source/type, which will be applied to an ongoing capture
-  // session (if any), or to a future capture session when Start() is called.
+  // Sets the capture source/type, and recording type, which will be applied to
+  // an ongoing capture session (if any), or to a future capture session when
+  // Start() is called.
   void SetSource(CaptureModeSource source);
   void SetType(CaptureModeType type);
+  void SetRecordingType(RecordingType recording_type);
 
   // Sets the audio recording flag, which will be applied to any future
   // recordings (cannot be set mid recording), or to a future capture mode
@@ -498,6 +501,7 @@ class ASH_EXPORT CaptureModeController
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;
+  RecordingType recording_type_ = RecordingType::kWebM;
 
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
