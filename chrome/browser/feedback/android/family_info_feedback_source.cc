@@ -8,11 +8,13 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/feedback/android/jni_headers/FamilyInfoFeedbackSource_jni.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -43,7 +45,9 @@ void JNI_FamilyInfoFeedbackSource_Start(
 FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
     const JavaParamRef<jobject>& obj,
     Profile* profile)
-    : identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
+    : supervised_user_service_(
+          SupervisedUserServiceFactory::GetForProfile(profile)),
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
       java_ref_(obj) {}
@@ -69,8 +73,20 @@ void FamilyInfoFeedbackSource::OnGetFamilyMembersSuccess(
       std::string role = member.role == FamilyMemberRole::HEAD_OF_HOUSEHOLD
                              ? kFamilyManagerRole
                              : FamilyInfoFetcher::RoleToString(member.role);
-      Java_FamilyInfoFeedbackSource_processFamilyMemberRole(
-          env, java_ref_, ConvertUTF8ToJavaString(env, role));
+
+      // If a child is signed-in, report the parental control web filter.
+      ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
+      if (base::FeatureList::IsEnabled(kReportParentalControlSitesChild) &&
+          member.role == FamilyMemberRole::CHILD) {
+        SupervisedUserURLFilter::WebFilterType web_filter_type =
+            supervised_user_service_->GetURLFilter()->GetWebFilterType();
+        child_web_filter_type = ConvertUTF8ToJavaString(
+            env, SupervisedUserURLFilter::WebFilterTypeToDisplayString(
+                     web_filter_type));
+      }
+      Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
+          env, java_ref_, ConvertUTF8ToJavaString(env, role),
+          child_web_filter_type);
     }
   }
   OnGetFamilyMembersCompletion();

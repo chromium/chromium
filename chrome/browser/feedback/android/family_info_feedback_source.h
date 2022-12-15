@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
 
 class Profile;
 
@@ -47,6 +48,7 @@ class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
   // Performs completion following call to GetFamilyMembers.
   void OnGetFamilyMembersCompletion();
 
+  raw_ptr<SupervisedUserService> supervised_user_service_;
   std::unique_ptr<FamilyInfoFetcher> family_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

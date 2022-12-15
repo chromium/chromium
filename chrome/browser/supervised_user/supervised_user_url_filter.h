@@ -156,6 +156,11 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
+  // Returns the string equivalent of a Web Filter type. This is a user-visible
+  // string included in the user feedback log.
+  static std::string WebFilterTypeToDisplayString(
+      WebFilterType web_filter_type);
+
   // Returns the filtering behavior for a given URL, based on the default
   // behavior and whether it is on a site list.
   FilteringBehavior GetFilteringBehaviorForURL(const GURL& url) const;
