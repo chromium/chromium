@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHe
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -109,11 +107,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testKeyboardAccessoryDisappearsWithKeyboard() throws TimeoutException {
+    public void testKeyboardAccessoryDisappearsWithKeyboard() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Focus the field to bring up the accessory.
@@ -210,11 +204,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testAccessoryHiddenAfterTappingAutoGenerationButton() throws TimeoutException {
+    public void testAccessoryHiddenAfterTappingAutoGenerationButton() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Focus the field to bring up the accessory and add the generation button.
@@ -258,11 +248,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
+    public void testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Focus the password field to bring up the accessory.
@@ -350,11 +336,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testPressingBackButtonHidesAccessorySheet() throws TimeoutException {
+    public void testPressingBackButtonHidesAccessorySheet() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Focus the field to bring up the accessory.
@@ -420,11 +402,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testInfobarStaysHiddenWhenOpeningSheet() throws TimeoutException {
+    public void testInfobarStaysHiddenWhenOpeningSheet() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Initialize and wait for the infobar.
@@ -473,11 +451,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testMovesUpSnackbar() throws TimeoutException {
+    public void testMovesUpSnackbar() throws TimeoutException {
         final String kSnackbarText = "snackbar";
 
         mHelper.loadTestPage(false);
@@ -516,11 +490,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testInfobarReopensOnPressingBack() throws TimeoutException {
+    public void testInfobarReopensOnPressingBack() throws TimeoutException {
         mHelper.loadTestPage(false);
 
         // Initialize and wait for the infobar.

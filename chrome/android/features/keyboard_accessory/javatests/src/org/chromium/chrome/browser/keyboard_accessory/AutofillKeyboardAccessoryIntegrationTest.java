@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHe
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
 import android.app.Activity;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -38,7 +37,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -204,11 +202,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102302")
-    public void
-    testSelectSuggestionHidesKeyboardAccessory(@EnabledFeature int enabledFeature)
+    public void testSelectSuggestionHidesKeyboardAccessory(@EnabledFeature int enabledFeature)
             throws ExecutionException, TimeoutException {
         loadTestPage(FakeKeyboard::new, enabledFeature);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
@@ -236,8 +230,6 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @SmallTest
     // clang-format off
-    @DisableIf.Build(hardware_is = "bullhead", sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1,
-        sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1216008")
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
         // clang-format on
@@ -265,8 +257,6 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @MediumTest
     // clang-format off
-    @DisableIf.Build(hardware_is = "bullhead", sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1,
-        sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1216008")
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
         // clang-format on
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
