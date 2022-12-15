@@ -4,18 +4,66 @@
 
 #include "ash/metrics/ui_metrics_recorder.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/test/test_event_handler.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 namespace {
 
-class FakeTestView : public views::View {
+// TestIMEEngineHandler invokes the callback synchronously for ProcessKeyEvent.
+class TestIMEEngineHandler : public MockIMEEngineHandler {
  public:
-  FakeTestView() = default;
+  // MockIMEEngineHandler overrides:
+  void ProcessKeyEvent(const ui::KeyEvent& key_event,
+                       KeyEventDoneCallback callback) override {
+    ++received_key_event_;
+    MockIMEEngineHandler::ProcessKeyEvent(key_event, std::move(callback));
+    last_passed_callback().Run(ui::ime::KeyEventHandledState::kNotHandled);
+  }
+
+  int GetReceivedKeyEvent() const { return received_key_event_; }
+
+ private:
+  int received_key_event_ = 0;
+};
+
+// WidgetDestroyHandler destroys a given widget synchronously on key events.
+class WidgetDestroyHandler : public ui::test::TestEventHandler {
+ public:
+  explicit WidgetDestroyHandler(std::unique_ptr<views::Widget> widget)
+      : widget_(std::move(widget)) {
+    widget_->GetNativeWindow()->AddPreTargetHandler(this);
+  }
+
+  // ui::test::TestEventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    ++received_key_event_;
+    event->SetHandled();
+    widget_.reset();
+  }
+
+  int GetReceivedKeyEvent() const { return received_key_event_; }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+  int received_key_event_ = 0;
+};
+
+// FakeTestView to consumer all events and trigger a paint. Derived from
+// `Textfield` so that IME related tests dispatches key events to IME engine.
+class FakeTestView : public views::Textfield {
+ public:
+  FakeTestView() { SetAccessibleName(u"FakeTestView"); }
   ~FakeTestView() override = default;
 
   // views::View:
@@ -25,7 +73,7 @@ class FakeTestView : public views::View {
     event->SetHandled();
   }
 
-  void OnKeyEvent(ui::KeyEvent* event) override { received_key_event_ += 1; }
+  void OnKeyEvent(ui::KeyEvent* event) override { ++received_key_event_; }
 
   int GetReceivedKeyEvent() const { return received_key_event_; }
 
@@ -142,6 +190,32 @@ TEST_F(UiMetricsRecorderTest, Gestures) {
     histogram_tester.ExpectTotalCount(
         "Ash.EventLatency.GesturePinchEnd.TotalLatency", 1);
   }
+}
+
+// Verifies no crashes when `EventTarget` is destroyed through a synchronous IME
+// `TextInputMethod::ProcessKeyEvent` call. See http://crbug.com/1392491.
+TEST_F(UiMetricsRecorderTest, TargetDestroyedWithSyncIME) {
+  // Setup.
+  auto ime_engine = std::make_unique<TestIMEEngineHandler>();
+  ui::IMEBridge::Get()->SetCurrentEngineHandler(ime_engine.get());
+
+  std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
+  FakeTestView* view =
+      widget->SetContentsView(std::make_unique<FakeTestView>());
+  widget->GetFocusManager()->SetFocusedView(view);
+
+  // Create an event handler on the test widget to close it synchronously.
+  WidgetDestroyHandler destroyer(std::move(widget));
+
+  // Press a key and no crash should happen.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // IME engine and `destroyer` should get the key event.
+  EXPECT_EQ(ime_engine->GetReceivedKeyEvent(), 1);
+  EXPECT_EQ(destroyer.GetReceivedKeyEvent(), 1);
+
+  // Teardown.
+  ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
 }
 
 }  // namespace

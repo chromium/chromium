@@ -175,13 +175,22 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     return DispatchKeyEventPostIME(event);
   }
 
+  // Resets previous event dispatch details before invoking IME engine's
+  // `ProcessKeyEvent`. `ProcessKeyEventDone` sets its value when it
+  // re-dispatches the key events. If `ProcessKeyEventDone` is invoked
+  // synchronously by `ProcessKeyEvent`, `dispatch_details_` would have correct
+  // dispatch details data to return. This is important because an `EventTarget`
+  // could be destroyed under `ProcessKeyEventDone`.
+  // See http://crbug.com/1392491.
+  dispatch_details_.reset();
+
   handling_key_event_ = true;
   GetEngine()->ProcessKeyEvent(
       *event, base::BindOnce(&InputMethodAsh::ProcessKeyEventDone,
                              weak_ptr_factory_.GetWeakPtr(),
                              // Pass the ownership of the new copied event.
                              base::Owned(new ui::KeyEvent(*event))));
-  return ui::EventDispatchDetails();
+  return dispatch_details_.value_or(ui::EventDispatchDetails());
 }
 
 void InputMethodAsh::ProcessKeyEventDone(
@@ -215,8 +224,8 @@ void InputMethodAsh::ProcessKeyEventDone(
         is_handled_by_char_composer
             ? ui::ime::KeyEventHandledState::kHandledByIME
             : handled_state;
-    std::ignore = ProcessKeyEventPostIME(event, handled_state_to_process,
-                                         /* stopped_propagation */ false);
+    dispatch_details_ = ProcessKeyEventPostIME(event, handled_state_to_process,
+                                               /* stopped_propagation */ false);
   }
   handling_key_event_ = false;
 }

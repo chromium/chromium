@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
@@ -21,6 +22,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/events/event_dispatcher.h"
 
 namespace ui {
 
@@ -220,6 +222,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   bool handling_key_event_ = false;
 
   TypingSessionManager typing_session_manager_;
+
+  // Use by `DispatchKeyEvent` to return a proper event dispatch details
+  // when IME engine's `ProcessKeyEvent` invokes `ProcessKeyEventDone`
+  // synchronously.
+  absl::optional<EventDispatchDetails> dispatch_details_;
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodAsh> weak_ptr_factory_{this};
