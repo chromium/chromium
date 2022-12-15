@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<link rel="help" href="https://crbug.com/1400067">
+<style>
+body {
+  -webkit-box-reflect: right min(1%, 0px);
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.designMode = 'on';
+  document.execCommand('SelectAll')
+  document.execCommand('Bold');
+});
+</script>

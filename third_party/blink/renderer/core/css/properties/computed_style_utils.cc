@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
@@ -509,10 +510,13 @@ CSSValue* ComputedStyleUtils::ValueForReflection(
 
   CSSPrimitiveValue* offset = nullptr;
   // TODO(alancutter): Make this work correctly for calc lengths.
-  if (reflection->Offset().IsPercentOrCalc()) {
+  if (reflection->Offset().IsPercent()) {
     offset = CSSNumericLiteralValue::Create(
         reflection->Offset().Percent(),
         CSSPrimitiveValue::UnitType::kPercentage);
+  } else if (reflection->Offset().IsCalculated()) {
+    offset = CSSMathFunctionValue::Create(reflection->Offset(),
+                                          style.EffectiveZoom());
   } else {
     offset = ZoomAdjustedPixelValue(reflection->Offset().Value(), style);
   }
