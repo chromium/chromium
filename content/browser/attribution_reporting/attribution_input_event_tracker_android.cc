@@ -9,8 +9,6 @@
 #include <tuple>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/web_contents/web_contents_android.h"
@@ -21,18 +19,8 @@
 
 namespace content {
 
-namespace {
-
-bool IsEventValid(const ui::MotionEventAndroid& event) {
-  // TODO(crbug.com/1378617): Apply Android's event policy.
-  return true;
-}
-
-}  // namespace
-
 AttributionInputEventTrackerAndroid::AttributionInputEventTrackerAndroid(
-    WebContents* web_contents)
-    : event_filter_(base::BindRepeating(&IsEventValid)) {
+    WebContents* web_contents) {
   DCHECK(web_contents);
 
   // Lazy initialization
@@ -52,14 +40,11 @@ AttributionInputEventTrackerAndroid::~AttributionInputEventTrackerAndroid() =
 
 void AttributionInputEventTrackerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
-  PushEventIfValid(event);
+  PushEvent(event);
 }
 
-void AttributionInputEventTrackerAndroid::PushEventIfValid(
+void AttributionInputEventTrackerAndroid::PushEvent(
     const ui::MotionEventAndroid& event) {
-  if (!event_filter_.Run(event))
-    return;
-
   most_recent_event_ =
       base::android::ScopedJavaGlobalRef<jobject>(event.GetJavaObject());
   most_recent_event_cache_time_ = base::TimeTicks::Now();

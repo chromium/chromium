@@ -7,10 +7,6 @@
 
 #include <jni.h>
 
-#include <utility>
-
-#include "base/callback.h"
-#include "base/check.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/android/event_forwarder.h"
@@ -59,20 +55,10 @@ class CONTENT_EXPORT AttributionInputEventTrackerAndroid
  private:
   friend class AttributionInputEventTrackerAndroidTest;
 
-  using EventFilterFunction =
-      base::RepeatingCallback<bool(const ui::MotionEventAndroid&)>;
-
   // ui::EventForwarder::Observer:
   void OnTouchEvent(const ui::MotionEventAndroid& event) override;
 
-  void PushEventIfValid(const ui::MotionEventAndroid& event);
-
-  void set_event_filter_for_testing(EventFilterFunction event_filter) {
-    DCHECK(!event_filter.is_null());
-    event_filter_ = std::move(event_filter);
-  }
-
-  EventFilterFunction event_filter_;
+  void PushEvent(const ui::MotionEventAndroid& event);
 
   base::android::ScopedJavaGlobalRef<jobject> most_recent_event_;
 
