@@ -40,7 +40,7 @@ js_library("auto_enrollment_check") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/auto_enrollment_check.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -51,7 +51,7 @@ js_library("demo_preferences") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_preferences.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
@@ -67,7 +67,7 @@ js_library("demo_setup") {
     "../../components:progress_list_item",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
@@ -114,7 +114,7 @@ js_library("hid_detection") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/hid_detection.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
@@ -141,7 +141,7 @@ js_library("oobe_network") {
   deps = [
     "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:assert",
@@ -154,7 +154,7 @@ js_library("packaged_license") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/packaged_license.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

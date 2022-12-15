@@ -90,7 +90,7 @@ js_library("lacros_data_migration") {
   deps = [
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -101,7 +101,7 @@ js_library("lacros_data_backward_migration") {
   deps = [
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -154,7 +154,7 @@ js_library("update_required_card") {
 js_library("checking_downloading_update") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/checking_downloading_update.js" ]
   deps = [
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",

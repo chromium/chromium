@@ -21,7 +21,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 
