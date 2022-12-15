@@ -97,8 +97,8 @@ TrackedChildURLLoaderFactoryBundle::Clone() {
 void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
   DCHECK(main_thread_host_bundle_);
 
-  // Required by |SequencedTaskRunnerHandle::Get()| below.
-  if (!base::SequencedTaskRunnerHandle::IsSet())
+  // Required by |SequencedTaskRunner::GetCurrentDefault()| below.
+  if (!base::SequencedTaskRunner::HasCurrentDefault())
     return;
 
   main_thread_host_bundle_->second->PostTask(
@@ -108,7 +108,7 @@ void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
           main_thread_host_bundle_->first, base::UnsafeDanglingUntriaged(this),
           std::make_unique<
               HostChildURLLoaderFactoryBundle::ObserverPtrAndTaskRunner>(
-              AsWeakPtr(), base::SequencedTaskRunnerHandle::Get())));
+              AsWeakPtr(), base::SequencedTaskRunner::GetCurrentDefault())));
 }
 
 void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
@@ -145,7 +145,7 @@ HostChildURLLoaderFactoryBundle::Clone() {
       base::WrapUnique(static_cast<ChildPendingURLLoaderFactoryBundle*>(
           ChildURLLoaderFactoryBundle::Clone().release()));
 
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   auto main_thread_host_bundle_clone = std::make_unique<
       TrackedChildURLLoaderFactoryBundle::HostPtrAndTaskRunner>(AsWeakPtr(),
                                                                 task_runner_);

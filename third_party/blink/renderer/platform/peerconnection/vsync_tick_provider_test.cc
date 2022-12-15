@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "metronome_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,7 +97,7 @@ class VSyncTickProviderTest : public ::testing::Test {
   FakeVSyncProvider fake_begin_frame_provider_;
   std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_ =
       VSyncTickProvider::Create(fake_begin_frame_provider_,
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 std::move(fake_default_tick_provider_holder_));
 };
 

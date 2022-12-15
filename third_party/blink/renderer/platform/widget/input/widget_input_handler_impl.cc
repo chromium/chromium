@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -96,10 +96,10 @@ void WidgetInputHandlerImpl::ImeSetComposition(
     int32_t start,
     int32_t end,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
-  RunOnMainThread(base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
-                                 base::ThreadTaskRunnerHandle::Get(), text,
-                                 ime_text_spans, range, start, end,
-                                 std::move(callback)));
+  RunOnMainThread(
+      base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
+                     base::SingleThreadTaskRunner::GetCurrentDefault(), text,
+                     ime_text_spans, range, start, end, std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
@@ -120,10 +120,10 @@ void WidgetInputHandlerImpl::ImeCommitText(
     const gfx::Range& range,
     int32_t relative_cursor_position,
     ImeCommitTextCallback callback) {
-  RunOnMainThread(
-      base::BindOnce(&ImeCommitTextOnMainThread, widget_,
-                     base::ThreadTaskRunnerHandle::Get(), text, ime_text_spans,
-                     range, relative_cursor_position, std::move(callback)));
+  RunOnMainThread(base::BindOnce(
+      &ImeCommitTextOnMainThread, widget_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), text, ime_text_spans,
+      range, relative_cursor_position, std::move(callback)));
 }
 
 void WidgetInputHandlerImpl::ImeFinishComposingText(bool keep_selection) {

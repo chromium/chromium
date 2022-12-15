@@ -316,7 +316,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   // Register a tracing state observer unless we're running in a test without a
   // task runner. Note that it's safe to remove a non-existent observer.
-  if (base::ThreadTaskRunnerHandle::IsSet()) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
         weak_factory_.GetWeakPtr());
   }
@@ -2200,9 +2200,9 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
   current_agent_group_scheduler_ = next_agent_group_scheduler;
 
   scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner =
-      base::ThreadTaskRunnerHandle::Get();
-  std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
-      thread_task_runner_handle_override;
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverride>
+      single_thread_task_runner_current_handle_override;
   if (scheduling_settings().mbi_override_task_runner_handle &&
       next_task_runner != previous_task_runner) {
     // per-thread and per-AgentSchedulingGroup task runner allows nested
@@ -2214,16 +2214,16 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
     // STTR/STR::GetCurrentDefault() properly. So there is no concern about
     // returning an unexpected task runner from STTR/STR::GetCurrentDefault() in
     // this specific case.
-    thread_task_runner_handle_override =
-        std::unique_ptr<base::ThreadTaskRunnerHandleOverride>(
-            new base::ThreadTaskRunnerHandleOverride(
+    single_thread_task_runner_current_handle_override =
+        std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverride>(
+            new base::SingleThreadTaskRunner::CurrentHandleOverride(
                 next_task_runner,
                 /*allow_nested_runloop=*/true));
   }
 
   main_thread_only().agent_group_scheduler_scope_stack.emplace_back(
       AgentGroupSchedulerScope{
-          std::move(thread_task_runner_handle_override),
+          std::move(single_thread_task_runner_current_handle_override),
           previous_agent_group_scheduler, next_agent_group_scheduler,
           std::move(previous_task_runner), std::move(next_task_runner),
           trace_event_scope_name, trace_event_scope_id});
@@ -2239,7 +2239,8 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
     DCHECK_EQ(base::SequencedTaskRunner::GetCurrentDefault(),
               agent_group_scheduler_scope.current_task_runner);
   }
-  agent_group_scheduler_scope.thread_task_runner_handle_override = nullptr;
+  agent_group_scheduler_scope
+      .single_thread_task_runner_current_handle_override = nullptr;
   DCHECK_EQ(base::SingleThreadTaskRunner::GetCurrentDefault(),
             agent_group_scheduler_scope.previous_task_runner);
   DCHECK_EQ(base::SequencedTaskRunner::GetCurrentDefault(),

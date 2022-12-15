@@ -66,15 +66,15 @@ Per-thread task runners include:
 New task runners might be added in the future; [contact the team](#contact)
 if you think you need a new one.
 
-## `ThreadTaskRunnerHandle::Get`
+## `SingleThreadTaskRunner::GetCurrentDefault`
 
-`base::ThreadTaskRunnerHandle::Get` is a way to get a task runner and
-it returns a default task runner for a thread. Because tasks posted to it
+`base::SingleThreadTaskRunner::GetCurrentDefault` is a way to get a task runner
+and it returns a default task runner for a thread. Because tasks posted to it
 lack any attribution, the scheduler can’t properly schedule and prioritise them.
 
-`base::ThreadTaskRunnerHandle::Get` usages are **banned** in `blink/` and
-`content/renderer/` directories and strongly discouraged elsewhere in the
-renderer process.
+`base::SingleThreadTaskRunner::GetCurrentDefault` usages are **banned** in
+`blink/` and `content/renderer/` directories and strongly discouraged elsewhere
+in the renderer process.
 
 Please help us to convert them to the appropriate task runner
 (usually per-frame one). See [Task Type Usage Guideline](

@@ -299,7 +299,7 @@ void FrameWidgetInputHandlerImpl::SelectAroundCaret(
               FROM_HERE,
               base::BindOnce(std::move(callback), std::move(result)));
         },
-        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
   }
 
   RunOnMainThread(base::BindOnce(
@@ -378,7 +378,7 @@ void FrameWidgetInputHandlerImpl::WaitForPageScaleAnimationForTesting(
           callback_task_runner->PostTask(FROM_HERE,
                                          base::BindOnce(std::move(callback)));
         },
-        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
   }
 
   RunOnMainThread(base::BindOnce(

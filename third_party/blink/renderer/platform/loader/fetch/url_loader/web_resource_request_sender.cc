@@ -16,8 +16,8 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -480,7 +480,7 @@ void WebResourceRequestSender::OnReceivedRedirect(
     // constructed, due to a URLLoaderThrottle that changed the starting
     // URL. Handle this in a posted task, as we don't have the loader
     // pointer yet.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WebResourceRequestSender::OnReceivedRedirect,
                                   weak_factory_.GetWeakPtr(), redirect_info,
                                   std::move(response_head), task_runner));

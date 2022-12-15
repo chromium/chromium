@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
@@ -77,7 +76,7 @@ void IpcNetworkManager::StartUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (network_list_received_) {
     // Post a task to avoid reentrancy.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, WTF::BindOnce(&IpcNetworkManager::SendNetworksChangedSignal,
                                  weak_factory_.GetWeakPtr()));
   } else {

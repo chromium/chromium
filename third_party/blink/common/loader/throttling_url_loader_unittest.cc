@@ -419,7 +419,7 @@ class ThrottlingURLLoaderTest : public testing::Test {
     loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
         factory_.shared_factory(), std::move(throttles_), /*request_id=*/0,
         /*options=*/0, &request, &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     factory_.factory_remote().FlushForTesting();
   }
 
@@ -658,7 +658,7 @@ TEST_F(ThrottlingURLLoaderTest,
   loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
       factory_.shared_factory(), std::move(throttles_), 0, 0, &request,
       &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   loader_ = nullptr;
 

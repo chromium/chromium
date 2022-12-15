@@ -8,7 +8,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/media_permission.h"
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -219,7 +219,7 @@ void FilteringNetworkManager::FireEventIfStarted() {
   // Post a task to avoid reentrancy.
   //
   // TODO(crbug.com/787254): Use Frame-based TaskRunner here.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       WTF::BindOnce(&FilteringNetworkManager::SendNetworksChangedSignal,
                     GetWeakPtr()));

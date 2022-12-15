@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/no_destructor.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace blink {
@@ -101,7 +101,8 @@ void AssociatedInterfaceProvider::OverrideBinderForTesting(
 AssociatedInterfaceProvider*
 AssociatedInterfaceProvider::GetEmptyAssociatedInterfaceProvider() {
   static base::NoDestructor<AssociatedInterfaceProvider>
-      associated_interface_provider(base::ThreadTaskRunnerHandle::Get());
+      associated_interface_provider(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   return associated_interface_provider.get();
 }
 

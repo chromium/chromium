@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -38,7 +38,7 @@ P2PSocketDispatcher& P2PSocketDispatcher::From(MojoBindingContext& context) {
 
 P2PSocketDispatcher::P2PSocketDispatcher(MojoBindingContext& context, PassKey)
     : Supplement(context),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       network_list_observers_(
           new base::ObserverListThreadSafe<blink::NetworkListObserver>()),
       network_notification_client_receiver_(this, &context) {}

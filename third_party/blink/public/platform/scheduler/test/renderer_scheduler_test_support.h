@@ -21,11 +21,11 @@ namespace scheduler {
 class WebThreadScheduler;
 class WebMockThreadScheduler;
 
-// Creates simple scheduling infrastructure for unit tests.
-// It allows creation of FrameSchedulers and PageSchedulers, but doesn't provide
-// any task running infrastructure, relying on the presence of
-// ThreadTaskRunnerHandle::Get() instead, meaning that the users also have to
-// create base::debug::TaskEnvironment.
+// Creates simple scheduling infrastructure for unit tests.  It allows creation
+// of FrameSchedulers and PageSchedulers, but doesn't provide any task running
+// infrastructure, relying on the presence of
+// SingleThreadTaskRunner::GetCurrentDefault() instead, meaning that the users
+// also have to create base::debug::TaskEnvironment.
 std::unique_ptr<WebThreadScheduler> CreateWebMainThreadSchedulerForTests();
 
 // Simple scheduling infrastructure for unit tests, with the addition of mocked

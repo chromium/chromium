@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/media_permission.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,7 +161,7 @@ class FilteringNetworkManagerTest : public testing::Test,
   FilteringNetworkManagerTest()
       : media_permission_(new MockMediaPermission()),
         task_runner_(new base::TestSimpleTaskRunner()),
-        task_runner_handle_(task_runner_) {
+        task_runner_current_default_handle_(task_runner_) {
     networks_.emplace_back("test_eth0", "Test Network Adapter 1",
                            rtc::IPAddress(0x12345600U), 24,
                            rtc::ADAPTER_TYPE_ETHERNET),
@@ -262,7 +262,8 @@ class FilteringNetworkManagerTest : public testing::Test,
 
   std::vector<const rtc::Network*> network_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
 };
 
 // Test that when multiple routes is not requested, SignalNetworksChanged is

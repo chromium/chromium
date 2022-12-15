@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/bind_to_current_loop.h"
@@ -353,7 +353,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     base::TimeTicks capture_timestamp) {
   // Cache the thread sending frames on first frame arrival.
   if (!origin_task_runner_.get())
-    origin_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+    origin_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(origin_sequence_checker_);
   if (paused_)

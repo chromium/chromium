@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "base/task/sequence_manager/test/test_task_queue.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/thread_pool_manager.h"
 
 namespace base {
@@ -53,9 +53,9 @@ ThreadManager::ThreadManager(base::TimeTicks initial_time,
 
   test_task_runner_->AdvanceMockTickClock(initial_time - base::TimeTicks());
 
-  manager_ =
-      SequenceManagerForTest::Create(nullptr, ThreadTaskRunnerHandle::Get(),
-                                     test_task_runner_->GetMockTickClock());
+  manager_ = SequenceManagerForTest::Create(
+      nullptr, SingleThreadTaskRunner::GetCurrentDefault(),
+      test_task_runner_->GetMockTickClock());
 
   TaskQueue::Spec spec = TaskQueue::Spec(QueueName::DEFAULT_TQ);
   task_queues_.emplace_back(MakeRefCounted<TaskQueueWithVoters>(

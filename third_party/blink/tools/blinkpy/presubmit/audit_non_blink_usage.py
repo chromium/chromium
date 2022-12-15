@@ -1468,6 +1468,11 @@ _CONFIG = [
         # WTF::RefCounted should be used instead. base::RefCountedThreadSafe is
         # still needed for cross_thread_copier.h though.
         'allowed': ['base::RefCountedThreadSafe', '(?!base::RefCounted).+'],
+        # This is required to supplant less fine-grained inclass_disallows. We
+        # want to allow everything that the normal ones are allowing here, for
+        # the same reasons.
+        'inclass_allowed':
+        ['base::RefCountedThreadSafe::.+', '(?!base::RefCounted).+'],
         'disallowed': [
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.

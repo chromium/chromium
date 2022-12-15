@@ -18,7 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -586,7 +586,7 @@ VideoTrackAdapter::VideoTrackAdapter(
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
     : video_task_runner_(video_task_runner),
       media_stream_video_source_(media_stream_video_source),
-      renderer_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      renderer_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       muted_state_(false),
       frame_counter_(0),
       old_frame_counter_snapshot_(0),

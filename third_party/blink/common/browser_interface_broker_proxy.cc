@@ -6,8 +6,8 @@
 
 #include <tuple>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace blink {
 
@@ -68,7 +68,8 @@ BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
     auto& proxy = proxy_slot.GetOrCreateValue();
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote;
     std::ignore = remote.InitWithNewPipeAndPassReceiver();
-    proxy.Bind(std::move(remote), base::ThreadTaskRunnerHandle::Get());
+    proxy.Bind(std::move(remote),
+               base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   return proxy_slot.GetOrCreateValue();

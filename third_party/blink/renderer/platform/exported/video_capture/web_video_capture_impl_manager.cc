@@ -26,7 +26,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -74,7 +74,8 @@ struct WebVideoCaptureImplManager::DeviceEntry {
 
 WebVideoCaptureImplManager::WebVideoCaptureImplManager()
     : next_client_id_(0),
-      render_main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      render_main_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       is_suspending_all_(false) {}
 
 WebVideoCaptureImplManager::~WebVideoCaptureImplManager() {

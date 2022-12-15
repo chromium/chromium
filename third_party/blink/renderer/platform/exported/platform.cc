@@ -35,7 +35,6 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -146,22 +145,22 @@ class SimpleMainThread : public MainThread {
  public:
   SimpleMainThread() = default;
 
-  // We rely on base::ThreadTaskRunnerHandle for tasks posted on the main
-  // thread. The task runner handle may not be available on Blink's startup
-  // (== on SimpleMainThread's construction), because some tests like
-  // blink_platform_unittests do not set up a global task environment.
-  // In those cases, a task environment is set up on a test fixture's
-  // creation, and GetTaskRunner() returns the right task runner during
-  // a test.
+  // We rely on base::SingleThreadTaskRunner::CurrentDefaultHandle for tasks
+  // posted on the main thread. The task runner handle may not be available on
+  // Blink's startup (== on SimpleMainThread's construction), because some tests
+  // like blink_platform_unittests do not set up a global task environment.  In
+  // those cases, a task environment is set up on a test fixture's creation, and
+  // GetTaskRunner() returns the right task runner during a test.
   //
-  // If GetTaskRunner() can be called from a non-main thread (including
-  // a worker thread running Mojo callbacks), we need to somehow get a task
-  // runner for the main thread. This is not possible with
-  // ThreadTaskRunnerHandle. We currently deal with this issue by setting
-  // the main thread task runner on the test startup and clearing it on
-  // the test tear-down. This is what SetMainThreadTaskRunnerForTesting() for.
-  // This function is called from Platform::SetMainThreadTaskRunnerForTesting()
-  // and Platform::UnsetMainThreadTaskRunnerForTesting().
+  // If GetTaskRunner() can be called from a non-main thread (including a worker
+  // thread running Mojo callbacks), we need to somehow get a task runner for
+  // the main thread. This is not possible with
+  // SingleThreadTaskRunner::CurrentDefaultHandle. We currently deal with this
+  // issue by setting the main thread task runner on the test startup and
+  // clearing it on the test tear-down. This is what
+  // SetMainThreadTaskRunnerForTesting() for.  This function is called from
+  // Platform::SetMainThreadTaskRunnerForTesting() and
+  // Platform::UnsetMainThreadTaskRunnerForTesting().
 
   ThreadScheduler* Scheduler() override { return &scheduler_; }
 
@@ -170,7 +169,7 @@ class SimpleMainThread : public MainThread {
     if (main_thread_task_runner_for_testing_)
       return main_thread_task_runner_for_testing_;
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   void SetMainThreadTaskRunnerForTesting(
@@ -227,7 +226,7 @@ void Platform::InitializeMainThreadCommon(
 
   ThreadState* thread_state = ThreadState::AttachMainThread();
   new BlinkGCMemoryDumpProvider(
-      thread_state, base::ThreadTaskRunnerHandle::Get(),
+      thread_state, base::SingleThreadTaskRunner::GetCurrentDefault(),
       BlinkGCMemoryDumpProvider::HeapType::kBlinkMainThread);
 
   MemoryPressureListenerRegistry::Initialize();
@@ -242,25 +241,25 @@ void Platform::InitializeMainThreadCommon(
   g_gc_task_runner = new GCTaskRunner(Thread::MainThread());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       PartitionAllocMemoryDumpProvider::Instance(), "PartitionAlloc",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       FontCacheMemoryDumpProvider::Instance(), "FontCaches",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       MemoryCacheDumpProvider::Instance(), "MemoryCache",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       InstanceCountersMemoryDumpProvider::Instance(), "BlinkObjectCounters",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       ParkableStringManagerDumpProvider::Instance(), "ParkableStrings",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       &ParkableImageManager::Instance(), "ParkableImages",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       CanvasMemoryDumpProvider::Instance(), "Canvas",
-      base::ThreadTaskRunnerHandle::Get());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   SkGraphics::SetVariableColrV1EnabledFunc(
       RuntimeEnabledFeatures::VariableCOLRV1Enabled);
@@ -285,7 +284,8 @@ void Platform::SetMainThreadTaskRunnerForTesting() {
   DCHECK(WTF::IsMainThread());
   DCHECK(Thread::MainThread()->IsSimpleMainThread());
   static_cast<SimpleMainThread*>(Thread::MainThread())
-      ->SetMainThreadTaskRunnerForTesting(base::ThreadTaskRunnerHandle::Get());
+      ->SetMainThreadTaskRunnerForTesting(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void Platform::UnsetMainThreadTaskRunnerForTesting() {

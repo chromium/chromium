@@ -960,8 +960,9 @@ void MediaStreamVideoTrack::AddCropVersionCallback(uint32_t crop_version,
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   frame_deliverer_->AddCropVersionCallback(
-      crop_version, base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                                       std::move(callback)));
+      crop_version,
+      base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                         std::move(callback)));
 }
 
 void MediaStreamVideoTrack::RemoveCropVersionCallback(uint32_t crop_version) {

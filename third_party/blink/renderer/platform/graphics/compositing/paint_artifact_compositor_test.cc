@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer.h"
@@ -79,7 +79,7 @@ class PaintArtifactCompositorTest : public testing::Test,
  protected:
   PaintArtifactCompositorTest()
       : task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
-        task_runner_handle_(task_runner_) {}
+        task_runner_current_default_handle_(task_runner_) {}
 
   void SetUp() override {
     // Delay constructing the compositor until after the feature is set.
@@ -248,7 +248,8 @@ class PaintArtifactCompositorTest : public testing::Test,
   MockScrollCallbacks scroll_callbacks_;
   std::unique_ptr<PaintArtifactCompositor> paint_artifact_compositor_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      task_runner_current_default_handle_;
   cc::FakeLayerTreeHostClient layer_tree_host_client_;
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };

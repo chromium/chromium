@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -40,17 +40,17 @@ void SimpleMainThreadScheduler::RemoveRAILModeObserver(
 
 scoped_refptr<base::SingleThreadTaskRunner>
 SimpleMainThreadScheduler::V8TaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 SimpleMainThreadScheduler::CleanupTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 SimpleMainThreadScheduler::NonWakingTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 AgentGroupScheduler* SimpleMainThreadScheduler::CreateAgentGroupScheduler() {

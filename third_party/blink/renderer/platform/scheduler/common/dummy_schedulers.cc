@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
@@ -37,7 +37,7 @@ class DummyWidgetScheduler final : public WidgetScheduler {
   void Shutdown() override {}
   // Returns the input task runner.
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   void WillBeginFrame(const viz::BeginFrameArgs& args) override {}
   void BeginFrameNotExpectedSoon() override {}
@@ -70,7 +70,7 @@ class DummyFrameScheduler : public FrameScheduler {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   PageScheduler* GetPageScheduler() const override {
@@ -113,12 +113,12 @@ class DummyFrameScheduler : public FrameScheduler {
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() override {
     return WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override {
     return WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override {
@@ -149,7 +149,7 @@ class DummyFrameScheduler : public FrameScheduler {
   }
   void ReportActiveSchedulerTrackedFeatures() override {}
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
  private:
@@ -210,7 +210,7 @@ class SimpleThread : public MainThread {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       MainThreadTaskRunnerRestricted) const override {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   ThreadScheduler* Scheduler() override { return scheduler_; }
@@ -252,22 +252,22 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   std::unique_ptr<MainThread> CreateMainThread() override {
@@ -286,7 +286,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
     DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
   AgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
@@ -322,10 +322,10 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
     return CreateDummyPageScheduler();
   }
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   WebThreadScheduler& GetMainThreadScheduler() override {
     return *main_thread_scheduler_;

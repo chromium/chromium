@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_COMPOSITOR_TEST_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -23,7 +23,8 @@ class CompositorTest : public testing::Test {
   // cc::LayerTreeHost requires a task runner, so we use a mock task runner
   // and bind it as the current ThreadTaskRunnerHandle for this thread.
   scoped_refptr<base::TestMockTimeTaskRunner> runner_;
-  base::ThreadTaskRunnerHandle runner_handle_;
+  base::SingleThreadTaskRunner::CurrentDefaultHandle
+      runner_current_default_handle_;
 };
 
 }  // namespace blink

@@ -15,7 +15,7 @@
 #include "base/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
@@ -163,7 +163,7 @@ class WebMediaPlayerMS::FrameDeliverer {
                  scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                  scoped_refptr<base::TaskRunner> worker_task_runner,
                  media::GpuVideoAcceleratorFactories* gpu_factories)
-      : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         player_(player),
         enqueue_frame_cb_(std::move(enqueue_frame_cb)),
         media_task_runner_(media_task_runner),

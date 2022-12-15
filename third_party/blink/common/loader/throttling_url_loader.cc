@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -335,8 +334,8 @@ ThrottlingURLLoader::~ThrottlingURLLoader() {
 
     auto throttles =
         std::make_unique<std::vector<ThrottleEntry>>(std::move(throttles_));
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                    std::move(throttles));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(throttles));
   }
 }
 
