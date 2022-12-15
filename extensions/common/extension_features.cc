@@ -95,7 +95,7 @@ BASE_FEATURE(kExtensionsMenuAccessControl,
 // creating the script context too early which can be bad for performance.
 BASE_FEATURE(kAvoidEarlyExtensionScriptContextCreation,
              "AvoidEarlyExtensionScriptContextCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The feature enabling offscreen documents in Manifest V3 extensions.
 BASE_FEATURE(kExtensionsOffscreenDocuments,

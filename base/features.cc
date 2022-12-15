@@ -10,8 +10,6 @@ namespace base::features {
 // Alphabetical:
 
 // Optimizes parsing and loading of data: URLs.
-BASE_FEATURE(kOptimizeDataUrls,
-             "OptimizeDataUrls",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimizeDataUrls, "OptimizeDataUrls", FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace base::features
