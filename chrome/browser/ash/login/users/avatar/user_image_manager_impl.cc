@@ -328,12 +328,15 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
     // Fetch the default image from cloud before caching it.
     image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
 
+    // Set user image to a temp stub image while fetching the default image from
+    // the cloud.
+    auto user_image = std::make_unique<user_manager::UserImage>(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_LOGIN_DEFAULT_USER));
+    UpdateUser(std::move(user_image));
+    UpdateLocalState();
+
     if (g_skip_default_user_image_download) {
-      auto user_image = std::make_unique<user_manager::UserImage>(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGIN_DEFAULT_USER));
-      UpdateUser(std::move(user_image));
-      UpdateLocalState();
       NotifyJobDone();
       return;
     }
