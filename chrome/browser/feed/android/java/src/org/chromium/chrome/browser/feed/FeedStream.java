@@ -956,7 +956,8 @@ public class FeedStream implements Stream {
 
     /** returns true if we can use the onboarding feature. */
     boolean isOnboardingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_ONBOARDING);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_ONBOARDING)
+                && mStreamKind != StreamKind.SINGLE_WEB_FEED;
     }
 
     /**
@@ -1071,11 +1072,13 @@ public class FeedStream implements Stream {
         // * existing headers
         // * both new and existing contents
         ArrayList<NtpListContentManager.FeedContent> newContentList = new ArrayList<>();
+        boolean isZeroStateSlice = false;
         for (FeedUiProto.StreamUpdate.SliceUpdate sliceUpdate :
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
                 NtpListContentManager.FeedContent content =
                         createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
+                isZeroStateSlice = sliceUpdate.getSlice().hasZeroStateSlice();
                 if (content != null) {
                     newContentList.add(content);
                     if (!content.isNativeView()) {
@@ -1099,7 +1102,7 @@ public class FeedStream implements Stream {
         // If there was empty space left on the screen, add the spacer back in.  Since card size has
         // not yet been calculated, we use an approximation of adding the spacer if two or less
         // items are in the recycler view.
-        if (isOnboardingEnabled() && newContentList.size() <= 2) {
+        if (isOnboardingEnabled() && newContentList.size() <= 2 && !isZeroStateSlice) {
             addSpacer(newContentList);
         }
 
@@ -1160,8 +1163,9 @@ public class FeedStream implements Stream {
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             MarginLayoutParams marginParams =
                     (MarginLayoutParams) creatorErrorCard.getLayoutParams();
-            marginParams.setMargins(0, displayMetrics.heightPixels / 4, 0, 0);
-            creatorErrorCard.setLayoutParams(marginParams);
+            marginParams.setMargins(0, displayMetrics.heightPixels / 4, 0,
+                    mActivity.getResources().getDimensionPixelSize(
+                            R.dimen.creator_error_margin_bottom));
             return new NtpListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, creatorErrorCard);
         }
