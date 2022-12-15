@@ -15,9 +15,11 @@ namespace {
 const char kPriceTrackingNotifications[] = "enable_price_notification";
 }  // namespace
 
-// Determine if price drop notifications are enabled.
+// Determine if price drop notifications are enabled and the ShoppingService is
+// available.
 bool IsPriceNotificationsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      commerce::kCommercePriceTracking, kPriceTrackingNotifications,
-      /** default_value */ false);
+  return base::FeatureList::IsEnabled(commerce::kShoppingList) &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             commerce::kCommercePriceTracking, kPriceTrackingNotifications,
+             /** default_value */ false);
 }
