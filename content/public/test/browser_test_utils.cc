@@ -1086,7 +1086,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
 }
 
 #if !BUILDFLAG(IS_MAC)
-void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
+void SimulateMouseWheelCtrlZoomEvent(RenderWidgetHost* render_widget_host,
                                      const gfx::Point& point,
                                      bool zoom_in,
                                      blink::WebMouseWheelEvent::Phase phase) {
@@ -1100,8 +1100,8 @@ void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
       (zoom_in ? 1.0 : -1.0) * ui::MouseWheelEvent::kWheelDelta;
   wheel_event.wheel_ticks_y = (zoom_in ? 1.0 : -1.0);
   wheel_event.phase = phase;
-  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
+  RenderWidgetHostImpl* widget_host =
+      RenderWidgetHostImpl::From(render_widget_host);
   widget_host->ForwardWheelEvent(wheel_event);
 }
 

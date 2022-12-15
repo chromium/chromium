@@ -347,7 +347,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
 
 #if !BUILDFLAG(IS_MAC)
 // Simulate a mouse wheel event with the ctrl modifier set.
-void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
+void SimulateMouseWheelCtrlZoomEvent(RenderWidgetHost* render_widget_host,
                                      const gfx::Point& point,
                                      bool zoom_in,
                                      blink::WebMouseWheelEvent::Phase phase);

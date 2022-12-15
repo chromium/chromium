@@ -3467,7 +3467,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
 
 // In response to the events sent in |send_events|, ensures the PDF viewer zooms
 // in and that the viewer's custom pinch zooming mechanism is used to do so.
-void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
+void EnsureCustomPinchZoomInvoked(content::RenderFrameHost* guest_mainframe,
                                   WebContents* contents,
                                   base::OnceClosure send_events) {
   constexpr char kListenPinchUpdate[] = R"(
@@ -3477,7 +3477,7 @@ void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
                                                           resolve);
       });
   )";
-  ASSERT_TRUE(content::ExecuteScript(guest_contents, kListenPinchUpdate));
+  ASSERT_TRUE(content::ExecuteScript(guest_mainframe, kListenPinchUpdate));
 
   zoom::ZoomChangedWatcher zoom_watcher(
       contents,
@@ -3492,7 +3492,7 @@ void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
 
   bool got_update;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      guest_contents,
+      guest_mainframe,
       "updatePromise.then(function(update) { "
       "  window.domAutomationController.send(!!update); "
       "});",
@@ -3512,44 +3512,54 @@ void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
 
 // Ensure that touchpad pinch events are handled by the PDF viewer.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
 
   base::OnceClosure send_pinch = base::BindOnce(
-      [](WebContents* guest_contents) {
-        const gfx::Rect guest_rect = guest_contents->GetContainerBounds();
+      [](content::RenderFrameHost* guest_mainframe) {
+        const gfx::Rect guest_rect =
+            guest_mainframe->GetView()->GetViewBounds();
         const gfx::Point mouse_position(guest_rect.width() / 2,
                                         guest_rect.height() / 2);
         content::SimulateGesturePinchSequence(
-            guest_contents, mouse_position, 1.23,
+            guest_mainframe->GetRenderWidgetHost(), mouse_position, 1.23,
             blink::WebGestureDevice::kTouchpad);
       },
-      guest_contents);
+      guest_mainframe);
 
-  EnsureCustomPinchZoomInvoked(guest_contents, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
                                std::move(send_pinch));
 }
 
 #if !BUILDFLAG(IS_MAC)
 // Ensure that ctrl-wheel events are handled by the PDF viewer.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
 
   base::OnceClosure send_ctrl_wheel = base::BindOnce(
-      [](WebContents* guest_contents) {
-        const gfx::Rect guest_rect = guest_contents->GetContainerBounds();
+      [](content::RenderFrameHost* guest_mainframe) {
+        const gfx::Rect guest_rect =
+            guest_mainframe->GetView()->GetViewBounds();
         const gfx::Point mouse_position(guest_rect.width() / 2,
                                         guest_rect.height() / 2);
         content::SimulateMouseWheelCtrlZoomEvent(
-            guest_contents, mouse_position, true,
+            guest_mainframe->GetRenderWidgetHost(), mouse_position, true,
             blink::WebMouseWheelEvent::kPhaseBegan);
       },
-      guest_contents);
+      guest_mainframe);
 
-  EnsureCustomPinchZoomInvoked(guest_contents, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
                                std::move(send_ctrl_wheel));
 }
 
@@ -3563,23 +3573,28 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
 #endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        MAYBE_TouchscreenPinchInvokesCustomZoom) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
 
   base::OnceClosure send_touchscreen_pinch = base::BindOnce(
-      [](WebContents* guest_contents) {
-        const gfx::Rect guest_rect = guest_contents->GetContainerBounds();
+      [](WebContents* web_contents, content::RenderFrameHost* guest_mainframe) {
+        const gfx::Rect guest_rect =
+            guest_mainframe->GetView()->GetViewBounds();
         const gfx::PointF anchor_position(guest_rect.width() / 2,
                                           guest_rect.height() / 2);
         base::RunLoop run_loop;
-        content::SimulateTouchscreenPinch(guest_contents, anchor_position, 1.2f,
+        content::SimulateTouchscreenPinch(web_contents, anchor_position, 1.2f,
                                           run_loop.QuitClosure());
         run_loop.Run();
       },
-      guest_contents);
+      GetActiveWebContents(), guest_mainframe);
 
-  EnsureCustomPinchZoomInvoked(guest_contents, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
                                std::move(send_touchscreen_pinch));
 }
 
