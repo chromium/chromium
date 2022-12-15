@@ -5814,7 +5814,7 @@
   {
     "name": "quick-gesture-show-launcher",
     "owners": [ "anasalazar", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "quick-intensive-throttling-after-loading",
