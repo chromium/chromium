@@ -32328,6 +32328,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1043" label="CloudAPAuthEnabled"/>
   <int value="1044" label="UsbDetectorNotificationEnabled"/>
   <int value="1045" label="LacrosSelection"/>
+  <int value="1046" label="UseMojoVideoDecoderForPepperAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

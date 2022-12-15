@@ -126,5 +126,10 @@ const char kOffsetParentNewSpecBehaviorEnabled[] =
 const char kSendMouseEventsDisabledFormControlsEnabled[] =
     "policy.send_mouse_events_disabled_form_controls_enabled";
 
+// If true the feature UseMojoVideoDecoderForPepper will be allowed, otherwise
+// feature will be forced off.
+const char kUseMojoVideoDecoderForPepperAllowed[] =
+    "policy.use_mojo_video_decoder_for_pepper_allowed";
+
 }  // namespace policy_prefs
 }  // namespace policy

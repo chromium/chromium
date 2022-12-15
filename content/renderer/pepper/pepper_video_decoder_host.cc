@@ -160,7 +160,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
   min_picture_count_ = min_picture_count;
 
   if (acceleration != PP_HARDWAREACCELERATION_NONE) {
-    if (!base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper)) {
+    if (!media::IsUseMojoVideoDecoderForPepperEnabled()) {
       // This is not synchronous, but subsequent IPC messages will be buffered,
       // so it is okay to immediately send IPC messages.
       if (command_buffer->channel()) {

@@ -1,0 +1,37 @@
+owners:
+- pmolinalopez@chromium.org
+- andrescj@chromium.org
+- blundell@chromium.org
+caption: Allow <ph name="PEPPER_NAME">Pepper</ph> to use a new decoder
+  for hardware accelerated video decoding.
+desc: |-
+  This policy controls whether <ph name="PEPPER_NAME">Pepper</ph> plugins can
+  use the new decoder to talk to hardware decoders instead of the legacy video
+  decoder.
+
+  The migration only affects internal implementation details and should not
+  change any behavior. However, this policy can be used in case any PPAPI
+  applications do not work as expected.
+
+  When the policy is left unset or set to Enabled the browser will decide which
+  implementation is used.
+  When the policy is set to Disabled, the browser will use the old implementation
+  until this policy expires.
+supported_on:
+- chrome.*:110-114
+- chrome_os:110-114
+device_only: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Allow <ph name="PEPPER_NAME">Pepper</ph> to use the new video decoder.
+  value: true
+- caption: Force <ph name="PEPPER_NAME">Pepper</ph> to use the legacy video decoder.
+  value: false
+default: true
+example_value: false
+tags: []

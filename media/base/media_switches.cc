@@ -274,6 +274,12 @@ const char kCastStreamingForceEnableHardwareH264[] =
 const char kCastStreamingForceEnableHardwareVp8[] =
     "cast-streaming-force-enable-hardware-vp8";
 
+// Disables the code path that makes Pepper use the MojoVideoDecoder for
+// hardware accelerated video decoding. It overrides the value of the
+// kUseMojoVideoDecoderForPepper feature flag.
+const char kDisableUseMojoVideoDecoderForPepper[] =
+    "disable-use-mojo-video-decoder-for-pepper";
+
 }  // namespace switches
 
 namespace media {
@@ -1304,6 +1310,19 @@ bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);
 }
 #endif
+
+bool IsUseMojoVideoDecoderForPepperEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableUseMojoVideoDecoderForPepper)) {
+    LOG(WARNING) << "UseMojoVideoDecoderForPepper: Disabled by policy";
+    return false;
+  }
+
+  auto enabled = base::FeatureList::IsEnabled(kUseMojoVideoDecoderForPepper);
+  LOG(WARNING) << "UseMojoVideoDecoderForPepper: feature controlled: "
+               << enabled;
+  return enabled;
+}
 
 // Return bitmask of audio formats supported by EDID.
 uint32_t GetPassthroughAudioFormats() {

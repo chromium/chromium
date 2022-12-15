@@ -138,6 +138,8 @@ MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
 // to take effect.
 MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
 
+MEDIA_EXPORT extern const char kDisableUseMojoVideoDecoderForPepper[];
+
 }  // namespace switches
 
 namespace media {
@@ -377,6 +379,8 @@ MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #endif
+
+MEDIA_EXPORT bool IsUseMojoVideoDecoderForPepperEnabled();
 
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,
