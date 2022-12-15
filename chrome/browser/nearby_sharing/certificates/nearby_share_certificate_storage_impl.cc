@@ -348,7 +348,7 @@ NearbyShareCertificateStorageImpl::GetPrivateCertificates() const {
   std::vector<NearbySharePrivateCertificate> certs;
   for (const base::Value& cert_dict : list.GetList()) {
     absl::optional<NearbySharePrivateCertificate> cert(
-        NearbySharePrivateCertificate::FromDictionary(cert_dict));
+        NearbySharePrivateCertificate::FromDictionary(cert_dict.GetDict()));
     if (!cert)
       return absl::nullopt;
 
@@ -368,11 +368,12 @@ NearbyShareCertificateStorageImpl::NextPublicCertificateExpirationTime() const {
 
 void NearbyShareCertificateStorageImpl::ReplacePrivateCertificates(
     const std::vector<NearbySharePrivateCertificate>& private_certificates) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const NearbySharePrivateCertificate& cert : private_certificates) {
     list.Append(cert.ToDictionary());
   }
-  pref_service_->Set(prefs::kNearbySharingPrivateCertificateListPrefName, list);
+  pref_service_->SetList(prefs::kNearbySharingPrivateCertificateListPrefName,
+                         std::move(list));
 }
 
 void NearbyShareCertificateStorageImpl::AddPublicCertificates(
@@ -488,13 +489,14 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
 }
 
 void NearbyShareCertificateStorageImpl::SavePublicCertificateExpirations() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
   for (const std::pair<std::string, base::Time>& pair :
        public_certificate_expirations_) {
-    dict.SetKey(EncodeString(pair.first), base::TimeToValue(pair.second));
+    dict.Set(EncodeString(pair.first), base::TimeToValue(pair.second));
   }
 
-  pref_service_->Set(
-      prefs::kNearbySharingPublicCertificateExpirationDictPrefName, dict);
+  pref_service_->SetDict(
+      prefs::kNearbySharingPublicCertificateExpirationDictPrefName,
+      std::move(dict));
 }

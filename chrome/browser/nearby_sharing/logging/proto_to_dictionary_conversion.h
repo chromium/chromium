@@ -15,33 +15,33 @@
 #include "chrome/browser/nearby_sharing/proto/timestamp.pb.h"
 
 // Converts Nearby Share protos to readable, JSON-style dictionaries.
-base::Value ListPublicCertificatesRequestToReadableDictionary(
+base::Value::Dict ListPublicCertificatesRequestToReadableDictionary(
     const nearbyshare::proto::ListPublicCertificatesRequest& request);
-base::Value ListPublicCertificatesResponseToReadableDictionary(
+base::Value::Dict ListPublicCertificatesResponseToReadableDictionary(
     const nearbyshare::proto::ListPublicCertificatesResponse& response);
-base::Value PublicCertificateToReadableDictionary(
+base::Value::Dict PublicCertificateToReadableDictionary(
     const nearbyshare::proto::PublicCertificate& certificate);
-base::Value TimestampToReadableDictionary(
+base::Value::Dict TimestampToReadableDictionary(
     const nearbyshare::proto::Timestamp& timestamp);
-base::Value ListContactPeopleRequestToReadableDictionary(
+base::Value::Dict ListContactPeopleRequestToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleRequest& request);
-base::Value ListContactPeopleResponseToReadableDictionary(
+base::Value::Dict ListContactPeopleResponseToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleResponse& response);
-base::Value ContactRecordToReadableDictionary(
+base::Value::Dict ContactRecordToReadableDictionary(
     const nearbyshare::proto::ContactRecord& contact_record);
-base::Value IdentifierToReadableDictionary(
+base::Value::Dict IdentifierToReadableDictionary(
     const nearbyshare::proto::Contact::Identifier& identifier);
-base::Value UpdateDeviceRequestToReadableDictionary(
+base::Value::Dict UpdateDeviceRequestToReadableDictionary(
     const nearbyshare::proto::UpdateDeviceRequest& request);
-base::Value DeviceToReadableDictionary(
+base::Value::Dict DeviceToReadableDictionary(
     const nearbyshare::proto::Device& device);
-base::Value ContactToReadableDictionary(
+base::Value::Dict ContactToReadableDictionary(
     const nearbyshare::proto::Contact& contact);
-base::Value FieldMaskToReadableDictionary(
+base::Value::Dict FieldMaskToReadableDictionary(
     const nearbyshare::proto::FieldMask& mask);
-base::Value UpdateDeviceResponseToReadableDictionary(
+base::Value::Dict UpdateDeviceResponseToReadableDictionary(
     const nearbyshare::proto::UpdateDeviceResponse& response);
-base::Value EncryptedMetadataToReadableDictionary(
+base::Value::Dict EncryptedMetadataToReadableDictionary(
     const nearbyshare::proto::EncryptedMetadata& data);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOGGING_PROTO_TO_DICTIONARY_CONVERSION_H_

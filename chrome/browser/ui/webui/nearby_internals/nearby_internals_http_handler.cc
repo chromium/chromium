@@ -34,7 +34,7 @@ enum class Rpc {
 // chrome/browser/resources/nearby_internals/types.js.
 enum class Direction { kRequest = 0, kResponse = 1 };
 
-std::string FormatAsJSON(const base::Value& value) {
+std::string FormatAsJSON(const base::Value::Dict& value) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
@@ -56,7 +56,7 @@ const char kHttpMessageDirectionKey[] = "direction";
 
 // Converts a RPC request/response to a raw dictionary value used as a
 // JSON argument to JavaScript functions.
-base::Value::Dict HttpMessageToDictionary(const base::Value& message,
+base::Value::Dict HttpMessageToDictionary(const base::Value::Dict& message,
                                           Direction dir,
                                           Rpc rpc) {
   base::Value::Dict dictionary;

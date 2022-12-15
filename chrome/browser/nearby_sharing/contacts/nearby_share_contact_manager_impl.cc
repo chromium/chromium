@@ -398,12 +398,12 @@ bool NearbyShareContactManagerImpl::SetAllowlist(
   if (new_allowlist == GetAllowedContacts())
     return false;
 
-  base::Value allowlist_value(base::Value::Type::LIST);
+  base::Value::List allowlist_value;
   for (const std::string& id : new_allowlist) {
     allowlist_value.Append(id);
   }
-  pref_service_->Set(prefs::kNearbySharingAllowedContactsPrefName,
-                     std::move(allowlist_value));
+  pref_service_->SetList(prefs::kNearbySharingAllowedContactsPrefName,
+                         std::move(allowlist_value));
 
   return true;
 }

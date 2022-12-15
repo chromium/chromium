@@ -36,7 +36,7 @@ class NearbySharePrivateCertificate {
   // Inverse operation of ToDictionary(). Returns absl::nullopt if the
   // conversion is not successful
   static absl::optional<NearbySharePrivateCertificate> FromDictionary(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
   // Generates a random EC key pair, secret key, and metadata encryption
   // key. Derives the certificate ID from the secret key. Derives the
@@ -101,7 +101,7 @@ class NearbySharePrivateCertificate {
 
   // Converts this private certificate to a dictionary value for storage
   // in Prefs.
-  base::Value ToDictionary() const;
+  base::Value::Dict ToDictionary() const;
 
   // For testing only.
   base::queue<std::vector<uint8_t>>& next_salts_for_testing() {

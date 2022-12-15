@@ -176,38 +176,31 @@ bool NearbyShareSchedulerBase::HasPendingImmediateRequest() const {
 
 void NearbyShareSchedulerBase::SetLastAttemptTime(
     base::Time last_attempt_time) {
-  DictionaryPrefUpdate(pref_service_, pref_name_)
-      .Get()
-      ->SetKey(kLastAttemptTimeKeyName, base::TimeToValue(last_attempt_time));
+  ScopedDictPrefUpdate(pref_service_, pref_name_)
+      ->Set(kLastAttemptTimeKeyName, base::TimeToValue(last_attempt_time));
 }
 
 void NearbyShareSchedulerBase::SetLastSuccessTime(
     base::Time last_success_time) {
-  DictionaryPrefUpdate(pref_service_, pref_name_)
-      .Get()
-      ->SetKey(kLastSuccessTimeKeyName, base::TimeToValue(last_success_time));
+  ScopedDictPrefUpdate(pref_service_, pref_name_)
+      ->Set(kLastSuccessTimeKeyName, base::TimeToValue(last_success_time));
 }
 
 void NearbyShareSchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {
-  DictionaryPrefUpdate(pref_service_, pref_name_)
-      .Get()
-      ->SetStringKey(kNumConsecutiveFailuresKeyName,
-                     base::NumberToString(num_failures));
+  ScopedDictPrefUpdate(pref_service_, pref_name_)
+      ->Set(kNumConsecutiveFailuresKeyName, base::NumberToString(num_failures));
 }
 
 void NearbyShareSchedulerBase::SetHasPendingImmediateRequest(
     bool has_pending_immediate_request) {
-  DictionaryPrefUpdate(pref_service_, pref_name_)
-      .Get()
-      ->SetBoolKey(kHasPendingImmediateRequestKeyName,
-                   has_pending_immediate_request);
+  ScopedDictPrefUpdate(pref_service_, pref_name_)
+      ->Set(kHasPendingImmediateRequestKeyName, has_pending_immediate_request);
 }
 
 void NearbyShareSchedulerBase::SetIsWaitingForResult(
     bool is_waiting_for_result) {
-  DictionaryPrefUpdate(pref_service_, pref_name_)
-      .Get()
-      ->SetBoolKey(kIsWaitingForResultKeyName, is_waiting_for_result);
+  ScopedDictPrefUpdate(pref_service_, pref_name_)
+      ->Set(kIsWaitingForResultKeyName, is_waiting_for_result);
 }
 
 void NearbyShareSchedulerBase::InitializePersistedRequest() {

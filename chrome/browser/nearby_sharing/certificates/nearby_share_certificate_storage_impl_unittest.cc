@@ -174,17 +174,16 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
         kMetadataEncryptionKey3, kEncryptedMetadataBytes3,
         kMetadataEncryptionKeyTag3));
 
-    base::Value expiration_dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict expiration_dict;
     db_entries_.clear();
     for (auto& cert : pub_certs) {
-      expiration_dict.SetKey(
-          EncodeString(cert.secret_id()),
-          base::TimeToValue(TimestampToTime(cert.end_time())));
+      expiration_dict.Set(EncodeString(cert.secret_id()),
+                          base::TimeToValue(TimestampToTime(cert.end_time())));
       db_entries_.emplace(cert.secret_id(), std::move(cert));
     }
-    pref_service_->Set(
+    pref_service_->SetDict(
         prefs::kNearbySharingPublicCertificateExpirationDictPrefName,
-        expiration_dict);
+        std::move(expiration_dict));
   }
 
   void CaptureBoolCallback(bool* dest, bool src) { *dest = src; }

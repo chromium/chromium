@@ -327,63 +327,63 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   return public_certificate;
 }
 
-base::Value NearbySharePrivateCertificate::ToDictionary() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
+  base::Value::Dict dict;
 
-  dict.SetIntKey(kVisibility, static_cast<int>(visibility_));
-  dict.SetKey(kNotBefore, base::TimeToValue(not_before_));
-  dict.SetKey(kNotAfter, base::TimeToValue(not_after_));
+  dict.Set(kVisibility, static_cast<int>(visibility_));
+  dict.Set(kNotBefore, base::TimeToValue(not_before_));
+  dict.Set(kNotAfter, base::TimeToValue(not_after_));
 
   std::vector<uint8_t> key_pair;
   key_pair_->ExportPrivateKey(&key_pair);
-  dict.SetStringKey(kKeyPair, BytesToEncodedString(key_pair));
+  dict.Set(kKeyPair, BytesToEncodedString(key_pair));
 
-  dict.SetStringKey(kSecretKey, EncodeString(secret_key_->key()));
-  dict.SetStringKey(kMetadataEncryptionKey,
-                    BytesToEncodedString(metadata_encryption_key_));
-  dict.SetStringKey(kId, BytesToEncodedString(id_));
-  dict.SetStringKey(kUnencryptedMetadata,
-                    EncodeString(unencrypted_metadata_.SerializeAsString()));
-  dict.SetStringKey(kConsumedSalts, SaltsToString(consumed_salts_));
+  dict.Set(kSecretKey, EncodeString(secret_key_->key()));
+  dict.Set(kMetadataEncryptionKey,
+           BytesToEncodedString(metadata_encryption_key_));
+  dict.Set(kId, BytesToEncodedString(id_));
+  dict.Set(kUnencryptedMetadata,
+           EncodeString(unencrypted_metadata_.SerializeAsString()));
+  dict.Set(kConsumedSalts, SaltsToString(consumed_salts_));
 
   return dict;
 }
 
 absl::optional<NearbySharePrivateCertificate>
-NearbySharePrivateCertificate::FromDictionary(const base::Value& dict) {
+NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
   absl::optional<int> int_opt;
   const std::string* str_ptr;
   absl::optional<std::string> str_opt;
   absl::optional<base::Time> time_opt;
   absl::optional<std::vector<uint8_t>> bytes_opt;
 
-  int_opt = dict.FindIntPath(kVisibility);
+  int_opt = dict.FindInt(kVisibility);
   if (!int_opt)
     return absl::nullopt;
 
   nearby_share::mojom::Visibility visibility =
       static_cast<nearby_share::mojom::Visibility>(*int_opt);
 
-  time_opt = base::ValueToTime(dict.FindPath(kNotBefore));
+  time_opt = base::ValueToTime(dict.Find(kNotBefore));
   if (!time_opt)
     return absl::nullopt;
 
   base::Time not_before = *time_opt;
 
-  time_opt = base::ValueToTime(dict.FindPath(kNotAfter));
+  time_opt = base::ValueToTime(dict.Find(kNotAfter));
   if (!time_opt)
     return absl::nullopt;
 
   base::Time not_after = *time_opt;
 
-  bytes_opt = EncodedStringToBytes(dict.FindStringPath(kKeyPair));
+  bytes_opt = EncodedStringToBytes(dict.FindString(kKeyPair));
   if (!bytes_opt)
     return absl::nullopt;
 
   std::unique_ptr<crypto::ECPrivateKey> key_pair =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(*bytes_opt);
 
-  str_opt = DecodeString(dict.FindStringPath(kSecretKey));
+  str_opt = DecodeString(dict.FindString(kSecretKey));
   if (!str_opt)
     return absl::nullopt;
 
@@ -391,19 +391,19 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value& dict) {
       crypto::SymmetricKey::Import(crypto::SymmetricKey::Algorithm::AES,
                                    *str_opt);
 
-  bytes_opt = EncodedStringToBytes(dict.FindStringPath(kMetadataEncryptionKey));
+  bytes_opt = EncodedStringToBytes(dict.FindString(kMetadataEncryptionKey));
   if (!bytes_opt)
     return absl::nullopt;
 
   std::vector<uint8_t> metadata_encryption_key = *bytes_opt;
 
-  bytes_opt = EncodedStringToBytes(dict.FindStringPath(kId));
+  bytes_opt = EncodedStringToBytes(dict.FindString(kId));
   if (!bytes_opt)
     return absl::nullopt;
 
   std::vector<uint8_t> id = *bytes_opt;
 
-  str_opt = DecodeString(dict.FindStringPath(kUnencryptedMetadata));
+  str_opt = DecodeString(dict.FindString(kUnencryptedMetadata));
   if (!str_opt)
     return absl::nullopt;
 
@@ -411,7 +411,7 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value& dict) {
   if (!unencrypted_metadata.ParseFromString(*str_opt))
     return absl::nullopt;
 
-  str_ptr = dict.FindStringPath(kConsumedSalts);
+  str_ptr = dict.FindString(kConsumedSalts);
   if (!str_ptr)
     return absl::nullopt;
 
