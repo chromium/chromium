@@ -192,6 +192,9 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenNotFound) {
 
 // Restore an entry that is in the cache.
 IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenFound) {
+  base::HistogramTester histogram_tester;
+  const char kTabRestored[] = "Tab.RestoreClosedTab";
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   NavigateToURL(browser(), "a.com");
@@ -208,6 +211,12 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenFound) {
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1), wc);
+
+  // We should store histogram kTabRestored when a tab is restored from
+  // ClosedTabCache with value 1.
+  EXPECT_EQ(histogram_tester.GetAllSamples(kTabRestored).size(), 1U);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kTabRestored),
+              testing::ElementsAre(base::Bucket(1, 1)));
 }
 
 // Evict an entry after timeout.

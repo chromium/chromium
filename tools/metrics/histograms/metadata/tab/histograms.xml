@@ -590,6 +590,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.RestoreClosedTab" enum="Boolean"
+    expires_after="2023-11-30">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    [Desktop] This metric is recorded whenever a tab is restored by the user.
+    Set to true if the tab is restored from ClosedTabCache and false indicates
+    the tab is restored normally. This accounts for all types of tab restores
+    i.e., in a closed window, closed group also on startup tab restores.
+  </summary>
+</histogram>
+
 <histogram name="Tab.RestoreResult" enum="TabRestoreResult" expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
   <owner>marq@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -218,6 +219,10 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         group, select, pin, base::TimeTicks(), storage_namespace,
         user_agent_override, extra_data, false /* from_session_restore */);
   }
+
+  // Record the metrics for restoring closed tabs. Set to true when the tab is
+  // restored from closed tab cache and false otherwise.
+  UMA_HISTOGRAM_BOOLEAN("Tab.RestoreClosedTab", restored_from_closed_tab_cache);
 
   // Only update the metadata if the group doesn't already exist since the
   // existing group has the latest metadata, which may have changed from the
