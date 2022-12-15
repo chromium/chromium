@@ -177,9 +177,14 @@ FastPairPairerImpl::FastPairPairerImpl(
 void FastPairPairerImpl::OnHandshakeComplete(
     scoped_refptr<Device> device,
     absl::optional<PairFailure> failure) {
+  // TODO(b/259429032) : Log with `RecordInitializationRetriesBeforeSuccess`
+  // the number of handshake retries occurred before success. Log with
+  // `FastPairInitializePairingProcessEvent` if we have exhausted the retries.
+
   if (failure.has_value()) {
     QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
                     << " because: " << failure.value();
+    RecordInitializationFailureReason(*device, failure.value());
     std::move(pair_failed_callback_).Run(device_, failure.value());
     // |this| may be destroyed after this line.
     return;
@@ -188,6 +193,7 @@ void FastPairPairerImpl::OnHandshakeComplete(
   // During handshake, the device address can be set to null.
   if (!device_->classic_address()) {
     QP_LOG(WARNING) << __func__ << ": Device lost during handshake.";
+    RecordInitializationFailureReason(*device, PairFailure::kPairingDeviceLost);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
     // |this| may be destroyed after this line.

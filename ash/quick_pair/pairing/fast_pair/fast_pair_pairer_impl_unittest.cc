@@ -111,6 +111,12 @@ constexpr char kInitializePairingProcessSubsequent[] =
     "FastPair.SubsequentPairing.Initialization";
 constexpr char kInitializePairingProcessRetroactive[] =
     "FastPair.RetroactivePairing.Initialization";
+constexpr char kInitializePairingProcessFailureReasonInitial[] =
+    "FastPair.InitialPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization.FailureReason";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -487,7 +493,7 @@ class FastPairPairerImplTest : public AshTestBase {
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };
 
-TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeFailed) {
+TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeFailed_Initial) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -496,6 +502,40 @@ TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeFailed) {
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateGattConnection);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonInitial,
+                PairFailure::kCreateGattConnection),
+            1);
+}
+
+TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kCreateGattConnection);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonSubsequent,
+                PairFailure::kCreateGattConnection),
+            1);
+}
+
+TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), PairFailure::kCreateGattConnection);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonRetroactive,
+                PairFailure::kCreateGattConnection),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, NoCallbackIsInvokedOnGattSuccess_Initial) {

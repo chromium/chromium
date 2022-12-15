@@ -223,6 +223,14 @@ void RecordFastPairInitializePairingProcessEvent(
     FastPairInitializePairingProcessEvent event);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordInitializationFailureReason(const Device& device,
+                                       PairFailure failure_reason);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordInitializationRetriesBeforeSuccess(const Device& device,
+                                              int num_retries_before_success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingTotalUxPairTime(const Device& device,
                                      base::TimeDelta total_pair_time);
 

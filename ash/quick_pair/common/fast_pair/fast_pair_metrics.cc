@@ -551,6 +551,18 @@ constexpr char kInitializePairingProcessSubsequent[] =
     "FastPair.SubsequentPairing.Initialization";
 constexpr char kInitializePairingProcessRetroactive[] =
     "FastPair.RetroactivePairing.Initialization";
+constexpr char kInitializePairingProcessFailureReasonInitial[] =
+    "FastPair.InitialPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessRetriesBeforeSuccessInitial[] =
+    "FastPair.InitialPairing.Initialization.RetriesBeforeSuccess";
+constexpr char kInitializePairingProcessRetriesBeforeSuccessSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization.RetriesBeforeSuccess";
+constexpr char kInitializePairingProcessRetriesBeforeSuccessRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization.RetriesBeforeSuccess";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
@@ -633,6 +645,48 @@ void RecordFastPairInitializePairingProcessEvent(
       break;
     case Protocol::kFastPairSubsequent:
       base::UmaHistogramEnumeration(kInitializePairingProcessSubsequent, event);
+      break;
+  }
+}
+
+void RecordInitializationFailureReason(const Device& device,
+                                       PairFailure failure_reason) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramEnumeration(
+          kInitializePairingProcessFailureReasonInitial, failure_reason);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramEnumeration(
+          kInitializePairingProcessFailureReasonRetroactive, failure_reason);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramEnumeration(
+          kInitializePairingProcessFailureReasonSubsequent, failure_reason);
+      break;
+  }
+}
+
+void RecordInitializationRetriesBeforeSuccess(const Device& device,
+                                              int num_retries_before_success) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramExactLinear(
+          kInitializePairingProcessRetriesBeforeSuccessInitial,
+          num_retries_before_success,
+          /*exclusive_max=*/10);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramExactLinear(
+          kInitializePairingProcessRetriesBeforeSuccessRetroactive,
+          num_retries_before_success,
+          /*exclusive_max=*/10);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramExactLinear(
+          kInitializePairingProcessRetriesBeforeSuccessSubsequent,
+          num_retries_before_success,
+          /*exclusive_max=*/10);
       break;
   }
 }
