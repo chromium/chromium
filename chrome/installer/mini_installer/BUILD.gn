@@ -54,7 +54,10 @@ source_set("lib") {
     "regkey.h",
   ]
 
-  deps = [ "//build:branding_buildflags" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/browser/chrome_for_testing:buildflags",
+  ]
 
   if (skip_archive_compression) {
     defines = [ "SKIP_ARCHIVE_COMPRESSION" ]
