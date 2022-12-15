@@ -5091,6 +5091,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DocumentScan.ScanFailureProgress" enum="ScanFailureProgress"
+    expires_after="2023-12-14">
+  <owner>rishabhagr@google.com</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Chrome OS document scan metric that tracks the stage at which the scan
+    failed.
+  </summary>
+</histogram>
+
 <histogram name="DocumentScan.ScanFailureReason" enum="ScanJobFailureReason"
     expires_after="2023-11-30">
   <owner>rishabhagr@google.com</owner>
