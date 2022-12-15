@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Hours, 1-12
-PASS Hours, 0-11
-PASS Hours, 0-23
-PASS Hours, 1-24
-Harness: the test ran to completion.
-

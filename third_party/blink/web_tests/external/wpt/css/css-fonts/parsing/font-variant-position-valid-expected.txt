@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS e.style['font-variant-position'] = "normal" should set the property value
-PASS e.style['font-variant-position'] = "sub" should set the property value
-PASS e.style['font-variant-position'] = "super" should set the property value
-Harness: the test ran to completion.
-

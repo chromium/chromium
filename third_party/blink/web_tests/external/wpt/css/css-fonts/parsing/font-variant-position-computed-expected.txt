@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Property font-variant-position value 'normal'
-PASS Property font-variant-position value 'sub'
-PASS Property font-variant-position value 'super'
-Harness: the test ran to completion.
-

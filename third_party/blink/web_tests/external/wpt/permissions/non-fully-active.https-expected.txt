@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Trying to query() a non-fully active document rejects with a InvalidStateError
-PASS Permission change events shouldn't fire on non-fully active document
-Harness: the test ran to completion.
-
