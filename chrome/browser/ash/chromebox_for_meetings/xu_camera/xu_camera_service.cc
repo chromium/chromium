@@ -168,8 +168,9 @@ void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,
   // GetCtrl depending on whether id provided is WebRTC or filepath
   switch (ctrl->which()) {
     case mojom::CtrlType::Tag::kQueryCtrl:
-      error_code = GetCtrlThroughQuery(
-          file_descriptor, std::move(ctrl->get_query_ctrl()), data, fn);
+      error_code =
+          CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
+                           data, GetRequest(fn));
       break;
     case mojom::CtrlType::Tag::kMappingCtrl:
       NOTIMPLEMENTED();
@@ -187,8 +188,36 @@ void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
                               const mojom::CtrlTypePtr ctrl,
                               const std::vector<uint8_t>& data,
                               SetCtrlCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(ENOSYS);
+  uint8_t error_code = ENOSYS;
+  mojom::ControlQueryPtr query;
+  std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
+                                            : id->get_dev_path();
+  int file_descriptor = delegate_->OpenFile(dev_path);
+  if (file_descriptor < 0) {
+    LOG(ERROR) << __func__ << ": File is invalid";
+    std::move(callback).Run(ENOENT);
+    return;
+  }
+
+  std::vector<uint8_t> data_(data);
+  // SetCtrl depending on whether id provided is WebRTC or filepath
+  switch (ctrl->which()) {
+    case mojom::CtrlType::Tag::kQueryCtrl:
+      error_code =
+          CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
+                           data_, UVC_SET_CUR);
+      break;
+    case mojom::CtrlType::Tag::kMappingCtrl:
+      NOTIMPLEMENTED();
+      error_code = ENOSYS;
+      break;
+    default:
+      LOG(ERROR) << __func__ << ": Invalid CtrlType::Tag";
+      error_code = EINVAL;
+  }
+
+  delegate_->CloseFile(file_descriptor);
+  std::move(callback).Run(error_code);
 }
 
 uint8_t XuCameraService::QueryXuControl(int file_descriptor,
@@ -219,27 +248,36 @@ std::string XuCameraService::GetDevicePath(const std::string& device_id) {
   return "";
 }
 
-uint8_t XuCameraService::GetCtrlThroughQuery(
-    int file_descriptor,
-    const mojom::ControlQueryPtr& query,
-    std::vector<uint8_t>& data,
-    const mojom::GetFn& fn) {
-  uint8_t error_code = 0;
-  data.resize(2);  // Data length is uint16.
-  error_code = QueryXuControl(file_descriptor, query->unit_id, query->selector,
-                              data.data(), UVC_GET_LEN, sizeof(uint16_t));
-
-  if (error_code != 0 || mojom::GetFn::kLen == fn) {
+uint8_t XuCameraService::CtrlThroughQuery(int file_descriptor,
+                                          const mojom::ControlQueryPtr& query,
+                                          std::vector<uint8_t>& data,
+                                          unsigned int request) {
+  if (UVC_SET_CUR == request) {
+    uint8_t error_code =
+        QueryXuControl(file_descriptor, query->unit_id, query->selector,
+                       data.data(), request, data.size());
     return error_code;
   }
+
+  data.clear();
+  data.resize(2);
+  uint8_t error_code =
+      QueryXuControl(file_descriptor, query->unit_id, query->selector,
+                     data.data(), UVC_GET_LEN, sizeof(uint16_t));
+
+  if (error_code != 0 || UVC_GET_LEN == request) {
+    return error_code;
+  }
+
   // Use the queried data as data length for GetCtrl.
   // UVC_GET_LEN return values is always returned as little-endian 16-bit
   // integer by the device.
   uint16_t data_len = le16toh(data[0] | (data[1] << 8));
   data.clear();
   data.resize(data_len);
+
   error_code = QueryXuControl(file_descriptor, query->unit_id, query->selector,
-                              data.data(), GetRequest(fn), data_len);
+                              data.data(), request, data_len);
 
   return error_code;
 }
