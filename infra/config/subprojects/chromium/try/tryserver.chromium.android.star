@@ -600,7 +600,7 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = not settings.is_main,
-    cores = "8|16",
+    cores = "16|32",
     main_list_view = "try",
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
