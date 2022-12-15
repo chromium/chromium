@@ -842,7 +842,7 @@
       'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-finch-smoke-chrome': 'official_reclient',
       'linux-password-manager-captured-sites-rel': 'release_bot',
-      'lorenz-graph-dbg': 'android_debug_static_external_bot_reclient_fastbuild',
+      'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       # b/248132996: for siso experiments.
       'siso-comparison-android': {
@@ -1533,6 +1533,10 @@
       'android', 'debug_bot_reclient',
     ],
 
+    'android_debug_bot_reclient_external_fastbuild': [
+      'android', 'debug_bot_reclient', 'android_external', 'android_fastbuild',
+    ],
+
     'android_debug_static_bot': [
       'android', 'debug_static_bot',
     ],
@@ -1548,10 +1552,6 @@
 
     'android_debug_static_bot_x86_reclient': [
       'android', 'debug_static_bot_reclient', 'x86', 'webview_shell',
-    ],
-
-    'android_debug_static_external_bot_reclient_fastbuild': [
-      'android', 'debug_static_bot_reclient', 'android_external', 'android_fastbuild',
     ],
 
     'android_debug_trybot_arm64': [
