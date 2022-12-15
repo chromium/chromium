@@ -188,6 +188,13 @@ struct DirectFromSellerSignals {
   DirectFromSellerSignalsSubresource? auction_signals;
 };
 
+// See blink::AuctionConfig::MaybePromiseJson.
+union AuctionAdConfigMaybePromiseJson {
+  uint32 nothing;  // value unused.
+  uint32 promise;  // value unused.
+  string json;
+};
+
 // Subset of AuctionAdConfig that is not shared by all auctions that are
 // using the same SellerWorklet object (so it's "not shared" between
 // AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
@@ -199,11 +206,15 @@ struct AuctionAdConfigNonSharedParams {
   // Must all be HTTPS.
   array<url.mojom.Origin>? interest_group_buyers;
 
-  // Opaque JSON data, passed as object to all worklets.
-  string? auction_signals;
+  // Opaque JSON data, passed as object to all worklets. At time of call to
+  // browser, it may also be a promise, but it should be resolved at time of
+  // call to worklet.
+  AuctionAdConfigMaybePromiseJson auction_signals;
 
-  // Opaque JSON data, passed as object to the seller worklet.
-  string? seller_signals;
+  // Opaque JSON data, passed as object to the seller worklet.  At time of call
+  // to browser, it may also be a promise, but it should be resolved at time of
+  // call to worklet.
+  AuctionAdConfigMaybePromiseJson seller_signals;
 
   // The value restricts the runtime of the seller's scoreAd() script.
   mojo_base.mojom.TimeDelta? seller_timeout;

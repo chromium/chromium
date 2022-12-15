@@ -1732,6 +1732,30 @@ class AuctionRunnerTest : public testing::Test,
   // Gets and clear most recent bad Mojo message.
   std::string TakeBadMessage() { return std::move(bad_message_); }
 
+  blink::AuctionConfig::MaybePromiseJson MakeSellerSignals(
+      bool use_promise,
+      const GURL& seller_decision_logic_url) {
+    if (use_promise) {
+      return blink::AuctionConfig::MaybePromiseJson::FromPromise();
+    } else {
+      return blink::AuctionConfig::MaybePromiseJson::FromJson(
+          base::StringPrintf(R"({"url": "%s"})",
+                             seller_decision_logic_url.spec().c_str()));
+    }
+  }
+
+  blink::AuctionConfig::MaybePromiseJson MakeAuctionSignals(
+      bool use_promise,
+      url::Origin seller) {
+    if (use_promise) {
+      return blink::AuctionConfig::MaybePromiseJson::FromPromise();
+    } else {
+      return blink::AuctionConfig::MaybePromiseJson::FromJson(
+          base::StringPrintf(R"("auctionSignalsFor %s")",
+                             seller.Serialize().c_str()));
+    }
+  }
+
   // Helper to create an auction config with the specified values.
   blink::AuctionConfig CreateAuctionConfig(
       const GURL& seller_decision_logic_url,
@@ -1742,8 +1766,8 @@ class AuctionRunnerTest : public testing::Test,
 
     auction_config.non_shared_params.interest_group_buyers = std::move(buyers);
 
-    auction_config.non_shared_params.seller_signals = base::StringPrintf(
-        R"({"url": "%s"})", seller_decision_logic_url.spec().c_str());
+    auction_config.non_shared_params.seller_signals = MakeSellerSignals(
+        use_promise_for_seller_signals_, seller_decision_logic_url);
     auction_config.non_shared_params.seller_timeout = base::Milliseconds(1000);
 
     base::flat_map<url::Origin, std::string> per_buyer_signals;
@@ -1768,8 +1792,8 @@ class AuctionRunnerTest : public testing::Test,
     auction_config.non_shared_params.all_buyers_timeout =
         base::Milliseconds(150);
 
-    auction_config.non_shared_params.auction_signals = base::StringPrintf(
-        R"("auctionSignalsFor %s")", auction_config.seller.Serialize().c_str());
+    auction_config.non_shared_params.auction_signals = MakeAuctionSignals(
+        use_promise_for_auction_signals_, auction_config.seller);
 
     auction_config.seller_experiment_group_id = seller_experiment_group_id_;
     auction_config.all_buyer_experiment_group_id =
@@ -2271,6 +2295,8 @@ class AuctionRunnerTest : public testing::Test,
             bid_from_component_auction_wins, report_post_auction_signals));
   }
 
+  bool use_promise_for_seller_signals_ = false;
+  bool use_promise_for_auction_signals_ = false;
   absl::optional<uint16_t> seller_experiment_group_id_;
   absl::optional<uint16_t> all_buyer_experiment_group_id_;
   std::map<url::Origin, uint16_t> per_buyer_experiment_group_id_;
@@ -5275,6 +5301,489 @@ function reportResult(auctionConfig, browserSignals) {
   CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
+}
+
+// An auction that passes auctionSignals via promises.
+TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals,
+      MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
+          .json_payload());
+
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// An auction that passes sellerSignals and auctionSignals via promises.
+TEST_F(AuctionRunnerTest, PromiseSignals) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in sellerSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals,
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals,
+      MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
+          .json_payload());
+
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// An auction that passes sellerSignals and auctionSignals via promises.
+// Empty values are provided, which causes the validation scripts to complain.
+TEST_F(AuctionRunnerTest, PromiseSignals2) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in sellerSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals, absl::nullopt);
+
+  auction_run_loop_->Run();
+
+  EXPECT_FALSE(result_.winning_group_id.has_value());
+  EXPECT_FALSE(result_.ad_url.has_value());
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
+                                  "https://adplatform.com/offers.js:74 "
+                                  "Uncaught Error: wrong auctionSignals.",
+                                  "https://anotheradthing.com/bids.js:74 "
+                                  "Uncaught Error: wrong auctionSignals."));
+}
+
+TEST_F(AuctionRunnerTest, PromiseSignalsResolveAfterAbort) {
+  use_promise_for_seller_signals_ = true;
+  dont_reset_auction_runner_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  abortable_ad_auction_->Abort();
+  auction_run_loop_->Run();
+  EXPECT_TRUE(result_.manually_aborted);
+
+  // Feed in sellerSignals. Nothing weird should happen.
+  auction_run_loop_ = std::make_unique<base::RunLoop>();
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals,
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+  EXPECT_TRUE(result_.manually_aborted);
+}
+
+TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/false);
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, GURL("https://ad1.com"),
+      std::vector<GURL>{GURL("https://ad1.com-component1.com"),
+                        GURL("https://ad1.com-component2.com")}));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
+      {"l1", "l2"}, GURL("https://ad2.com"),
+      std::vector<GURL>{GURL("https://ad2.com-component1.com"),
+                        GURL("https://ad2.com-component2.com")}));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in the signals.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals,
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals,
+      MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
+          .json_payload());
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  for (int component = 0; component < 2; ++component) {
+    const GURL& url =
+        (component == 0) ? kComponentSeller1Url : kComponentSeller2Url;
+    abortable_ad_auction_->ResolvedPromiseParam(
+        blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
+        blink::mojom::AuctionAdConfigField::kSellerSignals,
+        MakeSellerSignals(/*use_promise=*/false, url).json_payload());
+    auction_run_loop_->RunUntilIdle();
+    EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+    abortable_ad_auction_->ResolvedPromiseParam(
+        blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
+        blink::mojom::AuctionAdConfigField::kAuctionSignals,
+        MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(url))
+            .json_payload());
+    if (component != 1) {
+      auction_run_loop_->RunUntilIdle();
+      EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+    }
+  }
+
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in sellerSignals with wrong component ID.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("Invalid auction ID in ResolvedPromiseParam", TakeBadMessage());
+}
+
+// Trying to update auctionSignals which wasn't originally passed in as a
+// promise.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = false;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals, which isn't a promise in the first place.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
+}
+
+// Trying to update auctionSignals twice.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise2) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals twice.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals, absl::nullopt);
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kAuctionSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
+}
+
+// Trying to update sellerSignals which wasn't originally passed in as a
+// promise.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise3) {
+  use_promise_for_seller_signals_ = false;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
+}
+
+// Trying to update sellerSignals twice.
+TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise4) {
+  use_promise_for_seller_signals_ = true;
+  use_promise_for_auction_signals_ = true;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Can't complete yet.
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
+
+  // Feed in auctionSignals twice.
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
+  abortable_ad_auction_->ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigField::kSellerSignals, absl::nullopt);
+  auction_run_loop_->RunUntilIdle();
+  EXPECT_EQ("ResolvedPromiseParam updating non-promise", TakeBadMessage());
 }
 
 // Test the case where the ProcessManager initially prevents creating worklets,

@@ -96,8 +96,10 @@ AuctionConfig CreateFullConfig() {
       auction_config.non_shared_params;
   non_shared_params.interest_group_buyers.emplace();
   non_shared_params.interest_group_buyers->push_back(buyer);
-  non_shared_params.auction_signals = "[4]";
-  non_shared_params.seller_signals = "[5]";
+  non_shared_params.auction_signals =
+      AuctionConfig::MaybePromiseJson::FromJson("[4]");
+  non_shared_params.seller_signals =
+      AuctionConfig::MaybePromiseJson::FromJson("[5]");
   non_shared_params.seller_timeout = base::Seconds(6);
   non_shared_params.per_buyer_signals.emplace();
   (*non_shared_params.per_buyer_signals)[buyer] = "[7]";
@@ -158,6 +160,16 @@ bool SerializeAndDeserialize(const AuctionConfig& auction_config) {
     // This *should* be implied by the above, but let's check...
     EXPECT_EQ(auction_config.non_shared_params,
               auction_config_clone.non_shared_params);
+  }
+  return success;
+}
+
+bool SerializeAndDeserialize(const AuctionConfig::MaybePromiseJson& in) {
+  AuctionConfig::MaybePromiseJson out;
+  bool success = mojo::test::SerializeAndDeserialize<
+      blink::mojom::AuctionAdConfigMaybePromiseJson>(in, out);
+  if (success) {
+    EXPECT_EQ(in, out);
   }
   return success;
 }
@@ -327,6 +339,26 @@ TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoAuctionSignals) {
   AuctionConfig auction_config = CreateFullConfig();
   auction_config.direct_from_seller_signals->auction_signals = absl::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+}
+
+TEST(AuctionConfigMojomTraitsTest, MaybePromiseJson) {
+  {
+    AuctionConfig::MaybePromiseJson json =
+        AuctionConfig::MaybePromiseJson::FromJson("{A: 42}");
+    EXPECT_TRUE(SerializeAndDeserialize(json));
+  }
+
+  {
+    AuctionConfig::MaybePromiseJson nothing =
+        AuctionConfig::MaybePromiseJson::FromNothing();
+    EXPECT_TRUE(SerializeAndDeserialize(nothing));
+  }
+
+  {
+    AuctionConfig::MaybePromiseJson promise =
+        AuctionConfig::MaybePromiseJson::FromPromise();
+    EXPECT_TRUE(SerializeAndDeserialize(promise));
+  }
 }
 
 class AuctionConfigMojomTraitsDirectFromSellerSignalsTest

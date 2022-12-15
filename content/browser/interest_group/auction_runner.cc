@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -42,6 +43,29 @@ auction_worklet::mojom::KAnonymityBidMode DetermineKAnonMode() {
   }
 }
 
+// Returns null if failed to verify.
+blink::AuctionConfig* LookupAuction(
+    blink::AuctionConfig& config,
+    const blink::mojom::AuctionAdConfigAuctionIdPtr& auction) {
+  if (auction->is_main_auction()) {
+    return &config;
+  }
+  uint32_t pos = auction->get_component_auction();
+  if (pos < config.non_shared_params.component_auctions.size()) {
+    return &config.non_shared_params.component_auctions[pos];
+  }
+  return nullptr;
+}
+
+blink::AuctionConfig::MaybePromiseJson FromOptionalString(
+    base::optional_ref<const std::string> maybe_json) {
+  if (maybe_json.has_value()) {
+    return blink::AuctionConfig::MaybePromiseJson::FromJson(*maybe_json);
+  } else {
+    return blink::AuctionConfig::MaybePromiseJson::FromNothing();
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
@@ -57,14 +81,54 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
       std::move(auction_config), std::move(client_security_state),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
-  instance->StartAuction();
+  instance->StartAuctionIfReady();
   return instance;
 }
 
 AuctionRunner::~AuctionRunner() = default;
 
+void AuctionRunner::ResolvedPromiseParam(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction,
+    blink::mojom::AuctionAdConfigField field,
+    const absl::optional<std::string>& json_value) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config = LookupAuction(*owned_auction_config_, auction);
+  if (!config) {
+    mojo::ReportBadMessage("Invalid auction ID in ResolvedPromiseParam");
+    return;
+  }
+
+  blink::AuctionConfig::MaybePromiseJson new_val =
+      FromOptionalString(json_value);
+
+  switch (field) {
+    case blink::mojom::AuctionAdConfigField::kAuctionSignals:
+      if (!config->non_shared_params.auction_signals.is_promise()) {
+        mojo::ReportBadMessage("ResolvedPromiseParam updating non-promise");
+        return;
+      }
+      config->non_shared_params.auction_signals = std::move(new_val);
+      --promise_fields_in_auction_config_;
+      break;
+
+    case blink::mojom::AuctionAdConfigField::kSellerSignals:
+      if (!config->non_shared_params.seller_signals.is_promise()) {
+        mojo::ReportBadMessage("ResolvedPromiseParam updating non-promise");
+        return;
+      }
+      config->non_shared_params.seller_signals = std::move(new_val);
+      --promise_fields_in_auction_config_;
+      break;
+  }
+  StartAuctionIfReady();
+}
+
 void AuctionRunner::Abort() {
-  // Don't abort if the auction already finished (either as success or failure).
+  // Don't abort if the auction already finished (either as success or failure;
+  // this includes the case of multiple promise arguments rejecting).
   if (state_ != State::kFailed && state_ != State::kSucceeded) {
     FailAuction(/*manually_aborted=*/true);
   }
@@ -116,6 +180,8 @@ AuctionRunner::AuctionRunner(
       owned_auction_config_(
           std::make_unique<blink::AuctionConfig>(auction_config)),
       callback_(std::move(callback)),
+      promise_fields_in_auction_config_(
+          owned_auction_config_->non_shared_params.NumPromises()),
       auction_(kanon_mode_,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
@@ -123,7 +189,10 @@ AuctionRunner::AuctionRunner(
                interest_group_manager,
                /*auction_start_time=*/base::Time::Now()) {}
 
-void AuctionRunner::StartAuction() {
+void AuctionRunner::StartAuctionIfReady() {
+  if (promise_fields_in_auction_config_ > 0) {
+    return;
+  }
   auction_.StartLoadInterestGroupsPhase(
       is_interest_group_api_allowed_callback_,
       base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,

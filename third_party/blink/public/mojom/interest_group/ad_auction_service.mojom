@@ -10,13 +10,37 @@ import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// TODO(https://crbug.com/1400677): Too generic a name for this namespace.
 struct Replacement {
   string match;
   string replacement;
 };
 
+// Represents which AuctionConfig is getting concrete value filled in after a
+// promise param resolved --- either the top-level auction (if `main_auction`)
+// or a particular component auction.
+union AuctionAdConfigAuctionId {
+  uint32 main_auction;  // value unused.
+  uint32 component_auction;  // value position in component_auctions array.
+};
+
+// Represents which field is getting concrete value provided after the promise
+// that was originally passed in resolved.
+enum AuctionAdConfigField {
+  kAuctionSignals,
+  kSellerSignals
+};
+
 // Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
 interface AbortableAdAuction {
+  // This method should be called to provide a value for part of auction
+  // configuration that was passed in as a Promise initially. Has no effect
+  // if the auction has already been cancelled (e.g. due to a different
+  // promise rejecting).
+  ResolvedPromiseParam(AuctionAdConfigAuctionId auction,
+                       AuctionAdConfigField field,
+                       string? json_value);
+
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most
   // reporting pending).  Either way, the normal callback for RunAdAuction()

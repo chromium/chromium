@@ -80,6 +80,44 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
+                blink::AuctionConfig::MaybePromiseJson> {
+  static blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag GetTag(
+      const blink::AuctionConfig::MaybePromiseJson& value) {
+    switch (value.tag()) {
+      case blink::AuctionConfig::MaybePromiseJson::Tag::kNothing:
+        return blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::
+            kNothing;
+      case blink::AuctionConfig::MaybePromiseJson::Tag::kPromise:
+        return blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::
+            kPromise;
+      case blink::AuctionConfig::MaybePromiseJson::Tag::kJson:
+        return blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::
+            kJson;
+    }
+    NOTREACHED();
+    return blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kNothing;
+  }
+
+  static uint32_t nothing(const blink::AuctionConfig::MaybePromiseJson& value) {
+    return 0u;
+  }
+
+  static uint32_t promise(const blink::AuctionConfig::MaybePromiseJson& value) {
+    return 0u;
+  }
+
+  static const std::string& json(
+      const blink::AuctionConfig::MaybePromiseJson& value) {
+    return value.json_payload();
+  }
+
+  static bool Read(blink::mojom::AuctionAdConfigMaybePromiseJsonDataView in,
+                   blink::AuctionConfig::MaybePromiseJson* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                  blink::AuctionConfig::NonSharedParams> {
   static const absl::optional<std::vector<url::Origin>>& interest_group_buyers(
@@ -87,12 +125,12 @@ struct BLINK_COMMON_EXPORT
     return params.interest_group_buyers;
   }
 
-  static const absl::optional<std::string>& auction_signals(
+  static const blink::AuctionConfig::MaybePromiseJson& auction_signals(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.auction_signals;
   }
 
-  static const absl::optional<std::string>& seller_signals(
+  static const blink::AuctionConfig::MaybePromiseJson& seller_signals(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_signals;
   }

@@ -68,6 +68,33 @@ bool StructTraits<blink::mojom::DirectFromSellerSignalsDataView,
   return true;
 }
 
+bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
+                 blink::AuctionConfig::MaybePromiseJson>::
+    Read(blink::mojom::AuctionAdConfigMaybePromiseJsonDataView in,
+         blink::AuctionConfig::MaybePromiseJson* out) {
+  switch (in.tag()) {
+    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kNothing:
+      *out = blink::AuctionConfig::MaybePromiseJson::FromNothing();
+      return true;
+
+    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kPromise:
+      *out = blink::AuctionConfig::MaybePromiseJson::FromPromise();
+      return true;
+
+    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kJson: {
+      std::string json_payload;
+      if (!in.ReadJson(&json_payload)) {
+        return false;
+      }
+      *out = blink::AuctionConfig::MaybePromiseJson::FromJson(
+          std::move(json_payload));
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                   blink::AuctionConfig::NonSharedParams>::
     Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,

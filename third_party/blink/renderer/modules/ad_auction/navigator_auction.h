@@ -36,6 +36,7 @@ class MODULES_EXPORT NavigatorAuction final
     : public GarbageCollected<NavigatorAuction>,
       public Supplement<Navigator> {
  public:
+  class AuctionHandle;
   static const char kSupplementName[];
 
   explicit NavigatorAuction(Navigator&);
@@ -142,8 +143,6 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
-  class AuctionHandle;
-
   // Pending cross-site interest group joins and leaves. These may be added to a
   // queue before being passed to the browser process.
 

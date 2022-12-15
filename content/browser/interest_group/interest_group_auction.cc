@@ -648,7 +648,7 @@ class InterestGroupAuction::BuyerHelper
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components, bid_state->kanon_render_urls),
         kanon_mode, bid_state->bidder->joining_origin,
-        auction_->config_->non_shared_params.auction_signals,
+        auction_->config_->non_shared_params.auction_signals.maybe_json(),
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
         GetDirectFromSellerPerBuyerSignals(

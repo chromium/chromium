@@ -148,15 +148,11 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   ~AuctionRunner() override;
 
-  // Tells `auction_` to start the loading interest groups phase. May not be
-  // called more than once for a given AuctionRunner.
-  //
-  //  `callback` is invoked on auction completion. It should synchronously
-  //  destroy this AuctionRunner object. `callback` won't be invoked until after
-  //  CreateAndStart() returns.
-  void StartAuction(RunAuctionCallback callback);
-
   // AbortableAdAuction implementation.
+  void ResolvedPromiseParam(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction,
+      blink::mojom::AuctionAdConfigField field,
+      const absl::optional<std::string>& json_value) override;
   void Abort() override;
 
   // Fails the auction, invoking `callback_` and prevents any future calls into
@@ -189,7 +185,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       RunAuctionCallback callback);
 
   // Tells `auction_` to start the loading interest groups phase.
-  void StartAuction();
+  void StartAuctionIfReady();
 
   // Invoked asynchronously by `auction_` once all interest groups have loaded.
   // Fails the auction if `success` is false. Otherwise, starts the bidding and
@@ -237,6 +233,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   std::unique_ptr<blink::AuctionConfig> owned_auction_config_;
 
   RunAuctionCallback callback_;
+  int promise_fields_in_auction_config_;
 
   InterestGroupAuction auction_;
   State state_ = State::kLoadingGroupsPhase;

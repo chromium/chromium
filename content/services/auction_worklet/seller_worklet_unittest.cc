@@ -2484,9 +2484,11 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       url::Origin::Create(GURL("https://buyer1.com")),
       url::Origin::Create(GURL("https://another-buyer.com"))};
   auction_ad_config_non_shared_params_.auction_signals =
-      R"({"is_auction_signals": true})";
+      blink::AuctionConfig::MaybePromiseJson::FromJson(
+          R"({"is_auction_signals": true})");
   auction_ad_config_non_shared_params_.seller_signals =
-      R"({"is_seller_signals": true})";
+      blink::AuctionConfig::MaybePromiseJson::FromJson(
+          R"({"is_seller_signals": true})");
   auction_ad_config_non_shared_params_.seller_timeout = base::Milliseconds(200);
   base::flat_map<url::Origin, std::string> per_buyer_signals;
   per_buyer_signals[url::Origin::Create(GURL("https://a.com"))] =
@@ -3599,7 +3601,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportsInvalidScoreAdParameter) {
   // Auction config param is invalid.
-  auction_ad_config_non_shared_params_.auction_signals = "{invalid json";
+  auction_ad_config_non_shared_params_.auction_signals =
+      blink::AuctionConfig::MaybePromiseJson::FromJson("{invalid json");
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1",
@@ -3608,7 +3611,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       0);
   // Setting it back to default value to avoid affecting following tests.
   auction_ad_config_non_shared_params_.auction_signals =
-      R"({"is_auction_signals": true})";
+      blink::AuctionConfig::MaybePromiseJson::FromJson(
+          R"({"is_auction_signals": true})");
 
   // `ad_metadata_` is an invalid json.
   ad_metadata_ = "{invalid_json";
