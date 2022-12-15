@@ -4856,6 +4856,8 @@ source_set("unit_tests") {
     "policy/remote_commands/fake_cros_network_config_base.cc",
     "policy/remote_commands/fake_cros_network_config_base.h",
     "policy/remote_commands/user_command_arc_job_unittest.cc",
+    "policy/remote_commands/user_session_type_test_util.cc",
+    "policy/remote_commands/user_session_type_test_util.h",
     "policy/reporting/app_install_event_log_manager_wrapper_unittest.cc",
     "policy/reporting/arc_app_install_event_log_collector_unittest.cc",
     "policy/reporting/arc_app_install_event_log_manager_unittest.cc",

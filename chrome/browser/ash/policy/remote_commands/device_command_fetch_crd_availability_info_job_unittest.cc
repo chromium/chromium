@@ -12,10 +12,10 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
+#include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/common/value_builder.h"
@@ -34,9 +34,10 @@ using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using enterprise_management::RemoteCommand;
 using extensions::DictionaryBuilder;
+using test::SessionTypeToString;
+using test::TestSessionType;
 using testing::Not;
 
-constexpr char kTestAccountEmail[] = "test.email@example.com";
 constexpr long kUniqueID = 111222333444;
 
 RemoteCommand GenerateCommandProto(const std::string& payload) {
@@ -52,121 +53,6 @@ struct Result {
   RemoteCommandJob::Status status;
   std::string payload;
 };
-
-// All possible session types we need to test - including permutations of
-// manually and auto launched kiosk sessions.
-enum class TestSessionType {
-  // Kiosk sessions
-  kManuallyLaunchedArcKioskSession,
-  kManuallyLaunchedWebKioskSession,
-  kManuallyLaunchedKioskSession,
-  kAutoLaunchedArcKioskSession,
-  kAutoLaunchedWebKioskSession,
-  kAutoLaunchedKioskSession,
-
-  // Guest sessions
-  kManagedGuestSession,
-  kGuestSession,
-
-  // User sessions
-  kAffiliatedUserSession,
-  kUnaffiliatedUserSession,
-
-  // No user sessions
-  kNoSession,
-};
-
-const char* ToString(TestSessionType session_type) {
-#define CASE(type)            \
-  case TestSessionType::type: \
-    return #type
-
-  switch (session_type) {
-    CASE(kManuallyLaunchedArcKioskSession);
-    CASE(kManuallyLaunchedWebKioskSession);
-    CASE(kManuallyLaunchedKioskSession);
-    CASE(kAutoLaunchedArcKioskSession);
-    CASE(kAutoLaunchedWebKioskSession);
-    CASE(kAutoLaunchedKioskSession);
-    CASE(kManagedGuestSession);
-    CASE(kGuestSession);
-    CASE(kAffiliatedUserSession);
-    CASE(kUnaffiliatedUserSession);
-    CASE(kNoSession);
-  }
-
-#undef CASE
-}
-
-AccountId CreateUserOfType(TestSessionType session_type,
-                           ash::FakeChromeUserManager& user_manager) {
-  AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
-
-  switch (session_type) {
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
-      user_manager.AddArcKioskAppUser(account_id);
-      ash::ArcKioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(
-              false);
-      break;
-    case TestSessionType::kManuallyLaunchedWebKioskSession:
-      user_manager.AddWebKioskAppUser(account_id);
-      ash::WebKioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(
-              false);
-      break;
-    case TestSessionType::kManuallyLaunchedKioskSession:
-      user_manager.AddKioskAppUser(account_id);
-      ash::KioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(
-              false);
-      break;
-    case TestSessionType::kAutoLaunchedArcKioskSession:
-      user_manager.AddArcKioskAppUser(account_id);
-      ash::ArcKioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      break;
-    case TestSessionType::kAutoLaunchedWebKioskSession:
-      user_manager.AddWebKioskAppUser(account_id);
-      ash::WebKioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      break;
-    case TestSessionType::kAutoLaunchedKioskSession:
-      user_manager.AddKioskAppUser(account_id);
-      ash::KioskAppManager::Get()
-          ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      break;
-    case TestSessionType::kManagedGuestSession:
-      user_manager.AddPublicAccountUser(account_id);
-      break;
-    case TestSessionType::kGuestSession:
-      account_id = user_manager.AddGuestUser()->GetAccountId();
-      break;
-    case TestSessionType::kAffiliatedUserSession:
-      user_manager.AddUserWithAffiliation(account_id,
-                                          /*is_affiliated=*/true);
-      break;
-    case TestSessionType::kUnaffiliatedUserSession:
-      user_manager.AddUserWithAffiliation(account_id,
-                                          /*is_affiliated=*/false);
-      break;
-    case TestSessionType::kNoSession:
-      ADD_FAILURE();
-      break;
-  }
-
-  return account_id;
-}
-
-void StartSessionOfType(TestSessionType session_type,
-                        ash::FakeChromeUserManager& user_manager) {
-  if (session_type == TestSessionType::kNoSession) {
-    // Nothing to do if we don't need a session.
-    return;
-  }
-
-  user_manager.LoginUser(CreateUserOfType(session_type, user_manager));
-}
 
 test::NetworkBuilder CreateNetwork(NetworkType type = NetworkType::kWiFi) {
   return test::NetworkBuilder(type);
@@ -190,8 +76,9 @@ MATCHER_P(ListContains, expected_type, "") {
   }
 
   for (const base::Value& element : *list) {
-    if (element == expected_value)
+    if (element == expected_value) {
       return true;
+    }
   }
 
   *result_listener << "Actual list content: " << list->DebugString();
@@ -327,8 +214,8 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnUserSessionType) {
   TestSessionType session_type = GetParam();
-  SCOPED_TRACE(
-      base::StringPrintf("Testing session type %s", ToString(session_type)));
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
 
   StartSessionOfType(session_type, user_manager());
 
@@ -365,8 +252,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnSupportedCrdSessionTypes) {
   TestSessionType session_type = GetParam();
-  SCOPED_TRACE(
-      base::StringPrintf("Testing session type %s", ToString(session_type)));
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
 
   StartSessionOfType(session_type, user_manager());
 
@@ -404,8 +291,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldNotSupportRemoteAccessWithoutManagedNetworks) {
   TestSessionType session_type = GetParam();
-  SCOPED_TRACE(
-      base::StringPrintf("Testing session type %s", ToString(session_type)));
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(session_type)));
 
   fake_cros_network_config().SetActiveNetworks(
       {CreateNetwork().SetOncSource(OncSource::kNone)});
@@ -434,4 +321,5 @@ INSTANTIATE_TEST_SUITE_P(
                       TestSessionType::kAffiliatedUserSession,
                       TestSessionType::kUnaffiliatedUserSession,
                       TestSessionType::kNoSession));
+
 }  // namespace policy
