@@ -42,6 +42,7 @@ VariationsSeed LayerStudySeed(LayerStudySeedOptions options) {
   VariationsSeed seed;
   Layer* layer = seed.add_layers();
   layer->set_id(42);
+  layer->set_salt(42);
   layer->set_num_slots(10 * options.slot_multiplier);
   if (options.force_low_entropy_layer)
     layer->set_entropy_mode(Layer::LOW);
@@ -88,8 +89,8 @@ const std::vector<std::string> kExpectedLowEntropyAssignments = {
 // LayeredStudySeed should give the following assignment using the test LES.
 // All 3 arms get 6/20 values, with 2/20 not in the study.
 const std::vector<std::string> kExpectedRemainderEntropyAssignments = {
-    "A", "A", "C", "A", "C", "B", "A", "A", "A", "C",  // 10
-    "B", "B", "C", "",  "C", "B", "C", "B", "",  "B",  // 20
+    "A", "",  "B", "B", "C", "A", "B", "B", "C", "C",  // 10
+    "C", "A", "",  "A", "C", "A", "C", "B", "A", "B",  // 20
 };
 
 // The expected group assignments for the study based on high entropy.
@@ -220,7 +221,7 @@ TEST(VariationsUniformityTest, LowEntropyLayerDefaultEntropyStudy) {
   });
   // Some high entropy clients are excluded from the layer by low entropy.
   for (int i = 1; i < 6; i++) {
-    for (int les_value : {13, 18}) {
+    for (int les_value : {1, 12}) {
       expected[i * kMaxEntropy + les_value] = "";
     }
   }
@@ -258,9 +259,15 @@ TEST(VariationsUniformityTest, DefaultEntropyLayerDefaultEntropyStudy) {
       &kExpectedHighEntropyStudyAssignments,
   });
   // The following clients are excluded from the layer by high entropy.
-  // This is derived from a sample of the high entropy space, so 6/100 is a
-  // reasonable approximation of the average 10/100.
-  for (int exclusion : {35, 40, 43, 54, 79, 95}) {
+  // This is derived from a sample of the high entropy space, and 18/100
+  // exclusions is a likely (p>0.01) result at 10% exclusions.
+  int exclusions[] = {
+      1,  6,  7,  10, 17,  // 5
+      20, 25, 30, 31, 32,  // 10
+      38, 40, 62, 66, 67,  // 15
+      69, 71, 77           // 18
+  };
+  for (int exclusion : exclusions) {
     expected[kMaxEntropy + exclusion] = "";
   }
 

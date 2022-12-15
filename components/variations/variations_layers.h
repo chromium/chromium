@@ -15,6 +15,17 @@
 
 namespace variations {
 
+enum class InvalidLayerReason {
+  kInvalidId = 0,
+  kNoSlots = 1,
+  kNoMembers = 2,
+  kInvalidEntropyMode = 3,
+  kSlotsDoNotDivideLowEntropyDomain = 4,
+  kInvalidSlotBounds = 5,
+  kUnknownFields = 6,
+  kMaxValue = kUnknownFields,
+};
+
 // A view over the layers defined within a variations seed.
 //
 // A layer defines a collection of mutually exclusive members. For each client,

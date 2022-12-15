@@ -45,7 +45,8 @@ message Layer {
     optional uint32 id = 1;
     // Ranges of slots that belong to this member. These slot ranges must not
     // overlap with the slot ranges of other members within the layer, so
-    // that at most one member within the layer will be active.
+    // that at most one member within the layer will be active. The ranges must
+    // be listed in increasing order.
     repeated SlotRange slots = 2;
   }
 
@@ -66,7 +67,7 @@ message Layer {
 
   // A salt which is used as an input to a hash function together with the
   // output of the chosen entropy source, to choose an active slot within the
-  // layer.
+  // layer. If salt is unset or 0, the layer id will be used instead.
   optional uint32 salt = 4;
 
   enum EntropyMode {

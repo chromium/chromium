@@ -919,6 +919,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerSelected) {
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
+// TODO(b/260609574): Add a test for handling layers with unknown fields.
+
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
   VariationsSeed seed;
 
@@ -1002,11 +1004,16 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  // The layer should be rejected due to duplicated slot bounds.
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidSlotBounds,
+                                      1);
 
   // The layer only has the single member, which is what should be chosen.
   // Having two duplicate slot ranges within that member should not crash.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,
@@ -1031,7 +1038,12 @@ TYPED_TEST(VariationsSeedProcessorTest,
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  // The layer should be rejected due to invalid slot bounds.
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidSlotBounds,
+                                      1);
 
   // The layer member referenced by the study is missing slots, and should
   // never be chosen.
@@ -1059,12 +1071,105 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  // The layer should be rejected due to invalid slot bounds.
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidSlotBounds,
+                                      1);
 
   // The layer member referenced by the study is has its slots in the wrong
   // order (end < start) which should cause the slot to never be chosen
   // (and not crash).
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithLayerMemberWithOutOfOrderSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  {
+    Layer::LayerMember::SlotRange* range = member->add_slots();
+    range->set_start(8);
+    range->set_end(9);
+  }
+  // Add a second range that is not increasing from the first one.
+  {
+    Layer::LayerMember::SlotRange* range = member->add_slots();
+    range->set_start(1);
+    range->set_end(2);
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  base::HistogramTester histogram_tester;
+  this->CreateTrialsFromSeed(seed);
+  // The layer should be rejected due to out of order slots.
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidSlotBounds,
+                                      1);
+
+  // The layer should be rejected, so the study should not be active.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithInterleavedLayerMember) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(82);
+    {
+      Layer::LayerMember::SlotRange* range = member->add_slots();
+      range->set_start(0);
+      range->set_end(2);
+    }
+    {
+      Layer::LayerMember::SlotRange* range = member->add_slots();
+      range->set_start(8);
+      range->set_end(9);
+    }
+  }
+  // Add a second member that is interleaved with the first one.
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(100);
+    {
+      Layer::LayerMember::SlotRange* range = member->add_slots();
+      range->set_start(4);
+      range->set_end(5);
+    }
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // high entropy should select slot 0, and low entropy should select
+  // slot 9, which both activate the study.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
@@ -1168,7 +1273,10 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoMembers) {
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kNoMembers, 1);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoSlots) {
@@ -1179,7 +1287,10 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoSlots) {
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kNoSlots, 1);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoID) {
@@ -1188,7 +1299,10 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoID) {
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidId, 1);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, EmptyLayer) {
@@ -1196,7 +1310,10 @@ TYPED_TEST(VariationsSeedProcessorTest, EmptyLayer) {
   seed.add_layers();
 
   // Layer should be rejected and not crash.
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidId, 1);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LayersWithDuplicateID) {
@@ -1393,7 +1510,11 @@ TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
   AddExperiment("B", 1, study);
 
   // Layer should be rejected and not crash or timeout.
+  base::HistogramTester histogram_tester;
   this->CreateTrialsFromSeed(seed);
+  histogram_tester.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                      InvalidLayerReason::kInvalidSlotBounds,
+                                      1);
 }
 
 }  // namespace variations
