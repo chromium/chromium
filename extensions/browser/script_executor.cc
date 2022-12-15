@@ -33,10 +33,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace extensions {
 
 namespace {

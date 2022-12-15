@@ -847,21 +847,20 @@ std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
 //   ...
 // ]
 template <typename T>
-static std::unique_ptr<base::ListValue> CreatePermissionList(
-    const T& permissions) {
-  auto values = std::make_unique<base::ListValue>();
-  for (typename T::const_iterator i = permissions.begin();
-       i != permissions.end(); ++i) {
-    std::unique_ptr<base::Value> detail(i->ToValue());
+static std::unique_ptr<base::Value> CreatePermissionList(const T& permissions) {
+  base::Value::List values;
+  for (const auto* permission : permissions) {
+    std::unique_ptr<base::Value> detail(permission->ToValue());
     if (detail) {
       base::Value::Dict tmp;
-      tmp.Set(i->name(), base::Value::FromUniquePtrValue(std::move(detail)));
-      values->Append(base::Value(std::move(tmp)));
+      tmp.Set(permission->name(),
+              base::Value::FromUniquePtrValue(std::move(detail)));
+      values.Append(std::move(tmp));
     } else {
-      values->Append(i->name());
+      values.Append(permission->name());
     }
   }
-  return values;
+  return std::make_unique<base::Value>(std::move(values));
 }
 
 void ExtensionPrefs::SetExtensionPrefPermissionSet(
