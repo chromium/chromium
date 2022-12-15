@@ -62,19 +62,17 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
 void SetOriginStatus(Profile* profile,
                      const GURL& origin,
                      const OriginStatus& status) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value permission_dict(base::Value::Type::DICTIONARY);
-  permission_dict.SetKey(kExcludedKey,
-                         base::Value(status.is_exempt_from_future_revocations));
-  permission_dict.SetKey(kRevokedKey,
-                         base::Value(status.has_been_previously_revoked));
-  dict.SetKey(kPermissionName, std::move(permission_dict));
+  base::Value::Dict dict;
+  base::Value::Dict permission_dict;
+  permission_dict.Set(kExcludedKey, status.is_exempt_from_future_revocations);
+  permission_dict.Set(kRevokedKey, status.has_been_previously_revoked);
+  dict.Set(kPermissionName, std::move(permission_dict));
 
   permissions::PermissionsClient::Get()
       ->GetSettingsMap(profile)
       ->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-          dict.Clone());
+          base::Value(std::move(dict)));
 }
 
 void RevokePermission(const GURL& origin, Profile* profile) {
