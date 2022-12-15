@@ -57,13 +57,16 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackReturnsToPaymentSheet) {
   AddCreditCard(card);
 
   // Installs a payment handler which opens a window.
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
 
   ResetEventWaiterForDialogOpened();
-  EXPECT_EQ(
-      "success",
-      content::EvalJs(GetActiveWebContents(),
-                      "paymentRequestWithOptions({requestShipping: true})"));
+  EXPECT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "paymentRequestWithOptions({requestShipping: true}, $1)",
+                    payment_method)));
   WaitForObservedEvent();
 
   EXPECT_TRUE(IsPayButtonEnabled());
@@ -88,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackReturnsToPaymentSheet) {
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackAbortsRequestIfSkipSheet) {
   NavigateTo("/payment_handler.html");
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
 
   // Skip the sheet flow skips directly to the payment handler window.
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
@@ -99,7 +103,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUITest, BackAbortsRequestIfSkipSheet) {
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
 
   EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       "launchWithoutWaitForResponse()"));
+                                       content::JsReplace(
+                                           "launchWithoutWaitForResponse($1)",
+                                           payment_method)));
   WaitForObservedEvent();
 
   EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON));
