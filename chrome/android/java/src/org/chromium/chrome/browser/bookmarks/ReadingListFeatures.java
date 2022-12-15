@@ -47,9 +47,7 @@ public class ReadingListFeatures {
 
     /** Returns whether the root folder should be used as the default location. */
     public static boolean shouldUseRootFolderAsDefaultForReadLater() {
-        return isReadingListEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.READ_LATER, "use_root_bookmark_as_default", true);
+        return isReadingListEnabled();
     }
 
     /**
@@ -75,6 +73,7 @@ public class ReadingListFeatures {
     }
 
     private static boolean isReadingListEnabled() {
+        // This feature is enabled by default in native.
         return FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
