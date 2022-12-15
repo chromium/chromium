@@ -8,6 +8,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/harmonized_colors.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -387,11 +388,14 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
       features::IsDarkLightModeEnabled()
           ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
           : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+
   if (ash::features::IsJellyEnabled()) {
     AddRefPalette(mixer, key);
   } else {
     cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
   }
+  // Add after ref colors since it needs to override them.
+  AddHarmonizedColors(mixer, key);
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
 
   // TODO(b/234400002): Remove legacy colors once all usages are cleaned up.
