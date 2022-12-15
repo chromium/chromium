@@ -9,6 +9,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
 
@@ -28,6 +29,10 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
   DCHECK(signal.GetType() == ExtensionSignalType::kRemoteHostContacted ||
          signal.GetType() == ExtensionSignalType::kPasswordReuse);
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryPotentialPasswordTheft)) {
+    return;
+  }
   base::Time signal_creation_time = base::Time::NowFromSystemTime();
   extensions::ExtensionId extension_id;
   // Process remote host contacted signal.
