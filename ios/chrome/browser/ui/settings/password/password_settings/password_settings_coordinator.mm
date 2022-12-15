@@ -145,8 +145,7 @@
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState()),
+          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
           IOSChromePasswordStoreFactory::GetForBrowserState(
               browserState, ServiceAccessType::EXPLICIT_ACCESS),
           IOSChromeAccountPasswordStoreFactory::GetForBrowserState(

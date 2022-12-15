@@ -175,6 +175,33 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 }
 
+// Tests that the "Manage Passwords..." action works in incognito mode.
+- (void)testManagePasswordsActionOpensPasswordSettingsInIncognito {
+  // Open a tab in incognito.
+  [ChromeEarlGrey openNewIncognitoTab];
+  self.URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:self.URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the "Manage Passwords..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the password settings opened.
+  // Changed minimum visible percentage to 70% for Passwords table view in
+  // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
+  [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.7)];
+}
+
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
 // icons in the right state.
 - (void)testPasswordsStateAfterPresentingManagePasswords {

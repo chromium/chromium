@@ -109,6 +109,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
+#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -1638,9 +1639,14 @@ enum class ToolbarKind {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kIOSPasswordUISplit)) {
     DCHECK(!self.passwordSettingsCoordinator);
+
+    // Use main browser to open the password settings.
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
     self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
         initWithBaseViewController:self.viewController
-                           browser:self.browser];
+                           browser:sceneState.interfaceProvider.mainInterface
+                                       .browser];
     self.passwordSettingsCoordinator.delegate = self;
     [self.passwordSettingsCoordinator start];
   } else {
