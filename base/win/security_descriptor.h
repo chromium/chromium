@@ -13,6 +13,7 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/win/access_control_list.h"
+#include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,7 +22,21 @@ namespace base::win {
 
 // Represents the type of Windows kernel object for reading/writing the security
 // descriptor.
-enum class SecurityObjectType { kFile, kRegistry, kWindow, kKernel };
+enum class SecurityObjectType {
+  kFile,
+  kRegistry,
+  kWindowStation,
+  kDesktop,
+  kKernel
+};
+
+// Results from the access check.
+struct AccessCheckResult {
+  // The granted access from the check.
+  ACCESS_MASK granted_access;
+  // The access status. Set to true if the access check was successful.
+  bool access_status;
+};
 
 // This class is used to hold and modify a Windows security descriptor.
 class BASE_EXPORT SecurityDescriptor {
@@ -153,6 +168,44 @@ class BASE_EXPORT SecurityDescriptor {
                     SecurityAccessMode mode,
                     DWORD access_mask,
                     DWORD inheritance);
+
+  // Set one entry in the DACL.
+  // |known_sid| the known SID for the entry.
+  // |mode| the operation to perform on the ACL, e.g. grant access.
+  // |access_mask| the entries access mask.
+  // |inheritance| inheritance flags.
+  // Returns true if successful, false on
+  // error, with the Win32 last error set.
+  // If DACL is not present a NULL ACL will be added first.
+  bool SetDaclEntry(WellKnownSid known_sid,
+                    SecurityAccessMode mode,
+                    DWORD access_mask,
+                    DWORD inheritance);
+
+  // Perform an access check for this security descriptor.
+  // |token| specify the impersonation token to check against.
+  // |desired_access| the access desired for the check.
+  // |generic_mapping| the generic mapping for the access check.
+  // Returns the result of the access check. If an empty result is returned the
+  // call to the AccessCheck API failed.
+  absl::optional<AccessCheckResult> AccessCheck(
+      const AccessToken& token,
+      ACCESS_MASK desired_access,
+      const GENERIC_MAPPING& generic_mapping);
+
+  // Perform an access check for this security descriptor.
+  // |token| specify the impersonation token to check against.
+  // |desired_access| the access desired for the check.
+  // |object_type| the object type to determine how to map generic rights. Note
+  // that you can't use kKernel as that doesn't reflect a specific kernel object
+  // type, an empty return will be return if this is used. If you need to access
+  // check an unsupported type use the overload which accepts a manually
+  // configured GENERIC_MAPPING.
+  // Returns the result of the access check. If an empty result is returned the
+  // call to the AccessCheck API failed.
+  absl::optional<AccessCheckResult> AccessCheck(const AccessToken& token,
+                                                ACCESS_MASK desired_access,
+                                                SecurityObjectType object_type);
 
   // Get, set and clear owner member.
   const absl::optional<Sid>& owner() const { return owner_; }

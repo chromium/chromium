@@ -27,6 +27,10 @@ class BASE_EXPORT ExplicitAccessEntry {
                       SecurityAccessMode mode,
                       DWORD access_mask,
                       DWORD inheritance);
+  ExplicitAccessEntry(WellKnownSid known_sid,
+                      SecurityAccessMode mode,
+                      DWORD access_mask,
+                      DWORD inheritance);
   ExplicitAccessEntry(const ExplicitAccessEntry&) = delete;
   ExplicitAccessEntry& operator=(const ExplicitAccessEntry&) = delete;
   ExplicitAccessEntry(ExplicitAccessEntry&&);

@@ -45,12 +45,66 @@ SE_OBJECT_TYPE ConvertObjectType(SecurityObjectType object_type) {
       return SE_FILE_OBJECT;
     case SecurityObjectType::kRegistry:
       return SE_REGISTRY_KEY;
-    case SecurityObjectType::kWindow:
+    case SecurityObjectType::kWindowStation:
+    case SecurityObjectType::kDesktop:
       return SE_WINDOW_OBJECT;
     case SecurityObjectType::kKernel:
       return SE_KERNEL_OBJECT;
   }
   return SE_UNKNOWN_OBJECT_TYPE;
+}
+
+GENERIC_MAPPING GetGenericMappingForType(SecurityObjectType object_type) {
+  GENERIC_MAPPING generic_mapping = {};
+  switch (object_type) {
+    case SecurityObjectType::kFile:
+      generic_mapping.GenericRead = FILE_GENERIC_READ;
+      generic_mapping.GenericWrite = FILE_GENERIC_WRITE;
+      generic_mapping.GenericExecute = FILE_GENERIC_EXECUTE;
+      generic_mapping.GenericAll = FILE_ALL_ACCESS;
+      break;
+    case SecurityObjectType::kRegistry:
+      generic_mapping.GenericRead = KEY_READ;
+      generic_mapping.GenericWrite = KEY_WRITE;
+      generic_mapping.GenericExecute = KEY_EXECUTE;
+      generic_mapping.GenericAll = KEY_ALL_ACCESS;
+      break;
+    case SecurityObjectType::kDesktop:
+      generic_mapping.GenericRead =
+          STANDARD_RIGHTS_READ | DESKTOP_READOBJECTS | DESKTOP_ENUMERATE;
+      generic_mapping.GenericWrite =
+          STANDARD_RIGHTS_WRITE | DESKTOP_CREATEWINDOW | DESKTOP_CREATEMENU |
+          DESKTOP_HOOKCONTROL | DESKTOP_JOURNALRECORD |
+          DESKTOP_JOURNALPLAYBACK | DESKTOP_WRITEOBJECTS;
+      generic_mapping.GenericExecute =
+          STANDARD_RIGHTS_EXECUTE | DESKTOP_SWITCHDESKTOP;
+      generic_mapping.GenericAll =
+          STANDARD_RIGHTS_REQUIRED | DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
+          DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK |
+          DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP |
+          DESKTOP_WRITEOBJECTS;
+      break;
+    case SecurityObjectType::kWindowStation:
+      generic_mapping.GenericRead = STANDARD_RIGHTS_READ | WINSTA_ENUMDESKTOPS |
+                                    WINSTA_ENUMERATE | WINSTA_READATTRIBUTES |
+                                    WINSTA_READSCREEN;
+      generic_mapping.GenericWrite =
+          STANDARD_RIGHTS_WRITE | WINSTA_ACCESSCLIPBOARD |
+          WINSTA_CREATEDESKTOP | WINSTA_WRITEATTRIBUTES;
+      generic_mapping.GenericExecute = STANDARD_RIGHTS_EXECUTE |
+                                       WINSTA_ACCESSGLOBALATOMS |
+                                       WINSTA_EXITWINDOWS;
+      generic_mapping.GenericAll =
+          STANDARD_RIGHTS_REQUIRED | WINSTA_ACCESSCLIPBOARD |
+          WINSTA_ACCESSGLOBALATOMS | WINSTA_CREATEDESKTOP |
+          WINSTA_ENUMDESKTOPS | WINSTA_ENUMERATE | WINSTA_EXITWINDOWS |
+          WINSTA_READATTRIBUTES | WINSTA_READSCREEN | WINSTA_WRITEATTRIBUTES;
+      break;
+    case SecurityObjectType::kKernel:
+      NOTREACHED();
+      break;
+  }
+  return generic_mapping;
 }
 
 template <typename T>
@@ -323,6 +377,49 @@ bool SecurityDescriptor::SetDaclEntry(const Sid& sid,
     dacl_ = AccessControlList{};
   }
   return dacl_->SetEntry(sid, mode, access_mask, inheritance);
+}
+
+bool SecurityDescriptor::SetDaclEntry(WellKnownSid known_sid,
+                                      SecurityAccessMode mode,
+                                      DWORD access_mask,
+                                      DWORD inheritance) {
+  return SetDaclEntry(Sid(known_sid), mode, access_mask, inheritance);
+}
+
+absl::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
+    const AccessToken& token,
+    ACCESS_MASK desired_access,
+    const GENERIC_MAPPING& generic_mapping) {
+  GENERIC_MAPPING local_mapping = generic_mapping;
+  ::MapGenericMask(&desired_access, &local_mapping);
+
+  // Allocate a privilege set which could cover all possible privileges.
+  DWORD priv_set_length = checked_cast<DWORD>(
+      sizeof(PRIVILEGE_SET) +
+      (token.Privileges().size() * sizeof(LUID_AND_ATTRIBUTES)));
+  std::vector<char> priv_set(priv_set_length);
+  DWORD granted_access = 0;
+  BOOL access_status = FALSE;
+  SECURITY_DESCRIPTOR sd = {};
+  ToAbsolute(sd);
+  if (!::AccessCheck(&sd, token.get(), desired_access, &local_mapping,
+                     reinterpret_cast<PPRIVILEGE_SET>(priv_set.data()),
+                     &priv_set_length, &granted_access, &access_status)) {
+    return absl::nullopt;
+  }
+  return AccessCheckResult{granted_access, !!access_status};
+}
+
+absl::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
+    const AccessToken& token,
+    ACCESS_MASK desired_access,
+    SecurityObjectType object_type) {
+  if (object_type == SecurityObjectType::kKernel) {
+    ::SetLastError(ERROR_INVALID_PARAMETER);
+    return absl::nullopt;
+  }
+  return AccessCheck(token, desired_access,
+                     GetGenericMappingForType(object_type));
 }
 
 SecurityDescriptor::SecurityDescriptor(absl::optional<Sid>&& owner,

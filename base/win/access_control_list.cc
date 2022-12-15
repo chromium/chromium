@@ -91,6 +91,12 @@ ExplicitAccessEntry::ExplicitAccessEntry(const Sid& sid,
       access_mask_(access_mask),
       inheritance_(inheritance) {}
 
+ExplicitAccessEntry::ExplicitAccessEntry(WellKnownSid known_sid,
+                                         SecurityAccessMode mode,
+                                         DWORD access_mask,
+                                         DWORD inheritance)
+    : ExplicitAccessEntry(Sid(known_sid), mode, access_mask, inheritance) {}
+
 ExplicitAccessEntry::ExplicitAccessEntry(ExplicitAccessEntry&&) = default;
 ExplicitAccessEntry& ExplicitAccessEntry::operator=(ExplicitAccessEntry&&) =
     default;

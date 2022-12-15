@@ -152,6 +152,13 @@ TEST(AccessControlListTest, ExplicitAccessEntry) {
   EXPECT_EQ(ace.mode(), ace_clone.mode());
   EXPECT_EQ(ace.access_mask(), ace_clone.access_mask());
   EXPECT_EQ(ace.inheritance(), ace_clone.inheritance());
+  ExplicitAccessEntry ace_known(WellKnownSid::kSelf,
+                                SecurityAccessMode::kRevoke, ~FakeAccess,
+                                ~FakeInherit);
+  EXPECT_EQ(Sid(WellKnownSid::kSelf), ace_known.sid());
+  EXPECT_EQ(SecurityAccessMode::kRevoke, ace_known.mode());
+  EXPECT_EQ(~FakeAccess, ace_known.access_mask());
+  EXPECT_EQ(~FakeInherit, ace_known.inheritance());
 }
 
 TEST(AccessControlListTest, SetEntries) {
