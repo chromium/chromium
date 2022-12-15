@@ -237,9 +237,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     DCHECK_EQ(GetParam(), AppType::HOSTED_APP);
     const Extension* app = InstallExtensionWithSourceAndFlags(
         app_folder, 1, extensions::mojom::ManifestLocation::kInternal,
-        app_type_ == AppType::HOSTED_APP
-            ? extensions::Extension::NO_FLAGS
-            : extensions::Extension::FROM_BOOKMARK);
+        extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(app);
     app_id_ = app->id();
 

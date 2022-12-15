@@ -150,8 +150,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::AppType::kChromeApp) {
-      scoped_refptr<extensions::Extension> ext = CreateExtension(
-          app_id.app_id(), app_name, url.value(), false /*is_bookmark_app*/);
+      scoped_refptr<extensions::Extension> ext =
+          CreateExtension(app_id.app_id(), app_name, url.value());
       extension_service_->AddExtension(ext.get());
       task_environment_.RunUntilIdle();
       return;
@@ -163,14 +163,6 @@ class AppServiceWrapperTest : public ::testing::Test {
           &profile_, app_name, GURL(url.value()),
           webapps::WebappInstallSource::EXTERNAL_DEFAULT);
       EXPECT_EQ(installed_app_id, app_id.app_id());
-      task_environment_.RunUntilIdle();
-      return;
-    }
-
-    if (app_id.app_type() == apps::AppType::kWeb) {
-      scoped_refptr<extensions::Extension> web_app = CreateExtension(
-          app_id.app_id(), app_name, url.value(), true /*is_bookmark_app*/);
-      extension_service_->AddExtension(web_app.get());
       task_environment_.RunUntilIdle();
       return;
     }

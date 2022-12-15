@@ -40,7 +40,8 @@ class ExtensionCreator {
     kNoRunFlags = 0,
     kOverwriteCRX = 1 << 0,
     kRequireModernManifestVersion = 1 << 1,
-    kBookmarkApp = 1 << 2,
+    // DEPRECATED.
+    // kBookmarkApp = 1 << 2,
     kSystemApp = 1 << 3,
   };
 

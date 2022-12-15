@@ -95,10 +95,11 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
     // Chrome Web Store.
     FROM_WEBSTORE = 1 << 3,
 
-    // |FROM_BOOKMARK| indicates the extension is a bookmark app which has been
-    // generated from a web page. Bookmark apps have no permissions or extent
-    // and launch the web page they are created from when run.
-    FROM_BOOKMARK = 1 << 4,
+    // DEPRECATED - |FROM_BOOKMARK| indicates the extension is a bookmark app
+    // which has been generated from a web page. Bookmark apps have no
+    // permissions or extent and launch the web page they are created from when
+    // run.
+    // FROM_BOOKMARK = 1 << 4,
 
     // |FOLLOW_SYMLINKS_ANYWHERE| means that resources can be symlinks to
     // anywhere in the filesystem, rather than being restricted to the
@@ -311,11 +312,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   }
   int creation_flags() const { return creation_flags_; }
   bool from_webstore() const { return (creation_flags_ & FROM_WEBSTORE) != 0; }
-  // TODO(crbug.com/1065748): Retire this function when there are no old
-  // entries.
-  bool from_deprecated_bookmark() const {
-    return (creation_flags_ & FROM_BOOKMARK) != 0;
-  }
   bool may_be_untrusted() const {
     return (creation_flags_ & MAY_BE_UNTRUSTED) != 0;
   }

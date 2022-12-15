@@ -6041,19 +6041,6 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
     EXPECT_EQ(0, visitor.Visit(json_data));
   }
 
-  // Test is_bookmark_app.
-  MockProviderVisitor from_bookmark_visitor(
-      base_path, Extension::FROM_BOOKMARK);
-  json_data =
-      "{"
-      "  \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": {"
-      "    \"external_crx\": \"RandomExtension.crx\","
-      "    \"external_version\": \"1.0\","
-      "    \"is_bookmark_app\": true"
-      "  }"
-      "}";
-  EXPECT_EQ(1, from_bookmark_visitor.Visit(json_data));
-
   // Test is_from_webstore.
   MockProviderVisitor from_webstore_visitor(
       base_path, Extension::FROM_WEBSTORE);

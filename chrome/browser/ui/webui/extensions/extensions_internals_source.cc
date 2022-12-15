@@ -105,8 +105,6 @@ base::Value::List CreationFlagsToList(int creation_flags) {
     flags_value.Append("ALLOW_FILE_ACCESS");
   if (creation_flags & extensions::Extension::FROM_WEBSTORE)
     flags_value.Append("FROM_WEBSTORE");
-  if (creation_flags & extensions::Extension::FROM_BOOKMARK)
-    flags_value.Append("FROM_BOOKMARK");
   if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE)
     flags_value.Append("FOLLOW_SYMLINKS_ANYWHERE");
   if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY)

@@ -38,8 +38,7 @@ arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name,
 scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& extension_id,
     const std::string& name,
-    const std::string& url,
-    bool is_bookmark_app) {
+    const std::string& url) {
   base::Value::Dict manifest;
   manifest.Set(extensions::manifest_keys::kName, name);
   manifest.Set(extensions::manifest_keys::kVersion, "1");
@@ -48,8 +47,7 @@ scoped_refptr<extensions::Extension> CreateExtension(
 
   std::string error;
   extensions::Extension::InitFromValueFlags flags =
-      is_bookmark_app ? extensions::Extension::FROM_BOOKMARK
-                      : extensions::Extension::NO_FLAGS;
+      extensions::Extension::NO_FLAGS;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
           base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,

@@ -752,11 +752,6 @@ class ExtensionPrefs : public KeyedService {
   // TODO(archanasimha): Remove this around M89.
   void MigrateDeprecatedDisableReasons();
 
-  // Looks to see if the Youtube extension is installed, and removes the
-  // FROM_BOOKMARK flag from it's creation flags.
-  // TODO(dmurph): Remove this in m90.
-  void MigrateYoutubeOffBookmarkApps();
-
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the

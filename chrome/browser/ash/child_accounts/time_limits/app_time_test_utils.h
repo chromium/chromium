@@ -26,8 +26,7 @@ arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name,
 scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& extension_id,
     const std::string& name,
-    const std::string& url,
-    bool is_bookmark_app = false);
+    const std::string& url);
 
 }  // namespace app_time
 }  // namespace ash

@@ -107,9 +107,6 @@ bool ExtensionCreator::ValidateManifest(const base::FilePath& extension_dir,
   if (run_flags & kRequireModernManifestVersion)
     create_flags |= Extension::REQUIRE_MODERN_MANIFEST_VERSION;
 
-  if (run_flags & kBookmarkApp)
-    create_flags |= Extension::FROM_BOOKMARK;
-
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       extension_dir, extension_id,
       run_flags & kSystemApp ? mojom::ManifestLocation::kExternalComponent

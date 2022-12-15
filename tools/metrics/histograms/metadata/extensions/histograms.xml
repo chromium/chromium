@@ -3078,6 +3078,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.UninstallBookmarkApp" enum="Boolean"
     expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in M110.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
