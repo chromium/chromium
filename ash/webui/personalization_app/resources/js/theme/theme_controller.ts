@@ -67,4 +67,5 @@ export function setStaticColorPref(
     store: PersonalizationStore) {
   provider.setStaticColor(staticColor);
   store.dispatch(setStaticColorAction(staticColor));
+  store.dispatch(setColorSchemeAction(ColorScheme.kStatic));
 }

@@ -166,6 +166,9 @@ void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
     return;
   }
   color_palette_controller_->SetStaticColor(static_color, base::DoNothing());
+  // TODO(b/261505637): Remove and use pref listeners once the prefs are
+  // available.
   OnStaticColorChanged(static_color);
+  OnColorSchemeChanged(color_palette_controller_->color_scheme());
 }
 }  // namespace ash::personalization_app

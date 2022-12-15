@@ -60,9 +60,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
       // Whether or not to use the wallpaper to calculate the seed color.
       automaticSeedColorEnabled: {
         type: Boolean,
-        value: true,
-        notify: true,
-        reflectToAttribute: true,
+        computed: 'isAutomaticSeedColorEnabled_(colorSchemeSelected_)',
       },
       // The static color stored in the backend.
       staticColorSelected_: Object,
@@ -164,7 +162,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
     setStaticColorPref(staticColor, getThemeProvider(), this.getStore());
   }
 
-  private onClickToggle_() {
+  private onToggleChanged_() {
     if (this.automaticSeedColorEnabled) {
       const staticColor = this.staticColorSelected_ || DEFAULT_STATIC_COLOR;
       setStaticColorPref(staticColor, getThemeProvider(), this.getStore());
@@ -172,6 +170,10 @@ export class DynamicColorElement extends WithPersonalizationStore {
       const colorScheme = this.colorSchemeSelected_ || DEFAULT_COLOR_SCHEME;
       setColorSchemePref(colorScheme, getThemeProvider(), this.getStore());
     }
+  }
+
+  private isAutomaticSeedColorEnabled_(colorScheme: ColorScheme|null) {
+    return colorScheme === null || colorScheme !== ColorScheme.kStatic;
   }
 
   private getColorSchemeAriaChecked_(

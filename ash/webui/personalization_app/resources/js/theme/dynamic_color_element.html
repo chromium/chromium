@@ -64,7 +64,7 @@
     <!-- TODO(b/253089237): Add the final translated text. -->
     <div id="dynamicColorToggleDescription">[temp]Auto</div>
     <!-- TODO(b/253089237): Add the translated aria label. -->
-    <cr-toggle checked="{{automaticSeedColorEnabled}}" on-click="onClickToggle_">
+    <cr-toggle checked="{{automaticSeedColorEnabled}}" on-change="onToggleChanged_">
     </cr-toggle>
   </div>
   <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
@@ -75,7 +75,7 @@
       id="colorSchemeSelector"
       selected="0"
       selected-item="{{colorSchemeHighlightedButton_}}"
-      hidden="[[!automaticSeedColorEnabled]]">
+      hidden$="[[!automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[colorSchemes_]]" as="colorScheme">
       <cr-button
           tabindex$="[[getTabIndex_(colorScheme.id)]]"
@@ -90,7 +90,7 @@
       id="staticColorSelector"
       selected="0"
       selected-item="{{staticColorHighlightedButton_}}"
-      hidden="[[automaticSeedColorEnabled]]">
+      hidden$="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
           tabindex$="[[getTabIndex_(staticColor)]]"

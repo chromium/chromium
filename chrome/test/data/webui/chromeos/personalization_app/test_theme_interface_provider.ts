@@ -26,6 +26,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
   isDarkModeEnabledResponse = true;
   isColorModeAutoScheduleEnabledResponse = true;
   staticColor: SkColor|null;
+  colorScheme = ColorScheme.kTonalSpot;
 
   themeObserverRemote: ThemeObserverInterface|null = null;
 
@@ -48,16 +49,18 @@ export class TestThemeProvider extends TestBrowserProxy implements
   setColorScheme(colorScheme: ColorScheme) {
     this.methodCalled('setColorScheme', colorScheme);
     this.staticColor = null;
+    this.colorScheme = colorScheme;
   }
 
   setStaticColor(color: SkColor) {
     this.methodCalled('setStaticColor', color);
     this.staticColor = color;
+    this.colorScheme = ColorScheme.kStatic;
   }
 
   getColorScheme() {
     this.methodCalled('getColorScheme');
-    return Promise.resolve({colorScheme: ColorScheme.kTonalSpot});
+    return Promise.resolve({colorScheme: this.colorScheme});
   }
 
   getStaticColor() {

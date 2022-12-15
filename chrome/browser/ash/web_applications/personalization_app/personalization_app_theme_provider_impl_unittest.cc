@@ -250,10 +250,12 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {
   theme_provider_remote()->FlushForTesting();
   SkColor color = SK_ColorMAGENTA;
   EXPECT_NE(color, GetStaticColor());
+  EXPECT_NE(ash::ColorScheme::kStatic, GetColorScheme());
 
   theme_provider()->SetStaticColor(color);
 
   EXPECT_EQ(color, GetStaticColor());
+  EXPECT_EQ(ash::ColorScheme::kStatic, GetColorScheme());
 }
 
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetColorScheme) {
