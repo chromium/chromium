@@ -962,4 +962,41 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   RunUntilIdle();
 }
 
+TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
+       SecondMigrationCannotStartWhileTheFirstOneHasNotCompleted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      /*feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  // Add a form to the built-in backend to have something to migrate.
+  PasswordForm form = CreateTestPasswordForm();
+  built_in_backend().AddLoginAsync(form, base::DoNothing());
+
+  // Call StartMigrationIfNecessary for the first time.
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
+  RunUntilIdle();
+
+  // If the user gets evicted from the experiment, migration-related prefs are
+  // cleared.
+  prefs()->ClearPref(password_manager::prefs::kTimeOfLastMigrationAttempt);
+
+  // Simulate some time passing before the second migration is triggered.
+  FastForwardBy(base::Milliseconds(123u));
+
+  // Call StartMigrationIfNecessary for the second time before the first
+  // migration finishes in an attempt to reenroll.
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/true);
+  RunUntilIdle();
+
+  // Check the recorded last migration attempt time. It should not be recorded
+  // after the pref was cleared, because the second migration should not be
+  // triggered.
+  EXPECT_EQ(0, prefs()->GetDouble(
+                   password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
 }  // namespace password_manager

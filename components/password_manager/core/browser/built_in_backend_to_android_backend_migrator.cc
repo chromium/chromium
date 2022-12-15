@@ -153,6 +153,13 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary(
           password_manager::prefs::kTimeOfLastMigrationAttempt));
   if (time_passed_since_last_migration_attempt < kMigrationThreshold)
     return;
+
+  // Do not migrate if a migration is already running. By the time it ends, the
+  // two backends will be identical, therefore the second migration won't be
+  // needed.
+  if (migration_in_progress_type_ != MigrationType::kNone)
+    return;
+
   MigrationType migration_type =
       GetMigrationType(should_attempt_upm_reenrollment);
   if (migration_type != MigrationType::kNone)
@@ -197,11 +204,7 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
   // already transmitted through sync.
   // Once the local storage is supported, android backend becomes the only
   // active backend and there is no need to do this migration.
-  // Do not migrate if a migration is already running. By the time it ends, the
-  // two backends will be identical, therefore the second migration won't be
-  // needed.
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      (migration_in_progress_type_ == MigrationType::kNone) &&
       !features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
     return IsPasswordSyncEnabled(sync_service_)
                ? MigrationType::kNonSyncableToAndroidBackend
