@@ -52,6 +52,7 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_DQBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
+        V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMOFF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE),
@@ -267,6 +268,7 @@ bool V4L2IoctlShim::Ioctl(int request_code, struct v4l2_buffer* buffer) const {
 template <>
 bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
   DCHECK(request_code == static_cast<int>(VIDIOC_STREAMON) ||
+         request_code == static_cast<int>(VIDIOC_STREAMOFF) ||
          request_code == static_cast<int>(MEDIA_IOC_REQUEST_ALLOC));
   LOG_ASSERT(arg != nullptr) << "|arg| check failed.";
 
@@ -401,6 +403,30 @@ bool V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue) const {
   return ret;
 }
 
+bool V4L2IoctlShim::ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
+                                     uint32_t count) const {
+  struct v4l2_requestbuffers reqbuf;
+
+  memset(&reqbuf, 0, sizeof(reqbuf));
+  reqbuf.count = count;
+  reqbuf.type = queue->type();
+  reqbuf.memory = queue->memory();
+
+  const bool ret = Ioctl(VIDIOC_REQBUFS, &reqbuf);
+
+  queue->set_num_buffers(reqbuf.count);
+
+  if (count == 0) {
+    LOG(INFO) << "Requested to free all buffers in " << queue->type()
+              << "with a buffer count of 0.";
+  } else {
+    LOG(INFO) << queue->num_buffers() << " buffers requested, " << reqbuf.count
+              << " buffers returned for " << queue->type() << ".";
+  }
+
+  return ret;
+}
+
 bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
                          const uint32_t index) const {
   LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
@@ -499,6 +525,12 @@ bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
   int arg = static_cast<int>(type);
 
   return Ioctl(VIDIOC_STREAMON, &arg);
+}
+
+bool V4L2IoctlShim::StreamOff(const enum v4l2_buf_type type) const {
+  int arg = static_cast<int>(type);
+
+  return Ioctl(VIDIOC_STREAMOFF, &arg);
 }
 
 bool V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,

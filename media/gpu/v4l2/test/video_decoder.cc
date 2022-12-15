@@ -50,10 +50,10 @@ void UnpackUVPlane(std::vector<char>& dest_u,
 // 4:2:0 subsampled, but UV are interlaced). This function converts a single
 // MM21 plane into its equivalent NV12 plane.
 void DetilePlane(std::vector<char>& dest,
-                 gfx::Size dest_size,
+                 const gfx::Size& dest_size,
                  char* src,
-                 gfx::Size src_size,
-                 gfx::Size tile_size) {
+                 const gfx::Size& src_size,
+                 const gfx::Size& tile_size) {
   // Tile size in bytes.
   const int tile_len = tile_size.GetArea();
   // |width| rounded down to the nearest multiple of |tile_width|.
@@ -166,11 +166,15 @@ void VideoDecoder::Initialize() {
   if (!v4l2_ioctl_->SetFmt(CAPTURE_queue_))
     LOG(FATAL) << "SetFmt for CAPTURE queue failed.";
 
-  if (!v4l2_ioctl_->ReqBufs(OUTPUT_queue_))
-    LOG(FATAL) << "ReqBufs for OUTPUT queue failed.";
+  // If there is a dynamic resolution change, the Initialization sequence will
+  // be performed again, minus the allocation of OUTPUT queue buffers.
+  if (!IsResolutionChanged()) {
+    if (!v4l2_ioctl_->ReqBufs(OUTPUT_queue_))
+      LOG(FATAL) << "ReqBufs for OUTPUT queue failed.";
 
-  if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_))
-    LOG(FATAL) << "QueryAndMmapQueueBuffers for OUTPUT queue failed";
+    if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_))
+      LOG(FATAL) << "QueryAndMmapQueueBuffers for OUTPUT queue failed";
+  }
 
   if (!v4l2_ioctl_->ReqBufs(CAPTURE_queue_))
     LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
@@ -196,15 +200,52 @@ void VideoDecoder::Initialize() {
     LOG(FATAL) << "StreamOn for CAPTURE queue failed.";
 }
 
+// Follows the dynamic resolution change sequence described in
+// https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#dynamic-resolution-change
+VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
+    const gfx::Size& new_resolution) {
+  // Call VIDIOC_STREAMOFF() on both the OUTPUT and CAPTURE queues.
+  if (!v4l2_ioctl_->StreamOff(OUTPUT_queue_->type()))
+    LOG(FATAL) << "StreamOff for OUTPUT queue failed.";
+
+  if (!v4l2_ioctl_->StreamOff(CAPTURE_queue_->type()))
+    LOG(FATAL) << "StreamOff for CAPTURE queue failed.";
+
+  // Free all CAPTURE buffers from the driver side by calling VIDIOC_REQBUFS()
+  // on the CAPTURE queue with a buffer count of zero.
+  if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0))
+    LOG(FATAL) << "Failed to free all buffers for CAPTURE queue";
+
+  // Free queued CAPTURE buffer indexes that are tracked by the client side.
+  CAPTURE_queue_->DequeueAllBufferIndexes();
+
+  // Set the new resolution on OUTPUT queue. The driver will then pick up
+  // the new resolution to be set on the coded size for CAPTURE queue.
+  OUTPUT_queue_->set_display_size(new_resolution);
+  OUTPUT_queue_->set_coded_size(new_resolution);
+
+  if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
+                                     number_of_buffers_in_capture_queue_)) {
+    LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
+  }
+  CAPTURE_queue_->set_display_size(new_resolution);
+
+  // Perform the initialization sequence again
+  Initialize();
+  is_resolution_changed_ = false;
+
+  return VideoDecoder::kOk;
+}
+
 // Unpacks NV12 to I420 and optionally trims padding from source.
 // This expects a contiguous NV12 buffer, as specified by
 // V4L2_PIX_FMT_NV12.
 void VideoDecoder::ConvertNV12ToYUV(std::vector<char>& dest_y,
                                     std::vector<char>& dest_u,
                                     std::vector<char>& dest_v,
-                                    gfx::Size dest_size,
+                                    const gfx::Size& dest_size,
                                     const char* src,
-                                    gfx::Size src_size) {
+                                    const gfx::Size& src_size) {
   CHECK(dest_size.width() <= src_size.width());
   CHECK(dest_size.height() <= src_size.height());
 
@@ -246,10 +287,10 @@ void VideoDecoder::ConvertNV12ToYUV(std::vector<char>& dest_y,
 void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                     std::vector<char>& dest_u,
                                     std::vector<char>& dest_v,
-                                    gfx::Size dest_size,
+                                    const gfx::Size& dest_size,
                                     char* src_y,
                                     char* src_uv,
-                                    gfx::Size src_size) {
+                                    const gfx::Size& src_size) {
   constexpr int kMM21TileWidth = 16;
   constexpr int kMM21TileHeight = 32;
 

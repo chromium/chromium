@@ -92,7 +92,12 @@ class V4L2Queue {
 
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
+
   gfx::Size display_size() const { return display_size_; }
+  void set_display_size(gfx::Size display_size) {
+    display_size_ = display_size;
+  }
+
   enum v4l2_memory memory() const { return memory_; }
 
   void set_buffers(MmapedBuffers& buffers) { buffers_ = buffers; }
@@ -132,13 +137,15 @@ class V4L2Queue {
     queued_buffer_indexes_.erase(index);
   }
 
+  void DequeueAllBufferIndexes() { queued_buffer_indexes_.clear(); }
+
  private:
   const enum v4l2_buf_type type_;
   const uint32_t fourcc_;
   MmapedBuffers buffers_;
   uint32_t num_buffers_;
   // The size of the image on the screen.
-  const gfx::Size display_size_;
+  gfx::Size display_size_;
   // The size of the encoded frame. Usually has an alignment of 16, 32
   // depending on codec.
   gfx::Size coded_size_;
@@ -189,6 +196,10 @@ class V4L2IoctlShim {
   // Allocates buffers via VIDIOC_REQBUFS for |queue|.
   [[nodiscard]] bool ReqBufs(std::unique_ptr<V4L2Queue>& queue) const;
 
+  // Allocates buffers via VIDIOC_REQBUFS for |queue| with a buffer count.
+  [[nodiscard]] bool ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
+                                      uint32_t count) const;
+
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.
   [[nodiscard]] bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
@@ -201,6 +212,9 @@ class V4L2IoctlShim {
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;
+
+  // Stops streaming |queue| (via VIDIOC_STREAMOFF).
+  [[nodiscard]] bool StreamOff(const enum v4l2_buf_type type) const;
 
   // Sets the value of controls which specify decoding parameters
   // for each frame.

@@ -46,26 +46,34 @@ class VideoDecoder {
                                  gfx::Size& size,
                                  const int frame_number) = 0;
 
+  // Handles dynamic resolution change with new resolution parsed from frame
+  // header.
+  VideoDecoder::Result HandleDynamicResolutionChange(
+      const gfx::Size& new_resolution);
+
   // Returns whether the last decoded frame was visible.
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
+
+  // Return whether there is a dynamic resolytion change.
+  bool IsResolutionChanged() const { return is_resolution_changed_; }
 
  protected:
   // Helper method for converting NV12 frames to I420.
   static void ConvertNV12ToYUV(std::vector<char>& dest_y,
                                std::vector<char>& dest_u,
                                std::vector<char>& dest_v,
-                               gfx::Size dest_size,
+                               const gfx::Size& dest_size,
                                const char* src,
-                               gfx::Size src_size);
+                               const gfx::Size& src_size);
 
   // Helper method for converting MM21 frames to I420.
   static void ConvertMM21ToYUV(std::vector<char>& dest_y,
                                std::vector<char>& dest_u,
                                std::vector<char>& dest_v,
-                               gfx::Size dest_size,
+                               const gfx::Size& dest_size,
                                char* src_y,
                                char* src_uv,
-                               gfx::Size src_size);
+                               const gfx::Size& src_size);
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;
@@ -78,6 +86,12 @@ class VideoDecoder {
 
   // Whether the last decoded frame was visible.
   bool last_decoded_frame_visible_ = false;
+
+  // Whether there is a dynamic support change.
+  bool is_resolution_changed_ = false;
+
+  // Number of buffers in CAPTURE queue varied by different codecs.
+  uint32_t number_of_buffers_in_capture_queue_;
 };
 
 }  // namespace v4l2_test
