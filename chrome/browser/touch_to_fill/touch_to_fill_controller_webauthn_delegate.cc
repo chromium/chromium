@@ -48,7 +48,7 @@ void TouchToFillControllerWebAuthnDelegate::OnManagePasswordsSelected(
   password_manager_launcher::ShowPasswordSettings(
       request_delegate_->web_contents(),
       password_manager::ManagePasswordsReferrer::kTouchToFill);
-  std::move(action_complete).Run();
+  OnDismiss(std::move(action_complete));
 }
 
 void TouchToFillControllerWebAuthnDelegate::OnDismiss(
