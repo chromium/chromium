@@ -3590,16 +3590,20 @@ using PDFExtensionHitTestTest = PDFExtensionTest;
 // Flaky in nearly all configurations; see https://crbug.com/856169.
 IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Load page with embedded PDF and make sure it succeeds.
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
 
   gfx::Point point_in_parent(250, 25);
   gfx::Point point_in_pdf(250, 250);
 
   // Inject script to count MouseLeaves in the PDF.
   ASSERT_TRUE(content::ExecuteScript(
-      guest_contents,
+      guest_mainframe,
       "var enter_count = 0;\n"
       "var leave_count = 0;\n"
       "document.addEventListener('mouseenter', function (){\n"
@@ -3624,12 +3628,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   int leave_count = 0;
   do {
     ASSERT_TRUE(ExecuteScriptAndExtractInt(
-        guest_contents, "window.domAutomationController.send(leave_count);",
+        guest_mainframe, "window.domAutomationController.send(leave_count);",
         &leave_count));
   } while (!leave_count);
   int enter_count = 0;
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
-      guest_contents, "window.domAutomationController.send(enter_count);",
+      guest_mainframe, "window.domAutomationController.send(enter_count);",
       &enter_count));
   EXPECT_EQ(1, enter_count);
 }
