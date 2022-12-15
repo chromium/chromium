@@ -1,0 +1,36 @@
+{
+    "0": {
+        "executables": {
+            "base_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=check",
+                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
+                ],
+                "path": "bin/run_base_perftests"
+            }
+        },
+        "benchmarks": {}
+    },
+    "1": {
+        "benchmarks": {
+            "media.mobile": {
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 18,
+        "predicted_min_shard_time": 170,
+        "predicted_min_shard_index": 1,
+        "predicted_max_shard_time": 900.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 900.0,
+        "shard #1": 170
+    }
+}

@@ -348,6 +348,58 @@
       }
     ]
   },
+  "fuchsia-perf-nsn": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-nsn_map.json",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--os-check=check",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
+        ],
+        "isolate_name": "performance_web_engine_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "override_compile_targets": [
+          "performance_web_engine_test_suite"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": null,
+              "device_type": "Nelson",
+              "os": "Fuchsia",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "fuchsia-perf-nuc-fyi": {
     "isolated_scripts": [
       {

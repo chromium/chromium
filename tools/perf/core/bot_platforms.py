@@ -311,16 +311,24 @@ _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
 
-FUCHSIA_EXEC_ARGS = {'astro': None, 'sherlock': None, 'atlas': None}
+FUCHSIA_EXEC_ARGS = {
+    'astro': None,
+    'sherlock': None,
+    'atlas': None,
+    'nelson': None,
+    'nuc': None
+}
 FUCHSIA_EXEC_CONFIGS = {
     'astro': None,
     'sherlock': None,
     'atlas': None,
+    'nelson': None,
     'nuc': None
 }
 _IMAGE_PATHS = {
     'astro': ('astro-release', 'smart_display_eng_arrested'),
     'sherlock': ('sherlock-release', 'smart_display_max_eng_arrested'),
+    'nelson': ('nelson-release', 'smart_display_m3_eng_paused'),
 }
 
 # Some image paths are just a product-bundle, which is not a relative path.
@@ -488,6 +496,7 @@ _LACROS_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
+# Used for astro/nelson.
 _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('media.mobile'),
@@ -735,6 +744,13 @@ FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
                                   'fuchsia',
                                   is_fyi=True,
                                   executables=FUCHSIA_EXEC_CONFIGS['astro'])
+FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
+                                   '',
+                                   _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
+                                   2,
+                                   'fuchsia',
+                                   is_fyi=True,
+                                   executables=FUCHSIA_EXEC_CONFIGS['nelson'])
 FUCHSIA_PERF_SHERLOCK = PerfPlatform(
     'fuchsia-perf-shk',
     '',
