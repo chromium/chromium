@@ -28,6 +28,42 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/spinlock.h"
 
+#include <dlfcn.h>
+
+static void* gRecordReplayBeginDisallowEventsFn;
+
+static void RecordReplayBeginDisallowEvents() {
+  if (!gRecordReplayBeginDisallowEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEvents");
+    if (!fnptr) {
+      gRecordReplayBeginDisallowEventsFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayBeginDisallowEventsFn = fnptr;
+  }
+
+  if (gRecordReplayBeginDisallowEventsFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(gRecordReplayBeginDisallowEventsFn)();
+  }
+}
+
+static void* gRecordReplayEndDisallowEventsFn;
+
+static void RecordReplayEndDisallowEvents() {
+  if (!gRecordReplayEndDisallowEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayEndDisallowEvents");
+    if (!fnptr) {
+      gRecordReplayEndDisallowEventsFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayEndDisallowEventsFn = fnptr;
+  }
+
+  if (gRecordReplayEndDisallowEventsFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(gRecordReplayEndDisallowEventsFn)();
+  }
+}
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace base_internal {
@@ -70,6 +106,9 @@ thread_local ThreadIdentity* thread_identity_ptr = nullptr;
 
 void SetCurrentThreadIdentity(
     ThreadIdentity* identity, ThreadIdentityReclaimerFunction reclaimer) {
+  // Setting the identity can happen at non-deterministic points.
+  RecordReplayBeginDisallowEvents();
+
   assert(CurrentThreadIdentityIfPresent() == nullptr);
   // Associate our destructor.
   // NOTE: This call to pthread_setspecific is currently the only immovable
@@ -115,6 +154,8 @@ void SetCurrentThreadIdentity(
 #else
 #error Unimplemented ABSL_THREAD_IDENTITY_MODE
 #endif
+
+  RecordReplayEndDisallowEvents();
 }
 
 #if ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_TLS || \

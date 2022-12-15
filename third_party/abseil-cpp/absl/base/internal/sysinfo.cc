@@ -57,6 +57,42 @@
 #include "absl/base/internal/unscaledcycleclock.h"
 #include "absl/base/thread_annotations.h"
 
+#include <dlfcn.h>
+
+static void* gRecordReplayBeginDisallowEventsFn;
+
+static void RecordReplayBeginDisallowEvents() {
+  if (!gRecordReplayBeginDisallowEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEvents");
+    if (!fnptr) {
+      gRecordReplayBeginDisallowEventsFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayBeginDisallowEventsFn = fnptr;
+  }
+
+  if (gRecordReplayBeginDisallowEventsFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(gRecordReplayBeginDisallowEventsFn)();
+  }
+}
+
+static void* gRecordReplayEndDisallowEventsFn;
+
+static void RecordReplayEndDisallowEvents() {
+  if (!gRecordReplayEndDisallowEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayEndDisallowEvents");
+    if (!fnptr) {
+      gRecordReplayEndDisallowEventsFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayEndDisallowEventsFn = fnptr;
+  }
+
+  if (gRecordReplayEndDisallowEventsFn != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(gRecordReplayEndDisallowEventsFn)();
+  }
+}
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace base_internal {
@@ -349,7 +385,12 @@ ABSL_CONST_INIT static int num_cpus = 0;
 // initialized, therefore this must not allocate memory.
 int NumCPUs() {
   base_internal::LowLevelCallOnce(
-      &init_num_cpus_once, []() { num_cpus = GetNumCPUs(); });
+      &init_num_cpus_once, []() {
+        // The thread which ends up calling this can vary when replaying.
+        RecordReplayBeginDisallowEvents();
+        num_cpus = GetNumCPUs();
+        RecordReplayEndDisallowEvents();
+      });
   return num_cpus;
 }
 
