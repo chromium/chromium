@@ -11,8 +11,7 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-frame1.js
+      _test_create-frame1.js
   frame1 (frame1.html)
     127.0.0.1:8000
       devtools/bindings/resources/jssourcemaps-with-overlapping-sources
@@ -26,9 +25,8 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
+      _test_create-anotherFrame1.js
+      _test_create-frame1.js
   anotherFrame1 (frame1.html)
     127.0.0.1:8000
       devtools/bindings/resources/jssourcemaps-with-overlapping-sources
@@ -49,10 +47,9 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
+      _test_create-anotherFrame1.js
+      _test_create-frame1.js
+      _test_create-frame2.js
   anotherFrame1 (frame1.html)
     127.0.0.1:8000
       devtools/bindings/resources/jssourcemaps-with-overlapping-sources
@@ -80,11 +77,10 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-    _test_detach-anotherFrame1.js
+      _test_create-anotherFrame1.js
+      _test_create-frame1.js
+      _test_create-frame2.js
+      _test_detach-anotherFrame1.js
   frame1 (frame1.html)
     127.0.0.1:8000
       devtools/bindings/resources/jssourcemaps-with-overlapping-sources
@@ -105,12 +101,11 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-    _test_detach-anotherFrame1.js
-    _test_detachFrame2.js
+      _test_create-anotherFrame1.js
+      _test_create-frame1.js
+      _test_create-frame2.js
+      _test_detach-anotherFrame1.js
+      _test_detachFrame2.js
   frame1 (frame1.html)
     127.0.0.1:8000
       devtools/bindings/resources/jssourcemaps-with-overlapping-sources
@@ -124,11 +119,10 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-    _test_detach-anotherFrame1.js
-    _test_detachFrame1.js
-    _test_detachFrame2.js
+      _test_create-anotherFrame1.js
+      _test_create-frame1.js
+      _test_create-frame2.js
+      _test_detach-anotherFrame1.js
+      _test_detachFrame1.js
+      _test_detachFrame2.js
 

@@ -18,9 +18,9 @@ Workspace: 10 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-sass.scss
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] sourcemap-script.js
+[+] http://127.0.0.1:8000/devtools/resources/sourcemap-script.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachShadow1.js
 [+] sourcemap-style.css
-[+] _test_attachShadow1.js
 
 Running: attachShadow2
 Removed: 0 uiSourceCodes
@@ -34,10 +34,10 @@ Workspace: 13 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-sass.scss
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    sourcemap-script.js
+    http://127.0.0.1:8000/devtools/resources/sourcemap-script.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachShadow1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachShadow2.js
     sourcemap-style.css
-    _test_attachShadow1.js
-[+] _test_attachShadow2.js
 
 Running: detachShadow1
 Removed: 0 uiSourceCodes
@@ -52,11 +52,11 @@ Workspace: 15 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-sass.scss
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    sourcemap-script.js
+    http://127.0.0.1:8000/devtools/resources/sourcemap-script.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachShadow1.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachShadow2.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachShadow1.js
     sourcemap-style.css
-    _test_attachShadow1.js
-    _test_attachShadow2.js
-[+] _test_detachShadow1.js
 
 Running: detachShadow2
 Removed: 2 uiSourceCodes
@@ -73,9 +73,9 @@ Workspace: 15 uiSourceCodes.
 [+] debugger:///VM[XXX] _test_detachShadow2.js
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    sourcemap-script.js
-    _test_attachShadow1.js
-    _test_attachShadow2.js
-    _test_detachShadow1.js
-[+] _test_detachShadow2.js
+    http://127.0.0.1:8000/devtools/resources/sourcemap-script.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachShadow1.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachShadow2.js
+    http://127.0.0.1:8000/devtools/resources/_test_detachShadow1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachShadow2.js
 

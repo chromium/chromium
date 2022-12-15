@@ -5699,7 +5699,6 @@ crbug.com/1271336 external/wpt/native-io/detach_iframe_during_open.https.window.
 # Sheriff 2021-11-22
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Failure Pass Timeout ]
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
-crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 
 # Flaky on mac
 crbug.com/1263709 [ Mac ] http/tests/devtools/elements/node-xpath.js [ Failure ]
@@ -5783,26 +5782,6 @@ crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 
 # Sheriff 2022-01-12
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
-
-# Temporarily disabled to unblock https://crrev.com/c/3657449
-crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-attach-detach.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-navigate.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/bindings-main-frame-navigated.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/contentscripts-bindings-multiple-frames.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/contentscripts-navigator-multiple-frames.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/dynamic-bindings-frame-attach-detach.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/dynamic-navigator-frame-attach-detach.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/jssourcemap-navigator-overlapping-sources.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/shadowdom-bindings.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/sourcemap-bindings-multiple-frames.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/sourcemap-navigator-multiple-frames.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/suspendtarget-bindings.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/bindings/suspendtarget-navigator.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/sources/debugger/network-uisourcecode-provider.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-panel.js [ Failure Pass ]
-crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-with-same-source-url.js [ Failure Pass ]
 
 # Interop PE 2022-2023 investigation
 crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]

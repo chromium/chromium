@@ -14,24 +14,24 @@ Workspace: 9 uiSourceCodes.
 [+] debugger:///VM[XXX] dynamic-frame.html
 [+] debugger:///VM[XXX] dynamic-script.js
 [+] debugger:///VM[XXX] _test_attachFrame.js
-[+] dynamic-script.js
 [+] dynamic-style.css
 [+] http://127.0.0.1:8000/devtools/bindings/resources/dynamic-frame.html
+[+] http://127.0.0.1:8000/devtools/resources/dynamic-script.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
 
 Running: detachFrame
-Removed: 2 uiSourceCodes
+Removed: 3 uiSourceCodes
 [-] dynamic-style.css
 [-] http://127.0.0.1:8000/devtools/bindings/resources/dynamic-frame.html
-Workspace: 9 uiSourceCodes.
+[-] http://127.0.0.1:8000/devtools/resources/dynamic-script.js
+Workspace: 8 uiSourceCodes.
     debugger:///VM[XXX]
     debugger:///VM[XXX] dynamic-frame.html
     debugger:///VM[XXX] dynamic-script.js
     debugger:///VM[XXX] _test_attachFrame.js
 [+] debugger:///VM[XXX] _test_detachFrame.js
-    dynamic-script.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame.js
-[+] _test_detachFrame.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame.js
 

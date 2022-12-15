@@ -12,9 +12,8 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_create-iframe1.js
-    _test_create-iframe2.js
+      _test_create-iframe1.js
+      _test_create-iframe2.js
   frame1 (sourcemap-frame.html)
     127.0.0.1:8000
       devtools/bindings/resources
@@ -61,8 +60,7 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  (no domain)
-    _test_detachFrame.js
+      _test_detachFrame.js
   frame2 (sourcemap-frame.html)
     127.0.0.1:8000
       devtools/bindings/resources

@@ -17,7 +17,7 @@ Workspace: 9 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/script1.js
 [+] http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique1.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_create-frame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
 
 Running: attachAnotherFrame1
 Removed: 0 uiSourceCodes
@@ -33,8 +33,8 @@ Workspace: 13 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/script1.js
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique1.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_create-anotherFrame1.js
-    _test_create-frame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_create-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
 
 Running: attachFrame2
 Removed: 0 uiSourceCodes
@@ -55,9 +55,9 @@ Workspace: 19 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique1.ts
 [+] http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique2.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-[+] _test_create-frame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_create-frame2.js
 
 Running: detachAnotherFrame1
 Removed: 1 uiSourceCodes
@@ -80,10 +80,10 @@ Workspace: 21 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique1.ts
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique2.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-[+] _test_detach-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame2.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detach-anotherFrame1.js
 
 Running: detachFrame2
 Removed: 3 uiSourceCodes
@@ -107,11 +107,11 @@ Workspace: 21 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/script1.js
     http://127.0.0.1:8000/devtools/bindings/resources/jssourcemaps-with-overlapping-sources/unique1.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-    _test_detach-anotherFrame1.js
-[+] _test_detachFrame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_detach-anotherFrame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame2.js
 
 Running: detachFrame1
 Removed: 4 uiSourceCodes
@@ -134,10 +134,10 @@ Workspace: 20 uiSourceCodes.
 [+] debugger:///VM[XXX] _test_detachFrame1.js
     debugger:///VM[XXX] _test_detachFrame2.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_create-anotherFrame1.js
-    _test_create-frame1.js
-    _test_create-frame2.js
-    _test_detach-anotherFrame1.js
-[+] _test_detachFrame1.js
-    _test_detachFrame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-anotherFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_create-frame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_detach-anotherFrame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_detachFrame2.js
 

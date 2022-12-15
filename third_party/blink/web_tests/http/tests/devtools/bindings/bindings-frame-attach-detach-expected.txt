@@ -17,19 +17,19 @@ Workspace: 8 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/magic-script.js
 [+] http://127.0.0.1:8000/devtools/bindings/resources/magic-style.css
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
 
 Running: detachFrame
-Removed: 2 uiSourceCodes
+Removed: 3 uiSourceCodes
 [-] http://127.0.0.1:8000/devtools/bindings/resources/magic-frame.html
+[-] http://127.0.0.1:8000/devtools/bindings/resources/magic-script.js
 [-] http://127.0.0.1:8000/devtools/bindings/resources/magic-style.css
-Workspace: 8 uiSourceCodes.
+Workspace: 7 uiSourceCodes.
     debugger:///VM[XXX]
     debugger:///VM[XXX] magic-script.js
     debugger:///VM[XXX] _test_attachFrame.js
 [+] debugger:///VM[XXX] _test_detachFrame.js
-    http://127.0.0.1:8000/devtools/bindings/resources/magic-script.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame.js
-[+] _test_detachFrame.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame.js
 

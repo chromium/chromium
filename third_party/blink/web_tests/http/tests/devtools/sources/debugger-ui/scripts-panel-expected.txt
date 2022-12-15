@@ -6,7 +6,6 @@ Navigator:
 top
   example.com
     (index)
-  (no domain)
     bar.js
     baz.js
     foo.js
@@ -17,7 +16,6 @@ Navigator:
 top
   example.com
     (index)
-  (no domain)
     bar.js
     baz.js
     foo.js
@@ -26,7 +24,6 @@ Navigator:
 top
   example.com
     (index)
-  (no domain)
     bar.js
     baz.js
     foo.js
@@ -38,7 +35,6 @@ Navigator:
 top
   example.com
     (index)
-  (no domain)
     bar.js
 
 Running: testDebuggerUISourceCodeAddedAndRemoved
@@ -46,13 +42,11 @@ Navigator:
 top
   example.com
     (index)
-  (no domain)
     foo.js
 Navigator:
 top
   example.com
     (index)
-  (no domain)
     foo.js
     source.js
 

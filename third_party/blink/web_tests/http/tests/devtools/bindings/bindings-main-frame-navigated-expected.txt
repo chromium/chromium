@@ -19,7 +19,7 @@ Workspace: 10 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
 
 Running: navigateMainFrame
 Removed: 10 uiSourceCodes
@@ -32,7 +32,7 @@ Removed: 10 uiSourceCodes
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
 [-] http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[-] _test_attachFrame.js
+[-] http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
 Workspace: 1 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/empty-page.html
 

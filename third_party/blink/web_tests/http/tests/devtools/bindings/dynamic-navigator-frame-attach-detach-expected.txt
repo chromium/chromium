@@ -14,10 +14,12 @@ top
       inspected-page.html
   frame (dynamic-frame.html)
     127.0.0.1:8000
-      devtools/bindings/resources
-        dynamic-frame.html
+      devtools
+        bindings/resources
+          dynamic-frame.html
+        resources
+          dynamic-script.js
     (no domain)
-      dynamic-script.js
       dynamic-style.css
 
 Running: detachFrame
@@ -25,7 +27,4 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
-  frame (dynamic-frame.html)
-    (no domain)
-      dynamic-script.js
 

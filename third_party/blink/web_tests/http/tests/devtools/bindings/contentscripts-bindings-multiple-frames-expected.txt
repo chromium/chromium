@@ -10,20 +10,18 @@ Workspace: 2 uiSourceCodes.
 Running: attachFrame1
 Removed: 0 uiSourceCodes
 Workspace: 8 uiSourceCodes.
-[+] content-script-42.js
     debugger:///VM[XXX]
 [+] debugger:///VM[XXX] content-script-42.js
 [+] debugger:///VM[XXX] contentscript-frame.html
 [+] debugger:///VM[XXX] _test_attachFrame1.js
 [+] http://127.0.0.1:8000/devtools/bindings/resources/contentscript-frame.html
+[+] http://127.0.0.1:8000/devtools/resources/content-script-42.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_attachFrame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame1.js
 
 Running: attachFrame2
 Removed: 0 uiSourceCodes
 Workspace: 13 uiSourceCodes.
-[+] content-script-42.js
-    content-script-42.js
     debugger:///VM[XXX]
     debugger:///VM[XXX] content-script-42.js
 [+] debugger:///VM[XXX] content-script-42.js
@@ -32,15 +30,16 @@ Workspace: 13 uiSourceCodes.
     debugger:///VM[XXX] _test_attachFrame1.js
 [+] debugger:///VM[XXX] _test_attachFrame2.js
     http://127.0.0.1:8000/devtools/bindings/resources/contentscript-frame.html
+    http://127.0.0.1:8000/devtools/resources/content-script-42.js
+[+] http://127.0.0.1:8000/devtools/resources/content-script-42.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame1.js
-[+] _test_attachFrame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame2.js
 
 Running: detachFrame1
 Removed: 1 uiSourceCodes
-[-] content-script-42.js
+[-] http://127.0.0.1:8000/devtools/resources/content-script-42.js
 Workspace: 15 uiSourceCodes.
-    content-script-42.js
 [+] debugger:///VM[XXX]
     debugger:///VM[XXX]
     debugger:///VM[XXX] content-script-42.js
@@ -51,19 +50,20 @@ Workspace: 15 uiSourceCodes.
     debugger:///VM[XXX] _test_attachFrame2.js
 [+] debugger:///VM[XXX] _test_detachFrame1.js
     http://127.0.0.1:8000/devtools/bindings/resources/contentscript-frame.html
+    http://127.0.0.1:8000/devtools/resources/content-script-42.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame1.js
-    _test_attachFrame2.js
-[+] _test_detachFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame2.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame1.js
 
 Running: detachFrame2
 Removed: 2 uiSourceCodes
-[-] content-script-42.js
 [-] http://127.0.0.1:8000/devtools/bindings/resources/contentscript-frame.html
+[-] http://127.0.0.1:8000/devtools/resources/content-script-42.js
 Workspace: 16 uiSourceCodes.
+    debugger:///VM[XXX]
+    debugger:///VM[XXX]
 [+] debugger:///VM[XXX]
-    debugger:///VM[XXX]
-    debugger:///VM[XXX]
     debugger:///VM[XXX] content-script-42.js
     debugger:///VM[XXX] content-script-42.js
     debugger:///VM[XXX] contentscript-frame.html
@@ -73,8 +73,8 @@ Workspace: 16 uiSourceCodes.
     debugger:///VM[XXX] _test_detachFrame1.js
 [+] debugger:///VM[XXX] _test_detachFrame2.js
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame1.js
-    _test_attachFrame2.js
-    _test_detachFrame1.js
-[+] _test_detachFrame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame1.js
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame2.js
+    http://127.0.0.1:8000/devtools/resources/_test_detachFrame1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame2.js
 

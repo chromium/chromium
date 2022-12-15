@@ -19,7 +19,7 @@ UISourceCode content: <html>
 
 Running: testVMScript
 Creating script.
-UISourceCode: foo.js
+UISourceCode: http://127.0.0.1:8000/devtools/resources/foo.js
 UISourceCode is content script: false
 Highlighter type: text/javascript
 UISourceCode content: var foo=1;

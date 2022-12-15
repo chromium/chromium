@@ -17,7 +17,7 @@ Workspace: 8 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/magic-script.js
 [+] http://127.0.0.1:8000/devtools/bindings/resources/magic-style.css
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
 
 Running: navigateFrame
 Removed: 3 uiSourceCodes
@@ -31,6 +31,6 @@ Workspace: 8 uiSourceCodes.
 [+] debugger:///VM[XXX] _test_navigateFrame
 [+] http://127.0.0.1:8000/devtools/bindings/resources/empty-frame.html
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-    _test_attachFrame.js
-[+] _test_navigateFrame
+    http://127.0.0.1:8000/devtools/resources/_test_attachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_navigateFrame
 

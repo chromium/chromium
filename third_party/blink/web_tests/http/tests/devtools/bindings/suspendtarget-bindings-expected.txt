@@ -22,8 +22,8 @@ Workspace: 14 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_create-iframe1.js
-[+] _test_create-iframe2.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_create-iframe1.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_create-iframe2.js
 
 Running: Suspending targets.
 Removed: 12 uiSourceCodes
@@ -37,8 +37,8 @@ Removed: 12 uiSourceCodes
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-script.js
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
-[-] _test_create-iframe1.js
-[-] _test_create-iframe2.js
+[-] http://127.0.0.1:8000/devtools/resources/_test_create-iframe1.js
+[-] http://127.0.0.1:8000/devtools/resources/_test_create-iframe2.js
 Workspace: 2 uiSourceCodes.
     http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-frame.html
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
@@ -61,5 +61,5 @@ Workspace: 10 uiSourceCodes.
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [+] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
     http://127.0.0.1:8000/devtools/resources/inspected-page.html
-[+] _test_detachFrame.js
+[+] http://127.0.0.1:8000/devtools/resources/_test_detachFrame.js
 
