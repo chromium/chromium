@@ -7,9 +7,14 @@
         flex: 1
       }
 
-      /* Tooltip is hidden since site-list will display a common tooltip. */
+      /* Tooltip is hidden since site-list will display a common tooltip.
+       * Not using 'display: none' because tooltip still needs to be accessible
+       * by screen readers. */
       cr-policy-pref-indicator::part(tooltip) {
-        display: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        overflow: hidden;
+        width: 1px;
       }
     </style>
     <div class="list-item" focus-row-container>
@@ -38,7 +43,7 @@
       </div>
       <template is="dom-if" if="[[showPolicyPrefIndicator_]]">
         <cr-policy-pref-indicator pref="[[model]]"
-            icon-aria-label="[[label]]" on-mouseenter="onShowTooltip_"
+            on-mouseenter="onShowTooltip_"
             on-focus="onShowTooltip_" focus-row-control focus-type="policy">
         </cr-policy-pref-indicator>
       </template>

@@ -15,6 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {assertTooltipIsHidden} from './test_util.js';
 
 // clang-format on
 
@@ -48,18 +49,14 @@ suite('SiteListEntry', function() {
     const icon = prefIndicator!.shadowRoot!.querySelector('cr-tooltip-icon')!;
     const paperTooltip = icon.shadowRoot!.querySelector('paper-tooltip')!;
     // Never shown since site-list will show a common tooltip.
-    assertEquals('none', (paperTooltip.computedStyleMap().get('display') as {
-                           value: number,
-                         }).value);
+    assertTooltipIsHidden(paperTooltip);
     assertFalse(paperTooltip._showing);
     const wait = eventToPromise('show-tooltip', document);
     icon.$.indicator.dispatchEvent(
         new MouseEvent('mouseenter', {bubbles: true, composed: true}));
     return wait.then(() => {
       assertTrue(paperTooltip._showing);
-      assertEquals('none', (paperTooltip.computedStyleMap().get('display') as {
-                             value: number,
-                           }).value);
+      assertTooltipIsHidden(paperTooltip);
     });
   });
 

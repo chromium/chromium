@@ -11,6 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {assertTooltipIsHidden} from './test_util.js';
 // clang-format on
 
 /**
@@ -210,10 +211,7 @@ suite('ChooserExceptionListEntry', function() {
 
         // This tooltip is never shown since a common tooltip will be used.
         assertTrue(!!paperTooltip);
-        assertEquals(
-            'none',
-            (paperTooltip!.computedStyleMap().get('display') as
-             {value: string})!.value);
+        assertTooltipIsHidden(paperTooltip);
         assertFalse(paperTooltip!._showing);
 
         const wait = eventToPromise('show-tooltip', document);
@@ -221,10 +219,7 @@ suite('ChooserExceptionListEntry', function() {
             new MouseEvent('mouseenter', {bubbles: true, composed: true}));
         return wait.then(() => {
           assertTrue(paperTooltip!._showing);
-          assertEquals(
-              'none',
-              (paperTooltip!.computedStyleMap().get('display') as
-               {value: string})!.value);
+          assertTooltipIsHidden(paperTooltip);
         });
       });
 
