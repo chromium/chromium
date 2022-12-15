@@ -1478,7 +1478,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-health@google.com</owner>
   <summary>
     Captive portal time from a portal-suspected state to an online state on
-    ChromeOS.
+    ChromeOS. NOTE: Prior to M110 this used a range that was too small so those
+    results are invalid.
   </summary>
 </histogram>
 
@@ -1573,7 +1574,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-health@google.com</owner>
   <summary>
     Captive portal time from a redirect-found state to an online state on
-    ChromeOS.
+    ChromeOS. NOTE: Prior to M110 this used a range that was too small so those
+    results are invalid.
   </summary>
 </histogram>
 

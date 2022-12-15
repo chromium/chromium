@@ -2152,10 +2152,12 @@ void NetworkStateHandler::UpdatePortalStateAndNotify(
 void NetworkStateHandler::SendPortalHistogramTimes(base::TimeDelta elapsed) {
   switch (default_network_portal_state_) {
     case NetworkState::PortalState::kPortal:
-      base::UmaHistogramTimes("Network.RedirectFoundToOnlineTime", elapsed);
+      base::UmaHistogramMediumTimes("Network.RedirectFoundToOnlineTime",
+                                    elapsed);
       break;
     case NetworkState::PortalState::kPortalSuspected:
-      base::UmaHistogramTimes("Network.PortalSuspectedToOnlineTime", elapsed);
+      base::UmaHistogramMediumTimes("Network.PortalSuspectedToOnlineTime",
+                                    elapsed);
       break;
     default:
       // Previous state was not portalled, no times to report.

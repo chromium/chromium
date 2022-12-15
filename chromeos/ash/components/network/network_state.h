@@ -27,6 +27,7 @@ namespace ash {
 
 class DeviceState;
 class NetworkStateHandler;
+class NetworkStateTest;
 
 // Simple class to provide network state information about a network service.
 // This class should always be passed as a const* and should never be held
@@ -292,6 +293,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
  private:
   friend class MobileActivatorTest;
   friend class NetworkStateHandler;
+  friend class NetworkStateTest;
 
   // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, which must
   // be of type DICTIONARY, if the key exists, and validates |name_|. Returns

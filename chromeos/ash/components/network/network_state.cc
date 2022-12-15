@@ -650,6 +650,13 @@ bool NetworkState::UpdateName(const base::Value& properties) {
 }
 
 void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
+  if (!IsConnectedState()) {
+    // Unconnected networks are in an unknown portal state and should not
+    // update histograms.
+    shill_portal_state_ = PortalState::kUnknown;
+    return;
+  }
+
   int status_code =
       properties.FindIntKey(shill::kPortalDetectionFailedStatusCodeProperty)
           .value_or(0);
