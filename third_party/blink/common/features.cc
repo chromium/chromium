@@ -1246,19 +1246,19 @@ BASE_FEATURE(kUACHOverrideBlank,
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kPrewarmDefaultFontFamilies,
              "PrewarmDefaultFontFamilies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrewarmStandard = {&kPrewarmDefaultFontFamilies,
-                                                   "prewarm_standard", false};
+                                                   "prewarm_standard", true};
 const base::FeatureParam<bool> kPrewarmFixed = {&kPrewarmDefaultFontFamilies,
-                                                "prewarm_fixed", false};
+                                                "prewarm_fixed", true};
 const base::FeatureParam<bool> kPrewarmSerif = {&kPrewarmDefaultFontFamilies,
                                                 "prewarm_serif", true};
 const base::FeatureParam<bool> kPrewarmSansSerif = {
     &kPrewarmDefaultFontFamilies, "prewarm_sans_serif", true};
 const base::FeatureParam<bool> kPrewarmCursive = {&kPrewarmDefaultFontFamilies,
-                                                  "prewarm_cursive", false};
+                                                  "prewarm_cursive", true};
 const base::FeatureParam<bool> kPrewarmFantasy = {&kPrewarmDefaultFontFamilies,
-                                                  "prewarm_fantasy", false};
+                                                  "prewarm_fantasy", true};
 #endif
 
 // Enable `save-data` client hint.
@@ -1268,18 +1268,11 @@ BASE_FEATURE(kClientHintsSaveData,
 
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // TODO(crbug.com/1278147): Experiment with this more on desktop to
-             // see if it can help.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDecodeScriptSourceOffThread,
              "DecodeScriptSourceOffThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
@@ -1426,12 +1419,7 @@ const base::FeatureParam<bool> kPendingBeaconAPIForcesSendingOnNavigation = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrefetchFontLookupTables,
              "PrefetchFontLookupTables",
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kPrecompileInlineScripts,
@@ -1491,7 +1479,7 @@ BASE_FEATURE(kDisableArrayBufferSizeLimitsForTesting,
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClipboardUnsanitizedContent,
              "ClipboardUnsanitizedContent",

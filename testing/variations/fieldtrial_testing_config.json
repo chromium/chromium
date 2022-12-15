@@ -2947,6 +2947,89 @@
             ]
         }
     ],
+    "CombinedNavigationOptimizations2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221129",
+                    "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "50ms",
+                        "num-yields-with-default-budget": "2"
+                    },
+                    "enable_features": [
+                        "BatchImageDecoding",
+                        "DecodeScriptSourceOffThread",
+                        "EstablishGpuChannelAsync",
+                        "OptimizeDataUrls",
+                        "PrefetchFontLookupTables",
+                        "SplitCompositorTask",
+                        "TimedHTMLParserBudget"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221129",
+                    "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "500ms",
+                        "num-yields-with-default-budget": "6",
+                        "prewarm_cursive": "false",
+                        "prewarm_fantasy": "false",
+                        "prewarm_fixed": "false",
+                        "prewarm_sans_serif": "true",
+                        "prewarm_serif": "true",
+                        "prewarm_standard": "false"
+                    },
+                    "enable_features": [
+                        "AvoidEarlyExtensionScriptContextCreation",
+                        "DecodeScriptSourceOffThread",
+                        "OptimizeDataUrls",
+                        "PrewarmDefaultFontFamilies",
+                        "TimedHTMLParserBudget"
+                    ],
+                    "disable_features": [
+                        "EstablishGpuChannelAsync"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221129",
+                    "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "50ms",
+                        "num-yields-with-default-budget": "2"
+                    },
+                    "enable_features": [
+                        "DecodeScriptSourceOffThread",
+                        "EstablishGpuChannelAsync",
+                        "OptimizeDataUrls",
+                        "PrefetchFontLookupTables",
+                        "TimedHTMLParserBudget"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceHintAndroid": [
         {
             "platforms": [

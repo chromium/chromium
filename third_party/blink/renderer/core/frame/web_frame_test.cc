@@ -9606,9 +9606,7 @@ TEST_F(WebFrameSwapTest, AdHighlightEarlyApply) {
             SkColorSetARGB(128, 255, 0, 0));
 }
 
-// TODO(crbug.com/1314493): This test is flaky with the TimedHTMLParserBudget
-// feature enabled.
-TEST_F(WebFrameSwapTest, DISABLED_DoNotPropagateDisplayNonePropertyOnSwap) {
+TEST_F(WebFrameSwapTest, DoNotPropagateDisplayNonePropertyOnSwap) {
   WebFrameSwapTestClient* main_frame_client =
       static_cast<WebFrameSwapTestClient*>(MainFrame()->Client());
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
