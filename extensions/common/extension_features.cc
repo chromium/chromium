@@ -145,6 +145,6 @@ BASE_FEATURE(kExtensionsManifestV3Only,
 // See https://crbug.com/1382361 to track the launch status.
 BASE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules,
              "MinimumMV3CSPWithInlineSpeculationRules",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

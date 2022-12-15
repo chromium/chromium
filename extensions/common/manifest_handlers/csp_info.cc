@@ -223,12 +223,18 @@ CSPHandler::~CSPHandler() = default;
 
 // static
 const char* CSPHandler::GetMinimumMV3CSPForTesting() {
-  return kMinimumMV3CSP;
+  return base::FeatureList::IsEnabled(
+             extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
+             ? kMinimumMV3CSPWithInlineSpeculationRules
+             : kMinimumMV3CSP;
 }
 
 // static
 const char* CSPHandler::GetMinimumUnpackedMV3CSPForTesting() {
-  return kMinimumUnpackedMV3CSP;
+  return base::FeatureList::IsEnabled(
+             extensions_features::kMinimumMV3CSPWithInlineSpeculationRules)
+             ? kMinimumUnpackedMV3CSPWithInlineSpeculationRules
+             : kMinimumUnpackedMV3CSP;
 }
 
 bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
