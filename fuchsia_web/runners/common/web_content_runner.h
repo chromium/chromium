@@ -17,7 +17,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 
 class WebComponent;
-class WebInstanceHostV1;
 
 // sys::Runner that instantiates components hosting standard web content.
 class WebContentRunner : public fuchsia::sys::Runner {
@@ -33,23 +32,30 @@ class WebContentRunner : public fuchsia::sys::Runner {
     base::CommandLine extra_args;
   };
 
+  using CreateWebInstanceAndContextCallback =
+      base::RepeatingCallback<zx_status_t(
+          fuchsia::web::CreateContextParams params,
+          fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
+          base::CommandLine extra_args)>;
+
   using GetWebInstanceConfigCallback =
       base::RepeatingCallback<WebInstanceConfig()>;
 
   // Creates a Runner which will (re-)create the Context, if not already
   // running, when StartComponent() is called.
-  // |web_instance_host|: Used to create a web_instance Component in which to
-  //     host the fuchsia.web.Context.
+  // |create_web_instance_callback|: Used to create a web_instance Component in
+  //     which to host the fuchsia.web.Context.
   // |get_web_instance_config_callback|: Returns parameters for the Runner's
   //     fuchsia.web.Context.
   WebContentRunner(
-      WebInstanceHostV1& web_instance_host,
+      CreateWebInstanceAndContextCallback create_web_instance_callback,
       GetWebInstanceConfigCallback get_web_instance_config_callback);
 
   // Creates a Runner using a Context configured with `web_instance_config`.
   // The Runner becomes non-functional if the Context terminates.
-  WebContentRunner(WebInstanceHostV1& web_instance_host,
-                   WebInstanceConfig web_instance_config);
+  WebContentRunner(
+      CreateWebInstanceAndContextCallback create_web_instance_callback,
+      WebInstanceConfig web_instance_config);
 
   ~WebContentRunner() override;
 
@@ -106,7 +112,7 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // Starts the web_instance and connects |context_| to it.
   void CreateWebInstanceAndContext(WebInstanceConfig web_instance_config);
 
-  const raw_ref<WebInstanceHostV1> web_instance_host_;
+  const CreateWebInstanceAndContextCallback create_web_instance_callback_;
   const GetWebInstanceConfigCallback get_web_instance_config_callback_;
 
   // If set, invoked whenever a WebComponent is created.
