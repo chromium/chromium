@@ -49,6 +49,10 @@ class DIPSStorage {
   // Utility Methods -----------------------------------------------------------
 
   static size_t SetPrepopulateChunkSizeForTesting(size_t size);
+  void SetClockForTesting(base::Clock* clock) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    db_->SetClockForTesting(clock);
+  }
 
   // For each site in |sites|, set the interaction and storage timestamps to
   // |time|. Note this may run asynchronously -- the DB is not guaranteed to be

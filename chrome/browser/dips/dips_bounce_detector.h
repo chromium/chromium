@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
+#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,8 +27,6 @@ namespace base {
 class Clock;
 class TickClock;
 }  // namespace base
-
-class DIPSService;
 
 // ClientBounceDetectionState is owned by the DIPSBounceDetector and stores
 // data needed to detect stateful client-side redirects.
@@ -208,6 +207,10 @@ class DIPSWebContentsObserver
 
   void SetClockForTesting(base::Clock* clock) {
     detector_.SetClockForTesting(clock);
+    DCHECK(dips_service_);
+    dips_service_->storage()
+        ->AsyncCall(&DIPSStorage::SetClockForTesting)
+        .WithArgs(clock);
   }
 
  private:

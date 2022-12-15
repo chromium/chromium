@@ -9,7 +9,9 @@
 namespace dips {
 
 // Enables the DIPS (Detect Incidental Party State) feature.
-BASE_FEATURE(kFeature, "DIPS", base::FEATURE_DISABLED_BY_DEFAULT);
+// On by default to allow for collecting metrics. All potentially dangerous
+// behavior (database persistence, DIPS deletion) will be gated by params.
+BASE_FEATURE(kFeature, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kPersistedDatabaseEnabled{
@@ -25,6 +27,15 @@ const base::FeatureParam<base::TimeDelta> kGracePeriod{
 // repeatedly.
 const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
                                                       base::Hours(24)};
+
+// Set how long DIPS maintains an interaction for a site.
+//
+// If a site in the DIPS  database has an interaction within the grace period a
+// DIPS-triggering action, then that action and all ensuing actions are
+// protected from DIPS clearing until the interaction "expires" as set by this
+// param.
+const base::FeatureParam<base::TimeDelta> kInteractionTtl{
+    &kFeature, "interaction_ttl", base::Days(90)};
 
 // Sets the actions which will trigger DIPS clearing for a site. The default is
 // to set to kBounce, but can be overridden by Finch experiment groups or by

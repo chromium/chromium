@@ -5,10 +5,12 @@
 #include "chrome/browser/dips/dips_storage.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -39,6 +41,17 @@ void StoreState(absl::optional<StateValue>* state_value,
                                     : absl::nullopt;
 }
 
+class ScopedDIPSFeatureEnabledWithParams {
+ public:
+  explicit ScopedDIPSFeatureEnabledWithParams(
+      const base::FieldTrialParams& params) {
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature, params);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 }  // namespace
 
 class DIPSStorageTest : public testing::Test {
@@ -46,10 +59,9 @@ class DIPSStorageTest : public testing::Test {
   DIPSStorageTest() = default;
 
  protected:
-  TestStorage storage_;
-
- private:
   base::test::TaskEnvironment env_;
+  ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
+  TestStorage storage_;
 };
 
 TEST(DirtyBit, Constructor) {
@@ -494,6 +506,7 @@ class DIPSStoragePrepopulateTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
   base::SequenceBound<DIPSStorage> storage_;
 };
 

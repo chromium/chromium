@@ -16,6 +16,7 @@ BASE_DECLARE_FEATURE(kFeature);
 extern const base::FeatureParam<bool> kPersistedDatabaseEnabled;
 extern const base::FeatureParam<base::TimeDelta> kGracePeriod;
 extern const base::FeatureParam<base::TimeDelta> kTimerDelay;
+extern const base::FeatureParam<base::TimeDelta> kInteractionTtl;
 extern const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction;
 
 }  // namespace dips

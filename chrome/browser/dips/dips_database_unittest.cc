@@ -5,14 +5,17 @@
 #include <optional>
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_database.h"
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -45,9 +48,11 @@ class DIPSDatabaseTest : public testing::Test {
   explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
 
  protected:
+  base::SimpleTestClock clock_;
   std::unique_ptr<TestDatabase> db_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
+  base::test::ScopedFeatureList features_;
   // Test setup.
   void SetUp() override {
     if (in_memory_) {
@@ -59,6 +64,7 @@ class DIPSDatabaseTest : public testing::Test {
     }
 
     ASSERT_TRUE(db_->CheckDBInit());
+    db_->SetClockForTesting(clock());
   }
 
   void TearDown() override {
@@ -68,6 +74,16 @@ class DIPSDatabaseTest : public testing::Test {
     if (!in_memory_)
       ASSERT_TRUE(temp_dir_.Delete());
   }
+
+  base::Time Now() { return clock_.Now(); }
+
+  void AdvanceTimeTo(base::Time now) {
+    ASSERT_GE(now, clock_.Now());
+    clock_.SetNow(now);
+  }
+  void AdvanceTimeBy(base::TimeDelta delta) { clock_.Advance(delta); }
+
+  base::Clock* clock() { return &clock_; }
 
  private:
   bool in_memory_;
@@ -83,6 +99,13 @@ class DIPSDatabaseAllColumnTest
   DIPSDatabaseAllColumnTest()
       : DIPSDatabaseTest(std::get<0>(GetParam())),
         column_(std::get<1>(GetParam())) {}
+
+  void SetUp() override {
+    DIPSDatabaseTest::SetUp();
+    // Use inf ttl to prevent interactions from expiring unintentionally.
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
+  }
 
  protected:
   // Uses `times` to write  to the first and last columns for `column_` in the
@@ -203,6 +226,99 @@ INSTANTIATE_TEST_SUITE_P(
                                          ColumnType::kStatefulBounce,
                                          ColumnType::kStatelessBounce)));
 
+// A test class that verifies the behavior DIPSDatabase with respect to
+// interactions.
+//
+// Parameterized over whether the db is in memory.
+class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  DIPSDatabaseInteractionTest() : DIPSDatabaseTest(GetParam()) {}
+
+  void SetUp() override {
+    DIPSDatabaseTest::SetUp();
+    DCHECK(db_);
+    db_->Write("storage-only.test", storage_times,
+               {interaction_for_storage, interaction_for_storage},
+               /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
+    db_->Write(
+        "stateful-bounce.test", stateful_bounce_times,
+        {interaction_for_stateful_bounce, interaction_for_stateful_bounce},
+        stateful_bounce_times,
+        /*stateless_bounce_times=*/{});
+    db_->Write(
+        "stateless-bounce.test",
+        /*storage_times=*/{},
+        {interaction_for_stateless_bounce, interaction_for_stateless_bounce},
+        /*stateful_bounce_times=*/{}, stateless_bounce_times);
+  }
+
+ protected:
+  // Used to simulate just before/after another timestamp.
+  base::TimeDelta tiny_delta = base::Milliseconds(1);
+
+  base::Time storage = Time::FromDoubleT(1);
+  base::Time interaction_for_storage = Time::FromDoubleT(2);
+
+  base::Time stateful_bounce = Time::FromDoubleT(3);
+  base::Time interaction_for_stateful_bounce = Time::FromDoubleT(5);
+
+  base::Time stateless_bounce = Time::FromDoubleT(6);
+  base::Time interaction_for_stateless_bounce = Time::FromDoubleT(9);
+
+  TimestampRange storage_times = {storage, storage};
+  TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
+  TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
+};
+
+TEST_P(DIPSDatabaseInteractionTest, ClearExpiredInteractions) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                              {{"interaction_ttl", "3s"}});
+
+  base::TimeDelta interaction_ttl = dips::kInteractionTtl.Get();
+
+  ASSERT_EQ(interaction_ttl, base::Seconds(3));
+
+  EXPECT_THAT(
+      db_->GetAllSitesForTesting(),
+      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test",
+                           "storage-only.test"));
+  AdvanceTimeTo(interaction_for_storage + interaction_ttl + tiny_delta);
+  EXPECT_EQ(db_->ClearRowsWithExpiredInteractions(), 1u);
+  EXPECT_THAT(
+      db_->GetAllSitesForTesting(),
+      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test"));
+
+  AdvanceTimeTo(interaction_for_stateful_bounce + interaction_ttl + tiny_delta);
+  EXPECT_EQ(db_->ClearRowsWithExpiredInteractions(), 1u);
+  EXPECT_THAT(db_->GetAllSitesForTesting(),
+              testing::ElementsAre("stateless-bounce.test"));
+
+  AdvanceTimeTo(interaction_for_stateless_bounce + interaction_ttl +
+                tiny_delta);
+  EXPECT_EQ(db_->ClearRowsWithExpiredInteractions(), 1u);
+  EXPECT_THAT(db_->GetAllSitesForTesting(), testing::IsEmpty());
+}
+
+TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredInteractions) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                              {{"interaction_ttl", "10s"}});
+
+  EXPECT_TRUE(db_->Read("storage-only.test").has_value());
+  EXPECT_TRUE(db_->Read("stateful-bounce.test").has_value());
+  EXPECT_TRUE(db_->Read("stateless-bounce.test").has_value());
+
+  // Time travel to a point by which all interactions should've expired.
+  AdvanceTimeTo(Time::FromDoubleT(100));
+  EXPECT_EQ(db_->Read("storage-only.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("stateful-bounce.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("stateless-bounce.test"), absl::nullopt);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
+
 // A test class that verifies the behavior of the methods used to query the
 // DIPSDatabase for information more efficiently than using DIPSDatabase::Read.
 //
@@ -214,7 +330,9 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-
+    // Use inf ttl to prevent interactions from expiring unintentionally.
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
     DCHECK(db_);
     // Add entries to the database filling in the columns we want to test.
     // These test entries correspond with the following cases:
@@ -222,12 +340,12 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
     // - a site redirects the user while accessing storage
     // - a site redirects the user (without regard to storage access)
     //  All of these entries include a user interaction.
-    db_->Write("https://storage-only.test", storage_times, interaction_times,
+    db_->Write("storage-only.test", storage_times, interaction_times,
                /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
-    db_->Write("https://stateful-bounce.test", storage_times, interaction_times,
+    db_->Write("stateful-bounce.test", storage_times, interaction_times,
                stateful_bounce_times,
                /*stateless_bounce_times=*/{});
-    db_->Write("https://stateless-bounce.test",
+    db_->Write("stateless-bounce.test",
                /*storage_times=*/{}, interaction_times,
                /*stateful_bounce_times=*/{}, stateless_bounce_times);
   }
@@ -235,13 +353,13 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
  protected:
   // Rewrites the entries that were wrote in SetUp() to not have interactions.
   void ClearAllInteractions() {
-    db_->Write("https://storage-only.test", storage_times,
+    db_->Write("storage-only.test", storage_times,
                /*interaction_times=*/{},
                /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
-    db_->Write("https://stateful-bounce.test", storage_times,
+    db_->Write("stateful-bounce.test", storage_times,
                /*interaction_times=*/{}, stateful_bounce_times,
                /*stateless_bounce_times=*/{});
-    db_->Write("https://stateless-bounce.test",
+    db_->Write("stateless-bounce.test",
                /*storage_times=*/{}, /*interaction_times=*/{},
                /*stateful_bounce_times=*/{}, stateless_bounce_times);
   }
@@ -278,28 +396,6 @@ TEST_P(DIPSDatabaseQueryTest, VerifyInteractionsNonNull) {
               testing::IsEmpty());
 }
 
-TEST_P(DIPSDatabaseQueryTest, EnsureLastInteractionStrictlyBeforeRangeStart) {
-  // Verify that the |last_interaction| shouldn't be greater than |range_start|
-  // for each query method.
-  base::Time range_start = Time::FromDoubleT(0);
-  base::Time last_interaction = Time::FromDoubleT(1);
-
-  EXPECT_DCHECK_DEATH(db_->GetSitesThatBounced(range_start, last_interaction));
-  EXPECT_DCHECK_DEATH(
-      db_->GetSitesThatBouncedWithState(range_start, last_interaction));
-  EXPECT_DCHECK_DEATH(
-      db_->GetSitesThatUsedStorage(range_start, last_interaction));
-
-  // Verify that the |last_interaction| should be strictly less than
-  // |range_start| for each query method.
-  EXPECT_DCHECK_DEATH(
-      db_->GetSitesThatBounced(range_start, /*last_interaction=*/range_start));
-  EXPECT_DCHECK_DEATH(db_->GetSitesThatBouncedWithState(
-      range_start, /*last_interaction=*/range_start));
-  EXPECT_DCHECK_DEATH(db_->GetSitesThatUsedStorage(
-      range_start, /*last_interaction=*/range_start));
-}
-
 TEST_P(DIPSDatabaseQueryTest, GetSitesThatBounced_InteractionTest) {
   // All queries should be for the entire range (range_start > before_storage)
   // so that we can test the behavior of this method for different values of
@@ -318,20 +414,20 @@ TEST_P(DIPSDatabaseQueryTest, GetSitesThatBounced_InteractionTest) {
 
   // When the last_interaction bound is `after_interaction`, both sites that
   // bounced are returned since they had user interaction before it.
-  EXPECT_THAT(db_->GetSitesThatBounced(earliest_range_start, after_interaction),
-              testing::ElementsAre("https://stateful-bounce.test",
-                                   "https://stateless-bounce.test"));
+  EXPECT_THAT(
+      db_->GetSitesThatBounced(earliest_range_start, after_interaction),
+      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test"));
 }
 
 TEST_P(DIPSDatabaseQueryTest, GetSitesThatBounced_RangeStartTest) {
-  EXPECT_THAT(db_->GetSitesThatBounced(before_storage, after_interaction),
-              testing::ElementsAre("https://stateful-bounce.test",
-                                   "https://stateless-bounce.test"));
+  EXPECT_THAT(
+      db_->GetSitesThatBounced(before_storage, after_interaction),
+      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test"));
   // When the range begins after the stateful bounce happened,
   // "stateless-bounce.test" is returned since it bounces later.
   EXPECT_THAT(
       db_->GetSitesThatBounced(after_stateful_bounce, after_interaction),
-      testing::ElementsAre("https://stateless-bounce.test"));
+      testing::ElementsAre("stateless-bounce.test"));
   // When the range begins after the stateless bounce happened, neither are
   // returned since both sites bounced before this.
   EXPECT_THAT(
@@ -360,13 +456,13 @@ TEST_P(DIPSDatabaseQueryTest, GetSitesThatBouncedWithState_InteractionTest) {
   // did a stateful bounce is returned since it had user interaction before it.
   EXPECT_THAT(db_->GetSitesThatBouncedWithState(earliest_range_start,
                                                 after_interaction),
-              testing::ElementsAre("https://stateful-bounce.test"));
+              testing::ElementsAre("stateful-bounce.test"));
 }
 
 TEST_P(DIPSDatabaseQueryTest, GetSitesThatBouncedWithState_RangeStartTest) {
   EXPECT_THAT(
       db_->GetSitesThatBouncedWithState(before_storage, after_interaction),
-      testing::ElementsAre("https://stateful-bounce.test"));
+      testing::ElementsAre("stateful-bounce.test"));
   // When the range begins after the stateful bounce happened, no other sites
   // are returned (since no other site did a stateful bounce after this time).
   EXPECT_THAT(db_->GetSitesThatBouncedWithState(after_stateful_bounce,
@@ -394,20 +490,19 @@ TEST_P(DIPSDatabaseQueryTest, GetSitesThatUsedStorage_InteractionTest) {
   // used storage are returned since they had user interaction before it.
   EXPECT_THAT(
       db_->GetSitesThatUsedStorage(earliest_range_start, after_interaction),
-      testing::ElementsAre("https://stateful-bounce.test",
-                           "https://storage-only.test"));
+      testing::ElementsAre("stateful-bounce.test", "storage-only.test"));
 }
 
 TEST_P(DIPSDatabaseQueryTest, GetSitesThatUsedStorage_RangeStartTest) {
   // When the range begins at 0, both sites that used storage are returned since
   // they did so after t=0.
-  EXPECT_THAT(db_->GetSitesThatUsedStorage(before_storage, after_interaction),
-              testing::ElementsAre("https://stateful-bounce.test",
-                                   "https://storage-only.test"));
+  EXPECT_THAT(
+      db_->GetSitesThatUsedStorage(before_storage, after_interaction),
+      testing::ElementsAre("stateful-bounce.test", "storage-only.test"));
   // When the range begins after "storage-only.test" used storage, only
   // "stateful_bounce.test" is returned since it uses storage later.
   EXPECT_THAT(db_->GetSitesThatUsedStorage(after_storage, after_interaction),
-              testing::ElementsAre("https://stateful-bounce.test"));
+              testing::ElementsAre("stateful-bounce.test"));
   // When the range begins after the stateful bounce happened, no other sites
   // are returned (since no other site used storage after this time).
   EXPECT_THAT(
@@ -426,14 +521,19 @@ class DIPSDatabaseGarbageCollectionTest
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
+    features_.InitAndEnableFeatureWithParameters(
+        dips::kFeature,
+        {{"interaction_ttl",
+          base::StringPrintf("%dh", base::Days(180).InHours())}});
+    ASSERT_EQ(dips::kInteractionTtl.Get(), base::Days(180));
 
     DCHECK(db_);
-
     db_->SetMaxEntriesForTesting(200);
     db_->SetPurgeEntriesForTesting(20);
+    clock_.Advance(dips::kInteractionTtl.Get());
 
-    recent_interaction = Time::Now();
-    old_interaction = Time::Now() - DIPSDatabase::kMaxAge - base::Days(1);
+    recent_interaction = Now();
+    old_interaction = Now() - dips::kInteractionTtl.Get() - base::Days(1);
 
     recent_interaction_times = {recent_interaction, recent_interaction};
     old_interaction_times = {old_interaction, old_interaction};
@@ -443,20 +543,21 @@ class DIPSDatabaseGarbageCollectionTest
     DCHECK(db_);
 
     for (int i = 0; i < num_recent_entries; i++) {
-      db_->Write(base::StrCat({"https://recent_interaction.test",
-                               base::NumberToString(i)}),
-                 storage_times, recent_interaction_times, stateful_bounce_times,
-                 stateless_bounce_times);
+      db_->Write(
+          base::StrCat({"recent_interaction.test", base::NumberToString(i)}),
+          storage_times, recent_interaction_times, stateful_bounce_times,
+          stateless_bounce_times);
     }
 
     for (int i = 0; i < num_old_entries; i++) {
-      db_->Write(base::StrCat(
-                     {"https://old_interaction.test", base::NumberToString(i)}),
-                 storage_times, old_interaction_times, stateful_bounce_times,
-                 stateless_bounce_times);
+      db_->Write(
+          base::StrCat({"old_interaction.test", base::NumberToString(i)}),
+          storage_times, old_interaction_times, stateful_bounce_times,
+          stateless_bounce_times);
     }
   }
 
+ protected:
   base::Time recent_interaction;
   base::Time old_interaction;
   base::Time storage = Time::FromDoubleT(2);
@@ -508,40 +609,28 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
   EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
 }
 
-// More than |max_entries_| entries with recent user interaction and a few with
-// expired user interaction; only entries with expired user interaction should
-// be garbage collected by pure expiration.
-TEST_P(DIPSDatabaseGarbageCollectionTest, ExpirationPreservesRecent) {
-  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
-                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
-
-  EXPECT_EQ(db_->GarbageCollectExpired(), db_->GetMaxEntries() / 2);
-
-  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries() * 2);
-}
-
 // The entries with the oldest interaction and storage times should be deleted
 // first.
 TEST_P(DIPSDatabaseGarbageCollectionTest, OldestEntriesRemoved) {
-  db_->Write("https://old_interaction.test", {},
+  db_->Write("old_interaction.test", {},
              /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              {}, {});
-  db_->Write("https://old_storage_old_interaction.test",
+  db_->Write("old_storage_old_interaction.test",
              /*storage_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              /*interaction_times=*/{Time::FromDoubleT(2), Time::FromDoubleT(2)},
              {}, {});
-  db_->Write("https://old_storage.test",
+  db_->Write("old_storage.test",
              /*storage_times=*/{Time::FromDoubleT(3), Time::FromDoubleT(3)}, {},
              {}, {});
-  db_->Write("https://old_storage_new_interaction.test",
+  db_->Write("old_storage_new_interaction.test",
              /*storage_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              /*interaction_times=*/{Time::FromDoubleT(4), Time::FromDoubleT(4)},
              {}, {});
-  db_->Write("https://new_storage_old_interaction.test",
+  db_->Write("new_storage_old_interaction.test",
              /*storage_times=*/{Time::FromDoubleT(5), Time::FromDoubleT(5)},
              /*interaction_times=*/{Time::FromDoubleT(2), Time::FromDoubleT(2)},
              {}, {});
-  db_->Write("https://new_storage_new_interaction.test",
+  db_->Write("new_storage_new_interaction.test",
              /*storage_times=*/{Time::FromDoubleT(6), Time::FromDoubleT(6)},
              /*interaction_times=*/{Time::FromDoubleT(7), Time::FromDoubleT(7)},
              {}, {});
@@ -550,9 +639,9 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, OldestEntriesRemoved) {
   EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(3));
 
   EXPECT_THAT(db_->GetAllSitesForTesting(),
-              testing::ElementsAre("https://new_storage_new_interaction.test",
-                                   "https://new_storage_old_interaction.test",
-                                   "https://old_storage_new_interaction.test"));
+              testing::ElementsAre("new_storage_new_interaction.test",
+                                   "new_storage_old_interaction.test",
+                                   "old_storage_new_interaction.test"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -564,6 +653,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
  public:
   DIPSDatabaseHistogramTest() : DIPSDatabaseTest(false) {}
+
+  void SetUp() override {
+    DIPSDatabaseTest::SetUp();
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
+  }
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
 
@@ -586,7 +681,7 @@ TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseEntryCount", 0, 1);
 
   // Write an entry to the db.
-  db_->Write("https://url1.test", {},
+  db_->Write("url1.test", {},
              /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              {}, {});
   db_->ComputeDatabaseMetricsForTesting();
@@ -612,7 +707,7 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
 
   // Write an entry to the db.
-  db_->Write("https://url1.test", {},
+  db_->Write("url1.test", {},
              /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              {}, {});
   EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(1));
