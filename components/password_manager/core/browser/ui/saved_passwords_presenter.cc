@@ -105,17 +105,6 @@ PasswordNoteAction NoteChangeResultToPasswordNoteEditDialogAction(
   return PasswordNoteAction::kNoteNotChanged;
 }
 
-void LogMetricsAddCredential(const password_manager::PasswordForm& form) {
-  password_manager::metrics_util::
-      LogUserInteractionsWhenAddingCredentialFromSettings(
-          password_manager::metrics_util::
-              AddCredentialFromSettingsUserInteractions::kCredentialAdded);
-  if (!form.notes.empty() && form.notes[0].value.length() > 0) {
-    password_manager::metrics_util::LogPasswordNoteActionInSettings(
-        PasswordNoteAction::kNoteAddedInAddDialog);
-  }
-}
-
 }  // namespace
 
 namespace password_manager {
@@ -253,7 +242,6 @@ void SavedPasswordsPresenter::AddCredentialAsync(
   PasswordForm form = GenerateFormFromCredential(credential, type);
 
   GetStoreFor(form).AddLogin(form, base::BindOnce(std::move(completion)));
-  LogMetricsAddCredential(form);
 }
 
 bool SavedPasswordsPresenter::AddCredential(
@@ -266,7 +254,21 @@ bool SavedPasswordsPresenter::AddCredential(
   PasswordForm form = GenerateFormFromCredential(credential, type);
 
   GetStoreFor(form).AddLogin(form);
-  LogMetricsAddCredential(form);
+
+  // TODO(crbug.com/1400263): metrics below record user interactions, such
+  // recording belongs to the UI layer, not to SavedPasswordsPresenter. Remove
+  // this code and move recording to password_edit_dialog.ts and
+  // add_password_view_controller.mm
+  if (form.type == password_manager::PasswordForm::Type::kManuallyAdded) {
+    password_manager::metrics_util::
+        LogUserInteractionsWhenAddingCredentialFromSettings(
+            password_manager::metrics_util::
+                AddCredentialFromSettingsUserInteractions::kCredentialAdded);
+    if (!form.notes.empty() && form.notes[0].value.length() > 0) {
+      password_manager::metrics_util::LogPasswordNoteActionInSettings(
+          PasswordNoteAction::kNoteAddedInAddDialog);
+    }
+  }
 
   return true;
 }

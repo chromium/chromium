@@ -395,7 +395,7 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions
         add_credential_from_settings_user_interaction) {
   base::UmaHistogramEnumeration(
-      "PasswordManager.AddCredentialFromSettings.UserAction",
+      "PasswordManager.AddCredentialFromSettings.UserAction2",
       add_credential_from_settings_user_interaction);
 }
 

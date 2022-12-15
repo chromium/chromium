@@ -700,7 +700,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   private onViewExistingPasswordClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
-        'PasswordManager.AddCredentialFromSettings.UserAction',
+        'PasswordManager.AddCredentialFromSettings.UserAction2',
         AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     const existingEntry = this.savedPasswords.find(entry => {
@@ -755,7 +755,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
     if (isDuplicate && this.dialogMode === PasswordDialogMode.ADD) {
       chrome.metricsPrivate.recordEnumerationValue(
-          'PasswordManager.AddCredentialFromSettings.UserAction',
+          'PasswordManager.AddCredentialFromSettings.UserAction2',
           AddCredentialFromSettingsUserInteractions
               .DUPLICATED_CREDENTIAL_ENTERED,
           AddCredentialFromSettingsUserInteractions.COUNT);
