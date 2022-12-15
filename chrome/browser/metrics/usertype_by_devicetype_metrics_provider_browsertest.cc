@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
@@ -86,9 +86,8 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
 }
 
 absl::optional<AccountId> GetPrimaryAccountId() {
-  return AccountId::FromUserEmailGaiaId(
-      ash::FakeGaiaMixin::kEnterpriseUser1,
-      ash::FakeGaiaMixin::kEnterpriseUser1GaiaId);
+  return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                        FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
 
 void ProvideHistograms(bool should_emit_histograms_earlier) {

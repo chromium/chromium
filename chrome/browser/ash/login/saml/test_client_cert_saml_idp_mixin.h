@@ -12,6 +12,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+class FakeGaiaMixin;
 class GURL;
 
 namespace net {
@@ -22,8 +23,6 @@ class HttpResponse;
 }  // namespace net
 
 namespace ash {
-
-class FakeGaiaMixin;
 
 class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
  public:

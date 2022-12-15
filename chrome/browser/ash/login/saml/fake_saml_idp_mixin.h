@@ -17,9 +17,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace ash {
-
 class FakeGaiaMixin;
+
+namespace ash {
 
 class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
  public:

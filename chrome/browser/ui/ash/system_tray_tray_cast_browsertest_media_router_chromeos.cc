@@ -310,11 +310,10 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
                                   account_id);
     user_context.SetKey(ash::Key(password));
     user_context.SetPasswordKey(ash::Key(password));
-    if (account_id.GetUserEmail() == ash::FakeGaiaMixin::kEnterpriseUser1) {
-      user_context.SetRefreshToken(ash::FakeGaiaMixin::kTestRefreshToken1);
-    } else if (account_id.GetUserEmail() ==
-               ash::FakeGaiaMixin::kEnterpriseUser2) {
-      user_context.SetRefreshToken(ash::FakeGaiaMixin::kTestRefreshToken2);
+    if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser1) {
+      user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken1);
+    } else if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser2) {
+      user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken2);
     }
     return user_context;
   }

@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -474,9 +474,8 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
       &test_server_,
       this,
       /*should_launch_browser=*/true,
-      AccountId::FromUserEmailGaiaId(
-          ash::FakeGaiaMixin::kEnterpriseUser1,
-          ash::FakeGaiaMixin::kEnterpriseUser1GaiaId)};
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)};
 };
 
 IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,

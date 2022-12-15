@@ -75,9 +75,8 @@ class UserCloudPolicyManagerTest
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, std::get<1>(GetParam()) /*type*/, embedded_test_server(),
       this, true /*should_launch_browser*/,
-      AccountId::FromUserEmailGaiaId(
-          ash::FakeGaiaMixin::kEnterpriseUser1,
-          ash::FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
       // Initializing the login manager with no user will cause GAIA screen to
       // be shown on start-up.
       false /*include_initial_user*/};

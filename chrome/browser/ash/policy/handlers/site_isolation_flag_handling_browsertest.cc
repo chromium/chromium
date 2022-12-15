@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -222,7 +222,7 @@ class SiteIsolationFlagHandlingTest
   void SetUpOnMainThread() override {
     fake_gaia_.SetupFakeGaiaForLogin(account_id_.GetUserEmail(),
                                      account_id_.GetGaiaId(),
-                                     ash::FakeGaiaMixin::kFakeRefreshToken);
+                                     FakeGaiaMixin::kFakeRefreshToken);
 
     OobeBaseTest::SetUpOnMainThread();
 
@@ -279,7 +279,7 @@ class SiteIsolationFlagHandlingTest
   const ash::LoginManagerMixin::TestUserInfo user_{account_id_};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {user_}};
 
-  ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   // Observes for user session start.
   std::unique_ptr<ash::SessionStateWaiter> user_session_started_observer_;

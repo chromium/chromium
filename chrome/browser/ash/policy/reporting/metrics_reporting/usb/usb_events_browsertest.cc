@@ -7,7 +7,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -131,7 +131,7 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
       signin::GetTestGaiaIdForEmail(kTestUserEmail));
 
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_};
-  ash::FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
+  FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;

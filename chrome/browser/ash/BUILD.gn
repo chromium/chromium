@@ -4050,8 +4050,6 @@ static_library("test_support") {
     "login/test/dialog_window_waiter.h",
     "login/test/embedded_test_server_setup_mixin.cc",
     "login/test/embedded_test_server_setup_mixin.h",
-    "login/test/fake_gaia_mixin.cc",
-    "login/test/fake_gaia_mixin.h",
     "login/test/kiosk_test_helpers.cc",
     "login/test/kiosk_test_helpers.h",
     "login/test/logged_in_user_mixin.cc",

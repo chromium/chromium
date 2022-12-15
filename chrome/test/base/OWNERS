@@ -4,6 +4,8 @@ per-file test_browser_window*=*
 per-file testing_browser_process*=*
 per-file testing_profile*=*
 
+per-file fake_gaia*=file://google_apis/gaia/OWNERS
+
 per-file profile_deletion_observer.cc=file://chrome/browser/profiles/OWNERS
 
 per-file javascript_browser_test.*=dtseng@chromium.org
