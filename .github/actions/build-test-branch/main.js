@@ -25,6 +25,10 @@ const runTestsInput = process.env.INPUT_RUN_TESTS;
 console.log("RunTests", runTestsInput);
 const runTests = runTestsInput == "true";
 
+const numTestsInput = process.env.INPUT_NUM_TESTS;
+console.log("NumTests", numTestsInput);
+const numTests = numTestsInput ? +numTestsInput : undefined;
+
 let requestName = `Chromium Build/Test Branch ${branchName} ${chromiumRevision}`;
 if (driverRevision) {
   requestName += ` driver ${driverRevision}`;
@@ -65,6 +69,7 @@ function platformTasks(platform) {
         runtime: "chromium",
         revision: chromiumRevision,
         driverRevision,
+        numTests,
       },
       platform,
       [buildTask]

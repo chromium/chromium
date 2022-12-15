@@ -7,3 +7,5 @@ ownership_rules:
       path: .github/workflows/**
     - name: Github actions
       path: .github/actions/**
+    - name: DEPS file
+      path: "**/DEPS"
