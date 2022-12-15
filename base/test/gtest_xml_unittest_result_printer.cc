@@ -48,7 +48,7 @@ XmlUnitTestResultPrinter::~XmlUnitTestResultPrinter() {
   if (output_file_ && !open_failed_) {
     fprintf(output_file_.get(), "</testsuites>\n");
     fflush(output_file_);
-    CloseFile(output_file_);
+    CloseFile(output_file_.ExtractAsDangling());
   }
 }
 
