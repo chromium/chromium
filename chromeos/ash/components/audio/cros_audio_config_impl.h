@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/audio/cros_audio_config.h"
 
@@ -30,6 +31,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
   void OnAudioNodesChanged() override;
+
+  base::raw_ptr<CrasAudioHandler> audio_handler_;
 };
 
 }  // namespace ash::audio_config
