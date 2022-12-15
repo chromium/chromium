@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration2{TabSwitchingType}"
-    units="ms" expires_after="2023-01-26">
+    units="ms" expires_after="2024-01-26">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -689,8 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
-    units="ms" expires_after="2023-01-26">
-  <owner>ejoe@google.com</owner>
+    units="ms" expires_after="2024-01-26">
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
