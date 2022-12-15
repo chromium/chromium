@@ -244,7 +244,8 @@ constexpr bool kUseLazyCommit = false;
 // Use available space in the reference count to store the initially requested
 // size from the application. This is used for debugging. On mac, it is used to
 // workaround a bug. (crbug.com/1378822)
-#if BUILDFLAG(IS_MAC) && !defined(PA_REF_COUNT_CHECK_COOKIE)
+#if BUILDFLAG(IS_MAC) && !defined(PA_REF_COUNT_CHECK_COOKIE) && \
+    !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 #define PA_REF_COUNT_STORE_REQUESTED_SIZE
 #endif
 
