@@ -5,6 +5,9 @@
 #include "chrome/updater/posix/setup.h"
 
 #import <ServiceManagement/ServiceManagement.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -116,6 +119,7 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
     LOG(ERROR) << "Copying app to '" << dest_path.value().c_str() << "' failed";
     return false;
   }
+
   return true;
 }
 
@@ -328,18 +332,39 @@ int Setup(UpdaterScope scope) {
 }
 
 int PromoteCandidate(UpdaterScope scope) {
-  const absl::optional<base::FilePath> dest_path =
-      GetVersionedInstallDirectory(scope);
-  if (!dest_path)
+  const absl::optional<base::FilePath> updater_executable_path =
+      GetUpdaterExecutablePath(scope);
+  const absl::optional<base::FilePath> install_dir =
+      GetBaseInstallDirectory(scope);
+  const absl::optional<base::FilePath> bundle_path =
+      GetUpdaterAppBundlePath(scope);
+  if (!updater_executable_path || !bundle_path || !install_dir) {
     return kErrorFailedToGetVersionedInstallDirectory;
-  const base::FilePath updater_executable_path =
-      dest_path->Append(GetExecutableRelativePath());
+  }
 
-  if (!CreateWakeLaunchdJobPlist(scope, updater_executable_path))
+  // Update the launcher hard link.
+  base::FilePath tmp_launcher_name = install_dir->Append("launcher_new");
+  if (link(bundle_path->Append("Contents")
+               .Append("Helpers")
+               .Append("launcher")
+               .value()
+               .c_str(),
+           tmp_launcher_name.value().c_str())) {
+    return kErrorFailedToLinkLauncher;
+  }
+  if (rename(tmp_launcher_name.value().c_str(),
+             install_dir->Append("launcher").value().c_str())) {
+    return kErrorFailedToRenameLauncher;
+  }
+  // TODO(crbug.com/1339108): If kSystem, mark setuid on the launcher.
+
+  if (!CreateWakeLaunchdJobPlist(scope, *updater_executable_path)) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
+  }
 
-  if (!CreateUpdateServiceLaunchdJobPlist(scope, updater_executable_path))
+  if (!CreateUpdateServiceLaunchdJobPlist(scope, *updater_executable_path)) {
     return kErrorFailedToCreateUpdateServiceLaunchdJobPlist;
+  }
 
   if (!StartUpdateWakeVersionedLaunchdJob(scope))
     return kErrorFailedToStartLaunchdWakeJob;

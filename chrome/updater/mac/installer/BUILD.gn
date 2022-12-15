@@ -17,6 +17,7 @@ zip("updater_zip") {
     "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
     "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
     "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/launcher",
     "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
   ]
   deps = [ "//chrome/updater/mac:updater_bundle" ]
