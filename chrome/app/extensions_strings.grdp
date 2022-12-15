@@ -421,6 +421,9 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALWAYS_ON_THIS_SITE" desc="The option shown for an extension that can automatically access the site in the edit permissions dialog.">
     Always on this site
   </message>
+  <message name="IDS_EXTENSIONS_SITE_SETTINGS" desc="The text for the link to manage site settings for the extension.">
+    Site settings
+  </message>
   <message name="IDS_EXTENSIONS_PERMITTED_SITES" desc="The label above the list of sites that extensions are always permitted to run in.">
     All extensions allowed
   </message>

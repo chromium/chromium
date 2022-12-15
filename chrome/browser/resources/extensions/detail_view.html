@@ -403,6 +403,9 @@
         </div>
       </div>
     </template>
+    <cr-link-row class="hr"
+        id="siteSettings" label="$i18n{siteSettings}"
+        on-click="onSiteSettingsClick_" external></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
         <template is="dom-if"

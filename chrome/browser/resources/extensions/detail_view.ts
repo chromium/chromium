@@ -283,6 +283,12 @@ export class ExtensionsDetailViewElement extends
     this.delegate.openUrl(this.data.manifestHomePageUrl);
   }
 
+  private onSiteSettingsClick_() {
+    this.delegate.openUrl(
+        `chrome://settings/content/siteDetails?site=chrome-extension://${
+            this.data.id}`);
+  }
+
   private onViewInStoreTap_() {
     this.delegate.openUrl(this.data.webStoreUrl);
   }

@@ -69,6 +69,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     assertFalse(testIsVisible('#extensionsOptions'));
     assertTrue(
         item.$.description.textContent!.indexOf('This is an extension') !== -1);
+    assertTrue(testIsVisible('#siteSettings'));
 
     // Check the checkboxes visibility and state. They should be visible
     // only if the associated option is enabled, and checked if the
