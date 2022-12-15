@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -55,10 +56,11 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
 
   PrePaintTreeWalkContext context;
 
-#if DCHECK_IS_ON()
-  bool needed_tree_builder_context_update =
+  // GeometryMapper depends on paint properties.
+  bool needs_tree_builder_context_update =
       NeedsTreeBuilderContextUpdate(root_frame_view, context);
-#endif
+  if (needs_tree_builder_context_update)
+    GeometryMapper::ClearCache();
 
   VisualViewport& visual_viewport =
       root_frame_view.GetPage()->GetVisualViewport();
@@ -72,7 +74,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
 
 #if DCHECK_IS_ON()
-  if (needed_tree_builder_context_update && VLOG_IS_ON(1))
+  if (needs_tree_builder_context_update && VLOG_IS_ON(1))
     ShowAllPropertyTrees(root_frame_view);
 #endif
 

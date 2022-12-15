@@ -4240,6 +4240,10 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
     const LayoutObject& object) {
   DCHECK(CanDoDeferredTransformNodeUpdate(object));
 
+  // GeometryMapper depends on paint properties. This is typically called from
+  // the PrePaintTreeWalk, but we may skip that for this direct update.
+  GeometryMapper::ClearCache();
+
   auto& box = To<LayoutBox>(object);
   PhysicalSize size = PhysicalSize(box.Size());
   FragmentData* fragment_data = &object.GetMutableForPainting().FirstFragment();
