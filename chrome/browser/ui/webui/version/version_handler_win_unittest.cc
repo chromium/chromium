@@ -96,38 +96,3 @@ TEST_F(WebUIWindowsVersion, WinServer2016) {
   EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
             "Server OS Version 1001 (Build 17134.1555)");
 }
-
-TEST_F(WebUIWindowsVersion, Win81Pro) {
-  ubr_key.WriteValue(L"UBR", 0UL);
-  ubr_key.WriteValue(L"ReleaseId", L"1001");
-  base::test::ScopedOSInfoOverride os(
-      base::test::ScopedOSInfoOverride::Type::kWin81Pro);
-  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
-            "8.1 Version 1001 (Build 9600)");
-}
-
-TEST_F(WebUIWindowsVersion, WinServer2012R2) {
-  ubr_key.WriteValue(L"UBR", 0UL);
-  ubr_key.WriteValue(L"ReleaseId", L"1001");
-  base::test::ScopedOSInfoOverride os(
-      base::test::ScopedOSInfoOverride::Type::kWinServer2012R2);
-  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
-            "Server 2012 R2 Version 1001 (Build 9600)");
-}
-
-TEST_F(WebUIWindowsVersion, Win7ProSP1) {
-  ubr_key.WriteValue(L"UBR", 0UL);
-  ubr_key.WriteValue(L"ReleaseId", L"1001");
-  base::test::ScopedOSInfoOverride os(
-      base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
-  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
-            "7 Service Pack 1 Version 1001 (Build 7601)");
-}
-
-TEST_F(WebUIWindowsVersion, Win7ProSP1NoReleaseId) {
-  ubr_key.WriteValue(L"UBR", 0UL);
-  base::test::ScopedOSInfoOverride os(
-      base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
-  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
-            "7 Service Pack 1 (Build 7601)");
-}

@@ -51,19 +51,10 @@ void WinSystemSignalsService::GetAntiVirusSignals(
   }
 
   std::vector<device_signals::AvProduct> av_products;
-  if (os_info->version() >= base::win::Version::WIN8) {
-    // WSC is only supported on Win8+.
-    auto response = wsc_client_->GetAntiVirusProducts();
+  auto response = wsc_client_->GetAntiVirusProducts();
 
-    LogWscAvResponse(response);
-    av_products = std::move(response.av_products);
-  } else {
-    // Fallback to an undocumented WMI table on Win7 and earlier.
-    auto response = wmi_client_->GetAntiVirusProducts();
-
-    LogWmiAvResponse(response);
-    av_products = std::move(response.av_products);
-  }
+  LogWscAvResponse(response);
+  av_products = std::move(response.av_products);
 
   std::move(callback).Run(std::move(av_products));
 }

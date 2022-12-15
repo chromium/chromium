@@ -97,10 +97,9 @@ TEST_F(WinSystemSignalsServiceTest, GetFileSystemSignals) {
   EXPECT_EQ(results[0], response[0]);
 }
 
-// Tests that AV products cannot be retrieve on Win Server environments.
+// Tests that AV products cannot be retrieved on Win Server environments.
 TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Server) {
-  std::array<base::test::ScopedOSInfoOverride::Type, 3> server_versions = {
-      base::test::ScopedOSInfoOverride::Type::kWinServer2012R2,
+  std::array<base::test::ScopedOSInfoOverride::Type, 2> server_versions = {
       base::test::ScopedOSInfoOverride::Type::kWinServer2016,
       base::test::ScopedOSInfoOverride::Type::kWinServer2022,
   };
@@ -116,10 +115,9 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Server) {
   }
 }
 
-// Tests that AV products are retrieved through WSC on Win8 and above.
+// Tests that AV products are retrieved through WSC on Win10 and above.
 TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Wsc_Success) {
-  std::array<base::test::ScopedOSInfoOverride::Type, 5> win_versions = {
-      base::test::ScopedOSInfoOverride::Type::kWin81Pro,
+  std::array<base::test::ScopedOSInfoOverride::Type, 4> win_versions = {
       base::test::ScopedOSInfoOverride::Type::kWin10Pro,
       base::test::ScopedOSInfoOverride::Type::kWin10Pro21H1,
       base::test::ScopedOSInfoOverride::Type::kWin11Home,
@@ -232,110 +230,6 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Wsc_MixedParsingError) {
       device_signals::WscParsingError::kStateInvalid, 1);
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SystemSignals.Collection.WSC.AntiVirus.ParsingError.Rate",
-      /*error_rate=*/50, 1);
-}
-
-// Tests that AV products are retrieved via WMI on Win7.
-// TODO(crbug.com/1372568): Fix flaky test.
-TEST_F(WinSystemSignalsServiceTest, DISABLED_GetAntiVirusSignals_Win7_Success) {
-  device_signals::AvProduct fake_av_product;
-  fake_av_product.display_name = "some display name";
-  fake_av_product.product_id = "some product id";
-  fake_av_product.state = device_signals::AvProductState::kOn;
-
-  device_signals::WmiAvProductsResponse fake_response;
-  fake_response.av_products.push_back(fake_av_product);
-
-  EXPECT_CALL(*wmi_client_, GetAntiVirusProducts())
-      .WillOnce(Return(fake_response));
-
-  base::test::TestFuture<const std::vector<device_signals::AvProduct>&> future;
-
-  // Override OS version after initializing `future` to prevent running into
-  // a DCHECK in ScopedWinrtInitializer.
-  os_info_override_.emplace(
-      base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
-
-  win_system_signals_service_->GetAntiVirusSignals(future.GetCallback());
-
-  const auto& av_products = future.Get();
-  EXPECT_EQ(av_products.size(), fake_response.av_products.size());
-  EXPECT_EQ(av_products[0].product_id, fake_response.av_products[0].product_id);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.SystemSignals.Collection.WMI.AntiVirus.ParsingError.Rate",
-      /*error_rate=*/0, 1);
-}
-
-// Tests when a query error occurs when querying AVs from WMI on Win7.
-// TODO(crbug.com/1372568): Fix flaky test.
-TEST_F(WinSystemSignalsServiceTest,
-       DISABLED_GetAntiVirusSignals_Win7_QueryError) {
-  device_signals::WmiAvProductsResponse fake_response;
-  fake_response.query_error = base::win::WmiError::kFailedToCreateInstance;
-
-  EXPECT_CALL(*wmi_client_, GetAntiVirusProducts())
-      .WillOnce(Return(fake_response));
-
-  base::test::TestFuture<const std::vector<device_signals::AvProduct>&> future;
-
-  // Override OS version after initializing `future` to prevent running into
-  // a DCHECK in ScopedWinrtInitializer.
-  os_info_override_.emplace(
-      base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
-
-  win_system_signals_service_->GetAntiVirusSignals(future.GetCallback());
-
-  const auto& av_products = future.Get();
-  EXPECT_TRUE(av_products.empty());
-
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.SystemSignals.Collection.WMI.AntiVirus.QueryError",
-      fake_response.query_error.value(), 1);
-}
-
-// Tests when items and parsing error are returned when querying AVs from WMI on
-// Win7.
-// TODO(crbug.com/1372568): Fix flaky test.
-TEST_F(WinSystemSignalsServiceTest,
-       DISABLED_GetAntiVirusSignals_Win7_MixedParsingErrors) {
-  device_signals::AvProduct fake_av_product;
-  fake_av_product.display_name = "some display name";
-  fake_av_product.product_id = "some product id";
-  fake_av_product.state = device_signals::AvProductState::kOn;
-
-  // Adding 2 success and 2 failures, so the error rate should be 50%.
-  device_signals::WmiAvProductsResponse fake_response;
-  fake_response.av_products.push_back(fake_av_product);
-  fake_response.av_products.push_back(fake_av_product);
-  fake_response.parsing_errors.push_back(
-      device_signals::WmiParsingError::kFailedToGetName);
-  fake_response.parsing_errors.push_back(
-      device_signals::WmiParsingError::kStateInvalid);
-
-  EXPECT_CALL(*wmi_client_, GetAntiVirusProducts())
-      .WillOnce(Return(fake_response));
-
-  base::test::TestFuture<const std::vector<device_signals::AvProduct>&> future;
-
-  // Override OS version after initializing `future` to prevent running into
-  // a DCHECK in ScopedWinrtInitializer.
-  os_info_override_.emplace(
-      base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
-
-  win_system_signals_service_->GetAntiVirusSignals(future.GetCallback());
-
-  const auto& av_products = future.Get();
-  EXPECT_EQ(av_products.size(), fake_response.av_products.size());
-
-  histogram_tester_.ExpectBucketCount(
-      "Enterprise.SystemSignals.Collection.WMI.AntiVirus.ParsingError",
-      device_signals::WmiParsingError::kFailedToGetName, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Enterprise.SystemSignals.Collection.WMI.AntiVirus.ParsingError",
-      device_signals::WmiParsingError::kStateInvalid, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Enterprise.SystemSignals.Collection.WMI.AntiVirus.ParsingError.Rate",
       /*error_rate=*/50, 1);
 }
 
