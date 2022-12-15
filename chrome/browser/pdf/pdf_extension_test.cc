@@ -3636,12 +3636,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   // Load page with embedded PDF and make sure it succeeds.
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+  content::WaitForHitTestData(guest_mainframe);
 
   // Observe context menu IPC.
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
   content::ContextMenuInterceptor context_menu_interceptor(plugin_frame);
 
   ContextMenuWaiter menu_observer;
