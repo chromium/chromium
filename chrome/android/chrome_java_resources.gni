@@ -158,7 +158,6 @@ chrome_java_resources = [
   "java/res/drawable-nodpi/bookmark_widget_preview.png",
   "java/res/drawable-nodpi/widget_preview.png",
   "java/res/drawable-sw600dp/window_background.xml",
-  "java/res/drawable-v21/tile_view_highlight.xml",
   "java/res/drawable-v23/distilled_page_pref_background.xml",
   "java/res/drawable-v23/section_tab_background.xml",
   "java/res/drawable-v31/distilled_page_pref_background.xml",

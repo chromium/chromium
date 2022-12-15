@@ -4,6 +4,11 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/tile_view_highlight_plain" />
-</selector>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@android:color/white" >
+
+    <item
+        android:id="@android:id/mask"
+        android:drawable="@drawable/tile_view_highlight_mask"/>
+
+</ripple>
