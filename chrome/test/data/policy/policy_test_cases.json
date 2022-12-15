@@ -20848,7 +20848,7 @@
           ]
         },
         "prefs": {
-          "performance_tuning.tab_discarding.exceptions.managed": {
+          "performance_tuning.tab_discarding.exceptions_managed": {
             "value": [
               "example.com"
             ]

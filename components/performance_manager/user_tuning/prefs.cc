@@ -20,7 +20,7 @@ const char kTabDiscardingExceptions[] =
     "performance_tuning.tab_discarding.exceptions";
 
 const char kManagedTabDiscardingExceptions[] =
-    "performance_tuning.tab_discarding.exceptions.managed";
+    "performance_tuning.tab_discarding.exceptions_managed";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);

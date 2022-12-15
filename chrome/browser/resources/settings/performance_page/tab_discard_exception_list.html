@@ -26,15 +26,20 @@
     <iron-list id="list" items="[[siteList_]]" scroll-target="container"
         preserve-focus risk-selection class="cr-separators">
       <template>
-        <tab-discard-exception-entry site="[[item]]" first$="[[!index]]"
+        <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"
+            first$="[[!index]]" focus-row-index="[[index]]"
             tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
             last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
-            focus-row-index="[[index]]" on-menu-click="onMenuClick_">
+            on-menu-click="onMenuClick_" on-show-tooltip="onShowTooltip_">
         </tab-discard-exception-entry>
       </template>
     </iron-list>
   </div>
 </div>
+<paper-tooltip id="tooltip"
+    fit-to-visible-bounds manual-mode position="top">
+  [[tooltipText_]]
+</paper-tooltip>
 <cr-lazy-render id="menu">
   <template>
     <cr-action-menu role-description="$i18n{menu}">

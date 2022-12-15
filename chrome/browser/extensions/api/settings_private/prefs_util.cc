@@ -960,6 +960,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kTabDiscardingExceptions] =
           settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[performance_manager::user_tuning::prefs::
+                     kManagedTabDiscardingExceptions] =
+      settings_api::PrefType::PREF_TYPE_LIST;
 
   return *s_allowlist;
 }
