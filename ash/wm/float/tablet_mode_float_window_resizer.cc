@@ -30,6 +30,9 @@ constexpr int kDistanceFromEdge = 8;
 // The minimum distance that will be considered as a drag event.
 constexpr float kMinimumDragDistance = 5.f;
 
+// Minimum fling velocity required to tuck the window.
+const int kFlingToTuckVelocityThresholdSquared = 800 * 800;
+
 }  // namespace
 
 TabletModeFloatWindowResizer::TabletModeFloatWindowResizer(
@@ -131,9 +134,19 @@ void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
   absl::optional<bool> left;
   bool up;
   if (event->type() == ui::ET_SCROLL_FLING_START) {
-    if (details.velocity_x() != 0.f)
-      left.emplace(details.velocity_x() < 0.f);
-    up = details.velocity_y() < 0.f;
+    float velocity_x = details.velocity_x();
+    float velocity_y = details.velocity_y();
+    float fling_amount = velocity_x * velocity_x + velocity_y * velocity_y;
+    // If the fling wasn't large enough, update the window position based on its
+    // drag location.
+    if (fling_amount <= kFlingToTuckVelocityThresholdSquared) {
+      CompleteDrag();
+      return;
+    }
+    if (velocity_x != 0.f) {
+      left.emplace(velocity_x < 0.f);
+    }
+    up = velocity_y < 0.f;
   } else {
     DCHECK_EQ(ui::ET_GESTURE_SWIPE, event->type());
     if (details.swipe_left() || details.swipe_right())
