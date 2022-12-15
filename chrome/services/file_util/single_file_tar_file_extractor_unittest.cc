@@ -62,10 +62,12 @@ TEST_F(SingleFileTarFileExtractorTest, Extract) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("test.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(src_file.IsValid());
 
   base::FilePath out_path = temp_dir().AppendASCII("Extract_dst_file");
   base::File dst_file(out_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(dst_file.IsValid());
 
   auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
@@ -88,11 +90,13 @@ TEST_F(SingleFileTarFileExtractorTest, ExtractTarLargerThanChunk) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("test_large.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(src_file.IsValid());
 
   base::FilePath out_path =
       temp_dir().AppendASCII("ExtractTarLargerThanChunk_dst_file");
   base::File dst_file(out_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(dst_file.IsValid());
 
   auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
@@ -115,11 +119,13 @@ TEST_F(SingleFileTarFileExtractorTest, ExtractNonExistentTar) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("non_existent.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_FALSE(src_file.IsValid());
 
   base::FilePath out_path =
       temp_dir().AppendASCII("ExtractNonExistentTar_dst_file");
   base::File dst_file(out_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(dst_file.IsValid());
 
   auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
@@ -140,10 +146,12 @@ TEST_F(SingleFileTarFileExtractorTest, ZeroByteFile) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("empty_file.tar"));
   base::File src_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(src_file.IsValid());
 
   base::FilePath out_path = temp_dir().AppendASCII("ZeroByteFile_dst_file");
   base::File dst_file(out_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(dst_file.IsValid());
 
   auto mock_listener = std::make_unique<MockSingleFileExtractorListener>();
   mojo::Receiver<chrome::mojom::SingleFileExtractorListener> listener{
