@@ -15,11 +15,13 @@ class MockDeviceDisabledScreenView : public DeviceDisabledScreenView {
   MockDeviceDisabledScreenView();
   ~MockDeviceDisabledScreenView() override;
 
-  MOCK_METHOD3(Show,
-               void(const std::string&,
-                    const std::string&,
-                    const std::string&));
-  MOCK_METHOD1(UpdateMessage, void(const std::string& message));
+  MOCK_METHOD(
+      void,
+      Show,
+      (const std::string&, const std::string&, const std::string&, bool),
+      (override));
+
+  MOCK_METHOD(void, UpdateMessage, (const std::string&), (override));
 };
 
 }  // namespace ash

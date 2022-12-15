@@ -562,7 +562,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockDeviceDisabledScreenView>();
     MockScreen(std::make_unique<DeviceDisabledScreen>(
         device_disabled_screen_view_->AsWeakPtr()));
-    EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _)).Times(0);
+    EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _, _)).Times(0);
 
     mock_network_screen_view_ = std::make_unique<MockNetworkScreenView>();
     mock_network_screen_ =
@@ -677,7 +677,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     network_portal_detector_ = new NetworkPortalDetectorTestImpl();
     network_portal_detector::InitializeForTesting(network_portal_detector_);
 
-    // Default detworks happens to be usually "eth1" in tests.
+    // Default networks happens to be usually "eth1" in tests.
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
 
@@ -1288,8 +1288,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
 }
 
-// TODO(https://crbug.com/911661) Flaky time outs on Linux Chromium OS ASan
-// LSan bot.
+// TODO(crbug.com/911661) Flaky time outs on Linux ChromiumOS ASan LSan bot.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ControlFlowDeviceDisabled DISABLED_ControlFlowDeviceDisabled
 #else
@@ -1346,7 +1345,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                    base::Value(kDisabledMessage));
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(_, _, kDisabledMessage, false))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
@@ -2937,7 +2937,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
 
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _)).Times(1);
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(_, _, kDisabledMessage, false))
+      .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
   base::RunLoop().RunUntilIdle();

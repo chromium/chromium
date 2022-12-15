@@ -37,6 +37,7 @@ const DeviceDisabledElementBase = mixinBehaviors(
  */
 DeviceDisabledElementBase.$;
 
+/** @polymer */
 class DeviceDisabled extends DeviceDisabledElementBase {
   static get is() {
     return 'device-disabled-element';
@@ -49,38 +50,46 @@ class DeviceDisabled extends DeviceDisabledElementBase {
   static get properties() {
     return {
       /**
-       * Device serial number
        * The serial number of the device.
+       * @type {string}
        * @private
        */
       serial_: {
         type: String,
+        value: '',
       },
 
       /**
        * The domain that owns the device (can be empty).
+       * @type {string}
        * @private
        */
       enrollmentDomain_: {
         type: String,
+        value: '',
       },
 
       /**
        * Admin message (external data, non-html-safe).
+       * @type {string}
        * @private
        */
       message_: {
         type: String,
+        value: '',
+      },
+
+      /**
+       * Flag indicating if the device was disabled because it's in AD mode,
+       * which is no longer supported.
+       * @type {boolean}
+       * @private
+       */
+      isDisabledAdDevice_: {
+        type: Boolean,
+        value: false,
       },
     };
-  }
-
-  constructor() {
-    super();
-    // Properties:
-    this.serial_ = '';
-    this.enrollmentDomain_ = '';
-    this.message_ = '';
   }
 
   ready() {
@@ -107,7 +116,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload
+   * @param {Object} data Screen init payload.
    */
   onBeforeShow(data) {
     if ('serial' in data) {
@@ -119,27 +128,44 @@ class DeviceDisabled extends DeviceDisabledElementBase {
     if ('message' in data) {
       this.message_ = data.message;
     }
+    if ('isDisabledAdDevice' in data) {
+      this.isDisabledAdDevice_ = data.isDisabledAdDevice;
+    }
   }
 
   /**
-   * Sets the message to show to the user.
-   * @param {string} message The message to show to the user.
+   * Sets the message to be shown to the user.
+   * @param {string} message The message to be shown to the user.
    */
   setMessage(message) {
     this.message_ = message;
   }
 
   /**
-   * Updates the explanation shown to the user. The explanation will indicate
-   * the device serial number and that it is owned by |domain|. If |domain| is
-   * null or empty, a generic explanation will be used instead that does not
-   * reference any domain.
+   * Updates the explanation shown to the user. The explanation contains the
+   * device serial number and may contain the domain the device is enrolled to,
+   * if that information is available. However, if `isDisabledAdDevice` is true,
+   * a custom explanation about Chromad disabling will be used.
+   * @param {string} locale The i18n locale.
+   * @param {string} serial The device serial number.
+   * @param {string} domain The enrollment domain.
+   * @param {boolean} isDisabledAdDevice Flag indicating if the device was
+   *     disabled because it's in AD mode.
+   * @return {string} The internationalized explanation.
    */
-  disabledText_(locale, serial, domain) {
-    if (domain) {
-      return this.i18n('deviceDisabledExplanationWithDomain', serial, domain);
+  disabledText_(locale, serial, domain, isDisabledAdDevice) {
+    if (isDisabledAdDevice) {
+      return this.i18nAdvancedDynamic(
+          locale, 'deviceDisabledAdModeExplanation', {substitutions: [serial]});
     }
-    return this.i18n('deviceDisabledExplanationWithoutDomain', serial);
+    if (domain) {
+      return this.i18nAdvancedDynamic(
+          locale, 'deviceDisabledExplanationWithDomain',
+          {substitutions: [serial, domain]});
+    }
+    return this.i18nAdvancedDynamic(
+        locale, 'deviceDisabledExplanationWithoutDomain',
+        {substitutions: [serial]});
   }
 }
 

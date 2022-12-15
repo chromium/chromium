@@ -25,8 +25,9 @@ first, and prevents such error.
 >
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'deviceDisabledHeading')]]</h1>
-  <div slot="subtitle">
-    [[disabledText_(locale, serial_, enrollmentDomain_)]]
+  <div inner-h-t-m-l=
+      "[[disabledText_(locale, serial_, enrollmentDomain_, isDisabledAdDevice_)]]"
+    slot="subtitle">
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <div id="message" class="oobe-default-font">[[message_]]</div>

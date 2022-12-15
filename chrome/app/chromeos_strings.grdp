@@ -2289,6 +2289,10 @@
   <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN" desc="Explanation shown to the user when the device has been disabled by its owner. This version is used when the domain that owns the device is not known.">
     This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked by the owner.
   </message>
+  <message name="IDS_DEVICE_DISABLED_CHROMAD_DISABLED" desc="Explanation shown to the user when the device has been disabled because it's in Active Directory management mode, which is no longer supported.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Chrome device management with <ph name="MS_AD_NAME">Microsoft® Active Directory® (AD)</ph> is no longer supported. To sign in, use a different device or contact your device administrator.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
 
   <!-- Encryption migration dialog -->
   <message name="IDS_ENCRYPTION_MIGRATION_READY_TITLE" desc="Title shown in encryption migration screen, which asks the user to install an OS update.">
