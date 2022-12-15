@@ -141,9 +141,18 @@
     Undo
   </message>
 
-  <!-- Desktop and Android resources -->
-  <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)" meaning="Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
-    Detected Language
-  </message>
+  <if expr="not is_ios">
+    <!-- Desktop and Android resources -->
+    <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)" meaning="Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
+      Detected Language
+    </message>
+  </if>
+  <if expr="is_ios">
+    <!-- iOS resources -->
+    <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="In Title Case: Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)." meaning="In Title Case: Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
+      Detected Language
+    </message>
+  </if>
+
 
 </grit-part>
