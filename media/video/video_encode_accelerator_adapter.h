@@ -123,10 +123,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   template <class T>
   T WrapCallback(T cb);
   EncoderStatus::Or<scoped_refptr<VideoFrame>> PrepareGpuFrame(
-      const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
   EncoderStatus::Or<scoped_refptr<VideoFrame>> PrepareCpuFrame(
-      const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
 
   scoped_refptr<ReadOnlyRegionPool> input_pool_;

@@ -890,13 +890,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       (src_frame.format() == PIXEL_FORMAT_I420 ||
        src_frame.format() == PIXEL_FORMAT_I420A)) {
     if (dst_frame.format() == PIXEL_FORMAT_I420A) {
-      libyuv::ScalePlane(
-          src_frame.visible_data(VideoFrame::kAPlane),
-          src_frame.stride(VideoFrame::kAPlane),
-          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dst_frame.writable_data(VideoFrame::kAPlane),  // TODO: Is this right?
-          dst_frame.stride(VideoFrame::kAPlane), dst_frame.coded_size().width(),
-          dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlane),
+                         src_frame.stride(VideoFrame::kAPlane),
+                         src_frame.visible_rect().width(),
+                         src_frame.visible_rect().height(),
+                         dst_frame.GetWritableVisibleData(VideoFrame::kAPlane),
+                         dst_frame.stride(VideoFrame::kAPlane),
+                         dst_frame.visible_rect().width(),
+                         dst_frame.visible_rect().height(), kDefaultFiltering);
     }
     int error = libyuv::I420Scale(
         src_frame.visible_data(VideoFrame::kYPlane),
@@ -924,14 +925,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       (src_frame.format() == PIXEL_FORMAT_NV12 ||
        src_frame.format() == PIXEL_FORMAT_NV12A)) {
     if (dst_frame.format() == PIXEL_FORMAT_NV12A) {
-      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
-                         src_frame.stride(VideoFrame::kAPlaneTriPlanar),
-                         src_frame.visible_rect().width(),
-                         src_frame.visible_rect().height(),
-                         dst_frame.writable_data(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.coded_size().width(),
-                         dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(
+          src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
+          src_frame.stride(VideoFrame::kAPlaneTriPlanar),
+          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+          dst_frame.GetWritableVisibleData(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
     }
     int error = libyuv::NV12Scale(
         src_frame.visible_data(VideoFrame::kYPlane),
@@ -1031,13 +1032,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       if (error)
         return EncoderStatus::Codes::kFormatConversionError;
       // Convert alpha channel separately.
-      libyuv::ScalePlane(
-          src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
-          src_frame.stride(VideoFrame::kAPlaneTriPlanar),
-          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dst_frame.writable_data(VideoFrame::kAPlane),
-          dst_frame.stride(VideoFrame::kAPlane), dst_frame.coded_size().width(),
-          dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
+                         src_frame.stride(VideoFrame::kAPlaneTriPlanar),
+                         src_frame.visible_rect().width(),
+                         src_frame.visible_rect().height(),
+                         dst_frame.GetWritableVisibleData(VideoFrame::kAPlane),
+                         dst_frame.stride(VideoFrame::kAPlane),
+                         dst_frame.visible_rect().width(),
+                         dst_frame.visible_rect().height(), kDefaultFiltering);
       return OkStatus();
     } else {
       // Both resize and NV12-to-I420 conversion are required.
@@ -1077,13 +1079,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       if (error)
         return EncoderStatus::Codes::kScalingError;
       // Convert alpha channel separately.
-      libyuv::ScalePlane(
-          src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
-          src_frame.stride(VideoFrame::kAPlaneTriPlanar),
-          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dst_frame.writable_data(VideoFrame::kAPlane),
-          dst_frame.stride(VideoFrame::kAPlane), dst_frame.coded_size().width(),
-          dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlaneTriPlanar),
+                         src_frame.stride(VideoFrame::kAPlaneTriPlanar),
+                         src_frame.visible_rect().width(),
+                         src_frame.visible_rect().height(),
+                         dst_frame.GetWritableVisibleData(VideoFrame::kAPlane),
+                         dst_frame.stride(VideoFrame::kAPlane),
+                         dst_frame.visible_rect().width(),
+                         dst_frame.visible_rect().height(), kDefaultFiltering);
       return OkStatus();
     }
   }
@@ -1166,14 +1169,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       if (error)
         return EncoderStatus::Codes::kFormatConversionError;
       // Convert alpha channel separately.
-      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlane),
-                         src_frame.stride(VideoFrame::kAPlane),
-                         src_frame.visible_rect().width(),
-                         src_frame.visible_rect().height(),
-                         dst_frame.writable_data(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.coded_size().width(),
-                         dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(
+          src_frame.visible_data(VideoFrame::kAPlane),
+          src_frame.stride(VideoFrame::kAPlane),
+          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+          dst_frame.GetWritableVisibleData(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
       return OkStatus();
     } else {
       // Both resize and I420-to-NV12 conversion are required.
@@ -1210,14 +1213,14 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
       if (error)
         return EncoderStatus::Codes::kScalingError;
       // Convert alpha channel separately.
-      libyuv::ScalePlane(src_frame.visible_data(VideoFrame::kAPlane),
-                         src_frame.stride(VideoFrame::kAPlane),
-                         src_frame.visible_rect().width(),
-                         src_frame.visible_rect().height(),
-                         dst_frame.writable_data(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
-                         dst_frame.coded_size().width(),
-                         dst_frame.coded_size().height(), kDefaultFiltering);
+      libyuv::ScalePlane(
+          src_frame.visible_data(VideoFrame::kAPlane),
+          src_frame.stride(VideoFrame::kAPlane),
+          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+          dst_frame.GetWritableVisibleData(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.stride(VideoFrame::kAPlaneTriPlanar),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
       return OkStatus();
     }
   }

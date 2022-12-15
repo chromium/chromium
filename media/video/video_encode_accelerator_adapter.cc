@@ -160,23 +160,23 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     : public base::RefCountedThreadSafe<GpuMemoryBufferVideoFramePool> {
  public:
   GpuMemoryBufferVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
-                                const gfx::Size& size)
-      : gpu_factories_(gpu_factories), size_(size) {}
+                                const gfx::Size& coded_size)
+      : gpu_factories_(gpu_factories), coded_size_(coded_size) {}
   GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
   GpuMemoryBufferVideoFramePool& operator=(
       const GpuMemoryBufferVideoFramePool&) = delete;
 
-  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(const gfx::Size& size) {
+  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
+      const gfx::Size& visible_size) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (size_ != size)
-      return nullptr;
+    DCHECK(gfx::Rect(coded_size_).Contains(gfx::Rect(visible_size)));
 
     if (available_gmbs_.empty()) {
       constexpr auto kBufferFormat = gfx::BufferFormat::YUV_420_BIPLANAR;
       constexpr auto kBufferUsage =
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(size_, kBufferFormat,
-                                                       kBufferUsage);
+      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
+          coded_size_, kBufferFormat, kBufferUsage);
       if (!gmb)
         return nullptr;
 
@@ -191,7 +191,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     const gpu::MailboxHolder kEmptyMailBoxes[media::VideoFrame::kMaxPlanes] =
         {};
     return VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(size_), size_, std::move(gmb), kEmptyMailBoxes,
+        gfx::Rect(visible_size), visible_size, std::move(gmb), kEmptyMailBoxes,
         std::move(reuse_cb), base::TimeDelta());
   }
 
@@ -208,7 +208,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
   }
 
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
-  const gfx::Size size_;
+  const gfx::Size coded_size_;
 
   std::vector<std::unique_ptr<gfx::GpuMemoryBuffer>> available_gmbs_;
 
@@ -522,7 +522,8 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   }
 
   const bool frame_needs_resizing =
-      frame->visible_rect().size() != options_.frame_size;
+      frame->visible_rect().size() != options_.frame_size ||
+      frame->coded_size() != input_coded_size_;
 
   // Try using a frame with GPU buffer both are true:
   // 1. the frame already has GPU buffer
@@ -539,9 +540,9 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 
   EncoderStatus::Or<scoped_refptr<VideoFrame>> result(nullptr);
   if (use_gpu_buffer)
-    result = PrepareGpuFrame(input_coded_size_, frame);
+    result = PrepareGpuFrame(frame);
   else
-    result = PrepareCpuFrame(input_coded_size_, frame);
+    result = PrepareCpuFrame(frame);
 
   if (!result.has_value()) {
     std::move(done_cb).Run(
@@ -946,9 +947,11 @@ T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
 // frames can I420, NV12, or RGB -- they'll be converted to I420 if needed.
 EncoderStatus::Or<scoped_refptr<VideoFrame>>
 VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
-    const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
+
+  const auto dest_coded_size = input_coded_size_;
+  const auto dest_visible_rect = gfx::Rect(options_.frame_size);
 
   // The frame whose storage type is STORAGE_OWNED_MEMORY and
   // STORAGE_UNOWNED_MEMORY is copied here, not in mojo_video_frame_traits.
@@ -956,15 +959,15 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   // mojo_video_frame_traits doesn't.
   if (src_frame->storage_type() == VideoFrame::STORAGE_SHMEM &&
       src_frame->format() == PIXEL_FORMAT_I420 &&
-      src_frame->visible_rect().size() == size &&
-      src_frame->visible_rect().origin().IsOrigin()) {
+      src_frame->visible_rect() == dest_visible_rect &&
+      src_frame->coded_size() == dest_coded_size) {
     // Nothing to do here, the input frame is already what we need.
     return src_frame;
   }
 
   if (!input_pool_) {
     const size_t input_buffer_size =
-        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, size);
+        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, dest_coded_size);
     input_pool_ = base::MakeRefCounted<ReadOnlyRegionPool>(input_buffer_size);
   }
 
@@ -978,9 +981,9 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
-      PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
-      static_cast<uint8_t*>(mapping->memory()), mapping->size(),
-      src_frame->timestamp());
+      PIXEL_FORMAT_I420, dest_coded_size, dest_visible_rect,
+      dest_visible_rect.size(), static_cast<uint8_t*>(mapping->memory()),
+      mapping->size(), src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
@@ -1001,24 +1004,28 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
 // can I420, NV12, or RGB -- they'll be converted to NV12 if needed.
 EncoderStatus::Or<scoped_refptr<VideoFrame>>
 VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
-    const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareGpuFrame");
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(src_frame);
+
+  const auto dest_coded_size = input_coded_size_;
+  const auto dest_visible_rect = gfx::Rect(options_.frame_size);
+
   if (src_frame->HasGpuMemoryBuffer() &&
       src_frame->format() == PIXEL_FORMAT_NV12 &&
-      (gpu_resize_supported_ || src_frame->visible_rect().size() == size)) {
+      (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
     return src_frame;
   }
 
   if (!gmb_frame_pool_) {
     gmb_frame_pool_ = base::MakeRefCounted<GpuMemoryBufferVideoFramePool>(
-        gpu_factories_, size);
+        gpu_factories_, dest_coded_size);
   }
 
-  auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(size);
+  auto gpu_frame =
+      gmb_frame_pool_->MaybeCreateVideoFrame(dest_visible_rect.size());
   if (!gpu_frame)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
