@@ -3248,9 +3248,8 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   base::FilePath app_path = GetShortcutPath(
       override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
       app_name, app_id);
-  std::vector<base::FilePath> app_paths =
-      shell_integration::GetAllApplicationPathsForURL(test_file_url);
-  is_file_handled = base::Contains(app_paths, app_path);
+  is_file_handled =
+      shell_integration::CanApplicationHandleURL(app_path, test_file_url);
 #elif BUILDFLAG(IS_LINUX)
   AppId app_id = GetAppIdBySiteMode(site);
   for (const LinuxFileRegistration& command :

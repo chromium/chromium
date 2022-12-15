@@ -133,6 +133,16 @@ std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url) {
   return app_paths;
 }
 
+bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url) {
+  NSURL* ns_item_url = net::NSURLWithGURL(url);
+  NSURL* ns_app_url = base::mac::FilePathToNSURL(app_path);
+  Boolean result = FALSE;
+  LSCanURLAcceptURL(base::mac::NSToCFCast(ns_item_url),
+                    base::mac::NSToCFCast(ns_app_url), kLSRolesAll,
+                    kLSAcceptDefault, &result);
+  return result;
+}
+
 // Attempt to determine if this instance of Chrome is the default browser and
 // return the appropriate state. (Defined as being the handler for HTTP/HTTPS
 // protocols; we don't want to report "no" here if the user has simply chosen

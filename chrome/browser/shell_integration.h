@@ -74,6 +74,10 @@ std::u16string GetApplicationNameForProtocol(const GURL& url);
 // to launch the requested URL.
 // Returns an empty vector if no application is found.
 std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url);
+
+// Returns true if the application at `path` can be used to launch the given
+// `url`.
+bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url);
 #endif
 
 // Chrome's default web client state as a browser as a protocol client. If the
