@@ -1022,7 +1022,7 @@ union AudioResult {
 
 // Audio information.
 //
-// NextMinVersion: 1, NextIndex: 8
+// NextMinVersion: 2, NextIndex: 10
 [Stable]
 struct AudioInfo {
   // Is active output device mute or not.
@@ -1041,6 +1041,31 @@ struct AudioInfo {
   uint32 underruns@6;
   // Numbers of severe underruns.
   uint32 severe_underruns@7;
+  // Output nodes.
+  [MinVersion=1] array<AudioNodeInfo>? output_nodes@8;
+  // Input nodes.
+  [MinVersion=1] array<AudioNodeInfo>? input_nodes@9;
+};
+
+// Audio node information.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct AudioNodeInfo {
+  // Node id.
+  uint64 id@0;
+  // The name of this node. For example, "Speaker" or "Internal Mic".
+  string name@1;
+  // The name of the device that this node belongs to. For example,
+  // "HDA Intel PCH: CA0132 Analog:0,0"
+  string device_name@2;
+  // Whether this node is currently used for output/input. There is one active
+  // node for output and one active node for input.
+  bool active@3;
+  // The node volume in [0, 100].
+  uint8 node_volume@4;
+  // The input node gain set by UI, the value is in [0, 100].
+  uint8 input_node_gain@5;
 };
 
 // Audio hardware probe result.
