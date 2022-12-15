@@ -758,7 +758,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     BOOL usernameChanged =
         ![newUsernameValue isEqualToString:self.passwords[i].username];
     BOOL showUsernameAlreadyUsed =
-        usernameChanged && [self.delegate isUsernameReused:newUsernameValue];
+        usernameChanged &&
+        [self.delegate isUsernameReused:newUsernameValue
+                              forDomain:self.passwords[i].signonRealm];
     self.passwordDetailsInfoItems[i].usernameTextItem.hasValidText =
         !showUsernameAlreadyUsed;
     self.passwordDetailsInfoItems[i].usernameTextItem.identifyingIconEnabled =
@@ -1136,17 +1138,22 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 - (void)passwordEditingConfirmed {
   DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
+    NSString* oldUsername = self.passwords[i].username;
+    NSString* oldPassword = self.passwords[i].password;
     self.passwords[i].username =
         self.passwordDetailsInfoItems[i].usernameTextItem.textFieldValue;
     self.passwords[i].password =
         self.passwordDetailsInfoItems[i].passwordTextItem.textFieldValue;
     [self.delegate passwordDetailsViewController:self
-                          didEditPasswordDetails:self.passwords[i]];
+                          didEditPasswordDetails:self.passwords[i]
+                                 withOldUsername:oldUsername
+                                  andOldPassword:oldPassword];
     if (self.passwords[i].compromised) {
       UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                               PasswordCheckInteraction::kEditPassword);
     }
   }
+  [self.delegate didFinishEditingPasswordDetails];
   [super editButtonPressed];
   [self reloadData];
 }

@@ -92,11 +92,16 @@ constexpr char kPassword[] = "test";
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(PasswordDetails*)password {
+               didEditPasswordDetails:(PasswordDetails*)password
+                      withOldUsername:(NSString*)oldUsername
+                       andOldPassword:(NSString*)oldPassword {
   self.password = password;
 }
 
-- (BOOL)isUsernameReused:(NSString*)newUsername {
+- (void)didFinishEditingPasswordDetails {
+}
+
+- (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   return NO;
 }
 

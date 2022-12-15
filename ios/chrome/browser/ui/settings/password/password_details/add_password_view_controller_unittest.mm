@@ -61,10 +61,6 @@ constexpr char kPassword[] = "test";
   self.password = password;
 }
 
-- (BOOL)isUsernameReused:(NSString*)newUsername {
-  return NO;
-}
-
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
                          password:(NSString*)password {

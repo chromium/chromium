@@ -188,8 +188,4 @@ bool CheckForDuplicates(
   return hostname.find('.') == std::string::npos;
 }
 
-- (BOOL)isUsernameReused:(NSString*)newUsername {
-  return NO;
-}
-
 @end

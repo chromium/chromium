@@ -28,8 +28,11 @@ using base::SysNSStringToUTF16;
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 }
 
-// List of the usernames for the same domain.
-@property(nonatomic, strong) NSSet<NSString*>* usernamesWithSameDomain;
+// Dictionary of usernames of a same domain. Key: domain and value: NSSet of
+// usernames.
+@property(nonatomic, strong)
+    NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*
+        usernamesWithSameDomainDict;
 
 // Display name to use for the Password Details view.
 @property(nonatomic, strong) NSString* displayName;
@@ -51,17 +54,39 @@ using base::SysNSStringToUTF16;
     _passwordCheckObserver.reset(
         new PasswordCheckObserverBridge(self, manager));
     DCHECK(!_credentials.empty());
-    NSMutableSet<NSString*>* usernames = [[NSMutableSet alloc] init];
+
+    // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
+    // available in SavedPasswordsPresenter.
+    _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
+    NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
     auto savedCredentials =
         manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
+
+    // Store all usernames by domain.
+    for (const auto& credential : _credentials) {
+      [signonRealms
+          addObject:[NSString
+                        stringWithCString:credential.GetFirstSignonRealm()
+                                              .c_str()
+                                 encoding:[NSString defaultCStringEncoding]]];
+    }
     for (const auto& cred : savedCredentials) {
-      // TODO(crbug.com/1358979): Fix usernames logic.
-      if (cred.GetFirstSignonRealm() == _credentials[0].GetFirstSignonRealm()) {
-        [usernames addObject:base::SysUTF16ToNSString(cred.username)];
+      NSString* signonRealm =
+          [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
+                             encoding:[NSString defaultCStringEncoding]];
+      if ([signonRealms containsObject:signonRealm]) {
+        NSMutableSet* set =
+            [_usernamesWithSameDomainDict objectForKey:signonRealm];
+        if (!set) {
+          set = [[NSMutableSet alloc] init];
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+          [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
+
+        } else {
+          [set addObject:base::SysUTF16ToNSString(cred.username)];
+        }
       }
     }
-    [usernames removeObject:base::SysUTF16ToNSString(_credentials[0].username)];
-    _usernamesWithSameDomain = usernames;
   }
   return self;
 }
@@ -78,21 +103,45 @@ using base::SysNSStringToUTF16;
   _manager->RemoveObserver(_passwordCheckObserver.get());
 }
 
+// Update the usernames by domain dictionary by removing the old username and
+// adding the new one if it has changed.
+- (void)updateOldUsernameInDict:(NSString*)oldUsername
+                  toNewUsername:(NSString*)newUsername
+                withSignonRealm:(NSString*)signonRealm {
+  if ([oldUsername isEqualToString:newUsername]) {
+    return;
+  }
+
+  NSMutableSet* set = [_usernamesWithSameDomainDict objectForKey:signonRealm];
+  if (set) {
+    [set removeObject:oldUsername];
+    [set addObject:newUsername];
+  }
+}
+
 #pragma mark - PasswordDetailsTableViewControllerDelegate
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(PasswordDetails*)password {
+               didEditPasswordDetails:(PasswordDetails*)password
+                      withOldUsername:(NSString*)oldUsername
+                       andOldPassword:(NSString*)oldPassword {
   if ([password.password length] != 0) {
     password_manager::CredentialUIEntry original_credential;
 
     auto it = std::find_if(
         _credentials.begin(), _credentials.end(),
-        [password](password_manager::CredentialUIEntry credential) {
-          return [password.signonRealm
-              isEqualToString:[NSString stringWithUTF8String:
-                                            credential.GetFirstSignonRealm()
-                                                .c_str()]];
+        [password, oldUsername,
+         oldPassword](password_manager::CredentialUIEntry credential) {
+          return
+              [password.signonRealm
+                  isEqualToString:[NSString stringWithUTF8String:
+                                                credential.GetFirstSignonRealm()
+                                                    .c_str()]] &&
+              [oldUsername isEqualToString:base::SysUTF16ToNSString(
+                                               credential.username)] &&
+              [oldPassword isEqualToString:base::SysUTF16ToNSString(
+                                               credential.password)];
         });
 
     // There should be no reason not to find the credential in the vector of
@@ -107,10 +156,22 @@ using base::SysNSStringToUTF16;
     if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
             original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
+      // Update the usernames by domain dictionary.
+      NSString* signonRealm = [NSString
+          stringWithCString:updated_credential.GetFirstSignonRealm().c_str()
+                   encoding:[NSString defaultCStringEncoding]];
+      [self updateOldUsernameInDict:oldUsername
+                      toNewUsername:password.username
+                    withSignonRealm:signonRealm];
+
+      // Update the credential in the credentials vector.
       *it = std::move(updated_credential);
       return;
     }
   }
+}
+
+- (void)didFinishEditingPasswordDetails {
   [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
@@ -145,10 +206,11 @@ using base::SysNSStringToUTF16;
   return NO;
 }
 
-- (BOOL)isUsernameReused:(NSString*)newUsername {
+- (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the `_manager`.
-  return [self.usernamesWithSameDomain containsObject:newUsername];
+  return [[_usernamesWithSameDomainDict objectForKey:domain]
+      containsObject:newUsername];
 }
 
 #pragma mark - PasswordCheckObserver
