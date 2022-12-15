@@ -3255,7 +3255,6 @@ TEST_F(AppListTabletTest,
 
   // Verify that there is no existing result.
   EXPECT_TRUE(search_box_view->is_search_box_active());
-  EXPECT_FALSE(search_model->GetFirstVisibleResult());
   EXPECT_FALSE(result_selection_controller->selected_result());
 }
 
