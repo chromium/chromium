@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -207,6 +208,27 @@ class FirstActiveUseCaseImplUnderTest : public FirstActiveUseCaseImpl {
   ~FirstActiveUseCaseImplUnderTest() override = default;
 };
 
+class TwentyEightDayActiveUseCaseImplUnderTest
+    : public TwentyEightDayActiveUseCaseImpl {
+ public:
+  TwentyEightDayActiveUseCaseImplUnderTest(
+      PrefService* local_state,
+      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+          test_case)
+      : TwentyEightDayActiveUseCaseImpl(
+            kFakePsmDeviceActiveSecret,
+            kFakeChromeParameters,
+            local_state,
+            std::make_unique<FakePsmDelegate>(test_case.ec_cipher_key(),
+                                              test_case.seed(),
+                                              GetPlaintextIds(test_case))) {}
+  TwentyEightDayActiveUseCaseImplUnderTest(
+      const TwentyEightDayActiveUseCaseImplUnderTest&) = delete;
+  TwentyEightDayActiveUseCaseImplUnderTest& operator=(
+      const TwentyEightDayActiveUseCaseImplUnderTest&) = delete;
+  ~TwentyEightDayActiveUseCaseImplUnderTest() override = default;
+};
+
 }  // namespace
 
 // TODO(crbug/1317652): Refactor checking if current use case local pref is
@@ -371,6 +393,8 @@ class DeviceActivityClientTest : public testing::Test {
             features::kDeviceActiveClientDailyCheckMembership,
             features::kDeviceActiveClientMonthlyCheckMembership,
             features::kDeviceActiveClientFirstActiveCheckMembership,
+            features::kDeviceActiveClient28DayActiveCheckIn,
+            features::kDeviceActiveClient28DayActiveCheckMembership,
         },
         GetPsmNonMemberTestCase(),
         GetPrivateComputingRegressionTestCase(
@@ -442,6 +466,14 @@ class DeviceActivityClientTest : public testing::Test {
       use_cases.push_back(std::make_unique<FirstActiveUseCaseImplUnderTest>(
           &local_state_, psm_test_case));
     }
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceActiveClient28DayActiveCheckIn) ||
+        base::FeatureList::IsEnabled(
+            features::kDeviceActiveClient28DayActiveCheckMembership)) {
+      use_cases.push_back(
+          std::make_unique<TwentyEightDayActiveUseCaseImplUnderTest>(
+              &local_state_, psm_test_case));
+    }
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),
@@ -458,6 +490,8 @@ class DeviceActivityClientTest : public testing::Test {
         prefs::kDeviceActiveLastKnownMonthlyPingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnownFirstActivePingTimestamp);
+    local_state_.RemoveUserPref(
+        prefs::kDeviceActiveLastKnown28DayActivePingTimestamp);
   }
 
   void SimulateOprfResponse(const std::string& serialized_response_body,
@@ -533,7 +567,7 @@ class DeviceActivityClientTest : public testing::Test {
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {
-  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 3);
+  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 4);
 }
 
 TEST_F(DeviceActivityClientTest,
@@ -1225,7 +1259,8 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(psm_use_case));
-    if (psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY) {
+    if (psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY ||
+        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE) {
       SimulateImportResponse(std::string(), net::HTTP_OK);
       task_environment_.RunUntilIdle();
     }
@@ -1326,7 +1361,8 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
                  << psm_rlwe::RlweUseCase_Name(psm_use_case));
 
     if (psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY ||
-        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
+        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY ||
+        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE) {
       EXPECT_EQ(device_activity_client_->GetState(),
                 DeviceActivityClient::State::kCheckingIn);
 

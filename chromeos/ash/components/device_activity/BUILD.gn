@@ -52,6 +52,8 @@ component("device_activity") {
     "fresnel_pref_names.h",
     "monthly_use_case_impl.cc",
     "monthly_use_case_impl.h",
+    "twenty_eight_day_active_use_case_impl.cc",
+    "twenty_eight_day_active_use_case_impl.h",
   ]
 }
 
@@ -65,6 +67,7 @@ source_set("unit_tests") {
     "device_activity_controller_unittest.cc",
     "first_active_use_case_impl_unittest.cc",
     "monthly_use_case_impl_unittest.cc",
+    "twenty_eight_day_active_use_case_impl_unittest.cc",
   ]
 
   deps = [

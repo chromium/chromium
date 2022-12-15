@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -100,6 +101,8 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
   registry->RegisterTimePref(
       prefs::kDeviceActiveLastKnownFirstActivePingTimestamp, unix_epoch);
+  registry->RegisterTimePref(
+      prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
 }
 
 // static
@@ -242,6 +245,9 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<MonthlyUseCaseImpl>(
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
+  use_cases.push_back(std::make_unique<TwentyEightDayActiveUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<FirstActiveUseCaseImpl>(

@@ -18,4 +18,8 @@ const char kDeviceActiveLastKnownMonthlyPingTimestamp[] =
 const char kDeviceActiveLastKnownFirstActivePingTimestamp[] =
     "device_active.last_known_first_active_ping_timestamp";
 
+// Timestamp of last known 28 day active ping to Fresnel.
+const char kDeviceActiveLastKnown28DayActivePingTimestamp[] =
+    "device_active.last_known_28day_active_ping_timestamp";
+
 }  // namespace ash::prefs

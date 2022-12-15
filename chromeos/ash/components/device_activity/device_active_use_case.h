@@ -113,17 +113,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Compute the psm identifiers to date pairs for the use case object.
   // This is used to determine when the last sent psm id and its date is.
   // Date is rounded to nearest UTC midnight for simplicity.
-  //
-  // For example, the 28 day lookback queries on 01/28/2022 will generate the
-  // vector of psm ids for days 01, 02, 03, 04, 05, 06, ..., 28 of January 2022.
   virtual bool SavePsmIdToDateMap(base::Time ts);
 
   // Generates the |psm_ids_to_query_| using the |psm_id_to_date_| map.
   virtual void SetPsmIdentifiersToQuery();
 
   // Generates the |psm_ids_to_import_| from the ts.
-  // For example, the 28 day ping ahead imports on 01/01/2022 will generate the
-  // vector of psm ids for days 01, 02, 03, 04, 05, 06, ..., 28 of January 2022.
   virtual bool SetPsmIdentifiersToImport(base::Time ts);
 
   // Return vector of generated ids.

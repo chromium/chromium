@@ -321,6 +321,9 @@ DeviceActivityClient::GetSaveStatusRequest() {
         status.set_last_ping_utc_date(last_ping_utc_date);
         break;
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE:
+        status.set_use_case(private_computing::PrivateComputingUseCase::
+                                CROS_FRESNEL_28DAY_ACTIVE);
+        status.set_last_ping_utc_date(last_ping_utc_date);
         break;
       case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
         break;
@@ -666,6 +669,27 @@ void DeviceActivityClient::TransitionOutOfIdle(
         // |TransitionToCheckIn| if the local state pref is set.
         if (base::FeatureList::IsEnabled(
                 features::kDeviceActiveClientFirstActiveCheckIn)) {
+          // During rollout, we perform CheckIn without CheckMembership for
+          // powerwash, recovery, or RMA devices.
+          TransitionToCheckIn(current_use_case);
+          return;
+        }
+
+        break;
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE:
+        // Check membership continues when the cached local state pref
+        // is not set. The local state pref may not be set if the device is
+        // new, powerwashed, recovered, RMA, or the local state was corrupted.
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClient28DayActiveCheckMembership) &&
+            !current_use_case->IsLastKnownPingTimestampSet()) {
+          TransitionToCheckMembershipOprf(current_use_case);
+          return;
+        }
+
+        // |TransitionToCheckIn| if the local state pref is set.
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClient28DayActiveCheckIn)) {
           // During rollout, we perform CheckIn without CheckMembership for
           // powerwash, recovery, or RMA devices.
           TransitionToCheckIn(current_use_case);
