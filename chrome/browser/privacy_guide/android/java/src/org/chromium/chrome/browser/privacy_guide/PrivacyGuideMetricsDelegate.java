@@ -206,6 +206,8 @@ class PrivacyGuideMetricsDelegate {
      */
     static void recordMetricsForWelcomeCard() {
         RecordUserAction.record("Settings.PrivacyGuide.NextClickWelcome");
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.WELCOME_NEXT_BUTTON, PrivacyGuideInteractions.MAX_VALUE);
     }
 
     /**
