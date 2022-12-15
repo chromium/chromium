@@ -171,7 +171,7 @@ extensions to access powerful APIs.
 This is not considered a security bug ([example](https://crbug.com/1301966)).
 See above for [our stance on unpacked extensions][unpacked-extensions-stance].
 The addition of access to private APIs does not change this stance, as it is
-still most similar to a phyiscally-local attack or devtools execution in a
+still most similar to a physically-local attack or devtools execution in a
 trusted context (for instance, inspecting a component extension allows access
 to trusted APIs).
 

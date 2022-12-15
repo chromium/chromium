@@ -222,7 +222,7 @@ concepts.
 Withheld permissions are stored on the Extension object (as part of the
 PermissionsData class). Withheld permissions are the set of permissions that
 were listed as required permissions by the extension, but were withheld as part
-of the runtime host permissions feature. The extension does not have acccess
+of the runtime host permissions feature. The extension does not have access
 to these permissions.
 
 ### Runtime-Granted Permissions

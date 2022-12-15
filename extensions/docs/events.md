@@ -35,7 +35,7 @@ and a non-lazy) listeners. An event can be dispatched to these listeners while
 the corresponding lazy context is not running.
 
 * __Filtered events__:
-A listener can specify additional matching criterea that we call event filters.
+A listener can specify additional matching criteria that we call event filters.
 Some events support filters. IPCs (along with most but not all of the browser/
 or renderer/ code) use `DictionaryValue` to represent an event filter.
 

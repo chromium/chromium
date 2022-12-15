@@ -207,7 +207,7 @@ function to invoke).
 
 #### Advantages
 The most obvious advantage to using `callbackPass()` and `callbackFail()` is
-that is eliminates the need for more complex callback management.  In addition
+that it eliminates the need for more complex callback management.  In addition
 to keeping track of the callbacks, callbackPass() also automatically checks
 that there was no API error raised in the callback, obviating the need for a
 call to `chrome.test.assertNoLastError()`.  This can lead to more succinct
@@ -270,13 +270,13 @@ chrome.test.runTests([
       chrome.tabs.create({url: 'http://example.com'}, () => {
         <verify state>
         resolve();
-      }));
+      });
     });
     let storagePromise = new Promise((resolve) => {
       chrome.storage.local.set({foo: 'bar'}, () => {
         <verify state>
         resolve();
-      }));
+      });
     });
     Promise.all([tabPromise, storagePromise]).then(() => {
       chrome.test.succeed();
@@ -396,7 +396,7 @@ counter reaches zero.  Calling `chrome.test.succeed()` in addition to
 `callbackPass()`, `callbackFail()`, `listenOnce()`, or `listenForever()` can
 result in unpredictable behavior, or masking failures.
 
-### **Don't** Call other aysnchronous functions after callbackPass/Fail()
+### **Don't** Call other asynchronous functions after callbackPass/Fail()
 Consider the following code:
 
 ```js
@@ -429,7 +429,7 @@ Instead, if a complex chain of steps is needed, use either
 needed).
 
 ### **Don't** Go overboard with runTests()
-It can be tempting to set up a sequence of a 20-step sequence in
+It can be tempting to set up a 20-step sequence in
 `chrome.test.runTests()`, but this makes it very difficult to understand the
 total flow, harder to debug, and increases the risk of timing out (from simply
 doing too much).  If a test relies on multiple steps in `runTests()`, have a
