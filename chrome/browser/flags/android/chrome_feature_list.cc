@@ -237,7 +237,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchThinWebViewImplementation,
     &kDeferKeepScreenOnDuringGesture,
     &kDirectActions,
-    &kDuetTabStripIntegrationAndroid,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -734,10 +733,6 @@ BASE_FEATURE(kDownloadAutoResumptionThrottling,
 BASE_FEATURE(kDownloadHomeForExternalApp,
              "DownloadHomeForExternalApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDuetTabStripIntegrationAndroid,
-             "DuetTabStripIntegrationAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
