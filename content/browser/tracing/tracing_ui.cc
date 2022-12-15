@@ -52,13 +52,13 @@ constexpr char kStreamFormatJSON[] = "json";
 perfetto::TracingSession* g_tracing_session = nullptr;
 
 void OnGotCategories(WebUIDataSource::GotDataCallback callback,
-                     const std::set<std::string>& categorySet) {
-  base::ListValue category_list;
-  for (auto it = categorySet.begin(); it != categorySet.end(); it++) {
-    category_list.Append(*it);
+                     const std::set<std::string>& category_set) {
+  base::Value::List category_list;
+  for (const std::string& category : category_set) {
+    category_list.Append(category);
   }
 
-  scoped_refptr<base::RefCountedString> res(new base::RefCountedString());
+  auto res = base::MakeRefCounted<base::RefCountedString>();
   base::JSONWriter::Write(category_list, &res->data());
   std::move(callback).Run(res);
 }
@@ -74,8 +74,7 @@ bool BeginRecording(const std::string& data64,
 
   // TODO(skyostil): Migrate all use cases from TracingController to Perfetto.
   if (stream_format == kStreamFormatProtobuf) {
-    if (g_tracing_session)
-      delete g_tracing_session;
+    delete g_tracing_session;
     g_tracing_session =
         perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend)
             .release();
