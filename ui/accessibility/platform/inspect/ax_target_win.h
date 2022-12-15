@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
 
 namespace ui {
 
@@ -65,7 +66,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTargetWin final {
                                     IA2TableComPtr,
                                     IA2TableCellComPtr,
                                     IA2TextComPtr,
-                                    IA2ValueComPtr>;
+                                    IA2ValueComPtr,
+                                    ScopedCoMemArray<LONG>>;
 
   // Keep the value const to prevent accidental change of the value shared
   // between multiple instances of AXTargetWin.

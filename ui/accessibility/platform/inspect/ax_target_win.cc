@@ -46,6 +46,17 @@ std::string AXTargetWin::ToString() const {
   if (Is<int>())
     return base::NumberToString(As<int>());
 
+  if (Is<ScopedCoMemArray<LONG>>()) {
+    std::string str;
+    for (LONG value : As<ScopedCoMemArray<LONG>>()) {
+      if (!str.empty()) {
+        str += ", ";
+      }
+      str += base::NumberToString(value);
+    }
+    return '[' + str + ']';
+  }
+
   return "Unsupported";
 }
 

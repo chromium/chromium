@@ -1,0 +1,1 @@
+grid.QueryInterface(IAccessibleTable).selectedColumns=[0]

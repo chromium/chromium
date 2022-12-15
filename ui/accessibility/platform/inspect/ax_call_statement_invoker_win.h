@@ -77,6 +77,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
                                    std::string attribute) const;
   AXOptionalObject HasIA2State(const IA2ComPtr target, std::string state) const;
 
+  // AccessibleTable functionality
+  AXOptionalObject GetSelectedColumns(const IA2TableComPtr target) const;
+
   bool IsIAccessibleAndNotNull(const Target& target) const;
 
   // Map between IAccessible objects and their DOMIds/accessible tree

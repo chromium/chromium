@@ -40,6 +40,7 @@ constexpr const char kMacParameterizedAttributes[]{
 
 constexpr const char kIAccessible[]{"win/ia2/iaccessible"};
 constexpr const char kIAccessible2[]{"win/ia2/iaccessible2"};
+constexpr const char kIAccessibleTable[]{"win/ia2/iaccessibletable"};
 
 #endif
 
@@ -583,6 +584,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IAccessibleRole) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IAccessible2Role) {
   RunTypedTest<kIAccessible2>(L"iaccessible2-role.html");
+}
+
+// IAccessibleTable
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       IAccessibleTableSelectedColumns) {
+  RunTypedTest<kIAccessibleTable>(L"iaccessibletable-selected-columns.html");
 }
 
 #endif

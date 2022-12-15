@@ -219,6 +219,10 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Hypertext(
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Table(
     IA2TableComPtr target,
     const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "selectedColumns") {
+    return GetSelectedColumns(target);
+  }
+
   return AXOptionalObject::Error();
 }
 
@@ -355,6 +359,16 @@ AXOptionalObject AXCallStatementInvokerWin::HasIA2State(
     return AXOptionalObject(Target(false));
   }
 
+  return AXOptionalObject::Error();
+}
+
+AXOptionalObject AXCallStatementInvokerWin::GetSelectedColumns(
+    const IA2TableComPtr target) const {
+  ScopedCoMemArray<LONG> columns;
+  if (target->get_selectedColumns(INT_MAX, columns.Receive(),
+                                  columns.ReceiveSize()) == S_OK) {
+    return AXOptionalObject({std::move(columns)});
+  }
   return AXOptionalObject::Error();
 }
 
