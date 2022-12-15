@@ -74,15 +74,15 @@ em::RemoteCommand GenerateCommandProto(
       em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
-  base::Value root_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict root_dict;
   if (id.has_value()) {
-    root_dict.SetIntKey(kIdFieldName, id.value());
+    root_dict.Set(kIdFieldName, id.value());
   }
   if (command.has_value()) {
-    root_dict.SetIntKey(kCommandFieldName, static_cast<int>(command.value()));
+    root_dict.Set(kCommandFieldName, static_cast<int>(command.value()));
   }
   if (include_output.has_value()) {
-    root_dict.SetBoolKey(kIncludeOutputFieldName, include_output.value());
+    root_dict.Set(kIncludeOutputFieldName, include_output.value());
   }
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
@@ -94,15 +94,13 @@ std::string CreateInteractivePayload(
     uint32_t progress_percent,
     absl::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum user_message) {
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  root_dict.SetIntKey(kProgressPercentFieldName,
-                      static_cast<int>(progress_percent));
+  base::Value::Dict root_dict;
+  root_dict.Set(kProgressPercentFieldName, static_cast<int>(progress_percent));
   if (output.has_value())
-    root_dict.SetStringKey(kOutputFieldName, std::move(output.value()));
-  base::Value interactive_dict(base::Value::Type::DICTIONARY);
-  interactive_dict.SetIntKey(kUserMessageFieldName,
-                             static_cast<int>(user_message));
-  root_dict.SetPath(kInteractiveUpdateFieldName, std::move(interactive_dict));
+    root_dict.Set(kOutputFieldName, std::move(output.value()));
+  base::Value::Dict interactive_dict;
+  interactive_dict.Set(kUserMessageFieldName, static_cast<int>(user_message));
+  root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
 
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
@@ -114,16 +112,14 @@ std::string CreateNonInteractivePayload(
     absl::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
     const std::string& status_message) {
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  root_dict.SetIntKey(kProgressPercentFieldName,
-                      static_cast<int>(progress_percent));
+  base::Value::Dict root_dict;
+  root_dict.Set(kProgressPercentFieldName, static_cast<int>(progress_percent));
   if (output.has_value())
-    root_dict.SetStringKey(kOutputFieldName, std::move(output.value()));
-  base::Value noninteractive_dict(base::Value::Type::DICTIONARY);
-  noninteractive_dict.SetIntKey(kStatusFieldName, static_cast<int>(status));
-  noninteractive_dict.SetStringKey(kStatusMessageFieldName, status_message);
-  root_dict.SetPath(kNonInteractiveUpdateFieldName,
-                    std::move(noninteractive_dict));
+    root_dict.Set(kOutputFieldName, std::move(output.value()));
+  base::Value::Dict noninteractive_dict;
+  noninteractive_dict.Set(kStatusFieldName, static_cast<int>(status));
+  noninteractive_dict.Set(kStatusMessageFieldName, status_message);
+  root_dict.Set(kNonInteractiveUpdateFieldName, std::move(noninteractive_dict));
 
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);

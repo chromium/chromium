@@ -94,8 +94,9 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   if (!root->is_dict())
     return false;
 
+  base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
-  absl::optional<int> routine_enum = root->FindIntKey(kRoutineEnumFieldName);
+  absl::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
   if (!routine_enum.has_value())
     return false;
   if (!PopulateMojoEnumValueIfValid(routine_enum.value(), &routine_enum_)) {
@@ -107,7 +108,7 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   // Make sure there's a dictionary with parameter values for the routine.
   // Validation of routine-specific parameters will be done before running the
   // routine, so here we just check that any dictionary was given to us.
-  auto* params_dict = root->FindDictKey(kParamsFieldName);
+  auto* params_dict = dict.FindDict(kParamsFieldName);
   if (!params_dict)
     return false;
   params_dict_ = std::move(*params_dict);
@@ -153,7 +154,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
@@ -181,7 +182,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kPercentageUsedThresholdFieldName[] =
           "percentageUsedThreshold";
       absl::optional<int> percentage_used_threshold =
-          params_dict_.FindIntKey(kPercentageUsedThresholdFieldName);
+          params_dict_.FindInt(kPercentageUsedThresholdFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr input_threshold;
       // The smartctl check routine expects one optional integer >= 0.
       if (percentage_used_threshold.has_value()) {
@@ -204,9 +205,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       // Note that expectedPowerType is an optional parameter.
       constexpr char kExpectedPowerTypeFieldName[] = "expectedPowerType";
       absl::optional<int> expected_status =
-          params_dict_.FindIntKey(kExpectedStatusFieldName);
+          params_dict_.FindInt(kExpectedStatusFieldName);
       std::string* expected_power_type =
-          params_dict_.FindStringKey(kExpectedPowerTypeFieldName);
+          params_dict_.FindString(kExpectedPowerTypeFieldName);
       ash::cros_healthd::mojom::AcPowerStatusEnum expected_status_enum;
       // The AC power routine expects a valid ACPowerStatusEnum, and optionally
       // a string.
@@ -229,7 +230,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
@@ -249,7 +250,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
@@ -270,7 +271,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         kFloatingPointAccuracy: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
@@ -291,7 +292,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
       constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
       absl::optional<int> wear_level_threshold =
-          params_dict_.FindIntKey(kWearLevelThresholdFieldName);
+          params_dict_.FindInt(kWearLevelThresholdFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       // The NVMe wear level routine expects one optional integer >= 0.
       if (wear_level_threshold.has_value()) {
@@ -312,7 +313,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
       constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
       absl::optional<int> nvme_self_test_type =
-          params_dict_.FindIntKey(kNvmeSelfTestTypeFieldName);
+          params_dict_.FindInt(kNvmeSelfTestTypeFieldName);
       ash::cros_healthd::mojom::NvmeSelfTestTypeEnum nvme_self_test_type_enum;
       // The NVMe self-test routine expects a valid NvmeSelfTestTypeEnum.
       if (!nvme_self_test_type.has_value() ||
@@ -331,11 +332,11 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kTypeFieldName[] = "type";
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kFileSizeMbFieldName[] = "fileSizeMb";
-      absl::optional<int> type = params_dict_.FindIntKey(kTypeFieldName);
+      absl::optional<int> type = params_dict_.FindInt(kTypeFieldName);
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       absl::optional<int> file_size_mb =
-          params_dict_.FindIntKey(kFileSizeMbFieldName);
+          params_dict_.FindInt(kFileSizeMbFieldName);
       ash::cros_healthd::mojom::DiskReadRoutineTypeEnum type_enum;
       if (!length_seconds.has_value() || length_seconds.value() < 0 ||
           !file_size_mb.has_value() || file_size_mb.value() < 0 ||
@@ -354,7 +355,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
@@ -376,9 +377,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kMaximumDischargePercentAllowedFieldName[] =
           "maximumDischargePercentAllowed";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       absl::optional<int> maximum_discharge_percent_allowed =
-          params_dict_.FindIntKey(kMaximumDischargePercentAllowedFieldName);
+          params_dict_.FindInt(kMaximumDischargePercentAllowedFieldName);
       // The battery discharge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
           !maximum_discharge_percent_allowed.has_value() ||
@@ -399,9 +400,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kMinimumChargePercentRequiredFieldName[] =
           "minimumChargePercentRequired";
       absl::optional<int> length_seconds =
-          params_dict_.FindIntKey(kLengthSecondsFieldName);
+          params_dict_.FindInt(kLengthSecondsFieldName);
       absl::optional<int> minimum_charge_percent_required =
-          params_dict_.FindIntKey(kMinimumChargePercentRequiredFieldName);
+          params_dict_.FindInt(kMinimumChargePercentRequiredFieldName);
       // The battery charge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
           !minimum_charge_percent_required.has_value() ||
@@ -476,7 +477,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing: {
       std::string* stun_server_hostname =
-          params_dict_.FindStringKey(kStunServerHostnameFieldName);
+          params_dict_.FindString(kStunServerHostnameFieldName);
       diagnostics_service->RunVideoConferencingRoutine(
           stun_server_hostname
               ? absl::make_optional<std::string>(*stun_server_hostname)
@@ -514,7 +515,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen: {
       constexpr char kPrivacyScreenTargetState[] = "targetState";
       absl::optional<bool> target_state =
-          params_dict_.GetDict().FindBool(kPrivacyScreenTargetState);
+          params_dict_.FindBool(kPrivacyScreenTargetState);
       diagnostics_service->RunPrivacyScreenRoutine(
           target_state.value_or(true), std::move(response_callback));
       break;
