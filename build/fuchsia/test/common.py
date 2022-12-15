@@ -13,7 +13,7 @@ import time
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional
 
-from compatible_utils import get_ssh_prefix, get_host_arch
+from compatible_utils import get_ssh_prefix, get_host_arch, running_unattended
 
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -250,14 +250,33 @@ def get_component_uri(package: str) -> str:
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
 
+    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
+
+    # Garbage collection for swarming bots.
+    if running_unattended():
+        subprocess.run(ssh_prefix + ['--', 'pkgctl', 'gc'], check=False)
+
     for package in packages:
         resolve_cmd = [
             '--', 'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        subprocess.run(get_ssh_prefix(get_ssh_address(target_id)) +
-                       resolve_cmd,
-                       check=True)
+        retry_command(ssh_prefix + resolve_cmd)
+
+
+def retry_command(cmd: List[str], retries: int = 2,
+                  **kwargs) -> Optional[subprocess.CompletedProcess]:
+    """Helper function for retrying a subprocess.run command."""
+
+    for i in range(retries):
+        if i == retries - 1:
+            proc = subprocess.run(cmd, **kwargs, check=True)
+            return proc
+        proc = subprocess.run(cmd, **kwargs, check=False)
+        if proc.returncode == 0:
+            return proc
+        time.sleep(3)
+    return None
 
 
 def get_ssh_address(target_id: Optional[str]) -> str:
