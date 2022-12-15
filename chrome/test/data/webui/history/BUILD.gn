@@ -29,9 +29,15 @@ build_webui_tests("build") {
     "test_util.ts",
   ]
 
-  ts_path_mappings =
-      [ "chrome://history/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/history/tsc/*",
-                    target_gen_dir) ]
+  ts_path_mappings = [
+    "chrome://history/history.js|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/history/tsc/history.d.ts",
+            target_gen_dir),
+    "chrome://history/lazy_load.ts|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/history/tsc/lazy_load.d.ts",
+            target_gen_dir),
+  ]
   ts_deps = [ "//chrome/browser/resources/history:build_ts" ]
 }

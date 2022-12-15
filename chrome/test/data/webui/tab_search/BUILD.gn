@@ -21,9 +21,9 @@ build_webui_tests("build") {
   ]
 
   ts_path_mappings = [
-    "chrome://tab-search.top-chrome/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/tab_search/tsc/*",
-                    target_gen_dir),
+    "chrome://tab-search.top-chrome/tab_search.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/tab_search/tsc/tab_search.d.ts",
+            target_gen_dir),
     "chrome://webui-test/metrics_reporter/*|" +
         rebase_path(
             "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",

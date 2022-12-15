@@ -5,7 +5,7 @@
 import './shared_style.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';

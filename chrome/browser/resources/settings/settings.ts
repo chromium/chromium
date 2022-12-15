@@ -49,7 +49,7 @@ export {EDIT_STARTUP_URL_EVENT, SettingsStartupUrlEntryElement} from './on_start
 export {SettingsStartupUrlsPageElement} from './on_startup_page/startup_urls_page.js';
 export {StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './on_startup_page/startup_urls_page_browser_proxy.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from './open_window_proxy.js';
-export {pageVisibility, setPageVisibilityForTesting} from './page_visibility.js';
+export {pageVisibility, PrivacyPageVisibility, setPageVisibilityForTesting} from './page_visibility.js';
 // <if expr="chromeos_ash">
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
@@ -75,7 +75,7 @@ export {RelaunchMixin, RestartType} from './relaunch_mixin.js';
 export {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_banner.js';
 export {buildRouter, routes} from './route.js';
-export {SettingsRoutes, Route, Router} from './router.js';
+export {Route, Router, SettingsRoutes} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
 export {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_page/safety_check_child.js';
 // <if expr="_google_chrome and is_win">

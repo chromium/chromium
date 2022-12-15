@@ -15,9 +15,8 @@ build_webui_tests("build") {
     "toolbar_tests.ts",
   ]
 
-  ts_path_mappings =
-      [ "chrome://downloads/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/downloads/tsc/*",
-                    target_gen_dir) ]
+  ts_path_mappings = [ "chrome://downloads/downloads.js|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/downloads/tsc/downloads.d.ts",
+                           target_gen_dir) ]
   ts_deps = [ "//chrome/browser/resources/downloads:build_ts" ]
 }

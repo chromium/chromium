@@ -64,8 +64,11 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [
-    "chrome://profile-picker/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/signin/profile_picker/tsc/*",
+    "chrome://profile-picker/profile_picker.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/signin/profile_picker/tsc/profile_picker.d.ts",
+            target_gen_dir),
+    "chrome://profile-picker/lazy_load.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/signin/profile_picker/tsc/lazy_load.d.ts",
             target_gen_dir),
     "chrome://signin-dice-web-intercept/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/dice_web_signin_intercept/*",

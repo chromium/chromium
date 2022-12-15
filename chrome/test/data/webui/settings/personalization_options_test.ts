@@ -7,8 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
-import {PrivacyPageVisibility} from 'chrome://settings/page_visibility.js';
-import {loadTimeData, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, PrivacyPageVisibility, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="not is_chromeos">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
