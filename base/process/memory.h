@@ -78,6 +78,19 @@ using partition_alloc::win::kOomExceptionCode;
 // TODO(crbug.com/1279371): Enforce it, when all callers are converted.
 BASE_EXPORT void UncheckedFree(void* ptr);
 
+// Function object which invokes 'UncheckedFree' on its parameter, which should
+// be a pointer resulting from UncheckedMalloc or UncheckedCalloc. Can be used
+// to store such pointers in std::unique_ptr:
+//
+// int* foo_ptr = nullptr;
+// if (UncheckedMalloc(sizeof(*foo_ptr), reinterpret_cast<void**>(&foo_ptr))) {
+//   std::unique_ptr<int, base::UncheckedFreeDeleter> unique_foo_ptr(foo_ptr);
+//   ...
+// }
+struct UncheckedFreeDeleter {
+  inline void operator()(void* ptr) const { UncheckedFree(ptr); }
+};
+
 }  // namespace base
 
 #endif  // BASE_PROCESS_MEMORY_H_
