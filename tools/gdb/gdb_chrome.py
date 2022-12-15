@@ -244,10 +244,26 @@ pp_set.add_printer('absl::optional', '^absl::optional<.*>$',
                    AbslOptionalPrinter)
 
 
+class ClampedNumericPrinter(Printer):
+  type_re = r'^base::internal::ClampedNumeric<(.*)>$'
+
+  def to_string(self):
+    m = type_re.search(self.val.type)
+    if m is None:
+      return self.val['value']
+    return '(%s) %s' % (m.group(1), self.val['value_'])
+
+
+pp_set.add_printer('base::internal::ClampedNumeric',
+                   '^base::internal::ClampedNumeric<.*>$',
+                   ClampedNumericPrinter)
+
+
 class TimeDeltaPrinter(object):
 
   def __init__(self, val):
-    self._timedelta = datetime.timedelta(microseconds=int(val['delta_']))
+    self._timedelta = datetime.timedelta(
+        microseconds=int(val['delta_']['value_']))
 
   def timedelta(self):
     return self._timedelta
@@ -262,7 +278,7 @@ pp_set.add_printer('base::TimeDelta', '^base::TimeDelta$', TimeDeltaPrinter)
 class TimeTicksPrinter(TimeDeltaPrinter):
 
   def __init__(self, val):
-    self._timedelta = datetime.timedelta(microseconds=int(val['us_']))
+    self._timedelta = datetime.timedelta(microseconds=int(val['us_']['value_']))
 
 
 pp_set.add_printer('base::TimeTicks', '^base::TimeTicks$', TimeTicksPrinter)
@@ -273,8 +289,8 @@ class TimePrinter(object):
   def __init__(self, val):
     timet_offset = gdb.parse_and_eval('base::Time::kTimeTToMicrosecondsOffset')
     self._datetime = (
-        datetime.datetime.fromtimestamp(0) +
-        datetime.timedelta(microseconds=int(val['us_'] - timet_offset)))
+        datetime.datetime.fromtimestamp(0) + datetime.timedelta(
+            microseconds=int(val['us_']['value']) - int(timet_offset)))
 
   def datetime(self):
     return self._datetime
