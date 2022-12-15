@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -83,9 +84,6 @@
 namespace content {
 
 namespace {
-
-constexpr char kExpectedSXGEnabledAcceptHeaderForPrefetch[] =
-    "application/signed-exchange;v=b3;q=0.7,*/*;q=0.8";
 
 constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
 constexpr char kPrefetchResultHistogram[] =
@@ -1137,16 +1135,13 @@ class SignedExchangeAcceptHeaderBrowserTest
                          bool is_fallback) {
     const auto accept_header = GetInterceptedAcceptHeader(url);
     ASSERT_TRUE(accept_header);
-    EXPECT_EQ(
-        *accept_header,
-        IsSignedExchangeEnabled() && !is_fallback
-            ? (is_navigation
-                   ? std::string(kFrameAcceptHeaderValue) +
-                         std::string(kAcceptHeaderSignedExchangeSuffix)
-                   : std::string(kExpectedSXGEnabledAcceptHeaderForPrefetch))
-            : (is_navigation
-                   ? std::string(kFrameAcceptHeaderValue)
-                   : std::string(network::kDefaultAcceptHeaderValue)));
+    EXPECT_EQ(*accept_header,
+              IsSignedExchangeEnabled() && !is_fallback
+                  ? base::StrCat({kFrameAcceptHeaderValue,
+                                  kAcceptHeaderSignedExchangeSuffix})
+                  : (is_navigation
+                         ? std::string(kFrameAcceptHeaderValue)
+                         : std::string(network::kDefaultAcceptHeaderValue)));
   }
 
   void CheckNavigationAcceptHeader(const std::vector<GURL>& urls) {

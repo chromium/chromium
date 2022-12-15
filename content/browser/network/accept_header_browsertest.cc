@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
       "image/webp,image/apng,*/*;q=0.8,"
-      "application/signed-exchange;v=b3;q=0.9";
+      "application/signed-exchange;v=b3;q=0.7";
   EXPECT_EQ(expected_main_frame_accept_header, GetFor("/accept-header.html"));
 
   // ResourceType::kSubFrame
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
       "image/webp,image/apng,*/*;q=0.8,"
-      "application/signed-exchange;v=b3;q=0.9";
+      "application/signed-exchange;v=b3;q=0.7";
   EXPECT_EQ(expected_sub_frame_accept_header, GetFor("/iframe.html"));
 
   // ResourceType::kStylesheet
@@ -154,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
 #endif
 
   // ResourceType::kPrefetch
-  EXPECT_EQ("application/signed-exchange;v=b3;q=0.7,*/*;q=0.8",
-            GetFor("/prefetch"));
+  EXPECT_EQ(expected_main_frame_accept_header, GetFor("/prefetch"));
 
   // ResourceType::kXhr
   EXPECT_EQ("*/*", GetFor("/xhr"));

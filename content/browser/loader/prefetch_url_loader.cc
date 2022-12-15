@@ -13,6 +13,7 @@
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
@@ -21,13 +22,14 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 namespace {
 
-constexpr char kSignedExchangeEnabledAcceptHeaderForPrefetch[] =
+constexpr char kSignedExchangeEnabledAcceptHeaderForCrossOriginPrefetch[] =
     "application/signed-exchange;v=b3;q=0.7,*/*;q=0.8";
 
 }  // namespace
@@ -71,9 +73,19 @@ PrefetchURLLoader::PrefetchURLLoader(
   if (is_signed_exchange_handling_enabled_) {
     // Set the SignedExchange accept header.
     // (https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#internet-media-type-applicationsigned-exchange).
-    resource_request_.headers.SetHeader(
-        net::HttpRequestHeaders::kAccept,
-        kSignedExchangeEnabledAcceptHeaderForPrefetch);
+
+    // TODO(https://crbug.com/1400888): find a solution for CORS requests,
+    // perhaps exempt the Accept header from the 128-byte rule
+    // (https://fetch.spec.whatwg.org/#cors-safelisted-request-header). For now,
+    // we use the frame Accept header for prefetches only in requests with a
+    // no-cors/same-origin mode to avoid an unintended preflight.
+    std::string accept_header =
+        resource_request_.mode == network::mojom::RequestMode::kCors
+            ? kSignedExchangeEnabledAcceptHeaderForCrossOriginPrefetch
+            : FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
+                                     browser_context);
+    resource_request_.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                        std::move(accept_header));
     if (prefetched_signed_exchange_cache) {
       prefetched_signed_exchange_cache_adapter_ =
           std::make_unique<PrefetchedSignedExchangeCacheAdapter>(

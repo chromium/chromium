@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
       "image/webp,image/apng,*/*;q=0.8,"
-      "application/signed-exchange;v=b3;q=0.9";
+      "application/signed-exchange;v=b3;q=0.7";
   ASSERT_EQ(expected_plugin_accept_header, plugin_accept_header);
 
   std::string expected_favicon_accept_header =
