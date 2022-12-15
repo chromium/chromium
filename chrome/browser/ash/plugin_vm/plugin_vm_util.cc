@@ -36,6 +36,7 @@ const char kPitaDlc[] = "pita";
 const char kPluginVmShelfAppId[] = "lgjpclljbbmphhnalkeplcmnjpfmmaek";
 const char kPluginVmName[] = "PvmDefault";
 const char kChromeOSBaseDirectoryDisplayText[] = "Network \u203a ChromeOS";
+const char kPluginVmWindowId[] = "org.chromium.plugin_vm_ui";
 
 namespace {
 
@@ -136,6 +137,10 @@ absl::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
   }
 
   return absl::nullopt;
+}
+
+bool IsPluginvmWindowId(const std::string& window_id) {
+  return base::StartsWith(window_id, kPluginVmWindowId);
 }
 
 PluginVmPolicySubscription::PluginVmPolicySubscription(

@@ -96,6 +96,9 @@ void RemoveDriveDownloadDirectoryIfExists();
 // Returns nullopt if not a drive URL.
 absl::optional<std::string> GetIdFromDriveUrl(const GURL& url);
 
+// Returns true if window is PluginVM.
+bool IsPluginvmWindowId(const std::string& window_id);
+
 // A subscription for changes to PluginVm policy that may affect
 // PluginVmFeatures::Get()->IsAllowed.
 class PluginVmPolicySubscription {

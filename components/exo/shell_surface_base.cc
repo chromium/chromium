@@ -746,13 +746,16 @@ void ShellSurfaceBase::DisableMovement() {
 void ShellSurfaceBase::UpdateResizability() {
   SetCanResize(CalculateCanResize());
   auto max_size = GetMaximumSize();
+  bool max_size_resizability_only = false;
+  if (widget_ && widget_->GetNativeWindow()) {
+    max_size_resizability_only = widget_->GetNativeWindow()->GetProperty(
+        kMaximumSizeForResizabilityOnly);
+  }
 
-  // Allow maximizeing if the max size is bigger than 32k resolution.
+  // Allow maximizing if the max size is bigger than 32k resolution.
   SetCanMaximize(CanResize() && !parent_ &&
                  ash::desks_util::IsDeskContainerId(container_) &&
-                 (max_size.IsEmpty() ||
-                  (max_size.width() > ash::kAllowMaximizeThreshold &&
-                   max_size.height() > ash::kAllowMaximizeThreshold)));
+                 (max_size.IsEmpty() || max_size_resizability_only));
 }
 
 void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,

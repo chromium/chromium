@@ -269,16 +269,6 @@ void SaveWindowForWindowRestore(WindowState* window_state) {
 
 constexpr base::TimeDelta WindowState::kBoundsChangeSlideDuration;
 
-#if DCHECK_IS_ON()
-void WindowState::State::CheckMaximizableCondition(
-    const WindowState* window_state) const {
-  const aura::Window* window = window_state->window();
-  const gfx::Size max_size = window->delegate()->GetMaximumSize();
-  DCHECK(max_size.IsEmpty() || max_size.width() > kAllowMaximizeThreshold ||
-         max_size.height() > kAllowMaximizeThreshold);
-}
-#endif  // DCHECK_IS_ON()
-
 WindowState::ScopedBoundsChangeAnimation::ScopedBoundsChangeAnimation(
     aura::Window* window,
     BoundsChangeAnimationType bounds_animation_type)
@@ -387,13 +377,8 @@ bool WindowState::IsUserPositionable() const {
 }
 
 bool WindowState::CanMaximize() const {
-  bool can_maximize = (window_->GetProperty(aura::client::kResizeBehaviorKey) &
-                       aura::client::kResizeBehaviorCanMaximize) != 0;
-#if DCHECK_IS_ON()
-  if (window_->delegate() && can_maximize)
-    current_state_->CheckMaximizableCondition(this);
-#endif
-  return can_maximize;
+  return (window_->GetProperty(aura::client::kResizeBehaviorKey) &
+          aura::client::kResizeBehaviorCanMaximize) != 0;
 }
 
 bool WindowState::CanMinimize() const {

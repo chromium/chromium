@@ -1302,37 +1302,60 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
             shell_surface->GetWidget()->GetWindowBoundsInScreen().width());
 }
 
-TEST_F(ShellSurfaceTest, ShellSurfaceWithMaximumSize) {
+TEST_F(ShellSurfaceTest, ShellSurfaceMaximize) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
           .SetMaximumSize(gfx::Size(10, 10))
           .BuildShellSurface();
-
   auto* window_state =
       ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+
+  // Expect: Can't resize when max_size is set.
   EXPECT_FALSE(window_state->CanMaximize());
   EXPECT_FALSE(window_state->CanSnap());
 
   shell_surface->SetMaximumSize(gfx::Size(0, 0));
   shell_surface->root_surface()->Commit();
 
+  // Expect: Can resize without a max_size.
   EXPECT_TRUE(window_state->CanMaximize());
   EXPECT_TRUE(window_state->CanSnap());
+}
 
-  // If the max size is bigger than 16k resolution, allow max/snap state.
-  shell_surface->SetMaximumSize(
-      gfx::Size(ash::kAllowMaximizeThreshold, ash::kAllowMaximizeThreshold));
+TEST_F(ShellSurfaceTest, ShellSurfaceMaxSizeResizabilityOnlyMaximise) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .SetMinimumSize(gfx::Size(0, 0))
+          .BuildShellSurface();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      kMaximumSizeForResizabilityOnly, true);
   shell_surface->root_surface()->Commit();
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+
+  // Expect: Can resize with max_size > min_size.
+  EXPECT_TRUE(window_state->CanMaximize());
+  EXPECT_TRUE(window_state->CanResize());
+  EXPECT_TRUE(window_state->CanSnap());
+
+  shell_surface->SetMaximumSize(gfx::Size(0, 0));
+  shell_surface->root_surface()->Commit();
+
+  // Expect: Can resize with max_size unset.
+  EXPECT_TRUE(window_state->CanMaximize());
+  EXPECT_TRUE(window_state->CanResize());
+  EXPECT_TRUE(window_state->CanSnap());
+
+  shell_surface->SetMaximumSize(gfx::Size(10, 10));
+  shell_surface->SetMinimumSize(gfx::Size(10, 10));
+  shell_surface->root_surface()->Commit();
+
+  // Expect: Can't resize where max_size is set and max_size == min_size.
   EXPECT_FALSE(window_state->CanMaximize());
+  EXPECT_FALSE(window_state->CanResize());
   EXPECT_FALSE(window_state->CanSnap());
-
-  // If the max size is bigger than 32k resolution, allow max/snap state.
-  shell_surface->SetMaximumSize(gfx::Size(ash::kAllowMaximizeThreshold + 1,
-                                          ash::kAllowMaximizeThreshold + 1));
-  shell_surface->root_surface()->Commit();
-
-  EXPECT_TRUE(window_state->CanMaximize());
-  EXPECT_TRUE(window_state->CanSnap());
 }
 
 TEST_F(ShellSurfaceTest, Transient) {

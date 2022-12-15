@@ -25,6 +25,11 @@ extern const ui::ClassProperty<bool>* const kRestoreOrMaximizeExitsFullscreen;
 // to a HW protected buffer.
 extern const ui::ClassProperty<ProtectedNativePixmapQueryDelegate*>* const
     kProtectedNativePixmapQueryDelegate;
+
+// Flag for whether we ignore max_size hints for maximise purposes. Instead we
+// use the logic that if we can resize, we can maximise. Should only be set to
+// true for Sommelier-based windows.
+extern const ui::ClassProperty<bool>* const kMaximumSizeForResizabilityOnly;
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_WINDOW_PROPERTIES_H_

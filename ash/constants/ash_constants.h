@@ -34,10 +34,6 @@ constexpr int kDefaultLargeCursorSize = 64;
 
 constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 
-// If the window's maximum size (one of width/height) is bigger than this,
-// the window become maximizable/snappable.
-constexpr int kAllowMaximizeThreshold = 30720;
-
 // These device types are a subset of ui::InputDeviceType. These strings are
 // also used in Switch Access webui.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessInternalDevice[];

@@ -109,13 +109,6 @@ void ClientControlledState::AttachState(
 
 void ClientControlledState::DetachState(WindowState* window_state) {}
 
-#if DCHECK_IS_ON()
-void ClientControlledState::CheckMaximizableCondition(
-    const WindowState* window_state) const {
-  // A client decides when the window should be maximizable.
-}
-#endif  // DCHECK_IS_ON()
-
 void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                                                   const WMEvent* event) {
   if (!delegate_)

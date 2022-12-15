@@ -75,10 +75,6 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   void AttachState(WindowState* window_state,
                    WindowState::State* previous_state) override;
   void DetachState(WindowState* window_state) override;
-#if DCHECK_IS_ON()
-  void CheckMaximizableCondition(
-      const WindowState* window_state) const override;
-#endif  // DCHECK_IS_ON()
 
   // BaseState:
   void HandleWorkspaceEvents(WindowState* window_state,

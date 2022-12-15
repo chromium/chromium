@@ -16,4 +16,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ProtectedNativePixmapQueryDelegate*,
                              kProtectedNativePixmapQueryDelegate,
                              nullptr)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kMaximumSizeForResizabilityOnly, false)
+
 }  // namespace exo
