@@ -108,7 +108,7 @@ bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
   auto sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox::policy::kMediaFoundationCdmData});
   return base::win::GrantAccessToPath(
-      cdm_store_path_root, *sids,
+      cdm_store_path_root, sids,
       FILE_GENERIC_READ | FILE_GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
 }

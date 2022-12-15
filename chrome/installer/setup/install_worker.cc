@@ -823,14 +823,10 @@ void AddInstallWorkItems(const InstallParams& install_params,
             base::BindOnce(
                 [](const base::FilePath& histogram_storage_dir,
                    const CallbackWorkItem& work_item) {
-                  auto sid = base::win::Sid::FromKnownSid(
-                      base::win::WellKnownSid::kAuthenticatedUser);
-                  if (!sid)
-                    return false;
-                  std::vector<base::win::Sid> sids;
-                  sids.push_back(std::move(*sid));
                   return base::win::GrantAccessToPath(
-                      histogram_storage_dir, sids,
+                      histogram_storage_dir,
+                      base::win::Sid::FromKnownSidVector(
+                          {base::win::WellKnownSid::kAuthenticatedUser}),
                       FILE_GENERIC_READ | FILE_DELETE_CHILD,
                       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
                 },

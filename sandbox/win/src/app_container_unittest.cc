@@ -128,10 +128,7 @@ std::wstring CreateSddlWithSid(const base::win::Sid& sid) {
 }
 
 std::wstring CreateSddlWithSid(base::win::WellKnownSid known_sid) {
-  auto sid = base::win::Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return L"";
-  return CreateSddlWithSid(*sid);
+  return CreateSddlWithSid(base::win::Sid(known_sid));
 }
 
 void AccessCheckFile(AppContainer* container,
@@ -163,10 +160,8 @@ void AccessCheckFile(AppContainer* container,
                      DWORD desired_access,
                      DWORD expected_access,
                      BOOL expected_status) {
-  auto sid = base::win::Sid::FromKnownSid(known_sid);
-  ASSERT_TRUE(sid);
-  AccessCheckFile(container, path, *sid, desired_access, expected_access,
-                  expected_status);
+  AccessCheckFile(container, path, base::win::Sid(known_sid), desired_access,
+                  expected_access, expected_status);
 }
 
 void AccessCheckFile(AppContainer* container,
@@ -175,10 +170,8 @@ void AccessCheckFile(AppContainer* container,
                      DWORD desired_access,
                      DWORD expected_access,
                      BOOL expected_status) {
-  auto sid = base::win::Sid::FromKnownCapability(known_cap);
-  ASSERT_TRUE(sid);
-  AccessCheckFile(container, path, *sid, desired_access, expected_access,
-                  expected_status);
+  AccessCheckFile(container, path, base::win::Sid(known_cap), desired_access,
+                  expected_access, expected_status);
 }
 
 }  // namespace
@@ -188,22 +181,19 @@ TEST(AppContainerTest, SecurityCapabilities) {
     return;
 
   // This isn't a valid package SID but it doesn't matter for this test.
-  base::win::Sid package_sid =
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kNull);
+  base::win::Sid package_sid(base::win::WellKnownSid::kNull);
 
   std::vector<base::win::Sid> capabilities;
   SecurityCapabilities no_capabilities(package_sid);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&no_capabilities, package_sid, capabilities));
 
-  capabilities.push_back(
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld));
+  capabilities.emplace_back(base::win::WellKnownSid::kWorld);
   SecurityCapabilities one_capability(package_sid, capabilities);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&one_capability, package_sid, capabilities));
 
-  capabilities.push_back(
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kNetwork));
+  capabilities.emplace_back(base::win::WellKnownSid::kNetwork);
   SecurityCapabilities two_capabilities(package_sid, capabilities);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&two_capabilities, package_sid, capabilities));
@@ -274,12 +264,11 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
 
   ASSERT_TRUE(container->AddCapability(L"FakeCapability"));
   capabilities.push_back(
-      *base::win::Sid::FromNamedCapability(L"FakeCapability"));
+      base::win::Sid::FromNamedCapability(L"FakeCapability"));
 
   ASSERT_TRUE(container->AddCapability(
       base::win::WellKnownCapability::kInternetClient));
-  capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  capabilities.emplace_back(base::win::WellKnownCapability::kInternetClient);
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddCapabilitySddl(kSddlSid));
   capabilities.push_back(*base::win::Sid::FromSddlString(kSddlSid));
@@ -400,10 +389,9 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
 
   ASSERT_TRUE(container->AddCapability(
       base::win::WellKnownCapability::kInternetClient));
-  capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
-  impersonation_capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  capabilities.emplace_back(base::win::WellKnownCapability::kInternetClient);
+  impersonation_capabilities.emplace_back(
+      base::win::WellKnownCapability::kInternetClient);
 
   ASSERT_TRUE(CompareSidVectors(container->GetCapabilities(), capabilities));
   ASSERT_TRUE(CompareSidVectors(container->GetImpersonationCapabilities(),
@@ -411,12 +399,12 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
 
   ASSERT_TRUE(container->AddImpersonationCapability(
       base::win::WellKnownCapability::kPrivateNetworkClientServer));
-  impersonation_capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kPrivateNetworkClientServer));
+  impersonation_capabilities.emplace_back(
+      base::win::WellKnownCapability::kPrivateNetworkClientServer);
 
   ASSERT_TRUE(container->AddImpersonationCapability(L"FakeCapability"));
   impersonation_capabilities.push_back(
-      *base::win::Sid::FromNamedCapability(L"FakeCapability"));
+      base::win::Sid::FromNamedCapability(L"FakeCapability"));
 
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddImpersonationCapabilitySddl(kSddlSid));

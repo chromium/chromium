@@ -104,9 +104,7 @@ base::win::ScopedHandle DuplicateHandle(const base::win::ScopedHandle& handle,
 
 void ExpectSid(const absl::optional<Sid>& sid, WellKnownSid known_sid) {
   ASSERT_TRUE(sid);
-  auto compare_sid = Sid::FromKnownSid(known_sid);
-  ASSERT_TRUE(compare_sid);
-  EXPECT_EQ(*sid, *compare_sid);
+  EXPECT_EQ(*sid, Sid(known_sid));
 }
 
 }  // namespace
@@ -120,11 +118,11 @@ TEST(SecurityDescriptorTest, Initialize) {
   EXPECT_FALSE(sd.sacl());
   EXPECT_FALSE(sd.sacl_protected());
 
-  sd.set_owner(*Sid::FromKnownSid(WellKnownSid::kBuiltinUsers));
+  sd.set_owner(Sid(WellKnownSid::kBuiltinUsers));
   ExpectSid(sd.owner(), WellKnownSid::kBuiltinUsers);
   sd.clear_owner();
   EXPECT_FALSE(sd.owner());
-  sd.set_group(*Sid::FromKnownSid(WellKnownSid::kLocalSystem));
+  sd.set_group(Sid(WellKnownSid::kLocalSystem));
   ExpectSid(sd.group(), WellKnownSid::kLocalSystem);
   sd.clear_group();
   EXPECT_FALSE(sd.group());
@@ -304,37 +302,37 @@ TEST(SecurityDescriptorTest, SetDaclEntries) {
   std::vector<ExplicitAccessEntry> ace_list;
   EXPECT_TRUE(sd.SetDaclEntries(ace_list));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEmptyDacl);
-  ace_list.emplace_back(*Sid::FromKnownSid(WellKnownSid::kWorld),
-                        SecurityAccessMode::kGrant, EVENT_ALL_ACCESS, 0);
+  ace_list.emplace_back(Sid(WellKnownSid::kWorld), SecurityAccessMode::kGrant,
+                        EVENT_ALL_ACCESS, 0);
   EXPECT_TRUE(sd.SetDaclEntries(ace_list));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEvent);
-  ace_list.emplace_back(*Sid::FromKnownSid(WellKnownSid::kLocalSystem),
+  ace_list.emplace_back(Sid(WellKnownSid::kLocalSystem),
                         SecurityAccessMode::kDeny, EVENT_MODIFY_STATE, 0);
   EXPECT_TRUE(sd.SetDaclEntries(ace_list));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventWithSystem);
-  ace_list.emplace_back(*Sid::FromKnownSid(WellKnownSid::kWorld),
-                        SecurityAccessMode::kRevoke, EVENT_MODIFY_STATE, 0);
+  ace_list.emplace_back(Sid(WellKnownSid::kWorld), SecurityAccessMode::kRevoke,
+                        EVENT_MODIFY_STATE, 0);
   EXPECT_TRUE(sd.SetDaclEntries(ace_list));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventSystemOnly);
 }
 
 TEST(SecurityDescriptorTest, SetDaclEntry) {
   SecurityDescriptor sd;
-  EXPECT_TRUE(sd.SetDaclEntry(*Sid::FromKnownSid(WellKnownSid::kWorld),
+  EXPECT_TRUE(sd.SetDaclEntry(Sid(WellKnownSid::kWorld),
                               SecurityAccessMode::kGrant, READ_CONTROL, 0));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventReadControl);
-  EXPECT_TRUE(sd.SetDaclEntry(*Sid::FromKnownSid(WellKnownSid::kWorld),
+  EXPECT_TRUE(sd.SetDaclEntry(Sid(WellKnownSid::kWorld),
                               SecurityAccessMode::kGrant, EVENT_MODIFY_STATE,
                               0));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventReadControlModify);
-  EXPECT_TRUE(sd.SetDaclEntry(*Sid::FromKnownSid(WellKnownSid::kWorld),
+  EXPECT_TRUE(sd.SetDaclEntry(Sid(WellKnownSid::kWorld),
                               SecurityAccessMode::kSet, EVENT_ALL_ACCESS, 0));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEvent);
-  EXPECT_TRUE(sd.SetDaclEntry(*Sid::FromKnownSid(WellKnownSid::kLocalSystem),
+  EXPECT_TRUE(sd.SetDaclEntry(Sid(WellKnownSid::kLocalSystem),
                               SecurityAccessMode::kDeny, EVENT_MODIFY_STATE,
                               0));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventWithSystem);
-  EXPECT_TRUE(sd.SetDaclEntry(*Sid::FromKnownSid(WellKnownSid::kWorld),
+  EXPECT_TRUE(sd.SetDaclEntry(Sid(WellKnownSid::kWorld),
                               SecurityAccessMode::kRevoke, EVENT_ALL_ACCESS,
                               0));
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventSystemOnly);
@@ -370,7 +368,7 @@ TEST(SecurityDescriptorTest, WriteToFile) {
   EXPECT_EQ(curr_sd->ToSddl(DACL_SECURITY_INFORMATION), kInheritedFile);
 
   AccessControlList new_acl;
-  EXPECT_TRUE(new_acl.SetEntry(*Sid::FromKnownSid(WellKnownSid::kBuiltinUsers),
+  EXPECT_TRUE(new_acl.SetEntry(Sid(WellKnownSid::kBuiltinUsers),
                                SecurityAccessMode::kGrant, FILE_ALL_ACCESS, 0));
   SecurityDescriptor new_sd;
   new_sd.set_dacl(new_acl);

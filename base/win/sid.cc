@@ -93,16 +93,13 @@ Sid::Sid(const void* sid, size_t length)
   DCHECK(::IsValidSid(GetPSID()));
 }
 
-absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
+Sid Sid::FromKnownCapability(WellKnownCapability capability) {
   int32_t capability_rid = WellKnownCapabilityToRid(capability);
   return FromSubAuthorities(SECURITY_APP_PACKAGE_AUTHORITY,
                             {SECURITY_CAPABILITY_BASE_RID, capability_rid});
 }
 
-absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
-  if (!capability_name || !*capability_name) {
-    return absl::nullopt;
-  }
+Sid Sid::FromNamedCapability(const std::wstring& capability_name) {
   static const base::NoDestructor<std::map<std::wstring, WellKnownCapability>>
       known_capabilities(
           {{L"INTERNETCLIENT", WellKnownCapability::kInternetClient},
@@ -141,7 +138,7 @@ absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
                             rids);
 }
 
-absl::optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
+Sid Sid::FromKnownSid(WellKnownSid type) {
   switch (type) {
     case WellKnownSid::kNull:
       return FromSubAuthorities(SECURITY_NULL_SID_AUTHORITY,
@@ -210,10 +207,11 @@ absl::optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
   }
 }
 
-absl::optional<Sid> Sid::FromSddlString(const wchar_t* sddl_sid) {
+absl::optional<Sid> Sid::FromSddlString(const std::wstring& sddl_sid) {
   PSID psid = nullptr;
-  if (!::ConvertStringSidToSid(sddl_sid, &psid))
+  if (!::ConvertStringSidToSid(sddl_sid.c_str(), &psid)) {
     return absl::nullopt;
+  }
   auto psid_alloc = TakeLocalAlloc(psid);
   return FromPSID(psid_alloc.get());
 }
@@ -225,23 +223,23 @@ absl::optional<Sid> Sid::FromPSID(PSID sid) {
   return Sid(sid, ::GetLengthSid(sid));
 }
 
-absl::optional<Sid> Sid::GenerateRandomSid() {
+Sid Sid::GenerateRandomSid() {
   DWORD sub_authorities[4] = {};
   RandBytes(&sub_authorities, sizeof(sub_authorities));
   return FromSubAuthorities(SECURITY_NULL_SID_AUTHORITY,
                             std::size(sub_authorities), sub_authorities);
 }
 
-absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
+Sid Sid::FromIntegrityLevel(DWORD integrity_level) {
   return FromSubAuthorities(SECURITY_MANDATORY_LABEL_AUTHORITY, 1,
                             &integrity_level);
 }
 
 absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
-    const std::vector<const wchar_t*>& sddl_sids) {
+    const std::vector<std::wstring>& sddl_sids) {
   std::vector<Sid> converted_sids;
   converted_sids.reserve(sddl_sids.size());
-  for (const wchar_t* sddl_sid : sddl_sids) {
+  for (const std::wstring& sddl_sid : sddl_sids) {
     absl::optional<Sid> sid = FromSddlString(sddl_sid);
     if (!sid)
       return absl::nullopt;
@@ -250,40 +248,33 @@ absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
   return converted_sids;
 }
 
-absl::optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
-    const std::vector<const wchar_t*>& capability_names) {
-  std::vector<Sid> converted_sids;
-  converted_sids.reserve(capability_names.size());
-  for (const wchar_t* name : capability_names) {
-    absl::optional<Sid> sid = FromNamedCapability(name);
-    if (!sid)
-      return absl::nullopt;
-    converted_sids.push_back(std::move(*sid));
-  }
-  return converted_sids;
+std::vector<Sid> Sid::FromNamedCapabilityVector(
+    const std::vector<std::wstring>& capability_names) {
+  std::vector<Sid> sids;
+  std::transform(capability_names.cbegin(), capability_names.cend(),
+                 std::back_inserter(sids), FromNamedCapability);
+  return sids;
 }
 
-absl::optional<std::vector<Sid>> Sid::FromKnownCapabilityVector(
+std::vector<Sid> Sid::FromKnownCapabilityVector(
     const std::vector<WellKnownCapability>& capabilities) {
   std::vector<Sid> sids;
   std::transform(capabilities.cbegin(), capabilities.cend(),
-                 std::back_inserter(sids),
-                 [](WellKnownCapability known_cap) -> Sid {
-                   return *Sid::FromKnownCapability(known_cap);
-                 });
+                 std::back_inserter(sids), FromKnownCapability);
   return sids;
 }
 
-absl::optional<std::vector<Sid>> Sid::FromKnownSidVector(
+std::vector<Sid> Sid::FromKnownSidVector(
     const std::vector<WellKnownSid>& known_sids) {
   std::vector<Sid> sids;
   std::transform(known_sids.cbegin(), known_sids.cend(),
-                 std::back_inserter(sids), [](WellKnownSid known_sid) -> Sid {
-                   return *Sid::FromKnownSid(known_sid);
-                 });
+                 std::back_inserter(sids), FromKnownSid);
   return sids;
 }
 
+Sid::Sid(WellKnownSid known_sid) : Sid(FromKnownSid(known_sid)) {}
+Sid::Sid(WellKnownCapability known_capability)
+    : Sid(FromKnownCapability(known_capability)) {}
 Sid::Sid(Sid&& sid) = default;
 Sid& Sid::operator=(Sid&&) = default;
 Sid::~Sid() = default;
@@ -293,7 +284,6 @@ PSID Sid::GetPSID() const {
   return const_cast<char*>(sid_.data());
 }
 
-// Converts the SID to an SDDL format string.
 absl::optional<std::wstring> Sid::ToSddlString() const {
   LPWSTR sid = nullptr;
   if (!::ConvertSidToStringSid(GetPSID(), &sid))

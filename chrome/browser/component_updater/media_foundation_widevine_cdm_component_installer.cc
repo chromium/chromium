@@ -85,12 +85,9 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomInstall(
   auto sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox::policy::kMediaFoundationCdmFiles});
 
-  bool success = false;
-  if (sids) {
-    success = base::win::GrantAccessToPath(
-        install_dir, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-        CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
-  }
+  bool success = base::win::GrantAccessToPath(
+      install_dir, sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
 
   return update_client::CrxInstaller::Result(
       success ? update_client::InstallError::NONE

@@ -485,10 +485,7 @@ bool AccessToken::IsMember(const Sid& sid) const {
 }
 
 bool AccessToken::IsMember(WellKnownSid known_sid) const {
-  absl::optional<Sid> sid = Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return false;
-  return IsMember(*sid);
+  return IsMember(Sid(known_sid));
 }
 
 bool AccessToken::IsImpersonation() const {

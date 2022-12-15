@@ -20,7 +20,7 @@ std::vector<base::win::Sid> GetCapabilitySids(
     const std::initializer_list<std::wstring>& capabilities) {
   std::vector<base::win::Sid> sids;
   for (const auto& capability : capabilities) {
-    sids.push_back(*base::win::Sid::FromNamedCapability(capability.c_str()));
+    sids.push_back(base::win::Sid::FromNamedCapability(capability));
   }
   return sids;
 }

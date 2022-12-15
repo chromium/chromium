@@ -49,9 +49,7 @@ DWORD GetObjectSecurityDescriptor(HANDLE handle,
 
 void AddSidException(std::vector<base::win::Sid>& sids,
                      base::win::WellKnownSid known_sid) {
-  absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
-  DCHECK(sid);
-  sids.push_back(std::move(*sid));
+  sids.push_back(base::win::Sid::FromKnownSid(known_sid));
 }
 
 typedef BOOL(WINAPI* CreateAppContainerTokenFunction)(

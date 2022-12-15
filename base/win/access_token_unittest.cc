@@ -271,8 +271,7 @@ void CheckAccessTokenGroup(DWORD attributes,
                            bool enabled,
                            bool deny_only,
                            bool logon_id) {
-  AccessToken::Group group(*Sid::FromKnownSid(WellKnownSid::kWorld),
-                           attributes);
+  AccessToken::Group group(Sid(WellKnownSid::kWorld), attributes);
   EXPECT_EQ(L"S-1-1-0", *group.GetSid().ToSddlString());
   EXPECT_EQ(integrity, group.IsIntegrity());
   EXPECT_EQ(enabled, group.IsEnabled());
@@ -670,7 +669,7 @@ TEST(AccessTokenTest, Anonymous) {
       AccessToken::FromToken(atl_anon_token.GetHandle());
   ASSERT_TRUE(anon_token);
   CompareTokens(*anon_token, atl_anon_token);
-  EXPECT_EQ(*Sid::FromKnownSid(WellKnownSid::kAnonymous), anon_token->User());
+  EXPECT_EQ(Sid(WellKnownSid::kAnonymous), anon_token->User());
   absl::optional<Sid> logon_sid = anon_token->LogonId();
   EXPECT_FALSE(anon_token->LogonId());
   EXPECT_EQ(DWORD{ERROR_NOT_FOUND}, ::GetLastError());
@@ -684,9 +683,8 @@ TEST(AccessTokenTest, SetDefaultDacl) {
   absl::optional<AccessToken> read_only_token =
       AccessToken::FromToken(atl_dup_token.GetHandle());
   AccessControlList default_dacl;
-  absl::optional<Sid> world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
-  ASSERT_TRUE(world_sid);
-  ASSERT_TRUE(default_dacl.SetEntry(*world_sid, SecurityAccessMode::kGrant,
+  Sid world_sid(WellKnownSid::kWorld);
+  ASSERT_TRUE(default_dacl.SetEntry(world_sid, SecurityAccessMode::kGrant,
                                     GENERIC_ALL, 0));
   EXPECT_FALSE(read_only_token->SetDefaultDacl(default_dacl));
   absl::optional<AccessToken> token =
@@ -701,7 +699,7 @@ TEST(AccessTokenTest, SetDefaultDacl) {
   CAcl::CAceTypeArray types;
   CAcl::CAceFlagArray flags;
   atl_dacl.GetAclEntries(&sids, &access, &types, &flags);
-  EXPECT_TRUE(EqualSid(*world_sid, sids[0]));
+  EXPECT_TRUE(EqualSid(world_sid, sids[0]));
   EXPECT_EQ(access[0], DWORD{GENERIC_ALL});
   EXPECT_EQ(types[0], ACCESS_ALLOWED_ACE_TYPE);
   EXPECT_EQ(flags[0], 0U);

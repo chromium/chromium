@@ -15,12 +15,10 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
@@ -30,25 +28,13 @@ bool EqualSid(const absl::optional<Sid>& sid, const ATL::CSid& compare_sid) {
   return sid->Equal(const_cast<SID*>(compare_sid.GetPSID()));
 }
 
-bool EqualSid(const Sid& sid, const wchar_t* sddl_sid) {
+bool EqualSid(const Sid& sid, const std::wstring& sddl_sid) {
   PSID compare_sid;
-  if (!::ConvertStringSidToSid(sddl_sid, &compare_sid))
+  if (!::ConvertStringSidToSid(sddl_sid.c_str(), &compare_sid)) {
     return false;
+  }
   auto sid_ptr = TakeLocalAlloc(compare_sid);
   return sid.Equal(sid_ptr.get());
-}
-
-bool EqualSid(const absl::optional<Sid>& sid, const wchar_t* sddl_sid) {
-  if (!sid)
-    return false;
-  return EqualSid(sid.value(), sddl_sid);
-}
-
-bool EqualSid(const absl::optional<Sid>& sid,
-              const absl::optional<Sid>& compare_sid) {
-  if (!sid || !compare_sid)
-    return false;
-  return *sid == *compare_sid;
 }
 
 bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
@@ -63,14 +49,14 @@ bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
 }
 
 bool TestSidVector(absl::optional<std::vector<Sid>> sids,
-                   const std::vector<const wchar_t*> sddl) {
-  return sids &&
-         ranges::equal(*sids, sddl, [](const Sid& sid, const wchar_t* sddl) {
-           return EqualSid(sid, sddl);
-         });
+                   const std::vector<std::wstring>& sddl) {
+  return sids && ranges::equal(*sids, sddl,
+                               [](const Sid& sid, const std::wstring& sddl) {
+                                 return EqualSid(sid, sddl);
+                               });
 }
 
-bool TestFromSddlStringVector(const std::vector<const wchar_t*> sddl) {
+bool TestFromSddlStringVector(const std::vector<std::wstring> sddl) {
   return TestSidVector(Sid::FromSddlStringVector(sddl), sddl);
 }
 
@@ -142,9 +128,6 @@ TEST(SidTest, Initializers) {
 }
 
 TEST(SidTest, KnownCapability) {
-  if (GetVersion() < Version::WIN8)
-    return;
-
   const KnownCapabilityTestEntry capabilities[] = {
       {WellKnownCapability::kInternetClient, L"S-1-15-3-1"},
       {WellKnownCapability::kInternetClientServer, L"S-1-15-3-2"},
@@ -164,11 +147,14 @@ TEST(SidTest, KnownCapability) {
     EXPECT_TRUE(EqualSid(Sid::FromKnownCapability(capability.capability),
                          capability.sddl_sid))
         << "Known Capability: " << capability.sddl_sid;
+    EXPECT_TRUE(EqualSid(Sid(capability.capability), capability.sddl_sid))
+        << "Known Capability: " << capability.sddl_sid;
   }
 }
 
 TEST(SidTest, NamedCapability) {
-  const std::wstring capabilities[] = {L"InternetClient",
+  const std::wstring capabilities[] = {L"",
+                                       L"InternetClient",
                                        L"InternetClientServer",
                                        L"PrivateNetworkClientServer",
                                        L"PicturesLibrary",
@@ -184,8 +170,8 @@ TEST(SidTest, NamedCapability) {
                                        L"lpacCryptoServices"};
 
   for (const std::wstring& capability : capabilities) {
-    EXPECT_TRUE(EqualNamedCapSid(*Sid::FromNamedCapability(capability.c_str()),
-                                 capability))
+    EXPECT_TRUE(
+        EqualNamedCapSid(Sid::FromNamedCapability(capability), capability))
         << "Named Capability: " << capability;
   }
 }
@@ -215,22 +201,16 @@ TEST(SidTest, KnownSids) {
       {WellKnownSid::kHighLabel, ::WinHighLabelSid},
       {WellKnownSid::kSystemLabel, ::WinSystemLabelSid},
       {WellKnownSid::kWriteRestricted, ::WinWriteRestrictedCodeSid},
-      {WellKnownSid::kCreatorOwnerRights, ::WinCreatorOwnerRightsSid}};
+      {WellKnownSid::kCreatorOwnerRights, ::WinCreatorOwnerRightsSid},
+      {WellKnownSid::kAllApplicationPackages, ::WinBuiltinAnyPackageSid}};
 
   for (auto known_sid : known_sids) {
     EXPECT_TRUE(
         EqualSid(Sid::FromKnownSid(known_sid.sid), known_sid.well_known_sid))
         << "Known Sid: " << static_cast<int>(known_sid.sid);
+    EXPECT_TRUE(EqualSid(Sid(known_sid.sid), known_sid.well_known_sid))
+        << "Known Sid: " << static_cast<int>(known_sid.sid);
   }
-
-  if (GetVersion() < Version::WIN8)
-    return;
-
-  EXPECT_TRUE(EqualSid(Sid::FromKnownSid(WellKnownSid::kAllApplicationPackages),
-                       ::WinBuiltinAnyPackageSid));
-
-  if (GetVersion() < Version::WIN10)
-    return;
 
   EXPECT_TRUE(EqualSid(
       Sid::FromKnownSid(WellKnownSid::kAllRestrictedApplicationPackages),
@@ -248,11 +228,9 @@ TEST(SidTest, SddlString) {
 }
 
 TEST(SidTest, RandomSid) {
-  absl::optional<Sid> sid1 = Sid::GenerateRandomSid();
-  ASSERT_TRUE(sid1);
-  absl::optional<Sid> sid2 = Sid::GenerateRandomSid();
-  ASSERT_TRUE(sid2);
-  ASSERT_FALSE(EqualSid(sid1, sid2));
+  Sid sid1 = Sid::GenerateRandomSid();
+  Sid sid2 = Sid::GenerateRandomSid();
+  EXPECT_NE(sid1, sid2);
 }
 
 TEST(SidTest, FromIntegrityLevel) {
@@ -278,30 +256,29 @@ TEST(SidTest, FromSddlStringVector) {
   ASSERT_FALSE(
       TestFromSddlStringVector({L"S-1-1-0", L"X-1-15-2-2", L"S-1-15-3-2"}));
   ASSERT_FALSE(TestFromSddlStringVector({L""}));
-  ASSERT_FALSE(TestFromSddlStringVector({nullptr}));
-  ASSERT_FALSE(TestFromSddlStringVector({L"S-1-1-0", nullptr}));
   ASSERT_TRUE(TestFromSddlStringVector({}));
 }
 
 TEST(SidTest, FromNamedCapabilityVector) {
-  std::vector<const wchar_t*> capabilities = {L"InternetClient",
-                                              L"InternetClientServer",
-                                              L"PrivateNetworkClientServer",
-                                              L"PicturesLibrary",
-                                              L"VideosLibrary",
-                                              L"MusicLibrary",
-                                              L"DocumentsLibrary",
-                                              L"EnterpriseAuthentication",
-                                              L"SharedUserCertificates",
-                                              L"RemovableStorage",
-                                              L"Appointments",
-                                              L"Contacts",
-                                              L"registryRead",
-                                              L"lpacCryptoServices"};
+  std::vector<std::wstring> capabilities = {L"",
+                                            L"InternetClient",
+                                            L"InternetClientServer",
+                                            L"PrivateNetworkClientServer",
+                                            L"PicturesLibrary",
+                                            L"VideosLibrary",
+                                            L"MusicLibrary",
+                                            L"DocumentsLibrary",
+                                            L"EnterpriseAuthentication",
+                                            L"SharedUserCertificates",
+                                            L"RemovableStorage",
+                                            L"Appointments",
+                                            L"Contacts",
+                                            L"registryRead",
+                                            L"lpacCryptoServices"};
 
-  ASSERT_TRUE(ranges::equal(*Sid::FromNamedCapabilityVector(capabilities),
+  ASSERT_TRUE(ranges::equal(Sid::FromNamedCapabilityVector(capabilities),
                             capabilities, EqualNamedCapSid));
-  EXPECT_EQ(Sid::FromNamedCapabilityVector({})->size(), 0U);
+  EXPECT_EQ(Sid::FromNamedCapabilityVector({}).size(), 0U);
 }
 
 TEST(SidTest, FromKnownCapabilityVector) {
@@ -337,30 +314,26 @@ TEST(SidTest, FromKnownSidVector) {
 }
 
 TEST(SidTest, Equal) {
-  auto world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
-  ASSERT_TRUE(world_sid);
-  EXPECT_EQ(*world_sid, *world_sid);
+  Sid world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
+  EXPECT_EQ(world_sid, world_sid);
   auto world_sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(world_sid_sddl);
   EXPECT_EQ(world_sid, world_sid_sddl);
   EXPECT_EQ(world_sid_sddl, world_sid);
-  EXPECT_TRUE(world_sid->Equal(world_sid_sddl->GetPSID()));
-  EXPECT_TRUE(world_sid_sddl->Equal(world_sid->GetPSID()));
-  auto null_sid = Sid::FromKnownSid(WellKnownSid::kNull);
-  ASSERT_TRUE(null_sid);
-  EXPECT_NE(*world_sid, *null_sid);
-  EXPECT_NE(*null_sid, *world_sid);
-  EXPECT_FALSE(world_sid->Equal(null_sid->GetPSID()));
-  EXPECT_FALSE(null_sid->Equal(world_sid->GetPSID()));
+  EXPECT_TRUE(world_sid.Equal(world_sid_sddl->GetPSID()));
+  EXPECT_TRUE(world_sid_sddl->Equal(world_sid.GetPSID()));
+  Sid null_sid = Sid::FromKnownSid(WellKnownSid::kNull);
+  EXPECT_NE(world_sid, null_sid);
+  EXPECT_NE(null_sid, world_sid);
+  EXPECT_FALSE(world_sid.Equal(null_sid.GetPSID()));
+  EXPECT_FALSE(null_sid.Equal(world_sid.GetPSID()));
 }
 
 TEST(SidTest, Clone) {
-  auto world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
-  ASSERT_TRUE(world_sid);
-  auto world_sid_clone = world_sid->Clone();
-  EXPECT_NE(world_sid->GetPSID(), world_sid_clone.GetPSID());
-  EXPECT_EQ(*world_sid, world_sid_clone);
+  Sid world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
+  auto world_sid_clone = world_sid.Clone();
+  EXPECT_NE(world_sid.GetPSID(), world_sid_clone.GetPSID());
+  EXPECT_EQ(world_sid, world_sid_clone);
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

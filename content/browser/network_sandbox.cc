@@ -224,16 +224,12 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
     return true;
   DCHECK(!sandbox_params.lpac_capability_name.empty());
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(
-      {sandbox_params.lpac_capability_name.c_str()});
-  if (!ac_sids.has_value()) {
-    NOTREACHED();
-    return false;
-  }
+      {sandbox_params.lpac_capability_name});
 
   // Grant recursive access to directory. This also means new files in the
   // directory will inherit the ACE.
   return base::win::GrantAccessToPath(
-      directory->path(), *ac_sids,
+      directory->path(), ac_sids,
       GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE, /*recursive=*/true);
 #else

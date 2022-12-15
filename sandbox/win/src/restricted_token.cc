@@ -218,10 +218,7 @@ DWORD RestrictedToken::AddSidForDenyOnly(const base::win::Sid& sid) {
 }
 
 DWORD RestrictedToken::AddSidForDenyOnly(base::win::WellKnownSid known_sid) {
-  absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return ERROR_INVALID_SID;
-  return AddSidForDenyOnly(*sid);
+  return AddSidForDenyOnly(base::win::Sid(known_sid));
 }
 
 DWORD RestrictedToken::AddUserSidForDenyOnly() {
@@ -252,10 +249,7 @@ DWORD RestrictedToken::AddRestrictingSid(const base::win::Sid& sid) {
 }
 
 DWORD RestrictedToken::AddRestrictingSid(base::win::WellKnownSid known_sid) {
-  absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return ERROR_INVALID_SID;
-  return AddRestrictingSid(*sid);
+  return AddRestrictingSid(base::win::Sid(known_sid));
 }
 
 DWORD RestrictedToken::AddRestrictingSidLogonSession() {
@@ -320,10 +314,7 @@ DWORD RestrictedToken::AddDefaultDaclSid(const base::win::Sid& sid,
 DWORD RestrictedToken::AddDefaultDaclSid(base::win::WellKnownSid known_sid,
                                          SecurityAccessMode access_mode,
                                          ACCESS_MASK access) {
-  absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return ERROR_INVALID_SID;
-  return AddDefaultDaclSid(*sid, access_mode, access);
+  return AddDefaultDaclSid(base::win::Sid(known_sid), access_mode, access);
 }
 
 }  // namespace sandbox

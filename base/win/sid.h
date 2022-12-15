@@ -12,8 +12,7 @@
 #include "base/win/windows_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 // Known capabilities defined in Windows 8.
 enum class WellKnownCapability {
@@ -65,46 +64,48 @@ enum class WellKnownSid {
 class BASE_EXPORT Sid {
  public:
   // Create a Sid from an AppContainer capability name. The name can be
-  // completely arbitrary. Only available on Windows 10 and above.
-  static absl::optional<Sid> FromNamedCapability(
-      const wchar_t* capability_name);
+  // completely arbitrary.
+  static Sid FromNamedCapability(const std::wstring& capability_name);
 
   // Create a Sid from a known capability enumeration value. The Sids
   // match with the list defined in Windows 8.
-  static absl::optional<Sid> FromKnownCapability(
-      WellKnownCapability capability);
+  static Sid FromKnownCapability(WellKnownCapability capability);
 
   // Create a SID from a well-known type.
-  static absl::optional<Sid> FromKnownSid(WellKnownSid type);
+  static Sid FromKnownSid(WellKnownSid type);
 
   // Create a Sid from a SDDL format string, such as S-1-1-0.
-  static absl::optional<Sid> FromSddlString(const wchar_t* sddl_sid);
+  static absl::optional<Sid> FromSddlString(const std::wstring& sddl_sid);
 
   // Create a Sid from a PSID pointer.
   static absl::optional<Sid> FromPSID(const PSID sid);
 
   // Generate a random SID value.
-  static absl::optional<Sid> GenerateRandomSid();
+  static Sid GenerateRandomSid();
 
   // Create a SID for an integrity level RID.
-  static absl::optional<Sid> FromIntegrityLevel(DWORD integrity_level);
+  static Sid FromIntegrityLevel(DWORD integrity_level);
 
   // Create a vector of SIDs from a vector of SDDL format strings.
   static absl::optional<std::vector<Sid>> FromSddlStringVector(
-      const std::vector<const wchar_t*>& sddl_sids);
+      const std::vector<std::wstring>& sddl_sids);
 
   // Create a vector of SIDs from a vector of capability names.
-  static absl::optional<std::vector<Sid>> FromNamedCapabilityVector(
-      const std::vector<const wchar_t*>& capability_names);
+  static std::vector<Sid> FromNamedCapabilityVector(
+      const std::vector<std::wstring>& capability_names);
 
   // Create a vector of SIDs from a vector of well-known capability.
-  static absl::optional<std::vector<Sid>> FromKnownCapabilityVector(
+  static std::vector<Sid> FromKnownCapabilityVector(
       const std::vector<WellKnownCapability>& capabilities);
 
   // Create a vector of SIDs from a vector of well-known sids.
-  static absl::optional<std::vector<Sid>> FromKnownSidVector(
-      const std::vector<WellKnownSid>& sids);
+  static std::vector<Sid> FromKnownSidVector(
+      const std::vector<WellKnownSid>& known_sids);
 
+  // Create a known SID.
+  explicit Sid(WellKnownSid known_sid);
+  // Create a known capability SID.
+  explicit Sid(WellKnownCapability known_capability);
   Sid(const Sid&) = delete;
   Sid& operator=(const Sid&) = delete;
   Sid(Sid&& sid);
@@ -135,7 +136,6 @@ class BASE_EXPORT Sid {
   std::vector<char> sid_;
 };
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
 
 #endif  // BASE_WIN_SID_H_

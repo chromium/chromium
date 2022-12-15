@@ -217,7 +217,7 @@ TEST(SecurityUtilTest, GrantAccessToPathDirectoryNoInherit) {
 
 TEST(SecurityUtilTest, CloneSidVector) {
   std::vector<Sid> sids =
-      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+      Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
   std::vector<Sid> clone = CloneSidVector(sids);
   ASSERT_EQ(sids.size(), clone.size());
   for (size_t index = 0; index < sids.size(); ++index) {
@@ -229,13 +229,13 @@ TEST(SecurityUtilTest, CloneSidVector) {
 
 TEST(SecurityUtilTest, AppendSidVector) {
   std::vector<Sid> sids =
-      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+      Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
 
   std::vector<Sid> total_sids;
   AppendSidVector(total_sids, sids);
   EXPECT_EQ(total_sids.size(), sids.size());
 
-  std::vector<Sid> sids2 = *Sid::FromKnownSidVector(
+  std::vector<Sid> sids2 = Sid::FromKnownSidVector(
       {WellKnownSid::kCreatorOwner, WellKnownSid::kNetwork});
   AppendSidVector(total_sids, sids2);
   EXPECT_EQ(total_sids.size(), sids.size() + sids2.size());

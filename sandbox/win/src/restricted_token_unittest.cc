@@ -106,7 +106,7 @@ void CheckDaclForPackageSid(const base::win::ScopedHandle& token,
 
   base::win::Sid package_sid =
       *base::win::Sid::FromPSID(security_capabilities->AppContainerSid);
-  base::win::Sid all_package_sid = *base::win::Sid::FromKnownSid(
+  base::win::Sid all_package_sid(
       base::win::WellKnownSid::kAllApplicationPackages);
 
   unsigned int ace_count = dacl.GetAceCount();
@@ -173,7 +173,7 @@ void CheckRestrictingSid(const base::win::AccessToken& token,
 void CheckRestrictingSid(const base::win::AccessToken& token,
                          base::win::WellKnownSid known_sid,
                          int count) {
-  CheckRestrictingSid(token, *base::win::Sid::FromKnownSid(known_sid), count);
+  CheckRestrictingSid(token, base::win::Sid(known_sid), count);
 }
 
 void CheckRestrictingSid(HANDLE restricted_token,
@@ -304,7 +304,7 @@ TEST(RestrictedTokenTest, DenySid) {
             token.GetRestrictedToken(&token_handle));
   auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
   ASSERT_TRUE(restricted_token);
-  auto sid = base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld);
+  auto sid = base::win::Sid(base::win::WellKnownSid::kWorld);
   bool found_sid = false;
   for (const auto& group : restricted_token->Groups()) {
     if (sid == group.GetSid()) {
@@ -343,10 +343,8 @@ TEST(RestrictedTokenTest, DenySidsException) {
   RestrictedToken token;
   base::win::ScopedHandle token_handle;
 
-  std::vector<base::win::Sid> sids_exception;
-  auto sid = base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld);
-  ASSERT_TRUE(sid);
-  sids_exception.push_back(sid->Clone());
+  std::vector<base::win::Sid> sids_exception =
+      base::win::Sid::FromKnownSidVector({base::win::WellKnownSid::kWorld});
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
@@ -362,7 +360,7 @@ TEST(RestrictedTokenTest, DenySidsException) {
   for (const auto& group : restricted_token->Groups()) {
     if (group.IsLogonId() || group.IsIntegrity())
       continue;
-    if (sid == group.GetSid()) {
+    if (sids_exception[0] == group.GetSid()) {
       ASSERT_FALSE(group.IsDenyOnly());
       // Check we at least found one SID.
       found_sid = true;
@@ -605,8 +603,7 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   auto capabilities = base::win::Sid::FromKnownCapabilityVector(
       {base::win::WellKnownCapability::kInternetClient,
        base::win::WellKnownCapability::kPrivateNetworkClientServer});
-  ASSERT_TRUE(capabilities);
-  SecurityCapabilities caps_with_capabilities(*package_sid, *capabilities);
+  SecurityCapabilities caps_with_capabilities(*package_sid, capabilities);
   ASSERT_EQ(
       DWORD{ERROR_SUCCESS},
       CreateLowBoxToken(nullptr, PRIMARY, &caps_with_capabilities, &token));

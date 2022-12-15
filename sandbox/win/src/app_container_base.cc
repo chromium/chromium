@@ -204,7 +204,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   base::win::ScopedLocalAlloc sd = base::win::TakeLocalAlloc(sd_ptr);
 
   if (enable_low_privilege_app_container_) {
-    base::win::Sid any_package_sid = *base::win::Sid::FromKnownSid(
+    base::win::Sid any_package_sid(
         base::win::WellKnownSid::kAllApplicationPackages);
     // We can't create a LPAC token directly, so modify the DACL to simulate it.
     // Set mask for ALL APPLICATION PACKAGE Sid to 0.
