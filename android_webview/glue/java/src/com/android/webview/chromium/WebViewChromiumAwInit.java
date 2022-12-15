@@ -234,8 +234,6 @@ public class WebViewChromiumAwInit {
                 mAwProxyController = new AwProxyController();
             }
 
-            mFactory.getRunQueue().drainQueue();
-
             if (BuildInfo.isAtLeastT()
                             ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
                             : BuildInfo.targetsAtLeastT()) {
@@ -245,6 +243,10 @@ public class WebViewChromiumAwInit {
             if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
                 logCommandLineAndActiveTrials();
             }
+
+            // This runs all the pending tasks queued for after Chromium init is finished,
+            // so should be the last thing that happens in startChromiumLocked.
+            mFactory.getRunQueue().drainQueue();
         }
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.StartChromiumLocked",
