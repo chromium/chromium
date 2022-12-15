@@ -72,6 +72,9 @@ try_.orchestrator_builder(
     ),
     main_list_view = "try",
     tryjob = try_.job(),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -108,6 +111,9 @@ try_.orchestrator_builder(
     main_list_view = "try",
     check_for_flakiness = True,
     tryjob = try_.job(),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -349,6 +355,9 @@ try_.orchestrator_builder(
     main_list_view = "try",
     check_for_flakiness = True,
     tryjob = try_.job(),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
