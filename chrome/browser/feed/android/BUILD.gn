@@ -173,8 +173,6 @@ android_resources("feed_java_resources") {
     "java/res/color/tab_layout_text_color_list.xml",
     "java/res/drawable-hdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable-mdpi/follow_accelerator_shadow.9.png",
-    "java/res/drawable-v24/header_title_section_tab_background.xml",
-    "java/res/drawable-v24/header_title_tab_selected_background.xml",
     "java/res/drawable-xhdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable-xxhdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable/back_to_top_arrow.xml",
