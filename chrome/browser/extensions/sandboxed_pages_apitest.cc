@@ -144,12 +144,12 @@ INSTANTIATE_TEST_SUITE_P(,
                                            ManifestVersion::THREE));
 
 // Verify sandbox behavior.
-IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, WebAccessibleResourcesTest) {
+IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install extension.
   TestExtensionDir extension_dir;
-  constexpr char kManifest[] = R"({
+  static constexpr char kManifestV2[] = R"({
     "name": "Extension sandbox text",
     "version": "1.0",
     "manifest_version": 2,
@@ -160,7 +160,25 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, WebAccessibleResourcesTest) {
       "web_accessible_resource.html"
     ]
   })";
-  extension_dir.WriteManifest(kManifest);
+
+  static constexpr char kManifestV3[] =
+      R"({
+           "name": "Extension sandbox text",
+           "version": "1.0",
+           "manifest_version": 3,
+           "sandbox": {
+             "pages": ["sandboxed_page.html"]
+           },
+           "web_accessible_resources": [{
+             "resources": ["web_accessible_resource.html"],
+             "matches": ["<all_urls>"]
+           }]
+         })";
+
+  const char* manifest =
+      GetParam() == ManifestVersion::TWO ? kManifestV2 : kManifestV3;
+
+  extension_dir.WriteManifest(manifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("sandboxed_page.html"), "");
   extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"), "");
   extension_dir.WriteFile(FILE_PATH_LITERAL("resource.html"), "resource.html");
