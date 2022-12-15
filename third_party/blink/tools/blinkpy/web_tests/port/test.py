@@ -853,11 +853,11 @@ class TestPort(Port):
                              platforms=['Linux', 'Mac', 'Win'],
                              bases=['failures/expected'],
                              args=['--virtual-arg-skipped']),
-            VirtualTestSuite(prefix='virtual_failures',
-                             platforms=['Linux', 'Mac', 'Win'],
-                             bases=['failures/expected',
-                                    'failures/unexpected'],
-                             args=['--virtual-arg-failures']),
+            VirtualTestSuite(
+                prefix='virtual_failures',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=['failures/expected', 'failures/unexpected'],
+                args=['--virtual-arg-failures']),
             VirtualTestSuite(prefix='virtual_wpt',
                              platforms=['Linux', 'Mac', 'Win'],
                              bases=['external/wpt'],
@@ -870,10 +870,17 @@ class TestPort(Port):
                              platforms=['Linux', 'Mac', 'Win'],
                              bases=[],
                              args=['--virtual-arg-empty-bases']),
-            VirtualTestSuite(prefix='mixed_wpt',
-                             platforms=['Linux', 'Mac', 'Win'],
-                             bases=['http', 'external/wpt/dom'],
-                             args=['--virtual-arg']),
+            VirtualTestSuite(
+                prefix='mixed_wpt',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=[
+                    'http',
+                    'external/wpt/dom',
+                    # Should use the physical tests located under
+                    # `virtual/virtual_empty_bases`.
+                    'virtual/virtual_empty_bases',
+                ],
+                args=['--virtual-arg']),
         ]
 
 

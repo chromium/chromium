@@ -897,10 +897,15 @@ class PortTest(LoggingTestCase):
             'virtual/mixed_wpt/external/wpt/dom/ranges/Range-attributes-slow.html',
             'virtual/mixed_wpt/external/wpt/dom/ranges/Range-attributes.html',
         ]
+        physical_tests_under_virtual = [
+            'virtual/mixed_wpt/virtual/virtual_empty_bases/dir/physical2.html',
+            'virtual/mixed_wpt/virtual/virtual_empty_bases/physical1.html',
+        ]
 
         #  The full set of tests must be returned when running the entire suite.
-        self.assertEqual(sorted(port.tests(['virtual/mixed_wpt/'])),
-                         dom_tests + http_passes_tests + ssl_tests)
+        self.assertEqual(
+            sorted(port.tests(['virtual/mixed_wpt/'])), dom_tests +
+            http_passes_tests + ssl_tests + physical_tests_under_virtual)
 
         self.assertEqual(sorted(port.tests(['virtual/mixed_wpt/external'])),
                          dom_tests)
