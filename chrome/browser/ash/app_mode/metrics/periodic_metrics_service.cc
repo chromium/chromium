@@ -179,7 +179,8 @@ void PeriodicMetricsService::RecordChromeProcessCount() const {
   DCHECK(base::PathService::Get(base::FILE_EXE, &chrome_path));
   base::FilePath::StringType exe_name = chrome_path.BaseName().value();
   int process_count = base::GetProcessCount(exe_name, nullptr);
-  base::UmaHistogramCounts100(kKioskChromeProcessCountHistogram, process_count);
+  base::UmaHistogramCounts1000(kKioskChromeProcessCountHistogram,
+                               process_count);
 }
 
 void PeriodicMetricsService::RecordPreviousInternetAccessInfo() const {
