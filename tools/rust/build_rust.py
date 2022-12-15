@@ -191,9 +191,8 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
     # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
 
     RUSTENV['RUSTFLAGS_BOOTSTRAP'] = ''
-    if gcc_toolchain_flag:
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag} '
     if gcc_toolchain_path:
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag} '
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
             f' -L native={gcc_toolchain_path}/lib64')
     RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']

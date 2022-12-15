@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import platform
 import shutil
 import sys
 import tarfile
@@ -55,11 +56,6 @@ def main():
         return 1
     # Share this argument with other build scripts that we execute here.
     BUILD_MAC_ARM = args.build_mac_arm
-
-    # Only build on Linux. Other platforms are currently unsupported.
-    if not (sys.platform.startswith('linux') or sys.platform == 'win32'):
-        print('Only Linux and Windows is supported!')
-        return 1
 
     # The gcs_platform logic copied from `//tools/clang/scripts/upload.sh`.
     if sys.platform == 'darwin':
