@@ -533,6 +533,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.layoutGuideCenter
       referenceView:self.locationBarSteadyView.trailingButton
           underName:kVoiceSearchButtonGuide];
+  base::RecordAction(base::UserMetricsAction("MobileOmniboxVoiceSearch"));
   [self.dispatcher startVoiceSearch];
 }
 
