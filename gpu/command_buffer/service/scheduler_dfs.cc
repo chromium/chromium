@@ -576,11 +576,13 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
               << " (order_num: " << fence_iter->first.order_num << ").";
     Sequence* release_sequence =
         GetSequence(fence_iter->first.release_sequence_id);
-    // Sanity check to make sure we're not processing a sequence on another
-    // thread that's past
-    DCHECK(!(release_sequence && release_sequence->HasTasks() &&
-             release_sequence->tasks_.front().order_num >=
-                 fence_iter->first.order_num));
+    // ShouldYield might be calling this function, and a dependency might depend
+    // on the calling sequence, which might have not released its fences yet.
+    if (release_sequence && release_sequence->HasTasks() &&
+        release_sequence->tasks_.front().order_num >=
+            fence_iter->first.order_num) {
+      continue;
+    }
     if (Sequence* result = FindNextTaskFromRoot(release_sequence);
         result != nullptr) {
       return result;
@@ -617,7 +619,7 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTask() {
   // dependency tied to another thread.
   for (const SchedulingState& state : sorted_sequences) {
     Sequence* root_sequence = GetSequence(state.sequence_id);
-    DVLOG(10) << "RunNextTask: Calling FindNextTask on sequence "
+    DVLOG(10) << "FindNextTask: Calling FindNextTaskFromRoot on sequence "
               << root_sequence->sequence_id().value();
     if (Sequence* sequence = FindNextTaskFromRoot(root_sequence);
         sequence != nullptr) {
@@ -767,9 +769,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
   total_blocked_time_ += blocked_time;
 
   // Reset pointers after reaquiring the lock.
-  thread_state = &per_thread_state_map_[task_runner];
   sequence = GetSequence(sequence_id);
-
   if (sequence) {
     sequence->FinishTask();
   }
