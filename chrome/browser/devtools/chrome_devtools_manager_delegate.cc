@@ -60,16 +60,17 @@ namespace {
 bool GetExtensionInfo(content::WebContents* wc,
                       std::string* name,
                       std::string* type) {
-  Profile* profile = Profile::FromBrowserContext(wc->GetBrowserContext());
-  if (!profile)
+  auto* process_manager =
+      extensions::ProcessManager::Get(wc->GetBrowserContext());
+  if (!process_manager) {
     return false;
+  }
   const extensions::Extension* extension =
-      extensions::ProcessManager::Get(profile)->GetExtensionForWebContents(wc);
+      process_manager->GetExtensionForWebContents(wc);
   if (!extension)
     return false;
   extensions::ExtensionHost* extension_host =
-      extensions::ProcessManager::Get(profile)->GetBackgroundHostForExtension(
-          extension->id());
+      process_manager->GetBackgroundHostForExtension(extension->id());
   if (extension_host && extension_host->host_contents() == wc) {
     *name = extension->name();
     *type = ChromeDevToolsManagerDelegate::kTypeBackgroundPage;
@@ -166,8 +167,11 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     content::RenderFrameHost* rfh) {
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
-  return AllowInspection(profile, extensions::ProcessManager::Get(profile)
-                                      ->GetExtensionForRenderFrameHost(rfh));
+  auto* process_manager = extensions::ProcessManager::Get(profile);
+  return AllowInspection(
+      profile, process_manager
+                   ? process_manager->GetExtensionForRenderFrameHost(rfh)
+                   : nullptr);
 }
 
 // static
@@ -176,10 +180,10 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     content::WebContents* web_contents) {
   const extensions::Extension* extension = nullptr;
   if (web_contents) {
-    extension =
-        extensions::ProcessManager::Get(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-            ->GetExtensionForWebContents(web_contents);
+    if (auto* process_manager = extensions::ProcessManager::Get(
+            web_contents->GetBrowserContext())) {
+      extension = process_manager->GetExtensionForWebContents(web_contents);
+    }
   }
   return AllowInspection(profile, extension);
 }
