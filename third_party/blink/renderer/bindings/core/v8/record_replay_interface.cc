@@ -841,7 +841,10 @@ function previewBlinkObject(cdpObject, allProperties) {
   /**
    * @see https://github.com/replayio/gecko-dev/blob/592992ff7e15cb8ad1dd6fb109f19bd3523cd452/devtools/server/actors/replay/module.js#L1937
    */
-  if (plainObject instanceof Node) {
+  // TODO: figure out how to check for Node without using `instanceof`
+  // if (plainObject instanceof Node) {
+  // hackfix: check for random properties that nodes should have (can cause false positives)
+  if (plainObject?.nodeType > 0 && plainObject.nodeType <= 11 && plainObject.appendChild && plainObject.cloneNode) {
     return {
       node: previewBlinkNode(plainObject)
     }
@@ -854,7 +857,10 @@ function previewBlinkObject(cdpObject, allProperties) {
 
 function previewBlinkNode(node) {
   let attributes, pseudoType;
-  if (node instanceof Element) {
+  // TODO: figure out how to check for Element without using `instanceof`
+  // if (node instanceof Element) {
+  // hackfix: (can cause false positives)
+  if (node.attributes?.length) {
     attributes = [];
     for (const { name, value } of node.attributes) {
       attributes.push({ name, value });
