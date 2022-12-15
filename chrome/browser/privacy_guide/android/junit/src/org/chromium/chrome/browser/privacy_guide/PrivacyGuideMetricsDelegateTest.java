@@ -45,6 +45,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PrivacyGuideMetricsDelegateTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
+    private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -171,6 +172,19 @@ public class PrivacyGuideMetricsDelegateTest {
         mockMSBBState(false, false);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickMSBB"));
+    }
+
+    @Test
+    @SmallTest
+    public void testMSBB_nextNavigationHistogram() {
+        mockMSBBState(false, false);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.MSBB);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
     }
 
     @Test

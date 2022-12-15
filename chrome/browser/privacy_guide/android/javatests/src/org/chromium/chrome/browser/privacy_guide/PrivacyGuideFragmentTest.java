@@ -376,6 +376,26 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
+    public void testMSBBCard_nextNavigationHistogram() {
+        launchPrivacyGuide();
+        navigateToMSBBCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+
+        // MSBB page -> Sync page
+        ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
+        onView(withText(R.string.next)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
     public void testMSBBCard_offToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
         setMSBBState(false);
