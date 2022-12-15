@@ -343,6 +343,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           show_privacy_guide && base::FeatureList::IsEnabled(
                                                     features::kPrivacyGuide2));
 
+  html_source->AddBoolean("esbSettingsImprovementsEnabled",
+                          base::FeatureList::IsEnabled(
+                              safe_browsing::kEsbIphBubbleAndCollapseSettings));
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   html_source->AddBoolean(
       "biometricAuthenticationForFilling",
