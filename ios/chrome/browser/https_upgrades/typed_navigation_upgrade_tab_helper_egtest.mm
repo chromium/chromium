@@ -214,18 +214,6 @@ std::string GetURLWithoutScheme(const GURL& url) {
                 @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
-// Focuses on the omnibox and types the given text.
-- (void)typeTextAndPressEnter:(const std::string&)text {
-  [ChromeEarlGreyUI focusOmnibox];
-  // Type the text.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(base::SysUTF8ToNSString(text))];
-
-  // Press enter to navigate.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"\n")];
-}
-
 #pragma mark - Tests
 
 // Navigate to an HTTP URL. Since it's not typed in the omnibox, it shouldn't
@@ -250,7 +238,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
 
   GURL testURL = self.goodHTTPSServer->GetURL("/");
-  [self typeTextAndPressEnter:testURL.spec()];
+  [ChromeEarlGreyUI typeTextInOmnibox:testURL.spec() andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertNoUpgrade];
 }
@@ -265,15 +253,14 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
 
   GURL testURL = self.testServer->GetURL("/");
-  [self typeTextAndPressEnter:testURL.spec()];
+  [ChromeEarlGreyUI typeTextInOmnibox:testURL.spec() andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertNoUpgrade];
 }
 
-// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS
 // which should load successfully.
-- (void)DISABLED_test_TypeHTTPWithGoodHTTPS_ShouldUpgrade {
+- (void)test_TypeHTTPWithGoodHTTPS_ShouldUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -285,7 +272,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   std::string text = GetURLWithoutScheme(testURL);
 
   // Type the URL in the omnibox.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertSuccessfulUpgrade:1];
 
@@ -296,15 +283,14 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // Type again. Normally, Omnibox should remember the successful HTTPS
   // navigation and not attempt to upgrade again. We are using a faux-HTTPS
   // server in tests which serves an http:// URL, so it will get upgraded again.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertSuccessfulUpgrade:2];
 }
 
-// TODO(crbug.com/1359356): Test is consistently failing.
 // Same as test_TypeHTTPWithGoodHTTPS_ShouldUpgrade but with HTTPS-Only Mode
 // enabled.
-- (void)DISABLED_test_TypeHTTPWithGoodHTTPS_HTTPSOnlyModeEnabled_ShouldUpgrade {
+- (void)test_TypeHTTPWithGoodHTTPS_HTTPSOnlyModeEnabled_ShouldUpgrade {
   // Enable HTTPS-Only Mode.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 
@@ -319,7 +305,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   std::string text = GetURLWithoutScheme(testURL);
 
   // Type the URL in the omnibox.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertSuccessfulUpgrade:1];
 
@@ -330,7 +316,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // Type again. Normally, Omnibox should remember the successful HTTPS
   // navigation and not attempt to upgrade again. We are using a faux-HTTPS
   // server in tests which serves an http:// URL, so it will get upgraded again.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
   [self assertSuccessfulUpgrade:2];
 
@@ -342,11 +328,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
                 @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
-// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves bad response. The navigation should fall back to
 // HTTP.
-- (void)DISABLED_test_HTTPWithBadHTTPS_ShouldFallback {
+- (void)test_HTTPWithBadHTTPS_ShouldFallback {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
   [HttpsUpgradeAppInterface
@@ -361,7 +346,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   std::string text = GetURLWithoutScheme(testURL);
 
   // Navigation should upgrade but eventually load the HTTP URL.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertFailedUpgrade:1];
 
@@ -373,16 +358,15 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // URL and navigate directly to it. Histograms shouldn't change.
   // TODO(crbug.com/1169564): We should try the https URL after a certain
   // time has passed.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertFailedUpgrade:1];
 }
 
-// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves a slow loading response. The upgrade should timeout
 // and the navigation should fall back to HTTP.
-- (void)DISABLED_test_HTTPWithSlowHTTPS_ShouldFallBack {
+- (void)test_HTTPWithSlowHTTPS_ShouldFallBack {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowServer->port()
                                       useFakeHTTPS:true];
   [HttpsUpgradeAppInterface
@@ -401,7 +385,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 
   // Navigation should upgrade but eventually load the HTTP URL due to slow
   // HTTPS.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertTimedOutUpgrade:1];
 
@@ -413,7 +397,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // URL and navigate directly to it. Histograms shouldn't change.
   // TODO(crbug.com/1169564): We should try the https URL after a certain
   // time has passed.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertTimedOutUpgrade:1];
 }
@@ -451,7 +435,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
   // Navigation will upgrade to HTTPS, then redirect to slow HTTP, then
   // timeout, then fallback to normal HTTP.
   // The fallback HTTP URL will immediately show a response.
-  [self typeTextAndPressEnter:text];
+  [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertTimedOutUpgrade:1];
 }

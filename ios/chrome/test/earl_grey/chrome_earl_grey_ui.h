@@ -6,6 +6,7 @@
 #define IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_UI_H_
 
 #import <Foundation/Foundation.h>
+#import <string>
 #include "base/compiler_specific.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
@@ -160,6 +161,11 @@
 // Tries to dismiss any presented native context menu.
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
 - (BOOL)dismissContextMenuIfPresent;
+
+// Type `text` in Omnibox and optionally press Enter if `shouldPressEnter` is
+// YES.
+- (void)typeTextInOmnibox:(std::string const&)text
+            andPressEnter:(BOOL)shouldPressEnter;
 
 @end
 

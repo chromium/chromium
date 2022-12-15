@@ -4,6 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -111,6 +112,11 @@ class ScopedDisableTimerTracking {
   // The original NSTimer max trackable interval.
   double original_interval_;
 };
+
+// Maximum number of times `typeTextInOmnibox:andPressEnter:` will attempt to
+// type the given text in the Omnibox. If it still cannot be typed properly
+// after this number of attempts, `GREYAssert` is invoked.
+const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
 }  // namespace
 
@@ -550,6 +556,54 @@ class ScopedDisableTimerTracking {
       base::test::ios::WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                                    condition);
   EG_TEST_HELPER_ASSERT_TRUE(clearBrowsingDataViewVisibility, errorMessage);
+}
+
+- (void)typeTextInOmnibox:(std::string const&)text
+            andPressEnter:(BOOL)shouldPressEnter {
+  BOOL textHasBeenTypedProperly = NO;
+  int numberOfAttemptsPerformed = 0;
+  while (!textHasBeenTypedProperly &&
+         numberOfAttemptsPerformed <
+             kMaxNumberOfAttemptsAtTypingTextInOmnibox) {
+    [ChromeEarlGreyUI focusOmnibox];
+
+    // Type the text.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_typeText(base::SysUTF8ToNSString(text))];
+    numberOfAttemptsPerformed++;
+
+    // Check that the omnibox contains the typed text.
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    textHasBeenTypedProperly = error == nil;
+
+    if (!textHasBeenTypedProperly &&
+        numberOfAttemptsPerformed < kMaxNumberOfAttemptsAtTypingTextInOmnibox) {
+      // Text has not been typed properly. Defocusing the omnibox so a new
+      // attempt is possible next round of loop.
+      if ([ChromeEarlGrey isIPadIdiom]) {
+        id<GREYMatcher> typingShield = grey_accessibilityID(@"Typing Shield");
+        [[EarlGrey selectElementWithMatcher:typingShield]
+            performAction:grey_tap()];
+      } else {
+        [[EarlGrey selectElementWithMatcher:grey_buttonTitle(@"Cancel")]
+            performAction:grey_tap()];
+      }
+    }
+  }
+
+  if (textHasBeenTypedProperly && shouldPressEnter) {
+    // Press enter to navigate.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_typeText(@"\n")];
+  }
+
+  // Assert the text has been typed properly.
+  GREYAssert(textHasBeenTypedProperly,
+             @"Failed to type '%s' in the Omnibox after %d attempts.",
+             text.c_str(), numberOfAttemptsPerformed);
 }
 
 @end
