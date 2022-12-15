@@ -121,6 +121,21 @@ void WebStateListObserverBridge::WebStateActivatedAt(
                        reason:reason];
 }
 
+void WebStateListObserverBridge::WebStatePinnedStateChanged(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  const SEL selector = @selector(webStateList:
+              didChangePinnedStateForWebState:atIndex:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
+  }
+
+  [observer_ webStateList:web_state_list
+      didChangePinnedStateForWebState:web_state
+                              atIndex:index];
+}
+
 void WebStateListObserverBridge::WillBeginBatchOperation(
     WebStateList* web_state_list) {
   const SEL selector = @selector(webStateListWillBeginBatchOperation:);
