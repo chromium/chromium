@@ -83,12 +83,6 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   init_() {
-    // Initialize braille, prefs, TTS, and legacy background page first.
-    BrailleBackground.init();
-    ChromeVoxPrefs.init();
-    TtsBackground.init();
-    ChromeVoxBackground.init();
-
     chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
         () => this.onIntroduceChromeVox_());
 
@@ -113,8 +107,12 @@ export class Background extends ChromeVoxState {
   }
 
   static async init() {
-    // Initialize storage and legacy background first.
+    // Initialize storage, braille, prefs, TTS, and legacy background page
+    // first.
     await LocalStorage.init();
+    BrailleBackground.init();
+    ChromeVoxPrefs.init();
+    TtsBackground.init();
     ChromeVoxBackground.init();
 
     ChromeVoxState.instance = new Background();
