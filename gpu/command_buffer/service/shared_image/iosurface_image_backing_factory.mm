@@ -30,7 +30,6 @@
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gl_implementation.h"
 
 #import <Metal/Metal.h>
@@ -92,6 +91,21 @@ bool IsFormatSupported(viz::ResourceFormat resource_format) {
       return true;
     default:
       return false;
+  }
+}
+
+void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
+                            const gfx::ColorSpace& color_space) {
+  if (!color_space.IsValid()) {
+    return;
+  }
+
+  base::ScopedCFTypeRef<CFDataRef> cf_data =
+      gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(color_space);
+  if (cf_data) {
+    IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data);
+  } else {
+    IOSurfaceSetColorSpace(io_surface, color_space);
   }
 }
 
@@ -406,6 +420,11 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
+  if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface) {
+    LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
+    return nullptr;
+  }
+
   if (!gpu_memory_buffer_formats_.Has(buffer_format)) {
     LOG(ERROR) << "CreateSharedImage: unsupported buffer format "
                << gfx::BufferFormatToString(buffer_format);
@@ -418,51 +437,44 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
+  // Note that `size` refers to the size of the IOSurface, not the `plane`
+  // that is specified. This parameter should probably be ignored.
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+    LOG(ERROR) << "Invalid size " << size.ToString() << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
-  GLenum target =
-      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
-          ? GL_TEXTURE_2D
-          : gpu::GetPlatformSpecificTextureTarget();
-  scoped_refptr<gl::GLImage> image = MakeGLImage(
-      client_id, std::move(handle), buffer_format, color_space, plane, size);
-  if (!image) {
-    LOG(ERROR) << "Failed to create image.";
-    return nullptr;
+  const GLenum target = gpu::GetPlatformSpecificTextureTarget();
+  auto io_surface = handle.io_surface;
+  const auto io_surface_id = handle.id;
+  const uint32_t io_surface_plane = GetPlaneIndex(plane, buffer_format);
+
+  // Ensure that the IOSurface has the same size and pixel format as those
+  // specified by `size` and `buffer_format`. A malicious client could lie about
+  // this, which, if subsequently used to determine parameters for bounds
+  // checking, could result in an out-of-bounds memory access.
+  {
+    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
+    if (io_surface_format !=
+        BufferFormatToIOSurfacePixelFormat(buffer_format)) {
+      DLOG(ERROR)
+          << "IOSurface pixel format does not match specified buffer format.";
+      return nullptr;
+    }
+    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface),
+                              IOSurfaceGetHeight(io_surface));
+    if (io_surface_size != size) {
+      DLOG(ERROR) << "IOSurface size does not match specified size.";
+      return nullptr;
+    }
   }
-  gl::GLImageIOSurface* image_io_surface =
-      gl::GLImage::ToGLImageIOSurface(image.get());
-  if (!image_io_surface) {
-    LOG(ERROR) << "Created image was not IOSurface-backed.";
-    return nullptr;
-  }
 
-  // If we decide to use GL_TEXTURE_2D at the target for a native buffer, we
-  // would like to verify that it will actually work. If the image expects to be
-  // copied, there is no way to do this verification here, because copying is
-  // done lazily after the SharedImage is created, so require that the image is
-  // bindable. Currently NativeBufferNeedsPlatformSpecificTextureTarget can
-  // only return false on Chrome OS where GLImageNativePixmap is used which is
-  // always bindable.
-#if DCHECK_IS_ON()
-  bool texture_2d_support = false;
-  // If the PlatformSpecificTextureTarget on Mac is GL_TEXTURE_2D, this is
-  // supported.
-  texture_2d_support =
-      (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D);
-  DCHECK(target != GL_TEXTURE_2D || texture_2d_support ||
-         image->ShouldBindOrCopy() == gl::GLImage::BIND);
-#endif  // DCHECK_IS_ON()
-
-  const viz::ResourceFormat plane_format =
-      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
-
+  const gfx::BufferFormat plane_buffer_format =
+      GetPlaneBufferFormat(plane, buffer_format);
+  const viz::ResourceFormat plane_resource_format =
+      viz::GetResourceFormat(plane_buffer_format);
   const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
-  DCHECK_EQ(image->GetSize(), plane_size);
 
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
@@ -471,28 +483,12 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
-  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
+  auto si_format = viz::SharedImageFormat::SinglePlane(plane_resource_format);
   DCHECK(use_passthrough_);
   return std::make_unique<IOSurfaceImageBacking>(
-      image_io_surface->io_surface(), image_io_surface->io_surface_plane(),
-      image_io_surface->format(), image_io_surface->io_surface_id(), mailbox,
+      io_surface, io_surface_plane, plane_buffer_format, io_surface_id, mailbox,
       si_format, plane_size, color_space, surface_origin, alpha_type, usage,
       target, framebuffer_attachment_angle, /*is_cleared=*/true);
-}
-
-scoped_refptr<gl::GLImage> IOSurfaceImageBackingFactory::MakeGLImage(
-    int client_id,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    const gfx::ColorSpace& color_space,
-    gfx::BufferPlane plane,
-    const gfx::Size& size) {
-  if (!image_factory_)
-    return nullptr;
-
-  return image_factory_->CreateImageForGpuMemoryBuffer(
-      std::move(handle), size, format, color_space, plane, client_id,
-      kNullSurfaceHandle);
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(
@@ -589,15 +585,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       return nullptr;
     }
   }
-  if (color_space.IsValid()) {
-    base::ScopedCFTypeRef<CFDataRef> cf_data =
-        gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(
-            color_space);
-    if (cf_data)
-      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data);
-    else
-      IOSurfaceSetColorSpace(io_surface, color_space);
-  }
+  SetIOSurfaceColorSpace(io_surface.get(), color_space);
 
   const bool is_cleared = !pixel_data.empty();
   const bool framebuffer_attachment_angle =

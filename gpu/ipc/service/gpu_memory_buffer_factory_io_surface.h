@@ -5,24 +5,8 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_IO_SURFACE_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_IO_SURFACE_H_
 
-#include <unordered_map>
-#include <utility>
-
-#include <IOSurface/IOSurface.h>
-
-#include "base/mac/scoped_cftyperef.h"
-#include "base/memory/ref_counted.h"
-#include "base/synchronization/lock.h"
 #include "gpu/command_buffer/service/image_factory.h"
-#include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gfx/mac/io_surface.h"
-
-namespace gl {
-class GLImage;
-}
 
 namespace gpu {
 
@@ -54,25 +38,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) override;
   ImageFactory* AsImageFactory() override;
-
-  // Overridden from ImageFactory:
-  scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      const gfx::ColorSpace& color_space,
-      gfx::BufferPlane plane,
-      int client_id,
-      SurfaceHandle surface_handle) override;
-
- private:
-  typedef std::pair<gfx::IOSurfaceId, int> IOSurfaceMapKey;
-  typedef std::unordered_map<IOSurfaceMapKey,
-                             base::ScopedCFTypeRef<IOSurfaceRef>>
-      IOSurfaceMap;
-
-  IOSurfaceMap io_surfaces_;
-  base::Lock io_surfaces_lock_;
 };
 
 }  // namespace gpu
