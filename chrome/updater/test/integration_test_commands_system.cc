@@ -102,6 +102,16 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                         to_version);
   }
 
+  void ExpectInstallSequence(ScopedServer* test_server,
+                             const std::string& app_id,
+                             const std::string& install_data_index,
+                             const base::Version& from_version,
+                             const base::Version& to_version) const override {
+    updater::test::ExpectInstallSequence(updater_scope_, test_server, app_id,
+                                         install_data_index, from_version,
+                                         to_version);
+  }
+
   void ExpectVersionActive(const std::string& version) const override {
     RunCommand("expect_version_active", {Param("version", version)});
   }
@@ -250,6 +260,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void TearDownTestService() const override {
     updater::test::RunTestServiceCommand("teardown");
+  }
+
+  void RunHandoff(const std::string& app_id) const override {
+    RunCommand("run_handoff", {Param("app_id", app_id)});
   }
 #endif  // BUILDFLAG(IS_WIN)
 

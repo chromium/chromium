@@ -1410,6 +1410,27 @@ void RunUninstallCmdLine(UpdaterScope scope) {
   EXPECT_EQ(0, exit_code);
 }
 
+void RunHandoff(UpdaterScope scope, const std::string& app_id) {
+  const absl::optional<base::FilePath> installed_executable_path =
+      GetInstalledExecutablePath(scope);
+  ASSERT_TRUE(installed_executable_path);
+  ASSERT_TRUE(base::PathExists(*installed_executable_path));
+
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
+  const std::wstring command_line(base::StrCat(
+      {installed_executable_path->value(), L" /handoff \"appguid=",
+       base::ASCIIToWide(app_id), L"&needsadmin=",
+       IsSystemInstall(scope) ? L"Prefers" : L"False", L"\" /silent"}));
+  VLOG(0) << " RunHandoff: " << command_line;
+  const base::Process process = base::LaunchProcess(command_line, {});
+  ASSERT_TRUE(process.IsValid());
+
+  int exit_code = 0;
+  ASSERT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                             &exit_code));
+  ASSERT_EQ(exit_code, 0);
+}
+
 void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 

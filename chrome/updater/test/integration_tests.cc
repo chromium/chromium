@@ -194,6 +194,10 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void RunUninstallCmdLine() { test_commands_->RunUninstallCmdLine(); }
+
+  void RunHandoff(const std::string& app_id) {
+    test_commands_->RunHandoff(app_id);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void SetupFakeUpdaterHigherVersion() {
@@ -308,14 +312,13 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectSelfUpdateSequence(test_server);
   }
 
-  void ExpectInstallEvent(ScopedServer* test_server,
-                          const std::string& app_id) {
-    test_server->ExpectOnce(
-        {base::BindRepeating(
-            RequestMatcherRegex,
-            base::StrCat({R"(.*"appid":")", app_id, R"(","enabled":true,")",
-                          R"(event":\[{"eventresult":1,"eventtype":2,.*)"}))},
-        "");
+  void ExpectInstallSequence(ScopedServer* test_server,
+                             const std::string& app_id,
+                             const std::string& install_data_index,
+                             const base::Version& from_version,
+                             const base::Version& to_version) {
+    test_commands_->ExpectInstallSequence(
+        test_server, app_id, install_data_index, from_version, to_version);
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -561,6 +564,21 @@ TEST_F(IntegrationTest, UpdateApp) {
 }
 
 #if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, Handoff) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ExpectInstallSequence(&test_server, kAppId, "", base::Version({0, 0, 0, 0}),
+                        v1);
+  RunHandoff(kAppId);
+  EXPECT_TRUE(WaitForUpdaterExit());
+  ExpectAppVersion(kAppId, v1);
+
+  Uninstall();
+}
+
 TEST_F(IntegrationTest, ForceInstallApp) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());

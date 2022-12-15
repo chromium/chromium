@@ -215,6 +215,7 @@ void InvokeTestServiceFunction(const std::string& function_name,
                                const base::Value::Dict& arguments);
 
 void RunUninstallCmdLine(UpdaterScope scope);
+void RunHandoff(UpdaterScope scope, const std::string& app_id);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns the number of files in the directory, not including directories,
@@ -233,6 +234,13 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const std::string& install_data_index,
                           const base::Version& from_version,
                           const base::Version& to_version);
+
+void ExpectInstallSequence(UpdaterScope scope,
+                           ScopedServer* test_server,
+                           const std::string& app_id,
+                           const std::string& install_data_index,
+                           const base::Version& from_version,
+                           const base::Version& to_version);
 
 void StressUpdateService(UpdaterScope scope);
 
@@ -259,7 +267,6 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id);
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install);
-
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_

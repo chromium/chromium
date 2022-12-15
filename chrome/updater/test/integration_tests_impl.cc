@@ -194,6 +194,57 @@ void RunUpdaterWithSwitch(const base::Version& version,
   EXPECT_EQ(exit_code, expected_exit_code);
 }
 
+void ExpectSequence(UpdaterScope scope,
+                    ScopedServer* test_server,
+                    const std::string& app_id,
+                    const std::string& install_data_index,
+                    int event_type,
+                    const base::Version& from_version,
+                    const base::Version& to_version) {
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .AppendASCII(kDoNothingCRXName);
+  ASSERT_TRUE(base::PathExists(crx_path));
+
+  // First request: update check.
+  test_server->ExpectOnce(
+      {base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
+       base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(
+               R"(.*%s)",
+               !install_data_index.empty()
+                   ? base::StringPrintf(
+                         R"("data":\[{"index":"%s","name":"install"}],.*)",
+                         install_data_index.c_str())
+                         .c_str()
+                   : "")),
+       GetScopePredicate(scope)},
+      GetUpdateResponse(app_id, install_data_index,
+                        test_server->base_url().spec(), to_version, crx_path,
+                        kDoNothingCRXRun, {}));
+
+  // Second request: update download.
+  std::string crx_bytes;
+  base::ReadFileToString(crx_path, &crx_bytes);
+  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
+                          crx_bytes);
+
+  // Third request: event ping.
+  test_server->ExpectOnce(
+      {base::BindRepeating(
+           RequestMatcherRegex,
+           base::StringPrintf(R"(.*"eventresult":1,"eventtype":%d,)"
+                              R"("nextversion":"%s","previousversion":"%s".*)",
+                              event_type, to_version.GetString().c_str(),
+                              from_version.GetString().c_str())),
+       GetScopePredicate(scope)},
+      ")]}'\n");
+}
+
 }  // namespace
 
 void ExitTestMode(UpdaterScope scope) {
@@ -544,48 +595,18 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const std::string& install_data_index,
                           const base::Version& from_version,
                           const base::Version& to_version) {
-  base::FilePath test_data_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
-  ASSERT_TRUE(base::PathExists(crx_path));
+  ExpectSequence(scope, test_server, app_id, install_data_index, 3,
+                 from_version, to_version);
+}
 
-  // First request: update check.
-  test_server->ExpectOnce(
-      {base::BindRepeating(
-           RequestMatcherRegex,
-           base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())),
-       base::BindRepeating(
-           RequestMatcherRegex,
-           base::StringPrintf(
-               R"(.*%s)",
-               !install_data_index.empty()
-                   ? base::StringPrintf(
-                         R"("data":\[{"index":"%s","name":"install"}],.*)",
-                         install_data_index.c_str())
-                         .c_str()
-                   : "")),
-       GetScopePredicate(scope)},
-      GetUpdateResponse(app_id, install_data_index,
-                        test_server->base_url().spec(), to_version, crx_path,
-                        kDoNothingCRXRun, {}));
-
-  // Second request: update download.
-  std::string crx_bytes;
-  base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
-                          crx_bytes);
-
-  // Third request: event ping.
-  test_server->ExpectOnce(
-      {base::BindRepeating(
-           RequestMatcherRegex,
-           base::StringPrintf(R"(.*"eventresult":1,"eventtype":3,)"
-                              R"("nextversion":"%s","previousversion":"%s".*)",
-                              to_version.GetString().c_str(),
-                              from_version.GetString().c_str())),
-       GetScopePredicate(scope)},
-      ")]}'\n");
+void ExpectInstallSequence(UpdaterScope scope,
+                           ScopedServer* test_server,
+                           const std::string& app_id,
+                           const std::string& install_data_index,
+                           const base::Version& from_version,
+                           const base::Version& to_version) {
+  ExpectSequence(scope, test_server, app_id, install_data_index, 2,
+                 from_version, to_version);
 }
 
 // Runs multiple cycles of instantiating the update service, calling

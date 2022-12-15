@@ -83,6 +83,16 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                                         to_version);
   }
 
+  void ExpectInstallSequence(ScopedServer* test_server,
+                             const std::string& app_id,
+                             const std::string& install_data_index,
+                             const base::Version& from_version,
+                             const base::Version& to_version) const override {
+    updater::test::ExpectInstallSequence(updater_scope_, test_server, app_id,
+                                         install_data_index, from_version,
+                                         to_version);
+  }
+
   void ExpectVersionActive(const std::string& version) const override {
     updater::test::ExpectVersionActive(updater_scope_, version);
   }
@@ -218,6 +228,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}
+
+  void RunHandoff(const std::string& app_id) const override {
+    updater::test::RunHandoff(updater_scope_, app_id);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {

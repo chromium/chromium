@@ -8,11 +8,11 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/tag.h"
-#include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #endif
 
@@ -73,7 +73,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
 }
 
 UpdaterScope GetUpdaterScope() {
-  return GetUpdaterScopeForCommandLine(*base::CommandLine::ForCurrentProcess());
+  return GetUpdaterScopeForCommandLine(GetCommandLineLegacyCompatible());
 }
 
 bool IsSystemInstall() {

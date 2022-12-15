@@ -70,6 +70,10 @@ IntegrationTest.Install tests that the updater can be installed on a clean OS,
 that it is immediately active after installation, and then can be cleanly
 uninstalled.
 
+IntegrationTest.Handoff tests that the updater can be installed on a clean OS,
+that it can install an app via a "/handoff" command line, and then can be
+cleanly uninstalled.
+
 Overinstall cases are tested by IntegrationTest.OverinstallWorking and
 IntegrationTest.OverinstallBroken, to ensure that the updater can be installed
 on an unclean OS, and as a post-condition of installation, the system has a
