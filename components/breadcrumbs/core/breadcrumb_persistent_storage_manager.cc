@@ -170,20 +170,23 @@ void BreadcrumbPersistentStorageManager::GetStoredEvents(
       std::move(callback));
 }
 
-void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
-    const std::vector<std::string> pending_breadcrumbs,
-    std::vector<std::string> existing_events) {
+void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
+  // Clear `pending_breadcrumbs_`, as they will be included in the result from
+  // BreadcrumbManager::GetEvents() and written to disk.
+  pending_breadcrumbs_.clear();
+  write_timer_.Stop();
+  last_written_time_ = base::TimeTicks::Now();
+  file_position_ = 0;
+
   if (!CheckForFileConsent())
     return;
 
-  existing_events.insert(existing_events.end(), pending_breadcrumbs.begin(),
-                         pending_breadcrumbs.end());
-
+  base::circular_deque events = BreadcrumbManager::GetInstance().GetEvents();
   std::vector<std::string> breadcrumbs;
-  for (const std::string& event : base::Reversed(existing_events)) {
+  for (const std::string& event : base::Reversed(events)) {
     // Reduce saved events to only the amount that can be included in a crash
     // report. This allows future events to be appended up to
-    // |kPersistedFilesizeInBytes|, reducing the number of resizes needed.
+    // `kPersistedFilesizeInBytes`, reducing the number of resizes needed.
     const int event_with_separator_size =
         event.size() + strlen(kEventSeparator);
     if (event_with_separator_size + file_position_.value() >= kMaxDataLength)
@@ -202,26 +205,6 @@ void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
       base::BindOnce(&DoWriteEventsToFile, breadcrumbs_file_path_,
                      /*position=*/0, breadcrumbs_string, /*append=*/false,
                      write_counter_, write_counter_at_last_full_rewrite_));
-}
-
-void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
-  // Collect breadcrumbs which haven't been written yet to include in this full
-  // re-write.
-  std::vector<std::string> pending_breadcrumbs =
-      base::SplitString(pending_breadcrumbs_, kEventSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  pending_breadcrumbs_.clear();
-  write_timer_.Stop();
-
-  last_written_time_ = base::TimeTicks::Now();
-  file_position_ = 0;
-
-  // Load persisted events directly from file.
-  // TODO(crbug.com/1360583): get events from BreadcrumbManager instead.
-  GetStoredEvents(base::BindOnce(&BreadcrumbPersistentStorageManager::
-                                     CombineEventsAndRewriteAllBreadcrumbs,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 pending_breadcrumbs));
 }
 
 void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
