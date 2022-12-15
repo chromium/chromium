@@ -42,6 +42,27 @@ std::map<variations::VariationID, int> GetGroupWeights() {
        0},
       {field_trial_constants::kIOSPopularSitesImprovedSuggestionsControlID, 0}};
 
+  switch (GetChannel()) {
+    case version_info::Channel::UNKNOWN:
+      [[fallthrough]];
+    case version_info::Channel::CANARY:
+      [[fallthrough]];
+    case version_info::Channel::DEV:
+      [[fallthrough]];
+    case version_info::Channel::BETA:
+      weight_by_id[field_trial_constants::
+                       kIOSPopularSitesImprovedSuggestionsWithAppsEnabledID] =
+          25;
+      weight_by_id
+          [field_trial_constants::
+               kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledID] = 25;
+      weight_by_id[field_trial_constants::
+                       kIOSPopularSitesImprovedSuggestionsControlID] = 25;
+      break;
+    case version_info::Channel::STABLE:
+      break;
+  }
+
   return weight_by_id;
 }
 
