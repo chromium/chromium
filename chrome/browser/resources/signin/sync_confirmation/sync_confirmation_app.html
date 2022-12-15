@@ -4,7 +4,6 @@
     --footer-margin: 24px;
     --tangible-sync-illustration-url: url(./images/tangible_sync_illustration.svg);
     --sync-benefits-list-color: var(--google-grey-50);
-    --sync-benefits-list-text-color: black;
     --sync-benefit-icon-color: var(--google-blue-600);
     --sync-info-title-color: var(--google-grey-800);
     color: var(--cr-primary-text-color);
@@ -317,7 +316,6 @@
   #syncBenefitsList {
     background: var(--sync-benefits-list-color);
     border-radius: 24px;
-    color: var(--sync-benefits-list-text-color);
     display: flex;
     flex-direction: column;
     font-size: 0.81rem;
@@ -359,6 +357,14 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    :host {
+      --tangible-sync-illustration-url:
+          url(./images/tangible_sync_illustration_dark.svg);
+      --sync-benefits-list-color: var(--google-grey-800);
+      --sync-benefit-icon-color: var(--google-blue-300);
+      --sync-info-title-color: var(--google-grey-500);
+    }
+
     /* Modal dialog design */
     #illustration {
       background-image:
