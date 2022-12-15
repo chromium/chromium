@@ -28,6 +28,8 @@ namespace {
 constexpr char kFakePsmDeviceActiveSecret[] =
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
+constexpr char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
+
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     version_info::Channel::STABLE /* chromeos_channel */,
     MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
@@ -101,6 +103,24 @@ TEST_F(DailyUseCaseImplTest, DifferentDayTimestampsHaveDifferentWindowId) {
 
   EXPECT_NE(daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_1),
             daily_use_case_impl_->GenerateUTCWindowIdentifier(daily_ts_2));
+}
+
+TEST_F(DailyUseCaseImplTest, ExpectedMetadataIsSet) {
+  base::Time new_daily_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_daily_ts));
+
+  // Window identifier must be set before PSM id, and hence import request body
+  // can be generated.
+  daily_use_case_impl_->SetWindowIdentifier(new_daily_ts);
+
+  FresnelImportDataRequest req =
+      daily_use_case_impl_->GenerateImportRequestBody();
+  EXPECT_EQ(req.device_metadata().hardware_id(), kHardwareClassKeyNotFound);
+  EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
+  EXPECT_EQ(req.device_metadata().market_segment(),
+            MarketSegment::MARKET_SEGMENT_UNKNOWN);
+  EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
 }
 
 }  // namespace ash::device_activity

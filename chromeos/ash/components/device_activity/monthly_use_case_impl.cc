@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
@@ -51,9 +52,11 @@ FresnelImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
   device_metadata->set_chromeos_version(GetChromeOSVersion());
   device_metadata->set_chromeos_channel(GetChromeOSChannel());
 
-  // TODO(hirthanan): Disable until monthly check membership is rolled out.
-  // device_metadata->set_market_segment(GetMarketSegment());
-  // device_metadata->set_hardware_id(GetFullHardwareClass());
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceActiveClientMonthlyCheckMembership)) {
+    device_metadata->set_market_segment(GetMarketSegment());
+    device_metadata->set_hardware_id(GetFullHardwareClass());
+  }
 
   import_request.set_use_case(GetPsmUseCase());
   import_request.set_plaintext_identifier(psm_id_str);

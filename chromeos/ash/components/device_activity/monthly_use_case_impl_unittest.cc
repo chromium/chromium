@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
@@ -46,6 +48,11 @@ class MonthlyUseCaseImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::
+                                  kDeviceActiveClientMonthlyCheckMembership},
+        /*disabled_features*/ {});
+
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
     chromeos::system::StatisticsProvider::SetTestProvider(
@@ -66,6 +73,7 @@ class MonthlyUseCaseImplTest : public testing::Test {
 
   // Fake pref service for unit testing the local state.
   TestingPrefServiceSimple local_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
@@ -106,6 +114,23 @@ TEST_F(MonthlyUseCaseImplTest, DifferentMonthTimestampsHaveDifferentWindowId) {
 
   EXPECT_NE(monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_1),
             monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_2));
+}
+
+TEST_F(MonthlyUseCaseImplTest, ExpectedMetadataIsSet) {
+  base::Time new_monthly_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_monthly_ts));
+
+  // Window identifier must be set before PSM id, and hence import request body
+  // can be generated.
+  monthly_use_case_impl_->SetWindowIdentifier(new_monthly_ts);
+
+  FresnelImportDataRequest req =
+      monthly_use_case_impl_->GenerateImportRequestBody();
+  EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
+  EXPECT_EQ(req.device_metadata().market_segment(),
+            MarketSegment::MARKET_SEGMENT_UNKNOWN);
+  EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
 }
 
 }  // namespace ash::device_activity

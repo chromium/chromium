@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -113,10 +114,11 @@ FresnelImportDataRequest FirstActiveUseCaseImpl::GenerateImportRequestBody() {
   device_metadata->set_chromeos_version(GetChromeOSVersion());
   device_metadata->set_chromeos_channel(GetChromeOSChannel());
 
-  // TODO(hirthanan): Enable when rolling out check membership requests for the
-  // first active use case.
-  // device_metadata->set_hardware_id(GetFullHardwareClass());
-  // device_metadata->set_market_segment(GetMarketSegment());
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceActiveClientFirstActiveCheckMembership)) {
+    device_metadata->set_hardware_id(GetFullHardwareClass());
+    device_metadata->set_market_segment(GetMarketSegment());
+  }
 
   import_request.set_use_case(GetPsmUseCase());
 
