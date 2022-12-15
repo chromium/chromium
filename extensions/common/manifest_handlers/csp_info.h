@@ -87,11 +87,14 @@ class CSPHandler : public ManifestHandler {
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for sandboxed
-  // pages. This should be called after ParseExtensionPagesCSP.
+  // pages. This should be called after ParseExtensionPagesCSP. If
+  // `allow_remote_sources` is true, this allows the extension to specify remote
+  // sources in the sandbox CSP.
   bool ParseSandboxCSP(Extension* extension,
                        std::u16string* error,
                        base::StringPiece manifest_key,
-                       const base::Value* sandbox_csp);
+                       const base::Value* sandbox_csp,
+                       bool allow_remote_sources);
 
   // Helper to set the extension pages content security policy manifest data.
   bool SetExtensionPagesCSP(Extension* extension,

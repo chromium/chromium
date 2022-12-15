@@ -243,8 +243,12 @@ bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
+  // Since this is a MV2 extension / app, we don't allow remote sources in
+  // the CSP.
+  constexpr bool kAllowRemoteSources = false;
   if (!ParseSandboxCSP(extension, error, keys::kSandboxedPagesCSP,
-                       GetManifestPath(extension, keys::kSandboxedPagesCSP))) {
+                       GetManifestPath(extension, keys::kSandboxedPagesCSP),
+                       kAllowRemoteSources)) {
     return false;
   }
 
@@ -260,6 +264,9 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
     return false;
   }
 
+  // Since this is an MV3 extension, we allow remote sources in the
+  // sandboxed page CSP.
+  constexpr bool kAllowRemoteSources = true;
   return ParseExtensionPagesCSP(
              extension, error, keys::kContentSecurityPolicy_ExtensionPagesPath,
              GetManifestPath(
@@ -267,7 +274,8 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
          ParseSandboxCSP(
              extension, error, keys::kContentSecurityPolicy_SandboxedPagesPath,
              GetManifestPath(extension,
-                             keys::kContentSecurityPolicy_SandboxedPagesPath));
+                             keys::kContentSecurityPolicy_SandboxedPagesPath),
+             kAllowRemoteSources);
 }
 
 bool CSPHandler::ParseExtensionPagesCSP(
@@ -315,7 +323,8 @@ bool CSPHandler::ParseExtensionPagesCSP(
 bool CSPHandler::ParseSandboxCSP(Extension* extension,
                                  std::u16string* error,
                                  base::StringPiece manifest_key,
-                                 const base::Value* sandbox_csp) {
+                                 const base::Value* sandbox_csp,
+                                 bool allow_remote_sources) {
   if (!sandbox_csp) {
     SetSandboxCSP(extension, kDefaultSandboxedPageContentSecurityPolicy);
     return true;
@@ -335,9 +344,12 @@ bool CSPHandler::ParseSandboxCSP(Extension* extension,
   }
 
   std::vector<InstallWarning> warnings;
-  std::string effective_sandbox_csp =
-      csp_validator::GetEffectiveSandoxedPageCSP(
-          sandbox_csp_str, std::string(manifest_key), &warnings);
+  std::string effective_sandbox_csp = sandbox_csp_str;
+  if (!allow_remote_sources) {
+    effective_sandbox_csp =
+        csp_validator::GetSandboxedPageCSPDisallowingRemoteSources(
+            sandbox_csp_str, std::string(manifest_key), &warnings);
+  }
   SetSandboxCSP(extension, std::move(effective_sandbox_csp));
   extension->AddInstallWarnings(std::move(warnings));
   return true;

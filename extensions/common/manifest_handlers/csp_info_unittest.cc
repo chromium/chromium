@@ -188,7 +188,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
   ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
 
   const char kCustomSandboxedCSP[] =
-      "sandbox; script-src 'self'; child-src 'self';";
+      "sandbox; script-src https://www.google.com";
   const char kCustomExtensionPagesCSP[] = "script-src; object-src;";
 
   struct {

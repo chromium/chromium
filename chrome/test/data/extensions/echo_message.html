@@ -1,0 +1,13 @@
+<!-- Copyright 2022 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!doctype html>
+<html>
+  Sandboxed Page
+  <script>
+    onmessage = (e) => {
+      e.source.postMessage('echo ' + e.data, '*');
+    };
+  </script>
+</html>

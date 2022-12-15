@@ -110,18 +110,17 @@ std::string SanitizeContentSecurityPolicy(
     int options,
     std::vector<InstallWarning>* warnings);
 
-// Given the Content Security Policy of an app sandbox page, returns the
-// effective CSP for that sandbox page.
-//
-// The effective policy restricts the page from loading external web content
+// Given a `policy`, returns a sandboxed page CSP that disallows remote sources.
+// The returned policy restricts the page from loading external web content
 // (frames and scripts) within the page. This is done through adding 'self'
 // directive source to relevant CSP directive names.
 //
 // If |warnings| is not nullptr, any validation errors are appended to
 // |warnings|.
-std::string GetEffectiveSandoxedPageCSP(const std::string& policy,
-                                        std::string manifest_key,
-                                        std::vector<InstallWarning>* warnings);
+std::string GetSandboxedPageCSPDisallowingRemoteSources(
+    const std::string& policy,
+    std::string manifest_key,
+    std::vector<InstallWarning>* warnings);
 
 // Checks whether the given |policy| enforces a unique origin sandbox as
 // defined by http://www.whatwg.org/specs/web-apps/current-work/multipage/

@@ -47,8 +47,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       /*options=*/fuzzed_data_provider.ConsumeIntegralInRange(0, 4),
       &install_warnings);
 
-  csp_validator::GetEffectiveSandoxedPageCSP(content_security_policy,
-                                             manifest_key, &install_warnings);
+  csp_validator::GetSandboxedPageCSPDisallowingRemoteSources(
+      content_security_policy, manifest_key, &install_warnings);
 
   std::u16string error;
   csp_validator::DoesCSPDisallowRemoteCode(content_security_policy,

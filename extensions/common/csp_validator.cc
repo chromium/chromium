@@ -595,9 +595,10 @@ std::string SanitizeContentSecurityPolicy(
   return csp_enforcer.Enforce(csp_parser.directives(), warnings);
 }
 
-std::string GetEffectiveSandoxedPageCSP(const std::string& policy,
-                                        std::string manifest_key,
-                                        std::vector<InstallWarning>* warnings) {
+std::string GetSandboxedPageCSPDisallowingRemoteSources(
+    const std::string& policy,
+    std::string manifest_key,
+    std::vector<InstallWarning>* warnings) {
   CSPParser csp_parser(policy);
   AppSandboxPageCSPEnforcer csp_enforcer(std::move(manifest_key));
   return csp_enforcer.Enforce(csp_parser.directives(), warnings);

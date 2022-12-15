@@ -15,16 +15,16 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::csp_validator::ContentSecurityPolicyIsLegal;
-using extensions::csp_validator::GetEffectiveSandoxedPageCSP;
-using extensions::csp_validator::SanitizeContentSecurityPolicy;
-using extensions::csp_validator::ContentSecurityPolicyIsSandboxed;
-using extensions::csp_validator::OPTIONS_NONE;
-using extensions::csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;
-using extensions::csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
 using extensions::ErrorUtils;
 using extensions::InstallWarning;
 using extensions::Manifest;
+using extensions::csp_validator::ContentSecurityPolicyIsLegal;
+using extensions::csp_validator::ContentSecurityPolicyIsSandboxed;
+using extensions::csp_validator::GetSandboxedPageCSPDisallowingRemoteSources;
+using extensions::csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
+using extensions::csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;
+using extensions::csp_validator::OPTIONS_NONE;
+using extensions::csp_validator::SanitizeContentSecurityPolicy;
 
 namespace {
 
@@ -70,7 +70,7 @@ SanitizedCSPResult SanitizeCSP(const std::string& policy, int options) {
 
 SanitizedCSPResult SanitizeSandboxPageCSP(const std::string& policy) {
   SanitizedCSPResult result;
-  result.csp = GetEffectiveSandoxedPageCSP(
+  result.csp = GetSandboxedPageCSPDisallowingRemoteSources(
       policy, extensions::manifest_keys::kSandboxedPagesCSP, &result.warnings);
   return result;
 }

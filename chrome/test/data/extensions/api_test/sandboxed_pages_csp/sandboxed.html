@@ -16,7 +16,7 @@ window.addEventListener('securitypolicyviolation', function(e) {
     sendResponse('failed');
 });
 
-var loadFrameExpectResponse = function(iframe, url, isManifestV3) {
+var loadFrameExpectResponse = function(iframe, url) {
   var identifier = performance.now();
   return new Promise(function(resolve, reject) {
     window.addEventListener('message', function(e) {
@@ -29,16 +29,6 @@ var loadFrameExpectResponse = function(iframe, url, isManifestV3) {
     });
     iframe.onerror = reject;
     iframe.onload = function() {
-      if (isManifestV3) {
-        // TODO(crbug.com/1219825): A manifest V3 extension's sandboxed frame
-        // can't currently embed an extension's web_accessible iframe due to a
-        // bug with our handling of web accessible resources. Even though the
-        // iframe load fails, the onload event is raised. Early return in this
-        // case. Note the test still makes sense since a CSP violation is not
-        // raised while loading a local url.
-        resolve();
-        return;
-      }
       iframe.contentWindow.postMessage(
           JSON.stringify(['sandboxed frame msg', identifier]), '*');
     };
@@ -46,11 +36,11 @@ var loadFrameExpectResponse = function(iframe, url, isManifestV3) {
   });
 };
 
-var runTestAndRespond = function(localUrl, remoteUrl, isManifestV3) {
+var runTestAndRespond = function(localUrl, remoteUrl) {
   var iframe = document.createElement('iframe');
 
   // First load local resource in |iframe|, expect the local frame to respond.
-  loadFrameExpectResponse(iframe, localUrl, isManifestV3).then(function() {
+  loadFrameExpectResponse(iframe, localUrl).then(function() {
     // Then load remote resource in |iframe|, expect the navigation to be
     // blocked by the Content-Security-Policy.
     // Rely on the SecurityPolicyViolationEvent to detect that the frame has
@@ -66,8 +56,7 @@ onmessage = function(e) {
   if (command[0] == 'load') {
     var localUrl = command[1];
     var remoteUrl = command[2];
-    var isManifestV3 = command[3]
-    runTestAndRespond(localUrl, remoteUrl, isManifestV3);
+    runTestAndRespond(localUrl, remoteUrl);
   }
 };
 
