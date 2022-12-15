@@ -45,9 +45,12 @@ void* CommonDecoder::Bucket::GetData(size_t offset, size_t size) const {
 
 void CommonDecoder::Bucket::SetSize(size_t size) {
   if (size != size_) {
-    data_.reset(size ? new int8_t[size] : nullptr);
+    // Note: the `()` after `new[]` is significant: it ensures the elements are
+    // value-initialized (not to be confused with default *initialized*). In the
+    // case of int8_t, that means the returned buffer will be
+    // zero-initialized.
+    data_.reset(size ? new int8_t[size]() : nullptr);
     size_ = size;
-    memset(data_.get(), 0, size);
   }
 }
 
