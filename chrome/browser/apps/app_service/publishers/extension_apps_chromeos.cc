@@ -586,9 +586,6 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    PublisherBase::Publish(
-        app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
-        subscribers());
     AppPublisher::Publish(
         app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id));
   }
@@ -608,9 +605,6 @@ bool ExtensionAppsChromeOs::MaybeAddNotification(
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  PublisherBase::Publish(
-      app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
-      subscribers());
   AppPublisher::Publish(
       app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id));
   return true;

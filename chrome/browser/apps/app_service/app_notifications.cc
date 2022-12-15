@@ -69,16 +69,4 @@ AppPtr AppNotifications::CreateAppWithHasBadgeStatus(
   return app;
 }
 
-apps::mojom::AppPtr AppNotifications::GetAppWithHasBadgeStatus(
-    apps::mojom::AppType app_type,
-    const std::string& app_id) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
-  app->app_id = app_id;
-  app->has_badge = (HasNotification(app_id))
-                       ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
-  return app;
-}
-
 }  // namespace apps

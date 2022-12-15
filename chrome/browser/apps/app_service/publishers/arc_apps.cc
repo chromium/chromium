@@ -1418,9 +1418,6 @@ void ArcApps::OnNotificationUpdated(const std::string& notification_id,
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                             apps::mojom::AppType::kArc, app_id),
-                         subscribers_);
   AppPublisher::Publish(
       app_notifications_.CreateAppWithHasBadgeStatus(AppType::kArc, app_id));
 }
@@ -1435,9 +1432,6 @@ void ArcApps::OnNotificationRemoved(const std::string& notification_id) {
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                               apps::mojom::AppType::kArc, app_id),
-                           subscribers_);
     AppPublisher::Publish(
         app_notifications_.CreateAppWithHasBadgeStatus(AppType::kArc, app_id));
   }
