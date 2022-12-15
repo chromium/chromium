@@ -350,6 +350,9 @@ class PasswordStoreAndroidBackend
 
   base::Time initialized_at_ = base::Time::Now();
 
+  // This will be set to false once the first foregrounding has been handled.
+  bool should_delay_refresh_on_foregrounding_ = true;
+
   base::WeakPtrFactory<PasswordStoreAndroidBackend> weak_ptr_factory_{this};
 };
 

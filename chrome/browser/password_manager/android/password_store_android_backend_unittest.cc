@@ -1474,7 +1474,15 @@ TEST_F(PasswordStoreAndroidBackendTest, NotifyStoreOnForegroundSessionStart) {
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/base::DoNothing());
 
-  // Verify that the store would be notified.
+  // The initial foregrounding should issue a delayed notification so it
+  // doesn't overlap with other startup tasks.
+  EXPECT_CALL(store_notification_trigger, Run(_)).Times(0);
+  lifecycle_helper()->OnForegroundSessionStart();
+
+  EXPECT_CALL(store_notification_trigger, Run(Eq(absl::nullopt)));
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // Subsequent foregroundings should issue immediate notifications.
   EXPECT_CALL(store_notification_trigger, Run(Eq(absl::nullopt)));
   lifecycle_helper()->OnForegroundSessionStart();
 }

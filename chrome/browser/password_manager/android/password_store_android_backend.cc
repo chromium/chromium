@@ -62,6 +62,9 @@ constexpr char kRetryHistogramBase[] =
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
 constexpr base::TimeDelta kTaskRetryTimeout = base::Seconds(16);
+// Time in seconds by which calls to the password store happening on startup
+// should be delayed.
+constexpr base::TimeDelta kPasswordStoreCallDelaySeconds = base::Seconds(5);
 constexpr int kMaxReportedRetryAttempts = 10;
 
 using base::UTF8ToUTF16;
@@ -1259,6 +1262,17 @@ void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
 
   // Clear outdated pending tasks before the store queues a new request.
   ClearZombieTasks();
+
+  // If this is the first foregrounding signal, it corresponds to Chrome
+  // starting up. In that case, calls to Google Play Services should be delayed
+  // as they tend to be resource-intensive.
+  if (should_delay_refresh_on_foregrounding_) {
+    should_delay_refresh_on_foregrounding_ = false;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(stored_passwords_changed_, absl::nullopt),
+        kPasswordStoreCallDelaySeconds);
+    return;
+  }
 
   // Calling the remote form changes with a nullopt means that changes are not
   // available and the store should request all logins asynchronously to
