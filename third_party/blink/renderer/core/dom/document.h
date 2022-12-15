@@ -264,6 +264,7 @@ enum NodeListInvalidationType : int {
   kInvalidateForFormControls,
   kInvalidateOnHRefAttrChange,
   kInvalidateOnAnyAttrChange,
+  kInvalidateOnPopoverInvokerAttrChange,
 };
 const int kNumNodeListInvalidationTypes = kInvalidateOnAnyAttrChange + 1;
 
@@ -544,6 +545,7 @@ class CORE_EXPORT Document : public ContainerNode,
   HTMLCollection* WindowNamedItems(const AtomicString& name);
   DocumentNameCollection* DocumentNamedItems(const AtomicString& name);
   HTMLCollection* DocumentAllNamedItems(const AtomicString& name);
+  HTMLCollection* PopoverInvokers();
 
   // The unassociated listed elements are listed elements that are not
   // associated to a <form> element.

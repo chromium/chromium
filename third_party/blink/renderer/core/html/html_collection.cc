@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/class_collection.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/window_name_collection.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -64,6 +66,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kDataListOptions:
     case kWindowNamedItems:
     case kFormControls:
+    case kPopoverInvokers:
       return false;
     case kNodeChildren:
     case kTRCells:
@@ -108,6 +111,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kSelectedOptions:
     case kDataListOptions:
     case kMapAreas:
+    case kPopoverInvokers:
       return NodeListSearchRoot::kOwnerNode;
     case kFormControls:
       if (IsA<HTMLFieldSetElement>(owner))
@@ -162,6 +166,8 @@ static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
       return kInvalidateForFormControls;
     case kClassCollectionType:
       return kInvalidateOnClassAttrChange;
+    case kPopoverInvokers:
+      return kInvalidateOnPopoverInvokerAttrChange;
     case kNameNodeListType:
     case kRadioNodeListType:
     case kRadioImgNodeListType:
@@ -254,6 +260,11 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
       return IsA<HTMLObjectElement>(element) ||
              IsA<HTMLFormControlElement>(element) ||
              element.IsFormAssociatedCustomElement();
+    case kPopoverInvokers:
+      if (auto* invoker = DynamicTo<HTMLFormControlElement>(element)) {
+        return invoker->popoverTargetElement().popover;
+      }
+      return false;
     case kClassCollectionType:
     case kTagCollectionType:
     case kTagCollectionNSType:

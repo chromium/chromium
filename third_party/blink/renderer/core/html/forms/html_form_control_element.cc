@@ -332,7 +332,7 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
 //     values match, the behavior is to toggle.
 HTMLFormControlElement::PopoverTargetElement
 HTMLFormControlElement::popoverTargetElement() const {
-  const PopoverTargetElement no_element{.element = nullptr,
+  const PopoverTargetElement no_element{.popover = nullptr,
                                         .action = PopoverTriggerAction::kNone,
                                         .attribute_name = g_null_name};
   if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
@@ -368,7 +368,7 @@ HTMLFormControlElement::popoverTargetElement() const {
       DynamicTo<HTMLElement>(GetTreeScope().getElementById(idref));
   if (!popover_element || !popover_element->HasPopoverAttribute())
     return no_element;
-  return PopoverTargetElement{.element = popover_element,
+  return PopoverTargetElement{.popover = popover_element,
                               .action = action,
                               .attribute_name = attribute_name};
 }
@@ -376,7 +376,7 @@ HTMLFormControlElement::popoverTargetElement() const {
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   if (!IsDisabledFormControl()) {
     auto popover = popoverTargetElement();
-    if (popover.element) {
+    if (popover.popover) {
       auto trigger_support = SupportsPopoverTriggering();
       DCHECK_NE(popover.action, PopoverTriggerAction::kNone);
       DCHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
@@ -392,21 +392,21 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       // popover and set focus to the previously focused element, then the
       // normal focus management code will reset focus to the clicked control.
       bool can_show =
-          popover.element->IsPopoverReady(PopoverTriggerAction::kShow) &&
+          popover.popover->IsPopoverReady(PopoverTriggerAction::kShow) &&
           (popover.action == PopoverTriggerAction::kToggle ||
            popover.action == PopoverTriggerAction::kShow);
       bool can_hide =
-          popover.element->IsPopoverReady(PopoverTriggerAction::kHide) &&
+          popover.popover->IsPopoverReady(PopoverTriggerAction::kHide) &&
           (popover.action == PopoverTriggerAction::kToggle ||
            popover.action == PopoverTriggerAction::kHide);
       if (event.type() == event_type_names::kDOMActivate &&
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {
-          popover.element->HidePopoverInternal(
+          popover.popover->HidePopoverInternal(
               HidePopoverFocusBehavior::kFocusPreviousElement,
               HidePopoverForcingLevel::kHideAfterAnimations);
         } else if (can_show) {
-          popover.element->InvokePopover(this);
+          popover.popover->InvokePopover(this);
         }
       }
     }

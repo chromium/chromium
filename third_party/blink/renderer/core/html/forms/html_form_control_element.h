@@ -91,10 +91,10 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   struct PopoverTargetElement final {
    public:
     DISALLOW_NEW();
-    WeakMember<HTMLElement> element;
+    WeakMember<HTMLElement> popover;
     PopoverTriggerAction action;
     QualifiedName attribute_name;
-    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+    void Trace(Visitor* visitor) const { visitor->Trace(popover); }
   };
 
   enum class PopoverTriggerSupport {

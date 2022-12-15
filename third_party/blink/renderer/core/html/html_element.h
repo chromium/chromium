@@ -84,12 +84,6 @@ enum class HidePopoverForcingLevel {
   kHideImmediately,
 };
 
-enum class PopoverAncestorType {
-  kDefault,
-  kNewPopover,
-  kInclusive,
-};
-
 class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -229,8 +223,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
                            HidePopoverForcingLevel forcing_level);
   void PopoverHideFinishIfNeeded();
-  static const HTMLElement* NearestOpenAncestralPopover(const Node&,
-                                                        PopoverAncestorType);
+  static const HTMLElement* FindTopmostPopoverAncestor(const HTMLElement&);
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists, and if this element is a popover.
