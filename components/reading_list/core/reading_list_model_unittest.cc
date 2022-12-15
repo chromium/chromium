@@ -72,8 +72,8 @@ class ReadingListModelTest : public ReadingListModelObserver,
     base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
         storage->AsWeakPtr();
 
-    model_ = std::make_unique<ReadingListModelImpl>(
-        std::move(storage), /*pref_service=*/nullptr, &clock_);
+    model_ =
+        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
     model_->AddObserver(this);
 
     return storage_ptr;

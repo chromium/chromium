@@ -14,13 +14,14 @@
 #import "base/time/default_clock.h"
 #import "components/policy/policy_constants.h"
 #import "components/reading_list/core/reading_list_entry.h"
-#import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -84,15 +85,6 @@ class FakeNavigationManager : public web::FakeNavigationManager {
   void DiscardNonCommittedItems() override {}
 };
 
-std::unique_ptr<KeyedService> BuildReadingListModel(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<ReadingListModelImpl> reading_list_model(
-      new ReadingListModelImpl(nullptr, browser_state->GetPrefs(),
-                               base::DefaultClock::GetInstance()));
-  return reading_list_model;
-}
 }  // namespace
 
 // Test fixture for AppLauncherTabHelper class.
@@ -146,7 +138,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
     web_state_.SetBrowserState(chrome_browser_state_.get());
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
         chrome_browser_state_.get(),
-        base::BindRepeating(&BuildReadingListModel));
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<ReadingListEntry>()));
     is_reading_list_initialized_ = true;
   }
 

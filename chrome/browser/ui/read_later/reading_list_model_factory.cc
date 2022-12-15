@@ -17,7 +17,6 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
@@ -36,8 +35,7 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
 
   return std::make_unique<ReadingListModelImpl>(
-      std::move(storage), profile->GetPrefs(),
-      base::DefaultClock::GetInstance());
+      std::move(storage), base::DefaultClock::GetInstance());
 }
 
 }  // namespace

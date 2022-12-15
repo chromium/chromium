@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -45,20 +46,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-std::unique_ptr<KeyedService> BuildReadingListModel(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<ReadingListModelImpl> reading_list_model(
-      new ReadingListModelImpl(nullptr, browser_state->GetPrefs(),
-                               base::DefaultClock::GetInstance()));
-  return reading_list_model;
-}
-
-}  // namespace
 
 @protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
                                                 SnackbarCommands>
@@ -137,7 +124,8 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     fake_web_state_->SetBrowserState(chrome_browser_state_.get());
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
         chrome_browser_state_.get(),
-        base::BindRepeating(&BuildReadingListModel));
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<ReadingListEntry>()));
   }
 
   web::WebTaskEnvironment task_environment_;

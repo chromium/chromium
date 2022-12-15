@@ -175,6 +175,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/reading_list:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons:symbols",

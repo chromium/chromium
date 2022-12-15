@@ -20,7 +20,7 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
@@ -108,10 +110,15 @@ class PopupMenuMediatorTest : public PlatformTest {
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
+    builder.AddTestingFactory(
+        ReadingListModelFactory::GetInstance(),
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<ReadingListEntry>()));
     browser_state_ = builder.Build();
 
-    reading_list_model_.reset(new ReadingListModelImpl(
-        nullptr, nullptr, base::DefaultClock::GetInstance()));
+    reading_list_model_ =
+        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+
     popup_menu_ = OCMClassMock([PopupMenuTableViewController class]);
     popup_menu_strict_ =
         OCMStrictClassMock([PopupMenuTableViewController class]);
@@ -169,12 +176,11 @@ class PopupMenuMediatorTest : public PlatformTest {
   PopupMenuMediator* CreateMediator(PopupMenuType type,
                                     BOOL is_incognito,
                                     BOOL trigger_incognito_hint) {
-    mediator_ =
-        [[PopupMenuMediator alloc] initWithType:type
-                                    isIncognito:is_incognito
-                               readingListModel:reading_list_model_.get()
-                      triggerNewIncognitoTabTip:trigger_incognito_hint
-                         browserPolicyConnector:nil];
+    mediator_ = [[PopupMenuMediator alloc] initWithType:type
+                                            isIncognito:is_incognito
+                                       readingListModel:reading_list_model_
+                              triggerNewIncognitoTabTip:trigger_incognito_hint
+                                 browserPolicyConnector:nil];
     return mediator_;
   }
 
@@ -186,7 +192,7 @@ class PopupMenuMediatorTest : public PlatformTest {
     mediator_ =
         [[PopupMenuMediator alloc] initWithType:type
                                     isIncognito:is_incognito
-                               readingListModel:reading_list_model_.get()
+                               readingListModel:reading_list_model_
                       triggerNewIncognitoTabTip:trigger_incognito_hint
                          browserPolicyConnector:browser_policy_connector];
     return mediator_;
@@ -292,8 +298,8 @@ class PopupMenuMediatorTest : public PlatformTest {
   FakeOverlayPresentationContext presentation_context_;
   PopupMenuMediator* mediator_;
   BookmarkModel* bookmark_model_;
+  ReadingListModel* reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  std::unique_ptr<ReadingListModelImpl> reading_list_model_;
   web::FakeWebState* web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   id popup_menu_;

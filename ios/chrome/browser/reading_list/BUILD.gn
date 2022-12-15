@@ -87,6 +87,23 @@ source_set("reading_list_remover") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "reading_list_test_utils.cc",
+    "reading_list_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reading_list/core:test_support",
+  ]
+  public_deps = [
+    "//components/keyed_service/core",
+    "//components/reading_list/core",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -100,6 +117,7 @@ source_set("unit_tests") {
   deps = [
     ":distilled_bundle_data",
     ":reading_list",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/favicon/ios",

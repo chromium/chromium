@@ -7,10 +7,11 @@
 #import <memory>
 
 #import "base/time/default_clock.h"
-#import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -70,22 +71,14 @@ class ReadingListWebStateObserverTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    std::vector<ReadingListEntry> initial_entries;
+    initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time::Now());
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              auto model = std::make_unique<ReadingListModelImpl>(
-                  /* storage_layer */ nullptr, /* pref_service */ nullptr,
-                  base::DefaultClock::GetInstance());
-
-              model->AddOrReplaceEntry(
-                  GURL(kTestURL), kTestTitle,
-                  reading_list::ADDED_VIA_CURRENT_APP,
-                  /*estimated_read_time=*/base::TimeDelta());
-
-              return model;
-            }));
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::move(initial_entries)));
     browser_state_ = builder.Build();
 
     test_web_state_.SetBrowserState(browser_state_.get());

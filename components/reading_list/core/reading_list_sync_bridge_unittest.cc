@@ -97,8 +97,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
         std::make_unique<ReadingListModelStorageImpl>(
             syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
                 syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest())),
-        /*pref_service=*/nullptr, &clock_,
-        processor_.CreateForwardingProcessor());
+        &clock_, processor_.CreateForwardingProcessor());
 
     // Wait until the model loads.
     base::RunLoop().RunUntilIdle();

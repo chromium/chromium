@@ -40,8 +40,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_reading_list_model.cc",
-    "fake_reading_list_model.h",
     "fake_reading_list_model_storage.cc",
     "fake_reading_list_model_storage.h",
   ]

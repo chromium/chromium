@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_delegate.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,8 +58,14 @@ class ReadingListNotificationServiceTest : public testing::Test {
 
   void SetUp() override {
     clock_.SetNow(MakeLocalTime(kNow));
-    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
-        /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    reading_list_model_ =
+        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
+    // Complete the initial model load from storage.
+    storage_ptr->TriggerLoadCompletion();
+
     auto delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
     auto config = std::make_unique<ReadingListNotificationService::Config>();

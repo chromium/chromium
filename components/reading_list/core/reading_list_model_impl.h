@@ -21,8 +21,6 @@ namespace base {
 class Clock;
 }  // namespace base
 
-class PrefService;
-
 namespace syncer {
 class ModelTypeChangeProcessor;
 }  // namespace syncer
@@ -31,13 +29,9 @@ class ModelTypeChangeProcessor;
 class ReadingListModelImpl : public ReadingListModel {
  public:
   // Initialize a ReadingListModelImpl to load and save data in
-  // |storage_layer|. Passing null to |storage_layer| will create a
-  // ReadingListModelImpl without persistence. Data will not be persistent
-  // across sessions.
+  // |storage_layer|, which must not be null.
   // |clock| will be used to timestamp all the operations.
-  // TODO(crbug.com/1386158): Remove |pref_service| which is unused.
   ReadingListModelImpl(std::unique_ptr<ReadingListModelStorage> storage_layer,
-                       PrefService* pref_service,
                        base::Clock* clock);
   ~ReadingListModelImpl() override;
 
@@ -110,7 +104,6 @@ class ReadingListModelImpl : public ReadingListModel {
   // Test-only factory function to inject an arbitrary change processor.
   static std::unique_ptr<ReadingListModelImpl> BuildNewForTest(
       std::unique_ptr<ReadingListModelStorage> storage_layer,
-      PrefService* pref_service,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 

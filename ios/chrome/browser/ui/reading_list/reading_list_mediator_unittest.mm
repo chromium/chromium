@@ -11,6 +11,7 @@
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
 #import "components/favicon_base/favicon_types.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -46,7 +47,14 @@ class ReadingListMediatorTest
       public ::testing::WithParamInterface<FaviconServiceType> {
  public:
   ReadingListMediatorTest() {
-    model_ = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock_);
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    model_ =
+        std::make_unique<ReadingListModelImpl>(std::move(storage), &clock_);
+    // Complete the initial model load from storage.
+    storage_ptr->TriggerLoadCompletion();
+
     EXPECT_CALL(mock_favicon_service_,
                 GetLargestRawFaviconForPageURL(_, _, _, _, _))
         .WillRepeatedly([](auto, auto, auto,

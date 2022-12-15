@@ -182,6 +182,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/prefs",
     "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
     "//components/url_formatter",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon",

@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 
 #import <memory>
+#import <vector>
 
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/default_clock.h"
-#import "components/reading_list/core/fake_reading_list_model.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
+#import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,22 +41,14 @@ class OfflinePageTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    std::vector<ReadingListEntry> initial_entries;
+    initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time::Now());
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              auto model = std::make_unique<ReadingListModelImpl>(
-                  /* storage_layer */ nullptr, /* pref_service */ nullptr,
-                  base::DefaultClock::GetInstance());
-
-              model->AddOrReplaceEntry(
-                  GURL(kTestURL), kTestTitle,
-                  reading_list::ADDED_VIA_CURRENT_APP,
-                  /*estimated_read_time=*/base::TimeDelta());
-
-              return model;
-            }));
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::move(initial_entries)));
     browser_state_ = builder.Build();
 
     fake_web_state_.SetBrowserState(browser_state_.get());
@@ -81,21 +76,20 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    fake_reading_list_model_storage_ = storage->AsWeakPtr();
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              auto model = std::make_unique<FakeReadingListModel>();
-
-              ReadingListEntry entry(GURL(kTestURL), kTestTitle, base::Time());
-              entry.SetDistilledInfo(base::FilePath(kTestDistilledPath),
-                                     GURL(kTestDistilledURL), 50,
-                                     base::Time::FromTimeT(100));
-              model->SetEntry(std::move(entry));
-
-              return model;
-            }));
+            [](std::unique_ptr<FakeReadingListModelStorage>& storage,
+               web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              DCHECK(storage.get());
+              return std::make_unique<ReadingListModelImpl>(
+                  std::move(storage), base::DefaultClock::GetInstance());
+            },
+            base::OwnedRef(std::move(storage))));
     browser_state_ = builder.Build();
 
     fake_web_state_.SetBrowserState(browser_state_.get());
@@ -106,17 +100,19 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
                                             reading_list_model());
   }
 
-  FakeReadingListModel* reading_list_model() {
-    return static_cast<FakeReadingListModel*>(
-        ReadingListModelFactory::GetForBrowserState(browser_state_.get()));
+  ReadingListModel* reading_list_model() {
+    return ReadingListModelFactory::GetForBrowserState(browser_state_.get());
   }
 
-  const ReadingListEntry* entry() { return reading_list_model()->entry(); }
+  FakeReadingListModelStorage* fake_reading_list_model_storage() {
+    return fake_reading_list_model_storage_.get();
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState fake_web_state_;
+  base::WeakPtr<FakeReadingListModelStorage> fake_reading_list_model_storage_;
 };
 
 // Tests that loading an online version does mark it read.
@@ -263,14 +259,21 @@ TEST_F(OfflinePageTabHelperDelayedModelTest, TestLateReadingListModelLoading) {
         base::RunLoop().RunUntilIdle();
         return fake_web_state_.GetLastLoadedData();
       }));
-  EXPECT_FALSE(entry()->IsRead());
   EXPECT_FALSE(offline_page_tab_helper->presenting_offline_page());
-  reading_list_model()->SetLoaded();
+  // Complete the reading list model load from storage.
+  std::vector<ReadingListEntry> initial_entries;
+  initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time());
+  initial_entries.back().SetDistilledInfo(base::FilePath(kTestDistilledPath),
+                                          GURL(kTestDistilledURL), 50,
+                                          base::Time::FromTimeT(100));
+  fake_reading_list_model_storage()->TriggerLoadCompletion(
+      std::move(initial_entries));
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForFileOperationTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
         return fake_web_state_.GetLastLoadedData();
       }));
-  EXPECT_TRUE(entry()->IsRead());
+  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  EXPECT_TRUE(entry->IsRead());
   EXPECT_TRUE(offline_page_tab_helper->presenting_offline_page());
 }
