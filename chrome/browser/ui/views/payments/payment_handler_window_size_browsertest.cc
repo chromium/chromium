@@ -61,16 +61,19 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   AddCreditCard(card);
 
   // Install a payment handler which opens a window.
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
 
-  // Invoke a payment request with basic-card and methodName =
-  // window.location.origin + '/pay' supportedMethods (see payment_handler.js).
-  // Then check the dialog size when payment sheet is shown.
+  // Invoke a payment request with basic-card and `payment_method`
+  // supportedMethods (see payment_handler.js). Then check the dialog size when
+  // payment sheet is shown.
   ResetEventWaiterForDialogOpened();
-  EXPECT_EQ(
-      "success",
-      content::EvalJs(GetActiveWebContents(),
-                      "paymentRequestWithOptions({requestShipping: true})"));
+  EXPECT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "paymentRequestWithOptions({requestShipping: true}, $1)",
+                    payment_method)));
   WaitForObservedEvent();
   EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
 

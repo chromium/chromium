@@ -146,15 +146,16 @@ var paymentOptions = null;
 /**
  * Creates a payment request with required information and calls request.show()
  * to invoke payment sheet UI. To ensure that UI gets shown two payment methods
- * are supported: One url-based and one 'basic-card'.
- * @param {Object} options The list of requested paymentOptions.
- * @return {string} The 'success' or error message.
+ * are supported: One URL-based and one 'basic-card'.
+ * @param {Object} options - The list of requested paymentOptions.
+ * @param {string} paymentMethod - A URL-based payment method identifier.
+ * @return {string} - The 'success' or error message.
  */
-function paymentRequestWithOptions(options) {
+function paymentRequestWithOptions(options, paymentMethod = methodName) {
   paymentOptions = options;
   try {
     const request = new PaymentRequest([{
-          supportedMethods: methodName,
+          supportedMethods: paymentMethod,
         },
         {
           supportedMethods: 'basic-card',
