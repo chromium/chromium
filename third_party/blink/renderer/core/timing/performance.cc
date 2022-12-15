@@ -487,8 +487,7 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
   if (!root_frame) {
     return entries;
   }
-  const SecurityOrigin* root_origin =
-      ExecutionContext::From(script_state)->GetSecurityOrigin();
+  const SecurityOrigin* root_origin = window->GetSecurityOrigin();
 
   HeapDeque<Member<Frame>> queue;
   queue.push_back(root_frame);
