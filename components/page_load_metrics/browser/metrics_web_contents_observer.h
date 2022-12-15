@@ -91,8 +91,8 @@ class MetricsWebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
   void FrameDeleted(int frame_tree_node_id) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void MediaStartedPlaying(
@@ -257,9 +257,9 @@ class MetricsWebContentsObserver
                                           base::TimeTicks timestamp,
                                           bool is_certainly_browser_timestamp);
 
-  // Register / Unregister input event callback to given RenderViewHost
-  void RegisterInputEventObserver(content::RenderViewHost* host);
-  void UnregisterInputEventObserver(content::RenderViewHost* host);
+  // Register / Unregister input event callback to given RenderFrameHost
+  void RegisterInputEventObserver(content::RenderFrameHost* host);
+  void UnregisterInputEventObserver(content::RenderFrameHost* host);
 
   // Notify aborted provisional loads that a new navigation occurred. This is
   // used for more consistent attribution tracking for aborted provisional

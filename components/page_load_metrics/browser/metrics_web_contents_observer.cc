@@ -147,6 +147,8 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   for (auto& observer : lifecycle_observers_)
     observer.OnGoingAway();
 
+  UnregisterInputEventObserver(web_contents()->GetPrimaryMainFrame());
+
   // We tear down PageLoadTrackers in WebContentsDestroyed, rather than in the
   // destructor, since `web_contents()` returns nullptr in the destructor, and
   // PageLoadMetricsObservers can cause code to execute that wants to be able to
@@ -159,20 +161,24 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
 }
 
 void MetricsWebContentsObserver::RegisterInputEventObserver(
-    content::RenderViewHost* host) {
+    content::RenderFrameHost* host) {
   if (host != nullptr)
-    host->GetWidget()->AddInputEventObserver(this);
+    host->GetRenderWidgetHost()->AddInputEventObserver(this);
 }
 
 void MetricsWebContentsObserver::UnregisterInputEventObserver(
-    content::RenderViewHost* host) {
+    content::RenderFrameHost* host) {
   if (host != nullptr)
-    host->GetWidget()->RemoveInputEventObserver(this);
+    host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
 }
 
-void MetricsWebContentsObserver::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
+void MetricsWebContentsObserver::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   UnregisterInputEventObserver(old_host);
   RegisterInputEventObserver(new_host);
 }
@@ -257,8 +263,7 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
   if (embedder_interface_->IsNoStatePrefetch(web_contents))
     in_foreground_ = false;
 
-  RegisterInputEventObserver(
-      web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
+  RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
