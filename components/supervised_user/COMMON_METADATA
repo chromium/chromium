@@ -1,0 +1,5 @@
+# Chrome Kids team
+monorail {
+  component: "FamilyExperiences > Browser"
+}
+team_email: "chrome-kids-eng@google.com"

@@ -291,7 +291,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"  // nogncheck
+#include "components/supervised_user/core/common/features.h"  // nogncheck
 #endif  // ENABLE_SUPERVISED_USERS
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/grit",
+  "+components/strings/grit",
+  "+components/signin",
+  "+ui/base",
+]

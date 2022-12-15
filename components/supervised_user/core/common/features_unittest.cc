@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
+#include "components/supervised_user/core/common/features.h"
 
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -12,20 +12,19 @@
 namespace supervised_users {
 
 // Tests supervised user features configurations.
-class SupervisedUserFeaturesTest : public testing::Test {
+class FeaturesTest : public testing::Test {
  protected:
-  SupervisedUserFeaturesTest() = default;
-  SupervisedUserFeaturesTest(const SupervisedUserFeaturesTest&) = delete;
-  SupervisedUserFeaturesTest& operator=(const SupervisedUserFeaturesTest&) =
-      delete;
-  ~SupervisedUserFeaturesTest() override = default;
+  FeaturesTest() = default;
+  FeaturesTest(const FeaturesTest&) = delete;
+  FeaturesTest& operator=(const FeaturesTest&) = delete;
+  ~FeaturesTest() override = default;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests `kWebFilterInterstitialRefresh` and `kLocalWebApproval`features
 // configuration.
-using LocalWebApprovalsFeatureTest = SupervisedUserFeaturesTest;
+using LocalWebApprovalsFeatureTest = FeaturesTest;
 
 TEST_F(LocalWebApprovalsFeatureTest,
        InterstitialRefreshDisabledAndLocalApprovalsDisabled) {

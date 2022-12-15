@@ -10,6 +10,7 @@ import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
+import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//pdf/features.gni")
@@ -230,6 +231,7 @@ test("components_unittests") {
     "//components/subresource_filter/core/browser:unit_tests",
     "//components/subresource_filter/core/common:unit_tests",
     "//components/subresource_filter/tools:unit_tests",
+    "//components/supervised_user/core/common:unit_tests",
     "//components/sync:unit_tests",
     "//components/sync_bookmarks:unit_tests",
     "//components/sync_device_info:unit_tests",
@@ -257,6 +259,10 @@ test("components_unittests") {
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
   ]
+
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser:unit_tests" ]
+  }
 
   if (!is_ios) {
     deps += [ "//components/file_access:unit_tests" ]

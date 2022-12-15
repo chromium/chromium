@@ -106,7 +106,7 @@ p {
 }
 
 #family-link-kite {
-  content: -webkit-image-set(url(../../resources/supervised_user_icon.png) 1x);
+  content: -webkit-image-set(url(../resources/supervised_user_icon.png) 1x);
   height: 72px;
   width: 72px;
 }

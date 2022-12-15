@@ -67,8 +67,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"  // nogncheck
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
+#include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
