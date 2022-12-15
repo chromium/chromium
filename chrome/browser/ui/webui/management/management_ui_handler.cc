@@ -323,8 +323,13 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   bool report_audio_status = false;
   ash::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
                                        &report_audio_status);
+  // TODO(b/262295601): Add/refine management strings corresponding to XDR
+  // reporting policy.
+  bool device_report_xdr_events = false;
+  ash::CrosSettings::Get()->GetBoolean(ash::kDeviceReportXDREvents,
+                                       &device_report_xdr_events);
   if (collector->IsReportingActivityTimes() || report_device_peripherals ||
-      report_audio_status ||
+      report_audio_status || device_report_xdr_events ||
       profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
                               DeviceReportingType::kDeviceActivity);
@@ -347,7 +352,7 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
     AddDeviceReportingElement(report_sources, kManagementReportCrashReports,
                               DeviceReportingType::kCrashReport);
   }
-  if (collector->IsReportingAppInfoAndActivity()) {
+  if (collector->IsReportingAppInfoAndActivity() || device_report_xdr_events) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportAppInfoAndActivity,
                               DeviceReportingType::kAppInfoAndActivity);
