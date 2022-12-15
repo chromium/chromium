@@ -78,8 +78,8 @@ def main():
         if running_unattended():
             set_ffx_isolate_dir(
                 stack.enter_context(tempfile.TemporaryDirectory()))
-        stack.enter_context(
-            ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
+            stack.enter_context(
+                ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,

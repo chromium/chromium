@@ -31,15 +31,19 @@ class FlashDeviceTest(unittest.TestCase):
         self._sdk_hash_patcher = mock.patch('flash_device.get_sdk_hash',
                                             return_value=(_TEST_PRODUCT,
                                                           _TEST_VERSION))
+        self._swarming_patcher = mock.patch('flash_device.running_unattended',
+                                            return_value=False)
         self._check_patcher = mock.patch('flash_device.check_ssh_config_file')
         self._config_mock = self._config_patcher.start()
         self._ffx_mock = self._ffx_patcher.start()
         self._sdk_hash_mock = self._sdk_hash_patcher.start()
         self._check_patcher_mock = self._check_patcher.start()
+        self._swarming_mock = self._swarming_patcher.start()
         self.addCleanup(self._config_mock.stop)
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
         self.addCleanup(self._check_patcher_mock.stop)
+        self.addCleanup(self._swarming_mock.stop)
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
@@ -118,10 +122,9 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update when |os_check| is 'check' and system info does not
         match."""
 
+        self._swarming_mock.return_value = True
         with mock.patch('os.path.exists', return_value=True), \
                 mock.patch('flash_device._add_exec_to_flash_binaries'), \
-                mock.patch('flash_device.running_unattended',
-                           return_value=True), \
                 mock.patch('flash_device.subprocess.run'):
             self._ffx_mock.return_value.stdout = \
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
@@ -222,10 +225,11 @@ class FlashDeviceTest(unittest.TestCase):
 
     def test_update_raises_error_if_unattended_with_no_target(self) -> None:
         """Test update calls pave if specified."""
+
+        self._swarming_mock.return_value = True
         with mock.patch('time.sleep'), \
             mock.patch('flash_device.pave'), \
-            mock.patch('os.path.exists', return_value=True), \
-            mock.patch('flash_device.running_unattended', return_value=True):
+            mock.patch('os.path.exists', return_value=True):
             self.assertRaises(AssertionError,
                               flash_device.update,
                               _TEST_IMAGE_DIR,
@@ -236,11 +240,10 @@ class FlashDeviceTest(unittest.TestCase):
     def test_update_on_swarming(self) -> None:
         """Test update on swarming bots."""
 
+        self._swarming_mock.return_value = True
         with mock.patch('time.sleep'), \
              mock.patch('os.path.exists', return_value=True), \
              mock.patch('flash_device._add_exec_to_flash_binaries'), \
-             mock.patch('flash_device.running_unattended',
-                        return_value = True), \
              mock.patch('subprocess.run'):
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',

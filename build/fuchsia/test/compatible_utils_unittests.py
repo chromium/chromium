@@ -19,7 +19,7 @@ class CompatibleUtilsTest(unittest.TestCase):
 
     def test_running_unattended_returns_true_if_headless_set(self) -> None:
         """Test |running_unattended| returns True if CHROME_HEADLESS is set."""
-        with mock.patch('os.environ', {'CHROME_HEADLESS': 0}):
+        with mock.patch('os.environ', {'SWARMING_SERVER': 0}):
             self.assertTrue(compatible_utils.running_unattended())
 
         with mock.patch('os.environ', {'FOO_HEADLESS': 0}):

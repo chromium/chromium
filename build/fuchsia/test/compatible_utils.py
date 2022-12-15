@@ -36,8 +36,8 @@ def running_unattended() -> bool:
     When running unattended, confirmation prompts and the like are suppressed.
     """
 
-    # Chromium tests only for the presence of the variable, so match that here.
-    return 'CHROME_HEADLESS' in os.environ
+    # TODO(crbug/1401387): Change to mixin based approach.
+    return 'SWARMING_SERVER' in os.environ
 
 
 def get_host_arch() -> str:
