@@ -36,6 +36,18 @@ ServerBounceDetectionState::ServerBounceDetectionState(
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ServerBounceDetectionState);
 
+ClientBounceDetectionState::ClientBounceDetectionState(
+    const ClientBounceDetectionState& other) = default;
+ClientBounceDetectionState::~ClientBounceDetectionState() = default;
+ClientBounceDetectionState::ClientBounceDetectionState(
+    GURL url,
+    std::string site,
+    base::TimeTicks load_time) {
+  this->previous_url = std::move(url);
+  this->current_site = std::move(site);
+  this->page_load_time = load_time;
+}
+
 namespace {
 
 // The amount of time since finishing navigation to a page that a client-side
@@ -81,6 +93,9 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
                 base::DefaultClock::GetInstance()) {}
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
+
+const base::TimeDelta DIPSBounceDetector::kInteractionUpdateInterval =
+    base::Minutes(1);
 
 DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
                                        const base::TickClock* tick_clock,
@@ -265,7 +280,7 @@ void DIPSBounceDetector::DidStartNavigation(
           /*time=*/clock_->Now(),
           /*client_bounce_delay=*/bounce_time,
           /*has_sticky_activation=*/
-          client_detection_state_->received_user_activation);
+          client_detection_state_->last_activation_time.has_value());
       // We cannot append |client_redirect| to |redirect_context_| immediately,
       // because we don't know if the navigation will commit. We must wait until
       // DidFinishNavigation().
@@ -414,10 +429,21 @@ void DIPSBounceDetector::OnUserActivation() {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
-  if (client_detection_state_.has_value())
-    client_detection_state_->received_user_activation = true;
+  base::Time now = clock_->Now();
+  if (client_detection_state_.has_value()) {
+    // To decrease the number of writes made to the database, after a user
+    // activation event on the page, new activation events will not be recorded
+    // for the next |kInteractionUpdateInterval|.
+    if (client_detection_state_->last_activation_time.has_value() &&
+        (now - client_detection_state_->last_activation_time.value()) <
+            kInteractionUpdateInterval) {
+      return;
+    }
 
-  delegate_->RecordEvent(DIPSRecordedEvent::kInteraction, url, clock_->Now());
+    client_detection_state_->last_activation_time = now;
+  }
+
+  delegate_->RecordEvent(DIPSRecordedEvent::kInteraction, url, now);
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {

@@ -35,18 +35,16 @@ class ClientBounceDetectionState {
  public:
   ClientBounceDetectionState(GURL url,
                              std::string site,
-                             base::TimeTicks load_time) {
-    this->previous_url = std::move(url);
-    this->current_site = std::move(site);
-    this->page_load_time = load_time;
-  }
+                             base::TimeTicks load_time);
+  ClientBounceDetectionState(const ClientBounceDetectionState& other);
+  ~ClientBounceDetectionState();
 
   // The NavigationHandle's previously committed URL at the time the navigation
   // finishes and commits.
   GURL previous_url;
   std::string current_site;
   base::TimeTicks page_load_time;
-  bool received_user_activation = false;
+  absl::optional<base::Time> last_activation_time;
   CookieAccessType cookie_access_type = CookieAccessType::kUnknown;
 };
 
@@ -155,6 +153,11 @@ class DIPSNavigationHandle {
 // metrics and storing them in the DIPSDatabase).
 class DIPSBounceDetector {
  public:
+  // The amount of time since a page last received user interaction before a
+  // subsequent user interaction event may be recorded to DIPS Storage for the
+  // same page.
+  static const base::TimeDelta kInteractionUpdateInterval;
+
   explicit DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
                               const base::TickClock* tick_clock,
                               const base::Clock* clock);
@@ -170,6 +173,8 @@ class DIPSBounceDetector {
                                const GURL& url,
                                CookieOperation op);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
+  // Only records a new user activation event once per
+  // |kInteractionUpdateInterval| for a given page.
   void OnUserActivation();
   void BeforeDestruction();
 
