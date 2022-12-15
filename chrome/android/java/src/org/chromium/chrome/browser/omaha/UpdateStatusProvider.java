@@ -24,7 +24,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.AsyncTask.Status;
 import org.chromium.base.task.PostTask;
@@ -220,8 +219,6 @@ public class UpdateStatusProvider {
         }
 
         if (!mRecordedInitialStatus) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "GoogleUpdate.StartUp.State", mStatus.updateState, UpdateState.NUM_ENTRIES);
             mMetrics.analyzeFirstStatus();
             mRecordedInitialStatus = true;
         }
@@ -318,8 +315,6 @@ public class UpdateStatusProvider {
             File path = Environment.getDataDirectory();
             StatFs statFs = new StatFs(path.getAbsolutePath());
             long size = getSize(statFs);
-            RecordHistogram.recordLinearCountHistogram(
-                    "GoogleUpdate.InfoBar.DeviceFreeSpace", (int) size, 1, 1000, 50);
 
             int minRequiredStorage = UpdateConfigs.getMinRequiredStorage();
             if (minRequiredStorage == -1) return true;

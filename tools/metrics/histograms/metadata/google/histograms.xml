@@ -29,16 +29,6 @@ chromium-metrics-reviews@google.com.
   <summary>The HRESULT for a failed on-demand update check.</summary>
 </histogram>
 
-<histogram name="GoogleUpdate.InfoBar.DeviceFreeSpace" units="MB"
-    expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    (Android-only) The amount of internal memory storage that is free on the
-    file system and available to the applications when the InfoBar or update
-    menu item is shown.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohort" units="units"
     expires_after="2019-06-01">
   <owner>nikunjb@chromium.org</owner>
@@ -106,16 +96,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     (Android-only) Whether or not an update was being tracked as 'in progress'
     when another update was started.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.StartUp.State" enum="UpdateState"
-    expires_after="2020-10-15">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) The state of any in-progress updates when the process first
-    starts and queries for it.
   </summary>
 </histogram>
 

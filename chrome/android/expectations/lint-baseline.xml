@@ -5541,17 +5541,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: UpdateState.NONE, UpdateState.UPDATE_AVAILABLE, UpdateState.UNSUPPORTED_OS_VERSION"
-        errorLine1="                    &quot;GoogleUpdate.StartUp.State&quot;, mStatus.updateState, UpdateState.NUM_ENTRIES);"
-        errorLine2="                                                                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java"
-            line="224"
-            column="84"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ImageFormat.UNKNOWN, ImageFormat.RGB_565, ImageFormat.YV12, ImageFormat.Y8, ImageFormat.NV16, ImageFormat.NV21, ImageFormat.YUY2, ImageFormat.JPEG, ImageFormat.DEPTH_JPEG, ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888, ImageFormat.FLEX_RGB_888, ImageFormat.FLEX_RGBA_8888, ImageFormat.RAW_SENSOR, ImageFormat.RAW_PRIVATE, ImageFormat.RAW10, ImageFormat.RAW12, ImageFormat.DEPTH16, ImageFormat.DEPTH_POINT_CLOUD, ImageFormat.PRIVATE, ImageFormat.HEIC"
         errorLine1="                    mCaptureFormat.getHeight(), mCaptureFormat.getPixelFormat(), 2 /* maxImages */);"
         errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

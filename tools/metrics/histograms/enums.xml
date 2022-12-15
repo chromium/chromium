@@ -102097,16 +102097,6 @@ Full version information for the fingerprint enum values:
   <int value="3" label="AUTO_UPDATES_ONLY"/>
 </enum>
 
-<enum name="UpdateState">
-  <int value="0" label="None"/>
-  <int value="1" label="Update Available"/>
-  <int value="2" label="Unsupported OS Version"/>
-  <int value="3" label="Inline Update Available"/>
-  <int value="4" label="Inline Update Downloading"/>
-  <int value="5" label="Inline Update Ready"/>
-  <int value="6" label="Inline Update Failed"/>
-</enum>
-
 <enum name="UpgradeDetectorRollbackReason">
   <int value="0" label="Channel switch to more stable channel"/>
   <int value="1" label="Admin-initiated enterprise rollback"/>
