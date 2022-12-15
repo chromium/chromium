@@ -1488,6 +1488,12 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
 
 void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
                                              GetClientCallback callback) {
+  if (!context_) {
+    // It is shutting down, so resolve the promise to undefined in this case.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   ServiceWorkerContainerHost* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host || !container_host->is_execution_ready()) {
