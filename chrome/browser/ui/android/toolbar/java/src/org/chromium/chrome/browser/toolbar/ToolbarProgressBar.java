@@ -11,7 +11,6 @@ import android.animation.TimeAnimator;
 import android.animation.TimeAnimator.TimeListener;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
@@ -262,22 +261,19 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
         mAnimationInitialized = true;
 
-        // Only use the indeterminate animation if the Android version is > J.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            LayoutParams animationParams = new LayoutParams(getLayoutParams());
-            animationParams.width = 1;
-            animationParams.topMargin = mMarginTop;
+        LayoutParams animationParams = new LayoutParams(getLayoutParams());
+        animationParams.width = 1;
+        animationParams.topMargin = mMarginTop;
 
-            mAnimatingView = new ToolbarProgressBarAnimatingView(getContext(), animationParams);
+        mAnimatingView = new ToolbarProgressBarAnimatingView(getContext(), animationParams);
 
-            // The primary theme color may not have been set.
-            if (mThemeColor != 0 || mUseStatusBarColorAsBackground) {
-                setThemeColor(mThemeColor, false);
-            } else {
-                setForegroundColor(getForegroundColor());
-            }
-            UiUtils.insertAfter(mProgressBarContainer, mAnimatingView, this);
+        // The primary theme color may not have been set.
+        if (mThemeColor != 0 || mUseStatusBarColorAsBackground) {
+            setThemeColor(mThemeColor, false);
+        } else {
+            setForegroundColor(getForegroundColor());
         }
+        UiUtils.insertAfter(mProgressBarContainer, mAnimatingView, this);
     }
 
     /**

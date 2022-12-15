@@ -113,6 +113,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         mAnimationDrawable = new ColorDrawable(Color.WHITE);
 
         setImageDrawable(mAnimationDrawable);
+        setAlpha(0.0f);
 
         mListener = new ProgressBarUpdateListener();
         mAnimatorSet = new AnimatorSet();
