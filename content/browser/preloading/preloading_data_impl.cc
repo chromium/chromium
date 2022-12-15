@@ -4,12 +4,12 @@
 
 #include "content/browser/preloading/preloading_data_impl.h"
 
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_prediction.h"
-#include "content/browser/renderer_host/navigation_request.h"
-#include "content/public/browser/page.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
 
@@ -21,6 +21,30 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
         return predicted_url == navigated_url;
       },
       destination_url);
+}
+
+// static
+PreloadingURLMatchCallback
+PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
+    base::WeakPtr<PrefetchDocumentManager> manager,
+    const GURL& destination_url) {
+  return base::BindRepeating(
+      [](base::WeakPtr<PrefetchDocumentManager> prefetch_doc_manager,
+         const GURL& predicted_url, const GURL& navigated_url) {
+        if (!prefetch_doc_manager) {
+          return predicted_url == navigated_url;
+        }
+
+        if (predicted_url == navigated_url) {
+          return true;
+        }
+
+        const absl::optional<GURL> match_url =
+            prefetch_doc_manager->GetNoVarySearchHelper().MatchUrl(
+                navigated_url);
+        return match_url == predicted_url;
+      },
+      manager, destination_url);
 }
 
 // static
@@ -86,8 +110,6 @@ PreloadingDataImpl::~PreloadingDataImpl() = default;
 
 void PreloadingDataImpl::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  auto* navigation_request = NavigationRequest::From(navigation_handle);
-
   // Record UKMs for primary page navigations only. The reason we don't use
   // WebContentsObserver::PrimaryPageChanged is because we want to get the
   // navigation UkmSourceId which is different from
@@ -95,14 +117,14 @@ void PreloadingDataImpl::DidFinishNavigation(
   // TODO(crbug.com/1299330): Switch to PrimaryPageChanged once we align
   // RenderFrameHost::GetPageUkmSourceId with
   // PageLoadTracker::GetPageUKMSourceId.
-  if (!navigation_request->IsInPrimaryMainFrame() ||
-      navigation_request->IsSameDocument() ||
-      !navigation_request->HasCommitted()) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->HasCommitted()) {
     return;
   }
 
   ukm::SourceId navigated_page_source_id =
-      navigation_request->GetNextPageUkmSourceId();
+      navigation_handle->GetNextPageUkmSourceId();
 
   // Log the UKMs also on navigation when the user ends up navigating. Please
   // note that we currently log the metrics on the primary page to analyze
@@ -116,17 +138,17 @@ void PreloadingDataImpl::DidFinishNavigation(
 
 void PreloadingDataImpl::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  auto* navigation_request = NavigationRequest::From(navigation_handle);
-
   // Only observe for the navigation in the primary frame tree to log the
   // metrics after which this class will be deleted.
-  if (!navigation_request->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // Ignore same-document navigations as preloading is not served for these
   // cases.
-  if (navigation_request->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   // Match the preloading based on the URL the frame is navigating to rather
   // than the committed URL as they could be different because of redirects. We
@@ -134,7 +156,7 @@ void PreloadingDataImpl::DidStartNavigation(
   // PrimaryPageChanged is invoked where the metrics are logged to capture if
   // the prediction/triggering was accurate. This doesn't imply that the user
   // navigated to the predicted URL.
-  SetIsAccurateTriggeringAndPrediction(navigation_request->GetURL());
+  SetIsAccurateTriggeringAndPrediction(navigation_handle->GetURL());
 }
 
 void PreloadingDataImpl::WebContentsDestroyed() {

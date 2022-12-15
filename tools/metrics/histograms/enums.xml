@@ -81241,6 +81241,20 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
     The URL is not eligible to be prefetched, because in the default network
     context it is configured to use a proxy server.
   </int>
+  <int value="39" label="Prefetch Not Eligible: Browser Context Off The Record">
+    The URL is not eligible to be prefetched because in the browser is in
+    Incognito or Guest mode.
+  </int>
+  <int value="40" label="Prefetch Heldback">
+    The URL is eligible but heldback because it belongs to the Holdback group.
+  </int>
+  <int value="41" label="Prefetch Allowed">
+    The URL is eligible and not in the Holdback group (allowed to prefetch).
+  </int>
+  <int value="42" label="Prefetch Response Used">
+    The URL is prefetched successfully and the repsonse is used for the next
+    navigation.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">
