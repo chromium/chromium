@@ -191,7 +191,6 @@ public class StatusBarColorController
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 mIsIncognito = newModel.isIncognito();
-
                 // When opening a new Incognito Tab from a normal Tab (or vice versa), the
                 // status bar color is updated. However, this update is triggered after the
                 // animation, so we update here for the duration of the new Tab animation.
@@ -331,7 +330,11 @@ public class StatusBarColorController
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         assert mTabModelSelector == null : "mTabModelSelector should only be set once.";
         mTabModelSelector = tabModelSelector;
-        if (mTabModelSelector != null) mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        if (mTabModelSelector != null) {
+            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+            mIsIncognito = mTabModelSelector.isIncognitoSelected();
+            updateStatusBarColor();
+        }
     }
 
     /**
