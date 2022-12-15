@@ -209,6 +209,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(url::Origin, GetLastCommittedOrigin, (), (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
   MOCK_METHOD(const MockStoreResultFilter*,
               GetStoreResultFilter,
@@ -428,7 +429,10 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
         .WillRepeatedly(Return(password_autofill_manager_.get()));
     ON_CALL(client_, GetMainFrameCertStatus()).WillByDefault(Return(0));
 
-    ON_CALL(client_, GetLastCommittedURL()).WillByDefault(ReturnRef(test_url_));
+    ON_CALL(client_, GetLastCommittedURL)
+        .WillByDefault(ReturnRef(test_form_url_));
+    ON_CALL(client_, GetLastCommittedOrigin)
+        .WillByDefault(Return(url::Origin::Create(test_form_url_)));
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
     ON_CALL(client_, GetMetricsRecorder()).WillByDefault(Return(nullptr));
     ON_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
@@ -471,14 +475,14 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   PasswordForm MakeSavedForm() {
     PasswordForm form;
-    form.url = GURL("http://www.google.com/a/LoginAuth");
-    form.action = GURL("http://www.google.com/a/Login");
+    form.url = test_form_url_;
+    form.action = test_form_action_;
     form.username_element = u"Email";
     form.password_element = u"Passwd";
     form.username_value = u"googleuser";
     form.password_value = u"p4ssword";
     form.submit_element = u"signIn";
-    form.signon_realm = "http://www.google.com/";
+    form.signon_realm = test_signon_realm_;
     form.in_store = PasswordForm::Store::kProfileStore;
     return form;
   }
@@ -491,8 +495,8 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   FormData MakeSimpleFormData() {
     FormData form_data;
-    form_data.url = GURL("http://www.google.com/a/LoginAuth");
-    form_data.action = GURL("http://www.google.com/a/Login");
+    form_data.url = test_form_url_;
+    form_data.action = test_form_action_;
     form_data.name = u"the-form-name";
     form_data.unique_renderer_id = FormRendererId(10);
 
@@ -575,12 +579,12 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   PasswordForm MakeSimpleFormWithOnlyUsernameField() {
     PasswordForm form;
-    form.url = GURL("http://www.google.com/a/LoginAuth");
+    form.url = test_form_url_;
     form.username_element = u"Email";
     form.submit_element = u"signIn";
-    form.signon_realm = "http://www.google.com/";
+    form.signon_realm = test_signon_realm_;
     form.form_data.name = u"username_only_form";
-    form.form_data.url = GURL("http://www.google.com/a/LoginAuth");
+    form.form_data.url = form.url;
     form.form_data.unique_renderer_id = FormRendererId(30);
 
     FormFieldData field;
@@ -605,7 +609,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   PasswordForm MakeSimpleCreditCardForm() {
     PasswordForm form;
-    form.url = GURL("http://www.google.com/a/LoginAuth");
+    form.url = test_form_url_;
     form.signon_realm = form.url.GetWithEmptyPath().spec();
     form.username_element = u"cc-number";
     form.password_element = u"cvc";
@@ -641,7 +645,9 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
   base::test::ScopedFeatureList feature_list_;
 
-  const GURL test_url_{"https://www.example.com"};
+  const GURL test_form_url_{"https://www.google.com/a/LoginAuth"};
+  const GURL test_form_action_{"https://www.google.com/a/Login"};
+  const std::string test_signon_realm_ = "https://www.google.com/";
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAffiliationService> mock_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
@@ -3872,7 +3878,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   // Create FormData for a form with 1 password field and process it.
   FormData form_data;
   form_data.unique_renderer_id = FormRendererId(0);
-  form_data.url = GURL("http://www.google.com/a/LoginAuth");
+  form_data.url = test_form_url_;
 
   FormFieldData old_password_field;
   old_password_field.form_control_type = "password";
@@ -3926,7 +3932,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
 
   FormData form_data;
   form_data.unique_renderer_id = FormRendererId(0);
-  form_data.url = GURL("http://www.google.com/a/LoginAuth");
+  form_data.url = test_form_url_;
 
   FormFieldData old_password_field;
   old_password_field.form_control_type = "password";
@@ -3972,7 +3978,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
     FormData form_data;
     form_data.is_form_tag = false;
     form_data.unique_renderer_id = FormRendererId(0);
-    form_data.url = GURL("http://www.google.com/a/LoginAuth");
+    form_data.url = test_form_url_;
 
     FormFieldData old_password_field;
     old_password_field.form_control_type = "password";
@@ -4037,7 +4043,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
     FormData form_data;
     form_data.is_form_tag = false;
     form_data.unique_renderer_id = FormRendererId(0);
-    form_data.url = GURL("http://www.google.com/a/LoginAuth");
+    form_data.url = test_form_url_;
 
     FormFieldData old_password_field;
     old_password_field.form_control_type = "password";

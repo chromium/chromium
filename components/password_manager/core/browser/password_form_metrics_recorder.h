@@ -238,7 +238,10 @@ class PasswordFormMetricsRecorder
     kAcceptsWebAuthnCredentials = 10,
     // User need to reauthenticate using biometric.
     kBiometricAuthentication = 11,
-    kMaxValue = kBiometricAuthentication,
+    // Form is in an iframe with an origin that differs from the main frame
+    // origin.
+    kCrossOriginIframe = 12,
+    kMaxValue = kCrossOriginIframe,
   };
 
   // Used in UMA histogram, please do NOT reorder.

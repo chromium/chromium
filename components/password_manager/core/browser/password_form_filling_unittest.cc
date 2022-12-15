@@ -425,6 +425,10 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
   saved_http_match.action = GURL("http://accounts.google.com/a/ServiceLogin");
   saved_http_match.signon_realm = "http://accounts.google.com";
 
+  ON_CALL(client_, GetLastCommittedOrigin)
+      .WillByDefault(
+          Return(Origin::Create(GURL(observed_http_form.signon_realm))));
+
   ASSERT_FALSE(GURL(saved_http_match.signon_realm).SchemeIsCryptographic());
   std::vector<const PasswordForm*> best_matches = {&saved_http_match};
 
@@ -517,6 +521,33 @@ TEST_F(PasswordFormFillingTest,
       nullptr, /*blocked_by_user=*/false, metrics_recorder_.get(),
       /*webauthn_suggestions_available=*/false);
 }
+
+// Exclude Android and iOS, because there credentials are not filled on
+// the page load in any case.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
+  base::HistogramTester histogram_tester;
+
+  observed_form_.url = GURL("https://some_website.com");
+  saved_match_.url = GURL("https://some_website.com");
+  ON_CALL(client_, GetLastCommittedOrigin)
+      .WillByDefault(
+          Return(Origin::Create(GURL("https://another_website.com"))));
+
+  std::vector<const PasswordForm*> best_matches = {&saved_match_};
+  std::vector<const PasswordForm*> federated_matches = {};
+
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches,
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,
+      1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that the when there is a single preferred match, and no extra
 // matches, the PasswordFormFillData is filled in correctly.

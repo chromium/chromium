@@ -78199,6 +78199,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="Biometric authentication">
     User needs to reauthenticate using biometric.
   </int>
+  <int value="12" label="Cross origin iframe">
+    The form is in a cross origin iframe.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">

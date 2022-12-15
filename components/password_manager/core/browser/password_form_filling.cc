@@ -113,6 +113,10 @@ std::string GetPreferredRealm(const PasswordForm& form) {
                                        : form.app_display_name;
 }
 
+bool IsSameOrigin(const Origin& frame_origin, const GURL& credential_url) {
+  return frame_origin.IsSameOriginWith(Origin::Create(credential_url));
+}
+
 }  // namespace
 
 LikelyFormFilling SendFillInformationToRenderer(
@@ -213,6 +217,9 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
   } else if (preferred_match && preferred_match->is_public_suffix_match) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
+  } else if (!IsSameOrigin(client->GetLastCommittedOrigin(),
+                           GURL(observed_form.signon_realm))) {
+    wait_for_username_reason = WaitForUsernameReason::kCrossOriginIframe;
   } else if (no_sign_in_form) {
     // If the parser did not find a current password element, don't fill.
     wait_for_username_reason = WaitForUsernameReason::kFormNotGoodForFilling;
@@ -311,10 +318,9 @@ PasswordFormFillData CreatePasswordFormFillData(
     result.password_field.form_control_type = "password";
   }
 
-  Origin credential_origin = Origin::Create(form_on_page.url);
   if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {
     result.preferred_realm = GetPreferredRealm(preferred_match);
-  } else if (!main_frame_origin.IsSameOriginWith(credential_origin)) {
+  } else if (!IsSameOrigin(main_frame_origin, form_on_page.url)) {
     // If the suggestion is for a cross-origin iframe, display the origin of
     // the suggestion.
     result.preferred_realm = GetPreferredRealm(preferred_match);
@@ -331,10 +337,9 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.password = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
 
-    Origin match_origin = Origin::Create(match->url);
     if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {
       value.realm = GetPreferredRealm(*match);
-    } else if (!main_frame_origin.IsSameOriginWith(match_origin)) {
+    } else if (!IsSameOrigin(main_frame_origin, match->url)) {
       // If the suggestion is for a cross-origin iframe, display the origin of
       // the suggestion.
       value.realm = GetPreferredRealm(*match);
