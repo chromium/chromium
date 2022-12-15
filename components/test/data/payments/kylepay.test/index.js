@@ -16,7 +16,31 @@ async function install(method) {
       return 'The payment handler is already installed.';
     }
     await navigator.serviceWorker.register('app.js');
-    registration = await navigator.serviceWorker.ready;
+    await navigator.serviceWorker.ready;
+    if (!registration.paymentManager) {
+      return 'PaymentManager API not found.';
+    }
+    if (!registration.paymentManager.instruments) {
+      return 'PaymentInstruments API not found.';
+    }
+    await registration.paymentManager.instruments.set('instrument-id', {
+      name: 'Kyle Pay',
+      method,
+    });
+    return enableDelegations();
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Enables the delegations for this payment method.
+ * @return {Promise<string>} - Either "success" or an error message.
+ */
+async function enableDelegations() {
+  try {
+    let registration = await navigator.serviceWorker.getRegistration('app.js');
+    await navigator.serviceWorker.ready;
     if (!registration.paymentManager) {
       return 'PaymentManager API not found.';
     }
@@ -25,10 +49,6 @@ async function install(method) {
     }
     await registration.paymentManager.enableDelegations(
         ['shippingAddress', 'payerName', 'payerEmail', 'payerPhone']);
-    await registration.paymentManager.instruments.set('instrument-id', {
-      name: 'Kyle Pay',
-      method,
-    });
     return 'success';
   } catch (e) {
     return e.toString();

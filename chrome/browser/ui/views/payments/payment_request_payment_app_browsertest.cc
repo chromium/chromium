@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -48,7 +49,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  // Starts the test severs and opens a test page on alicepay.test.
+  // Starts the test severs.
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
 
@@ -61,52 +62,32 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
         permissions::PermissionRequestManager::ACCEPT_ALL);
   }
 
-  // Invokes the JavaScript function install(|method_name|) in
-  // components/test/data/payments/alicepay.test/app1/index.js, which responds
-  // back via domAutomationController.
   void InstallAlicePayForMethod(const std::string& method_name) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), alicepay_.GetURL("alicepay.test", "/app1/")));
-
-    std::string contents;
-    std::string script = "install('" + method_name + "');";
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), script,
-        &contents))
-        << "Script execution failed: " << script;
-    ASSERT_NE(std::string::npos,
-              contents.find("Payment app for \"" + method_name +
-                            "\" method installed."))
-        << method_name << " method install message not found in:\n"
-        << contents;
+    ASSERT_TRUE(
+        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+            *GetActiveWebContents(),
+            alicepay_.GetURL("alicepay.test", "/app1/app.js"), method_name,
+            PaymentAppInstallUtil::IconInstall::kWithIcon));
   }
 
-  // Invokes the JavaScript function install(|method_name|) in
-  // components/test/data/payments/bobpay.test/app1/index.js, which responds
-  // back via domAutomationController.
   void InstallBobPayForMethod(const std::string& method_name) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), bobpay_.GetURL("bobpay.test", "/app1/")));
-
-    std::string contents;
-    std::string script = "install('" + method_name + "');";
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), script,
-        &contents))
-        << "Script execution failed: " << script;
-    ASSERT_NE(std::string::npos,
-              contents.find("Payment app for \"" + method_name +
-                            "\" method installed."))
-        << method_name << " method install message not found in:\n"
-        << contents;
+    ASSERT_TRUE(
+        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+            *GetActiveWebContents(),
+            bobpay_.GetURL("bobpay.test", "/app1/app.js"), method_name,
+            PaymentAppInstallUtil::IconInstall::kWithIcon));
   }
 
-  // Installs Kyle Pay.
-  void InstallKylePay() {
+  void InstallKylePayAndEnableDelegations() {
+    ASSERT_TRUE(
+        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+            *GetActiveWebContents(), kylepay_.GetURL("kylepay.test", "/app.js"),
+            /*payment_method_identifier=*/"https://kylepay.test",
+            PaymentAppInstallUtil::IconInstall::kWithIcon));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), kylepay_.GetURL("kylepay.test", "/")));
-    EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                         "install('https://kylepay.test');"));
+    ASSERT_EQ("success",
+              content::EvalJs(GetActiveWebContents(), "enableDelegations()"));
   }
 
   void BlockAlicePay() {
@@ -148,8 +129,9 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   bool StartTestServer(const std::string& hostname,
                        net::EmbeddedTestServer* test_server) {
     host_resolver()->AddRule(hostname, "127.0.0.1");
-    if (!test_server->InitializeAndListen())
+    if (!test_server->InitializeAndListen()) {
       return false;
+    }
     test_server->ServeFilesFromSourceDirectory(
         "components/test/data/payments/" + hostname);
     test_server->StartAcceptingConnections();
@@ -159,14 +141,14 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   // https://alicepay.test hosts the payment app.
   net::EmbeddedTestServer alicepay_;
 
-  // https://bobpay.test/webpay does not permit any other origin to use this
-  // payment method.
+  // https://bobpay.test does not permit any other origin to use this payment
+  // method.
   net::EmbeddedTestServer bobpay_;
 
-  // https://frankpay.test/webpay supports payment apps from any origin.
+  // https://frankpay.test supports payment apps from any origin.
   net::EmbeddedTestServer frankpay_;
 
-  // https://kylepay.test/webpay hosts a just-in-time installable payment app.
+  // https://kylepay.test hosts a just-in-time installable payment app.
   net::EmbeddedTestServer kylepay_;
 };
 
@@ -460,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
 IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
                        SkipUIEnabledWhenSingleAppCanProvideAllInfo) {
   InstallBobPayForMethod("https://bobpay.test");
-  InstallKylePay();
+  InstallKylePayAndEnableDelegations();
 
   {
     NavigateTo("/payment_request_bobpay_and_cards_test.html");
