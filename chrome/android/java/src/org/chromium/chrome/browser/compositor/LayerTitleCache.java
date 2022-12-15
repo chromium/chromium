@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -134,7 +135,23 @@ public class LayerTitleCache {
             title.register();
         }
 
-        title.set(titleBitmapFactory.getTitleBitmap(mContext, titleString),
+        // Boolean determines if tab title text needs to be bolded.
+        boolean isBold = false;
+
+        // Bold title text for TSR detached.
+        if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+            if (mTabModelSelector == null) {
+                return titleString;
+            }
+
+            // Get currently selected tab id.
+            int selectedTabId = mTabModelSelector.getCurrentTabId();
+
+            // Selected tab title text should be bolded.
+            isBold = tabId == selectedTabId;
+        }
+
+        title.set(titleBitmapFactory.getTitleBitmap(mContext, titleString, isBold),
                 titleBitmapFactory.getFaviconBitmap(originalFavicon), fetchFaviconFromHistory);
 
         if (mNativeLayerTitleCache != 0) {

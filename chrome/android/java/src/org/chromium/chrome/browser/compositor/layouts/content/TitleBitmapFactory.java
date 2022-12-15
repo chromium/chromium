@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
+import android.graphics.Typeface;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -112,13 +113,20 @@ public class TitleBitmapFactory {
      *
      * @param context   Android's UI context.
      * @param title     The title of the tab.
+     * @param isBold    Whether the tab title text should be bolded.
      * @return          The Bitmap with the title.
      */
-    public Bitmap getTitleBitmap(Context context, String title) {
+    public Bitmap getTitleBitmap(Context context, String title, boolean isBold) {
         try {
             boolean drawText = !TextUtils.isEmpty(title);
             int textWidth =
                     drawText ? (int) Math.ceil(Layout.getDesiredWidth(title, mTextPaint)) : 0;
+
+            // Bold tab title text.
+            if (isBold) {
+                mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+            }
+
             // Minimum 1 width bitmap to avoid createBitmap function's IllegalArgumentException,
             // when textWidth == 0.
             Bitmap b = Bitmap.createBitmap(Math.max(Math.min(mMaxWidth, textWidth), 1), mViewHeight,
@@ -128,6 +136,10 @@ public class TitleBitmapFactory {
                 c.drawText(title, 0, Math.min(MAX_NUM_TITLE_CHAR, title.length()), 0,
                         Math.round((mViewHeight - mTextHeight) / 2.0f + mTextYOffset), mTextPaint);
             }
+
+            // Set bolded tab title text back to normal.
+            mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+
             return b;
         } catch (OutOfMemoryError ex) {
             Log.e(TAG, "OutOfMemoryError while building title texture.");
