@@ -1070,7 +1070,7 @@
   {
     "name": "content-suggestions-ui-module-refresh",
     "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 112
   },
   {
     "name": "context-menu-popup-for-all-screen-sizes",
@@ -6714,7 +6714,7 @@
   {
     "name": "trending-queries-module",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 112
   },
   {
     "name": "trim-on-memory-pressure",
