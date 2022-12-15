@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/cache_stats_recorder.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
@@ -272,15 +271,6 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  // The CacheStatsRecorder is an associated binding, instead of a
-  // non-associated one, because the sender (in the renderer process) posts the
-  // message after a time delay, in order to rate limit. The association
-  // protects against the render process host ID being recycled in that time
-  // gap between the preparation and the execution of that IPC.
-  associated_registry->AddInterface<chrome::mojom::CacheStatsRecorder>(
-      base::BindRepeating(&CacheStatsRecorder::Create,
-                          render_process_host->GetID()));
-
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
       content::GetUIThreadTaskRunner({});
   registry->AddInterface<metrics::mojom::CallStackProfileCollector>(

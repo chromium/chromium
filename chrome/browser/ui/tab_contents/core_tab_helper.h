@@ -108,7 +108,6 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // content::WebContentsObserver overrides:
   void DidStartLoading() override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
   void NavigationEntriesDeleted() override;
   void OnWebContentsFocused(content::RenderWidgetHost*) override;
   void OnWebContentsLostFocus(content::RenderWidgetHost*) override;

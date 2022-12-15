@@ -275,8 +275,6 @@ static_library("browser") {
     "browsing_data/third_party_data_remover.h",
     "browsing_topics/browsing_topics_service_factory.cc",
     "browsing_topics/browsing_topics_service_factory.h",
-    "cache_stats_recorder.cc",
-    "cache_stats_recorder.h",
     "cart/commerce_hint_service.cc",
     "cart/commerce_hint_service.h",
     "chooser_controller/title_util.cc",

@@ -31,7 +31,6 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -407,13 +406,6 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
 
 void CoreTabHelper::DidStartLoading() {
   UpdateContentRestrictions(0);
-}
-
-void CoreTabHelper::OnVisibilityChanged(content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE) {
-    web_cache::WebCacheManager::GetInstance()->ObserveActivity(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
-  }
 }
 
 // Update back/forward buttons for web_contents that are active.

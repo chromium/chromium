@@ -28,14 +28,12 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/cache_stats_recorder.mojom.h"
 #include "chrome/common/child_process_logging.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/url_constants.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
-#include "components/web_cache/public/features.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
@@ -71,8 +69,6 @@ using content::RenderThread;
 
 namespace {
 
-const int kCacheStatsDelayMS = 2000;
-
 class RendererResourceDelegate
     : public blink::WebResourceRequestSenderDelegate {
  public:
@@ -81,27 +77,7 @@ class RendererResourceDelegate
   RendererResourceDelegate(const RendererResourceDelegate&) = delete;
   RendererResourceDelegate& operator=(const RendererResourceDelegate&) = delete;
 
-  void OnRequestComplete() override {
-    // Update the browser about our cache.
-
-    // No need to update the browser if the WebCache manager doesn't need this
-    // information.
-    if (base::FeatureList::IsEnabled(
-            web_cache::kTrimWebCacheOnMemoryPressureOnly) ||
-        base::FeatureList::IsEnabled(
-            blink::features::kNoCentralWebCacheLimitControl)) {
-      return;
-    }
-    // Rate limit informing the host of our cache stats.
-    if (!weak_factory_.HasWeakPtrs()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&RendererResourceDelegate::InformHostOfCacheStats,
-                         weak_factory_.GetWeakPtr()),
-          base::Milliseconds(kCacheStatsDelayMS));
-    }
-  }
-
+  void OnRequestComplete() override {}
   scoped_refptr<blink::WebRequestPeer> OnReceivedResponse(
       scoped_refptr<blink::WebRequestPeer> current_peer,
       const blink::WebString& mime_type,
@@ -115,23 +91,6 @@ class RendererResourceDelegate
   }
 
  private:
-  void InformHostOfCacheStats() {
-    DCHECK(!base::FeatureList::IsEnabled(
-        web_cache::kTrimWebCacheOnMemoryPressureOnly));
-    DCHECK(!base::FeatureList::IsEnabled(
-        blink::features::kNoCentralWebCacheLimitControl));
-    WebCache::UsageStats stats;
-    WebCache::GetUsageStats(&stats);
-    if (!cache_stats_recorder_) {
-      RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-          &cache_stats_recorder_);
-    }
-    cache_stats_recorder_->RecordCacheStats(stats.capacity, stats.size);
-  }
-
-  mojo::AssociatedRemote<chrome::mojom::CacheStatsRecorder>
-      cache_stats_recorder_;
-
   base::WeakPtrFactory<RendererResourceDelegate> weak_factory_{this};
 };
 

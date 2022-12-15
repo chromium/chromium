@@ -181,7 +181,6 @@ static_library("renderer") {
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
     "//components/visitedlink/renderer",
-    "//components/web_cache/public:features",
     "//components/web_cache/renderer",
     "//components/webapps/renderer",
     "//content/public/child",
