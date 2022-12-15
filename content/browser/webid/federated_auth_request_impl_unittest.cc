@@ -176,8 +176,8 @@ struct RequestExpectations {
 // Mock configuration values for test.
 struct MockClientIdConfiguration {
   FetchStatus fetch_status;
-  const char* privacy_policy_url;
-  const char* terms_of_service_url;
+  std::string privacy_policy_url;
+  std::string terms_of_service_url;
 };
 
 struct MockWellKnown {
@@ -186,10 +186,10 @@ struct MockWellKnown {
 
 struct MockConfig {
   FetchStatus fetch_status;
-  const char* accounts_endpoint;
-  const char* token_endpoint;
-  const char* client_metadata_endpoint;
-  const char* metrics_endpoint;
+  std::string accounts_endpoint;
+  std::string token_endpoint;
+  std::string client_metadata_endpoint;
+  std::string metrics_endpoint;
 };
 
 struct MockIdpInfo {
@@ -202,7 +202,7 @@ struct MockIdpInfo {
 
 struct MockConfiguration {
   const char* token;
-  base::flat_map<const char*, MockIdpInfo> idp_info;
+  base::flat_map<std::string, MockIdpInfo> idp_info;
   FetchStatus token_response;
   bool delay_token_response;
   bool customized_dialog;
@@ -235,7 +235,7 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
     kAccounts,
 };
 
-static const base::flat_map<const char*, MockIdpInfo> kSingleProviderInfo{
+static const base::flat_map<std::string, MockIdpInfo> kSingleProviderInfo{
     {kProviderUrlFull, kDefaultIdentityProviderInfo}};
 
 constexpr char kProviderTwoUrlFull[] = "https://idp2.example/fedcm.json";
@@ -369,7 +369,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                       FetchWellKnownCallback callback) override {
     add_fetched_endpoint(FetchedEndpoint::WELL_KNOWN);
 
-    const char* provider_key = ConvertProviderToChar(provider);
+    std::string provider_key = provider.spec();
     std::set<GURL> url_set(
         config_.idp_info[provider_key].well_known.provider_urls.begin(),
         config_.idp_info[provider_key].well_known.provider_urls.end());
@@ -384,7 +384,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                    FetchConfigCallback callback) override {
     add_fetched_endpoint(FetchedEndpoint::CONFIG);
 
-    const char* provider_key = ConvertProviderToChar(provider);
+    std::string provider_key = provider.spec();
     IdpNetworkRequestManager::Endpoints endpoints;
     endpoints.token =
         GURL(config_.idp_info[provider_key].config.token_endpoint);
@@ -478,20 +478,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       fetched_endpoint <<= kFetchedEndpointMultiBitshift;
     }
     fetched_endpoints_ |= fetched_endpoint;
-  }
-
-  const char* ConvertProviderToChar(const GURL& provider) {
-    // TODO(crbug.com/1362079): We iterate through config_idp_info to find the
-    // correct provider. This is because we cannot have a static GURL
-    // initializer. We should make this cleaner by finding another way to map
-    // provider to provider info.
-    const char* provider_key;
-    for (const auto& idp_info : config_.idp_info) {
-      provider_key = idp_info.first;
-      if (GURL(provider_key) == provider)
-        break;
-    }
-    return provider_key;
   }
 };
 
@@ -1027,11 +1013,6 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
 
 // Test that not having the filename in the well-known fails.
 TEST_F(FederatedAuthRequestImplTest, WellKnownHasNoFilename) {
-  IdentityProviderParameters identity_provider{"https://idp.example/foo",
-                                               kClientId, kNonce};
-  RequestParameters parameters{
-      std::vector<IdentityProviderParameters>{identity_provider},
-      /*prefer_auto_sign_in=*/false};
   MockConfiguration config{kConfigurationValid};
   config.idp_info[kProviderUrlFull].well_known.provider_urls =
       std::set<std::string>{GURL(kProviderUrlFull).GetWithoutFilename().spec()};
@@ -1041,7 +1022,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownHasNoFilename) {
       {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::WELL_KNOWN | FetchedEndpoint::CONFIG};
-  RunAuthTest(parameters, expectations, config);
+  RunAuthTest(kDefaultRequestParameters, expectations, config);
 }
 
 // Test that request fails if config is missing token endpoint.
