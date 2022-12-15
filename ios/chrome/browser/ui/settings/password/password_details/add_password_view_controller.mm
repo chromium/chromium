@@ -585,6 +585,10 @@ const CGFloat kSymbolSize = 15;
     [self showTLDMissingSection];
     return;
   }
+  password_manager::metrics_util::
+      LogUserInteractionsWhenAddingCredentialFromSettings(
+          password_manager::metrics_util::
+              AddCredentialFromSettingsUserInteractions::kCredentialAdded);
   [self.delegate
       addPasswordViewController:self
           didAddPasswordDetails:self.usernameTextItem.textFieldValue

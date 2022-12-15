@@ -1312,36 +1312,6 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsAcceptsOnlyValidURLs) {
               UnorderedElementsAre(valid_url_cred, valid_android_cred));
 }
 
-TEST_F(SavedPasswordsPresenterTest,
-       AddCredentialEmitsMetricsOnlyForManuallyAddedPasswords) {
-  base::HistogramTester histogram_tester;
-
-  PasswordForm form1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
-  PasswordForm form2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
-  PasswordForm form3 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 3);
-
-  presenter().AddCredential(CredentialUIEntry(form1),
-                            PasswordForm::Type::kManuallyAdded);
-  // Default type argument is `kManuallyAdded`.
-  presenter().AddCredential(CredentialUIEntry(form2));
-  RunUntilIdle();
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AddCredentialFromSettings.UserAction2", 2);
-
-  // Expected count should not change after this call, because password type is
-  // not `kManuallyAdded`.
-  presenter().AddCredential(CredentialUIEntry(form3),
-                            PasswordForm::Type::kImported);
-  RunUntilIdle();
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AddCredentialFromSettings.UserAction2", 2);
-}
-
 // Tests whether passwords added via AddPassword are saved to the correct store
 // based on |in_store| value.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,

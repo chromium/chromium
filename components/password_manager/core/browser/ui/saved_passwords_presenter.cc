@@ -255,15 +255,7 @@ bool SavedPasswordsPresenter::AddCredential(
 
   GetStoreFor(form).AddLogin(form);
 
-  // TODO(crbug.com/1400263): metrics below record user interactions, such
-  // recording belongs to the UI layer, not to SavedPasswordsPresenter. Remove
-  // this code and move recording to password_edit_dialog.ts and
-  // add_password_view_controller.mm
   if (form.type == password_manager::PasswordForm::Type::kManuallyAdded) {
-    password_manager::metrics_util::
-        LogUserInteractionsWhenAddingCredentialFromSettings(
-            password_manager::metrics_util::
-                AddCredentialFromSettingsUserInteractions::kCredentialAdded);
     if (!form.notes.empty() && form.notes[0].value.length() > 0) {
       password_manager::metrics_util::LogPasswordNoteActionInSettings(
           PasswordNoteAction::kNoteAddedInAddDialog);

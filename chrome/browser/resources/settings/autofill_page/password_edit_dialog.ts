@@ -501,6 +501,10 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           'PasswordManager.AddCredentialFromSettings.AccountStoreUsed',
           useAccountStore);
     }
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PasswordManager.AddCredentialFromSettings.UserAction2',
+        AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED,
+        AddCredentialFromSettingsUserInteractions.COUNT);
     PasswordManagerImpl.getInstance()
         .addPassword({
           url: this.$.websiteInput.value,
