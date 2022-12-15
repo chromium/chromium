@@ -53,11 +53,17 @@ def create_emulator_from_args(args: argparse.Namespace) -> FfxEmulator:
 
 def main():
     """Stand-alone function for starting an emulator."""
+
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     register_emulator_args(parser, True)
     register_log_args(parser)
     args = parser.parse_args()
-    with create_emulator_from_args(args):
+    with create_emulator_from_args(args) as target_id:
+        logging.info(
+            'Emulator successfully started. You can now run Chrome '
+            'Fuchsia tests with --target-id=%s to target this emulator.',
+            target_id)
         try:
             while True:
                 time.sleep(10000)

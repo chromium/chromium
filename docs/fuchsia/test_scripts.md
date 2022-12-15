@@ -11,33 +11,6 @@ to these scripts by the end of Q422. The new scripts currently support:
 To build Fuchsia gtest binaries follow
 [build instructions](build_instructions.md).
 
-### Run on a transient emulated device
-
-The test script brings up an emulator, runs the tests on it, and
-shuts the emulator down when finished.
-```bash
-$ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR]
-```
-
-### Run on a persistent emulated device from the Chromium tree
-
-You can start a persistent emulator from the Chromium tree by running this
-command:
-
-```bash
-$ ./build/fuchsia/test/start_emulator.py
-```
-
-Note that running this command for the first time will download a Fuchsia
-product bundle and will take around a minute. Part of the output should be:
-
-```
-Logging to \
- "$HOME/.local/share/Fuchsia/ffx/emu/instances/[EMULATOR_NAME]/emulator.log"
-```
-
-Record the [EMULATOR_NAME] value as it will be used in subsequent commands.
-
 #### E2E Testing Script
 
 Once the emulator is running, you can run tests on this emulator instance by
