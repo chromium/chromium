@@ -249,7 +249,6 @@ void OnDeviceClusteringBackend::ProcessVisits(
     // Rewrite the entities for the visit, but only if it is possible that we
     // had additional metadata for it.
     if (entity_metadata_provider_) {
-      base::flat_map<std::string, int> inserted_categories;
       auto entity_it =
           visit.content_annotations.model_annotations.entities.begin();
       while (entity_it !=
@@ -302,8 +301,8 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
   base::OnceCallback<std::vector<history::Cluster>()> clustering_callback =
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          clustering_request_source, engagement_score_provider_ != nullptr,
-          std::move(cluster_visits), std::move(entity_id_to_metadata_map));
+          engagement_score_provider_ != nullptr, std::move(cluster_visits),
+          base::OwnedRef(std::move(entity_id_to_metadata_map)));
 
   switch (clustering_request_source) {
     case ClusteringRequestSource::kJourneysPage:
@@ -320,25 +319,54 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 // static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
-    ClusteringRequestSource clustering_request_source,
     bool engagement_score_provider_is_valid,
     std::vector<history::ClusterVisit> visits,
-    base::flat_map<std::string, optimization_guide::EntityMetadata>
+    base::flat_map<std::string, optimization_guide::EntityMetadata>&
         entity_id_to_entity_metadata_map) {
-  base::ElapsedThreadTimer cluster_visits_timer;
+  base::ElapsedThreadTimer compute_clusters_timer;
 
-  // TODO(crbug.com/1260145): All of these objects are "stateless" between
-  // requests for clusters. If there needs to be shared state, the entire
-  // backend needs to be refactored to separate these objects from the UI and
-  // background thread.
+  // 1. Group visits into clusters.
+  base::ElapsedThreadTimer context_clusterer_timer;
   std::unique_ptr<Clusterer> clusterer = std::make_unique<Clusterer>();
+  std::vector<history::Cluster> clusters =
+      clusterer->CreateInitialClustersFromVisits(std::move(visits));
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ContextClusterer.ThreadTime",
+      context_clusterer_timer.Elapsed());
 
+  // 2. Determine how the clusters should be displayed.
+  base::ElapsedThreadTimer compute_clusters_for_ui_timer;
+  clusters = GetClustersForUIOnBackgroundThread(
+      std::move(clusters), entity_id_to_entity_metadata_map);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ComputeClustersForUI.ThreadTime",
+      compute_clusters_for_ui_timer.Elapsed());
+
+  // 3. Determine the triggerability for the clusters.
+  for (auto& cluster : clusters) {
+    base::ElapsedThreadTimer cluster_triggerability_timer;
+    cluster = GetClusterTriggerabilityOnBackgroundThread(
+        engagement_score_provider_is_valid, std::move(cluster),
+        entity_id_to_entity_metadata_map);
+    base::UmaHistogramTimes(
+        "History.Clusters.Backend.ComputeClusterTriggerability.ThreadTime",
+        cluster_triggerability_timer.Elapsed());
+  }
+
+  base::UmaHistogramTimes("History.Clusters.Backend.ComputeClusters.ThreadTime",
+                          compute_clusters_timer.Elapsed());
+
+  return clusters;
+}
+
+// static
+std::vector<history::Cluster>
+OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
+    std::vector<history::Cluster> clusters,
+    base::flat_map<std::string, optimization_guide::EntityMetadata>&
+        entity_id_to_entity_metadata_map) {
   // The cluster processors to be run.
   std::vector<std::unique_ptr<ClusterProcessor>> cluster_processors;
-
-  // The cluster finalizers to be run.
-  std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
-
   cluster_processors.push_back(
       std::make_unique<FullMembershipClusterProcessor>());
   if (GetConfig().content_clustering_enabled) {
@@ -347,16 +375,40 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
             &entity_id_to_entity_metadata_map));
   }
 
-  // Cluster finalizers that affect the appearance of a cluster on a UI surface.
+  // The cluster finalizers to run that affect the appearance of a cluster on a
+  // UI surface.
+  std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
   cluster_finalizers.push_back(
       std::make_unique<SimilarVisitDeduperClusterFinalizer>());
   cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
   cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
       &entity_id_to_entity_metadata_map));
 
-  // TODO(b/259466296): Guard the below cluster finalizers so that they don't
-  // run when we start persisting "basic" clusters at navigation, as these
-  // attributes will be computed on the fly.
+  // Process clusters.
+  for (const auto& processor : cluster_processors) {
+    processor->ProcessClusters(&clusters);
+  }
+
+  // Run finalizers that dedupe and score visits within a cluster and
+  // log several metrics about the result.
+  for (auto& cluster : clusters) {
+    for (const auto& finalizer : cluster_finalizers) {
+      finalizer->FinalizeCluster(cluster);
+    }
+  }
+
+  return clusters;
+}
+
+// static
+history::Cluster
+OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
+    bool engagement_score_provider_is_valid,
+    history::Cluster cluster,
+    base::flat_map<std::string, optimization_guide::EntityMetadata>&
+        entity_id_to_entity_metadata_map) {
+  // The cluster finalizers to be run.
+  std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
 
   // Cluster finalizers that affect the keywords for a cluster.
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
@@ -373,39 +425,11 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     cluster_finalizers.push_back(std::make_unique<CategoryClusterFinalizer>());
   }
 
-  // Group visits into clusters.
-  base::ElapsedThreadTimer clusterer_timer;
-  std::vector<history::Cluster> clusters =
-      clusterer->CreateInitialClustersFromVisits(std::move(visits));
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.ContextClusterer.ThreadTime",
-      clusterer_timer.Elapsed());
-
-  // Process clusters.
-  base::ElapsedThreadTimer cluster_processors_timer;
-  for (const auto& processor : cluster_processors) {
-    processor->ProcessClusters(&clusters);
+  for (const auto& finalizer : cluster_finalizers) {
+    finalizer->FinalizeCluster(cluster);
   }
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.ClusterProcessors.ThreadTime",
-      cluster_processors_timer.Elapsed());
 
-  // Run finalizers that dedupe and score visits within a cluster and
-  // log several metrics about the result.
-  base::ElapsedThreadTimer cluster_finalizers_timer;
-  for (auto& cluster : clusters) {
-    for (const auto& finalizer : cluster_finalizers) {
-      finalizer->FinalizeCluster(cluster);
-    }
-  }
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.ClusterFinalizers.ThreadTime",
-      cluster_finalizers_timer.Elapsed());
-
-  base::UmaHistogramTimes("History.Clusters.Backend.ComputeClusters.ThreadTime",
-                          cluster_visits_timer.Elapsed());
-
-  return clusters;
+  return cluster;
 }
 
 }  // namespace history_clusters
