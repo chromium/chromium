@@ -431,7 +431,7 @@ class circular_deque {
   constexpr circular_deque() = default;
 
   // Constructs with |count| copies of |value| or default constructed version.
-  circular_deque(size_type count) { resize(count); }
+  explicit circular_deque(size_type count) { resize(count); }
   circular_deque(size_type count, const T& value) { resize(count, value); }
 
   // Range constructor.
