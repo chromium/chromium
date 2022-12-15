@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
@@ -256,29 +257,27 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
 
   // |policy_value| is expected to conform to the defined schema. But it's
   // not strictly valid since there are additional restrictions.
-  const base::DictionaryValue* dict_value = nullptr;
   DCHECK(policy_value->is_dict());
-  policy_value->GetAsDictionary(&dict_value);
 
   // Dictionary entries with any invalid setting get removed at the end. We
   // can't mutate the dict while iterating, so store them here.
   std::unordered_set<std::string> invalid_keys;
 
   // Check each entry, populating |invalid_keys| and |errors|.
-  for (auto entry : dict_value->DictItems()) {
-    DCHECK(entry.first == schema_constants::kWildcard ||
-           IsValidIdList(entry.first));
-    DCHECK(entry.second.is_dict());
+  for (const auto [extension_ids, policy] : policy_value->GetDict()) {
+    DCHECK(extension_ids == schema_constants::kWildcard ||
+           IsValidIdList(extension_ids));
+    DCHECK(policy.is_dict());
 
     // Extracts sub dictionary.
-    const base::Value::Dict& sub_dict = entry.second.GetDict();
+    const base::Value::Dict& sub_dict = policy.GetDict();
 
     const std::string* installation_mode =
         sub_dict.FindString(schema_constants::kInstallationMode);
     if (installation_mode) {
       if (*installation_mode == schema_constants::kForceInstalled ||
           *installation_mode == schema_constants::kNormalInstalled) {
-        DCHECK(entry.first != schema_constants::kWildcard);
+        DCHECK(extension_ids != schema_constants::kWildcard);
         // Verifies that 'update_url' is specified for 'force_installed' and
         // 'normal_installed' mode.
         const std::string* update_url =
@@ -287,18 +286,18 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           if (errors) {
             errors->AddError(policy_name(), IDS_POLICY_NOT_SPECIFIED_ERROR,
                              policy::PolicyErrorPath{
-                                 entry.first, schema_constants::kUpdateUrl});
+                                 extension_ids, schema_constants::kUpdateUrl});
           }
-          invalid_keys.insert(entry.first);
+          invalid_keys.insert(extension_ids);
           continue;
         }
         if (!GURL(*update_url).is_valid()) {
           // Warns about an invalid update URL.
           if (errors) {
             errors->AddError(policy_name(), IDS_POLICY_INVALID_UPDATE_URL_ERROR,
-                             entry.first);
+                             extension_ids);
           }
-          invalid_keys.insert(entry.first);
+          invalid_keys.insert(extension_ids);
           continue;
         }
       }
@@ -327,18 +326,18 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
               if (errors) {
                 errors->AddError(
                     policy_name(), IDS_POLICY_URL_PATH_SPECIFIED_ERROR,
-                    unparsed_url, policy::PolicyErrorPath{entry.first, key});
+                    unparsed_url, policy::PolicyErrorPath{extension_ids, key});
               }
-              invalid_keys.insert(entry.first);
+              invalid_keys.insert(extension_ids);
               break;
             }
           }
           if (parse_result != URLPattern::ParseResult::kSuccess) {
             if (errors) {
               errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR,
-                               policy::PolicyErrorPath{entry.first, key});
+                               policy::PolicyErrorPath{extension_ids, key});
             }
-            invalid_keys.insert(entry.first);
+            invalid_keys.insert(extension_ids);
             break;
           }
         }
@@ -352,7 +351,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         policy::PolicyErrorPath error_path = {
-            entry.first, schema_constants::kPolicyBlockedHosts};
+            extension_ids, schema_constants::kPolicyBlockedHosts};
         errors->AddError(
             policy_name(), IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
             base::NumberToString(schema_constants::kMaxItemsURLPatternSet),
@@ -367,7 +366,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         policy::PolicyErrorPath error_path = {
-            entry.first, schema_constants::kPolicyAllowedHosts};
+            extension_ids, schema_constants::kPolicyAllowedHosts};
         errors->AddError(
             policy_name(), IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
             base::NumberToString(schema_constants::kMaxItemsURLPatternSet),
