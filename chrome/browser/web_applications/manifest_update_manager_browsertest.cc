@@ -3455,7 +3455,28 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
+class ManifestUpdateBrowserTestUrlHandlerSynchronize
+    : public ManifestUpdateManagerBrowserTest_UrlHandlers,
+      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+ public:
+  ManifestUpdateBrowserTestUrlHandlerSynchronize() {
+    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kOsIntegrationSubManagers});
+    }
+  }
+
+  ~ManifestUpdateBrowserTestUrlHandlerSynchronize() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateBrowserTestUrlHandlerSynchronize,
                        NoHandlersChangeUpdateAssociations) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -3515,6 +3536,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
   matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
   ASSERT_EQ(matches.size(), 0u);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManifestUpdateBrowserTestUrlHandlerSynchronize,
+    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+                      OsIntegrationSubManagersState::kDisabled),
+    test::GetOsIntegrationSubManagersTestName);
 #endif
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

@@ -90,6 +90,9 @@ void WebAppUninstallJob::Start(const url::Origin& app_origin,
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
       base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/1401125): Remove UninstallAllOsHooks() once OS integration
+  // sub managers have been implemented.
   os_integration_manager.UninstallAllOsHooks(app_id_, synchronize_barrier);
   os_integration_manager.Synchronize(
       app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));

@@ -944,6 +944,8 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
     options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
     auto os_hooks_barrier =
         OsIntegrationManager::GetBarrierForSynchronize(std::move(callback));
+    // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
+    // sub managers have been implemented.
     os_integration_manager.InstallOsHooks(web_app->app_id(), os_hooks_barrier,
                                           nullptr, options);
     os_integration_manager.Synchronize(
@@ -969,6 +971,8 @@ void MaybeUnregisterOsUninstall(const WebApp* web_app,
   if (user_installable_before_install && !user_installable_after_install) {
     OsHooksOptions options;
     options[OsHookType::kUninstallationViaOsSettings] = true;
+    // TODO(crbug.com/1401125): Remove UninstallOsHooks() once OS integration
+    // sub managers have been implemented.
     os_integration_manager.UninstallOsHooks(web_app->app_id(), options,
                                             base::DoNothing());
     os_integration_manager.Synchronize(web_app->app_id(), base::DoNothing());

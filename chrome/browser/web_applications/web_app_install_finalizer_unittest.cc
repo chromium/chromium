@@ -462,13 +462,6 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppInstallFinalizerUnitTest,
     ::testing::Values(OsIntegrationSubManagersState::kEnabled,
                       OsIntegrationSubManagersState::kDisabled),
-    [](const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
-      switch (info.param) {
-        case OsIntegrationSubManagersState::kEnabled:
-          return "OSIntegrationSubManagers_Enabled";
-        case OsIntegrationSubManagersState::kDisabled:
-          return "OSIntegrationSubManagers_Disabled";
-      }
-    });
+    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace web_app

@@ -323,7 +323,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     UpdateProtocolHandlerApprovalCommandTest,
     ::testing::Values(OsIntegrationSubManagersState::kEnabled,
-                      OsIntegrationSubManagersState::kDisabled));
+                      OsIntegrationSubManagersState::kDisabled),
+    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

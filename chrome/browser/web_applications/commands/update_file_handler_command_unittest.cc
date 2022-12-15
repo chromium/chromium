@@ -10,8 +10,10 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -19,14 +21,24 @@
 namespace web_app {
 namespace {
 
-class UpdateFileHandlerCommandTest : public WebAppTest {
+class UpdateFileHandlerCommandTest
+    : public WebAppTest,
+      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
   const char* kTestAppName = "test app";
   const GURL kTestAppUrl = GURL("https://example.com");
 
   UpdateFileHandlerCommandTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFileHandlingAPI);
+    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}},
+           {blink::features::kFileHandlingAPI, {}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileHandlingAPI},
+          {features::kOsIntegrationSubManagers});
+    }
   }
 
   ~UpdateFileHandlerCommandTest() override = default;
@@ -70,7 +82,7 @@ class UpdateFileHandlerCommandTest : public WebAppTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
+TEST_P(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
   const AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
@@ -90,7 +102,7 @@ TEST_F(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
           app_id));
 }
 
-TEST_F(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
+TEST_P(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
   const AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
@@ -110,7 +122,7 @@ TEST_F(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
           app_id));
 }
 
-TEST_F(UpdateFileHandlerCommandTest, UpdateFileHandler) {
+TEST_P(UpdateFileHandlerCommandTest, UpdateFileHandler) {
   const AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
@@ -141,6 +153,13 @@ TEST_F(UpdateFileHandlerCommandTest, UpdateFileHandler) {
       provider()->registrar_unsafe().ExpectThatFileHandlersAreRegisteredWithOs(
           app_id));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UpdateFileHandlerCommandTest,
+    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+                      OsIntegrationSubManagersState::kDisabled),
+    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

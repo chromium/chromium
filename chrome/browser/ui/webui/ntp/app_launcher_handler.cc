@@ -1467,6 +1467,8 @@ void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
           base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
                          weak_ptr_factory_.GetWeakPtr(), app_id));
 
+  // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
+  // sub managers have been implemented.
   web_app_provider_->os_integration_manager().InstallOsHooks(
       app_id, os_hooks_barrier, /*web_app_info=*/nullptr, std::move(options));
   web_app_provider_->os_integration_manager().Synchronize(

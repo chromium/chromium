@@ -549,6 +549,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
           &WebAppInstallFinalizer::OnInstallHooksFinished,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
 
+  // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
+  // sub managers have been implemented.
   os_integration_manager_->InstallOsHooks(
       app_id, os_hooks_barrier, /*web_app_info=*/nullptr, hooks_options);
   os_integration_manager_->Synchronize(
@@ -608,6 +610,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      app_id, old_name));
 
+  // TODO(crbug.com/1401125): Remove UpdateOsHooks() once OS integration
+  // sub managers have been implemented.
   os_integration_manager_->UpdateOsHooks(app_id, old_name,
                                          file_handlers_need_os_update,
                                          web_app_info, os_hooks_barrier);

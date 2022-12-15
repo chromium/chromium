@@ -275,11 +275,4 @@ INSTANTIATE_TEST_SUITE_P(
     AppLauncherHandlerTest,
     ::testing::Values(OsIntegrationSubManagersState::kEnabled,
                       OsIntegrationSubManagersState::kDisabled),
-    [](const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
-      switch (info.param) {
-        case OsIntegrationSubManagersState::kEnabled:
-          return "OSIntegrationSubManagers_Enabled";
-        case OsIntegrationSubManagersState::kDisabled:
-          return "OSIntegrationSubManagers_Disabled";
-      }
-    });
+    web_app::test::GetOsIntegrationSubManagersTestName);

@@ -193,6 +193,9 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
     return;
   }
 
+  // TODO(crbug.com/1401125): Remove InstallOsHooks() and UninstallOsHooks()
+  // once OS integration
+  // sub managers have been implemented.
   if (login_mode_.value() == RunOnOsLoginMode::kNotRun) {
     web_app::OsHooksOptions os_hooks;
     os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;

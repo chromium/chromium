@@ -355,9 +355,13 @@ void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
                 handler.web_app_id().value(), handler.protocol());
 
             // Update registration with the OS.
+            // TODO(crbug.com/1401125): Remove UpdateProtocolHandlers() once OS
+            // integration sub managers have been implemented.
             lock.os_integration_manager().UpdateProtocolHandlers(
                 handler.web_app_id().value(),
                 /*force_shortcut_updates_if_needed=*/true, base::DoNothing());
+            lock.os_integration_manager().Synchronize(
+                handler.web_app_id().value(), base::DoNothing());
           },
           std::move(handler)));
 

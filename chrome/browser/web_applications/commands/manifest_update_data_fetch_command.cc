@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -576,11 +577,26 @@ void ManifestUpdateDataFetchCommand::NoManifestUpdateRequired() {
     return;
   }
 
-  lock_->os_integration_manager().UpdateUrlHandlers(
-      app_id_,
+  auto manifest_update_origin_update_callback = base::BindOnce(
+      &ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated,
+      AsWeakPtr());
+  auto synchronize_callback = base::BarrierCallback<bool>(
+      /*num_callbacks = */ 2,
       base::BindOnce(
-          &ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated,
-          AsWeakPtr()));
+          [&](base::OnceCallback<void(bool)> final_callback,
+              std::vector<bool> final_results) {
+            DCHECK_EQ(2u, final_results.size());
+            bool final_result = final_results[0] && final_results[1];
+            std::move(final_callback).Run(final_result);
+          },
+          std::move(manifest_update_origin_update_callback)));
+
+  // TODO(crbug.com/1401125): Remove UpdateUrlHandlers() once OS integration
+  // sub managers have been implemented.
+  lock_->os_integration_manager().UpdateUrlHandlers(app_id_,
+                                                    synchronize_callback);
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(synchronize_callback, true));
 }
 
 void ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated(

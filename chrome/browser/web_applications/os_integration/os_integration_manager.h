@@ -114,8 +114,12 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void Start();
 
-  // Start OS Integration synchronization from external points. This should be
-  // the only point of call into OsIntegrationManager from external places.
+  // Start OS Integration synchronization from external callsites. This should
+  // be the only point of call into OsIntegrationManager from external places
+  // after the OS integration sub managers have been implemented.
+  // TODO(crbug.com/1401125): Remove all install, uninstall and update functions
+  // from this file once all OS Integration sub managers have been implemented,
+  // connected to the web_app system and tested.
   virtual void Synchronize(const AppId& app_id, base::OnceClosure callback);
 
   // Install all needed OS hooks for the web app.

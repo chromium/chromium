@@ -349,6 +349,8 @@ void WebAppUiManagerImpl::InstallOsHooksForReplacementApp(
   options.add_to_desktop = locations.on_desktop;
   options.add_to_quick_launch_bar = locations.in_quick_launch_bar;
   options.os_hooks[OsHookType::kRunOnOsLogin] = locations.in_startup;
+  // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
+  // sub managers have been implemented.
   os_integration_manager_->InstallOsHooks(app_id, base::DoNothing(), nullptr,
                                           options);
   os_integration_manager_->Synchronize(app_id, base::DoNothing());
