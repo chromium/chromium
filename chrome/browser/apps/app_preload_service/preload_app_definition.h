@@ -11,6 +11,8 @@
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
+class GURL;
+
 namespace apps {
 
 // A wrapper class around an App Preload Server proto to allow for easier
@@ -31,9 +33,15 @@ class PreloadAppDefinition {
   // Returns the Web App manifest ID for the app, which is the canonical
   // identifier for this app, as specified by
   // https://www.w3.org/TR/appmanifest/#id-member. Does not attempt to validate
-  // the value in the proto. Must only be called if `GetPlatform()` returns
+  // the value returned. Must only be called if `GetPlatform()` returns
   // `AppType::kWeb`.
   std::string GetWebAppManifestId() const;
+
+  // Returns the Web App manifest URL for the app, which hosts the manifest of
+  // the app in a JSON format. The URL could point to a local file, or a web
+  // address. Does not attempt to validate the GURL. Must only be called if
+  // `GetPlatform()` returns `AppType::kWeb`.
+  GURL GetWebAppManifestUrl() const;
 
  private:
   proto::AppProvisioningListAppsResponse_App app_proto_;

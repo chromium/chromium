@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
+#include "url/gurl.h"
+
 namespace apps {
 
 std::string PreloadAppDefinition::GetName() const {
@@ -30,6 +32,12 @@ std::string PreloadAppDefinition::GetWebAppManifestId() const {
   DCHECK_EQ(GetPlatform(), AppType::kWeb);
 
   return app_proto_.web_extras().manifest_id();
+}
+
+GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
+  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+
+  return GURL(app_proto_.web_extras().manifest_url());
 }
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {

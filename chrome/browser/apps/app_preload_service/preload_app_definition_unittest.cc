@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "url/gurl.h"
 
 namespace apps {
 
@@ -110,6 +111,52 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdNotSpecified) {
   PreloadAppDefinition app_def(app);
 
   ASSERT_TRUE(app_def.GetWebAppManifestId().empty());
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlWebsite) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_url(
+      "https://meltingpot.googleusercontent.com/manifest.json");
+
+  PreloadAppDefinition app_def(app);
+
+  GURL manifest_url = app_def.GetWebAppManifestUrl();
+
+  ASSERT_TRUE(manifest_url.is_valid());
+  ASSERT_EQ(manifest_url.spec(),
+            "https://meltingpot.googleusercontent.com/manifest.json");
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlLocalFile) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_url(
+      "file:///usr/var/share/aps/peanut_manifest.json");
+
+  PreloadAppDefinition app_def(app);
+
+  GURL manifest_url = app_def.GetWebAppManifestUrl();
+
+  ASSERT_TRUE(manifest_url.is_valid());
+  ASSERT_EQ(manifest_url.spec(),
+            "file:///usr/var/share/aps/peanut_manifest.json");
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlInvalidUrl) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_url("invalid url");
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_FALSE(app_def.GetWebAppManifestUrl().is_valid());
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlNotSpecified) {
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_TRUE(app_def.GetWebAppManifestUrl().is_empty());
 }
 
 }  // namespace apps
