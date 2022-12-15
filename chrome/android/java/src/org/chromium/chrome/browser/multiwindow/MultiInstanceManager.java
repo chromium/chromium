@@ -12,11 +12,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
-import android.os.Build;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -50,7 +48,6 @@ import java.util.List;
  * {@link #isStartedUpCorrectly(int)} to validate that the owning Activity should be allowed to
  * finish starting up.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 public class MultiInstanceManager
         implements PauseResumeWithNativeObserver, RecreateObserver, ConfigurationChangedObserver,
                    NativeInitObserver, MultiWindowModeStateDispatcher.MultiWindowModeObserver,
@@ -111,9 +108,7 @@ public class MultiInstanceManager
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return null;
-        } else if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,
                     modalDialogManagerSupplier, menuOrKeyboardActionController);
