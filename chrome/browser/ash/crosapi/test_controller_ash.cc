@@ -64,7 +64,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
@@ -72,7 +72,7 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 
 namespace crosapi {
 
@@ -525,7 +525,7 @@ void TestControllerAsh::BindTestShillController(
   std::move(callback).Run();
 }
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 namespace {
 
 // Observer that destroys itself after receiving OnPrintJobFinished event.
@@ -556,7 +556,7 @@ class SelfOwnedPrintJobHistoryServiceObserver
 
 }  // namespace
 
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 
 // This class is set as UtteranceEventDelegate for the Ash TtsUtterance
 // created in TestControllerAsh::TtsSpeak(), which is called from lacros browser
@@ -603,7 +603,7 @@ class TestControllerAsh::AshUtteranceEventDelegate
 void TestControllerAsh::CreateAndCancelPrintJob(
     const std::string& job_title,
     CreateAndCancelPrintJobCallback callback) {
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   auto* profile = ProfileManager::GetPrimaryUserProfile();
 
   auto* observer = new SelfOwnedPrintJobHistoryServiceObserver(
@@ -623,7 +623,7 @@ void TestControllerAsh::CreateAndCancelPrintJob(
   print_job_manager->NotifyJobCreated(print_job->GetWeakPtr());
   print_job->set_state(ash::CupsPrintJob::State::STATE_CANCELLED);
   print_job_manager->NotifyJobCanceled(print_job->GetWeakPtr());
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 }
 
 void TestControllerAsh::BindShillClientTestInterface(

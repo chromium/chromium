@@ -38,6 +38,7 @@
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
 #include "media/media_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_security_policy.h"
@@ -45,7 +46,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/renderer/extensions/api/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/api/platform_keys_natives.h"
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
 #endif
 #endif
@@ -251,7 +252,7 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
       ->SetDelegate(
           std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   bindings->GetHooksForAPI("printing")
       ->SetDelegate(std::make_unique<extensions::PrintingHooksDelegate>());
 #endif

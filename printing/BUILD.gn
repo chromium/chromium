@@ -75,6 +75,7 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
     ]
     deps = [
       "//base",
+      "//printing/buildflags",
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy",
       "//services/network:network_sandbox_hook",
@@ -388,8 +389,6 @@ test("printing_unittests") {
 
 if (use_cups) {
   config("cups") {
-    defines = [ "USE_CUPS" ]
-
     if (is_mac) {
       libs = [ "cups" ]
       lib_dirs = [ "$mac_sdk_path/usr/lib" ]

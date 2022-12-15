@@ -205,7 +205,7 @@ void PrintJobWorker::SetSettings(base::Value::Dict new_settings,
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
         print_backend->GetPrinterDriverInfo(printer_name));
 
-#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
     PrinterBasicInfo basic_info;
     if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info) ==
         mojom::ResultCode::kSuccess) {
@@ -215,7 +215,7 @@ void PrintJobWorker::SetSettings(base::Value::Dict new_settings,
 
       new_settings.Set(kSettingAdvancedSettings, std::move(advanced_settings));
     }
-#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
   }
 
   mojom::ResultCode result;

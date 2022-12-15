@@ -12,20 +12,21 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 
 namespace printing {
 
-#if !defined(USE_CUPS)
+#if !BUILDFLAG(USE_CUPS)
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
     bool skip_system_calls) {
   return std::make_unique<PrintingContextNoSystemDialog>(delegate);
 }
-#endif  // !defined(USE_CUPS)
+#endif  // !BUILDFLAG(USE_CUPS)
 
 PrintingContextNoSystemDialog::PrintingContextNoSystemDialog(Delegate* delegate)
     : PrintingContext(delegate) {}

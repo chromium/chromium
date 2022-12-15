@@ -18,8 +18,8 @@
 #include "base/hash/hash.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -29,6 +29,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -217,11 +218,12 @@ class PolicyPrefMappingTest {
     if (prefs_.empty()) {
       ADD_FAILURE() << "missing |prefs|";
     }
-    const base::Value* required_preprocessor_macros_value =
-        mapping.FindListKey("required_preprocessor_macros");
-    if (required_preprocessor_macros_value) {
-      for (const auto& macro : required_preprocessor_macros_value->GetList())
-        required_preprocessor_macros_.push_back(macro.GetString());
+    const base::Value* required_buildflags_value =
+        mapping.FindListKey("required_buildflags");
+    if (required_buildflags_value) {
+      for (const auto& required_buildflag: required_buildflags_value->GetList()) {
+        required_buildflags_.push_back(required_buildflag.GetString());
+      }
     }
   }
   ~PolicyPrefMappingTest() = default;
@@ -235,8 +237,8 @@ class PolicyPrefMappingTest {
     return prefs_;
   }
 
-  const std::vector<std::string>& required_preprocessor_macros() const {
-    return required_preprocessor_macros_;
+  const std::vector<std::string>& required_buildflags() const {
+    return required_buildflags_;
   }
 
  private:
@@ -244,43 +246,29 @@ class PolicyPrefMappingTest {
   base::Value policies_settings_;
   const std::string pref_;
   std::vector<std::unique_ptr<PrefTestCase>> prefs_;
-  std::vector<std::string> required_preprocessor_macros_;
+  std::vector<std::string> required_buildflags_;
 };
 
-// Populates preprocessor macros as strings that policy pref mapping test cases
+// Populates buildflags as strings that policy pref mapping test cases
 // can depend on and implements a check if such a test case should run according
-// to the preprocessor macros.
-class PreprocessorMacrosChecker {
- public:
-  PreprocessorMacrosChecker() {
-    // If you are adding a macro mapping here, please also add it to the
-    // documentation of 'required_preprocessor_macros' in
-    // policy_test_cases.json.
-#if defined(USE_CUPS)
-    enabled_preprocessor_macros.insert("USE_CUPS");
+// to the buildflags.
+bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
+  static base::NoDestructor<base::flat_set<std::string>> kBuildFlags([] {
+    base::flat_set<std::string> flags;
+#if BUILDFLAG(USE_CUPS)
+    flags.insert("USE_CUPS");
 #endif
-  }
-  ~PreprocessorMacrosChecker() = default;
-  PreprocessorMacrosChecker(const PreprocessorMacrosChecker& other) = delete;
-  PreprocessorMacrosChecker& operator=(const PreprocessorMacrosChecker& other) =
-      delete;
+    return flags;
+  }());
 
-  // Returns true if |test| may be executed based on its reuquired preprocessor
-  // macros.
-  bool SupportsTest(const PolicyPrefMappingTest* test) const {
-    for (const std::string& required_macro :
-         test->required_preprocessor_macros()) {
-      if (enabled_preprocessor_macros.find(required_macro) ==
-          enabled_preprocessor_macros.end()) {
-        return false;
-      }
+  for (const auto& required_buildflag : test->required_buildflags()) {
+    if (!kBuildFlags->contains(required_buildflag)) {
+      return false;
     }
-    return true;
   }
 
- private:
-  std::set<std::string> enabled_preprocessor_macros;
-};
+  return true;
+}
 
 // Contains the testing details for a single policy. This is part of the data
 // loaded from chrome/test/data/policy/policy_test_cases.json.
@@ -574,7 +562,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 
-  const PreprocessorMacrosChecker preprocessor_macros_checker;
   const PolicyTestCases test_cases(test_case_path);
 
   auto test_filter = GetTestFilter();
@@ -623,9 +610,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
             << "Test #" << i << " for " << test_case->name()
             << " is missing pref values to check for";
 
-        if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
+        if (!CheckRequiredBuildFlagsSupported(pref_mapping.get())) {
           LOG(INFO) << "Test #" << i << " for " << test_case->name()
-                    << " skipped due to preprocessor macros";
+                    << " skipped due to buildflags";
           continue;
         }
 

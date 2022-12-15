@@ -199,10 +199,10 @@ the policies set in `policies`) and the value is a dictionary with `scope`
 `active_directory`, `local_account_override`, `platform`, `merged`,
 `cloud_from_ash`], defaults to `cloud`).
 
-Each `PolicyPrefMappingTest` can also have a `required_preprocessor_macros`,
-which defines a list of required preprocessor macros for the test to run.
+Each `PolicyPrefMappingTest` can also have a `required_buildflags`,
+which defines a list of required buildflags for the test to run.
 Possible values are [`USE_CUPS`]. Defaults to an empty list if not specified. If
-any of the specified macros is not defined in the current build, the test case
+any of the specified buildflags is not defined in the current build, the test case
 is skipped.
 
 ### PolicyPrefTestCase
@@ -270,7 +270,7 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
           },
           ... // 0...N policies
         }, // optional
-        "required_prepocessor_macros": array<string> // optional, subset of ["USE_CUPS"], defaults to empty list
+        "required_buildflags": array<string> // optional, subset of ["USE_CUPS"], defaults to empty list
         "prefs": {
           ${pref_name_1}: {
             "location": string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"

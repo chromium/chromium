@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -555,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   ASSERT_TRUE(settings->is_settings());
   EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
   EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsOverrideDpi);
-#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
   const PrintSettings::AdvancedSettings& advanced_settings =
       settings->get_settings().advanced_settings();
   EXPECT_EQ(advanced_settings.size(), kDefaultPrintInfoOptions.size());
@@ -564,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
     ASSERT_NE(option, kDefaultPrintInfoOptions.end());
     EXPECT_EQ(option->second, advanced_setting.second.GetString());
   }
-#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
 
   // Updating for an invalid printer should not return print settings.
   print_settings.set_device_name(kInvalidPrinterName16);

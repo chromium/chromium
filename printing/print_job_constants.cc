@@ -237,7 +237,7 @@ const char kSettingOpenPDFInPreview[] = "openPDFInPreview";
 const uint32_t kInvalidPageIndex = std::numeric_limits<int>::max();
 const uint32_t kMaxPageCount = std::numeric_limits<int>::max();
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 const char kBlack[] = "Black";
 const char kCMYK[] = "CMYK";
 const char kKCMY[] = "KCMY";

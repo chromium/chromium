@@ -49,7 +49,7 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
       base::MayBlock(), base::TaskPriority::USER_VISIBLE};
 #endif
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   // CUPS is thread safe.
   return base::ThreadPool::CreateTaskRunner(kTraits);
 #elif BUILDFLAG(IS_WIN)
@@ -269,9 +269,9 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
     VLOG(1) << "Enumerate printers start via service";
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
-    service_mgr.EnumeratePrinters(
-        base::BindOnce(&OnDidEnumeratePrinters, std::move(callback),
-                       std::move(done_callback)));
+    service_mgr.EnumeratePrinters(base::BindOnce(&OnDidEnumeratePrinters,
+                                                 std::move(callback),
+                                                 std::move(done_callback)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)

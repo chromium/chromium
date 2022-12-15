@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace printing {
 
@@ -156,7 +157,7 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const uint32_t kInvalidPageIndex;
 COMPONENT_EXPORT(PRINTING_BASE) extern const uint32_t kMaxPageCount;
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 // Printer color models
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kBlack[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMYK[];

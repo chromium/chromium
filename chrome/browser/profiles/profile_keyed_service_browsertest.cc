@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "content/public/test/browser_test.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace {
@@ -412,9 +413,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PrefWatcher",
     "PreferenceAPI",
     "PrimaryAccountPolicyManager",
-  #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+  #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     "PrintingMetricsService",
-  #endif // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+  #endif // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     "PrivacySandboxService",
     "PrivacySandboxSettings",
     "ProcessManager",

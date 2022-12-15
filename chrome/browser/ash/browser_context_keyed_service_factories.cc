@@ -46,8 +46,9 @@
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "printing/buildflags/buildflags.h"
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
@@ -67,7 +68,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
   crosapi::PersistentForcedExtensionKeepAliveFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   CupsProxyServiceManagerFactory::GetInstance();
 #endif
   CupsPrintersManagerFactory::GetInstance();
@@ -76,7 +77,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   eche_app::EcheAppManagerFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
 #endif
   FileChangeServiceFactory::GetInstance();

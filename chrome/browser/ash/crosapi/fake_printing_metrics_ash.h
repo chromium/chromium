@@ -7,7 +7,7 @@
 
 #include "printing/buildflags/buildflags.h"
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #error Fake PrintingMetricsAsh cannot be used with the USE_CUPS flag.
 #endif
 

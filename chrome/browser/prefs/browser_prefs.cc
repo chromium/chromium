@@ -296,9 +296,9 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1527,9 +1527,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterListPref(
       chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
       PrefRegistry::PUBLIC);
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

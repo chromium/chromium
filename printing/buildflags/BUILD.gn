@@ -19,5 +19,6 @@ buildflag_header("buildflags") {
     "ENABLE_TAGGED_PDF=$enable_tagged_pdf",
     "ENABLE_OOP_PRINTING=$enable_oop_printing",
     "ENABLE_PRINT_CONTENT_ANALYSIS=$enable_print_content_analysis",
+    "USE_CUPS=$use_cups",
   ]
 }

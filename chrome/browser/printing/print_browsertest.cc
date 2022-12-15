@@ -2878,7 +2878,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
             kTestPrintSettingsCopies);
-#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
   // Collect just the keys to compare the info options vs. advanced settings.
   std::vector<std::string> advanced_setting_keys;
   std::vector<std::string> print_info_options_keys;
@@ -2892,7 +2892,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   }
   EXPECT_THAT(advanced_setting_keys,
               testing::UnorderedElementsAreArray(print_info_options_keys));
-#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

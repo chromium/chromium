@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
@@ -259,7 +260,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     settings->set_is_modifiable(is_modifiable.value());
   }
 
-#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS))
   const base::Value::Dict* advanced_settings =
       job_settings.FindDict(kSettingAdvancedSettings);
   if (advanced_settings) {
@@ -271,7 +272,8 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
         settings->advanced_settings().emplace(item.first, item.second.Clone());
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
+#endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) &&
+        // BUILDFLAG(USE_CUPS))
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool send_user_info =

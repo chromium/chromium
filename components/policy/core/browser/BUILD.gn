@@ -129,6 +129,7 @@ static_library("test_support") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/prefs",
+    "//printing/buildflags",
     "//testing/gtest",
     "//url",
   ]

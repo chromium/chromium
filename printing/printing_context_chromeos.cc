@@ -410,7 +410,7 @@ mojom::ResultCode PrintingContextChromeos::PrintDocument(
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   std::vector<char> buffer;
   if (!metafile.GetDataAsVector(&buffer))
     return mojom::ResultCode::kFailed;
@@ -419,7 +419,7 @@ mojom::ResultCode PrintingContextChromeos::PrintDocument(
 #else
   NOTREACHED();
   return mojom::ResultCode::kFailed;
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 }
 
 mojom::ResultCode PrintingContextChromeos::DocumentDone() {

@@ -1112,7 +1112,7 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "required_preprocessor_macros": [
+        "required_buildflags": [
           "USE_CUPS"
         ],
         "policies": {

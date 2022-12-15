@@ -138,6 +138,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 #include "content/public/browser/stable_video_decoder_factory.h"
@@ -145,11 +146,11 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
 #else
 #include "chrome/browser/ash/crosapi/fake_printing_metrics_ash.h"
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 
 namespace crosapi {
 namespace {
@@ -245,9 +246,9 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
                                      g_browser_process->local_state())),
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
       printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
@@ -682,9 +683,9 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
 
 void CrosapiAsh::BindPrintingMetrics(
     mojo::PendingReceiver<mojom::PrintingMetrics> receiver) {
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   printing_metrics_ash_->BindReceiver(std::move(receiver));
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 }
 
 void CrosapiAsh::BindReceiver(

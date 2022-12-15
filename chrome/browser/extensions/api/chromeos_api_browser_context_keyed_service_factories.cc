@@ -13,7 +13,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.h"
 #endif
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
 #endif
 
@@ -24,7 +24,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExternalLogoutDoneEventHandlerFactory::GetInstance();
 #endif
   extensions::ExternalLogoutRequestEventHandlerFactory::GetInstance();
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   extensions::PrintingMetricsService::GetFactoryInstance();
 #endif
   extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();

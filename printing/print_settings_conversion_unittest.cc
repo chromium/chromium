@@ -8,6 +8,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -199,7 +200,7 @@ TEST(PrintSettingsConversionTest, DontSendUsername) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS))
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   base::Value value = base::test::ParseJson(kPrinterSettings);
   ASSERT_TRUE(value.is_dict());
@@ -220,6 +221,7 @@ TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));
   EXPECT_EQ(settings->advanced_settings().at("Foo"), base::Value("Bar"));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
+#endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) &&
+        // BUILDFLAG(USE_CUPS))
 
 }  // namespace printing

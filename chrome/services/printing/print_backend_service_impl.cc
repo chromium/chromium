@@ -25,6 +25,7 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
@@ -37,7 +38,7 @@
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 #include "printing/backend/cups_connection_pool.h"
 #endif
 
@@ -80,7 +81,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   static constexpr base::TaskTraits kTraits = {
       base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   // CUPS is thread safe, so a task runner can be allocated for each job.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(kTraits);
@@ -671,7 +672,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
       print_backend_->GetPrinterDriverInfo(*printer_name));
 
-#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
   // Try to fill in advanced settings based upon basic info options.
   PrinterBasicInfo basic_info;
   if (print_backend_->GetPrinterBasicInfo(*printer_name, &basic_info) ==
@@ -682,7 +683,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
 
     job_settings.Set(kSettingAdvancedSettings, std::move(advanced_settings));
   }
-#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
 
   // Use a one-time `PrintingContext` to do the update to print settings.
   // Intentionally do not cache this context here since the process model does
@@ -708,7 +709,7 @@ void PrintBackendServiceImpl::StartPrinting(
     mojom::PrintTargetType target_type,
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
   if (connection_pool) {
     // If a pool exists then this document can only proceed with printing if

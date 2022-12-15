@@ -2125,11 +2125,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kPrintingAPIExtensionsAllowlist,
       prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 #else   // BUILDFLAG(IS_CHROMEOS)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       signin_legacy_policies;

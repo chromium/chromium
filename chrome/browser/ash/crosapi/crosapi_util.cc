@@ -143,6 +143,7 @@
 #include "device/bluetooth/floss/floss_features.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -198,11 +199,11 @@ bool GetIsCurrentUserOwner() {
 }
 
 bool GetUseCupsForPrinting() {
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
   return true;
 #else
   return false;
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 }
 
 // Returns the device specific data needed for Lacros.

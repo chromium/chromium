@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +42,7 @@ TEST(PrintSettingsDeathTest, IsColorModelSelectedEdges) {
   EXPECT_DCHECK_DEATH(
       IsColorModelSelected(mojom::ColorModel::kUnknownColorModel));
 }
-#if defined(USE_CUPS)
+#if BUILDFLAG(USE_CUPS)
 TEST(PrintSettingsTest, GetColorModelForModel) {
   std::string color_setting_name;
   std::string color_value;
@@ -65,6 +66,6 @@ TEST(PrintSettingsTest, GetIppColorModelForModel) {
   }
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // defined(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS)
 
 }  // namespace printing
