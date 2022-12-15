@@ -431,8 +431,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
   }
 
   private onAutoScanSpeedFaster_(): void {
-    const pref: chrome.settingsPrivate.PrefObject<number> =
-        this.getPref(AUTO_SCAN_SPEED_PREF);
+    const pref = this.getPref<number>(AUTO_SCAN_SPEED_PREF);
     const currentValue = pref.value;
     // Find the first element in the array that is equal to, or smaller than,
     // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
@@ -448,8 +447,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
   }
 
   private onAutoScanSpeedSlower_(): void {
-    const pref: chrome.settingsPrivate.PrefObject<number> =
-        this.getPref(AUTO_SCAN_SPEED_PREF);
+    const pref = this.getPref<number>(AUTO_SCAN_SPEED_PREF);
     const currentValue = pref.value;
     // Find the first element in the array that is equal to, or smaller than,
     // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
@@ -490,8 +488,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
     const currentAction = (this.assignmentContentsElement.firstChild as
                            SettingsSwitchAccessActionAssignmentPaneElement)
                               .action;
-    const pref: chrome.settingsPrivate.PrefObject<Object> =
-        this.getPref(actionToPref[currentAction]);
+    const pref = this.getPref<Object>(actionToPref[currentAction]);
     const hasSwitchAssigned = Object.keys(pref.value).length > 0;
 
     if (hasSwitchAssigned) {

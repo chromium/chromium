@@ -51,7 +51,7 @@ export class OsSettingsPersonalizationOptionsElement extends
   private showSpellCheckControlToggle_(): boolean {
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
-        (this.getPref('spellcheck.dictionaries').value as string[]).length > 0);
+        this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
 
   // </if><!-- _google_chrome -->

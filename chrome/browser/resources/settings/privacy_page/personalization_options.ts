@@ -229,7 +229,7 @@ export class SettingsPersonalizationOptionsElement extends
   private showSpellCheckControlToggle_(): boolean {
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
-        (this.getPref('spellcheck.dictionaries').value as string[]).length > 0);
+        this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
   // </if><!-- not chromeos -->
 
@@ -237,7 +237,7 @@ export class SettingsPersonalizationOptionsElement extends
   private showSpellCheckControlLink_(): boolean {
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
-        (this.getPref('spellcheck.dictionaries').value as string[]).length > 0);
+        this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
 
   private onUseSpellingServiceLinkClick_() {

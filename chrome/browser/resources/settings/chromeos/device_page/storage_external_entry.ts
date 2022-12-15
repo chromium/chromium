@@ -79,7 +79,7 @@ class StorageExternalEntryElement extends StorageExternalEntryElementBase {
    * UUID of this storage.
    */
   private updateVisible_(): void {
-    const uuids: string[] = this.getPref('arc.visible_external_storages').value;
+    const uuids = this.getPref<string[]>('arc.visible_external_storages').value;
     const isVisible = uuids.some((id) => id === this.uuid);
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: '',

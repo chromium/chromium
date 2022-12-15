@@ -163,8 +163,9 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
       return this.activeTimeZoneDisplayName;
     }
     const method =
-        this.getPref('generated.resolve_timezone_by_geolocation_method_short')
-            .value as number;
+        this.getPref<number>(
+                'generated.resolve_timezone_by_geolocation_method_short')
+            .value;
     const id = [
       'setTimeZoneAutomaticallyDisabled',
       'setTimeZoneAutomaticallyIpOnlyDefault',

@@ -597,7 +597,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
         this.makeSetFromArray_(spellCheckBlockedPref.value);
 
     const translateBlockedPrefValue =
-        this.getPref('translate_blocked_languages').value as string[];
+        this.getPref<string[]>('translate_blocked_languages').value;
     const translateBlockedSet =
         this.makeSetFromArray_(translateBlockedPrefValue);
 

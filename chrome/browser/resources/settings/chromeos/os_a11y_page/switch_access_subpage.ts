@@ -366,8 +366,7 @@ class SettingsSwitchAccessSubpageElement extends
     const improvedTextInputEnabled = loadTimeData.getBoolean(
         'showExperimentalAccessibilitySwitchAccessImprovedTextInput');
 
-    const pref: chrome.settingsPrivate.PrefObject<boolean> =
-        this.getPref(PREFIX + 'auto_scan.enabled');
+    const pref = this.getPref<boolean>(PREFIX + 'auto_scan.enabled');
     const autoScanEnabled = pref.value;
     return improvedTextInputEnabled && autoScanEnabled;
   }

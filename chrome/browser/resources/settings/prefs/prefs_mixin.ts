@@ -93,7 +93,7 @@ export const PrefsMixin = dedupingMixin(
 
 export interface PrefsMixinInterface {
   prefs: any;
-  getPref(prefPath: string): chrome.settingsPrivate.PrefObject;
+  getPref<T = any>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
   setPrefValue(prefPath: string, value: any): void;
   appendPrefListItem(key: string, item: any): void;
   updatePrefListItem(key: string, item: any, new_item: any): void;
