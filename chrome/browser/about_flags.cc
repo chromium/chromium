@@ -2643,8 +2643,6 @@ const FeatureEntry::FeatureParam kFedCmVariationAutoSignin[] = {
     {features::kFedCmAutoSigninFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureParam kFedCmVariationIdpSignout[] = {
     {features::kFedCmIdpSignoutFieldTrialParamName, "true"}};
-const FeatureEntry::FeatureParam kFedCmVariationIframe[] = {
-    {features::kFedCmIframeSupportFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureParam kFedCmVariationIdpSigninStatus[] = {
     {features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
@@ -2652,8 +2650,6 @@ const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
      std::size(kFedCmVariationAutoSignin), nullptr},
     {"- with FedCM IDP sign-out", kFedCmVariationIdpSignout,
      std::size(kFedCmVariationIdpSignout), nullptr},
-    {"- with iframe support", kFedCmVariationIframe,
-     std::size(kFedCmVariationIframe), nullptr},
     {"- with FedCM IDP sign-in status", kFedCmVariationIdpSigninStatus,
      std::size(kFedCmVariationIdpSigninStatus), nullptr},
 };
@@ -8066,6 +8062,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
+
+    {"fedcm-iframe-support", flag_descriptions::kFedCmIframeSupportName,
+     flag_descriptions::kFedCmIframeSupportDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmIframeSupport)},
 
     {"fedcm-without-third-party-cookies",
      flag_descriptions::kFedCmWithoutThirdPartyCookiesName,

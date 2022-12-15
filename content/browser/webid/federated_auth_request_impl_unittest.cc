@@ -2451,9 +2451,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
 
 TEST_F(FederatedAuthRequestImplTest, IframeTooManyRequests) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIframeSupportFieldTrialParamName, "true"}});
+  list.InitWithFeatures({features::kFedCm, features::kFedCmIframeSupport}, {});
   EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,

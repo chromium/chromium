@@ -1424,6 +1424,11 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
+const char kFedCmIframeSupportName[] = "FedCM with iframe support";
+const char kFedCmIframeSupportDescription[] =
+    "Enables the 'identity-credentials-get' Permissions-Policy for the FedCM "
+    "API.";
+
 const char kFedCmWithoutThirdPartyCookiesName[] =
     "FedCmWithoutThirdPartyCookies";
 const char kFedCmWithoutThirdPartyCookiesDescription[] =

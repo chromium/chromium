@@ -35,6 +35,7 @@ gamepad
 geolocation
 gyroscope
 hid
+identity-credentials-get
 idle-detection
 keyboard-map
 local-fonts

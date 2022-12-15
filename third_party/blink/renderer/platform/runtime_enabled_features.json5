@@ -1208,7 +1208,7 @@
       name: "FedCmIframeSupport",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
     },
     {
       name: "FedCmMultipleIdentityProviders",

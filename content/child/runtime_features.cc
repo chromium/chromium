@@ -213,6 +213,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
+    {wf::EnableFedCmIframeSupport, features::kFedCmIframeSupport,
+     kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      features::kFedCmMultipleIdentityProviders, kDefault},
     {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kDefault},
@@ -534,11 +536,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
             features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
             false)) {
       WebRuntimeFeatures::EnableFedCmIdpSignout(true);
-    }
-    if (base::GetFieldTrialParamByFeatureAsBool(
-            features::kFedCm, features::kFedCmIframeSupportFieldTrialParamName,
-            false)) {
-      WebRuntimeFeatures::EnableFedCmIframeSupport(true);
     }
     if (base::GetFieldTrialParamByFeatureAsBool(
             features::kFedCm,

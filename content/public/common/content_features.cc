@@ -384,9 +384,10 @@ const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 
-// Field trial boolean parameter which indicates that FedCM API is enabled in
-// cross-origin iframes.
-const char kFedCmIframeSupportFieldTrialParamName[] = "IframeSupport";
+// Enables usage of the FedCM API with iframe support.
+BASE_FEATURE(kFedCmIframeSupport,
+             "FedCmIframeSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
