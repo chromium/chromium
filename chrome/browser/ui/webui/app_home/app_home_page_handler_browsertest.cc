@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
   loop.Run();
   EXPECT_EQ(web_app::RunOnOsLoginMode::kWindowed,
             web_app::WebAppProvider::GetForWebApps(profile())
-                ->registrar()
+                ->registrar_unsafe()
                 .GetAppRunOnOsLoginMode(installed_app_id)
                 .value);
 }
