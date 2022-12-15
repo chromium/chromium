@@ -455,7 +455,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
 }
 
 TEST_F(PhoneStatusProcessorTest,
-       PhoneStatusSnapshotUpdate_AppStreamLauncher_enableded) {
+       PhoneStatusSnapshotUpdate_AppStreamLauncher_enabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
@@ -577,6 +577,18 @@ TEST_F(PhoneStatusProcessorTest,
   EXPECT_EQ(u"vis", app_stream_launcher_data_model_->GetAppsListSortedByName()
                         ->at(1)
                         .visible_app_name);
+
+  EXPECT_EQ(2u,
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .size());
+  EXPECT_EQ(u"vis",
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .at(0)
+                .visible_app_name);
+  EXPECT_EQ(u"a_vis",
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .at(1)
+                .visible_app_name);
 }
 
 TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
@@ -910,7 +922,7 @@ TEST_F(PhoneStatusProcessorTest, OnAppStreamUpdateReceived) {
   EXPECT_EQ("app1", app_stream_manager_observer_.last_app_stream_update_);
 }
 
-TEST_F(PhoneStatusProcessorTest, OnAppListUpdateReceived) {
+TEST_F(PhoneStatusProcessorTest, OnAppListUpdateReceived_allApps) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
@@ -940,7 +952,11 @@ TEST_F(PhoneStatusProcessorTest, OnAppListUpdateReceived) {
 
   // Simulate receiving a proto message.
   fake_message_receiver_->NotifyAppListUpdateReceived(expected_update);
+  decoder_delegate_->CompleteAllRequests();
 
+  EXPECT_EQ(0u,
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .size());
   EXPECT_EQ(2u, app_stream_launcher_data_model_->GetAppsList()->size());
   EXPECT_EQ(
       u"first_app",
@@ -948,6 +964,52 @@ TEST_F(PhoneStatusProcessorTest, OnAppListUpdateReceived) {
   EXPECT_EQ(
       u"second_app",
       app_stream_launcher_data_model_->GetAppsList()->at(1).visible_app_name);
+}
+
+TEST_F(PhoneStatusProcessorTest, OnAppListUpdateReceived_recentApps) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
+                            features::kEcheLauncher},
+      /*disabled_features=*/{});
+
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  proto::AppListUpdate expected_update;
+  auto* streamable_apps = expected_update.mutable_recent_apps();
+  auto* app1 = streamable_apps->add_apps();
+  app1->set_package_name("pkg1");
+  app1->set_visible_name("first_app");
+  app1->set_icon("icon1");
+
+  auto* app2 = streamable_apps->add_apps();
+  app2->set_package_name("pkg2");
+  app2->set_visible_name("second_app");
+  app2->set_icon("icon2");
+
+  // Simulate feature set to enabled and connected.
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+
+  // Simulate receiving a proto message.
+  fake_message_receiver_->NotifyAppListUpdateReceived(expected_update);
+  decoder_delegate_->CompleteAllRequests();
+
+  EXPECT_EQ(0u, app_stream_launcher_data_model_->GetAppsList()->size());
+  EXPECT_EQ(2u,
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .size());
+  EXPECT_EQ(u"first_app",
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .at(0)
+                .visible_app_name);
+  EXPECT_EQ(u"second_app",
+            fake_recent_apps_interaction_handler_->FetchRecentAppMetadataList()
+                .at(1)
+                .visible_app_name);
 }
 
 TEST_F(PhoneStatusProcessorTest, OnAppListUpdateFeatureDisabled) {

@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -190,6 +191,20 @@ std::vector<RecentAppsInteractionHandler::UserState> GetUserStates(
     states.emplace_back(state);
   }
   return states;
+}
+
+bool ShouldUpdateRecents(
+    PhoneStatusProcessor::AppListUpdateType app_list_update_type) {
+  return app_list_update_type ==
+             PhoneStatusProcessor::AppListUpdateType::kOnlyRecentApps ||
+         app_list_update_type == PhoneStatusProcessor::AppListUpdateType::kBoth;
+}
+
+bool ShouldUpdateLauncher(
+    PhoneStatusProcessor::AppListUpdateType app_list_update_type) {
+  return app_list_update_type ==
+             PhoneStatusProcessor::AppListUpdateType::kOnlyLauncherApps ||
+         app_list_update_type == PhoneStatusProcessor::AppListUpdateType::kBoth;
 }
 
 }  // namespace
@@ -383,7 +398,8 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
   if (features::IsEcheSWAEnabled()) {
-    GenerateAppListWithIcons(phone_status_snapshot.streamable_apps());
+    GenerateAppListWithIcons(phone_status_snapshot.streamable_apps(),
+                             AppListUpdateType::kBoth);
   }
   multidevice_feature_access_manager_
       ->UpdatedFeatureSetupConnectionStatusIfNeeded();
@@ -422,16 +438,25 @@ void PhoneStatusProcessor::OnHostStatusChanged(
 
 void PhoneStatusProcessor::OnAppListUpdateReceived(
     const proto::AppListUpdate app_list_update) {
-  if (!app_list_update.has_all_apps())
+  if (!features::IsEcheSWAEnabled()) {
     return;
-
-  if (features::IsEcheSWAEnabled() && features::IsEcheLauncherEnabled()) {
-    GenerateAppListWithIcons(app_list_update.all_apps());
+  }
+  if (app_list_update.has_all_apps() && features::IsEcheLauncherEnabled()) {
+    GenerateAppListWithIcons(app_list_update.all_apps(),
+                             AppListUpdateType::kOnlyLauncherApps);
+  }
+  if (app_list_update.has_recent_apps()) {
+    GenerateAppListWithIcons(app_list_update.recent_apps(),
+                             AppListUpdateType::kOnlyRecentApps);
   }
 }
 
 void PhoneStatusProcessor::GenerateAppListWithIcons(
-    const proto::StreamableApps& streamable_apps) {
+    const proto::StreamableApps& streamable_apps,
+    AppListUpdateType app_list_update_type) {
+  PA_LOG(INFO) << "Received a list of " << streamable_apps.apps_size()
+               << " apps, app_list_update_type="
+               << static_cast<int>(app_list_update_type);
   if (streamable_apps.apps_size() == 0) {
     return;
   }
@@ -455,14 +480,16 @@ void PhoneStatusProcessor::GenerateAppListWithIcons(
         IconDecoder::DecodingData(str_hash(key), app.icon()));
   }
 
-  icon_decoder_->BatchDecode(std::move(decoding_data_list),
-                             base::BindOnce(&PhoneStatusProcessor::IconsDecoded,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            base::OwnedRef(apps_list)));
+  icon_decoder_->BatchDecode(
+      std::move(decoding_data_list),
+      base::BindOnce(&PhoneStatusProcessor::IconsDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), base::OwnedRef(apps_list),
+                     app_list_update_type));
 }
 
 void PhoneStatusProcessor::IconsDecoded(
     std::vector<Notification::AppMetadata>& apps_list,
+    AppListUpdateType app_list_update_type,
     std::unique_ptr<std::vector<IconDecoder::DecodingData>> decode_items) {
   std::hash<std::string> str_hash;
   for (const IconDecoder::DecodingData& decoding_data : *decode_items) {
@@ -478,15 +505,16 @@ void PhoneStatusProcessor::IconsDecoded(
       }
     }
   }
-  if (recent_apps_interaction_handler_) {
+  if (recent_apps_interaction_handler_ &&
+      ShouldUpdateRecents(app_list_update_type)) {
     recent_apps_interaction_handler_->SetStreamableApps(apps_list);
   }
 
-  if (features::IsEcheLauncherEnabled() && app_stream_launcher_data_model_) {
+  if (features::IsEcheLauncherEnabled() && app_stream_launcher_data_model_ &&
+      ShouldUpdateLauncher(app_list_update_type)) {
     app_stream_launcher_data_model_->SetAppList(apps_list);
   }
-
-  if (features::IsEcheSWAEnabled() && features::IsEcheLauncherEnabled() &&
+  if (app_list_update_type == AppListUpdateType::kOnlyLauncherApps &&
       !has_received_first_app_list_update_ &&
       connection_initialized_timestamp_ != base::TimeTicks()) {
     base::UmaHistogramTimes(

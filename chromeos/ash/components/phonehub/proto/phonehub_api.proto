@@ -327,6 +327,7 @@ message StreamableApps {
 message PhoneStatusSnapshot {
   PhoneProperties properties = 1;
   repeated Notification notifications = 2;
+  // TODO(nayebi): remove this and use AppListUpdate.recent_apps instead
   StreamableApps streamable_apps = 3;
 }
 
@@ -394,6 +395,7 @@ message AppStreamUpdate {
 message AppListUpdate {
   // List of apps available to stream, sorted by recency.
   optional StreamableApps all_apps = 1;
+  optional StreamableApps recent_apps = 2;
 }
 
 // When adding new fields to this message, update CameraRollItem#operator==

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/fake_recent_apps_interaction_handler.h"
+#include <utility>
 
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
 namespace ash {
@@ -45,7 +47,8 @@ void FakeRecentAppsInteractionHandler::OnFeatureStateChanged(
 void FakeRecentAppsInteractionHandler::NotifyRecentAppAddedOrUpdated(
     const Notification::AppMetadata& app_metadata,
     base::Time last_accessed_timestamp) {
-  recent_apps_metadata_.emplace_back(app_metadata, last_accessed_timestamp);
+  recent_apps_metadata_.emplace(recent_apps_metadata_.begin(), app_metadata,
+                                last_accessed_timestamp);
 }
 
 std::vector<Notification::AppMetadata>
@@ -59,7 +62,10 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
 
 void FakeRecentAppsInteractionHandler::SetStreamableApps(
     const std::vector<Notification::AppMetadata>& streamable_apps) {
-  // TODO(nayebi): Do we need to implement this?
+  recent_apps_metadata_.clear();
+  for (const auto& app_metadata : streamable_apps) {
+    recent_apps_metadata_.emplace_back(app_metadata, base::Time::UnixEpoch());
+  }
 }
 
 void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {

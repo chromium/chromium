@@ -37,6 +37,13 @@ class PhoneStatusProcessor
       public FeatureStatusProvider::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
+  enum class AppListUpdateType {
+    kOnlyRecentApps = 0,
+    kOnlyLauncherApps,
+    kBoth,
+    kMaxValue = kBoth
+  };
+
   PhoneStatusProcessor(
       DoNotDisturbController* do_not_disturb_controller,
       FeatureStatusProvider* feature_status_provider,
@@ -90,10 +97,12 @@ class PhoneStatusProcessor
   void SetEcheFeatureStatusReceivedFromPhoneHub(
       proto::FeatureStatus eche_feature_status);
 
-  void GenerateAppListWithIcons(const proto::StreamableApps& streamable_apps);
+  void GenerateAppListWithIcons(const proto::StreamableApps& streamable_apps,
+                                AppListUpdateType app_list_update_type);
 
   void IconsDecoded(
       std::vector<Notification::AppMetadata>& apps_list,
+      AppListUpdateType app_list_update_type,
       std::unique_ptr<std::vector<IconDecoder::DecodingData>> decode_items);
 
   DoNotDisturbController* do_not_disturb_controller_;
