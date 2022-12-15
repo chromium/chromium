@@ -130,16 +130,16 @@ void BluetoothTestCast::UpdateAdapter(
   }
 
   // Add service_uuids.
-  std::vector<uint8_t> data;
+  std::vector<uint8_t> parsed_uuids;
   for (const auto& uuid_str : service_uuids) {
     chromecast::bluetooth_v2_shlib::Uuid uuid;
     ASSERT_TRUE(chromecast::bluetooth::util::ParseUuid(uuid_str, &uuid));
-    data.insert(data.end(), uuid.rbegin(), uuid.rend());
+    parsed_uuids.insert(parsed_uuids.end(), uuid.rbegin(), uuid.rend());
   }
   result
       .type_to_data
           [chromecast::bluetooth::LeScanResult::kGapComplete128BitServiceUuids]
-      .push_back(std::move(data));
+      .push_back(std::move(parsed_uuids));
 
   // Add service data.
   for (const auto& it : service_data) {
@@ -155,7 +155,8 @@ void BluetoothTestCast::UpdateAdapter(
 
   // Add manufacturer data.
   for (const auto& it : manufacturer_data) {
-    std::vector<uint8_t> data({(it.first & 0xFF), ((it.first >> 8) & 0xFF)});
+    std::vector<uint8_t> data{{static_cast<uint8_t>(it.first & 0xFF),
+                               static_cast<uint8_t>((it.first >> 8) & 0xFF)}};
     data.insert(data.end(), it.second.begin(), it.second.end());
     result
         .type_to_data[chromecast::bluetooth::LeScanResult::kGapManufacturerData]
