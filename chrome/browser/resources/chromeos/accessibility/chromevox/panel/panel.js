@@ -29,9 +29,7 @@ import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
-/**
- * Class to manage the panel.
- */
+/** Class to manage the panel. */
 export class Panel extends PanelInterface {
   /** @private */
   constructor() {
@@ -96,70 +94,60 @@ export class Panel extends PanelInterface {
     this.mockTouchGestureSourceForTesting_ = false;
     /** @private {boolean} */
     this.tutorialReadyForTesting_ = false;
+
+    this.initListeners_();
   }
 
-  /**
-   * Initialize the panel.
-   */
-  static async init() {
-    if (Panel.instance_) {
-      throw new Error('Cannot call Panel.init() more than once');
-    }
-
-    await LocalStorage.init();
-    Panel.instance_ = new Panel();
-    PanelInterface.instance = Panel.instance_;
-
-    const updateSessionState = sessionState => {
-      Panel.instance_.sessionState_ = sessionState;
-      $('options').disabled = sessionState !== 'IN_SESSION';
-    };
-    chrome.loginState.getSessionState(updateSessionState);
-    chrome.loginState.onSessionStateChanged.addListener(updateSessionState);
-    LocaleOutputHelper.init();
-
+  /** @private */
+  initListeners_() {
+    chrome.loginState.getSessionState(state => this.updateSessionState_(state));
+    chrome.loginState.onSessionStateChanged.addListener(
+        state => this.updateSessionState_(state));
     $('braille-pan-left')
-        .addEventListener(
-            'click',
-            () => chrome.extension.getBackgroundPage()['ChromeVox']
-                      .braille.panLeft(),
-            false);
-
+        .addEventListener('click', () => this.onPanLeft_(), false);
     $('braille-pan-right')
-        .addEventListener(
-            'click',
-            () => chrome.extension.getBackgroundPage()['ChromeVox']
-                      .braille.panRight(),
-            false);
-
-    Panel.updateFromPrefs();
-
-    Msgs.addTranslatedMessagesToDom(document);
-
-    window.addEventListener('storage', function(event) {
-      if (event.key === 'brailleCaptions') {
-        Panel.updateFromPrefs();
-      }
-    }, false);
-
-    window.addEventListener('message', function(message) {
-      const command = JSON.parse(message.data);
-      Panel.exec(/** @type {PanelCommand} */ (command));
-    }, false);
-
+        .addEventListener('click', () => this.onPanRight_(), false);
     $('menus_button').addEventListener('mousedown', Panel.onOpenMenus, false);
     $('options').addEventListener('click', Panel.onOptions, false);
     $('close').addEventListener('click', Panel.onClose, false);
 
     document.addEventListener('keydown', Panel.onKeyDown, false);
     document.addEventListener('mouseup', Panel.onMouseUp, false);
-    window.addEventListener('blur', function(evt) {
-      if (evt.target !== window || document.activeElement === document.body) {
-        return;
-      }
+    window.addEventListener(
+        'storage', event => this.onStorageChanged_(event), false);
+    window.addEventListener(
+        'message', message => this.onMessage_(message), false);
+    window.addEventListener('blur', event => this.onBlur_(event), false);
+    window.addEventListener('hashchange', () => this.onHashChange_(), false);
 
-      PanelInterface.instance.closeMenusAndRestoreFocus();
-    }, false);
+    BridgeHelper.registerHandler(
+        BridgeConstants.Panel.TARGET,
+        BridgeConstants.Panel.Action.ADD_MENU_ITEM,
+        itemData => Panel.addNodeMenuItem(itemData));
+    BridgeHelper.registerHandler(
+        BridgeConstants.Panel.TARGET,
+        BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
+        () => Panel.onCurrentRangeChanged());
+  }
+
+  /** Initialize the panel. */
+  static async init() {
+    if (Panel.instance_) {
+      throw new Error('Cannot call Panel.init() more than once');
+    }
+
+    await LocalStorage.init();
+    LocaleOutputHelper.init();
+    Panel.instance_ = new Panel();
+    PanelInterface.instance = Panel.instance_;
+
+    Panel.updateFromPrefs();
+    Msgs.addTranslatedMessagesToDom(document);
+
+    switch (location.search.slice(1)) {
+      case 'tutorial':
+        Panel.onTutorial();
+    }
   }
 
   /** @override */
@@ -1286,6 +1274,60 @@ export class Panel extends PanelInterface {
       }
     }
   }
+
+  /** @private */
+  onBlur_(event) {
+    if (event.target !== window || document.activeElement === document.body) {
+      return;
+    }
+
+    this.closeMenusAndRestoreFocus();
+  }
+
+  /** @private */
+  async onHashChange_() {
+    // Save the sticky state when a user first focuses the panel.
+    if (location.hash === '#fullscreen' || location.hash === '#focus') {
+      this.originalStickyState_ =
+          await BackgroundBridge.ChromeVoxPrefs.getStickyPref();
+    }
+
+    // If the original sticky state was on when we first entered the panel,
+    // toggle it in in every case. (fullscreen/focus turns the state off,
+    // collapse turns it back on).
+    if (this.originalStickyState_) {
+      BackgroundBridge.CommandHandler.onCommand(Command.TOGGLE_STICKY_MODE);
+    }
+  }
+
+  /** @private */
+  onMessage_(message) {
+    const command = JSON.parse(message.data);
+    Panel.exec(/** @type {PanelCommand} */ (command));
+  }
+
+  /** @private */
+  onPanLeft_() {
+    chrome.extension.getBackgroundPage()['ChromeVox'].braille.panLeft();
+  }
+
+  /** @private */
+  onPanRight_() {
+    chrome.extension.getBackgroundPage()['ChromeVox'].braille.panRight();
+  }
+
+  /** @private */
+  onStorageChanged_(event) {
+    if (event.key === 'brailleCaptions') {
+      Panel.updateFromPrefs();
+    }
+  }
+
+  /** @private */
+  updateSessionState_(sessionState) {
+    this.sessionState_ = sessionState;
+    $('options').disabled = sessionState !== 'IN_SESSION';
+  }
 }
 
 Panel.ACTION_TO_MSG_ID = {
@@ -1298,32 +1340,6 @@ Panel.ACTION_TO_MSG_ID = {
   longClick: 'force_long_click_on_current_item',
 };
 
-window.addEventListener('load', async function() {
-  await Panel.init();
-
-  switch (location.search.slice(1)) {
-    case 'tutorial':
-      Panel.onTutorial();
-  }
-}, false);
-
-window.addEventListener('hashchange', async function() {
-  const bkgnd = chrome.extension.getBackgroundPage();
-
-  // Save the sticky state when a user first focuses the panel.
-  if (location.hash === '#fullscreen' || location.hash === '#focus') {
-    Panel.instance_.originalStickyState_ =
-        await BackgroundBridge.ChromeVoxPrefs.getStickyPref();
-  }
-
-  // If the original sticky state was on when we first entered the panel, toggle
-  // it in in every case. (fullscreen/focus turns the state off, collapse
-  // turns it back on).
-  if (Panel.instance_.originalStickyState_) {
-    BackgroundBridge.CommandHandler.onCommand(Command.TOGGLE_STICKY_MODE);
-  }
-}, false);
-
 /**
  * Shortcut for document.getElementById.
  * @param {string} id of the element.
@@ -1333,13 +1349,7 @@ function $(id) {
   return document.getElementById(id);
 }
 
-BridgeHelper.registerHandler(
-    BridgeConstants.Panel.TARGET, BridgeConstants.Panel.Action.ADD_MENU_ITEM,
-    itemData => Panel.addNodeMenuItem(itemData));
-BridgeHelper.registerHandler(
-    BridgeConstants.Panel.TARGET,
-    BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
-    () => Panel.onCurrentRangeChanged());
+window.addEventListener('load', async () => await Panel.init(), false);
 
 /** @private {Panel} */
 Panel.instance_;
