@@ -325,15 +325,24 @@ LogicalRect ComputeOutOfFlowAvailableRect(
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const NGLogicalStaticPosition& static_position) {
+  return ComputeOutOfFlowAvailableRect(node, space.AvailableSize(), insets,
+                                       static_position);
+}
+
+LogicalRect ComputeOutOfFlowAvailableRect(
+    const NGBlockNode& node,
+    const LogicalSize& available_size,
+    const NGLogicalOutOfFlowInsets& insets,
+    const NGLogicalStaticPosition& static_position) {
   const bool is_table = node.IsTable();
   LayoutUnit inline_offset, inline_size;
   std::tie(inline_offset, inline_size) = ComputeAvailableSpaceInOneAxis(
-      space.AvailableSize().inline_size, insets.inline_start, insets.inline_end,
+      available_size.inline_size, insets.inline_start, insets.inline_end,
       static_position.offset.inline_offset,
       GetStaticPositionEdge(static_position.inline_edge), is_table);
   LayoutUnit block_offset, block_size;
   std::tie(block_offset, block_size) = ComputeAvailableSpaceInOneAxis(
-      space.AvailableSize().block_size, insets.block_start, insets.block_end,
+      available_size.block_size, insets.block_start, insets.block_end,
       static_position.offset.block_offset,
       GetStaticPositionEdge(static_position.block_edge), is_table);
   return LogicalRect(inline_offset, block_offset, inline_size, block_size);

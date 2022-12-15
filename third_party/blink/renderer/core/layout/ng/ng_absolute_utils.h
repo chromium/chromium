@@ -64,6 +64,11 @@ ComputeOutOfFlowAvailableRect(const NGBlockNode&,
                               const NGConstraintSpace&,
                               const NGLogicalOutOfFlowInsets&,
                               const NGLogicalStaticPosition&);
+CORE_EXPORT LogicalRect
+ComputeOutOfFlowAvailableRect(const NGBlockNode&,
+                              const LogicalSize& available_size,
+                              const NGLogicalOutOfFlowInsets&,
+                              const NGLogicalStaticPosition&);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
