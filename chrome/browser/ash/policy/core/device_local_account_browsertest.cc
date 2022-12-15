@@ -34,6 +34,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -383,6 +384,19 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   DeviceLocalAccountTest& operator=(const DeviceLocalAccountTest&) = delete;
 
  protected:
+  static constexpr char kDisplayNameTag[] =
+      "screenplay-6fef6eb9-1132-4d67-9ff7-f7d68b34fc3c";
+  static constexpr char kExtensionsCachedTag[] =
+      "screenplay-ac6c2f45-b38f-46b2-b107-36546701bcb2";
+  static constexpr char kExtensionsUncachedTag[] =
+      "screenplay-0834405c-3800-4c41-b5d5-cc57c9bfd472";
+  static constexpr char kUserAvatarImageTag[] =
+      "screenplay-91d50c4f-f526-4fad-a04d-5c9e1a90fb2b";
+
+  static void AddScreenplayTag(const std::string& screenplay_tag) {
+    base::AddTagToTestResult("feature_id", screenplay_tag);
+  }
+
   DeviceLocalAccountTest()
       : public_session_input_method_id_(
             base::StringPrintf(kPublicSessionInputMethodIDTemplate,
@@ -860,6 +874,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_LoginScreen) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
+  AddScreenplayTag(DeviceLocalAccountTest::kDisplayNameTag);
+
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
 
@@ -1005,6 +1021,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, FullscreenAllowed) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
+  AddScreenplayTag(DeviceLocalAccountTest::kExtensionsUncachedTag);
+
   // Make it possible to force-install a hosted app and an extension.
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   scoped_refptr<TestingUpdateManifestProvider> testing_update_manifest_provider(
@@ -1067,6 +1085,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
+  AddScreenplayTag(DeviceLocalAccountTest::kExtensionsCachedTag);
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Pre-populate the device local account's extension cache with a hosted app
@@ -1363,6 +1383,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
+  AddScreenplayTag(DeviceLocalAccountTest::kUserAvatarImageTag);
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   UploadDeviceLocalAccountPolicy();
