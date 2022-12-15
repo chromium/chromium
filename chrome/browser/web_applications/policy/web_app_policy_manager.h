@@ -65,9 +65,13 @@ class WebAppPolicyManager {
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 
+  // `initialization_complete` waits for the first `SynchronizeInstalledApps` to
+  // finish if it's triggered on `Start`.
   void Start(base::OnceClosure initialization_complete);
 
-  void ReinstallPlaceholderAppIfNecessary(const GURL& url);
+  void ReinstallPlaceholderAppIfNecessary(
+      const GURL& url,
+      ExternallyManagedAppManager::OnceInstallCallback on_complete);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -190,7 +194,7 @@ class WebAppPolicyManager {
 
   // Testing callbacks
   base::OnceClosure refresh_policy_settings_completed_;
-  base::OnceClosure on_apps_synchronized_;
+  base::OnceClosure on_apps_synchronized_for_testing_;
 
   bool is_refreshing_ = false;
   bool needs_refresh_ = false;
@@ -200,6 +204,9 @@ class WebAppPolicyManager {
   std::unique_ptr<WebAppSetting> default_settings_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
+
+  base::OnceClosure initialization_complete_;
+
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<IsolatedWebAppPolicyManager> iwa_policy_manager_;
 #endif

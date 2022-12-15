@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -519,6 +520,13 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         unhashed_app_id);
   }
 
+  void WaitForAppsToSynchronize() {
+    base::RunLoop loop;
+    policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
+        loop.QuitClosure());
+    loop.Run();
+  }
+
  private:
   webapps::InstallResultCode install_result_code_ =
       webapps::InstallResultCode::kSuccessNewInstall;
@@ -537,8 +545,6 @@ TEST_P(WebAppPolicyManagerTest, NoPrefValues) {
   if (ShouldSkipPWASpecificTest())
     return;
 
-  base::RunLoop().RunUntilIdle();
-
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
   EXPECT_TRUE(install_requests.empty());
@@ -551,7 +557,7 @@ TEST_P(WebAppPolicyManagerTest, NoForceInstalledApps) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  base::Value::List());
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -686,7 +692,7 @@ TEST_P(WebAppPolicyManagerTest, TwoForceInstalledApps) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -706,7 +712,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithNoDefaultLaunchContainer) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -726,7 +732,7 @@ TEST_P(WebAppPolicyManagerTest,
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -747,7 +753,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -769,7 +775,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -789,7 +795,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -809,7 +815,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithUnsecureCustomAppIcon) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -829,7 +835,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppName) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -854,7 +860,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
   }
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
   // Change custom name
   {
     base::Value::List list;
@@ -862,7 +868,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
   }
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -895,7 +901,7 @@ TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(first_list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -910,7 +916,7 @@ TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(second_list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   expected_install_options_list.push_back(GetTabbedInstallOptions());
 
@@ -935,7 +941,7 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(first_list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   // We should only try to install the app in the policy.
   std::vector<ExternalInstallOptions> expected_install_options_list;
@@ -953,7 +959,6 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
 TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::RunLoop().RunUntilIdle();
 
   // Add two sites, one that opens in a window and one that opens in a tab.
   base::Value::List first_list;
@@ -961,7 +966,7 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   first_list.Append(GetTabbedItem());
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(first_list));
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -977,7 +982,7 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   second_list.Append(GetWindowedItem());
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(second_list));
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   // We'll try to install the app again but ExternallyManagedAppManager will
   // handle not re-installing the app.
@@ -998,7 +1003,7 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
@@ -1008,8 +1013,13 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   EXPECT_EQ(expected_options_list, install_options_list);
 
   MakeInstalledAppPlaceholder(GURL(kWindowedUrl));
-  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<const GURL&,
+                         ExternallyManagedAppManager::InstallResult>
+      future;
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl),
+                                                      future.GetCallback());
+  EXPECT_EQ(future.Get<1>().code,
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   auto reinstall_options = GetWindowedInstallOptions();
   reinstall_options.install_placeholder = false;
@@ -1028,7 +1038,7 @@ TEST_P(WebAppPolicyManagerTest, DoNotReinstallIfNotPlaceholder) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
@@ -1038,8 +1048,13 @@ TEST_P(WebAppPolicyManagerTest, DoNotReinstallIfNotPlaceholder) {
   EXPECT_EQ(expected_options_list, install_options_list);
 
   // By default, the app being installed is not a placeholder app.
-  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<const GURL&,
+                         ExternallyManagedAppManager::InstallResult>
+      future;
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl),
+                                                      future.GetCallback());
+  EXPECT_EQ(future.Get<1>().code,
+            webapps::InstallResultCode::kFailedPlaceholderUninstall);
 
   // No other options are added to list as the app is currently not
   // installed as a placeholder app.
@@ -1056,7 +1071,7 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetFallbackAppNameInstallOptions());
@@ -1066,8 +1081,13 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   EXPECT_EQ(expected_options_list, install_options_list);
 
   MakeInstalledAppPlaceholder(GURL(kWindowedUrl));
-  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<const GURL&,
+                         ExternallyManagedAppManager::InstallResult>
+      future;
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl),
+                                                      future.GetCallback());
+  EXPECT_EQ(future.Get<1>().code,
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   auto reinstall_options = GetFallbackAppNameInstallOptions();
   reinstall_options.install_placeholder = false;
@@ -1086,7 +1106,7 @@ TEST_P(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
 
-  base::RunLoop().RunUntilIdle();
+  WaitForAppsToSynchronize();
 
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
@@ -1095,9 +1115,14 @@ TEST_P(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
       externally_managed_app_manager().install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
+  base::test::TestFuture<const GURL&,
+                         ExternallyManagedAppManager::InstallResult>
+      future;
   // Try to reinstall for app not installed by policy.
-  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kTabbedUrl));
-  base::RunLoop().RunUntilIdle();
+  policy_manager().ReinstallPlaceholderAppIfNecessary(GURL(kTabbedUrl),
+                                                      future.GetCallback());
+  EXPECT_EQ(future.Get<1>().code,
+            webapps::InstallResultCode::kFailedPlaceholderUninstall);
 
   EXPECT_EQ(expected_options_list, install_options_list);
 }
@@ -1105,7 +1130,6 @@ TEST_P(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
 TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::RunLoop().RunUntilIdle();
   // Add an app.
   {
     base::Value::List list;
@@ -1120,7 +1144,10 @@ TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
   }
-  base::RunLoop().RunUntilIdle();
+
+  // `OnAppsSynchronized` should be triggered twice.
+  WaitForAppsToSynchronize();
+  WaitForAppsToSynchronize();
 
   // Both apps should have been installed.
   std::vector<ExternalInstallOptions> expected_options_list;
@@ -1156,7 +1183,7 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
     histograms.ExpectTotalCount(
         WebAppPolicyManager::kInstallResultHistogramName, 0);
 
-    base::RunLoop().RunUntilIdle();
+    WaitForAppsToSynchronize();
 
     histograms.ExpectTotalCount(
         WebAppPolicyManager::kInstallResultHistogramName, 1);
@@ -1174,7 +1201,8 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
 
-    base::RunLoop().RunUntilIdle();
+    WaitForAppsToSynchronize();
+
     histograms.ExpectTotalCount(
         WebAppPolicyManager::kInstallResultHistogramName, 3);
     histograms.ExpectBucketCount(
@@ -1185,8 +1213,6 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
-  base::RunLoop().RunUntilIdle();
-
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.empty());
 
@@ -1262,12 +1288,9 @@ TEST_P(WebAppPolicyManagerTest,
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
 
-  base::RunLoop loop;
-  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
-      loop.QuitClosure());
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
-  loop.Run();
+  WaitForAppsToSynchronize();
 
   const auto& install_requests =
       externally_managed_app_manager().install_requests();
@@ -1322,12 +1345,9 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
 
-  base::RunLoop force_install_loop;
-  policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
-      force_install_loop.QuitClosure());
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(list));
-  force_install_loop.Run();
+  WaitForAppsToSynchronize();
 
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 

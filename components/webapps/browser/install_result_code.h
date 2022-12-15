@@ -83,7 +83,10 @@ enum class InstallResultCode {
   // The installation stopped due to an uninstall from sync being scheduled.
   kHaltedBySyncUninstall = 28,
 
-  kMaxValue = kHaltedBySyncUninstall,
+  // Invalid install URL for externally managed apps.
+  kInstallURLInvalid = 29,
+
+  kMaxValue = kInstallURLInvalid,
 };
 
 // Checks if InstallResultCode is not a failure.

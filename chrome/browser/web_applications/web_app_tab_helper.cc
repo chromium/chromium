@@ -178,7 +178,8 @@ void WebAppTabHelper::UpdateAudioFocusGroupId() {
 }
 
 void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
-  provider_->policy_manager().ReinstallPlaceholderAppIfNecessary(url);
+  provider_->policy_manager().ReinstallPlaceholderAppIfNecessary(
+      url, base::DoNothing());
 }
 
 absl::optional<AppId> WebAppTabHelper::FindAppWithUrlInScope(

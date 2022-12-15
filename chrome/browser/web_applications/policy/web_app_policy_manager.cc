@@ -118,7 +118,10 @@ void WebAppPolicyManager::SetSystemWebAppDelegateMap(
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 
-void WebAppPolicyManager::Start(base::OnceClosure on_done) {
+void WebAppPolicyManager::Start(base::OnceClosure initialization_complete) {
+  DCHECK(initialization_complete_.is_null());
+
+  initialization_complete_ = std::move(initialization_complete);
   // When Lacros is enabled, don't run PWA-specific logic in Ash.
   // TODO(crbug.com/1251491): Consider factoring out logic that should only run
   // in Ash into a separate class. This way, when running in Ash, we won't need
@@ -131,11 +134,12 @@ void WebAppPolicyManager::Start(base::OnceClosure on_done) {
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support)
-                     .Then(std::move(on_done)));
+                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support));
 }
 
-void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
+void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
+    const GURL& url,
+    ExternallyManagedAppManager::OnceInstallCallback on_complete) {
   const base::Value::List& web_apps =
       pref_service_->GetList(prefs::kWebAppInstallForceList);
   const auto& web_apps_list = web_apps;
@@ -149,13 +153,21 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
       app_registrar_->LookupPlaceholderAppId(url, WebAppManagement::kPolicy)
           .has_value();
 
-  if (it == web_apps_list.end() || !is_placeholder_url)
+  if (it == web_apps_list.end() || !is_placeholder_url) {
+    std::move(on_complete)
+        .Run(url, ExternallyManagedAppManager::InstallResult(
+                      webapps::InstallResultCode::kFailedPlaceholderUninstall));
     return;
+  }
 
   ExternalInstallOptions install_options = ParseInstallPolicyEntry(*it);
 
-  if (!install_options.install_url.is_valid())
+  if (!install_options.install_url.is_valid()) {
+    std::move(on_complete)
+        .Run(url, ExternallyManagedAppManager::InstallResult(
+                      webapps::InstallResultCode::kInstallURLInvalid));
     return;
+  }
 
   // No need to install a placeholder because there should be one already.
   install_options.wait_for_windows_closed = true;
@@ -164,7 +176,7 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
   externally_managed_app_manager_->InstallNow(std::move(install_options),
-                                              base::DoNothing());
+                                              std::move(on_complete));
 }
 
 // static
@@ -204,6 +216,10 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
             weak_ptr_factory_.GetWeakPtr()));
     RefreshPolicyInstalledIsolatedWebApps();
 #endif
+  } else {
+    if (initialization_complete_) {
+      std::move(initialization_complete_).Run();
+    }
   }
   ObserveDisabledSystemFeaturesPolicy();
 }
@@ -538,7 +554,7 @@ RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByUnhashedAppId(
 
 void WebAppPolicyManager::SetOnAppsSynchronizedCompletedCallbackForTesting(
     base::OnceClosure callback) {
-  on_apps_synchronized_ = std::move(callback);
+  on_apps_synchronized_for_testing_ = std::move(callback);
 }
 
 void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
@@ -631,8 +647,13 @@ void WebAppPolicyManager::OnAppsSynchronized(
                                   url_and_result.second.code);
   }
 
-  if (on_apps_synchronized_)
-    std::move(on_apps_synchronized_).Run();
+  if (on_apps_synchronized_for_testing_) {
+    std::move(on_apps_synchronized_for_testing_).Run();
+  }
+
+  if (initialization_complete_) {
+    std::move(initialization_complete_).Run();
+  }
 }
 
 WebAppPolicyManager::WebAppSetting::WebAppSetting() {
