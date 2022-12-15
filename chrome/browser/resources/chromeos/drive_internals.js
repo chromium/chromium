@@ -106,6 +106,7 @@ function updateBulkPinning(enabled) {
     return;
   }
   $('bulk-pinning-setup-stage').innerText = 'Unknown';
+  $('bulk-pinning-setup-stage-error').innerText = 'Unknown';
   $('bulk-pinning-available-disk-space').innerText = 'Unknown';
   $('bulk-pinning-required-disk-space').innerText = 'Unknown';
   $('bulk-pinning-pinned-disk-space').innerText = 'Unknown';
@@ -119,6 +120,9 @@ function onBulkPinningProgress(progress) {
     return;
   }
   $('bulk-pinning-setup-stage').innerText = progress.stage;
+  if (progress.setupError) {
+    $('bulk-pinning-setup-stage-error').innerText = progress.setupError;
+  }
   $('bulk-pinning-available-disk-space').innerText =
       progress.availableDiskSpace;
   $('bulk-pinning-required-disk-space').innerText = progress.requiredDiskSpace;

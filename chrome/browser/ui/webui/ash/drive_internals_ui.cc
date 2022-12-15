@@ -93,6 +93,56 @@ size_t LogMarkToLogLevelNameIndex(char mark) {
   }
 }
 
+std::string BulkPinSetupStageToString(drivefs::pinning::SetupStage stage) {
+  using drivefs::pinning::SetupStage;
+  switch (stage) {
+    case SetupStage::kFinishedSetup:
+      return "kFinishedSetup";
+    case SetupStage::kFinishedSetupWithError:
+      return "kFinishedSetupWithError";
+    case SetupStage::kCalculatedFreeLocalDiskSpace:
+      return "kCalculatedFreeLocalDiskSpace";
+    case SetupStage::kCalculatedRequiredDiskSpace:
+      return "kCalculatedRequiredDiskSpace";
+    case SetupStage::kNotStarted:
+      return "kNotStarted";
+    case SetupStage::kStarted:
+      return "kStarted";
+    default:
+      return "SetupStage(Unknown)";
+  }
+}
+
+std::string BulkPinSetupErrorToString(drivefs::pinning::SetupError error) {
+  using drivefs::pinning::SetupError;
+  switch (error) {
+    case SetupError::kSuccess:
+      return "kSuccess";
+    case SetupError::kManagerDisabled:
+      return "kManagerDisabled";
+    case SetupError::kErrorCalculatingFreeDiskSpace:
+      return "kErrorCalculatingFreeDiskSpace";
+    case SetupError::kErrorRetrievingSearchResults:
+      return "kErrorRetrievingSearchResults";
+    case SetupError::kErrorResultsReturnedInvalid:
+      return "kErrorResultsReturnedInvalid";
+    case SetupError::kErrorNotEnoughFreeSpace:
+      return "kErrorNotEnoughFreeSpace";
+    case SetupError::kErrorRetrievingSearchResultsForPinning:
+      return "kErrorRetrievingSearchResultsForPinning";
+    case SetupError::kErrorResultsReturnedInvalidForPinning:
+      return "kErrorResultsReturnedInvalidForPinning";
+    case SetupError::kErrorFailedToPinItem:
+      return "kErrorFailedToPinItem";
+    case SetupError::kErrorSearchQueryNotBound:
+      return "kErrorSearchQueryNotBound";
+    case SetupError::kErrorManagerStopped:
+      return "kErrorManagerStopped";
+    default:
+      return "SetupError(Unknown)";
+  }
+}
+
 // Gets metadata of all files and directories in |root_path|
 // recursively. Stores the result as a list of dictionaries like:
 //
@@ -608,8 +658,12 @@ class DriveInternalsWebUIHandler
   void OnSetupProgress(
       const drivefs::pinning::SetupProgress& progress) override {
     base::Value::Dict setup_progress;
-    setup_progress.Set("stage",
-                       base::NumberToString(static_cast<int>(progress.stage)));
+    setup_progress.Set("stage", BulkPinSetupStageToString(progress.stage));
+    if (progress.stage ==
+        drivefs::pinning::SetupStage::kFinishedSetupWithError) {
+      setup_progress.Set("setupError",
+                         BulkPinSetupErrorToString(progress.error));
+    }
     setup_progress.Set("availableDiskSpace",
                        base::NumberToString(progress.available_disk_space));
     setup_progress.Set("requiredDiskSpace",
