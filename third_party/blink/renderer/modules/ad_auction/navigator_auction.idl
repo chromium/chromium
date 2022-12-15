@@ -9,6 +9,8 @@
 // Common interest group APIs are behind AdInterestGroupAPI and specific ad
 // serving APIs are behing Fledge and Parakeet respectively.
 
+typedef (USVString or FencedFrameConfig) AdAuctionResponse;
+
 [
   ImplementedAs=NavigatorAuction,
   RuntimeEnabled=AdInterestGroupAPI,
@@ -24,7 +26,7 @@
   void updateAdInterestGroups();
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
-  Promise<USVString?> runAdAuction(AuctionAdConfig config);
+  Promise<AdAuctionResponse?> runAdAuction(AuctionAdConfig config);
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
   sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);

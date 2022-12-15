@@ -122,6 +122,13 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // `isConnected()`. It will be deferred if the page is currently prerendering.
   void Navigate(const KURL& url);
 
+  // This method delegates to `Navigate()` above only if `this` has a non-null
+  // `config_`. If that's the case, this method pulls the appropriate URL off of
+  // the config (either supplied by script, or the internal urn uuid that maps
+  // to a resource in the browser process's `FencedFrameURLMapping`), and
+  // navigates to it.
+  void NavigateToConfig();
+
   // Delegate creation will be deferred if the page is currently prerendering.
   void CreateDelegateAndNavigate();
 

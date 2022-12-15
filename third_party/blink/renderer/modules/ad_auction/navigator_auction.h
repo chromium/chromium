@@ -186,6 +186,7 @@ class MODULES_EXPORT NavigatorAuction final
   void AuctionComplete(
       ScriptPromiseResolver*,
       std::unique_ptr<ScopedAbortState>,
+      bool resolve_to_config,
       bool manually_aborted,
       const absl::optional<FencedFrame::RedactedFencedFrameConfig>&);
   // Completion callback for Mojo call made by deprecatedURNToURL().

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/ad_auction/ads.h"
@@ -1484,10 +1485,16 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
     scoped_abort_state =
         std::make_unique<ScopedAbortState>(signal, abort_handle);
   }
+
+  bool resolve_to_config =
+      config->getResolveToConfigOr(false) &&
+      RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(context);
+
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
       WTF::BindOnce(&NavigatorAuction::AuctionComplete, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(scoped_abort_state)));
+                    WrapPersistent(resolver), std::move(scoped_abort_state),
+                    resolve_to_config));
   return promise;
 }
 
@@ -1784,6 +1791,7 @@ void NavigatorAuction::LeaveComplete(bool is_cross_origin,
 void NavigatorAuction::AuctionComplete(
     ScriptPromiseResolver* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    bool resolve_to_config,
     bool manually_aborted,
     const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
         result_config) {
@@ -1800,7 +1808,11 @@ void NavigatorAuction::AuctionComplete(
   } else if (result_config) {
     DCHECK(result_config->mapped_url().has_value());
     DCHECK(!result_config->mapped_url()->potentially_opaque_value.has_value());
-    resolver->Resolve(KURL(result_config->urn().value()));
+    if (resolve_to_config) {
+      resolver->Resolve(FencedFrameConfig::From(result_config.value()));
+    } else {
+      resolver->Resolve(KURL(result_config->urn().value()));
+    }
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
 namespace blink {
 
@@ -32,6 +33,11 @@ FencedFrameConfig::FencedFrameConfig(
     url_attribute_visibility_ = AttributeVisibility::kTransparent;
     url_ = KURL(mapped_url.value().potentially_opaque_value.value());
   }
+
+  const absl::optional<GURL>& urn = config.urn();
+  CHECK(blink::IsValidUrnUuidURL(*urn));
+  KURL urn_uuid = KURL(*urn);
+  urn_.emplace(std::move(urn_uuid));
 }
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {

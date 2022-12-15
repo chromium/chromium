@@ -322,14 +322,8 @@ HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
 
 void HTMLFencedFrameElement::setConfig(FencedFrameConfig* config) {
   config_ = config;
-
   if (config_) {
-    // Navigate to the specified url in the installed config.
-    DCHECK(config_->url());
-    KURL url =
-        config_
-            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
-    Navigate(url);
+    NavigateToConfig();
   }
 }
 
@@ -559,6 +553,26 @@ void HTMLFencedFrameElement::Navigate(const KURL& url) {
   }
 }
 
+void HTMLFencedFrameElement::NavigateToConfig() {
+  CHECK(config_);
+
+  // Prioritize navigating to `config_`'s internal URN if it exists. If so, that
+  // means it was created by information from the browser process, and the URN
+  // is stored in the `FencedFrameURLMapping`. Otherwise, `config_` was
+  // constructed from script and has a user-supplied URL that `this` will
+  // navigate to instead.
+  if (config_->urn(PassKey())) {
+    KURL url = config_->urn(PassKey()).value();
+    CHECK(IsValidUrnUuidURL(GURL(url)));
+    Navigate(url);
+  } else {
+    CHECK(config_->url());
+    Navigate(
+        config_
+            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>());
+  }
+}
+
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
   TRACE_EVENT0("navigation",
                "HTMLFencedFrameElement::CreateDelegateAndNavigate");
@@ -582,25 +596,11 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   frame_delegate_ = FencedFrameDelegate::Create(this);
 
-  KURL url;
-  // If there is a config, the urn or url will be retrieved from it.
-  if (!config_) {
-    url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-  } else if (config_->urn(PassKey())) {
-    // TODO(lbrady) Right now, the URN should always be null. It will eventually
-    // be able to have a value read into it. We will enable the DCHECK at that
-    // point.
-    // DCHECK(IsValidUrnUuidURL(GURL(config_->urn().value())));
-    NOTREACHED();
-    url = config_->urn(PassKey()).value();
+  if (config_) {
+    NavigateToConfig();
   } else {
-    DCHECK(config_->url());
-    url =
-        config_
-            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
+    Navigate(GetNonEmptyURLAttribute(html_names::kSrcAttr));
   }
-
-  Navigate(url);
 }
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
