@@ -319,7 +319,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTrustedWebActivityQualityEnforcement,
     &kTrustedWebActivityQualityEnforcementForced,
     &kTrustedWebActivityQualityEnforcementWarning,
-    &kShowExtendedPreloadingSetting,
     &kStartSurfaceAndroid,
     &kStartSurfaceReturnTime,
     &kStartSurfaceRefactor,
@@ -1038,10 +1037,6 @@ BASE_FEATURE(kTrustedWebActivityQualityEnforcementForced,
 
 BASE_FEATURE(kTrustedWebActivityQualityEnforcementWarning,
              "TrustedWebActivityQualityEnforcementWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShowExtendedPreloadingSetting,
-             "ShowExtendedPreloadingSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceAndroid,

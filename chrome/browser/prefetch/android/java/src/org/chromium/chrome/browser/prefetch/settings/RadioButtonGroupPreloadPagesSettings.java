@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.prefetch.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -76,11 +74,7 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         super.onBindViewHolder(holder);
         mExtendedPreloading = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                 R.id.extended_preloading);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_EXTENDED_PRELOADING_SETTING)) {
-            mExtendedPreloading.setAuxButtonClickedListener(this);
-        } else {
-            mExtendedPreloading.setVisibility(View.INVISIBLE);
-        }
+        mExtendedPreloading.setAuxButtonClickedListener(this);
         mStandardPreloading = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                 R.id.standard_preloading);
         mStandardPreloading.setAuxButtonClickedListener(this);
@@ -137,12 +131,6 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
      *         buttons of other states to unchecked.
      */
     public void setCheckedState(@PreloadPagesState int checkedState) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_EXTENDED_PRELOADING_SETTING)
-                && checkedState == PreloadPagesState.EXTENDED_PRELOADING) {
-            // If the extended preloading UI setting is disabled, show "Standard
-            // Preloading" as a substitute.
-            checkedState = PreloadPagesState.STANDARD_PRELOADING;
-        }
         mPreloadPagesState = checkedState;
         mExtendedPreloading.setChecked(checkedState == PreloadPagesState.EXTENDED_PRELOADING);
         mStandardPreloading.setChecked(checkedState == PreloadPagesState.STANDARD_PRELOADING);

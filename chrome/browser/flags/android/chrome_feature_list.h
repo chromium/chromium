@@ -173,7 +173,6 @@ BASE_DECLARE_FEATURE(kTrustedWebActivityPostMessage);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcement);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcementForced);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcementWarning);
-BASE_DECLARE_FEATURE(kShowExtendedPreloadingSetting);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kStartSurfaceRefactor);
