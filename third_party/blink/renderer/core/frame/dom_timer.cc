@@ -102,7 +102,7 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   // is small, to avoid being affected by ongoing experiments on delay clamping
   // MaxUnthrottledTimeoutNestingLevel and SetTimeoutZeroWithoutClamping.
   // TODO(1153139) Remove this logic one experiments have shipped.
-  bool precise = (timeout < kMinimumInterval) ||
+  bool precise = (timeout <= kMinimumInterval) ||
                  (scheduler::IsAlignWakeUpsDisabledForProcess() &&
                   timeout < kMaxHighResolutionInterval);
 
