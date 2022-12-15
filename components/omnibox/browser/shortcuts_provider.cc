@@ -364,8 +364,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         // Shortcut-generated HC matches have empty `ClusterKeywordData()`s,
         // because it wasn't generated via an entity match in the first place.
         HistoryClusterProvider::CompleteHistoryClustersMatch(
-            matching_string, history::ClusterKeywordData(), &match,
-            &suggestion_groups_map_);
+            matching_string, history::ClusterKeywordData(), &match);
 #endif  // !BUILDFLAG(IS_IOS)
 
         return match;

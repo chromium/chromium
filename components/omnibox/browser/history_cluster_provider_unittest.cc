@@ -446,25 +446,8 @@ TEST_F(HistoryClustersProviderTest, Counterfactual_Enabled) {
   VerifyFeatureTriggered(true);
 }
 
-TEST_F(HistoryClustersProviderTest, Grouping) {
-  // By default, should have groups.
-  AutocompleteInput input;
-  input.set_omit_asynchronous_matches(false);
-  search_provider_->matches_ = {CreateMatch(u"keyword")};
-  search_provider_->done_ = true;
-
-  provider_->Start(input, false);
-  ASSERT_EQ(provider_->matches().size(), 1u);
-  EXPECT_EQ(provider_->matches()[0].suggestion_group_id,
-            omnibox::GROUP_HISTORY_CLUSTER);
-}
-
-TEST_F(HistoryClustersProviderTest, Grouping_FreeRanking) {
-  // When `omnibox_history_cluster_provider_free_ranking` is enabled, should not
-  // have groups.
-  config_.omnibox_history_cluster_provider_free_ranking = true;
-  history_clusters::SetConfigForTesting(config_);
-
+TEST_F(HistoryClustersProviderTest, Grouping_Ranking) {
+  // Should not have groups.
   AutocompleteInput input;
   input.set_omit_asynchronous_matches(false);
   search_provider_->matches_ = {CreateMatch(u"keyword")};

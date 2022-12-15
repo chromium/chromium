@@ -17,7 +17,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 HistoryClusterProvider::HistoryClusterProvider(
@@ -44,18 +43,8 @@ HistoryClusterProvider::HistoryClusterProvider(
 void HistoryClusterProvider::CompleteHistoryClustersMatch(
     const std::string& matching_text,
     history::ClusterKeywordData matched_keyword_data,
-    AutocompleteMatch* match,
-    omnibox::GroupConfigMap* provider_suggestion_group_maps) {
+    AutocompleteMatch* match) {
   DCHECK(match);
-  DCHECK(provider_suggestion_group_maps);
-
-  if (!history_clusters::GetConfig()
-           .omnibox_history_cluster_provider_free_ranking) {
-    match->suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-    // Insert a corresponding omnibox::GroupConfig with default values in the
-    // suggestion groups map; otherwise the group ID will get dropped.
-    (*provider_suggestion_group_maps)[omnibox::GROUP_HISTORY_CLUSTER];
-  }
 
   // It's fine to unconditionally attach this takeover action, as the action
   // itself checks the flag to redirect the user to either the Side Panel or
@@ -145,8 +134,8 @@ bool HistoryClusterProvider::CreateMatches() {
           OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
       if (!history_clusters::GetConfig()
                .omnibox_history_cluster_provider_counterfactual) {
-        matches_.push_back(CreateMatch(
-            search_match.contents, std::move(matched_keyword_data.value())));
+        matches_.push_back(
+            CreateMatch(search_match, std::move(matched_keyword_data.value())));
       }
       return true;
     }
@@ -155,7 +144,7 @@ bool HistoryClusterProvider::CreateMatches() {
 }
 
 AutocompleteMatch HistoryClusterProvider::CreateMatch(
-    std::u16string text,
+    const AutocompleteMatch& search_match,
     history::ClusterKeywordData matched_keyword_data) {
   AutocompleteMatch match;
   match.provider = this;
@@ -167,7 +156,13 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
   //  Ideally, relevance would depend on how many keywords matched, how
   //  significant the keywords were, how significant their clusters were etc.
   match.relevance =
-      history_clusters::GetConfig().omnibox_history_cluster_provider_score;
+      history_clusters::GetConfig()
+              .omnibox_history_cluster_provider_inherit_search_match_score
+          ? search_match.relevance - 1
+          : history_clusters::GetConfig()
+                .omnibox_history_cluster_provider_score;
+
+  const auto& text = search_match.contents;
 
   match.destination_url = GURL(base::UTF8ToUTF16(base::StringPrintf(
       "chrome://history/journeys?q=%s",
@@ -186,8 +181,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
   match.contents_class = {{0, ACMatchClassification::DIM}};
 
   CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),
-                               std::move(matched_keyword_data), &match,
-                               &suggestion_groups_map_);
+                               std::move(matched_keyword_data), &match);
 
   return match;
 }

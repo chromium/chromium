@@ -35,8 +35,7 @@ class HistoryClusterProvider : public AutocompleteProvider,
   static void CompleteHistoryClustersMatch(
       const std::string& matching_text,
       history::ClusterKeywordData matched_keyword_data,
-      AutocompleteMatch* match,
-      omnibox::GroupConfigMap* provider_suggestion_groups_map);
+      AutocompleteMatch* match);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -59,7 +58,7 @@ class HistoryClusterProvider : public AutocompleteProvider,
 
   // Creates a `AutocompleteMatch`.
   AutocompleteMatch CreateMatch(
-      std::u16string text,
+      const AutocompleteMatch& search_match,
       history::ClusterKeywordData matched_keyword_data);
 
   // The `AutocompleteInput` passed to `Start()`.

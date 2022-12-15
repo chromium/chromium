@@ -190,6 +190,20 @@ struct Config {
   // aren't too many strong navigation matches.
   int omnibox_history_cluster_provider_score = 900;
 
+  // If enabled, will inherit the score from the matched search suggestion. This
+  // tries to emulate the ranking of chips, though remains slightly more
+  // conservative in that chips will be shown if the match query is at least the
+  // 8th top scored suggestion, while rows will be shown if the matched query is
+  // at least the 7th top scored suggestion. If enabled,
+  // `omnibox_history_cluster_provider_score` becomes a no-op.
+  bool omnibox_history_cluster_provider_inherit_search_match_score = false;
+
+  // If enabled, ranks the suggestion row below the default suggestion, but
+  // above the searches. Though whether it appears or not will depend on scores.
+  // Otherwise, ranks the suggestion among the search group; the exact position
+  // will depend on scores.
+  bool omnibox_history_cluster_provider_rank_above_searches = false;
+
   // Whether Journey suggestions from the `HistoryClusterProvider` can be
   // surfaced from the shortcuts' provider. They will be scored according to the
   // shortcuts' provider's scoring, which is more aggressive than the default
@@ -218,10 +232,6 @@ struct Config {
   // is intending to perform a navigation. Meaningless if
   // `omnibox_history_cluster_provider` is disabled.
   bool omnibox_history_cluster_provider_on_navigation_intents = false;
-
-  // If enabled, allows the suggestion row to be ranked in any position;
-  // otherwise, always ranked last.
-  bool omnibox_history_cluster_provider_free_ranking = false;
 
   // The `kOnDeviceClusteringKeywordFiltering` feature and child params.
 

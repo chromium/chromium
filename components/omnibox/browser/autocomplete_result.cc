@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -1278,12 +1279,15 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
   base::ranges::stable_sort(begin, end, {}, [](const auto& m) {
     if (AutocompleteMatch::IsStarterPackType(m.type))
       return 0;
-    // Group history cluster suggestions with searches. If the
-    // `omnibox_history_cluster_provider_free_ranking` feature is disabled,
-    // they'll be pushed back to last position, and grouping here will have
-    // no effect.
-    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
-      return 0;
+#if !BUILDFLAG(IS_IOS)
+    // Group history cluster suggestions above or with searches.
+    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER) {
+      return history_clusters::GetConfig()
+                     .omnibox_history_cluster_provider_rank_above_searches
+                 ? 0
+                 : 1;
+    }
+#endif  // !BUILDFLAG(IS_IOS)
     if (AutocompleteMatch::IsSearchType(m.type))
       return 1;
     return 2;
