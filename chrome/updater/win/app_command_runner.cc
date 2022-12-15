@@ -256,7 +256,9 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
   options.start_hidden = true;
 
   process = base::LaunchProcess(
-      base::StrCat({L"\"", executable.value(), L"\" ", parameters}), options);
+      base::StrCat(
+          {QuoteForCommandLineToArgvW(executable.value()), L" ", parameters}),
+      options);
   if (!process.IsValid()) {
     const HRESULT hr = HRESULTFromLastError();
     LOG(ERROR) << __func__ << "base::LaunchProcess failed: " << hr;

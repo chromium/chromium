@@ -698,10 +698,13 @@ std::wstring BuildMsiCommandLine(
            ? base::StrCat(
                  {L" ",
                   base::UTF8ToWide(base::ToUpperASCII(kInstallerDataSwitch)),
-                  L"=\"", installer_data_file->value(), L"\""})
+                  L"=",
+                  QuoteForCommandLineToArgvW(installer_data_file->value())})
            : L"",
-       L" REBOOT=ReallySuppress /qn /i \"", msi_installer.value(),
-       L"\" /log \"", msi_installer.value(), L".log\""});
+       L" REBOOT=ReallySuppress /qn /i ",
+       QuoteForCommandLineToArgvW(msi_installer.value()), L" /log ",
+       QuoteForCommandLineToArgvW(
+           msi_installer.AddExtension(L".log").value())});
 }
 
 std::wstring BuildExeCommandLine(
