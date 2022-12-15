@@ -84,6 +84,10 @@ class PrivacyGuideMetricsDelegate {
                 stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
         // Record user action for clicking the next button on the Sync card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickHistorySync");
+        // Record histogram for clicking the next button on the Sync card
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
+                PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON,
+                PrivacyGuideInteractions.MAX_VALUE);
     }
 
     /**

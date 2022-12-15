@@ -250,6 +250,19 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    public void testSync_nextNavigationHistogram() {
+        mockHistorySyncState(false, false);
+        assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
     public void testSafeBrowsing_enhanceToEnhanceSettingsStatesHistogram() {
         mockSafeBrowsingState(
                 SafeBrowsingState.ENHANCED_PROTECTION, SafeBrowsingState.ENHANCED_PROTECTION);

@@ -542,6 +542,26 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
+    public void testSyncCard_nextNavigationHistogram() {
+        launchPrivacyGuide();
+        navigateToSyncCard();
+
+        assertEquals(0,
+                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+
+        // Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        onView(withText(R.string.next)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
+                        PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
     public void testSyncCard_offToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
         navigateToSyncCard();
