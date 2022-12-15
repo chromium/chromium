@@ -138,11 +138,6 @@ class TabStripLayoutHelper {
   // in |slots_|.
   int GetSlotIndexForGroupHeader(tab_groups::TabGroupId group) const;
 
-  // Compares |cached_slots_| to the TabAnimations in |animator_| and DCHECKs if
-  // the TabAnimation::ViewType do not match. Prevents bugs that could cause the
-  // wrong callback being run when a tab or group is deleted.
-  void VerifyAnimationsMatchTabSlots() const;
-
   // Updates the value of either |active_tab_width_| or |inactive_tab_width_|,
   // as appropriate.
   void UpdateCachedTabWidth(int tab_index, int tab_width, bool active);
