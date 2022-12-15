@@ -49,7 +49,6 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
   void OnBlur() override;
-  void OnThemeChanged() override;
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;

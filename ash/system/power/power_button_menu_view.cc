@@ -7,16 +7,14 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
@@ -87,11 +85,11 @@ PowerButtonMenuView::PowerButtonMenuView(
       power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kMenuCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kMenuCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuCornerRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -330,10 +328,6 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
 
 void PowerButtonMenuView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
 }
 
 void PowerButtonMenuView::OnImplicitAnimationsCompleted() {

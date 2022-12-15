@@ -4,9 +4,11 @@
 
 #include "ash/system/power/power_button_menu_item_view.h"
 
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -47,6 +49,8 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   SetFocusPainter(nullptr);
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_view_->SetImage(
+      ui::ImageModel::FromVectorIcon(icon_, kColorAshIconColorPrimary));
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_->SetText(title_text);
@@ -54,6 +58,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   title_->SetLineHeight(kLineHeight);
   title_->SetMultiLine(true);
   title_->SetMaxLines(2);
+  title_->SetEnabledColorId(cros_tokens::kTextColorPrimary);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().OverrideName(title_->GetText());
 
@@ -97,17 +102,6 @@ void PowerButtonMenuItemView::OnBlur() {
   SchedulePaint();
 }
 
-void PowerButtonMenuItemView::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  const auto* color_provider = AshColorProvider::Get();
-  icon_view_->SetImage(gfx::CreateVectorIcon(
-      icon_, color_provider->GetContentLayerColor(
-                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  title_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-}
-
 void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -124,9 +118,7 @@ void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetLocalBounds();
   bounds.Inset(gfx::Insets(kItemBorderThickness));
   // Stroke.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  flags.setColor(GetColorProvider()->GetColor(ui::kColorAshFocusRing));
   flags.setStrokeWidth(kItemBorderThickness);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
   canvas->DrawRoundRect(bounds, kFocusedItemRoundRectRadiusDp, flags);
