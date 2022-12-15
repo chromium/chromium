@@ -48,7 +48,9 @@ enum class MenuActionType {
   SearchCopiedImage = 36,
   VisitCopiedLink = 37,
   SearchCopiedText = 38,
-  kMaxValue = SearchCopiedText
+  PinTab = 39,
+  UnpinTab = 40,
+  kMaxValue = UnpinTab
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

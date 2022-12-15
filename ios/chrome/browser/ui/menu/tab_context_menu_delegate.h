@@ -48,6 +48,9 @@ class DistantSession;
 // Tells the delegate to open the tab grid selection mode.
 - (void)selectTabs;
 
+// Tells the delegate to pin a tab with the item identifier `identifier`.
+- (void)pinTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito;
+
 // Tells the delegate to close the tab with the item identifier `identifier`.
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito;
 

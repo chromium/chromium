@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
@@ -113,6 +114,17 @@
                     }]];
     }
 
+    if (IsPinnedTabsEnabled()) {
+      if ([self.contextMenuDelegate
+              respondsToSelector:@selector(pinTabWithIdentifier:incognito:)]) {
+        [menuElements addObject:[actionFactory actionToPinTabWithBlock:^{
+                        [self.contextMenuDelegate
+                            pinTabWithIdentifier:gridCell.itemIdentifier
+                                       incognito:self.incognito];
+                      }]];
+      }
+    }
+
     if (item.URL.SchemeIsHTTPOrHTTPS() &&
         [self.contextMenuDelegate
             respondsToSelector:@selector(addToReadingListURL:title:)]) {
@@ -180,6 +192,7 @@
 
 - (void)browserDestroyed:(Browser*)browser {
   DCHECK_EQ(browser, self.browser);
+  _browserObserver.reset();
   self.browser = nullptr;
 }
 

@@ -1078,6 +1078,14 @@
   [self.bookmarkInteractionController presentBookmarkEditorForURL:URL];
 }
 
+- (void)pinTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {
+  if (incognito) {
+    [self.incognitoTabsMediator pinItemWithID:identifier];
+  } else {
+    [self.regularTabsMediator pinItemWithID:identifier];
+  }
+}
+
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {
   if (incognito) {
     [self.incognitoTabsMediator closeItemWithID:identifier];

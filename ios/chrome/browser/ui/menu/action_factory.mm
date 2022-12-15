@@ -75,6 +75,17 @@
                       block:block];
 }
 
+- (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? DefaultSymbolWithPointSize(
+                                      kPinSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"pin"];
+  return [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_PINTAB)
+                image:image
+                 type:MenuActionType::PinTab
+                block:block];
+}
+
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols()
                        ? DefaultSymbolWithPointSize(kDeleteActionSymbol,

@@ -500,6 +500,15 @@ void RecordTabGridCloseTabsCount(int count) {
   return index == self.webStateList->active_index();
 }
 
+- (void)pinItemWithID:(NSString*)itemID {
+  int index = GetIndexOfTabWithId(self.webStateList, itemID);
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  self.webStateList->SetWebStatePinnedAt(index, true);
+}
+
 - (void)closeItemWithID:(NSString*)itemID {
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
   if (index != WebStateList::kInvalidIndex) {

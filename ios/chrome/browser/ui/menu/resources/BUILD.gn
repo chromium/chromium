@@ -100,6 +100,14 @@ imageset("open_new_window") {
   ]
 }
 
+imageset("pin") {
+  sources = [
+    "pin.imageset/Contents.json",
+    "pin.imageset/pin@2x.png",
+    "pin.imageset/pin@3x.png",
+  ]
+}
+
 imageset("read_later") {
   sources = [
     "read_later.imageset/Contents.json",
@@ -169,5 +177,13 @@ imageset("select") {
     "select.imageset/Contents.json",
     "select.imageset/select@2x.png",
     "select.imageset/select@3x.png",
+  ]
+}
+
+imageset("unpin") {
+  sources = [
+    "unpin.imageset/Contents.json",
+    "unpin.imageset/unpin@2x.png",
+    "unpin.imageset/unpin@3x.png",
   ]
 }
