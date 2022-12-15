@@ -86,25 +86,6 @@ void AuctionRunner::FailAuction(
 
   UpdateInterestGroupsPostAuction();
 
-  // Most kinds of failures here mean that the auction could not complete at
-  // all (such as seller worklet process crashing, page getting unloaded, etc.),
-  // but there plain not being a winner gets reported as a failure, too. In
-  // that case, however, it's possible that there would be a winner with or
-  // without k-anon enforcement (depending on the kanon_mode) that needs to be
-  // reported to the client.
-  absl::optional<InterestGroupAuction::AuctionResult> result =
-      auction_.final_auction_result();
-  bool may_have_valid_kanon_info =
-      result &&
-      (*result == InterestGroupAuction::AuctionResult::kAllBidsRejected ||
-       *result == InterestGroupAuction::AuctionResult::kNoBids);
-
-  bool report_kanon_enforce =
-      !manually_aborted && may_have_valid_kanon_info &&
-      (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce);
-  bool report_kanon_sim =
-      !manually_aborted && may_have_valid_kanon_info &&
-      (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kSimulate);
   std::move(callback_).Run(
       this, manually_aborted,
       /*winning_group_key=*/absl::nullopt,
@@ -113,18 +94,7 @@ void AuctionRunner::FailAuction(
       /*winning_group_ad_metadata=*/std::string(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       auction_.TakePrivateAggregationRequests(),
-      std::move(interest_groups_that_bid),
-      /*render_url_without_kanon_enforced=*/
-      report_kanon_enforce ? auction_.TakeRenderUrlWithoutKAnonEnforced()
-                           : absl::nullopt,
-      /*ad_component_urls_without_kanon_enforced=*/
-      report_kanon_enforce ? auction_.TakeComponentUrlsWithoutKAnonEnforced()
-                           : std::vector<GURL>(),
-      /*render_url_with_kanon_simulated=*/
-      report_kanon_sim ? auction_.TakeSimulatedKAnonRenderUrl() : absl::nullopt,
-      /*ad_component_urls_with_kanon_simulated=*/
-      report_kanon_sim ? auction_.TakeSimulatedKAnonComponentUrls()
-                       : std::vector<GURL>(),
+      std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),
       auction_.TakeErrors(), /*reporter=*/nullptr);
 }
 
@@ -203,12 +173,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   blink::InterestGroupKey winning_group_key(
       {winning_group.owner, winning_group.name});
 
-  // TODO(https://crbug.com/1396068): Only do this if/when the winning ad is
-  // loaded in a frame.
-  interest_group_manager_->RegisterAdAsWon(
-      *auction_.top_bid()->bid->interest_group,
-      *auction_.top_bid()->bid->bid_ad);
-
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
@@ -222,10 +186,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   DCHECK(reporter);
 
   state_ = State::kSucceeded;
-  bool in_kanon_enforce =
-      (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce);
-  bool in_kanon_sim =
-      (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kSimulate);
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
@@ -234,18 +194,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
       std::move(debug_win_report_urls),
       // In this case, the reporter has all the private aggregation requests.
       std::map<url::Origin, PrivateAggregationRequests>(),
-      std::move(interest_groups_that_bid),
-      /*render_url_without_kanon_enforced=*/
-      in_kanon_enforce ? auction_.TakeRenderUrlWithoutKAnonEnforced()
-                       : absl::nullopt,
-      /*ad_component_urls_without_kanon_enforced=*/
-      in_kanon_enforce ? auction_.TakeComponentUrlsWithoutKAnonEnforced()
-                       : std::vector<GURL>(),
-      /*render_url_with_kanon_simulated=*/
-      in_kanon_sim ? auction_.TakeSimulatedKAnonRenderUrl() : absl::nullopt,
-      /*ad_component_urls_with_kanon_simulated=*/
-      in_kanon_sim ? auction_.TakeSimulatedKAnonComponentUrls()
-                   : std::vector<GURL>(),
+      std::move(interest_groups_that_bid), auction_.GetKAnonKeysToJoin(),
       std::move(errors), std::move(reporter));
 }
 

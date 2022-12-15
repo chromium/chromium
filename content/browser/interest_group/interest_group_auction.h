@@ -456,21 +456,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // only be called once, since it moves the stored origins.
   void TakePostAuctionUpdateOwners(std::vector<url::Origin>& owners);
 
-  // For an auction in k-anon enforcement mode (a precondition for making this
-  // call), retrieves what the winner would be if enforcement were off.
-  //
-  // May only be called after the auction has completed, for either success or
-  // failure. May only be called once, since it moves the stored URLs.
-  absl::optional<GURL> TakeRenderUrlWithoutKAnonEnforced();
-  std::vector<GURL> TakeComponentUrlsWithoutKAnonEnforced();
-
-  // For an auction in k-anon simulation mode (a precondition for making this
-  // call), retrieves what the winner would be if k-anon enforcement were on.
-  //
-  // May only be called after the auction has completed, for either success or
-  // failure. May only be called once, since it moves the stored URLs.
-  absl::optional<GURL> TakeSimulatedKAnonRenderUrl();
-  std::vector<GURL> TakeSimulatedKAnonComponentUrls();
+  // Retrieves the keys that need to be joined as a result of the auction. A
+  // failed auction may result in keys that still need to be joined, for
+  // instance if the reason the auction failed was that none of the bids were
+  // k-anonymous.
+  base::flat_set<std::string> GetKAnonKeysToJoin() const;
 
   // Returns the top bid of whichever auction (k-anon or not, depending on the
   // configuration) is actually to be used for the user-facing results. May only
@@ -689,7 +679,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // These may be null. They should only be invoked after the bidding and
   // scoring phase has completed.
   ScoredBid* top_kanon_enforced_bid();
+  const ScoredBid* top_kanon_enforced_bid() const;
   ScoredBid* top_non_kanon_enforced_bid();
+  const ScoredBid* top_non_kanon_enforced_bid() const;
 
   // -----------------------------------
   // Methods not associated with a phase
@@ -726,6 +718,11 @@ class CONTENT_EXPORT InterestGroupAuction
   auction_worklet::mojom::KAnonymityBidMode kanon_mode() const {
     return kanon_mode_;
   }
+
+  // Returns true if the auction had a non-k-anonymous winner.
+  bool HasNonKAnonWinner() const;
+  // Returns true if the non-k-anonymous winner of the auction is k-anonymous.
+  bool NonKAnonWinnerIsKAnon() const;
 
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace

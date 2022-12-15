@@ -6,20 +6,28 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 
 namespace content {
 
+namespace {
+const GURL& extractUrlFromAd(const blink::InterestGroup::Ad& ad) {
+  return ad.render_url;
+}
+}  // namespace
+
 std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
-                             const blink::InterestGroup::Ad& ad) {
+                             const GURL& ad_url) {
   DCHECK(group.ads);
-  DCHECK(base::Contains(*group.ads, ad) ||
-         (group.ad_components && base::Contains(*group.ad_components, ad)));
+  DCHECK(base::ranges::count(*group.ads, ad_url, &extractUrlFromAd) > 0 ||
+         (group.ad_components &&
+          base::ranges::count(*group.ad_components, ad_url, &extractUrlFromAd) >
+              0));
   DCHECK(group.bidding_url);
   return group.owner.GetURL().spec() + '\n' +
-         group.bidding_url.value_or(GURL()).spec() + '\n' +
-         ad.render_url.spec();
+         group.bidding_url.value_or(GURL()).spec() + '\n' + ad_url.spec();
 }
 
 GURL RenderUrlFromKAnonKeyForAdBid(const std::string& key) {
@@ -98,11 +106,11 @@ void InterestGroupKAnonymityManager::QuerySetsCallback(
   }
 }
 
-void InterestGroupKAnonymityManager::RegisterAdAsWon(
-    const blink::InterestGroup& group,
-    const blink::InterestGroup::Ad& ad) {
-  RegisterIDAsJoined(KAnonKeyForAdBid(group, ad));
-  RegisterIDAsJoined(KAnonKeyForAdNameReporting(group, ad));
+void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(
+    base::flat_set<std::string> keys) {
+  for (const auto& key : keys) {
+    RegisterIDAsJoined(key);
+  }
   // TODO(behamilton): Consider proactively starting a query here to improve the
   // speed that browsers see new ads. We will likely want to rate limit this
   // somehow though.

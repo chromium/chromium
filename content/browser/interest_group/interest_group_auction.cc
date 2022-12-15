@@ -1128,6 +1128,11 @@ InterestGroupAuction::~InterestGroupAuction() {
     UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result",
                               *final_auction_result_);
 
+    if (HasNonKAnonWinner()) {
+      UMA_HISTOGRAM_BOOLEAN("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon",
+                            NonKAnonWinnerIsKAnon());
+    }
+
     // Only record time of full auctions and aborts.
     switch (*final_auction_result_) {
       case AuctionResult::kAborted:
@@ -1482,6 +1487,38 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   return url.ReplaceComponents(replacements);
 }
 
+bool InterestGroupAuction::HasNonKAnonWinner() const {
+  if (!final_auction_result_) {
+    return false;
+  }
+
+  switch (*final_auction_result_) {
+    // Bidding and scoring phase completed with no fatal error. We either
+    // succeeded or only failed because we did not have a winner. If the only
+    // reason we didn't have a winner was k-anonymity enforcement, there may
+    // still be a non-k-anon winner.
+    case AuctionResult::kSuccess:
+    case AuctionResult::kNoBids:
+    case AuctionResult::kAllBidsRejected:
+      return top_non_kanon_enforced_bid() != nullptr;
+    case AuctionResult::kAborted:
+    case AuctionResult::kBadMojoMessage:
+    case AuctionResult::kNoInterestGroups:
+    case AuctionResult::kSellerWorkletLoadFailed:
+    case AuctionResult::kSellerWorkletCrashed:
+    case AuctionResult::kSellerRejected:
+    case AuctionResult::kComponentLostAuction:
+      return false;
+  }
+}
+
+bool InterestGroupAuction::NonKAnonWinnerIsKAnon() const {
+  return top_non_kanon_enforced_bid() &&
+         top_non_kanon_enforced_bid()
+                 ->bid->auction->top_non_kanon_enforced_bid()
+                 ->bid->bid_role == Bid::BidRole::kBothKAnonModes;
+}
+
 void InterestGroupAuction::TakeDebugReportUrls(
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
@@ -1593,35 +1630,38 @@ void InterestGroupAuction::TakePostAuctionUpdateOwners(
   }
 }
 
-absl::optional<GURL> InterestGroupAuction::TakeRenderUrlWithoutKAnonEnforced() {
-  DCHECK_EQ(kanon_mode_, auction_worklet::mojom::KAnonymityBidMode::kEnforce);
-  ScoredBid* non_kanon_winner = top_non_kanon_enforced_bid();
-  return non_kanon_winner
-             ? absl::make_optional(std::move(non_kanon_winner->bid->render_url))
-             : absl::nullopt;
-}
+base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
+  if (!HasNonKAnonWinner()) {
+    return {};
+  }
 
-std::vector<GURL>
-InterestGroupAuction::TakeComponentUrlsWithoutKAnonEnforced() {
-  DCHECK_EQ(kanon_mode_, auction_worklet::mojom::KAnonymityBidMode::kEnforce);
-  ScoredBid* non_kanon_winner = top_non_kanon_enforced_bid();
-  return non_kanon_winner ? std::move(non_kanon_winner->bid->ad_components)
-                          : std::vector<GURL>();
-}
+  // If the k-anon winner is the same as the non-k-anon winner then just include
+  // it once.
+  std::vector<const ScoredBid*> bids_to_include = {
+      top_non_kanon_enforced_bid()};
+  if (!NonKAnonWinnerIsKAnon()) {
+    bids_to_include.push_back(top_kanon_enforced_bid());
+  }
 
-absl::optional<GURL> InterestGroupAuction::TakeSimulatedKAnonRenderUrl() {
-  DCHECK_EQ(kanon_mode_, auction_worklet::mojom::KAnonymityBidMode::kSimulate);
-  ScoredBid* kanon_winner = top_kanon_enforced_bid();
-  return kanon_winner
-             ? absl::make_optional(std::move(kanon_winner->bid->render_url))
-             : absl::nullopt;
-}
-
-std::vector<GURL> InterestGroupAuction::TakeSimulatedKAnonComponentUrls() {
-  DCHECK_EQ(kanon_mode_, auction_worklet::mojom::KAnonymityBidMode::kSimulate);
-  ScoredBid* kanon_winner = top_kanon_enforced_bid();
-  return kanon_winner ? std::move(kanon_winner->bid->ad_components)
-                      : std::vector<GURL>();
+  // Add all the KAnon keys for the winning k-anon and non-k-anon bids.
+  std::vector<std::string> k_anon_keys_to_join;
+  for (const ScoredBid* scored_bid : bids_to_include) {
+    if (!scored_bid) {
+      continue;
+    }
+    DCHECK(scored_bid->bid);
+    const blink::InterestGroup& interest_group =
+        *scored_bid->bid->interest_group;
+    k_anon_keys_to_join.push_back(
+        KAnonKeyForAdBid(interest_group, scored_bid->bid->bid_ad->render_url));
+    k_anon_keys_to_join.push_back(
+        KAnonKeyForAdNameReporting(interest_group, *scored_bid->bid->bid_ad));
+    for (const GURL& ad_component : scored_bid->bid->ad_components) {
+      k_anon_keys_to_join.push_back(
+          KAnonKeyForAdBid(interest_group, ad_component));
+    }
+  }
+  return base::flat_set<std::string>(std::move(k_anon_keys_to_join));
 }
 
 const InterestGroupAuction::LeaderInfo& InterestGroupAuction::leader_info()
@@ -1634,13 +1674,22 @@ const InterestGroupAuction::LeaderInfo& InterestGroupAuction::leader_info()
 }
 
 InterestGroupAuction::ScoredBid*
+InterestGroupAuction::top_kanon_enforced_bid() {
+  return kanon_enforced_auction_leader_.top_bid.get();
+}
+const InterestGroupAuction::ScoredBid*
+InterestGroupAuction::top_kanon_enforced_bid() const {
+  return kanon_enforced_auction_leader_.top_bid.get();
+}
+
+InterestGroupAuction::ScoredBid*
 InterestGroupAuction::top_non_kanon_enforced_bid() {
   return non_kanon_enforced_auction_leader_.top_bid.get();
 }
 
-InterestGroupAuction::ScoredBid*
-InterestGroupAuction::top_kanon_enforced_bid() {
-  return kanon_enforced_auction_leader_.top_bid.get();
+const InterestGroupAuction::ScoredBid*
+InterestGroupAuction::top_non_kanon_enforced_bid() const {
+  return non_kanon_enforced_auction_leader_.top_bid.get();
 }
 
 absl::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(

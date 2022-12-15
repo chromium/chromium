@@ -133,10 +133,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
-      absl::optional<GURL> render_url_without_kanon_enforced,
-      std::vector<GURL> ad_component_urls_without_kanon_enforced,
-      absl::optional<GURL> render_url_with_kanon_simulated,
-      std::vector<GURL> ad_component_urls_with_kanon_simulated,
+      base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 
@@ -149,7 +146,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                           std::string winning_group_ad_metadata,
                           std::vector<GURL> debug_loss_report_urls,
                           std::vector<GURL> debug_win_report_urls,
-                          blink::InterestGroupSet interest_groups_that_bid);
+                          blink::InterestGroupSet interest_groups_that_bid,
+                          base::flat_set<std::string> k_anon_keys_to_join);
 
   // Calls LogWebFeatureForCurrentPage() for the frame to inform it of FLEDGE
   // private aggregation API usage, if `private_aggregation_requests` is

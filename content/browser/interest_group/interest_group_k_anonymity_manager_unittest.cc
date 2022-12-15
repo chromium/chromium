@@ -111,13 +111,6 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
     return result;
   }
 
-  absl::optional<base::Time> GetLastAdReported(
-      InterestGroupManagerImpl* manager,
-      const blink::InterestGroup& group,
-      const blink::InterestGroup::Ad& ad) {
-    return GetLastReported(manager, KAnonKeyForAdBid(group, ad));
-  }
-
   std::unique_ptr<InterestGroupManagerImpl> CreateManager(
       bool has_error = false) {
     delegate_ = std::make_unique<TestKAnonymityServiceDelegate>(has_error);
@@ -186,10 +179,15 @@ TEST_F(InterestGroupKAnonymityManagerTest, RegisterAdAsWonPerformsJoinSet) {
   blink::InterestGroup group = MakeInterestGroup(owner, "foo");
   group.bidding_url = GURL("https://www.example.com/bidding.js");
 
+  const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(group, GURL(kAdURL));
+  const std::string kAd1KAnonReportNameKey =
+      KAnonKeyForAdNameReporting(group, group.ads.value()[0]);
+
   auto manager = CreateManager();
   EXPECT_FALSE(getGroup(manager.get(), owner, name));
+  EXPECT_EQ(base::Time::Min(), GetLastReported(manager.get(), kAd1KAnonBidKey));
   EXPECT_EQ(base::Time::Min(),
-            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
+            GetLastReported(manager.get(), kAd1KAnonReportNameKey));
 
   manager->JoinInterestGroup(group, top_frame);
   // The group *must* exist when JoinInterestGroup returns.
@@ -200,34 +198,41 @@ TEST_F(InterestGroupKAnonymityManagerTest, RegisterAdAsWonPerformsJoinSet) {
 
   // Ads are *not* reported as part of joining an interest group.
   absl::optional<base::Time> reported =
-      GetLastAdReported(manager.get(), group, group.ads.value()[0]);
+      GetLastReported(manager.get(), kAd1KAnonBidKey);
   EXPECT_EQ(base::Time::Min(), reported);
+  EXPECT_EQ(base::Time::Min(),
+            GetLastReported(manager.get(), kAd1KAnonReportNameKey));
 
   base::Time before_mark_ad = base::Time::Now();
-  manager->RegisterAdAsWon(group, group.ads.value()[0]);
+  manager->RegisterAdKeysAsJoined({kAd1KAnonBidKey, kAd1KAnonReportNameKey});
 
   // k-anonymity update happens here.
   task_environment().FastForwardBy(base::Minutes(1));
 
-  reported = GetLastAdReported(manager.get(), group, group.ads.value()[0]);
+  reported = GetLastReported(manager.get(), kAd1KAnonBidKey);
   EXPECT_LE(before_mark_ad, reported);
   ASSERT_TRUE(reported);
   base::Time last_reported = *reported;
+  EXPECT_EQ(last_reported,
+            GetLastReported(manager.get(), kAd1KAnonReportNameKey));
 
-  manager->RegisterAdAsWon(group, group.ads.value()[0]);
+  manager->RegisterAdKeysAsJoined({kAd1KAnonBidKey});
   task_environment().FastForwardBy(base::Minutes(1));
 
   // Second update shouldn't have changed the update time (too recent).
+  EXPECT_EQ(last_reported, GetLastReported(manager.get(), kAd1KAnonBidKey));
   EXPECT_EQ(last_reported,
-            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
+            GetLastReported(manager.get(), kAd1KAnonReportNameKey));
 
   task_environment().FastForwardBy(kJoinInterval);
 
   // Updated more than 24 hours ago, so update.
-  manager->RegisterAdAsWon(group, group.ads.value()[0]);
+  manager->RegisterAdKeysAsJoined({kAd1KAnonBidKey});
   task_environment().RunUntilIdle();
-  EXPECT_LT(last_reported,
-            GetLastAdReported(manager.get(), group, group.ads.value()[0]));
+  EXPECT_LT(last_reported, GetLastReported(manager.get(), kAd1KAnonBidKey));
+  // Other key should not have changed.
+  EXPECT_EQ(last_reported,
+            GetLastReported(manager.get(), kAd1KAnonReportNameKey));
 }
 
 TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
@@ -239,16 +244,17 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
 
   auto manager = CreateManager(/*has_error=*/true);
   blink::InterestGroup g = MakeInterestGroup(owner, "foo");
+  const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(g, GURL(kAdURL));
 
   manager->JoinInterestGroup(g, top_frame);
   // The group *must* exist when JoinInterestGroup returns.
   ASSERT_TRUE(getGroup(manager.get(), owner, name));
-  manager->RegisterAdAsWon(g, g.ads.value()[0]);
+  manager->RegisterAdKeysAsJoined({kAd1KAnonBidKey});
 
   // k-anonymity update happens here.
   task_environment().FastForwardBy(base::Minutes(1));
 
-  // If the updates succeed then we normally would not record the update as
+  // If the update failed then we normally would not record the update as
   // having been completed, so we would try it later.
   // For now we'll record the update as having been completed to to reduce
   // bandwidth and provide more accurate use counts.
@@ -256,7 +262,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   // values below.
 
   absl::optional<base::Time> ad_reported =
-      GetLastAdReported(manager.get(), g, g.ads.value()[0]);
+      GetLastReported(manager.get(), kAd1KAnonBidKey);
   ASSERT_TRUE(ad_reported);
 
   // TODO(behamilton): Change this once we expect the server to be stable.
@@ -280,8 +286,8 @@ TEST_F(InterestGroupKAnonymityManagerTest, RenderUrlFromKAnonKeyForAdBid) {
 
   const blink::InterestGroup::Ad& ad = group.ads.value()[0];
 
-  EXPECT_EQ(ad.render_url,
-            RenderUrlFromKAnonKeyForAdBid(KAnonKeyForAdBid(group, ad)));
+  EXPECT_EQ(ad.render_url, RenderUrlFromKAnonKeyForAdBid(
+                               KAnonKeyForAdBid(group, ad.render_url)));
 }
 
 class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
@@ -339,14 +345,15 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   const GURL ad1 = GURL(kAdURL);
 
   blink::InterestGroup group1 = MakeInterestGroup(owner, "foo");
+  const std::string kAd1KAnonKey = KAnonKeyForAdBid(group1, ad1);
 
   // Join one group twice, and an overlapping group once.
   manager->JoinInterestGroup(group1, top_frame);
   manager->JoinInterestGroup(group1, top_frame);
   manager->JoinInterestGroup(MakeInterestGroup(owner, "bar"), top_frame);
 
-  manager->RegisterAdAsWon(group1, group1.ads.value()[0]);
-  manager->RegisterAdAsWon(group1, group1.ads.value()[0]);
+  manager->RegisterAdKeysAsJoined({kAd1KAnonKey});
+  manager->RegisterAdKeysAsJoined({kAd1KAnonKey});
 
   // k-anonymity update happens here.
   task_environment().FastForwardBy(base::Minutes(1));

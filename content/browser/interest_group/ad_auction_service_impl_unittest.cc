@@ -531,6 +531,36 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
       auction_worklet_services_;
 };
 
+class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
+ public:
+  TestKAnonymityServiceDelegate() = default;
+
+  void JoinSet(std::string id,
+               base::OnceCallback<void(bool)> callback) override {
+    join_ids_.push_back(id);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+  }
+
+  void QuerySets(
+      std::vector<std::string> ids,
+      base::OnceCallback<void(std::vector<bool>)> callback) override {
+    // Return that nothing is k-anonymous.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<bool>(ids.size(), false)));
+  }
+
+  base::TimeDelta GetJoinInterval() override { return base::Seconds(1); }
+
+  base::TimeDelta GetQueryInterval() override { return base::Seconds(1); }
+
+  const std::vector<std::string>& join_ids() const { return join_ids_; }
+
+ private:
+  std::vector<std::string> join_ids_;
+};
+
 }  // namespace
 
 // Tests the interest group management functionality of AdAuctionServiceImpl --
@@ -569,6 +599,9 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // the auction "processes" in-process instead.
     manager_->set_auction_process_manager_for_testing(
         std::make_unique<SameProcessAuctionProcessManager>());
+    manager_->set_k_anonymity_manager_for_testing(
+        std::make_unique<InterestGroupKAnonymityManager>(manager_.get(),
+                                                         &k_anon_delegate_));
   }
 
   void TearDown() override {
@@ -841,6 +874,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // Destroy the AdAuctionService, if there is one.
   void DestroyAdAuctionService() { ad_auction_service_.reset(); }
 
+  const std::vector<std::string>& GetKAnonJoinedIds() const {
+    return k_anon_delegate_.join_ids();
+  }
+
  protected:
   const GURL kUrlA = GURL(kOriginStringA);
   const url::Origin kOriginA = url::Origin::Create(kUrlA);
@@ -866,6 +903,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   base::test::ScopedFeatureList fenced_frame_feature_list_;
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
+  TestKAnonymityServiceDelegate k_anon_delegate_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
   raw_ptr<InterestGroupManagerImpl> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -3824,6 +3862,14 @@ function scoreAd(
   ASSERT_EQ(
       R"({"render_url":"https://example.com/render"})",
       storage_interest_group->bidding_browser_signals->prev_wins[0]->ad_json);
+
+  // The auction should also trigger a k-anon "join" for the winning ad.
+  EXPECT_THAT(GetKAnonJoinedIds(),
+              ::testing::UnorderedElementsAre(
+                  KAnonKeyForAdBid(interest_group,
+                                   interest_group.ads.value()[0].render_url),
+                  KAnonKeyForAdNameReporting(interest_group,
+                                             interest_group.ads.value()[0])));
 }
 
 // Add an interest group, and run an ad auction. Seller rejects the bid. Bid
@@ -3872,6 +3918,9 @@ function scoreAd(
   EXPECT_EQ(1, storage_interest_group->bidding_browser_signals->bid_count);
   EXPECT_EQ(0u,
             storage_interest_group->bidding_browser_signals->prev_wins.size());
+
+  // The auction should not trigger any k-anon "joins".
+  EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
 }
 
 // Run ad auction when number of urn mappings has reached limit, the action
@@ -6295,5 +6344,139 @@ function scoreAd(
   // privateAggregation should cause a ReferenceError.
   EXPECT_EQ(auction_result, absl::nullopt);
 }
+
+class AdAuctionServiceImplKAnonTest
+    : public AdAuctionServiceImplTest,
+      public ::testing::WithParamInterface<
+          auction_worklet::mojom::KAnonymityBidMode> {
+ public:
+  AdAuctionServiceImplKAnonTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    switch (kanon_mode()) {
+      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+        enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
+        enabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
+        break;
+      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+        enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
+        disabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
+        break;
+      case auction_worklet::mojom::KAnonymityBidMode::kNone:
+        disabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
+        disabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
+        break;
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  auction_worklet::mojom::KAnonymityBidMode kanon_mode() { return GetParam(); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Add an interest group with a non-k-anonymous ad and run an ad auction.
+TEST_P(AdAuctionServiceImplKAnonTest, RunAdAuctionNotKAnon) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  switch (kanon_mode()) {
+    case auction_worklet::mojom::KAnonymityBidMode::kNone:
+    case auction_worklet::mojom::KAnonymityBidMode::kSimulate: {
+      ASSERT_NE(auction_result, absl::nullopt);
+      EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+                GURL("https://example.com/render"));
+
+      // Running the auction alone should not result in updating the interest
+      // group's bid count, previous win list or trigger k-anon joins, no matter
+      // how much time passes.
+      task_environment()->RunUntilIdle();
+      auto storage_interest_group =
+          GetInterestGroup(interest_group.owner, interest_group.name);
+      ASSERT_TRUE(storage_interest_group);
+      EXPECT_EQ(0, storage_interest_group->bidding_browser_signals->bid_count);
+      EXPECT_EQ(
+          0u,
+          storage_interest_group->bidding_browser_signals->prev_wins.size());
+      EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
+
+      // Invoking the URN callback (which is done when the result is loaded in a
+      // frame) updates those fields.
+      InvokeCallbackForURN(*auction_result);
+      storage_interest_group =
+          GetInterestGroup(interest_group.owner, interest_group.name);
+      ASSERT_TRUE(storage_interest_group);
+      EXPECT_EQ(1, storage_interest_group->bidding_browser_signals->bid_count);
+      ASSERT_EQ(
+          1u,
+          storage_interest_group->bidding_browser_signals->prev_wins.size());
+      ASSERT_EQ(R"({"render_url":"https://example.com/render"})",
+                storage_interest_group->bidding_browser_signals->prev_wins[0]
+                    ->ad_json);
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              KAnonKeyForAdBid(interest_group,
+                               interest_group.ads.value()[0].render_url),
+              KAnonKeyForAdNameReporting(interest_group,
+                                         interest_group.ads.value()[0])));
+      break;
+    }
+    case auction_worklet::mojom::KAnonymityBidMode::kEnforce: {
+      // The auction should fail because there were no k-anonymous bids.
+      // Since the auction failed, everything should update immediately.
+      EXPECT_FALSE(auction_result);
+      task_environment()->RunUntilIdle();
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              KAnonKeyForAdBid(interest_group,
+                               interest_group.ads.value()[0].render_url),
+              KAnonKeyForAdNameReporting(interest_group,
+                                         interest_group.ads.value()[0])));
+      break;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    AdAuctionServiceImplKAnonTest,
+    ::testing::Values(auction_worklet::mojom::KAnonymityBidMode::kNone,
+                      auction_worklet::mojom::KAnonymityBidMode::kSimulate,
+                      auction_worklet::mojom::KAnonymityBidMode::kEnforce));
 
 }  // namespace content

@@ -550,12 +550,10 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   std::vector<StorageInterestGroup::KAnonymityData> expected_bidding = {
-      {KAnonKeyForAdBid(g, g.ads.value()[0]), false, base::Time::Min()},
-      {KAnonKeyForAdBid(g, g.ads.value()[1]), false, base::Time::Min()},
-      {KAnonKeyForAdBid(g, g.ad_components.value()[0]), false,
-       base::Time::Min()},
-      {KAnonKeyForAdBid(g, g.ad_components.value()[1]), false,
-       base::Time::Min()},
+      {KAnonKeyForAdBid(g, ad1_url), false, base::Time::Min()},
+      {KAnonKeyForAdBid(g, ad2_url), false, base::Time::Min()},
+      {KAnonKeyForAdBid(g, ad1_url), false, base::Time::Min()},
+      {KAnonKeyForAdBid(g, ad3_url), false, base::Time::Min()},
   };
   std::vector<StorageInterestGroup::KAnonymityData> expected_reporting = {
       {KAnonKeyForAdNameReporting(g, g.ads.value()[0]), false,
@@ -571,8 +569,8 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
               testing::UnorderedElementsAreArray(expected_reporting));
 
   base::Time update_time = base::Time::Now();
-  StorageInterestGroup::KAnonymityData kanon_bid{
-      KAnonKeyForAdBid(g, g.ads.value()[0]), true, update_time};
+  StorageInterestGroup::KAnonymityData kanon_bid{KAnonKeyForAdBid(g, ad1_url),
+                                                 true, update_time};
   StorageInterestGroup::KAnonymityData kanon_report{
       KAnonKeyForAdNameReporting(g, g.ads.value()[0]), true, update_time};
   storage->UpdateKAnonymity(kanon_bid);
@@ -592,8 +590,8 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon_bid = StorageInterestGroup::KAnonymityData{
-      KAnonKeyForAdBid(g, g.ads.value()[1]), true, update_time};
+  kanon_bid = StorageInterestGroup::KAnonymityData{KAnonKeyForAdBid(g, ad2_url),
+                                                   true, update_time};
   kanon_report = StorageInterestGroup::KAnonymityData{
       KAnonKeyForAdNameReporting(g, g.ads.value()[1]), true, update_time};
   storage->UpdateKAnonymity(kanon_bid);
@@ -636,11 +634,11 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   // Update the k-anonymity data.
   base::Time update_kanon_time = base::Time::Now();
   StorageInterestGroup::KAnonymityData ad1_bid_kanon{
-      KAnonKeyForAdBid(g, g.ads.value()[0]), true, update_kanon_time};
+      KAnonKeyForAdBid(g, ad1_url), true, update_kanon_time};
   StorageInterestGroup::KAnonymityData ad1_report_kanon{
       KAnonKeyForAdNameReporting(g, g.ads.value()[0]), true, update_kanon_time};
   StorageInterestGroup::KAnonymityData ad2_bid_kanon{
-      KAnonKeyForAdBid(g, g.ad_components.value()[0]), true, update_kanon_time};
+      KAnonKeyForAdBid(g, ad2_url), true, update_kanon_time};
   storage->UpdateKAnonymity(ad1_bid_kanon);
   storage->UpdateKAnonymity(ad1_report_kanon);
   storage->UpdateKAnonymity(ad2_bid_kanon);
@@ -689,11 +687,11 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join3"));
 
   // K-anon data should be the default.
-  ad1_bid_kanon = {KAnonKeyForAdBid(g, g.ads.value()[0]),
+  ad1_bid_kanon = {KAnonKeyForAdBid(g, ad1_url),
                    /*is_k_anonymous=*/false, base::Time::Min()};
   ad1_report_kanon = {KAnonKeyForAdNameReporting(g, g.ads.value()[0]),
                       /*is_k_anonymous=*/false, base::Time::Min()};
-  ad2_bid_kanon = {KAnonKeyForAdBid(g, g.ad_components.value()[0]),
+  ad2_bid_kanon = {KAnonKeyForAdBid(g, ad2_url),
                    /*is_k_anonymous=*/false, base::Time::Min()};
   groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, groups.size());
@@ -725,7 +723,7 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   g1.ads.emplace();
   g1.ads->push_back(blink::InterestGroup::Ad(ad1_url, "metadata1"));
 
-  std::string k_anon_key = KAnonKeyForAdBid(g1, g1.ads.value()[0]);
+  std::string k_anon_key = KAnonKeyForAdBid(g1, ad1_url);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   storage->JoinInterestGroup(g1, joining_originA.GetURL());

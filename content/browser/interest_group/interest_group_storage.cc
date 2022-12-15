@@ -1733,9 +1733,10 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     if (db_interest_group.interest_group.ads) {
       for (auto& ad : db_interest_group.interest_group.ads.value()) {
         absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-        if (!DoGetKAnonymity(
-                db, KAnonKeyForAdBid(db_interest_group.interest_group, ad),
-                ad_kanon)) {
+        if (!DoGetKAnonymity(db,
+                             KAnonKeyForAdBid(db_interest_group.interest_group,
+                                              ad.render_url),
+                             ad_kanon)) {
           return absl::nullopt;
         }
         if (!ad_kanon)
@@ -1759,9 +1760,10 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     if (db_interest_group.interest_group.ad_components) {
       for (auto& ad : db_interest_group.interest_group.ad_components.value()) {
         absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-        if (!DoGetKAnonymity(
-                db, KAnonKeyForAdBid(db_interest_group.interest_group, ad),
-                ad_kanon)) {
+        if (!DoGetKAnonymity(db,
+                             KAnonKeyForAdBid(db_interest_group.interest_group,
+                                              ad.render_url),
+                             ad_kanon)) {
           return absl::nullopt;
         }
         if (!ad_kanon)

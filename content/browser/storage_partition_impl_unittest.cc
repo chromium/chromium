@@ -277,7 +277,7 @@ class RemoveInterestGroupTester {
     interest_group_manager->JoinInterestGroup(group, origin.GetURL());
 
     // Update the K-anonymity so that we can tell when it gets removed.
-    k_anon_key = KAnonKeyForAdBid(group, group.ads.value()[0]);
+    k_anon_key = KAnonKeyForAdBid(group, GURL("https://owner.example.com/ad1"));
     interest_group_manager->UpdateLastKAnonymityReported(k_anon_key);
   }
 

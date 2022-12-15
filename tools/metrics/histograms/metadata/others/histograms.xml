@@ -625,6 +625,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon"
+    enum="Boolean" expires_after="2023-07-31">
+  <owner>behamilton@google.com</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Recorded at the end of a FLEDGE auction when there is a non-k-anonymous
+    winner. True when the non-k-anonymous winner is k-anonymous.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
     expires_after="2023-07-31">
   <owner>caraitto@chromium.org</owner>

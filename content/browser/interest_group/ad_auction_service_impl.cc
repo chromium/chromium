@@ -152,6 +152,7 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
     const std::vector<GURL>& debug_loss_report_urls,
     const std::vector<GURL>& debug_win_report_urls,
     const blink::InterestGroupSet& interest_groups_that_bid,
+    base::flat_set<std::string> k_anon_keys_to_join,
     const network::mojom::ClientSecurityStatePtr& client_security_state,
     scoped_refptr<network::WrapperSharedURLLoaderFactory>
         trusted_url_loader_factory) {
@@ -165,6 +166,8 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
   interest_group_manager->RecordInterestGroupBids(interest_groups_that_bid);
   interest_group_manager->RecordInterestGroupWin(winning_group_key,
                                                  winning_group_ad_metadata);
+  interest_group_manager->RegisterAdKeysAsJoined(
+      std::move(k_anon_keys_to_join));
 
   SendPrivateAggregationRequests(private_aggregation_manager, main_frame_origin,
                                  std::move(*private_aggregation_requests));
@@ -615,15 +618,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
     blink::InterestGroupSet interest_groups_that_bid,
-    absl::optional<GURL> render_url_without_kanon_enforced,
-    std::vector<GURL> ad_component_urls_without_kanon_enforced,
-    absl::optional<GURL> render_url_with_kanon_simulated,
-    std::vector<GURL> ad_component_urls_with_kanon_simulated,
+    base::flat_set<std::string> k_anon_keys_to_join,
     std::vector<std::string> errors,
     std::unique_ptr<InterestGroupAuctionReporter> reporter) {
-  // TODO(https://crbug.com/1234419): Use the various ..._kanon_... URLs as
-  // appropriate (to update k-anon info, metrics?)
-
   // Remove `auction` from `auctions_` but tmeporarily keep it alive - on
   // success, it owns a AuctionWorkletManager::WorkletHandle for the top-level
   // auction, which `reporter` can reuse once started. Fine to delete after
@@ -650,6 +647,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       SendPrivateAggregationRequests(private_aggregation_manager_,
                                      main_frame_origin_,
                                      std::move(private_aggregation_requests));
+      GetInterestGroupManager().RegisterAdKeysAsJoined(
+          std::move(k_anon_keys_to_join));
       if (!interest_groups_that_bid.empty()) {
         GetInterestGroupManager().RecordInterestGroupBids(
             interest_groups_that_bid);
@@ -691,7 +690,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       std::move(*winning_group_key), std::move(*render_url),
       std::move(ad_component_urls), std::move(winning_group_ad_metadata),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      std::move(interest_groups_that_bid)));
+      std::move(interest_groups_that_bid), std::move(k_anon_keys_to_join)));
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);
@@ -708,7 +707,8 @@ void AdAuctionServiceImpl::OnReporterComplete(
     std::string winning_group_ad_metadata,
     std::vector<GURL> debug_loss_report_urls,
     std::vector<GURL> debug_win_report_urls,
-    blink::InterestGroupSet interest_groups_that_bid) {
+    blink::InterestGroupSet interest_groups_that_bid,
+    base::flat_set<std::string> k_anon_keys_to_join) {
   // Forward debug information to devtools.
   //
   // TODO(https://crbug.com/1394777): Ideally this will share code with the
@@ -761,7 +761,8 @@ void AdAuctionServiceImpl::OnReporterComplete(
                       std::move(private_aggregation_requests))),
               std::move(report_urls), std::move(debug_win_report_urls),
               std::move(debug_loss_report_urls),
-              std::move(interest_groups_that_bid), GetClientSecurityState(),
+              std::move(interest_groups_that_bid),
+              std::move(k_anon_keys_to_join), GetClientSecurityState(),
               GetRefCountedTrustedURLLoaderFactory()),
           ad_component_urls, ad_beacon_map);
 

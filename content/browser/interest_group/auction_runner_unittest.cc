@@ -965,7 +965,7 @@ void AuthorizeKAnon(const blink::InterestGroup::Ad& ad,
                     StorageInterestGroup& group) {
   group.bidding_ads_kanon.emplace_back();
   group.bidding_ads_kanon.back().key =
-      KAnonKeyForAdBid(group.interest_group, ad);
+      KAnonKeyForAdBid(group.interest_group, ad.render_url);
   DCHECK_EQ(GURL(url),
             RenderUrlFromKAnonKeyForAdBid(group.bidding_ads_kanon.back().key));
   group.bidding_ads_kanon.back().is_k_anonymous = true;
@@ -1666,10 +1666,7 @@ class AuctionRunnerTest : public testing::Test,
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests;
     blink::InterestGroupSet interest_groups_that_bid;
-    absl::optional<GURL> render_url_without_kanon_enforced;
-    std::vector<GURL> ad_component_urls_without_kanon_enforced;
-    absl::optional<GURL> render_url_with_kanon_simulated;
-    std::vector<GURL> ad_component_urls_with_kanon_simulated;
+    base::flat_set<std::string> k_anon_keys_to_join;
 
     std::vector<std::string> errors;
   };
@@ -1884,10 +1881,7 @@ class AuctionRunnerTest : public testing::Test,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
       blink::InterestGroupSet interest_groups_that_bid,
-      absl::optional<GURL> render_url_without_kanon_enforced,
-      std::vector<GURL> ad_component_urls_without_kanon_enforced,
-      absl::optional<GURL> render_url_with_kanon_simulated,
-      std::vector<GURL> ad_component_urls_with_kanon_simulated,
+      base::flat_set<std::string> k_anon_keys_to_join,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter) {
     DCHECK(auction_run_loop_);
@@ -1915,14 +1909,7 @@ class AuctionRunnerTest : public testing::Test,
     result_.interest_groups_that_bid = std::move(interest_groups_that_bid);
     result_.private_aggregation_requests =
         std::move(private_aggregation_requests);
-    result_.render_url_without_kanon_enforced =
-        std::move(render_url_without_kanon_enforced);
-    result_.ad_component_urls_without_kanon_enforced =
-        std::move(ad_component_urls_without_kanon_enforced);
-    result_.render_url_with_kanon_simulated =
-        std::move(render_url_with_kanon_simulated);
-    result_.ad_component_urls_with_kanon_simulated =
-        std::move(ad_component_urls_with_kanon_simulated);
+    result_.k_anon_keys_to_join = std::move(k_anon_keys_to_join);
 
     if (!reporter) {
       EXPECT_FALSE(result_.winning_group_id);
@@ -10810,21 +10797,25 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
   // No k-anon authorizations.
   StartAuction(kSellerUrl, bidders);
   auction_run_loop_->Run();
+  EXPECT_THAT(
+      result_.k_anon_keys_to_join,
+      testing::UnorderedElementsAre(
+          KAnonKeyForAdBid(bidders[0].interest_group,
+                           bidders[0].interest_group.ads.value()[0].render_url),
+          KAnonKeyForAdNameReporting(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0])));
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
   switch (kanon_mode()) {
     case auction_worklet::mojom::KAnonymityBidMode::kNone:
       ASSERT_TRUE(result_.ad_url.has_value());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       break;
 
     case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
       EXPECT_FALSE(result_.ad_url.has_value());
-      ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_without_kanon_enforced.value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
       EXPECT_THAT(
           result_.errors,
           testing::ElementsAre(
@@ -10835,8 +10826,6 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
     case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
       ASSERT_TRUE(result_.ad_url.has_value());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       break;
   }
@@ -10866,29 +10855,28 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.ad_url.has_value());
   EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-  switch (kanon_mode()) {
-    case auction_worklet::mojom::KAnonymityBidMode::kNone:
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
-      break;
-
-    case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
-      ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_without_kanon_enforced.value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
-      EXPECT_THAT(result_.errors, testing::ElementsAre());
-      break;
-
-    case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      ASSERT_TRUE(result_.render_url_with_kanon_simulated.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_with_kanon_simulated.value());
-      break;
-  }
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(
+      result_.k_anon_keys_to_join,
+      testing::UnorderedElementsAre(
+          KAnonKeyForAdBid(bidders[0].interest_group,
+                           bidders[0].interest_group.ads.value()[0].render_url),
+          KAnonKeyForAdNameReporting(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0])));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon",
+      kanon_mode() != auction_worklet::mojom::KAnonymityBidMode::kNone, 1);
 }
 
+// Test that k-anonymity for ads with ad components is handled correctly:
+//  - All components must be k-anonymous to be eligible.
+//  - All components of the winner will be reported as joined.
+// Runs an auction with two groups where each gives a bid with two component ads
+// and all ad URLs except one component ad URL of the second bidder are
+// k-anonymous. When k-anonymity is enforced the first interest group should
+// win, despite having a lower bid.
 TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -10926,12 +10914,35 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
   AuthorizeKAnon(bidders[1].interest_group.ad_components.value()[0],
                  "https://ad2.com/1", bidders[1]);
 
+  std::vector<std::string> ad1_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[0].interest_group,
+                       bidders[0].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[0].interest_group,
+                                 bidders[0].interest_group.ads.value()[0]),
+      KAnonKeyForAdBid(
+          bidders[0].interest_group,
+          bidders[0].interest_group.ad_components.value()[0].render_url),
+      KAnonKeyForAdBid(
+          bidders[0].interest_group,
+          bidders[0].interest_group.ad_components.value()[1].render_url),
+  };
+
+  std::vector<std::string> ad2_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[1].interest_group,
+                       bidders[1].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[1].interest_group,
+                                 bidders[1].interest_group.ads.value()[0]),
+      KAnonKeyForAdBid(
+          bidders[1].interest_group,
+          bidders[1].interest_group.ad_components.value()[0].render_url),
+      KAnonKeyForAdBid(
+          bidders[1].interest_group,
+          bidders[1].interest_group.ad_components.value()[1].render_url),
+  };
+
   for (bool run_as_component : {false, true}) {
     SCOPED_TRACE(run_as_component);
 
-    result_.ad_url.reset();
-    result_.render_url_without_kanon_enforced.reset();
-    result_.render_url_with_kanon_simulated.reset();
     if (run_as_component) {
       component_auctions_.emplace_back(
           CreateAuctionConfig(kSellerUrl, {{kBidder1, kBidder2}}));
@@ -10946,6 +10957,9 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
 
     GURL expected_seller_report_url;
     std::vector<GURL> expected_report_urls;
+    base::flat_set<std::string> expected_k_anon_keys_to_join;
+    histogram_tester_->ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
     switch (kanon_mode()) {
       case auction_worklet::mojom::KAnonymityBidMode::kNone:
         // k-anon support is turned off entirely, so ad2 wins, and no other URLs
@@ -10955,12 +10969,10 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         EXPECT_THAT(result_.ad_component_urls,
                     testing::UnorderedElementsAre(GURL("https://ad2.com/1"),
                                                   GURL("https://ad2.com/2")));
-        EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-        EXPECT_THAT(result_.ad_component_urls_without_kanon_enforced,
-                    testing::UnorderedElementsAre());
-        EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
-        EXPECT_THAT(result_.ad_component_urls_with_kanon_simulated,
-                    testing::UnorderedElementsAre());
+        // Only join for ad2
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
+
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
@@ -10979,15 +10991,11 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         EXPECT_THAT(result_.ad_component_urls,
                     testing::UnorderedElementsAre(GURL("https://ad1.com/1"),
                                                   GURL("https://ad1.com/2")));
-        ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-        EXPECT_EQ(GURL("https://ad2.com"),
-                  result_.render_url_without_kanon_enforced.value());
-        EXPECT_THAT(result_.ad_component_urls_without_kanon_enforced,
-                    testing::UnorderedElementsAre(GURL("https://ad2.com/1"),
-                                                  GURL("https://ad2.com/2")));
-        EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
-        EXPECT_THAT(result_.ad_component_urls_with_kanon_simulated,
-                    testing::UnorderedElementsAre());
+
+        expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                            ad1_k_anon_keys.end());
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
@@ -11002,21 +11010,21 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         EXPECT_THAT(result_.ad_component_urls,
                     testing::UnorderedElementsAre(GURL("https://ad2.com/1"),
                                                   GURL("https://ad2.com/2")));
-        EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-        EXPECT_THAT(result_.ad_component_urls_without_kanon_enforced,
-                    testing::UnorderedElementsAre());
-        ASSERT_TRUE(result_.render_url_with_kanon_simulated.has_value());
-        EXPECT_EQ(GURL("https://ad1.com"),
-                  result_.render_url_with_kanon_simulated.value());
-        EXPECT_THAT(result_.ad_component_urls_with_kanon_simulated,
-                    testing::UnorderedElementsAre(GURL("https://ad1.com/1"),
-                                                  GURL("https://ad1.com/2")));
+
+        expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                            ad1_k_anon_keys.end());
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
         break;
     }
+
+    EXPECT_THAT(result_.k_anon_keys_to_join, testing::UnorderedElementsAreArray(
+                                                 expected_k_anon_keys_to_join));
+
     expected_report_urls.push_back(expected_seller_report_url);
     if (run_as_component) {
       // Both top-level and component auction report this.
@@ -11027,6 +11035,10 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
   }
 }
 
+// Test that if there are two ads, one k-anonymous and one not k-anonymous that
+// the correct ad is the winner (depends on `kanon_mode()`). Note that the
+// non-k-anonymous ad bids higher so that it wins when k-anonymity is not
+// enforced.
 TEST_P(AuctionRunnerKAnonTest, Basic) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -11052,12 +11064,22 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
   AuthorizeKAnon(bidders[0].interest_group.ads.value()[0], "https://ad1.com",
                  bidders[0]);
 
+  std::vector<std::string> ad1_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[0].interest_group,
+                       bidders[0].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[0].interest_group,
+                                 bidders[0].interest_group.ads.value()[0]),
+  };
+  std::vector<std::string> ad2_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[1].interest_group,
+                       bidders[1].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[1].interest_group,
+                                 bidders[1].interest_group.ads.value()[0]),
+  };
+
   for (bool run_as_component : {false, true}) {
     SCOPED_TRACE(run_as_component);
 
-    result_.ad_url.reset();
-    result_.render_url_without_kanon_enforced.reset();
-    result_.render_url_with_kanon_simulated.reset();
     if (run_as_component) {
       component_auctions_.emplace_back(
           CreateAuctionConfig(kSellerUrl, {{kBidder1, kBidder2}}));
@@ -11070,7 +11092,10 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
     auction_run_loop_->Run();
     EXPECT_THAT(result_.errors, testing::ElementsAre());
     ASSERT_TRUE(result_.ad_url.has_value());
+    histogram_tester_->ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
 
+    base::flat_set<std::string> expected_k_anon_keys_to_join;
     GURL expected_seller_report_url;
     std::vector<GURL> expected_report_urls;
     switch (kanon_mode()) {
@@ -11078,8 +11103,8 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         // k-anon support is turned off entirely, so ad2 wins, and no other URLs
         // are set.
         EXPECT_EQ(GURL("https://ad2.com"), result_.ad_url.value());
-        EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-        EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
@@ -11090,10 +11115,10 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         // k-anon requirement meands ad1 wins, but we also report ad2 as what
         // would have won had it been authorized.
         EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-        ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-        EXPECT_EQ(GURL("https://ad2.com"),
-                  result_.render_url_without_kanon_enforced.value());
-        EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+        expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                            ad1_k_anon_keys.end());
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
@@ -11104,16 +11129,19 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         // Winner is ad2.com, disregarding k-anonymity, but we also report that
         // if we did care about it, ad1.com would have won.
         EXPECT_EQ(GURL("https://ad2.com"), result_.ad_url.value());
-        EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-        ASSERT_TRUE(result_.render_url_with_kanon_simulated.has_value());
-        EXPECT_EQ(GURL("https://ad1.com"),
-                  result_.render_url_with_kanon_simulated.value());
+        expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                            ad1_k_anon_keys.end());
+        expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                            ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
         expected_report_urls.push_back(
             ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                          /*made_highest_scoring_other_bid=*/false));
         break;
     }
+    EXPECT_THAT(result_.k_anon_keys_to_join, testing::UnorderedElementsAreArray(
+                                                 expected_k_anon_keys_to_join));
+
     expected_report_urls.push_back(expected_seller_report_url);
     if (run_as_component) {
       // Both top-level and component auction report this.
@@ -11150,19 +11178,29 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   AuthorizeKAnon(bidders[0].interest_group.ads.value()[0], "https://ad1.com",
                  bidders[0]);
 
+  std::vector<std::string> ad1_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[0].interest_group,
+                       bidders[0].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[0].interest_group,
+                                 bidders[0].interest_group.ads.value()[0]),
+  };
+
   StartAuction(kSellerUrl, bidders);
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.ad_url.has_value());
   EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
+  EXPECT_THAT(result_.k_anon_keys_to_join,
+              testing::UnorderedElementsAreArray(ad1_k_anon_keys));
+
   std::vector<GURL> expected_report_urls;
   expected_report_urls.emplace_back("https://reporting.example.com/2");
   switch (kanon_mode()) {
     case auction_worklet::mojom::KAnonymityBidMode::kNone:
       // k-anon support is turned off entirely, so no other URLs
       // are set.
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                        /*made_highest_scoring_other_bid=*/false));
@@ -11170,10 +11208,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
 
     case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
       // The enforced winner is the same, but there is no runner-up.
-      ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_without_kanon_enforced.value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/0,
                        /*made_highest_scoring_other_bid=*/false));
@@ -11181,10 +11217,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
 
     case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
       // ad1.com also wins in the simulated mode.
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      ASSERT_TRUE(result_.render_url_with_kanon_simulated.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_with_kanon_simulated.value());
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
       expected_report_urls.push_back(
           ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
                        /*made_highest_scoring_other_bid=*/false));
@@ -11228,17 +11262,33 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
   AuthorizeKAnon(bidders[0].interest_group.ads.value()[0], "https://ad1.com",
                  bidders[0]);
 
+  std::vector<std::string> ad1_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[0].interest_group,
+                       bidders[0].interest_group.ads.value()[0].render_url),
+      KAnonKeyForAdNameReporting(bidders[0].interest_group,
+                                 bidders[0].interest_group.ads.value()[0]),
+  };
+  std::vector<std::string> ad2_k_anon_keys = {
+      KAnonKeyForAdBid(bidders[0].interest_group,
+                       bidders[0].interest_group.ads.value()[1].render_url),
+      KAnonKeyForAdNameReporting(bidders[0].interest_group,
+                                 bidders[0].interest_group.ads.value()[1]),
+  };
+
   StartAuction(kSellerUrl, bidders);
   auction_run_loop_->Run();
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   ASSERT_TRUE(result_.ad_url.has_value());
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
 
+  base::flat_set<std::string> expected_k_anon_keys_to_join;
   switch (kanon_mode()) {
     case auction_worklet::mojom::KAnonymityBidMode::kNone:
       // Don't care about k-anonymity: ad2 wins, nothing else is reporter.
       EXPECT_EQ(GURL("https://ad2.com"), result_.ad_url.value());
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+      expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                          ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/2"));
       break;
@@ -11247,10 +11297,10 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
       // Ad 2 is what got blocked by enforcement --- if it were authorized, it
       // would win.
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url.value());
-      ASSERT_TRUE(result_.render_url_without_kanon_enforced.has_value());
-      EXPECT_EQ(GURL("https://ad2.com"),
-                result_.render_url_without_kanon_enforced.value());
-      EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+      expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                          ad1_k_anon_keys.end());
+      expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                          ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/1"));
       break;
@@ -11259,14 +11309,16 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
       // Winner is ad2.com, disregarding k-anonymity, but we also report that
       // if we did care about it, ad1.com would have won.
       EXPECT_EQ(GURL("https://ad2.com"), result_.ad_url.value());
-      EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-      ASSERT_TRUE(result_.render_url_with_kanon_simulated.has_value());
-      EXPECT_EQ(GURL("https://ad1.com"),
-                result_.render_url_with_kanon_simulated.value());
+      expected_k_anon_keys_to_join.insert(ad1_k_anon_keys.begin(),
+                                          ad1_k_anon_keys.end());
+      expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
+                                          ad2_k_anon_keys.end());
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre("https://reporting.example.com/2"));
       break;
   }
+  EXPECT_THAT(result_.k_anon_keys_to_join,
+              testing::UnorderedElementsAreArray(expected_k_anon_keys_to_join));
 }
 
 // Test to make sure that k-anon info doesn't get incorrectly reported when
@@ -11317,8 +11369,9 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
 
   // Should not have anything to report.
   EXPECT_FALSE(result_.ad_url.has_value());
-  EXPECT_FALSE(result_.render_url_without_kanon_enforced.has_value());
-  EXPECT_FALSE(result_.render_url_with_kanon_simulated.has_value());
+  EXPECT_THAT(result_.k_anon_keys_to_join, testing::ElementsAre());
+  histogram_tester_->ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 0);
 }
 
 TEST_P(AuctionRunnerKAnonTest, MojoValidation) {

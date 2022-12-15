@@ -248,10 +248,9 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
       .WithArgs(group_key, std::move(ad_json));
 }
 
-void InterestGroupManagerImpl::RegisterAdAsWon(
-    const blink::InterestGroup& group,
-    const blink::InterestGroup::Ad& ad) {
-  k_anonymity_manager_->RegisterAdAsWon(group, ad);
+void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
+    base::flat_set<std::string> keys) {
+  k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(keys));
 }
 
 void InterestGroupManagerImpl::GetInterestGroup(
