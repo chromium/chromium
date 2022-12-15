@@ -576,8 +576,13 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   }
 }
 
+// TODO(crbug.com/1359392): Remove this override when kPasswordsGrouping flag is
+// removed.
 - (BOOL)shouldHideToolbar {
-  return !self.editing;
+  // When credentials are grouped, each credential section has its own Delete
+  // button displayed on editing mode, hence showing the toolbar with the Delete
+  // button is not necessary.
+  return IsPasswordGroupingEnabled() || !self.editing;
 }
 
 #pragma mark - Private
