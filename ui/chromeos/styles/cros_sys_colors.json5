@@ -197,6 +197,7 @@
       light: '$cros.ref.primary10',
       dark: '$cros.ref.primary10',
     },
+    'system-on-primary-container-disabled': 'rgba($cros.sys.system-on-primary-container.rgb, 0.38)',
 
     /* Harmonized colors */
     'on-positive-container': {
