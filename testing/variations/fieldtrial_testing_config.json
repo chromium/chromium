@@ -8358,21 +8358,6 @@
             ]
         }
     ],
-    "PasswordsGrouping": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordsGrouping"
-                    ]
-                }
-            ]
-        }
-    ],
     "Path2DPaintCache": [
         {
             "platforms": [
