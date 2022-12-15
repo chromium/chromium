@@ -408,9 +408,310 @@ Specific setup steps include:
 * Setting the resource to load for the empty path.
 * Adding all resources from a GritResourceMap.
 
-## Browser (C++) &rarr; Renderer (JS)
+## Browser (C++) and Renderer (JS) communication
 
-### WebUIMessageHandler::AllowJavascript()
+### Mojo
+
+[Mojo](https://chromium.googlesource.com/chromium/src/+/master/mojo/README.md)
+is used for IPC throughout Chromium, and should generally be used for new
+WebUIs to communicate between the browser (C++) and the renderer (JS/TS). To
+use Mojo, you will need to:
+
+* Write an interface definition for the JS/C++ interface in a mojom file
+* Add a build target in the BUILD.gn file to autogenerate C++ and TypeScript
+  code ("bindings").
+* Bind the interface on the C++ side and implement any methods to send or
+  receive information from TypeScript.
+* Add the TypeScript bindings file to your WebUI's <code>ts_library()</code>
+  and use them in your TypeScript code.
+
+#### Mojo Interface Definition
+Mojo interfaces are declared in mojom files. For WebUIs, these normally live
+alongside the C++ code in chrome/browser/ui/webui. For example:
+
+**chrome/browser/ui/webui/donuts/donuts.mojom**
+```
+module donuts.mojom;
+
+interface PageHandlerFactory {
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://donuts (Renderer -> Browser)
+interface PageHandler {
+  StartPilotLight();
+
+  BakeDonuts(uint32 num_donuts);
+
+  // Expects a response from the browser.
+  GetNumberOfDonuts() => (uint32 num_donuts);
+}
+
+// Called from C++ side of chrome://donuts. (Browser -> Renderer)
+interface Page {
+  DonutsBaked(uint32 num_donuts);
+}
+```
+
+#### BUILD.gn mojo target
+mojom() is the build rule used to generate mojo bindings. It can be set up as
+follows:
+
+**chrome/browser/ui/webui/donuts/BUILD.gn**
+```
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "donuts.mojom" ]
+  webui_module_path = "/"
+  use_typescript_sources = true
+}
+```
+
+#### Setting up C++ bindings
+The WebUIController class should inherit from ui::MojoWebUIController and
+from the PageHandlerFactory class defined in the mojom file.
+
+**chrome/browser/ui/webui/donuts/donuts_ui.h**
+```c++
+class DonutsPageHandler;
+
+class DonutsUI : public ui::MojoWebUIController,
+                 public donuts::mojom::PageHandlerFactory {
+ public:
+  explicit DonutsUI(content::WebUI* web_ui);
+
+  DonutsUI(const DonutsUI&) = delete;
+  DonutsUI& operator=(const DonutsUI&) = delete;
+
+  ~DonutsUI() override;
+
+  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<donuts::mojom::PageHandlerFactory> receiver);
+
+ private:
+  // donuts::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<donuts::mojom::Page> page,
+      mojo::PendingReceiver<donuts::mojom::PageHandler> receiver) override;
+
+  std::unique_ptr<DonutsPageHandler> page_handler_;
+
+  mojo::Receiver<donuts::mojom::PageHandlerFactory> page_factory_receiver_{
+      this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+```
+
+**chrome/browser/ui/webui/donuts/donuts_ui.cc**
+```c++
+DonutsUI::DonutsUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, true) {
+  // Normal constructor steps (e.g. setting up data source) go here.
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(DonutsUI)
+
+DonutsUI::~DonutsUI() = default;
+
+void DonutsUI::BindInterface(
+    mojo::PendingReceiver<donuts::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void DonutsUI::CreatePageHandler(
+    mojo::PendingRemote<donuts::mojom::Page> page,
+    mojo::PendingReceiver<donuts::mojom::PageHandler> receiver) {
+  DCHECK(page);
+  page_handler_ = std::make_unique<DonutsPageHandler>(
+      std::move(receiver), std::move(page));
+}
+```
+
+You also need to register the PageHandlerFactory to your controller in
+**chrome/browser/chrome_browser_interface_binders.cc**:
+```c++
+RegisterWebUIControllerInterfaceBinder<donuts::mojom::PageHandlerFactory,
+                                       DonutsUI>(map);
+```
+
+#### Using C++ bindings for communication
+The WebUI message handler should inherit from the Mojo PageHandler class.
+
+**chrome/browser/ui/webui/donuts/donuts_page_handler.h**
+```c++
+#include "chrome/browser/ui/webui/donuts/donuts.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+class DonutsPageHandler : public donuts::mojom::PageHandler {
+ public:
+  DonutsPageHandler(
+      mojo::PendingReceiver<donuts::mojom::PageHandler> receiver,
+      mojo::PendingRemote<donuts::mojom::Page> page);
+
+  DonutsPageHandler(const DonutsPageHandler&) = delete;
+  DonutsPageHandler& operator=(const DonutsPageHandler&) = delete;
+
+  ~DonutsPageHandler() override;
+
+  // Triggered by some outside event
+  void DonutsPageHandler::OnBakingDonutsFinished(uint32_t num_donuts);
+
+  // donuts::mojom::PageHandler:
+  void StartPilotLight() override;
+  void BakeDonuts(uint32_t num_donuts) override;
+  void GetNumberOfDonuts(GetNumberOfDonutsCallback callback) override;
+}
+```
+
+The message handler needs to implement all the methods on the PageHandler
+interface.
+
+**chrome/browser/ui/webui/donuts/donuts_page_handler.cc**
+```c++
+DonutsPageHandler::DonutsPageHandler(
+    mojo::PendingReceiver<donuts::mojom::PageHandler> receiver,
+    mojo::PendingRemote<donuts::mojom::Page> page)
+    : receiver_(this, std::move(receiver)),
+      page_(std::move(page)) {
+}
+
+DonutsPageHandler::~DonutsPageHandler() {
+  GetOven()->TurnOffGas();
+}
+
+// Triggered by outside asynchronous event; sends information to the renderer.
+void DonutsPageHandler::OnBakingDonutsFinished(uint32_t num_donuts) {
+  page_->DonutsBaked(num_donuts);
+}
+
+// Triggered by startPilotLight() call in TS.
+void DonutsPageHandler::StartPilotLight() {
+  GetOven()->StartPilotLight();
+}
+
+// Triggered by bakeDonuts() call in TS.
+void DonutsPageHandler::BakeDonuts(int32_t num_donuts) {
+  GetOven()->BakeDonuts();
+}
+
+// Triggered by getNumberOfDonuts() call in TS; sends a response back to the
+// renderer.
+void DonutsPageHandler::GetNumberOfDonuts(GetNumberOfDonutsCallback callback) {
+  uint32_t result = GetOven()->GetNumberOfDonuts();
+  std::move(callback).Run(result);
+}
+```
+
+#### Setting Up TypeScript bindings
+
+For WebUIs using the `build_webui()` rule, the TypeScript mojo bindings can be
+added to the build and served from the root (e.g.
+`chrome://donuts/donuts.mojom-webui.js`) by adding the following arguments to
+`build_webui()`:
+
+**chrome/browser/resources/donuts/BUILD.gn**
+```
+build_webui("build") {
+  # ... Other arguments go here
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/donuts:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/donuts/donuts.mojom-webui.ts",
+  ]
+  # ... Other arguments can go here
+}
+```
+
+It is often helpful to wrap the TypeScript side of Mojo setup in a BrowserProxy
+class:
+
+**chrome/browser/resources/donuts/browser_proxy.ts**
+```js
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './donuts.mojom-webui.js';
+
+class BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
+
+  constructor() {
+    this.callbackRouter = new PageCallbackRouter();
+
+    this.handler = new PageHandlerRemote();
+
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+  }
+
+  static getInstance(): BrowserProxy {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  static setInstance(obj: BrowserProxy) {
+    instance = obj;
+  }
+}
+
+let instance: BrowserProxy|null = null;
+```
+
+#### Using TypeScript bindings for communication
+The `callbackRouter` (`PageCallbackRouter`) can be used to add listeners for
+asynchronous events sent from the browser.
+
+The `handler` (`PageHandlerRemote`) can be used to send messages from the
+renderer to the browser. For interface methods that require a browser response,
+calling the method returns a promise. The promise will be resolved with the
+response from the browser.
+
+**chrome/browser/resources/donuts/donuts.ts**
+```js
+import {BrowserProxy} from './browser_proxy.js';
+
+let numDonutsBaked: number = 0;
+
+window.onload = function() {
+  // Other page initialization steps go here
+  const proxy = BrowserProxy.getInstance();
+  // Tells the browser to start the pilot light.
+  proxy.handler.startPilotLight();
+  // Adds a listener for the asynchronous "donutsBaked" event.
+  proxy.callbackRouter.donutsBaked.addListener(
+    (numDonuts: number) => {
+      numDonutsBaked += numDonuts;
+    });
+};
+
+function CheckNumberOfDonuts() {
+  // Requests the number of donuts from the browser, and alerts with the
+  // response.
+  BrowserProxy.getInstance().handler.getNumberOfDonuts().then(
+      (numDonuts: number) => {
+        alert('Yay, there are ' + numDonuts + ' delicious donuts left!');
+      });
+}
+
+function BakeDonuts(numDonuts: number) {
+  // Tells the browser to bake |numDonuts| donuts.
+  BrowserProxy.getInstance().handler.bakeDonuts(numDonuts);
+}
+```
+
+### Pre-Mojo alternative: chrome.send()/WebUIMessageHandler
+Most Chrome WebUIs were added before the introduction of Mojo, and use the
+older style WebUIMessageHandler + chrome.send() pattern. The following sections
+detail the methods in WebUIMessageHandler and the corresponding communication
+methods in TypeScript/JavaScript and how to use them.
+
+#### WebUIMessageHandler::AllowJavascript()
 
 A tab that has been used for settings UI may be reloaded, or may navigate to an
 external origin. In both cases, one does not want callbacks from C++ to
@@ -474,7 +775,7 @@ detect page readiness omits <i>application-specific</i> initialization, and a
 custom <code>'initialized'</code> message is often necessary.
 </div>
 
-### WebUIMessageHandler::CallJavascriptFunction()
+#### WebUIMessageHandler::CallJavascriptFunction()
 
 When the browser process needs to tell the renderer/JS of an event or otherwise
 execute code, it can use `CallJavascriptFunction()`.
@@ -519,7 +820,7 @@ alternatives:
   when Javascript requires a response to an inquiry about C++-canonical state
   (i.e. "Is Autofill enabled?", "Is the user incognito?")
 
-### WebUIMessageHandler::FireWebUIListener()
+#### WebUIMessageHandler::FireWebUIListener()
 
 `FireWebUIListener()` is used to notify a registered set of listeners that an
 event has occurred. This is generally used for events that are not guaranteed to
@@ -547,7 +848,7 @@ If you simply need to get a response in Javascript from C++, consider using
 [`sendWithPromise()`](#sendWithPromise) and
 [`ResolveJavascriptCallback`](#ResolveJavascriptCallback).
 
-### WebUIMessageHandler::OnJavascriptAllowed()
+#### WebUIMessageHandler::OnJavascriptAllowed()
 
 `OnJavascriptDisallowed()` is a lifecycle method called in response to
 [`AllowJavascript()`](#AllowJavascript). It is a good place to register
@@ -589,7 +890,7 @@ when a renderer has been created and the
 document has loaded enough to signal to the C++ that it's ready to respond to
 messages.
 
-### WebUIMessageHandler::OnJavascriptDisallowed()
+#### WebUIMessageHandler::OnJavascriptDisallowed()
 
 `OnJavascriptDisallowed` is a lifecycle method called when it's unclear whether
 it's safe to send JavaScript messsages to the renderer.
@@ -623,7 +924,7 @@ Because `OnJavascriptDisallowed()` is not guaranteed to be called before a
 scoped observer that automatically unsubscribes on destruction but can also
 imperatively unsubscribe in `OnJavascriptDisallowed()`.
 
-### WebUIMessageHandler::RejectJavascriptCallback()
+#### WebUIMessageHandler::RejectJavascriptCallback()
 
 This method is called in response to
 [`sendWithPromise()`](#sendWithPromise) to reject the issued Promise. This
@@ -654,7 +955,7 @@ CallJavascriptFunction("cr.webUIResponse", callback_id, base::Value(false),
 
 See also: [`ResolveJavascriptCallback`](#ResolveJavascriptCallback)
 
-### WebUIMessageHandler::ResolveJavascriptCallback()
+#### WebUIMessageHandler::ResolveJavascriptCallback()
 
 This method is called in response to
 [`sendWithPromise()`](#sendWithPromise) to fulfill an issued Promise,
@@ -666,7 +967,7 @@ callbacks.
 So, given this TypeScript code:
 
 ```js
-sendWithPromise('bakeDonuts').then(function(numDonutsBaked: number) {
+sendWithPromise('bakeDonuts', [5]).then(function(numDonutsBaked: number) {
   shop.donuts += numDonutsBaked;
 });
 ```
@@ -681,9 +982,7 @@ void OvenHandler::HandleBakeDonuts(const base::Value::List& args) {
 }
 ```
 
-## Renderer (JS) &rarr; Browser (C++)
-
-### chrome.send()
+#### chrome.send()
 
 When the JavaScript `window` object is created, a renderer is checked for [WebUI
 bindings](#bindings).
@@ -734,7 +1033,7 @@ callback with the deserialized arguments:
 message_callbacks_.find(message)->second.Run(&args);
 ```
 
-### addWebUiListener()
+#### addWebUiListener()
 
 WebUI listeners are a convenient way for C++ to inform JavaScript of events.
 
@@ -747,7 +1046,7 @@ code.
 Adding WebUI listeners creates and inserts a unique ID into a map in JavaScript,
 just like [sendWithPromise()](#sendWithPromise).
 
-addWebUiListener can be imported from 'chrome://resources/js/cr.m.js'.
+addWebUiListener can be imported from 'chrome://resources/js/cr.js'.
 
 ```js
 // addWebUiListener():
@@ -785,7 +1084,7 @@ addWebUiListener('donuts-baked', function(numFreshlyBakedDonuts: number) {
 });
 ```
 
-### sendWithPromise()
+#### sendWithPromise()
 
 `sendWithPromise()` is a wrapper around `chrome.send()`. It's used when
 triggering a message requires a response:
