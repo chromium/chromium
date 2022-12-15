@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
+#include <cmath>
 #include "base/check_op.h"
 #endif
 
@@ -18,7 +19,7 @@ struct CharacterRange {
       : start(from), end(to), ascent(ascent), descent(descent) {
 #if DCHECK_IS_ON()
     // start/end can saturate in tests or a fuzzer, but not a real world case.
-    if (!isnan(start))
+    if (!std::isnan(start))
       DCHECK_LE(start, end);
 #endif
   }
