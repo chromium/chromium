@@ -10,28 +10,28 @@ promise_test(() => {
     return new Promise(resolve => {
         performance.clearResourceTimings()
 
-        let localFrameLoaded = false
-        let remoteFrameLoaded = false
+        let sameOriginFrameLoaded = false
+        let crossOriginFrameLoaded = false
 
         // Create first child iframe.
-        const localChildFrame = document.createElement('iframe')
-        localChildFrame.src = "../resources/child-frame.html"
-        document.body.appendChild(localChildFrame)
+        const sameOriginChildFrame = document.createElement('iframe')
+        sameOriginChildFrame.src = "../resources/child-frame.html"
+        document.body.appendChild(sameOriginChildFrame)
 
-        localChildFrame.addEventListener("load", () => {
-            localFrameLoaded = true
-            if (remoteFrameLoaded)
+        sameOriginChildFrame.addEventListener("load", () => {
+            sameOriginFrameLoaded = true
+            if (crossOriginFrameLoaded)
                 verifyPerformanceEntries()
         })
 
         // Create second child iframe.
-        const remoteChildFrame = document.createElement('iframe')
-        remoteChildFrame.src = "http://{{hosts[][www]}}:{{ports[http][0]}}/resources/child-frame.html"
-        document.body.appendChild(remoteChildFrame)
+        const crossOriginChildFrame = document.createElement('iframe')
+        crossOriginChildFrame.src = "http://{{hosts[][www]}}:{{ports[http][0]}}/resources/child-frame.html"
+        document.body.appendChild(crossOriginChildFrame)
 
-        remoteChildFrame.addEventListener("load", () => {
-            remoteFrameLoaded = true
-            if (localFrameLoaded)
+        crossOriginChildFrame.addEventListener("load", () => {
+            crossOriginFrameLoaded = true
+            if (sameOriginFrameLoaded)
                 verifyPerformanceEntries()
         })
 
@@ -52,5 +52,5 @@ promise_test(() => {
             resolve()
         }
     })
-}, "GetEntries of a ParentFrame with one RemoteFrame child and one LocalFrame child")
+}, "GetEntries of a parent Frame with one Cross-Origin child and one Same-Origin child")
 </script>

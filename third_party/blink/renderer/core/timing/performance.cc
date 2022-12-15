@@ -511,7 +511,9 @@ PerformanceEntryVector Performance::GetEntriesWithChildFrames(
         WindowPerformance* window_performance =
             DOMWindowPerformance::performance(*current_window);
 
-        // Get the performance entries based on entry_type input.
+        // Get the performance entries based on entry_type input. Since the root
+        // frame can script the current frame, its okay to expose the current
+        // frame's performance entries to the root.
         PerformanceEntryVector current_entries;
         if (entry_type.IsNull()) {
           current_entries = window_performance->GetEntriesForCurrentFrame();
