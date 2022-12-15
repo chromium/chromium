@@ -44,15 +44,16 @@ FaceMLAppUI::FaceMLAppUI(content::WebUI* web_ui,
 
   // Register common permissions for chrome-untrusted://face-ml pages.
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
-  const url::Origin untrusted_origin =
-      url::Origin::Create(GURL(kChromeUIFaceMLAppUntrustedURL));
+  const url::Origin origin = url::Origin::Create(GURL(kChromeUIFaceMLAppURL));
   webui_allowlist->RegisterAutoGrantedPermissions(
-      untrusted_origin, {
-                            ContentSettingsType::COOKIES,
-                            ContentSettingsType::JAVASCRIPT,
-                            ContentSettingsType::IMAGES,
-                            ContentSettingsType::SOUND,
-                        });
+      origin, {
+                  ContentSettingsType::COOKIES,
+                  ContentSettingsType::DISPLAY_CAPTURE,
+                  ContentSettingsType::JAVASCRIPT,
+                  ContentSettingsType::IMAGES,
+                  ContentSettingsType::MEDIASTREAM_CAMERA,
+                  ContentSettingsType::SOUND,
+              });
 }
 
 FaceMLAppUI::~FaceMLAppUI() = default;
