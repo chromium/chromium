@@ -337,7 +337,9 @@
   <slot></slot>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
-    <div id="thumbnailPlaceholder" class="placeholder"></div>
+    <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
+      <div id="thumbnailPlaceholder" class="placeholder"></div>
+    </template>
     <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
       <div class="placeholder currently-set-text"></div>
       <div class="placeholder"></div>
