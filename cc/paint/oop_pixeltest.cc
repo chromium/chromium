@@ -112,7 +112,7 @@ class OopPixelTest : public testing::Test,
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGpuRaster, /*support_locking=*/true,
+            viz::TestContextType::kGpuRaster, /*support_locking=*/false,
             &gr_shader_cache_, &activity_flags_);
     gpu::ContextResult result =
         raster_context_provider_->BindToCurrentSequence();
@@ -162,10 +162,6 @@ class OopPixelTest : public testing::Test,
 
   SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,
                   const RasterOptions& options) {
-    GURL url("https://example.com/foo");
-    viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
-        raster_context_provider_.get(), url.possibly_invalid_spec().c_str());
-
     absl::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;

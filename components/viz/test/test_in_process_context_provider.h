@@ -10,11 +10,11 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/config/gpu_feature_info.h"
 
 class GrDirectContext;
@@ -67,8 +67,11 @@ class TestInProcessContextProvider
   base::Lock* GetLock() override;
   const gpu::Capabilities& ContextCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
-  void AddObserver(ContextLostObserver* obs) override {}
-  void RemoveObserver(ContextLostObserver* obs) override {}
+  void AddObserver(ContextLostObserver* obs) override;
+  void RemoveObserver(ContextLostObserver* obs) override;
+
+  // Calls OnContextLost() on all observers. This doesn't modify the context.
+  void SendOnContextLost();
 
   void ExecuteOnGpuThread(base::OnceClosure task);
 
@@ -77,9 +80,14 @@ class TestInProcessContextProvider
   ~TestInProcessContextProvider() override;
 
  private:
+  void CheckValidThreadOrLockAcquired() const;
+
   const TestContextType type_;
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
   raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
+
+  base::ThreadChecker main_thread_checker_;
+  base::ThreadChecker context_thread_checker_;
 
   gpu::Capabilities caps_;
 
@@ -93,6 +101,8 @@ class TestInProcessContextProvider
   std::unique_ptr<ContextCacheController> cache_controller_;
   absl::optional<base::Lock> context_lock_;
   gpu::GpuFeatureInfo gpu_feature_info_;
+
+  base::ObserverList<ContextLostObserver>::Unchecked observers_;
 };
 
 }  // namespace viz

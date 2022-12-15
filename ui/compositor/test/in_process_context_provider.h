@@ -67,10 +67,6 @@ class InProcessContextProvider
   void AddObserver(viz::ContextLostObserver* obs) override;
   void RemoveObserver(viz::ContextLostObserver* obs) override;
 
-  // Gives the GL internal format that should be used for calling CopyTexImage2D
-  // on the default framebuffer.
-  uint32_t GetCopyTextureInternalFormat();
-
   // Calls OnContextLost() on all observers. This doesn't modify the context.
   void SendOnContextLost();
 

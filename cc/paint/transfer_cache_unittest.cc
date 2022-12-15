@@ -10,6 +10,7 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
+#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/client_transfer_cache.h"

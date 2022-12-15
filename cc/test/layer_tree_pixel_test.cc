@@ -24,6 +24,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
@@ -122,6 +123,8 @@ void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
   if (!use_software_renderer()) {
     viz::RasterContextProvider* worker_context_provider =
         host_impl->layer_tree_frame_sink()->worker_context_provider();
+    viz::RasterContextProvider::ScopedRasterContextLock lock(
+        worker_context_provider);
     EXPECT_EQ(use_accelerated_raster(),
               worker_context_provider->ContextCapabilities().gpu_rasterization);
     EXPECT_EQ(
