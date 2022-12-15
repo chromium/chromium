@@ -326,6 +326,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:block_cleanup_test",
     "//ios/chrome/test:test_support",
     "//ios/net",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/common:uikit",
     "//ios/web/find_in_page",
     "//ios/web/public",

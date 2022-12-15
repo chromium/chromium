@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
@@ -232,6 +233,9 @@ using base::UserMetricsAction;
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
     return tabRestoreService && !tabRestoreService->entries().empty();
+  }
+  if (sel_isEqual(action, @selector(keyCommand_reportAnIssue))) {
+    return ios::provider::IsUserFeedbackSupported();
   }
   return [super canPerformAction:action withSender:sender];
 }

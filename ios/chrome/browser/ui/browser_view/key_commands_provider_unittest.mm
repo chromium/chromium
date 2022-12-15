@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -227,7 +228,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewWindow"));
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_reportAnIssue"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_goToTabGrid"));
   EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
@@ -508,6 +508,12 @@ TEST_F(KeyCommandsProviderTest, CanPerform_ReopenLastClosedTab) {
   // Close a tab.
   CloseWebState(1);
   EXPECT_TRUE(CanPerform(@"keyCommand_reopenLastClosedTab"));
+}
+
+// Checks whether KeyCommandsProvider supports user feedback.
+TEST_F(KeyCommandsProviderTest, CanPerform_ReportAnIssue) {
+  EXPECT_EQ(CanPerform(@"keyCommand_reportAnIssue"),
+            ios::provider::IsUserFeedbackSupported());
 }
 
 #pragma mark - Metrics Tests
