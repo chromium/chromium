@@ -49,22 +49,11 @@
 
 namespace content {
 
-namespace {
-bool IsRendererPasteAllowed(RenderFrameHost& render_frame_host) {
-  ContentBrowserClient* browser_client = GetContentClient()->browser();
-  return browser_client->IsClipboardPasteAllowed(&render_frame_host);
-}
-}  // namespace
-
-// 5 mins is based on the timeout in BinaryUploadService. This scanning timeout
-// of 5 mins means no paste will be held back longer before being allowed or
-// blocked, so matching this timeout with the threshold for a paste being too
-// old ensures scans that:
-//  - Scans that timeout can be retried without waiting
-//  - Scans that succeed will apply their verdicts without the risk that their
-//    associated IsPasteContentAllowedRequest is already too old.
-const base::TimeDelta ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld =
-    base::Minutes(5);
+// The amount of time that the result of a content allow request is cached
+// and reused for the same clipboard `seqno`.
+constexpr base::TimeDelta
+    ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld =
+        base::Milliseconds(500);
 
 ClipboardHostImpl::IsPasteContentAllowedRequest::
     IsPasteContentAllowedRequest() = default;
@@ -88,16 +77,19 @@ bool ClipboardHostImpl::IsPasteContentAllowedRequest::AddCallback(
 
 void ClipboardHostImpl::IsPasteContentAllowedRequest::Complete(
     IsClipboardPasteContentAllowedCallbackArgType data) {
+  completed_time_ = base::Time::Now();
   data_ = std::move(data);
   InvokeCallbacks();
 }
 
 bool ClipboardHostImpl::IsPasteContentAllowedRequest::IsObsolete(
     base::Time now) {
-  // If the request is old and no longer has any registered callbacks it is
-  // obsolete.
-  return (now - time_) > kIsPasteContentAllowedRequestTooOld &&
-         callbacks_.empty();
+  return (now - completed_time_) > kIsPasteContentAllowedRequestTooOld;
+}
+
+base::Time ClipboardHostImpl::IsPasteContentAllowedRequest::completed_time() {
+  DCHECK(is_complete());
+  return completed_time_;
 }
 
 void ClipboardHostImpl::IsPasteContentAllowedRequest::InvokeCallbacks() {
@@ -206,7 +198,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
 
 void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -243,7 +235,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
                                  ReadHtmlCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::u16string(), GURL(), 0, 0);
     return;
   }
@@ -275,7 +267,7 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
                                 ReadSvgCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -298,7 +290,7 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::string());
     return;
   }
@@ -322,7 +314,7 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
                                 ReadPngCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
@@ -356,7 +348,7 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::move(result));
     return;
   }
@@ -435,7 +427,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const std::u16string& type,
                                        ReadCustomDataCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host())) {
+  if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -501,6 +493,21 @@ void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
 void ClipboardHostImpl::CommitWrite() {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
+}
+
+bool ClipboardHostImpl::IsRendererPasteAllowed(
+    ui::ClipboardBuffer clipboard_buffer,
+    RenderFrameHost& render_frame_host) {
+  auto it = is_allowed_requests_.find(
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          clipboard_buffer));
+  if (it != is_allowed_requests_.end() && it->second.is_complete() &&
+      !it->second.IsObsolete(base::Time::Now())) {
+    return true;
+  }
+
+  return GetContentClient()->browser()->IsClipboardPasteAllowed(
+      &render_frame_host);
 }
 
 bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
