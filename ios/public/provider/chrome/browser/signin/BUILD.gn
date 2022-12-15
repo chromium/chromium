@@ -83,14 +83,6 @@ source_set("test_support") {
   public_deps = [ "//testing/gmock" ]
 }
 
-# Forwarding-target needed until internal repository has been updated to
-# use the new target.
-source_set("capabilities_types") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "capabilities_dict.h" ]
-  public_deps = [ "//ios/chrome/browser/signin:capabilities_types" ]
-}
-
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
