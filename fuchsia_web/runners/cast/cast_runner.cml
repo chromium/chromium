@@ -36,9 +36,9 @@
     // Used to host services provided by CFv1 and Modular, to offer to Cast
     // activities under the cast-runner.
     {
-      directory: "svc_for_cfv2",
+      directory: "for_dynamic_component_host",
       rights: [ "rw*" ],
-      path: "/svc_for_cfv2",
+      path: "/for_dynamic_component_host",
     },
 
   ],

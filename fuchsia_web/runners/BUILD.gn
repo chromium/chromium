@@ -81,6 +81,7 @@ source_set("cast_runner_core") {
     "//components/cast/message_port",
     "//components/cast/named_message_port_connector:named_message_port_connector",
     "//components/fuchsia_component_support",
+    "//components/fuchsia_component_support:dynamic_component_host",
     "//fuchsia_web/cast_streaming",
     "//fuchsia_web/runners/common/modular",
     "//fuchsia_web/webinstance_host",

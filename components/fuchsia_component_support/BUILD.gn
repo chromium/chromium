@@ -56,21 +56,43 @@ source_set("annotations_manager") {
   ]
 }
 
+# Integration helper for components which host child components.
+source_set("dynamic_component_host") {
+  visibility = [ "*" ]
+
+  sources = [
+    "dynamic_component_host.cc",
+    "dynamic_component_host.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
+  ]
+
+  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   visibility += [ "//components:components_unittests__exec" ]
   sources = [
     "annotations_manager_unittest.cc",
     "config_reader_unittest.cc",
+    "dynamic_component_host_unittest.cc",
     "inspect_unittest.cc",
   ]
   deps = [
     ":annotations_manager",
+    ":dynamic_component_host",
     ":fuchsia_component_support",
     "//base",
     "//base/test:test_support",
     "//components/version_info",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
