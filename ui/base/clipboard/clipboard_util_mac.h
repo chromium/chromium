@@ -7,10 +7,13 @@
 
 #import <AppKit/AppKit.h>
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/file_info.h"
 
 namespace ui {
 
@@ -50,6 +53,15 @@ bool URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
                                  bool include_files,
                                  NSArray<NSString*>** urls,
                                  NSArray<NSString*>** titles);
+
+// For a given pasteboard, extracts the files found on it.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+std::vector<FileInfo> FilesFromPasteboard(NSPasteboard* pboard);
+
+// Writes files to a given pasteboard.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+void WriteFilesToPasteboard(NSPasteboard* pboard,
+                            const std::vector<FileInfo>& files);
 
 // Gets the NSPasteboard specified from the clipboard buffer.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)

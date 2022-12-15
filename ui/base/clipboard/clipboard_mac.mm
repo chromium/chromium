@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
-#include "ui/base/clipboard/clipboard.h"
 
 #include <limits>
 
@@ -18,6 +17,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -343,11 +343,9 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kFilenames);
 
-  NSArray* paths = [GetPasteboard() propertyListForType:NSFilenamesPboardType];
-  for (NSString* path in paths) {
-    result->push_back(
-        ui::FileInfo(base::mac::NSStringToFilePath(path), base::FilePath()));
-  }
+  std::vector<ui::FileInfo> files =
+      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+  base::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -433,12 +431,7 @@ void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
-  NSMutableArray* paths = [NSMutableArray arrayWithCapacity:filenames.size()];
-  for (const ui::FileInfo& file : filenames) {
-    NSString* path = base::mac::FilePathToNSString(file.path);
-    [paths addObject:path];
-  }
-  [GetPasteboard() setPropertyList:paths forType:NSFilenamesPboardType];
+  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void ClipboardMac::WriteBookmark(const char* title_data,

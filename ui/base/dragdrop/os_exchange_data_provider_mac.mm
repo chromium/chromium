@@ -7,9 +7,11 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/check_op.h"
+#include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/filename_util.h"
@@ -167,22 +169,13 @@ void OSExchangeDataProviderMac::SetURL(const GURL& url,
 }
 
 void OSExchangeDataProviderMac::SetFilename(const base::FilePath& path) {
-  [GetPasteboard() setPropertyList:@[ base::SysUTF8ToNSString(path.value()) ]
-                           forType:NSFilenamesPboardType];
+  std::vector<FileInfo> filenames(1, ui::FileInfo(path, base::FilePath()));
+  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void OSExchangeDataProviderMac::SetFilenames(
     const std::vector<FileInfo>& filenames) {
-  if (filenames.empty())
-    return;
-
-  NSMutableArray* paths = [NSMutableArray arrayWithCapacity:filenames.size()];
-
-  for (const auto& filename : filenames) {
-    NSString* path = base::SysUTF8ToNSString(filename.path.value());
-    [paths addObject:path];
-  }
-  [GetPasteboard() setPropertyList:paths forType:NSFilenamesPboardType];
+  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void OSExchangeDataProviderMac::SetPickledData(
@@ -248,25 +241,23 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
 }
 
 bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
-  NSArray* paths = [GetPasteboard() propertyListForType:NSFilenamesPboardType];
-  if ([paths count] == 0)
+  std::vector<ui::FileInfo> files =
+      ui::ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+  if (files.empty()) {
     return false;
+  }
 
-  *path = base::FilePath(base::SysNSStringToUTF8(paths[0]));
+  *path = files[0].path;
   return true;
 }
 
 bool OSExchangeDataProviderMac::GetFilenames(
     std::vector<FileInfo>* filenames) const {
-  NSArray* paths = [GetPasteboard() propertyListForType:NSFilenamesPboardType];
-  if ([paths count] == 0)
-    return false;
-
-  for (NSString* path in paths)
-    filenames->push_back(
-        {base::FilePath(base::SysNSStringToUTF8(path)), base::FilePath()});
-
-  return true;
+  std::vector<ui::FileInfo> files =
+      ui::ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+  bool result = !files.empty();
+  base::ranges::move(files, std::back_inserter(*filenames));
+  return result;
 }
 
 bool OSExchangeDataProviderMac::GetPickledData(
@@ -294,12 +285,12 @@ bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
 }
 
 bool OSExchangeDataProviderMac::HasFile() const {
-  return [[GetPasteboard() types] containsObject:NSFilenamesPboardType];
+  return [GetPasteboard().types containsObject:NSPasteboardTypeFileURL];
 }
 
 bool OSExchangeDataProviderMac::HasCustomFormat(
     const ClipboardFormatType& format) const {
-  return [[GetPasteboard() types] containsObject:format.ToNSString()];
+  return [GetPasteboard().types containsObject:format.ToNSString()];
 }
 
 void OSExchangeDataProviderMac::SetFileContents(
@@ -365,8 +356,9 @@ NSArray<NSDraggingItem*>* OSExchangeDataProviderMac::GetDraggingItems() const {
 NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
     kUTTypeChromiumInitiatedDrag, kUTTypeChromiumWebCustomData,
-    kUTTypeWebKitWebURLsWithTitles, NSFilenamesPboardType, NSPasteboardTypeHTML,
-    NSPasteboardTypeRTF, NSPasteboardTypeString, NSPasteboardTypeURL
+    kUTTypeWebKitWebURLsWithTitles, NSPasteboardTypeFileURL,
+    NSPasteboardTypeHTML, NSPasteboardTypeRTF, NSPasteboardTypeString,
+    NSPasteboardTypeURL
   ];
 }
 

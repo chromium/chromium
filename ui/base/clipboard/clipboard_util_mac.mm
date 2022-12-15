@@ -10,10 +10,12 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/url_file_parser.h"
 #include "url/gurl.h"
 
@@ -286,8 +288,7 @@ bool ReadURLItemsWithTitles(NSPasteboard* pboard,
   NSMutableArray<NSString*>* urls_array = [NSMutableArray array];
   NSMutableArray<NSString*>* titles_array = [NSMutableArray array];
 
-  NSArray<NSPasteboardItem*>* items = pboard.pasteboardItems;
-  for (NSPasteboardItem* item : items) {
+  for (NSPasteboardItem* item in pboard.pasteboardItems) {
     // Try each of several ways of getting URLs from the pasteboard item and
     // stop with the first one that works.
 
@@ -329,7 +330,9 @@ UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
 }
 
-NSArray<NSPasteboardItem*>* ClipboardUtil::PasteboardItemsFromUrls(
+namespace ClipboardUtil {
+
+NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     NSArray<NSString*>* urls,
     NSArray<NSString*>* titles) {
   DCHECK_EQ(urls.count, titles.count);
@@ -343,8 +346,7 @@ NSArray<NSPasteboardItem*>* ClipboardUtil::PasteboardItemsFromUrls(
     NSString* title = titles[i];
 
     NSURL* url = [NSURL URLWithString:url_string];
-    if (url.isFileURL &&
-        [NSFileManager.defaultManager fileExistsAtPath:url.path]) {
+    if (url.isFileURL && [url checkResourceIsReachableAndReturnError:nil]) {
       [item setString:url_string forType:NSPasteboardTypeFileURL];
     }
 
@@ -367,8 +369,7 @@ NSArray<NSPasteboardItem*>* ClipboardUtil::PasteboardItemsFromUrls(
   return items;
 }
 
-void ClipboardUtil::AddDataToPasteboard(NSPasteboard* pboard,
-                                        NSPasteboardItem* item) {
+void AddDataToPasteboard(NSPasteboard* pboard, NSPasteboardItem* item) {
   NSSet* old_types = [NSSet setWithArray:[pboard types]];
   NSMutableSet* new_types = [NSMutableSet setWithArray:[item types]];
   [new_types minusSet:old_types];
@@ -382,15 +383,63 @@ void ClipboardUtil::AddDataToPasteboard(NSPasteboard* pboard,
   }
 }
 
-bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
-                                                bool include_files,
-                                                NSArray<NSString*>** urls,
-                                                NSArray<NSString*>** titles) {
+bool URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
+                                 bool include_files,
+                                 NSArray<NSString*>** urls,
+                                 NSArray<NSString*>** titles) {
   return ReadWebURLsWithTitlesPboardType(pboard, urls, titles) ||
          ReadURLItemsWithTitles(pboard, include_files, urls, titles);
 }
 
-NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
+std::vector<FileInfo> FilesFromPasteboard(NSPasteboard* pboard) {
+  std::vector<FileInfo> results;
+  for (NSPasteboardItem* item in pboard.pasteboardItems) {
+    NSString* file_url_string = [item stringForType:NSPasteboardTypeFileURL];
+    if (!file_url_string) {
+      continue;
+    }
+    NSURL* file_url = [NSURL URLWithString:file_url_string].filePathURL;
+
+    // Do not check for file existence here; tests verify if they're able to put
+    // paths of non-existent files on the pasteboard.
+
+    NSString* filename;
+    BOOL success = [file_url getResourceValue:&filename
+                                       forKey:NSURLLocalizedNameKey
+                                        error:nil];
+
+    if (success) {
+      results.emplace_back(base::mac::NSURLToFilePath(file_url),
+                           base::mac::NSStringToFilePath(filename));
+    } else {
+      results.emplace_back(
+          base::mac::NSURLToFilePath(file_url),
+          base::mac::NSStringToFilePath(file_url.lastPathComponent));
+    }
+  }
+
+  return results;
+}
+
+void WriteFilesToPasteboard(NSPasteboard* pboard,
+                            const std::vector<FileInfo>& files) {
+  if (files.empty()) {
+    return;
+  }
+
+  NSMutableArray<NSPasteboardItem*>* items =
+      [NSMutableArray arrayWithCapacity:files.size()];
+  for (const auto& file : files) {
+    NSURL* url = base::mac::FilePathToNSURL(file.path);
+    NSPasteboardItem* item = [[[NSPasteboardItem alloc] init] autorelease];
+    [item setString:url.absoluteString forType:NSPasteboardTypeFileURL];
+    [items addObject:item];
+  }
+
+  [pboard writeObjects:items];
+}
+
+NSPasteboard* PasteboardFromBuffer(ClipboardBuffer buffer) {
   NSString* buffer_type = nil;
   switch (buffer) {
     case ClipboardBuffer::kCopyPaste:
@@ -407,7 +456,7 @@ NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
   return [NSPasteboard pasteboardWithName:buffer_type];
 }
 
-NSString* ClipboardUtil::GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
+NSString* GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
   NSData* rtf_data = [pboard dataForType:NSPasteboardTypeRTF];
   if (!rtf_data)
     return nil;
@@ -426,5 +475,7 @@ NSString* ClipboardUtil::GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
   return [[[NSString alloc] initWithData:html_data
                                 encoding:NSUTF8StringEncoding] autorelease];
 }
+
+}  // namespace ClipboardUtil
 
 }  // namespace ui

@@ -8,6 +8,7 @@
 #import <Carbon/Carbon.h>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -438,23 +439,9 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
   }
 
   // Get files.
-  if ([types containsObject:NSFilenamesPboardType]) {
-    NSArray* files = [pboard propertyListForType:NSFilenamesPboardType];
-    if ([files isKindOfClass:[NSArray class]] && [files count]) {
-      for (NSUInteger i = 0; i < [files count]; i++) {
-        NSString* filename = [files objectAtIndex:i];
-        BOOL exists = [[NSFileManager defaultManager]
-                           fileExistsAtPath:filename];
-        if (exists) {
-          data->filenames.emplace_back(
-              base::FilePath::FromUTF8Unsafe(base::SysNSStringToUTF8(filename)),
-              base::FilePath());
-        }
-      }
-    }
-  }
-
-  // TODO(pinkerton): Get file contents. http://crbug.com/34661
+  std::vector<ui::FileInfo> files =
+      ui::ClipboardUtil::FilesFromPasteboard(pboard);
+  base::ranges::move(files, std::back_inserter(data->filenames));
 
   // Get custom MIME data.
   if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {
