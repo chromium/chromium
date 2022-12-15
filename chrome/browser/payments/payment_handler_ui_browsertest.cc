@@ -10,8 +10,7 @@
 namespace payments {
 namespace {
 
-class PaymentHandlerUiBrowserTest
-    : public PaymentRequestPlatformBrowserTestBase {};
+using PaymentHandlerUiBrowserTest = PaymentRequestPlatformBrowserTestBase;
 
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_OpenPaymentTwiceShouldBeSuccessful \
@@ -26,21 +25,30 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
                        MAYBE_OpenPaymentTwiceShouldBeSuccessful) {
   NavigateTo("/maxpay.test/merchant.html");
 
-  std::string expected = "success";
-  EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
+  std::string payment_method;
+  InstallPaymentApp("maxpay.test", "/maxpay.test/payment_handler_sw.js",
+                    &payment_method);
   EXPECT_EQ("app_is_ready",
-            content::EvalJs(
-                GetActiveWebContents(),
-                "launchAndWaitUntilReady('./payment_handler_window.html')"));
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "launchAndWaitUntilReady($1, $2)",
+                                https_server()->GetURL(
+                                    "maxpay.test",
+                                    "/maxpay.test/payment_handler_window.html"),
+                                payment_method)));
   EXPECT_TRUE(test_controller()->ClickPaymentHandlerCloseButton());
   EXPECT_EQ("User closed the Payment Request UI.",
             content::EvalJs(GetActiveWebContents(), "getResult()"));
 
   // The second time should be successful.
   EXPECT_EQ("app_is_ready",
-            content::EvalJs(
-                GetActiveWebContents(),
-                "launchAndWaitUntilReady('./payment_handler_window.html')"));
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "launchAndWaitUntilReady($1, $2)",
+                                https_server()->GetURL(
+                                    "maxpay.test",
+                                    "/maxpay.test/payment_handler_window.html"),
+                                payment_method)));
   EXPECT_TRUE(test_controller()->ClickPaymentHandlerCloseButton());
   EXPECT_EQ("User closed the Payment Request UI.",
             content::EvalJs(GetActiveWebContents(), "getResult()"));

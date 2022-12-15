@@ -76,17 +76,19 @@ async function uninstall() {
 
 /**
  * Launches the payment handler and waits until its window is ready.
- * @param {string} url - open a specified url in payment handler window.
+ * @param {string} url - The URL to open in the payment handler window.
+ * @param {string} paymentMethod - The payment method identifier.
  * @return {Promise<string>} - the message about the launch result.
  */
-function launchAndWaitUntilReady(url = './payment_handler_window.html') {
+function launchAndWaitUntilReady(
+    url = './payment_handler_window.html', paymentMethod = methodName) {
   let appReadyResolver;
   appReadyPromise = new Promise((r) => {
     appReadyResolver = r;
   });
   try {
     const request = new PaymentRequest(
-      [{supportedMethods: methodName, data: {url}}],
+      [{supportedMethods: paymentMethod, data: {url}}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}}});
     request.onpaymentmethodchange = (event) => {
       appReadyResolver(event.methodDetails.status);
