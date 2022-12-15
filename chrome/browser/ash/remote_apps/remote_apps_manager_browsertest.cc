@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -333,6 +334,12 @@ class RemoteAppsManagerBrowsertest
   }
 
  protected:
+  // Launch healthcare application on device (COM_HEALTH_CUJ1_TASK2_WF1).
+  void AddScreenplayTag() {
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-446812cc-07af-4094-bfb2-00150301ede3");
+  }
+
   app_list::AppListSyncableService* app_list_syncable_service_;
   AppListModelUpdater* app_list_model_updater_;
   ash::AppListTestApi app_list_test_api_;
@@ -343,6 +350,8 @@ class RemoteAppsManagerBrowsertest
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
+  AddScreenplayTag();
+
   // Show launcher UI so that app icons are loaded.
   ShowLauncherAppsGrid(/*wait_for_opening_animation=*/false);
 
@@ -466,6 +475,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DeleteFolderError) {
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddFolderAndApp) {
+  AddScreenplayTag();
+
   std::string folder_name = "folder_name";
   // Folder has id kId1.
   manager_->AddFolder(folder_name, /*add_to_front=*/false);
@@ -492,6 +503,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddFolderAndApp) {
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
                        AddFolderWithMultipleApps) {
+  AddScreenplayTag();
+
   // Folder has id kId1.
   manager_->AddFolder("folder_name", /*add_to_front=*/false);
 
@@ -592,6 +605,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
+  AddScreenplayTag();
+
   // Folder has id kId1.
   manager_->AddFolder("folder_name", /*add_to_front=*/false);
 
@@ -619,6 +634,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
 // Test that app launched events are only dispatched to the extension which
 // added the app, and the all events are dispatched to the Lacros observer.
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, OnAppLaunched) {
+  AddScreenplayTag();
+
   base::test::TestFuture<std::string>
       on_remote_app_launched_with_app_id1_future;
   base::test::TestFuture<std::string>
@@ -774,6 +791,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteFoldersNotSynced) {
 // apps and folders to the front of the launcher, before all native items.
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
                        SortLauncherWithRemoteAppsFirst) {
+  AddScreenplayTag();
+
   // Show launcher UI so that app icons are loaded.
   ShowLauncherAppsGrid(/*wait_for_opening_animation=*/true);
 
