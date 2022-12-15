@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 
 #include <algorithm>
+#include <cmath>
+
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
@@ -128,14 +130,17 @@ static void OutsetCornerForMarginOrShadow(gfx::SizeF& corner,
     return;
 
   float width_factor = 1;
-  if (corner.width() < abs(width_outset))
-    width_factor = 1 + pow(corner.width() / abs(width_outset) - 1, 3);
+  if (corner.width() < std::abs(width_outset)) {
+    width_factor = 1 + std::pow(corner.width() / std::abs(width_outset) - 1, 3);
+  }
 
   float height_factor = 1;
-  if (corner.height() == corner.width() && width_outset == height_outset)
+  if (corner.height() == corner.width() && width_outset == height_outset) {
     height_factor = width_factor;
-  else if (corner.height() < abs(height_outset))
-    height_factor = 1 + pow(corner.height() / abs(height_outset) - 1, 3);
+  } else if (corner.height() < std::abs(height_outset)) {
+    height_factor =
+        1 + std::pow(corner.height() / std::abs(height_outset) - 1, 3);
+  }
 
   corner.set_width(std::max(corner.width() + width_factor * width_outset, 0.f));
   corner.set_height(
