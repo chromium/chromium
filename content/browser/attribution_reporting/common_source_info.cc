@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
 
@@ -147,6 +148,26 @@ net::SchemefulSite CommonSourceInfo::DestinationSite() const {
 
 net::SchemefulSite CommonSourceInfo::SourceSite() const {
   return net::SchemefulSite(source_origin_);
+}
+
+base::Value CommonSourceInfo::SerializeDestinationSites() const {
+  base::flat_set<net::SchemefulSite> sites;
+  for (const auto& destination : destination_origins_) {
+    sites.insert(net::SchemefulSite(destination));
+  }
+
+  if (sites.size() == 1) {
+    return base::Value(sites.begin()->Serialize());
+  }
+
+  base::Value::List list;
+  list.reserve(sites.size());
+
+  for (const auto& site : sites) {
+    list.Append(site.Serialize());
+  }
+
+  return base::Value(std::move(list));
 }
 
 }  // namespace content

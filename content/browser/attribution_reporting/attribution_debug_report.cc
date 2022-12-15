@@ -29,6 +29,8 @@ using DebugDataType = ::content::AttributionDebugReport::DataType;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
+constexpr char kAttributionDestination[] = "attribution_destination";
+
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
                                                   bool is_debug_cookie_set) {
   return is_debug_cookie_set ? absl::make_optional(data_type) : absl::nullopt;
@@ -205,11 +207,6 @@ void SetSourceData(base::Value::Dict& data_body,
   }
 }
 
-void SetAttributionDestination(base::Value::Dict& data_body,
-                               const net::SchemefulSite& destination) {
-  data_body.Set("attribution_destination", destination.Serialize());
-}
-
 template <typename T>
 void SetLimit(base::Value::Dict& data_body, absl::optional<T> limit) {
   DCHECK(limit.has_value());
@@ -224,7 +221,8 @@ base::Value::Dict GetReportDataBody(
 
   const CommonSourceInfo& common_info = source.common_info();
   base::Value::Dict data_body;
-  SetAttributionDestination(data_body, common_info.DestinationSite());
+  data_body.Set(kAttributionDestination,
+                common_info.SerializeDestinationSites());
   SetSourceData(data_body, common_info);
 
   switch (data_type) {
@@ -266,8 +264,8 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
                                     const AttributionTrigger& trigger,
                                     const CreateReportResult& result) {
   base::Value::Dict data_body;
-  SetAttributionDestination(data_body,
-                            net::SchemefulSite(trigger.destination_origin()));
+  data_body.Set(kAttributionDestination,
+                net::SchemefulSite(trigger.destination_origin()).Serialize());
   if (absl::optional<uint64_t> debug_key = trigger.registration().debug_key)
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
 

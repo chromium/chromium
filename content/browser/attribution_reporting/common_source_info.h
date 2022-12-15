@@ -17,6 +17,10 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace net {
 class SchemefulSite;
 }  // namespace net
@@ -131,6 +135,11 @@ class CONTENT_EXPORT CommonSourceInfo {
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
   // that we avoid unnecessary copies of |source_origin_|.
   net::SchemefulSite SourceSite() const;
+
+  // Serializes the source's destination origins as a set of sites. If the set
+  // has a single element, returns the string directly. Otherwise, returns a
+  // list of strings.
+  base::Value SerializeDestinationSites() const;
 
  private:
   uint64_t source_event_id_;

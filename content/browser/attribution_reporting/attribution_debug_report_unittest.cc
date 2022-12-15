@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/test/values_test_util.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -18,6 +19,8 @@
 
 namespace content {
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
@@ -222,6 +225,39 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             << test_case.result << ", " << is_debug_cookie_set;
       }
     }
+  }
+
+  // Multiple destinations
+  {
+    absl::optional<AttributionDebugReport> report =
+        AttributionDebugReport::Create(
+            SourceBuilder()
+                .SetDebugReporting(true)
+                .SetDestinationOrigins({
+                    *SuitableOrigin::Create(GURL("https://a.c.test")),
+                    *SuitableOrigin::Create(GURL("https://b.c.test")),
+                    *SuitableOrigin::Create(GURL("https://d.test")),
+                })
+                .Build(),
+            /*is_debug_cookie_set=*/true,
+            AttributionStorage::StoreSourceResult(
+                StorableSource::Result::kSuccessNoised,
+                /*min_fake_report_time=*/absl::nullopt,
+                /*max_destinations_per_source_site_reporting_origin=*/
+                absl::nullopt,
+                /*max_sources_per_origin=*/absl::nullopt));
+
+    EXPECT_EQ(report->ReportBody(), base::test::ParseJson(R"json([{
+         "body": {
+           "attribution_destination": [
+             "https://c.test",
+             "https://d.test"
+           ],
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-noised"
+      }])json"));
   }
 }
 
