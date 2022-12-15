@@ -792,6 +792,7 @@ source_set("presence_internal") {
     "src/presence/implementation/advertisement_decoder.cc",
     "src/presence/implementation/advertisement_factory.cc",
     "src/presence/implementation/base_broadcast_request.cc",
+    "src/presence/implementation/broadcast_manager.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/encryption.cc",
     "src/presence/implementation/ldt.cc",
