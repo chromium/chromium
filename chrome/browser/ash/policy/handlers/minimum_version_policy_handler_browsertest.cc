@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -910,7 +910,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
       AccountId::FromUserEmailGaiaId(ash::test::kTestEmail,
                                      ash::test::kTestGaiaId)};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, child_user.account_id};
-  FakeGaiaMixin fake_gaia_{&mixin_host_};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
 };
 
