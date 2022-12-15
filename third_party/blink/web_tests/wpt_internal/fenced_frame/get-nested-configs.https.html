@@ -56,6 +56,48 @@ promise_test(async (t) => {
   assert_equals(length, '0', 'There should be 0 nested configurations.');
 }, 'getNestedConfigs() in a nested iframe should be empty');
 
+promise_test(async (t) => {
+  const key = token();
+
+  const nested_url = generateURL("resources/embeddee.html", [key]);
+
+  // Navigate a fenced frame to `navigate-nested-config.html`. That page will
+  // in turn create a nested fenced frame which will be navigated to the URN of
+  // the first item in the nested configs list, `nested_url`.
+  const urn = await generateURNFromFledge(
+      "resources/navigate-nested-config.html", [key],
+      [nested_url]);
+  attachFencedFrame(urn, mode='opaque-ads');
+
+  const response = await nextValueFromServer(key);
+  assert_equals(response, 'PASS', 'The nested URL should load.');
+}, 'Nested configs created by FLEDGE should be navigable');
+
+promise_test(async (t) => {
+  const key = token();
+
+  const nested_url = generateURL("resources/embeddee.html", [key]);
+
+  // Navigate a fenced frame to `navigate-nested-config.html`. That page will
+  // in turn create a nested fenced frame which will be navigated to the URN of
+  // the first item in the nested configs list, `nested_url`. Since this URN
+  // is invalid, the navigation should gracefully fail.
+  const urn = await generateURNFromFledge(
+      "resources/navigate-nested-config.html", [key],
+      []);
+  attachFencedFrame(urn, mode='opaque-ads');
+
+  // There is no API to observe whether the document in the FencedFrame loaded
+  // or not. Instead, set up a timeout. If the document loads, "PASS" will be
+  // sent to the server. Otherwise "BLOCKED" will be sent after 1 second.
+  step_timeout(() => {
+    writeValueToServer(key, "BLOCKED");
+  }, 1000);
+
+  const response = await nextValueFromServer(key);
+  assert_equals(response, 'BLOCKED', 'The nested URL should not load.');
+}, 'Navigating an invalid config should be handled gracefully');
+
 </script>
 </body>
 </html>

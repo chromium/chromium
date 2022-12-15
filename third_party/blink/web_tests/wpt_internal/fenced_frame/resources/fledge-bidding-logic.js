@@ -5,11 +5,22 @@
 // `reportWin` empty. See `generateURNFromFledge` in "utils.js" to see how
 // these files are used.
 
-function generateBid(
-    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
-  return {'ad': 'example', 'bid': 1,
-          'render': interestGroup.ads[0].renderUrl};
+function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+  trustedBiddingSignals, browserSignals) {
+  const ad = interestGroup.ads[0];
+
+  // `auctionSignals` controls whether or not component auctions are allowed.
+  let allowComponentAuction =
+      typeof auctionSignals === 'string' &&
+      auctionSignals.includes('bidderAllowsComponentAuction');
+
+  let result = {'ad': ad, 'bid': 1, 'render': ad.renderUrl,
+      'allowComponentAuction': allowComponentAuction};
+  if (interestGroup.adComponents && interestGroup.adComponents.length > 0)
+    result.adComponents = interestGroup.adComponents.map((component) => {
+      return component.renderUrl;
+    });
+  return result;
 }
 
 function reportWin(

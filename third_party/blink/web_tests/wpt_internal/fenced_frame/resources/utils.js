@@ -53,11 +53,19 @@ async function generateURN(href, keylist = []) {
 // called with an await operator. @param {string} href - The base url of the
 // page being navigated to @param {string list} keylist - The list of key UUIDs
 // to be used. Note that order matters when extracting the keys
-async function generateURNFromFledge(href, keylist) {
+// @param {string} href - The base url of the page being navigated to
+// @param {string list} keylist - The list of key UUIDs to be used. Note that
+//                                order matters when extracting the keys
+// @param {string list} nested_urls - A list of urls that will eventually become
+//                                    the nested configs/ad components
+async function generateURNFromFledge(href, keylist, nested_urls=[]) {
   const bidding_token = token();
   const seller_token = token();
 
   const full_url = generateURL(href, keylist);
+  const ad_components_list = nested_urls.map((url) => {
+    return {renderUrl: url}
+  });
 
   const interestGroup = {
     name: 'testAd1',
@@ -65,7 +73,10 @@ async function generateURNFromFledge(href, keylist) {
     biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
     ads: [{renderUrl: full_url, bid: 1}],
     userBiddingSignals: {biddingToken: bidding_token},
+    trustedBiddingSignalsKeys: ['key1'],
+    adComponents: ad_components_list,
   };
+
   // Pick an arbitrarily high duration to guarantee that we never leave the
   // ad interest group while the test runs.
   navigator.joinAdInterestGroup(interestGroup, /*durationSeconds=*/3000000);
@@ -247,8 +258,6 @@ function attachFencedFrame(url, mode='') {
 function attachIFrame(url) {
   const iframe = document.createElement('iframe');
   iframe.src = url;
-  console.log(document);
-  console.log(document.body);
   document.body.append(iframe);
   return iframe;
 }
