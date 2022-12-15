@@ -17,6 +17,13 @@ BASE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove,
              "FileSystemAccessDoNotOverwriteOnMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/1114923): Remove this flag eventually.
+// When enabled, the remove() method is enabled. Otherwise, throws a
+// NotSupportedError DomException.
+BASE_FEATURE(kFileSystemAccessRemove,
+             "FileSystemAccessRemove",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1254078): Remove this flag eventually.
 // When enabled, removeEntry() acquires an exclusive lock (as opposed to a
 // shared lock when disabled).

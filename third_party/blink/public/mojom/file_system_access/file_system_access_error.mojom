@@ -18,7 +18,9 @@ enum FileSystemAccessStatus {
   kNoModificationAllowedError,
   // Modifications to the underlying file system were not allowed in that way.
   kInvalidModificationError,
-  // The object being operated on was in an invalid state for the operation.
+  // The feature is not yet launched.
+  kNotSupportedError,
+  // The object being operated on was in an invalid state for the operation
   kInvalidState,
   // An invalid argument was passed to a method.
   kInvalidArgument,

@@ -53,6 +53,10 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           isolate, DOMExceptionCode::kSecurityError, message));
       break;
+    case mojom::blink::FileSystemAccessStatus::kNotSupportedError:
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          isolate, DOMExceptionCode::kNotSupportedError, message));
+      break;
     case mojom::blink::FileSystemAccessStatus::kInvalidState:
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           isolate, DOMExceptionCode::kInvalidStateError, message));

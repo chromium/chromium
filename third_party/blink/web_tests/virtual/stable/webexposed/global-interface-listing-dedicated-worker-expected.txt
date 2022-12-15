@@ -584,6 +584,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method isSameEntry
 [Worker]     method queryPermission
+[Worker]     method remove
 [Worker]     method requestPermission
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag

@@ -40,10 +40,8 @@ enum FileSystemHandleKind {
         RuntimeEnabled=FileSystemAccessAPIExperimental
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
                           USVString new_entry_name);
-    [
-        CallWith=ScriptState,
-        RuntimeEnabled=FileSystemAccessAPIExperimental
-    ] Promise<void> remove(optional FileSystemRemoveOptions options = {});
+    [CallWith=ScriptState]
+    Promise<void> remove(optional FileSystemRemoveOptions options = {});
 
     [CallWith=ScriptState, Measure]
     Promise<boolean> isSameEntry(FileSystemHandle other);
