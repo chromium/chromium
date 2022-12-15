@@ -18,6 +18,7 @@
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/init/gl_init_export.h"
+#include "ui/gl/presenter.h"
 
 namespace gl {
 
@@ -100,7 +101,7 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateViewGLSurface(
 // semantics - there is no default framebuffer and the primary surface must
 // be presented as an overlay. If surfaceless mode is not supported or
 // enabled it will return a null pointer.
-GL_INIT_EXPORT scoped_refptr<GLSurface> CreateSurfacelessViewGLSurface(
+GL_INIT_EXPORT scoped_refptr<Presenter> CreateSurfacelessViewGLSurface(
     GLDisplay* display,
     gfx::AcceleratedWidget window);
 #endif  // BUILDFLAG(IS_OZONE)

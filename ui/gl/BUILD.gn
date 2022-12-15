@@ -122,6 +122,8 @@ component("gl") {
     "gpu_switching_manager.h",
     "gpu_timing.cc",
     "gpu_timing.h",
+    "presenter.cc",
+    "presenter.h",
     "progress_reporter.h",
     "scoped_binders.cc",
     "scoped_binders.h",

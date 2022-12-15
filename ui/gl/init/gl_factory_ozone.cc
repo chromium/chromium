@@ -15,6 +15,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/ozone_util.h"
+#include "ui/gl/presenter.h"
 
 namespace gl {
 namespace init {
@@ -76,7 +77,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
   return nullptr;
 }
 
-scoped_refptr<GLSurface> CreateSurfacelessViewGLSurface(
+scoped_refptr<Presenter> CreateSurfacelessViewGLSurface(
     GLDisplay* display,
     gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateSurfacelessViewGLSurface");

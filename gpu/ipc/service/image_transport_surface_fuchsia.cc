@@ -12,7 +12,16 @@
 namespace gpu {
 
 // static
-scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
+    gl::GLDisplay* display,
+    base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
+    SurfaceHandle surface_handle,
+    gl::GLSurfaceFormat format) {
+  return nullptr;
+}
+
+// static
+scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,

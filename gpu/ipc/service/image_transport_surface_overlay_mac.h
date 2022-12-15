@@ -15,8 +15,8 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gpu_switching_observer.h"
+#include "ui/gl/presenter.h"
 
 @class CAContext;
 @class CALayer;
@@ -32,7 +32,7 @@ class GLFence;
 
 namespace gpu {
 
-class ImageTransportSurfaceOverlayMacEGL : public gl::GLSurfaceEGL,
+class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
                                            public ui::GpuSwitchingObserver {
  public:
   ImageTransportSurfaceOverlayMacEGL(

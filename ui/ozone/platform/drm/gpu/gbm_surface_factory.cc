@@ -24,6 +24,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/presenter.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/common/native_pixmap_egl_binding.h"
@@ -140,12 +141,16 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     return nullptr;
   }
 
-  scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+  scoped_refptr<gl::Presenter> CreateSurfacelessViewGLSurface(
       gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
-    return gl::InitializeGLSurface(new GbmSurfaceless(
-        surface_factory_, display->GetAs<gl::GLDisplayEGL>(),
-        drm_thread_proxy_->CreateDrmWindowProxy(window), window));
+    scoped_refptr<gl::Presenter> presenter =
+        base::MakeRefCounted<GbmSurfaceless>(
+            surface_factory_, display->GetAs<gl::GLDisplayEGL>(),
+            drm_thread_proxy_->CreateDrmWindowProxy(window), window);
+    if (!presenter->Initialize(gl::GLSurfaceFormat()))
+      return nullptr;
+    return presenter;
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(

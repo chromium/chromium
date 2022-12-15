@@ -17,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/presenter.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -32,7 +32,7 @@ namespace gl {
 class ScopedANativeWindow;
 class ScopedJavaSurfaceControl;
 
-class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
+class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
  public:
   GLSurfaceEGLSurfaceControl(
       GLDisplayEGL* display,

@@ -111,7 +111,7 @@ scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
     return gl::init::CreateOffscreenGLSurfaceWithFormat(
         GetSharedContextState()->display(), gfx::Size(), format);
   } else {
-    return gpu::ImageTransportSurface::CreateNativeSurface(
+    return gpu::ImageTransportSurface::CreatePresenterOrNativeSurface(
         GetSharedContextState()->display(), stub, surface_handle_, format);
   }
 }

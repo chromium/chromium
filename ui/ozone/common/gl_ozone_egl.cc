@@ -85,7 +85,7 @@ scoped_refptr<gl::GLContext> GLOzoneEGL::CreateGLContext(
                                  compatible_surface, attribs);
 }
 
-scoped_refptr<gl::GLSurface> GLOzoneEGL::CreateSurfacelessViewGLSurface(
+scoped_refptr<gl::Presenter> GLOzoneEGL::CreateSurfacelessViewGLSurface(
     gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   // This will usually not be implemented by the platform specific version.

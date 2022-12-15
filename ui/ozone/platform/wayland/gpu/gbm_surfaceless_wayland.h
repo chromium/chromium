@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/presenter.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/public/swap_completion_callback.h"
@@ -27,8 +27,7 @@ using BufferId = uint32_t;
 // and displaying happens directly through NativePixmap buffers. CC would call
 // into SurfaceFactoryOzone to allocate the buffers and then call
 // ScheduleOverlayPlane(..) to schedule the buffer for presentation.
-class GbmSurfacelessWayland : public gl::SurfacelessEGL,
-                              public WaylandSurfaceGpu {
+class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
  public:
   GbmSurfacelessWayland(gl::GLDisplayEGL* display,
                         WaylandBufferManagerGpu* buffer_manager,

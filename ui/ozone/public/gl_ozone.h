@@ -20,6 +20,7 @@ namespace gl {
 class GLContext;
 class GLShareGroup;
 class GLSurface;
+class Presenter;
 
 struct GLContextAttribs;
 struct GLVersionInfo;
@@ -99,7 +100,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   // overlay-only displays. This will return null if surfaceless mode is
   // unsupported.
   // TODO(spang): Consider deprecating this and using OverlaySurface for GL.
-  virtual scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+  virtual scoped_refptr<gl::Presenter> CreateSurfacelessViewGLSurface(
       gl::GLDisplay* display,
       gfx::AcceleratedWidget window) = 0;
 

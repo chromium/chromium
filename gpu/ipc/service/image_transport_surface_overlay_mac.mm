@@ -49,7 +49,7 @@ BASE_FEATURE(kAVFoundationOverlays,
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
     gl::GLDisplayEGL* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate)
-    : gl::GLSurfaceEGL(display),
+    : gl::Presenter(display, gfx::Size()),
       delegate_(delegate),
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),

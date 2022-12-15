@@ -80,7 +80,7 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
     GLDisplayEGL* display,
     scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : GLSurfaceEGL(display),
+    : Presenter(display, gfx::Size()),
       child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
       root_surface_(std::move(root_surface)),
       transaction_ack_timeout_manager_(task_runner),

@@ -14,25 +14,36 @@
 namespace gpu {
 
 // static
-scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
+    gl::GLDisplay* display,
+    base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
+    SurfaceHandle surface_handle,
+    gl::GLSurfaceFormat format) {
+  DCHECK_NE(surface_handle, kNullSurfaceHandle);
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
+      gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
+    return base::WrapRefCounted<gl::Presenter>(
+        new ImageTransportSurfaceOverlayMacEGL(
+            display->GetAs<gl::GLDisplayEGL>(), delegate));
+  }
+
+  return nullptr;
+}
+
+// static
+scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
 
-  switch (gl::GetGLImplementation()) {
-    case gl::kGLImplementationEGLGLES2:
-    case gl::kGLImplementationEGLANGLE:
-      return base::WrapRefCounted<gl::GLSurface>(
-          new ImageTransportSurfaceOverlayMacEGL(
-              display->GetAs<gl::GLDisplayEGL>(), delegate));
-    case gl::kGLImplementationMockGL:
-    case gl::kGLImplementationStubGL:
-      return base::WrapRefCounted<gl::GLSurface>(new gl::GLSurfaceStub);
-    default:
-      return nullptr;
+  if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
+      gl::GetGLImplementation() == gl::kGLImplementationStubGL) {
+    return base::WrapRefCounted<gl::GLSurface>(new gl::GLSurfaceStub);
   }
+
+  return nullptr;
 }
 
 }  // namespace gpu

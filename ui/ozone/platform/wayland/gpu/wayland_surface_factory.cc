@@ -63,7 +63,7 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
       gl::GLDisplay* display,
       gfx::AcceleratedWidget widget) override;
 
-  scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+  scoped_refptr<gl::Presenter> CreateSurfacelessViewGLSurface(
       gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override;
 
@@ -126,7 +126,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
       display->GetAs<gl::GLDisplayEGL>(), std::move(egl_window), window));
 }
 
-scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
+scoped_refptr<gl::Presenter> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
     gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
@@ -136,8 +136,12 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   // If there is a gbm device available, use surfaceless gl surface.
   if (!buffer_manager_->GetGbmDevice())
     return nullptr;
-  return gl::InitializeGLSurface(new GbmSurfacelessWayland(
-      display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window));
+  scoped_refptr<gl::Presenter> presenter =
+      base::MakeRefCounted<GbmSurfacelessWayland>(
+          display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window);
+  if (!presenter->Initialize(gl::GLSurfaceFormat()))
+    return nullptr;
+  return presenter;
 #else
   return nullptr;
 #endif
