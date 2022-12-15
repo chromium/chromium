@@ -10,5 +10,6 @@ found in the LICENSE file.
     android:minWidth="@dimen/quick_action_search_widget_dino_min_size"
     android:minHeight="@dimen/quick_action_search_widget_dino_min_size"
     android:initialLayout="@layout/quick_action_search_widget_dino_layout"
+    android:previewLayout="@layout/quick_action_search_widget_dino_preview_layout"
     android:previewImage="@drawable/quick_action_search_widget_dino_preview"
     android:widgetCategory="home_screen" />

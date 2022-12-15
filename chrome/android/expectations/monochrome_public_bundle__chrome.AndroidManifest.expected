@@ -777,7 +777,7 @@
     <receiver  # DIFF-ANCHOR: 226134db
         android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:exported="true"
-        android:label="@string/dino_widget_title">
+        android:label="@string/dino_widget_text">
       <intent-filter>  # DIFF-ANCHOR: 4ed161a4
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4

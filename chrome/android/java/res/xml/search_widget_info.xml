@@ -11,6 +11,7 @@ found in the LICENSE file.
     android:minWidth="240dp"
     android:minHeight="48dp"
     android:initialLayout="@layout/search_widget_template"
+    android:previewLayout="@layout/search_widget_template"
     android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal"
     android:updatePeriodMillis="86400000"

@@ -11,13 +11,21 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:ignore="UselessParent">
+    tools:ignore="UselessParent,MergeRootFrame">
 
-  <!-- Note that the parent layout is not "useless". We use it to enforce a particular
-    aspect ratio of the Dino widget. There are very few layouts that are permitted to be
-    used with RemoteViews, ConstraintLayout and is sadly not one of them.
-    Please check the QuickActionSearchWidgetProviderDelegate to see how the sizes are
-    enforced for this widget. -->
+  <!-- Notes:
+    - the parent layout is not "useless". We use it to enforce a particular
+      aspect ratio of the Dino widget. There are very few layouts that are permitted to be
+      used with RemoteViews, ConstraintLayout and is sadly not one of them.
+      Please check the QuickActionSearchWidgetProviderDelegate to see how the sizes are
+      enforced for this widget.
+    - root frame merging is not really feasible, because this layout, and the preview layout
+      currently serve different purposes. the layout here is intended to be able to encompass
+      the entire area assigned to the widget on the launcher screen, while the preview layout
+      has fixed size for preview purposes.
+      In other words: we want the widget to cover the entier available area, but we want to
+      confine its bounds for the preview.
+  -->
 
   <LinearLayout
       android:id="@+id/dino_quick_action_button"

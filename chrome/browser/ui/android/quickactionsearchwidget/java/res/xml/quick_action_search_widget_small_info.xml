@@ -13,4 +13,5 @@ found in the LICENSE file.
     android:minResizeHeight="@dimen/quick_action_search_widget_xsmall_height"
     android:resizeMode="vertical|horizontal"
     android:previewImage="@drawable/quick_action_search_widget_small_preview"
+    android:previewLayout="@layout/quick_action_search_widget_small_preview_layout"
     android:widgetCategory="home_screen|searchbox" />
