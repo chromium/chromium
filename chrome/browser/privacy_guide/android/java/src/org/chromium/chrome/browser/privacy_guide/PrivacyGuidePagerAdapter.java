@@ -20,8 +20,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         super(parent);
 
         mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.MSBB);
-        if (displayHandler.shouldDisplaySync()) {
-            mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.SYNC);
+        if (displayHandler.shouldDisplayHistorySync()) {
+            mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         }
         if (displayHandler.shouldDisplaySafeBrowsing()) {
             mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
@@ -38,8 +38,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         switch (fragmentType) {
             case PrivacyGuideFragment.FragmentType.MSBB:
                 return new MSBBFragment();
-            case PrivacyGuideFragment.FragmentType.SYNC:
-                return new SyncFragment();
+            case PrivacyGuideFragment.FragmentType.HISTORY_SYNC:
+                return new HistorySyncFragment();
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING:
                 return new SafeBrowsingFragment();
             case PrivacyGuideFragment.FragmentType.COOKIES:

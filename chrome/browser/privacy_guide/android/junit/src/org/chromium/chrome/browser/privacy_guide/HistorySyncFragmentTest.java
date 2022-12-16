@@ -36,10 +36,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * JUnit tests of the class {@link SyncFragment}.
+ * JUnit tests of the class {@link HistorySyncFragment}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SyncFragmentTest {
+public class HistorySyncFragmentTest {
     private static final String CHANGE_HISTORY_SYNC_ON_USER_ACTION =
             "Settings.PrivacyGuide.ChangeHistorySyncOn";
     private static final String CHANGE_HISTORY_SYNC_OFF_USER_ACTION =
@@ -75,9 +75,9 @@ public class SyncFragmentTest {
     private void initFragmentWithSyncState(boolean syncAll, boolean historySync) {
         initSyncState(syncAll, historySync);
         mScenario = FragmentScenario.launchInContainer(
-                SyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(
-                fragment -> mHistorySyncButton = fragment.getView().findViewById(R.id.sync_switch));
+                HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(fragment
+                -> mHistorySyncButton = fragment.getView().findViewById(R.id.history_sync_switch));
     }
 
     private void initSyncState(boolean syncAll, boolean historySync) {

@@ -19,7 +19,7 @@ class PrivacyGuideMetricsDelegate {
      */
     private Boolean mInitialMsbbState;
     /**
-     * Initial state of History Sync when {@link SyncFragment} is created.
+     * Initial state of History Sync when {@link HistorySyncFragment} is created.
      */
     private boolean mInitialHistorySyncState;
     /**
@@ -62,9 +62,9 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
-     * A method to record metrics on the next click of {@link SyncFragment}.
+     * A method to record metrics on the next click of {@link HistorySyncFragment}.
      */
-    private void recordMetricsOnNextForSyncCard() {
+    private void recordMetricsOnNextForHistorySyncCard() {
         boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled();
 
         int stateChange;
@@ -82,9 +82,9 @@ class PrivacyGuideMetricsDelegate {
         // Record histogram comparing |mInitialHistorySyncState| and |currentValue|
         RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.SettingsStates",
                 stateChange, PrivacyGuideSettingsStates.MAX_VALUE);
-        // Record user action for clicking the next button on the Sync card
+        // Record user action for clicking the next button on the History Sync card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickHistorySync");
-        // Record histogram for clicking the next button on the Sync card
+        // Record histogram for clicking the next button on the History Sync card
         RecordHistogram.recordEnumeratedHistogram("Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON,
                 PrivacyGuideInteractions.MAX_VALUE);
@@ -169,7 +169,7 @@ class PrivacyGuideMetricsDelegate {
                 mInitialMsbbState = PrivacyGuideUtils.isMsbbEnabled();
                 break;
             }
-            case PrivacyGuideFragment.FragmentType.SYNC: {
+            case PrivacyGuideFragment.FragmentType.HISTORY_SYNC: {
                 mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled();
                 break;
             }
@@ -198,8 +198,8 @@ class PrivacyGuideMetricsDelegate {
                 recordMetricsOnNextForMSBBCard();
                 break;
             }
-            case PrivacyGuideFragment.FragmentType.SYNC: {
-                recordMetricsOnNextForSyncCard();
+            case PrivacyGuideFragment.FragmentType.HISTORY_SYNC: {
+                recordMetricsOnNextForHistorySyncCard();
                 break;
             }
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING: {
@@ -247,9 +247,9 @@ class PrivacyGuideMetricsDelegate {
 
     /**
      * A method to record metrics on the History Sync toggle change of the Privacy Guide's {@link
-     * SyncFragment}.
+     * HistorySyncFragment}.
      */
-    static void recordMetricsOnSyncChange(boolean isHistorySyncOn) {
+    static void recordMetricsOnHistorySyncChange(boolean isHistorySyncOn) {
         if (isHistorySyncOn) {
             RecordUserAction.record("Settings.PrivacyGuide.ChangeHistorySyncOn");
         } else {
@@ -299,7 +299,7 @@ class PrivacyGuideMetricsDelegate {
      */
     static void recordMetricsOnBackForCard(@PrivacyGuideFragment.FragmentType int fragmentType) {
         switch (fragmentType) {
-            case PrivacyGuideFragment.FragmentType.SYNC: {
+            case PrivacyGuideFragment.FragmentType.HISTORY_SYNC: {
                 RecordUserAction.record("Settings.PrivacyGuide.BackClickHistorySync");
                 break;
             }

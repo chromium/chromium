@@ -116,12 +116,12 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
     }
 
-    private void navigateToSyncCard() {
+    private void navigateToHistorySyncCard() {
         // Welcome page -> MSBB page
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
     }
@@ -131,12 +131,12 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
     }
 
@@ -145,12 +145,12 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         // SB page -> Cookies page
@@ -163,12 +163,12 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         // SB page -> Cookies page
@@ -226,13 +226,13 @@ public class PrivacyGuideFragmentTest {
         onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         testButtons(true, false, false);
         onView(withText(R.string.next)).perform(click());
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         testButtons(true, true, false);
         onView(withText(R.string.next)).perform(click());
 
@@ -259,11 +259,11 @@ public class PrivacyGuideFragmentTest {
         // Welcome page -> MSBB page
         onView(withText(R.string.privacy_guide_start_button)).perform(click());
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
         // SB page -> Cookies page
         ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
@@ -273,12 +273,12 @@ public class PrivacyGuideFragmentTest {
         ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
         testButtons(false, true, true);
         onView(withText(R.string.back)).perform(click());
-        // Sync page <- SB page
+        // History Sync page <- SB page
         ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
         testButtons(true, true, false);
         onView(withText(R.string.back)).perform(click());
-        // MSBB page <- Sync page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // MSBB page <- History Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         testButtons(true, true, false);
         onView(withText(R.string.back)).perform(click());
         // MSBB page -> Exit
@@ -366,7 +366,7 @@ public class PrivacyGuideFragmentTest {
         mActionTester = new UserActionTester();
         navigateToMSBBCard();
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
@@ -384,7 +384,7 @@ public class PrivacyGuideFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.MSBB_NEXT_BUTTON));
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
@@ -405,7 +405,7 @@ public class PrivacyGuideFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF));
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
@@ -426,7 +426,7 @@ public class PrivacyGuideFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_ON));
 
-        // MSBB page -> Sync page | with click on MSBB switch
+        // MSBB page -> History Sync page | with click on MSBB switch
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withId(R.id.msbb_switch)).perform(click());
         onView(withText(R.string.next)).perform(click());
@@ -448,7 +448,7 @@ public class PrivacyGuideFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_OFF));
 
-        // MSBB page -> Sync page | with click on MSBB switch
+        // MSBB page -> History Sync page | with click on MSBB switch
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withId(R.id.msbb_switch)).perform(click());
         onView(withText(R.string.next)).perform(click());
@@ -470,7 +470,7 @@ public class PrivacyGuideFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_ON_TO_ON));
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
@@ -506,12 +506,12 @@ public class PrivacyGuideFragmentTest {
                 mPrivacyGuideMetricsDelegateMock);
         navigateToMSBBCard();
 
-        // MSBB page -> Sync page
+        // MSBB page -> History Sync page
         ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
         onView(withText(R.string.next)).perform(click());
 
-        // MSBB page <- Sync page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // MSBB page <- History Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.back)).perform(click());
 
         // MSBB page
@@ -526,13 +526,13 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_nextClickHistorySyncUserAction() {
+    public void testHistorySyncCard_nextClickHistorySyncUserAction() {
         launchPrivacyGuide();
         mActionTester = new UserActionTester();
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         assertTrue(
@@ -542,16 +542,16 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_nextNavigationHistogram() {
+    public void testHistorySyncCard_nextNavigationHistogram() {
         launchPrivacyGuide();
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(NEXT_NAVIGATION_HISTOGRAM,
                         PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         assertEquals(1,
@@ -562,16 +562,16 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_offToOffSettingsStatesHistogram() {
+    public void testHistorySyncCard_offToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         assertEquals(1,
@@ -582,17 +582,17 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_offToOnSettingsStatesHistogram() {
+    public void testHistorySyncCard_offToOnSettingsStatesHistogram() {
         launchPrivacyGuide();
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
 
-        // Sync page -> SB page | with click on sync switch
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
-        onView(withId(R.id.sync_switch)).perform(click());
+        // History Sync page -> SB page | with click on History Sync switch
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
+        onView(withId(R.id.history_sync_switch)).perform(click());
         setHistorySyncState(true);
         onView(withText(R.string.next)).perform(click());
 
@@ -604,18 +604,18 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_onToOffSettingsStatesHistogram() {
+    public void testHistorySyncCard_onToOffSettingsStatesHistogram() {
         launchPrivacyGuide();
         setHistorySyncState(true);
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
 
-        // Sync page -> SB page | with click on sync switch
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
-        onView(withId(R.id.sync_switch)).perform(click());
+        // History Sync page -> SB page | with click on History Sync switch
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
+        onView(withId(R.id.history_sync_switch)).perform(click());
         setHistorySyncState(false);
         onView(withText(R.string.next)).perform(click());
 
@@ -627,17 +627,17 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_onToOnSettingsStatesHistogram() {
+    public void testHistorySyncCard_onToOnSettingsStatesHistogram() {
         launchPrivacyGuide();
         setHistorySyncState(true);
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
         assertEquals(0,
                 mHistogramTestRule.getHistogramValueCount(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
         assertEquals(1,
@@ -648,17 +648,17 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_nextButtonInitialSyncStateIsSet() {
+    public void testHistorySyncCard_nextButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
                 mPrivacyGuideMetricsDelegateMock);
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
-        // Sync page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
 
         verify(mPrivacyGuideMetricsDelegateMock)
-                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.SYNC);
+                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
 
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
     }
@@ -666,25 +666,25 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_backButtonInitialSyncStateIsSet() {
+    public void testHistorySyncCard_backButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
                 mPrivacyGuideMetricsDelegateMock);
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
-        // Sync page -> SB page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.next)).perform(click());
 
-        // Sync page <- SB page
+        // History Sync page <- SB page
         ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
         onView(withText(R.string.back)).perform(click());
 
-        // Sync page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // History Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
 
         verify(mPrivacyGuideMetricsDelegateMock, times(2))
-                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.SYNC);
+                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
 
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
     }
@@ -997,17 +997,17 @@ public class PrivacyGuideFragmentTest {
     @Test
     @SmallTest
     @Feature({"PrivacyGuide"})
-    public void testSyncCard_backClickHistorySyncUserAction() {
+    public void testHistorySyncCard_backClickHistorySyncUserAction() {
         launchPrivacyGuide();
         mActionTester = new UserActionTester();
-        navigateToSyncCard();
+        navigateToHistorySyncCard();
 
-        // MSBB page <- Sync page
-        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        // MSBB page <- History Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_history_sync_toggle));
         onView(withText(R.string.back)).perform(click());
 
         // Verify that the user action is emitted when the back button is clicked on the History
-        // sync card
+        // Sync card
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
     }
@@ -1020,7 +1020,7 @@ public class PrivacyGuideFragmentTest {
         mActionTester = new UserActionTester();
         navigateToSafeBrowsingCard();
 
-        // Sync page <- SB page
+        // History Sync page <- SB page
         ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
         onView(withText(R.string.back)).perform(click());
 

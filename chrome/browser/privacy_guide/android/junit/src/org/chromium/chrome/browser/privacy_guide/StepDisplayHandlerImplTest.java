@@ -114,13 +114,13 @@ public class StepDisplayHandlerImplTest {
     @Test
     public void testDisplayHistorySyncWhenSyncOn() {
         setSyncState(true);
-        assertTrue(mStepDisplayHandler.shouldDisplaySync());
+        assertTrue(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
     public void testDontDisplayHistorySyncWhenSyncOff() {
         setSyncState(false);
-        assertFalse(mStepDisplayHandler.shouldDisplaySync());
+        assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test

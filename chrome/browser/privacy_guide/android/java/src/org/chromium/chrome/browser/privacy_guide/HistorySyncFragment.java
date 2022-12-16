@@ -21,16 +21,17 @@ import org.chromium.components.sync.UserSelectableType;
 import java.util.Set;
 
 /**
- * Controls the behaviour of the Sync privacy guide page.
+ * Controls the behaviour of the History Sync privacy guide page.
  */
-public class SyncFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class HistorySyncFragment
+        extends Fragment implements CompoundButton.OnCheckedChangeListener {
     private SyncService mSyncService;
     private boolean mInitialKeepEverythingSynced;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.privacy_guide_sync_step, container, false);
+        return inflater.inflate(R.layout.privacy_guide_history_sync_step, container, false);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class SyncFragment extends Fragment implements CompoundButton.OnCheckedCh
         mSyncService = SyncService.get();
         mInitialKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
 
-        SwitchCompat historySyncSwitch = view.findViewById(R.id.sync_switch);
+        SwitchCompat historySyncSwitch = view.findViewById(R.id.history_sync_switch);
         historySyncSwitch.setChecked(isHistoryEnabled());
 
         historySyncSwitch.setOnCheckedChangeListener(this);
@@ -46,7 +47,7 @@ public class SyncFragment extends Fragment implements CompoundButton.OnCheckedCh
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(isChecked);
+        PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(isChecked);
 
         boolean keepEverythingSynced = isChecked && mInitialKeepEverythingSynced;
 

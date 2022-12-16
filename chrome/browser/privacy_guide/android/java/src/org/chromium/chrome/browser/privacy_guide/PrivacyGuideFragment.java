@@ -38,11 +38,11 @@ public class PrivacyGuideFragment extends Fragment {
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentType.MSBB, FragmentType.SYNC, FragmentType.SAFE_BROWSING,
+    @IntDef({FragmentType.MSBB, FragmentType.HISTORY_SYNC, FragmentType.SAFE_BROWSING,
             FragmentType.COOKIES})
     @interface FragmentType {
         int MSBB = 0;
-        int SYNC = 1;
+        int HISTORY_SYNC = 1;
         int SAFE_BROWSING = 2;
         int COOKIES = 3;
     }

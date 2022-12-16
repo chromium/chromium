@@ -9,9 +9,9 @@ package org.chromium.chrome.browser.privacy_guide;
  */
 public interface StepDisplayHandler {
     /**
-     * @return Whether the Privacy Guide Sync page should be displayed.
+     * @return Whether the Privacy Guide History Sync page should be displayed.
      */
-    boolean shouldDisplaySync();
+    boolean shouldDisplayHistorySync();
 
     /**
      * @return Whether the Privacy Guide Safe Browsing page should be displayed.

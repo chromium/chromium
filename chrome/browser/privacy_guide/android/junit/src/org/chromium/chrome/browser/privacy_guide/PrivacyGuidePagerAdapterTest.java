@@ -36,7 +36,7 @@ public class PrivacyGuidePagerAdapterTest {
     }
 
     @Parameter(0)
-    public boolean mShouldDisplaySync;
+    public boolean mShouldDisplayHistorySync;
     @Parameter(1)
     public boolean mShouldDisplaySafeBrowsing;
     @Parameter(2)
@@ -63,8 +63,8 @@ public class PrivacyGuidePagerAdapterTest {
     private void initPagerAdapterWithState() {
         mStepDisplayHandler = new StepDisplayHandler() {
             @Override
-            public boolean shouldDisplaySync() {
-                return mShouldDisplaySync;
+            public boolean shouldDisplayHistorySync() {
+                return mShouldDisplayHistorySync;
             }
 
             @Override
@@ -92,8 +92,8 @@ public class PrivacyGuidePagerAdapterTest {
     public void testFragmentsDisplayed() {
         Set<Class> fragmentClassSet = getDisplayedFragmentClasses();
         Assert.assertTrue(fragmentClassSet.contains(MSBBFragment.class));
-        Assert.assertEquals("Sync step displayed incorrectly", mShouldDisplaySync,
-                fragmentClassSet.contains(SyncFragment.class));
+        Assert.assertEquals("History Sync step displayed incorrectly", mShouldDisplayHistorySync,
+                fragmentClassSet.contains(HistorySyncFragment.class));
         Assert.assertEquals("Safe Browsing step displayed incorrectly", mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
         Assert.assertEquals("Cookies step displayed incorrectly", mShouldDisplayCookies,

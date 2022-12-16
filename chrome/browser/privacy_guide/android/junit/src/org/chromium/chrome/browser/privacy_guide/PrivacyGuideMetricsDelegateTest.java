@@ -189,12 +189,12 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_offToOffSettingsStatesHistogram() {
+    public void testHistorySync_offToOffSettingsStatesHistogram() {
         mockHistorySyncState(false, false);
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF));
@@ -202,12 +202,12 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_offToOnSettingsStatesHistogram() {
+    public void testHistorySync_offToOnSettingsStatesHistogram() {
         mockHistorySyncState(false, true);
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON));
@@ -215,12 +215,12 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_onToOffSettingsStatesHistogram() {
+    public void testHistorySync_onToOffSettingsStatesHistogram() {
         mockHistorySyncState(true, false);
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF));
@@ -228,12 +228,12 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_onToOnSettingsStatesHistogram() {
+    public void testHistorySync_onToOnSettingsStatesHistogram() {
         mockHistorySyncState(true, true);
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(SETTINGS_STATES_HISTOGRAM,
                         PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON));
@@ -241,21 +241,21 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_nextClickUserAction() {
+    public void testHistorySync_nextClickUserAction() {
         mockHistorySyncState(false, false);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickHistorySync"));
     }
 
     @Test
     @SmallTest
-    public void testSync_nextNavigationHistogram() {
+    public void testHistorySync_nextNavigationHistogram() {
         mockHistorySyncState(false, false);
         assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
                         PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SYNC);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(NEXT_NAVIGATION_HISTOGRAM,
                         PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON));
@@ -436,16 +436,16 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_changeHistorySyncOnUserAction() {
-        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(true);
+    public void testHistorySync_changeHistorySyncOnUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(true);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeHistorySyncOn"));
     }
 
     @Test
     @SmallTest
-    public void testSync_changeHistorySyncOffUserAction() {
-        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(false);
+    public void testHistorySync_changeHistorySyncOffUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(false);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeHistorySyncOff"));
     }
@@ -501,9 +501,9 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
-    public void testSync_backClickUserAction() {
+    public void testHistorySync_backClickUserAction() {
         PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
-                PrivacyGuideFragment.FragmentType.SYNC);
+                PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
     }

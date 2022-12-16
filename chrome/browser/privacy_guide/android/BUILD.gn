@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_guide/CookiesFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/MSBBFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationHeading.java",
@@ -18,7 +19,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandler.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImpl.java",
-    "java/src/org/chromium/chrome/browser/privacy_guide/SyncFragment.java",
   ]
   deps = [
     ":java_resources",
@@ -49,12 +49,12 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/privacy_guide/CookiesFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/MSBBFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideMetricsDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapterTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImplTest.java",
-    "junit/src/org/chromium/chrome/browser/privacy_guide/SyncFragmentTest.java",
   ]
   deps = [
     ":java",
@@ -116,22 +116,22 @@ android_resources("java_resources") {
     "java/res/drawable/inactive_tab_circle.xml",
     "java/res/drawable/privacy_guide_cookies_image.xml",
     "java/res/drawable/privacy_guide_done_image.xml",
+    "java/res/drawable/privacy_guide_history_sync_image.xml",
     "java/res/drawable/privacy_guide_illustration.xml",
     "java/res/drawable/privacy_guide_msbb_image.xml",
     "java/res/drawable/privacy_guide_sb_image.xml",
-    "java/res/drawable/privacy_guide_sync_image.xml",
     "java/res/drawable/tab_selector.xml",
     "java/res/layout/privacy_guide_cookies_step.xml",
     "java/res/layout/privacy_guide_done.xml",
     "java/res/layout/privacy_guide_explanation_heading.xml",
     "java/res/layout/privacy_guide_explanation_item.xml",
     "java/res/layout/privacy_guide_fragment.xml",
+    "java/res/layout/privacy_guide_history_sync_step.xml",
     "java/res/layout/privacy_guide_msbb_step.xml",
     "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
     "java/res/layout/privacy_guide_sb_standard_explanation.xml",
     "java/res/layout/privacy_guide_sb_step.xml",
     "java/res/layout/privacy_guide_steps.xml",
-    "java/res/layout/privacy_guide_sync_step.xml",
     "java/res/layout/privacy_guide_welcome.xml",
     "java/res/menu/privacy_guide_toolbar_menu.xml",
     "java/res/values/attrs.xml",

@@ -19,7 +19,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  */
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     @Override
-    public boolean shouldDisplaySync() {
+    public boolean shouldDisplayHistorySync() {
         SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncFeatureEnabled();
     }
