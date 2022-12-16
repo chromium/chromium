@@ -5302,6 +5302,12 @@ const char kEnableViewPpdDescription[] =
     "Enable View PPD link in the edit printer dialog allowing the "
     "user to request to view the PPD for a specific printer.";
 
+const char kDeprecateAssistantStylusFeaturesName[] =
+    "Deprecate Assistant Stylus Features";
+const char kDeprecateAssistantStylusFeaturesDescription[] =
+    "Deprecates the stylus features associated with the Assistant \"what's on "
+    "my screen\" feature which is already deprecated.";
+
 const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
 const char kEapGtcWifiAuthenticationDescription[] =
     "Allows configuration of WiFi networks using EAP-GTC authentication";

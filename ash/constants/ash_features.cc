@@ -571,6 +571,13 @@ BASE_FEATURE(kDarkLightModeKMeansColor,
              "DarkLightModeKMeansColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Assistant stylus features, including the
+// Assistant option in the stylus palette tool and the Assistant screen
+// selection flow triggered by the stylus long press action.
+BASE_FEATURE(kDeprecateAssistantStylusFeatures,
+             "DeprecateAssistantStylusFeatures",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,
              "DeskTemplateSync",
@@ -2471,6 +2478,10 @@ bool IsDarkLightModeEnabled() {
 bool IsDarkLightModeKMeansColorEnabled() {
   return IsDarkLightModeEnabled() &&
          base::FeatureList::IsEnabled(kDarkLightModeKMeansColor);
+}
+
+bool IsDeprecateAssistantStylusFeaturesEnabled() {
+  return base::FeatureList::IsEnabled(kDeprecateAssistantStylusFeatures);
 }
 
 bool IsDeskTemplateSyncEnabled() {

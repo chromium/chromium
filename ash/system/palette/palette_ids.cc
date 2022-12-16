@@ -17,6 +17,8 @@ PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
       return PALETTE_LASER_POINTER;
     case PaletteToolId::MAGNIFY:
       return PALETTE_MAGNIFY;
+    case PaletteToolId::METALAYER:
+      return PALETTE_METALAYER;
     case PaletteToolId::ENTER_CAPTURE_MODE:
       return PALETTE_ENTER_CAPTURE_MODE;
   }

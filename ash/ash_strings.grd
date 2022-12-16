@@ -1756,6 +1756,18 @@ Style notes:
       <message name="IDS_ASH_STYLUS_TOOLS_MAGNIFIER_MODE" desc="Title of the magnification mode in the stylus tools. Clicking this button opens up a magnifier. The magnifier remains active until the user turns it off by tapping the same button again.">
         Magnifying glass
       </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_MODE" desc="Title of the metalayer mode in the stylus tools. Clicking this button opens up the Assistant overlay. The overlay remains active until the user completes the interaction.">
+        Assistant
+      </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_MODE_LOADING" desc="Title of the metalayer mode in the stylus tools, displayed while the Assistant is still loading.">
+        Assistant (loading...)
+      </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but it is still loading.">
+        Assistant is loading...
+      </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_DEPRECATE" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but the feature is deprecated.">
+        Searching what's on my screen with Google Assistant is no longer supported.
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
       </message>
@@ -1764,6 +1776,9 @@ Style notes:
       </message>
       <message name="IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_DESCRIPTION" desc="The description of the bubble that pops up the first time a user uses a stylus on a non assistant enabled device. Describes what tools exist in the palette tray.">
         Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer, or magnifying glass.
+      </message>
+      <message name="IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_WITH_ASSISTANT_DESCRIPTION" desc="The description of the bubble that pops up the first time a user uses a stylus on a assistant enabled device. Describes what tools exist in the palette tray.">
+        Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer, or magnifying glass.
       </message>
       <message name="IDS_ASH_PALETTE_SETTINGS" desc="The label on the setting button used to open palette setting page.">
         Stylus settings

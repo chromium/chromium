@@ -222,6 +222,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "palette_action_create_note.icon",
     "palette_mode_laser_pointer.icon",
     "palette_mode_magnify.icon",
+    "palette_mode_metalayer.icon",
     "palette_tray_icon_default.icon",
     "palette_tray_icon_default_newui.icon",
     "palette_tray_icon_projector.icon",
