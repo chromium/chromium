@@ -229,6 +229,21 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   EXPECT_FALSE(media_tray()->is_active());
 }
 
+// Tests that the shelf is forced to show when the bubble is visible (this is so
+// that the shelf doesn't hide when shelf auto-hide is enabled).
+TEST_F(MediaTrayTest, OpenBubbleForcesShelfToShow) {
+  provider()->SetHasActiveNotifications(true);
+  SimulateNotificationListChanged();
+  ASSERT_TRUE(media_tray()->GetVisible());
+
+  // The shelf should not be forced to show initially.
+  EXPECT_FALSE(status_area_widget()->ShouldShowShelf());
+
+  // Open the media tray bubble and verify that the shelf is forced to show.
+  SimulateTapOnMediaTray();
+  EXPECT_TRUE(status_area_widget()->ShouldShowShelf());
+}
+
 TEST_F(MediaTrayTest, ShowEmptyStateWhenNoActiveNotification) {
   // Media tray should be visible when there is active notification.
   provider()->SetHasActiveNotifications(true);

@@ -264,6 +264,10 @@ views::Widget* MediaTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
+TrayBubbleView* MediaTray::GetBubbleView() {
+  return bubble_ ? bubble_->GetBubbleView() : nullptr;
+}
+
 void MediaTray::ShowBubble() {
   DCHECK(MediaNotificationProvider::Get());
   SetNotificationColorTheme();
