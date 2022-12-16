@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_FUCHSIA_FAKES_POINTER_EVENT_UTILITY_H_
-#define UI_EVENTS_FUCHSIA_FAKES_POINTER_EVENT_UTILITY_H_
+#ifndef UI_EVENTS_FUCHSIA_UTIL_POINTER_EVENT_UTILITY_H_
+#define UI_EVENTS_FUCHSIA_UTIL_POINTER_EVENT_UTILITY_H_
 
 #include <fuchsia/ui/pointer/cpp/fidl.h>
 #include <ui/gfx/geometry/point_f.h>
@@ -119,4 +119,4 @@ class MouseEventBuilder {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_FUCHSIA_FAKES_POINTER_EVENT_UTILITY_H_
+#endif  // UI_EVENTS_FUCHSIA_UTIL_POINTER_EVENT_UTILITY_H_

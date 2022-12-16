@@ -6,6 +6,7 @@
 
 #include <fuchsia/scenic/scheduling/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 
 #include <string>
 
@@ -15,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/ozone/platform/flatland/tests/fake_flatland.h"
 
 namespace ui {
 namespace {
@@ -35,7 +35,7 @@ class FlatlandConnectionTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-  FakeFlatland fake_flatland_;
+  scenic::FakeFlatland fake_flatland_;
 
  private:
   base::TestComponentContextForProcess test_context_;
@@ -59,10 +59,10 @@ TEST_F(FlatlandConnectionTest, Initialization) {
 TEST_F(FlatlandConnectionTest, BasicPresent) {
   // Set up callbacks which allow sensing of how many presents were handled.
   size_t presents_called = 0u;
-  fake_flatland_.SetPresentHandler(base::BindLambdaForTesting(
+  fake_flatland_.SetPresentHandler(
       [&presents_called](fuchsia::ui::composition::PresentArgs present_args) {
         presents_called++;
-      }));
+      });
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
@@ -77,10 +77,10 @@ TEST_F(FlatlandConnectionTest, BasicPresent) {
 TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
   // Set up callbacks which allow sensing of how many presents were handled.
   size_t presents_called = 0u;
-  fake_flatland_.SetPresentHandler(base::BindLambdaForTesting(
+  fake_flatland_.SetPresentHandler(
       [&presents_called](fuchsia::ui::composition::PresentArgs present_args) {
         presents_called++;
-      }));
+      });
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
@@ -137,7 +137,7 @@ TEST_F(FlatlandConnectionTest, ReleaseFences) {
   // Set up callbacks which allow sensing of how many presents were handled.
   size_t presents_called = 0u;
   zx_handle_t release_fence_handle;
-  fake_flatland_.SetPresentHandler(base::BindLambdaForTesting(
+  fake_flatland_.SetPresentHandler(
       [&presents_called, &release_fence_handle](
           fuchsia::ui::composition::PresentArgs present_args) {
         presents_called++;
@@ -145,7 +145,7 @@ TEST_F(FlatlandConnectionTest, ReleaseFences) {
             present_args.release_fences().empty()
                 ? ZX_HANDLE_INVALID
                 : present_args.release_fences().front().get();
-      }));
+      });
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.

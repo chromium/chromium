@@ -92,10 +92,6 @@ source_set("flatland_unittests") {
     "flatland_connection_unittest.cc",
     "flatland_surface_unittest.cc",
     "flatland_window_unittest.cc",
-    "tests/fake_flatland.cc",
-    "tests/fake_flatland.h",
-    "tests/fake_view_ref_focused.cc",
-    "tests/fake_view_ref_focused.h",
   ]
   deps = [
     ":flatland",

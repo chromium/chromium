@@ -591,12 +591,8 @@ static_library("test_support") {
 
   if (is_fuchsia) {
     sources += [
-      "fuchsia/fakes/fake_mouse_source.cc",
-      "fuchsia/fakes/fake_mouse_source.h",
-      "fuchsia/fakes/fake_touch_source.cc",
-      "fuchsia/fakes/fake_touch_source.h",
-      "fuchsia/fakes/pointer_event_utility.cc",
-      "fuchsia/fakes/pointer_event_utility.h",
+      "fuchsia/util/pointer_event_utility.cc",
+      "fuchsia/util/pointer_event_utility.h",
     ]
 
     deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer" ]
@@ -724,6 +720,7 @@ if (!is_ios) {
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+        "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp_testing",
       ]
     }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/fuchsia/fakes/pointer_event_utility.h"
+#include "ui/events/fuchsia/util/pointer_event_utility.h"
 #include <zircon/types.h>
 #include <utility>
 
