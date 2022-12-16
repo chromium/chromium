@@ -142,6 +142,10 @@ async def main():
     # }
     links = command_result["result"]["result"]
 
+    # Assert the result is non-empty
+    assert len(links["value"]) > 0, "The result should be non-empty."
+
+
     # Puppeteer:
     # console.log(links.join('\n'));
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L45

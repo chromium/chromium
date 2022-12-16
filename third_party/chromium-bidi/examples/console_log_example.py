@@ -120,6 +120,10 @@ async def main():
     #     }
     # }
     event_response = await read_JSON_message(websocket)
+
+    # Assert the result is an event.
+    assert event_response["method"] == "log.entryAdded"
+
     print(f'text: {event_response["params"]["text"]}' + '\n'
           f'args: {event_response["params"]["args"]}')
 
