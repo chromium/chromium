@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -65,6 +66,15 @@ void WebAppProviderBridgeLacros::GetWebApkCreationParams(
                      app_id, std::move(callback)));
 }
 
+void WebAppProviderBridgeLacros::InstallMicrosoft365(
+    InstallMicrosoft365Callback callback) {
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath(),
+      /*incognito=*/false,
+      base::BindOnce(&WebAppProviderBridgeLacros::InstallMicrosoft365Impl,
+                     std::move(callback)));
+}
+
 // static
 void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
     mojom::ArcWebAppInstallInfoPtr arc_install_info,
@@ -105,6 +115,13 @@ void WebAppProviderBridgeLacros::GetWebApkCreationParamsImpl(
     GetWebApkCreationParamsCallback callback,
     Profile* profile) {
   apps::GetWebApkCreationParams(profile, app_id, std::move(callback));
+}
+
+// static
+void WebAppProviderBridgeLacros::InstallMicrosoft365Impl(
+    InstallMicrosoft365Callback callback,
+    Profile* profile) {
+  chromeos::InstallMicrosoft365(profile, std::move(callback));
 }
 
 }  // namespace crosapi

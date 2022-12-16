@@ -7,6 +7,9 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -73,14 +76,6 @@ void CloudUploadPageHandler::IsOfficeWebAppInstalled(
 
 void CloudUploadPageHandler::InstallOfficeWebApp(
     InstallOfficeWebAppCallback callback) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  if (provider == nullptr) {
-    // TODO(b/259869338): This means that web apps are managed in Lacros, so we
-    // need to add a crosapi to install the web app.
-    std::move(callback).Run(false);
-    return;
-  }
-
   auto wrapped_callback = base::BindOnce(
       [](InstallOfficeWebAppCallback callback,
          webapps::InstallResultCode result_code) {
@@ -88,8 +83,23 @@ void CloudUploadPageHandler::InstallOfficeWebApp(
       },
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
 
-  // Web apps are managed in Ash.
-  chromeos::InstallMicrosoft365(profile_, std::move(wrapped_callback));
+  if (web_app::WebAppProvider::GetForWebApps(profile_)) {
+    // Web apps are managed in Ash.
+    chromeos::InstallMicrosoft365(profile_, std::move(wrapped_callback));
+  } else {
+    // Web apps are managed in Lacros.
+    crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
+        crosapi::CrosapiManager::Get()
+            ->crosapi_ash()
+            ->web_app_service_ash()
+            ->GetWebAppProviderBridge();
+    if (!web_app_provider_bridge) {
+      std::move(wrapped_callback)
+          .Run(webapps::InstallResultCode::kWebAppProviderNotReady);
+      return;
+    }
+    web_app_provider_bridge->InstallMicrosoft365(std::move(wrapped_callback));
+  }
 }
 
 void CloudUploadPageHandler::IsODFSMounted(IsODFSMountedCallback callback) {

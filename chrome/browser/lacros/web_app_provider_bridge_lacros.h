@@ -30,6 +30,7 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
   void GetWebApkCreationParams(
       const std::string& app_id,
       GetWebApkCreationParamsCallback callback) override;
+  void InstallMicrosoft365(InstallMicrosoft365Callback callback) override;
 
  private:
   static void WebAppInstalledInArcImpl(
@@ -44,6 +45,8 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
       const std::string& app_id,
       GetWebApkCreationParamsCallback callback,
       Profile* profile);
+  static void InstallMicrosoft365Impl(InstallMicrosoft365Callback callback,
+                                      Profile* profile);
 
   mojo::Receiver<mojom::WebAppProviderBridge> receiver_{this};
 };

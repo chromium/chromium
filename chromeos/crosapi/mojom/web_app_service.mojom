@@ -29,8 +29,8 @@ struct WebApkCreationParams {
 
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
-// Next version: 2
-// Next method id: 3
+// Next version: 3
+// Next method id: 4
 [Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
@@ -52,6 +52,10 @@ interface WebAppProviderBridge {
   [MinVersion=1]
   GetWebApkCreationParams@2(string app_id)
     => (WebApkCreationParams webapk_creation_params);
+
+  // Installs Microsoft 365 web app in Lacros.
+  [MinVersion=2]
+  InstallMicrosoft365@3() => (WebAppInstallResultCode install_result);
 };
 
 // An interface implemented in ash-chrome. Allows lacros-chrome:
