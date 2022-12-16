@@ -758,6 +758,8 @@ export namespace BrowsingContext {
     BrowsingContext.Info
   >;
 
+  export const AllEvents = 'browsingContext';
+
   export enum EventNames {
     LoadEvent = 'browsingContext.load',
     DomContentLoadedEvent = 'browsingContext.domContentLoaded',
@@ -798,6 +800,8 @@ export namespace Log {
     EventNames.LogEntryAddedEvent,
     LogEntry
   >;
+
+  export const AllEvents = 'log';
 
   export enum EventNames {
     LogEntryAddedEvent = 'log.entryAdded',
@@ -856,6 +860,8 @@ export namespace CDP {
     cdpSession: string;
   };
 
+  export const AllEvents = 'cdp';
+
   export enum EventNames {
     EventReceivedEvent = 'cdp.eventReceived',
   }
@@ -886,21 +892,28 @@ export namespace Session {
     params: SubscribeParameters;
   };
 
-  const EventNameSchema = zod.enum([
+  const SubscribeParametersEventSchema = zod.enum([
+    BrowsingContext.AllEvents,
     BrowsingContext.EventNames.ContextCreatedEvent,
     BrowsingContext.EventNames.ContextDestroyedEvent,
     BrowsingContext.EventNames.DomContentLoadedEvent,
     BrowsingContext.EventNames.LoadEvent,
+    Log.AllEvents,
     Log.EventNames.LogEntryAddedEvent,
+    CDP.AllEvents,
     CDP.EventNames.EventReceivedEvent,
   ]);
+
+  export type SubscribeParametersEvent = zod.infer<
+    typeof SubscribeParametersEventSchema
+  >;
 
   // SessionSubscribeParameters = {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
   const SubscribeParametersSchema = zod.object({
-    events: zod.array(EventNameSchema),
+    events: zod.array(SubscribeParametersEventSchema),
     contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
   });
   export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;

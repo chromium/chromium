@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes, Message} from '../../../protocol/protocol.js';
+import type {
+  CommonDataTypes,
+  Message,
+  Session,
+} from '../../../protocol/protocol.js';
 import type {BidiServer} from '../../BidiServer.js';
 import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
@@ -58,13 +62,13 @@ export interface IEventManager {
   ): Promise<void>;
 
   subscribe(
-    events: string[],
+    events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void>;
 
   unsubscribe(
-    event: string[],
+    events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void>;
@@ -130,7 +134,7 @@ export class EventManager implements IEventManager {
   async registerPromiseEvent(
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null,
-    eventName: string
+    eventName: Session.SubscribeParametersEvent
   ): Promise<void> {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
@@ -149,11 +153,11 @@ export class EventManager implements IEventManager {
   }
 
   async subscribe(
-    eventNames: string[],
+    events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (let eventName of eventNames) {
+    for (let eventName of events) {
       for (let contextId of contextIds) {
         if (
           contextId !== null &&
@@ -179,7 +183,7 @@ export class EventManager implements IEventManager {
   }
 
   async unsubscribe(
-    events: string[],
+    events: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {

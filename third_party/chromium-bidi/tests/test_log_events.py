@@ -19,6 +19,45 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
+async def test_log_subscribeToAllLogEvents_logEventReceived(websocket, context_id):
+    await subscribe(websocket, "log")
+    # Send command.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('some log message')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    await wait_for_event(websocket, "log.entryAdded")
+
+
+@pytest.mark.asyncio
+async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
+    # Send command.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('some log message')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Wait for responses
+    await wait_for_event(websocket, "log.entryAdded")
+
+
+@pytest.mark.asyncio
 async def test_consoleLog_textAndArgs(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
 

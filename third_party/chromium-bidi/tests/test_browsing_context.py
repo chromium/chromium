@@ -19,6 +19,22 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_subscribeToAllBrowsingContextEvents_eventReceived(
+      websocket):
+    await subscribe(websocket, "browsingContext")
+
+    await send_JSON_command(websocket, {
+        "id": 9,
+        "method": "browsingContext.create",
+        "params": {
+            "type": "tab"
+        }
+    })
+
+    await wait_for_event(websocket, "browsingContext.domContentLoaded")
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_noInitialLoadEvents(websocket):
     # Due to the nature, the test does not always fail, even if the
     # implementation does not guarantee the initial context to be fully loaded.

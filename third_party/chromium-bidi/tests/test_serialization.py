@@ -450,18 +450,11 @@ async def test_serialization_node(websocket, context_id):
         {
             "type": "node",
             "value": {
-                "nodeType":
-                1,
-                "nodeValue":
-                "",
-                "nodeName":
-                "",
-                "localName":
-                "div",
-                "namespaceURI":
-                "http://www.w3.org/1999/xhtml",
-                "childNodeCount":
-                2,
+                "nodeType": 1,
+                "backendNodeId": any_value,
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 2,
                 "attributes": {
                     "some_attr_name": "some_attr_value"
                 },
@@ -470,14 +463,13 @@ async def test_serialization_node(websocket, context_id):
                     "value": {
                         "nodeType": 3,
                         "nodeValue": "some text",
-                        "nodeName": "some text"
+                        "backendNodeId": any_value,
                     }
                 }, {
                     "type": "node",
                     "value": {
                         "nodeType": 1,
-                        "nodeValue": "",
-                        "nodeName": "",
+                        "backendNodeId": any_value,
                         "localName": "h2",
                         "namespaceURI": "http://www.w3.org/1999/xhtml",
                         "childNodeCount": 1,
