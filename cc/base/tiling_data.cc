@@ -45,6 +45,10 @@ TilingData::TilingData(const gfx::Size& max_texture_size,
     : max_texture_size_(max_texture_size),
       tiling_size_(tiling_size),
       border_texels_(has_border_texels ? 1 : 0) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::TilingData #1 %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 
@@ -54,11 +58,20 @@ TilingData::TilingData(const gfx::Size& max_texture_size,
     : max_texture_size_(max_texture_size),
       tiling_size_(tiling_size),
       border_texels_(border_texels) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::TilingData #2 %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 
 void TilingData::SetTilingSize(const gfx::Size& tiling_size) {
   tiling_size_ = tiling_size;
+
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::SetTilingSize %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 

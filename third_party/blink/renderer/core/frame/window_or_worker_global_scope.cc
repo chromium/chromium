@@ -151,9 +151,15 @@ int WindowOrWorkerGlobalScope::setTimeout(
     V8Function* handler,
     int timeout,
     const HeapVector<ScriptValue>& arguments) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("WindowOrWorkerGlobalScope::setTimeout #1");
+
   ExecutionContext* execution_context = event_target.GetExecutionContext();
-  if (!IsAllowed(execution_context, false, g_empty_string))
+  if (!IsAllowed(execution_context, false, g_empty_string)) {
+    // https://linear.app/replay/issue/RUN-885
+    recordreplay::Assert("WindowOrWorkerGlobalScope::setTimeout #1.1");
     return 0;
+  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler, arguments);
   return DOMTimer::Install(execution_context, action,
@@ -165,13 +171,22 @@ int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
                                           const String& handler,
                                           int timeout,
                                           const HeapVector<ScriptValue>&) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("WindowOrWorkerGlobalScope::setTimeout #2");
+
   ExecutionContext* execution_context = event_target.GetExecutionContext();
-  if (!IsAllowed(execution_context, true, handler))
+  if (!IsAllowed(execution_context, true, handler)) {
+    // https://linear.app/replay/issue/RUN-885
+    recordreplay::Assert("WindowOrWorkerGlobalScope::setTimeout #2.1");
     return 0;
+  }
   // Don't allow setting timeouts to run empty functions.  Was historically a
   // performance issue.
-  if (handler.empty())
+  if (handler.empty()) {
+    // https://linear.app/replay/issue/RUN-885
+    recordreplay::Assert("WindowOrWorkerGlobalScope::setTimeout #2.2");
     return 0;
+  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
   return DOMTimer::Install(execution_context, action,
