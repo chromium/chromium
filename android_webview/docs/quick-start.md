@@ -32,41 +32,89 @@ See general Android instructions for:
   dependencies](/docs/android_build_instructions.md#Install-additional-build-dependencies)
   **and** [running hooks](/docs/android_build_instructions.md#Run-the-hooks)
 
+## Install adb
+
+If you don't already have `adb` installed, the fastest way is to add chromium's
+Android SDK to your `$PATH`. If you use multiple terminal, you'll want to run
+this command in each terminal:
+
+```shell
+$ source build/android/envsetup.sh
+```
+
 ## Device setup
 
-Easiest configuration is to choose a **Google APIs** emulator running **Android
-N or higher**. See [Device Setup](./device-setup.md) for instructions.
+The recommend configuration is to use an **Android P emulator**. Android N or O
+are also OK, however if you need to use any other OS version then you need to
+switch to the full [build guide](./build-instructions.md) instead.
 
-*** promo
-**Android O or higher** comes with troubleshooting tools, so that's highly
-recommended.
-***
+Set up an [Android emulator](/docs/android_emulator.md). You have 2 options for
+this:
+
+1. Preconfigured emulator image. Just run this command in your terminal, which
+   will launch an emulator window when the emulator is ready. If anything goes
+   wrong, see [the
+   documentation](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md#Using-Prebuilt-CIPD-packages)
+   or try the next option (see below).
+
+  ```shell
+  $ tools/android/avd/avd.py start \
+      --avd-config tools/android/avd/proto/generic_android28.textpb --emulator-window
+  ```
+
+2. Android Studio Emulator image. [Install the Android Studio
+   IDE](https://developer.android.com/studio/install) and then follow [these
+   instructions](https://developer.android.com/studio/run/managing-avds)
+   to launch the Device Manager GUI. Create an emulator with these settings:
+
+   * Skin: any Pixel device skin is fine
+   * Release name: **Pie**
+   * ABI: **x86**
+   * Target: **Google APIs**
+   <!-- Keep this part in sync with /docs/android_emulator.md -->
+   * Select "Show Advanced Settings" > scroll down:
+      * Set internal storage to 4000MB
+      * Set SD card to 1000MB
+   * If in doubt, consult the
+     [chromium
+     documentation](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md#Using-Your-Own-Emulator-Image)
+     to configure your emulator
+
+   Once configured, click the **play** button to launch the emulator.
+
+**Verify your emulator is ready:** after performing either of the steps above,
+you should check your emulator by running:
+
+```shell
+# If everything worked correctly, this should say "device" in the right column.
+$ adb devices
+List of devices attached
+emulator-5554   device
+```
 
 ## Setting up the build
 
-Assuming you took the advice from above, configure GN args (run `gn args
-out/Default`) as follows:
+Configure GN args (run `gn args out/Default`) as follows:
 
 ```gn
-# Minimal
 target_os = "android"
-target_cpu = "x86"  # Assuming you chose an x86 emulator
+target_cpu = "x86"
 
 # This package name is allowed for debuggable (userdebug) devices, and lets
 # devs install a WebView provider without the usual signature checks. This only
-# works on N+.
+# works on N-P.
 system_webview_package_name = "com.google.android.apps.chrome"
+
+# Recommended: this lets you use System WebView Shell as a test app.
+system_webview_shell_package_name = "org.chromium.my_webview_shell"
 ```
 
-## Build WebView
+## Build, install, and switch WebView provider {#build}
 
 ```shell
+# Build
 $ autoninja -C out/Default system_webview_apk
-```
 
-## Install WebView and switch provider
-
-```shell
 # Install the APK
 $ out/Default/bin/system_webview_apk install
 
@@ -74,13 +122,74 @@ $ out/Default/bin/system_webview_apk install
 $ out/Default/bin/system_webview_apk set-webview-provider
 ```
 
-## Start running an app
+**That's it!** Your APK should be installed and should be providing the WebView
+implementation for all apps on the system.
 
-**That it!** Your APK should be installed and should be providing the WebView
-implementation for all apps on the system. If you want to verify this, look at
-the steps for [building the System WebView Shell](./webview-shell.md). The
-version number in the shell's top bar should match the version number in your
-local copy of `//chrome/VERSION`.
+## Things to do next
+
+### Start running an app
+
+**Skip this section** if you already have an app you want to test.
+
+You can start testing our your WebView APK with the System WebView Shell test
+app. This also shows the WebView version at the top of the app, so you can
+verify this is using the version you built locally. You can run this test app
+like so:
+
+```shell
+# Build
+$ autoninja -C out/Default system_webview_shell_apk
+
+# Install
+$ out/Default/bin/system_webview_shell_apk install
+
+# Launch a URL
+$ out/Default/bin/system_webview_shell_apk launch "https://www.google.com/"
+```
+
+For more info about WebView Shell, see [the docs](./webview-shell.md).
+
+### Toggle features or commandline flags
+
+**Skip this section** if you don't need to toggle a specific commandline flag.
+
+If you exposed your flag in [ProductionSupportedFlagList.java], then you can
+toggle the flag in WebView DevTools. For more info about WebView DevTools, see
+[the docs](./developer-ui.md). You can launch WebView DevTools with:
+
+```shell
+$ adb shell am start -a "com.android.webview.SHOW_DEV_UI"
+```
+
+If the flag is not exposed, you can instead try following [these
+steps](./commandline-flags.md).
+
+### Debug with adb logcat
+
+We recommend starting with "printf-style debugging" on Android:
+
+1. Add some logs in your code:
+   * In C++ code: add `LOG(ERROR) << "SOMETAG: <your log message goes here>";`
+   * In Java code: add `org.chromium.base.Log.e("SOMETAG", "<your log message
+     goes here>");`
+2. Recompile and reinstall `system_webview_apk` (see
+   [steps above](#build)). Re-launch your test app.
+3. Read your log messages by running this command:
+   `adb logcat | grep 'SOMETAG'`
+
+For more guidance, refer to [the logging
+documentation](/docs/android_logging.md).
+
+### Run automated tests
+
+We recommend starting with [integration
+tests](./test-instructions.md#instrumentation-tests).
+
+### Shutdown your emulator when you're done
+
+The recommended way to turn off your emulator is to just close the emulator
+window. If that doesn't work or you can't find the emulator window, then you can
+safely shutdown your emulator by running `adb emu kill` in the terminal.
 
 ## Troubleshooting
 
@@ -89,10 +198,6 @@ troubleshoot the problem is to query the state of the on-device
 WebViewUpdateService:
 
 ```shell
-# If you don't have `adb` in your path, you can source this file to use
-# the copy from chromium's Android SDK
-$ source build/android/envsetup.sh
-
 # Only available on O+
 $ adb shell dumpsys webviewupdate
 
@@ -208,3 +313,4 @@ If you can't follow the quick start guide for some reason, please consult our
 [general build instructions](build-instructions.md).
 
 [1]: https://groups.google.com/a/chromium.org/forum/#!forum/android-webview-dev
+[ProductionSupportedFlagList.java]: https://source.chromium.org/chromium/chromium/src/+/main:android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java

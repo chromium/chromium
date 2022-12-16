@@ -58,7 +58,6 @@ $ autoninja -C out/Default system_webview_shell_apk
 ## Installing the shell
 
 ```sh
-# Build and install
 $ out/Default/bin/system_webview_shell_apk install
 ```
 
