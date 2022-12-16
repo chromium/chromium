@@ -86,6 +86,25 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   auto old_state = state_;
   state_ = state;
 
+  if (state_.has_media_app != old_state.has_media_app) {
+    for (auto& observer : observer_list_) {
+      observer.OnHasMediaAppStateChange(state_.has_media_app);
+    }
+  }
+
+  if (state_.has_camera_permission != old_state.has_camera_permission) {
+    for (auto& observer : observer_list_) {
+      observer.OnCameraPermissionStateChange(state_.has_camera_permission);
+    }
+  }
+
+  if (state_.has_microphone_permission != old_state.has_microphone_permission) {
+    for (auto& observer : observer_list_) {
+      observer.OnMicrophonePermissionStateChange(
+          state_.has_microphone_permission);
+    }
+  }
+
   if (state_.is_capturing_camera != old_state.is_capturing_camera) {
     for (auto& observer : observer_list_)
       observer.OnCameraCapturingStateChange(state_.is_capturing_camera);
@@ -94,6 +113,12 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   if (state_.is_capturing_microphone != old_state.is_capturing_microphone) {
     for (auto& observer : observer_list_)
       observer.OnMicrophoneCapturingStateChange(state_.is_capturing_microphone);
+  }
+
+  if (state_.is_capturing_screen != old_state.is_capturing_screen) {
+    for (auto& observer : observer_list_) {
+      observer.OnScreenSharingStateChange(state_.is_capturing_screen);
+    }
   }
 }
 

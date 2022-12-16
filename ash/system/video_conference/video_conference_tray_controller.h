@@ -28,11 +28,24 @@ class ASH_EXPORT VideoConferenceTrayController
    public:
     ~Observer() override = default;
 
+    // Called when the state of `has_media_app` within
+    // `VideoConferenceMediaState` is changed.
+    virtual void OnHasMediaAppStateChange(bool has_media_app) = 0;
+
+    // Called when the state of camera permission is changed.
+    virtual void OnCameraPermissionStateChange(bool has_permission) = 0;
+
+    // Called when the state of microphone permission is changed.
+    virtual void OnMicrophonePermissionStateChange(bool has_permission) = 0;
+
     // Called when the state of camera capturing is changed.
     virtual void OnCameraCapturingStateChange(bool is_capturing) = 0;
 
     // Called when the state of microphone capturing is changed.
     virtual void OnMicrophoneCapturingStateChange(bool is_capturing) = 0;
+
+    // Called when the state of screen sharing is changed.
+    virtual void OnScreenSharingStateChange(bool is_capturing_screen) = 0;
   };
 
   VideoConferenceTrayController();

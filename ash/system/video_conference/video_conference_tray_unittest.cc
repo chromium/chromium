@@ -11,6 +11,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -58,6 +59,22 @@ class VideoConferenceTrayTest : public AshTestBase {
     return video_conference_tray()->toggle_bubble_button_;
   }
 
+  VideoConferenceTrayButton* camera_icon() {
+    return video_conference_tray()->camera_icon();
+  }
+
+  VideoConferenceTrayButton* audio_icon() {
+    return video_conference_tray()->audio_icon();
+  }
+
+  // The video conference tray and its buttons are, by default, not visible.
+  // However, we would want to make it visible for testing.
+  void SetTrayAndButtonsVisible() {
+    video_conference_tray()->SetVisiblePreferred(true);
+    camera_icon()->SetVisible(true);
+    audio_icon()->SetVisible(true);
+  }
+
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  private:
@@ -66,6 +83,8 @@ class VideoConferenceTrayTest : public AshTestBase {
 };
 
 TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
+  SetTrayAndButtonsVisible();
+
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
 
   // Clicking the toggle button should construct and open up the bubble.
@@ -93,6 +112,8 @@ TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
 }
 
 TEST_F(VideoConferenceTrayTest, ToggleBubbleButtonRotation) {
+  SetTrayAndButtonsVisible();
+
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
   // When the bubble is not open in horizontal shelf, the indicator should point
@@ -135,60 +156,112 @@ TEST_F(VideoConferenceTrayTest, ToggleBubbleButtonRotation) {
             video_conference_tray()->GetRotationValueForToggleBubbleButton());
 }
 
+TEST_F(VideoConferenceTrayTest, TrayVisibility) {
+  // We only show the tray when there is any running media app(s).
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(video_conference_tray()->GetVisible());
+
+  state.has_media_app = false;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_FALSE(video_conference_tray()->GetVisible());
+}
+
+TEST_F(VideoConferenceTrayTest, CameraButtonVisibility) {
+  // Camera icon should only be visible when permission has been granted.
+  VideoConferenceMediaState state;
+  state.has_camera_permission = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(camera_icon()->GetVisible());
+
+  state.has_camera_permission = false;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_FALSE(camera_icon()->GetVisible());
+}
+
+TEST_F(VideoConferenceTrayTest, MicrophoneButtonVisibility) {
+  // Microphone icon should only be visible when permission has been granted.
+  VideoConferenceMediaState state;
+  state.has_microphone_permission = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(audio_icon()->GetVisible());
+
+  state.has_microphone_permission = false;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_FALSE(audio_icon()->GetVisible());
+}
+
+TEST_F(VideoConferenceTrayTest, ScreenshareButtonVisibility) {
+  auto* screen_share_icon = video_conference_tray()->screen_share_icon();
+
+  VideoConferenceMediaState state;
+  state.is_capturing_screen = true;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_TRUE(screen_share_icon->GetVisible());
+  EXPECT_TRUE(screen_share_icon->show_privacy_indicator());
+
+  state.is_capturing_screen = false;
+  controller()->UpdateWithMediaState(state);
+  EXPECT_FALSE(screen_share_icon->GetVisible());
+  EXPECT_FALSE(screen_share_icon->show_privacy_indicator());
+}
+
 TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
-  auto* camera_icon = video_conference_tray()->camera_icon();
-  EXPECT_FALSE(camera_icon->toggled());
+  SetTrayAndButtonsVisible();
+
+  EXPECT_FALSE(camera_icon()->toggled());
 
   // Click the button should mute the camera.
-  LeftClickOn(camera_icon);
+  LeftClickOn(camera_icon());
   EXPECT_TRUE(controller()->camera_muted());
-  EXPECT_TRUE(camera_icon->toggled());
+  EXPECT_TRUE(camera_icon()->toggled());
 
   // Toggle again, should be unmuted.
-  LeftClickOn(camera_icon);
+  LeftClickOn(camera_icon());
   EXPECT_FALSE(controller()->camera_muted());
-  EXPECT_FALSE(camera_icon->toggled());
+  EXPECT_FALSE(camera_icon()->toggled());
 }
 
 TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
-  auto* audio_icon = video_conference_tray()->audio_icon();
-  EXPECT_FALSE(audio_icon->toggled());
+  SetTrayAndButtonsVisible();
+
+  EXPECT_FALSE(audio_icon()->toggled());
 
   // Click the button should mute the microphone.
-  LeftClickOn(audio_icon);
+  LeftClickOn(audio_icon());
   EXPECT_TRUE(controller()->microphone_muted());
-  EXPECT_TRUE(audio_icon->toggled());
+  EXPECT_TRUE(audio_icon()->toggled());
 
   // Toggle again, should be unmuted.
-  LeftClickOn(audio_icon);
+  LeftClickOn(audio_icon());
   EXPECT_FALSE(controller()->microphone_muted());
-  EXPECT_FALSE(audio_icon->toggled());
+  EXPECT_FALSE(audio_icon()->toggled());
 }
 
 TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {
-  auto* camera_icon = video_conference_tray()->camera_icon();
-  auto* audio_icon = video_conference_tray()->audio_icon();
+  SetTrayAndButtonsVisible();
 
   // Privacy indicator should be shown when camera is actively capturing video.
-  EXPECT_FALSE(camera_icon->show_privacy_indicator());
+  EXPECT_FALSE(camera_icon()->show_privacy_indicator());
   VideoConferenceMediaState state;
   state.is_capturing_camera = true;
   controller()->UpdateWithMediaState(state);
-  EXPECT_TRUE(camera_icon->show_privacy_indicator());
+  EXPECT_TRUE(camera_icon()->show_privacy_indicator());
 
   // Privacy indicator should be shown when microphone is actively capturing
   // audio.
-  EXPECT_FALSE(audio_icon->show_privacy_indicator());
+  EXPECT_FALSE(audio_icon()->show_privacy_indicator());
   state.is_capturing_microphone = true;
   controller()->UpdateWithMediaState(state);
-  EXPECT_TRUE(audio_icon->show_privacy_indicator());
+  EXPECT_TRUE(audio_icon()->show_privacy_indicator());
 
   // Should not show indicator when not capture.
   state.is_capturing_camera = false;
   state.is_capturing_microphone = false;
   controller()->UpdateWithMediaState(state);
-  EXPECT_FALSE(camera_icon->show_privacy_indicator());
-  EXPECT_FALSE(audio_icon->show_privacy_indicator());
+  EXPECT_FALSE(camera_icon()->show_privacy_indicator());
+  EXPECT_FALSE(audio_icon()->show_privacy_indicator());
 }
 
 }  // namespace ash

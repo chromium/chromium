@@ -50,6 +50,9 @@ class BubbleViewTest : public AshTestBase {
 
     set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
+
+    // Make the video conference tray visible for testing.
+    video_conference_tray()->SetVisiblePreferred(true);
   }
 
   void TearDown() override {
