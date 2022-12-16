@@ -234,7 +234,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
     &kDeferKeepScreenOnDuringGesture,
-    &kDirectActions,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -714,8 +713,6 @@ BASE_FEATURE(kContextualSearchThinWebViewImplementation,
 BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
              "DeferKeepScreenOnDuringGesture",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDirectActions, "DirectActions", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadAutoResumptionThrottling,
              "DownloadAutoResumptionThrottling",
