@@ -14159,6 +14159,11 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
       bucket.ToBucketLocator(), std::move(callback));
 }
 
+GlobalRenderFrameHostId RenderFrameHostImpl::GetAssociatedRenderFrameHostId()
+    const {
+  return GetGlobalId();
+}
+
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)

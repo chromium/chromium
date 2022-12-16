@@ -134,6 +134,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
       const storage::BucketInfo& bucket,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
+  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
 
  private:
   int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;

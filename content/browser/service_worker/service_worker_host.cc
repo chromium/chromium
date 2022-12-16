@@ -261,4 +261,10 @@ void ServiceWorkerHost::BindCacheStorageForBucket(
                                                 bucket.ToBucketLocator());
 }
 
+GlobalRenderFrameHostId ServiceWorkerHost::GetAssociatedRenderFrameHostId()
+    const {
+  // For `ServiceWorkerHost` there is no associated `RenderFrameHost`.
+  return GlobalRenderFrameHostId();
+}
+
 }  // namespace content

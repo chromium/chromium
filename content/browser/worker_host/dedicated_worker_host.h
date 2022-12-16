@@ -220,6 +220,7 @@ class DedicatedWorkerHost final
       const storage::BucketInfo& bucket,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
+  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures

@@ -228,6 +228,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void GetSandboxedFileSystemForBucket(
       const storage::BucketInfo& bucket,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
+  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
 
  private:
   friend class SharedWorkerHostTest;

@@ -1005,6 +1005,11 @@ void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(
                                                     std::move(callback));
 }
 
+GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
+    const {
+  return GetAncestorRenderFrameHostId();
+}
+
 blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   return bfcache_disabling_features_;

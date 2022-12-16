@@ -478,6 +478,12 @@ void SharedWorkerHost::GetSandboxedFileSystemForBucket(
                                                     std::move(callback));
 }
 
+GlobalRenderFrameHostId SharedWorkerHost::GetAssociatedRenderFrameHostId()
+    const {
+  // For shared workers, there is no associated `RenderFrameHost`.
+  return GlobalRenderFrameHostId();
+}
+
 void SharedWorkerHost::AllowFileSystem(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {

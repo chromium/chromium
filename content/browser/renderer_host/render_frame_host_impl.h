@@ -2705,6 +2705,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetSandboxedFileSystemForBucket(
       const storage::BucketInfo& bucket,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
+  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
 
   // Sends out all pending beacons held by this document and all its child
   // documents.

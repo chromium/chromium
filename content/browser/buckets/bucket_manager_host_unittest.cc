@@ -15,6 +15,7 @@
 #include "content/browser/buckets/bucket_manager_host.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -87,6 +88,9 @@ class BucketManagerHostTest : public testing::Test {
     void BindCacheStorageForBucket(
         const storage::BucketInfo& bucket,
         mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {}
+    GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override {
+      return GlobalRenderFrameHostId();
+    }
 
     void GetSandboxedFileSystemForBucket(
         const storage::BucketInfo& bucket,
