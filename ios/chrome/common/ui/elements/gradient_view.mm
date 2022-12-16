@@ -13,10 +13,10 @@
 
 @interface GradientView ()
 
-// The color at the top of the gradient.
-@property(nonatomic, strong) UIColor* topColor;
-// The color at the bottom of the gradient.
-@property(nonatomic, strong) UIColor* bottomColor;
+// The color at the start of the gradient.
+@property(nonatomic, strong) UIColor* startColor;
+// The color at the end of the gradient.
+@property(nonatomic, strong) UIColor* endColor;
 
 @end
 
@@ -28,16 +28,28 @@
   return [CAGradientLayer class];
 }
 
-- (instancetype)initWithTopColor:(UIColor*)topColor
-                     bottomColor:(UIColor*)bottomColor {
+- (instancetype)initWithStartColor:(UIColor*)startColor
+                          endColor:(UIColor*)endColor
+                        startPoint:(CGPoint)startPoint
+                          endPoint:(CGPoint)endPoint {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    self.topColor = topColor;
-    self.bottomColor = bottomColor;
+    self.startColor = startColor;
+    self.endColor = endColor;
+    self.gradientLayer.startPoint = startPoint;
+    self.gradientLayer.endPoint = endPoint;
     self.userInteractionEnabled = NO;
     [self updateColors];
   }
   return self;
+}
+
+- (instancetype)initWithTopColor:(UIColor*)topColor
+                     bottomColor:(UIColor*)bottomColor {
+  return [self initWithStartColor:topColor
+                         endColor:bottomColor
+                       startPoint:CGPointMake(0.5, 0)
+                         endPoint:CGPointMake(0.5, 1)];
 }
 
 - (CAGradientLayer*)gradientLayer {
@@ -63,8 +75,8 @@
   [CATransaction setDisableActions:YES];
 
   self.gradientLayer.colors = @[
-    (id)self.topColor.CGColor,
-    (id)self.bottomColor.CGColor,
+    (id)self.startColor.CGColor,
+    (id)self.endColor.CGColor,
   ];
   [CATransaction commit];
 }

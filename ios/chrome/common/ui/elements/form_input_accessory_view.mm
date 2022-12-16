@@ -10,6 +10,7 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,9 +50,6 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 // The navigation delegate if any.
 @property(nonatomic, weak) id<FormInputAccessoryViewDelegate> delegate;
 
-// Gradient layer to disolve the leading view's end.
-@property(nonatomic, strong) CAGradientLayer* gradientLayer;
-
 @property(nonatomic, weak) UIButton* previousButton;
 
 @property(nonatomic, weak) UIButton* nextButton;
@@ -81,11 +79,6 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [self setUpWithLeadingView:leadingView
           customTrailingView:nil
           navigationDelegate:delegate];
-}
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  self.gradientLayer.frame = self.gradientLayer.superlayer.bounds;
 }
 
 #pragma mark - UIInputViewAudioFeedback
@@ -171,18 +164,14 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 
   self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-  CAGradientLayer* gradientLayer = [[CAGradientLayer alloc] init];
-  gradientLayer.colors = @[
-    (id)[[UIColor clearColor] CGColor], (id)[[UIColor whiteColor] CGColor]
-  ];
-  gradientLayer.startPoint = CGPointMake(0, 0.5);
-  gradientLayer.endPoint = CGPointMake(0.6, 0.5);
-  self.gradientLayer = gradientLayer;
+  // Gradient view to disolve the leading view's end.
+  UIView* gradientView = [[GradientView alloc]
+      initWithStartColor:[[UIColor colorNamed:kBackgroundColor]
+                             colorWithAlphaComponent:0]
+                endColor:[UIColor colorNamed:kBackgroundColor]
+              startPoint:CGPointMake(0, 0.5)
+                endPoint:CGPointMake(0.6, 0.5)];
 
-  UIView* gradientView = [[UIView alloc] init];
-  gradientView.userInteractionEnabled = NO;
-  gradientView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  gradientView.layer.mask = gradientLayer;
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   if (base::i18n::IsRTL()) {
     gradientView.transform = CGAffineTransformMakeRotation(M_PI);

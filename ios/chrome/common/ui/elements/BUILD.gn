@@ -49,6 +49,7 @@ source_set("form_input_accessory") {
     "form_input_accessory_view_text_data.mm",
   ]
   deps = [
+    ":elements",
     "resources:mf_arrow_down",
     "resources:mf_arrow_up",
     "//base",

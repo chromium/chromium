@@ -8,13 +8,21 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-// A UIView showing a vertical gradient from transparent to opaque using the
-// system background color.
+// A UIView showing an axial gradient with two colors.
 @interface GradientView : UIView
 
+// Initializes the view with the a gradient starting at `startPoint` and ending
+// at 'endPoint'. `startPoint` and `endPoint` are defined in the unit coordinate
+// space ([0, 1]) and then mapped to the view's bounds rectangle when drawn.
+- (instancetype)initWithStartColor:(UIColor*)startColor
+                          endColor:(UIColor*)endColor
+                        startPoint:(CGPoint)startPoint
+                          endPoint:(CGPoint)endPoint NS_DESIGNATED_INITIALIZER;
+
+// Initializes the view with a vertical gradient.
 - (instancetype)initWithTopColor:(UIColor*)topColor
-                     bottomColor:(UIColor*)bottomColor
-    NS_DESIGNATED_INITIALIZER;
+                     bottomColor:(UIColor*)bottomColor;
+
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
