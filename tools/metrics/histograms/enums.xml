@@ -25513,28 +25513,6 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Detailed view shown"/>
 </enum>
 
-<enum name="DetectionOfCountryName">
-  <int value="0" label="Common Names">
-    A country was resolved via the hardcoded common names.
-  </int>
-  <int value="1" label="Application Locale">
-    A country was resolved by a lookup of the name using the application locale.
-  </int>
-  <int value="2" label="Local Languages">
-    A country was resolved by a lookup of the name using a map, where each
-    country is represented in the main languages spoken by in the country.
-  </int>
-  <int value="3" label="Default Locale">
-    A country was resolved by lookup using the en_US locale.
-  </int>
-  <int value="4" label="Via Language Of Website">
-    A country was resolved by a lookup using the language of the website.
-  </int>
-  <int value="5" label="Not Found">
-    A country name candidate could not be resolved to a country code.
-  </int>
-</enum>
-
 <enum name="DeviceActiveClientPreservedFileState">
 <!-- This must be kept current with DeviceActivityClient::PreservedFileState
 located in chromeos/ash/components/device_activity/device_activity_client.h -->
@@ -61890,7 +61868,6 @@ from previous Chrome versions.
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
   <int value="671800756" label="TabStripImprovements:enabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
-  <int value="673565219" label="AutofillCountryFromLocalName:enabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
@@ -64280,7 +64257,6 @@ from previous Chrome versions.
   <int value="2073113207" label="SensorContentSetting:disabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
   <int value="2075718434" label="NtpRealboxSuggestionAnswers:disabled"/>
-  <int value="2076336464" label="AutofillCountryFromLocalName:disabled"/>
   <int value="2076787478" label="OmniboxDisplayTitleForCurrentUrl:disabled"/>
   <int value="2076903744" label="progress-bar-animation"/>
   <int value="2077106718" label="EnableMessagesWebPush:enabled"/>

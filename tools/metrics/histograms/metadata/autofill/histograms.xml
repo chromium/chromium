@@ -946,20 +946,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CountryCodeResolution.{Situation}"
-    enum="DetectionOfCountryName" expires_after="M112">
-  <owner>battre@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records, whenever the country of an AddressProfile is set, how we figured
-    out the country code belonging to a country name.
-  </summary>
-  <token key="Situation">
-    <variant name="WhenSettingCountryCode"/>
-    <variant name="WhenSettingCountryName"/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.CreditCard.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2023-04-16">
   <owner>jsaul@google.com</owner>

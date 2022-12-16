@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -195,14 +194,12 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
       // it is tested if a country code can be derived from the value when it is
       // interpreted as a full country name. Otherwise an empty string is
       // assigned to |country_code|.
-      if (!value.empty()) {
-        DetectionOfCountryName source = DetectionOfCountryName::kNotFound;
-        country_code =
-            CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
-                value, locale, &source);
-        base::UmaHistogramEnumeration(
-            "Autofill.CountryCodeResolution.WhenSettingCountryCode", source);
-      }
+      CountryNames* country_names =
+          !value.empty() ? CountryNames::GetInstance() : nullptr;
+      country_code = country_names
+                         ? country_names->GetCountryCodeForLocalizedCountryName(
+                               value, locale)
+                         : std::string();
     }
 
     structured_address_.SetValueForTypeIfPossible(ADDRESS_HOME_COUNTRY,
@@ -217,12 +214,9 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
 
   ServerFieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
-    DetectionOfCountryName source = DetectionOfCountryName::kNotFound;
     std::string country_code =
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
-            value, locale, &source);
-    base::UmaHistogramEnumeration(
-        "Autofill.CountryCodeResolution.WhenSettingCountryName", source);
+            value, locale);
 
     structured_address_.SetValueForTypeIfPossible(ADDRESS_HOME_COUNTRY,
                                                   country_code, status);

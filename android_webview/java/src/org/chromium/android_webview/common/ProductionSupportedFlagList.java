@@ -159,9 +159,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_COUNTRY_FROM_LOCAL_NAME,
-                    "Chrome needs to map country names to country codes. If enabled, the lookup "
-                            + "considers all locales that are registered for a country."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_MIN3_FIELD_TYPES_FOR_LOCAL_HEURISTICS,
                     "Require at least 3 distinct field types for local heuristics to return "
                             + "classifications."),

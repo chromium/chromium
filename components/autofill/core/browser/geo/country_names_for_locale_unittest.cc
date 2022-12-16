@@ -7,8 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,17 +66,6 @@ TEST(CountryNamesForLocaleTest, MoveConstructior) {
 
   // Test that the new instance returns the correct values.
   EXPECT_EQ("DE", moved_names.GetCountryCode(u"Deutschland"));
-}
-
-TEST(CountryNamesForLocaleTest, GetLocallyLocalizedNames) {
-  base::span<const icu::Locale> available_locales = GetAvailableLocales();
-  if (!base::Contains(available_locales, "de-IT")) {
-    LOG(INFO) << "Skipping test because locale de-IT is not installed";
-  }
-
-  CountryNamesForLocale local_names(kPseudoLocaleOfNativeTranslations);
-  EXPECT_EQ("IT", local_names.GetCountryCode(u"Italien"));
-  EXPECT_EQ("", local_names.GetCountryCode(u"Italy"));
 }
 
 }  // namespace autofill

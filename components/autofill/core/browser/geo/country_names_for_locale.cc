@@ -4,16 +4,14 @@
 
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
-#include <cstring>
 #include <map>
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/logging.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -61,40 +59,6 @@ std::unique_ptr<icu::Collator> CreateCollator(const icu::Locale& locale) {
   return collator;
 }
 
-std::map<std::string, std::string> GetLocallyLocalizedNames(
-    const icu::Collator& collator) {
-  std::map<std::string, std::string> localized_names;
-  int32_t buffer_size = 1000;
-  auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-
-  // Get all installed locals.
-  int32_t num_locales;
-  const icu::Locale* locales = icu::Locale::getAvailableLocales(num_locales);
-
-  for (int32_t i = 0; i < num_locales; ++i) {
-    // For each locale (e.g. de_IT), determine the language (de) and country
-    // (IT), and determine the name of the country in the language (the
-    // German (de) term for Italy (IT) would be "Italien").
-    const icu::Locale& locale = locales[i];
-
-    // Get the country name in the specific locale:
-    const char* country_code = locale.getCountry();
-    if (strlen(country_code) == 0)
-      continue;
-    std::u16string country_name =
-        l10n_util::GetDisplayNameForCountry(country_code, locale.getName());
-
-    if (country_name.empty())
-      continue;
-
-    std::string sort_key =
-        GetSortKey(collator, country_name, &buffer, &buffer_size);
-    localized_names.emplace(sort_key, country_code);
-  }
-
-  return localized_names;
-}
-
 // Returns the mapping of country names localized to |locale| to their
 // corresponding country codes. The provided |collator| should be suitable for
 // the locale. The collator being null is handled gracefully by returning an
@@ -104,12 +68,6 @@ std::map<std::string, std::string> GetLocalizedNames(
     const std::string& locale,
     const icu::Collator* collator) {
   if (!collator)
-    return std::map<std::string, std::string>();
-
-  if (locale == kPseudoLocaleOfNativeTranslations)
-    return GetLocallyLocalizedNames(*collator);
-
-  if (locale == kPseudoLocaleOfNativeTranslationsDisabled)
     return std::map<std::string, std::string>();
 
   std::map<std::string, std::string> localized_names;
@@ -129,12 +87,6 @@ std::map<std::string, std::string> GetLocalizedNames(
 }
 
 }  // namespace
-
-base::span<const icu::Locale> GetAvailableLocales() {
-  int32_t num_locales;
-  const icu::Locale* locales = icu::Locale::getAvailableLocales(num_locales);
-  return base::span<const icu::Locale>(locales, num_locales);
-}
 
 CountryNamesForLocale::CountryNamesForLocale(const std::string& locale_name)
     : locale_name_(locale_name),

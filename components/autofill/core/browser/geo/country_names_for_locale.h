@@ -9,28 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/span.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace autofill {
-
-// This is a pseudo locale for the "Country name" -> "Country code" mapping.
-// When using this locale, we map the name of each country in the languages
-// spoken in the country to the country code. This is not exhaustive but
-// based on registered locales. For example, for Italy, there may be ca-IT,
-// de-IT and it-IT, but no fr-IT even though Italy has a French community.
-// This is not perfect but a start.
-constexpr const char kPseudoLocaleOfNativeTranslations[] = "native";
-
-// TODO(crbug.com/1360502) Remove this after finishing the experiment. The
-// purpose of this locale is just to provide a value for a default/control
-// experiment group in which we don't have native translations of countries.
-constexpr const char kPseudoLocaleOfNativeTranslationsDisabled[] =
-    "native-disabled";
-
-// Returns the locales installed on this computer.
-base::span<const icu::Locale> GetAvailableLocales();
 
 class CountryNamesForLocale {
  public:
