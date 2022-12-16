@@ -446,7 +446,6 @@ external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html
 external/wpt/payment-handler/idlharness.https.any.serviceworker.html
 external/wpt/payment-request/idlharness.https.window.html
 external/wpt/periodic-background-sync/idlharness.https.any.html
-external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html
 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch
 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen
 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?touch

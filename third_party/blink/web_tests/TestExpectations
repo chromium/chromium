@@ -4659,9 +4659,6 @@ crbug.com/1066178 external/wpt/html/user-activation/consumption-crossorigin.sub.
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
 crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
 
-# Sheriff 2020-03-08
-crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass Timeout ]
-
 # [virtual/...]external/wpt/web-animation test flakes
 
 # Sheriff 2020-04-01
