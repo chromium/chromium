@@ -65,6 +65,8 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // It is not required to SetCleared() if one binds an image.
   //
   // The context must be current.
+  // TODO(crbug.com/1310020): Simplify this interface/implementation for fact
+  // that we now always pass |nullptr| for |image| in production.
   virtual void BindStreamTextureImage(gl::GLImage* image,
                                       GLuint service_id) = 0;
 #endif

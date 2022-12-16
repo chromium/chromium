@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -23,27 +24,6 @@
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
-
-namespace {
-
-// If enabled, then nullptr is passed for the GLImage instance when invoking
-// BindStreamTextureImage(). Rolling this change out is the last blocker to
-// eliminating StreamTextureSharedImageInterface being a subclass of GLImage.
-// TODO(crbug.com/1310020): Remove this flag once the change has rolled out
-// safely.
-BASE_FEATURE(kPassNullForGLImageWhenBindingTexture,
-             "kPassNullForGLImageWhenBindingTexture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Returns either |nullptr| or |sii|.
-gl::GLImage* GetGLImageToUseWhenBindingTexture(
-    StreamTextureSharedImageInterface* sii) {
-  return (base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture))
-             ? nullptr
-             : sii;
-}
-
-}  // namespace
 
 VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
     const Mailbox& mailbox,
@@ -132,21 +112,7 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
         static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(texture_->service_id());
 
-    // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
-    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      gles2::Texture* texture = GLTextureImageRepresentation::GetTexture();
-      texture->SetLevelImageState(texture->target(), 0, gles2::Texture::BOUND);
-    }
-
     return true;
-  }
-
-  void EndAccess() override {
-    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      gles2::Texture* texture = GLTextureImageRepresentation::GetTexture();
-      texture->SetLevelImageState(texture->target(), 0,
-                                  gles2::Texture::UNBOUND);
-    }
   }
 
  private:
@@ -191,19 +157,7 @@ class VideoSurfaceTextureImageBacking::
         static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(passthrough_texture_->service_id());
 
-    // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
-    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      passthrough_texture_->clear_bind_pending();
-    }
-
     return true;
-  }
-
-  void EndAccess() override {
-    // NOTE: It is not necessary to mark |texture_passthrough_| as needing
-    // binding here: if there is a subsequent flow that requires that the
-    // texture be bound, that flow will itself invoke set_bind_pending() on
-    // the texture.
   }
 
  private:
@@ -235,8 +189,7 @@ VideoSurfaceTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
   // texture_id in abstract texture via BindStreamTextureImage().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
   texture->BindStreamTextureImage(
-      GetGLImageToUseWhenBindingTexture(stream_texture_sii_.get()),
-      stream_texture_sii_->GetTextureBase()->service_id());
+      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
 
   return std::make_unique<GLTextureVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
@@ -264,8 +217,7 @@ VideoSurfaceTextureImageBacking::ProduceGLTexturePassthrough(
   // texture_id in abstract texture via BindStreamTextureImage().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
   texture->BindStreamTextureImage(
-      GetGLImageToUseWhenBindingTexture(stream_texture_sii_.get()),
-      stream_texture_sii_->GetTextureBase()->service_id());
+      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
 
   return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
@@ -305,8 +257,7 @@ VideoSurfaceTextureImageBacking::ProduceSkia(
   // texture_id in abstract texture via BindStreamTextureImage().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
   texture->BindStreamTextureImage(
-      GetGLImageToUseWhenBindingTexture(stream_texture_sii_.get()),
-      stream_texture_sii_->GetTextureBase()->service_id());
+      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
 
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
