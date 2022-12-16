@@ -553,14 +553,18 @@ const FeatureEntry::FeatureVariation kOpenInDownloadVariations[] = {
 
 const FeatureEntry::FeatureParam kEnablePinnedTabsBottomPosition[] = {
     {kEnablePinnedTabsParameterName, kEnablePinnedTabsBottomParam}};
-const FeatureEntry::FeatureParam kEnablePinnedTabsTopPosition[] = {
-    {kEnablePinnedTabsParameterName, kEnablePinnedTabsTopParam}};
+const FeatureEntry::FeatureParam kEnablePinnedTabsOverflowBottomPosition[] = {
+    {kEnablePinnedTabsParameterName, kEnablePinnedTabsOverflowBottomParam}};
+const FeatureEntry::FeatureParam kEnablePinnedTabsOverflowTopPosition[] = {
+    {kEnablePinnedTabsParameterName, kEnablePinnedTabsOverflowTopParam}};
 
 const FeatureEntry::FeatureVariation kEnablePinnedTabsVariations[] = {
     {"bottom pinned tabs", kEnablePinnedTabsBottomPosition,
      std::size(kEnablePinnedTabsBottomPosition), nullptr},
-    {"top pinned tabs", kEnablePinnedTabsTopPosition,
-     std::size(kEnablePinnedTabsTopPosition), nullptr},
+    {"overflow + bottom pinned tabs", kEnablePinnedTabsOverflowBottomPosition,
+     std::size(kEnablePinnedTabsOverflowBottomPosition), nullptr},
+    {"overflow + top pinned tabs", kEnablePinnedTabsOverflowTopPosition,
+     std::size(kEnablePinnedTabsOverflowTopPosition), nullptr},
 };
 
 const FeatureEntry::FeatureParam kAutofillBrandingIOSMonotone[] = {

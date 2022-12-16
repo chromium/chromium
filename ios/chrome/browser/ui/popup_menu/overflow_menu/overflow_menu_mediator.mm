@@ -1118,7 +1118,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [appActions addObject:self.openNewWindowAction];
   }
 
-  if (IsPinnedTabsEnabled()) {
+  if (IsPinnedTabsOverflowEnabled()) {
     [appActions addObject:([self isTabPinned] ? self.unpinTabAction
                                               : self.pinTabAction)];
   }
@@ -1204,7 +1204,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.helpActionsGroup.footer = nil;
   }
 
-  if (IsPinnedTabsEnabled()) {
+  if (IsPinnedTabsOverflowEnabled()) {
     // Enable/disable items based on page state.
     self.pinTabAction.enabled = [self isCurrentURLWebURL];
     self.unpinTabAction.enabled = [self isCurrentURLWebURL];
