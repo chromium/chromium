@@ -258,7 +258,7 @@ class WebAppTabStripLinkCapturingBrowserTest
 
   void InstallTestTabbedApp() {
     WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
-    provider().sync_bridge().SetAppUserDisplayMode(
+    provider().sync_bridge_unsafe().SetAppUserDisplayMode(
         app_id_, UserDisplayMode::kTabbed, /*is_user_action=*/false);
   }
 

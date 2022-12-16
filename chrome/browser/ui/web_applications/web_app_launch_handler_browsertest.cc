@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
 
   {
     ScopedRegistryUpdate update(
-        &WebAppProvider::GetForTest(profile())->sync_bridge());
+        &WebAppProvider::GetForTest(profile())->sync_bridge_unsafe());
     WebApp* web_app = update->UpdateApp(app_id);
     web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
   }

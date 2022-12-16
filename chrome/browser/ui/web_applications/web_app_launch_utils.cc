@@ -581,7 +581,7 @@ void UpdateLaunchStats(content::WebContents* web_contents,
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   WebAppProvider::GetForLocalAppsUnchecked(profile)
-      ->sync_bridge()
+      ->sync_bridge_unsafe()
       .SetAppLastLaunchTime(app_id, base::Time::Now());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

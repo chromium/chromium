@@ -240,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
   {
-    auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+    auto& sync_bridge =
+        WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
 
     Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -330,7 +331,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
           .get();
-  auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
+  auto& sync_bridge =
+      WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
 
   GURL app1_url(
       embedded_test_server()->GetURL("/banners/scope_a/no_manifest.html"));

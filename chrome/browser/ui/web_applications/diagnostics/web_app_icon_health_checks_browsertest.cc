@@ -49,7 +49,7 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
 
   ScopedRegistryUpdate CreateUpdateScope() {
     return ScopedRegistryUpdate(
-        &WebAppProvider::GetForTest(profile())->sync_bridge());
+        &WebAppProvider::GetForTest(profile())->sync_bridge_unsafe());
   }
 
   void RunIconChecksWithMetricExpectations(
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
   // missing app names).
   {
     WebAppSyncBridge& sync_bridge =
-        WebAppProvider::GetForTest(profile())->sync_bridge();
+        WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
     sync_bridge.set_disable_checks_for_testing(true);
     ScopedRegistryUpdate update(&sync_bridge);
     WebApp* web_app = update->UpdateApp(app_id);

@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
             registrar().GetAppFileHandlerApprovalState(app_id()));
-  provider()->sync_bridge().SetAppFileHandlerApprovalState(
+  provider()->sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id(), ApiApprovalState::kAllowed);
 
   auto [file_associations, association_count] =

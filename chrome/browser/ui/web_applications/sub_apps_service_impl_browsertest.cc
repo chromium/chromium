@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Add another source to mock installation from 2 sources.
   {
-    ScopedRegistryUpdate update(&provider().sync_bridge());
+    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     WebApp* web_app = update->UpdateApp(parent_app_id_);
     if (web_app)
       web_app->AddSource(WebAppManagement::kDefault);

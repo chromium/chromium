@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->sync_bridge().SetAppUserDisplayMode(
+  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
       app_id, web_app::UserDisplayMode::kBrowser, /*is_user_action=*/false);
 
   Browser* const new_browser =
@@ -1131,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->sync_bridge().SetAppUserDisplayMode(
+  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
       app_id, web_app::UserDisplayMode::kBrowser, /*is_user_action=*/false);
 
   NavigateToURLAndWait(browser(), app_url);
@@ -1654,7 +1654,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
             GetInstallableAppName());
 
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
+    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
     update->UpdateApp(app_id)->SetName("test_app_2");
   }
 
@@ -1943,9 +1943,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   EXPECT_TRUE(new_browser->is_type_app());
   EXPECT_EQ(new_browser->app_controller()->app_id(), app_id);
 
-  WebAppProvider::GetForTest(profile())->sync_bridge().SetAppUserDisplayMode(
-      app_id, web_app::UserDisplayMode::kBrowser,
-      /*is_user_action=*/false);
+  WebAppProvider::GetForTest(profile())
+      ->sync_bridge_unsafe()
+      .SetAppUserDisplayMode(app_id, web_app::UserDisplayMode::kBrowser,
+                             /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
   EXPECT_EQ(browser_list->GetLastActive(), browser());
@@ -2380,7 +2381,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   // This does NOT uninstall the web app, it just flags it for uninstall on
   // startup.
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
+    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
     WebApp* web_app = update->UpdateApp(app_id);
     ASSERT_TRUE(web_app);
     web_app->SetIsUninstalling(true);
