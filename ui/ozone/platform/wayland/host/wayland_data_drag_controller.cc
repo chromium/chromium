@@ -503,7 +503,7 @@ void WaylandDataDragController::OnDataTransferFinished(
       data_offer_.reset();
     }
     offered_exchange_data_provider_.reset();
-    data_device_->ResetDragDelegate();
+    data_device_->ResetDragDelegateIfNotDragSource();
     is_leave_pending_ = false;
     return;
   }
@@ -532,12 +532,17 @@ std::string WaylandDataDragController::GetNextUnprocessedMimeType() {
 void WaylandDataDragController::PropagateOnDragEnter(
     const gfx::PointF& location,
     std::unique_ptr<OSExchangeData> data) {
-  DCHECK(window_);
-  {
-    window_->OnDragEnter(
-        location, std::move(data),
-        DndActionsToDragOperations(data_offer_->source_actions()));
+  // |data_offer_| may have already been destroyed at this point if, for
+  // example, the drop event comes in while the data fetching was ongoing and no
+  // subsequent 'leave' is received, so just early-out in this case.
+  if (!data_offer_) {
+    return;
   }
+
+  DCHECK(window_);
+  window_->OnDragEnter(
+      location, std::move(data),
+      DndActionsToDragOperations(data_offer_->source_actions()));
   OnDragMotion(location);
 }
 
