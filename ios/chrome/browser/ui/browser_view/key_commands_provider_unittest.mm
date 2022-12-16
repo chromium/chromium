@@ -239,24 +239,16 @@ TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
   // No tabs.
   ASSERT_EQ(web_state_list_->count(), 0);
   NSArray<NSString*>* actions = @[
-    @"keyCommand_openLocation",
-    @"keyCommand_closeTab",
-    @"keyCommand_showBookmarks",
-    @"keyCommand_reload",
-    @"keyCommand_showHistory",
-    @"keyCommand_voiceSearch",
-    @"keyCommand_stop",
-    @"keyCommand_showHelp",
-    @"keyCommand_showDownloads",
-    @"keyCommand_select1",
-    @"keyCommand_select2",
-    @"keyCommand_select3",
-    @"keyCommand_select4",
-    @"keyCommand_select5",
-    @"keyCommand_select6",
-    @"keyCommand_select7",
-    @"keyCommand_select8",
-    @"keyCommand_select9",
+    @"keyCommand_openLocation",  @"keyCommand_closeTab",
+    @"keyCommand_showBookmarks", @"keyCommand_reload",
+    @"keyCommand_showHistory",   @"keyCommand_voiceSearch",
+    @"keyCommand_stop",          @"keyCommand_showHelp",
+    @"keyCommand_showDownloads", @"keyCommand_select1",
+    @"keyCommand_select2",       @"keyCommand_select3",
+    @"keyCommand_select4",       @"keyCommand_select5",
+    @"keyCommand_select6",       @"keyCommand_select7",
+    @"keyCommand_select8",       @"keyCommand_select9",
+    @"keyCommand_showNextTab",   @"keyCommand_showPreviousTab",
   ];
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
@@ -365,38 +357,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_EditingTextActions) {
   EXPECT_FALSE(CanPerform(@"keyCommand_forward"));
   EXPECT_FALSE(CanPerform(@"keyCommand_back", back_2));
   EXPECT_FALSE(CanPerform(@"keyCommand_forward", forward_2));
-}
-
-// Checks whether KeyCommandsProvider can perform the actions that are only
-// available when there are at least two tabs.
-TEST_F(KeyCommandsProviderTest, CanPerform_ShowPreviousAndNextTab) {
-  // No tabs.
-  ASSERT_EQ(web_state_list_->count(), 0);
-  NSArray<NSString*>* actions = @[
-    @"keyCommand_showNextTab",
-    @"keyCommand_showPreviousTab",
-  ];
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
-
-  // Open a tab.
-  InsertNewWebState(0);
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
-
-  // Open a second tab.
-  InsertNewWebState(1);
-  for (NSString* action in actions) {
-    EXPECT_TRUE(CanPerform(action));
-  }
-
-  // Close the one tab.
-  CloseWebState(0);
-  for (NSString* action in actions) {
-    EXPECT_FALSE(CanPerform(action));
-  }
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only

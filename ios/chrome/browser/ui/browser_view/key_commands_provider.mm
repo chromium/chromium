@@ -207,7 +207,9 @@ using base::UserMetricsAction;
       sel_isEqual(action, @selector(keyCommand_select6)) ||
       sel_isEqual(action, @selector(keyCommand_select7)) ||
       sel_isEqual(action, @selector(keyCommand_select8)) ||
-      sel_isEqual(action, @selector(keyCommand_select9))) {
+      sel_isEqual(action, @selector(keyCommand_select9)) ||
+      sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
+      sel_isEqual(action, @selector(keyCommand_showPreviousTab))) {
     return self.tabsCount > 0;
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
@@ -216,13 +218,6 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_findNext)) ||
       sel_isEqual(action, @selector(keyCommand_findPrevious))) {
     return [self isFindInPageActive];
-  }
-  if (sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
-      sel_isEqual(action, @selector(keyCommand_showPreviousTab))) {
-    WebStateList* webStateList = self.browser->GetWebStateList();
-    return webStateList &&
-           webStateList->active_index() != WebStateList::kInvalidIndex &&
-           self.tabsCount > 1;
   }
   if (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
       sel_isEqual(action, @selector(keyCommand_addToReadingList))) {
