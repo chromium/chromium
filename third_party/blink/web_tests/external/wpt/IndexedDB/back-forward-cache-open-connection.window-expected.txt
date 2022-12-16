@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-NOTRUN BFCache support test for page with open IndexedDB connection BFCache not supported.
+NOTRUN Testing BFCache support for page with open IndexedDB connection, and eviction behavior when receiving versionchange event. BFCache not supported.
 Harness: the test ran to completion.
 
