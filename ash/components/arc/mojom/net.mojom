@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 25
+// Next MinVersion: 26
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -668,7 +668,45 @@ enum Flag {
   ENABLE_ARC_HOST_VPN = 1,
 };
 
-// Next Method ID: 18
+// The band to start an AP on.
+[Extensible]
+enum WifiBand {
+  [Default] kUnknown = 0,
+  k2Ghz = 1,
+  k5Ghz = 2,
+  k6Ghz = 3,
+  k60Ghz = 4,
+};
+
+
+// The status to represent a local only hotspot connection status.
+[Extensible]
+enum LohsStatus {
+  [Default] kUnknown = 0,
+  kSuccess = 1,
+  kErrorGeneric = 2,
+  kErrorIncompatibleMode = 3,
+  kErrorTetheringDisallowed = 4,
+};
+
+// The struct to represent a local only hotspot configuration.
+struct LohsConfig {
+  // The network band that Android is requesting.
+  WifiBand band@0;
+
+  // Security type of the local only hotspot.
+  SecurityType security_type@1;
+
+  // SSID of the local only hotspot. The network SSID encoded as a
+  // hexadecimal string.
+  string hexssid@2;
+
+  // Passphrase of the local only hotspot. If the security type requires one.
+  // It will be null otherwise.
+  string? passphrase@3;
+};
+
+// Next Method ID: 20
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -747,6 +785,12 @@ interface NetHost {
   // ChromeOS VPN network and won't be disconnected. If the default network
   // isn't a ChromeOS VPN network, then nothing happens.
   [MinVersion=18] DisconnectHostVpn@17();
+
+  // Sends a request to Chrome to start a local only hotspot.
+  [MinVersion=25] StartLohs@18(LohsConfig config) => (LohsStatus status);
+
+  // Sends a request to Chrome to stop a local only hotspot.
+  [MinVersion=25] StopLohs@19();
 };
 
 // Next Method ID: 12

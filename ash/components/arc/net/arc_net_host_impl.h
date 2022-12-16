@@ -87,6 +87,9 @@ class ArcNetHostImpl : public KeyedService,
   std::unique_ptr<base::DictionaryValue> TranslateVpnConfigurationToOnc(
       const mojom::AndroidVpnConfiguration& cfg);
   void DisconnectHostVpn() override;
+  void StartLohs(mojom::LohsConfigPtr config,
+                 StartLohsCallback callback) override;
+  void StopLohs() override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;

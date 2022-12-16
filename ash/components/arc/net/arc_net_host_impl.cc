@@ -1473,4 +1473,16 @@ void ArcNetHostImpl::OnShuttingDown() {
   observing_network_state_ = false;
 }
 
+void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
+                               StartLohsCallback callback) {
+  // TODO(b/257880335): Retrieve the actual LOHS status.
+  std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+  return;
+}
+
+void ArcNetHostImpl::StopLohs() {
+  // TODO(b/257880335): Implement the stop request.
+  return;
+}
+
 }  // namespace arc
