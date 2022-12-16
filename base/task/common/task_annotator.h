@@ -46,6 +46,8 @@ class BASE_EXPORT TaskAnnotator {
                             uint32_t (*method_info)(),
                             bool is_response);
 
+  static void MarkCurrentTaskAsInterestingForTracing();
+
   TaskAnnotator();
 
   TaskAnnotator(const TaskAnnotator&) = delete;
@@ -152,12 +154,21 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
                      uint32_t (*method_info)(),
                      bool is_response);
 
+  void MaybeTraceInterestingTaskDetails();
+
+  // In long-task tracking, not every task (including its queue time) will be
+  // recorded in a trace. If a particular task + queue time needs to be
+  // recorded, flag it explicitly. For example, input tasks are required for
+  // calculating scroll jank metrics.
+  bool is_interesting_task = false;
+
  private:
   void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
 
   // For tracking task duration
   raw_ptr<const TickClock> tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
+  TimeTicks task_end_time_;
 
   // Tracing variables.
 

@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
@@ -234,6 +235,9 @@ class CompositorImpl::HostBeginFrameObserver
         task_runner_(std::move(task_runner)) {}
 
   void OnStandaloneBeginFrame(const viz::BeginFrameArgs& args) override {
+    // Mark the current task as interesting, as it maybe be responsible for
+    // handling input events for flings.
+    base::TaskAnnotator::MarkCurrentTaskAsInterestingForTracing();
     if (args.type == viz::BeginFrameArgs::MISSED)
       return;
 

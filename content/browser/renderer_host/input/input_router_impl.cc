@@ -651,6 +651,10 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
                             blink::mojom::InputEventResultState::kIgnored,
                             nullptr, nullptr, /*scroll_result_data=*/nullptr);
   }
+  // Ensure that the associated PendingTask for the WidgetInputHandler is
+  // recorded when tasking long-running chrome tasks. This is needed to
+  // selectively record input queueing and processing time.
+  base::TaskAnnotator::MarkCurrentTaskAsInterestingForTracing();
 }
 
 void InputRouterImpl::KeyboardEventHandled(

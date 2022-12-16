@@ -76,6 +76,14 @@ void TaskAnnotator::OnIPCReceived(const char* interface_name,
                                            is_response);
 }
 
+void TaskAnnotator::MarkCurrentTaskAsInterestingForTracing() {
+  auto* current_task = GetTLSForCurrentLongTaskTracker()->Get();
+  if (!current_task)
+    return;
+
+  current_task->is_interesting_task = true;
+}
+
 TaskAnnotator::TaskAnnotator() = default;
 TaskAnnotator::~TaskAnnotator() = default;
 
@@ -304,8 +312,10 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
   if (!is_tracing_)
     return;
 
-  TimeTicks task_end_time = tick_clock_->NowTicks();
-  if ((task_end_time - task_start_time_) >= kMaxTaskDurationTimeDelta) {
+  task_end_time_ = tick_clock_->NowTicks();
+  MaybeTraceInterestingTaskDetails();
+
+  if ((task_end_time_ - task_start_time_) >= kMaxTaskDurationTimeDelta) {
     TRACE_EVENT_BEGIN("scheduler.long_tasks", "LongTaskTracker",
                       perfetto::Track::ThreadScoped(task_annotator_),
                       task_start_time_, [&](perfetto::EventContext& ctx) {
@@ -314,7 +324,7 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
                       });
     TRACE_EVENT_END("scheduler.long_tasks",
                     perfetto::Track::ThreadScoped(task_annotator_),
-                    task_end_time);
+                    task_end_time_);
   }
 #if !BUILDFLAG(ENABLE_BASE_TRACING)
   // Suppress the unused variable warning when TRACE_EVENT macros are turned
@@ -360,6 +370,41 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
     info->set_mojo_interface_method_iid(*location_iid);
   }
 #endif
+}
+
+// This method is used to record the queueing time and task start time for tasks
+// that may be of interest during a trace, even if they are not considered long
+// tasks. For example, input - the queue time and flow information is required
+// to calculate chrome input to browser intervals in perfetto, and further
+// calculate the chrome tasks blocking input. We need LatencyInfo slices to be
+// associated with the correct input IPCs, hence record in the LongTaskTracker.
+void TaskAnnotator::LongTaskTracker::MaybeTraceInterestingTaskDetails() {
+  if (is_interesting_task && ipc_interface_name_) {
+    // Record the equivalent of a delayed instant trace event, acting as the
+    // start of the flow between task queue time and task execution start time.
+    TRACE_EVENT_INSTANT("scheduler.long_tasks", "InterestingTask_QueueingTime",
+                        perfetto::Track::ThreadScoped(task_annotator_),
+                        pending_task_.queue_time,
+                        perfetto::Flow::ProcessScoped(
+                            task_annotator_->GetTaskTraceID(pending_task_)));
+
+    // Record the equivalent of a top-level event with enough IPC information
+    // to calculate the input to browser interval. This event will be the
+    // termination of the event above, aka the start of task execution.
+    TRACE_EVENT_BEGIN(
+        "scheduler.long_tasks", "InterestingTask_ProcessingTime",
+        perfetto::Track::ThreadScoped(task_annotator_), task_start_time_,
+        [&](perfetto::EventContext& ctx) {
+          perfetto::TerminatingFlow::ProcessScoped(
+              task_annotator_->GetTaskTraceID(pending_task_))(ctx);
+          auto* info = ctx.event()->set_chrome_mojo_event_info();
+          info->set_mojo_interface_tag(ipc_interface_name_);
+        });
+
+    TRACE_EVENT_END("scheduler.long_tasks",
+                    perfetto::Track::ThreadScoped(task_annotator_),
+                    task_end_time_);
+  }
 }
 
 }  // namespace base
