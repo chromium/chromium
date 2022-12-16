@@ -2631,13 +2631,6 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'ChromeOS FYI Release Skylab (kevin)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=skylab-drone@chromeos-service-accounts.iam.gserviceaccount.com',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -3085,13 +3078,6 @@
           # work around the issue. See https://crbug.com/1166379 for more
           # information.
           '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'ChromeOS FYI Release Skylab (kevin)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=skylab-drone@chromeos-service-accounts.iam.gserviceaccount.com',
         ],
       },
       'android_optional_gpu_tests_rel': {
