@@ -15,13 +15,11 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;

@@ -43,7 +43,7 @@ class ResponseBuilder {
   ResponseBuilder& SetSuccess(bool success);
 
   // Build the response to be fed to a
-  // |policy::CloudPolicyClient::ResponseCallback| object.
+  // |::policy::CloudPolicyClient::ResponseCallback| object.
   //
   // Because we are focusing on testing here, the build here won't change
   // members of the |ResponseBuilder| instance so that it can be called repeated
@@ -90,7 +90,7 @@ class MakeUploadEncryptedReportAction {
       ResponseBuilder&& response_builder = ResponseBuilder());
   void operator()(base::Value::Dict request,
                   absl::optional<base::Value::Dict> context,
-                  policy::CloudPolicyClient::ResponseCallback callback);
+                  ::policy::CloudPolicyClient::ResponseCallback callback);
 
  private:
   ResponseBuilder response_builder_;

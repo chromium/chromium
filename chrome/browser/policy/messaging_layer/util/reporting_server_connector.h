@@ -26,8 +26,6 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   using ResponseCallback =
       base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
 
-  friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
-
   // RAII class for testing ReportingServerConnector - substitutes cloud policy
   // client instead of getting it from the cloud policy core. Resets client when
   // destructed.
@@ -49,6 +47,8 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
                                     ResponseCallback callback);
 
  private:
+  friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
+
   // Manages reporting accumulated payload sizes per hour via UMA.
   class PayloadSizePerHourUmaReporter {
    public:

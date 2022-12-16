@@ -113,7 +113,7 @@ MakeUploadEncryptedReportAction::MakeUploadEncryptedReportAction(
 void MakeUploadEncryptedReportAction::operator()(
     base::Value::Dict request,
     absl::optional<base::Value::Dict> context,
-    policy::CloudPolicyClient::ResponseCallback callback) {
+    ::policy::CloudPolicyClient::ResponseCallback callback) {
   response_builder_.SetRequest(std::move(request));
   std::move(callback).Run(response_builder_.Build());
 }

@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_H_
 
 #include <memory>
-#include <queue>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"

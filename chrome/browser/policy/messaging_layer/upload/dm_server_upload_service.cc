@@ -12,8 +12,6 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

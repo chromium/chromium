@@ -23,10 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#endif
-
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -59,14 +55,6 @@ class ReportingServerConnectorTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient mock_client_;
   ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Without setting up install attributes, browser_policy_connector_ash()
-  // call inside ReportingServerConnector will fail a check.
-  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_{
-      ash::StubInstallAttributes::CreateCloudManaged("test-domain",
-                                                     "FAKE-DEVICE-ID")};
-#endif
 };
 
 TEST_F(ReportingServerConnectorTest,
