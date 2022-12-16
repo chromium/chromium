@@ -507,6 +507,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Is this a Document Picture in Picture window?
   bool IsPictureInPictureWindow() const;
 
+  void set_is_picture_in_picture_window_for_testing(
+      bool is_picture_in_picture) {
+    is_picture_in_picture_window_ = is_picture_in_picture;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
