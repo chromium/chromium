@@ -11,6 +11,7 @@ import {ChooserType, ContentSetting, ContentSettingsTypes, SiteDetailsElement, S
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -33,28 +34,20 @@ class TestWebsiteUsageBrowserProxy extends TestBrowserProxy implements
   }
 }
 
-/** @fileoverview Suite of tests for site-details. */
+/** Suite of tests for site-details. */
 suite('SiteDetails', function() {
-  /**
-   * A site list element created before each test.
-   */
+  /** A site list element created before each test. */
   let testElement: SiteDetailsElement;
 
-  /**
-   * An example pref with 1 pref in each category.
-   */
+  /** An example pref with 1 pref in each category. */
   let prefs: SiteSettingsPref;
 
-  /**
-   * The mock site settings prefs proxy object to use during test.
-   */
+  /** The mock site settings prefs proxy object to use during test. */
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
-  /**
-   * The mock website usage proxy object to use during test.
-   */
+  /** The mock website usage proxy object to use during test. */
   let websiteUsageProxy: TestWebsiteUsageBrowserProxy;
 
   // Initialize a site-details before each test.
@@ -360,7 +353,6 @@ suite('SiteDetails', function() {
         });
   });
 
-
   test('show confirmation dialog on reset settings', async function() {
     browserProxy.setPrefs(prefs);
     const origin = 'https://foo.com:443';
@@ -528,6 +520,7 @@ suite('SiteDetails', function() {
             testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
         assertEquals(null, fpsPolicy);
       });
+
   test(
       'first party set policy shown when managed key is set to true',
       async function() {
@@ -553,5 +546,51 @@ suite('SiteDetails', function() {
         const fpsPolicy =
             testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
         assertFalse(fpsPolicy!.hidden);
+      });
+
+  test(
+      'clear data dialog warns about ad personalization data removal',
+      function() {
+        const origin = 'https://foo.com:443';
+        browserProxy.setPrefs(prefs);
+        testElement = createSiteDetails(origin);
+
+        flush();
+
+        assertTrue(Boolean(testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#confirmClearStorage #adPersonalization')));
+      });
+});
+
+// TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
+// out.
+suite('SiteDetailsPrivacySandboxSettings4Disabled', function() {
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxSettings4: false,
+    });
+  });
+
+  /** A site list element created before each test. */
+  let testElement: SiteDetailsElement;
+
+  function createSiteDetails(origin: string) {
+    const siteDetailsElement = document.createElement('site-details');
+    document.body.appendChild(siteDetailsElement);
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS_SITE_DETAILS,
+        new URLSearchParams('site=' + origin));
+    return siteDetailsElement;
+  }
+
+  test(
+      'clear data dialog does not warn about ad personalization data removal',
+      function() {
+        const origin = 'https://foo.com:443';
+        testElement = createSiteDetails(origin);
+
+        flush();
+        assertFalse(Boolean(testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#confirmClearStorage #adPersonalization')));
       });
 });

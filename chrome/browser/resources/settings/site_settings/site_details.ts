@@ -133,6 +133,13 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
+      isPrivacySandboxSettings4_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isPrivacySandboxSettings4');
+        },
+      },
+
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,

@@ -16,6 +16,7 @@ GEN('#include "components/content_settings/core/common/features.h"');
 GEN('#include "components/performance_manager/public/features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
+GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "content/public/common/content_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -404,6 +405,15 @@ var CrSettingsSiteDetailsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/site_details_tests.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
   }
 };
 

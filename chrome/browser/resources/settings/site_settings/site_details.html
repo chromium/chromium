@@ -31,6 +31,7 @@
         padding: 8px;
       }
     </style>
+
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
         on-close="onResetSettingsDialogClosed_">
@@ -59,14 +60,21 @@
         <div class="detail-list">
           <div class="detail">
             <iron-icon icon="all-sites:logout" aria-hidden="true"
-              role="presentation"></iron-icon>
+                role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
             <iron-icon icon="all-sites:offline" aria-hidden="true"
-              role="presentation"></iron-icon>
+                role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageOfflineData}
           </div>
+          <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+            <div class="detail" id="adPersonalization">
+              <iron-icon icon="all-sites:tag" aria-hidden="true"
+                  role="presentation"></iron-icon>
+              $i18n{siteSettingsRemoveSiteAdPersonalization}
+            </div>
+          </template>
         </div>
       </div>
       <div slot="button-container">
@@ -112,9 +120,9 @@
             <template is="dom-if" if="[[fpsEnterprisePref_]]">
               <div id="fpsPolicyContainer">
                 <cr-policy-pref-indicator
-                  id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
-                  icon-aria-label="[[label]]" focus-row-control
-                  focus-type="policy">
+                    id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                    icon-aria-label="[[label]]" focus-row-control
+                    focus-type="policy">
                 </cr-policy-pref-indicator>
               </div>
             </template>
@@ -136,6 +144,7 @@
         $i18n{siteSettingsReset}
       </cr-button>
     </div>
+
     <div class="list-frame">
       <site-details-permission category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
           icon="settings:location-on" label="$i18n{siteSettingsLocation}">
