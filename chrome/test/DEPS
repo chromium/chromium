@@ -81,6 +81,7 @@ include_rules = [
   "+components/zoom",
   "+device/bluetooth/dbus",
   "+extensions",
+  "+google_apis",
   "+mojo",
   "+rlz/buildflags",
   "+services",
