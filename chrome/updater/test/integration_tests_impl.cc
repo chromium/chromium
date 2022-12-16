@@ -190,8 +190,8 @@ void RunUpdaterWithSwitch(const base::Version& version,
   base::CommandLine command_line(*installed_executable_path);
   command_line.AppendSwitch(command);
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, expected_exit_code);
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, expected_exit_code);
 }
 
 void ExpectSequence(UpdaterScope scope,
@@ -297,8 +297,8 @@ void Install(UpdaterScope scope) {
   command_line.AppendSwitch(kInstallSwitch);
   command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, 0);
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, 0);
 }
 
 void PrintLog(UpdaterScope scope) {
@@ -503,7 +503,7 @@ void ExpectAppVersion(UpdaterScope scope,
   EXPECT_TRUE(app_version.IsValid() && version == app_version);
 }
 
-bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
+void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
   command_line.AppendSwitch(kEnableLoggingSwitch);
   command_line.AppendSwitchASCII(kLoggingModuleSwitch,
@@ -514,13 +514,14 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   }
   VLOG(0) << " Run command: " << command_line.GetCommandLineString();
   base::Process process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid()) {
-    return false;
-  }
+  VPLOG_IF(0, !process.IsValid());
+  ASSERT_TRUE(process.IsValid());
 
   // macOS requires a larger timeout value for --install.
-  return process.WaitForExitWithTimeout(2 * TestTimeouts::action_max_timeout(),
-                                        exit_code);
+  bool succeeded = process.WaitForExitWithTimeout(
+      2 * TestTimeouts::action_max_timeout(), exit_code);
+  VPLOG_IF(0, !succeeded);
+  ASSERT_TRUE(succeeded);
 }
 
 bool WaitFor(base::RepeatingCallback<bool()> predicate,
@@ -711,8 +712,8 @@ void RunRecoveryComponent(UpdaterScope scope,
   command.AppendSwitchASCII(kBrowserVersionSwitch, version.GetString());
   command.AppendSwitchASCII(kAppGuidSwitch, app_id);
   int exit_code = -1;
-  EXPECT_TRUE(Run(scope, command, &exit_code));
-  EXPECT_EQ(exit_code, kErrorOk);
+  Run(scope, command, &exit_code);
+  ASSERT_EQ(exit_code, kErrorOk);
 }
 
 void ExpectLastChecked(UpdaterScope updater_scope) {

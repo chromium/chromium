@@ -378,7 +378,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     }
 
     int exit_code = -1;
-    ASSERT_TRUE(Run(updater_scope_, helper_command, &exit_code));
+    Run(updater_scope_, helper_command, &exit_code);
 
     // A failure here indicates that the integration test helper
     // process ran but the invocation of the test helper command was not

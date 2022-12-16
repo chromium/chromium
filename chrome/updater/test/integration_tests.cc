@@ -102,7 +102,7 @@ class IntegrationTest : public ::testing::Test {
 
   void TearDown() override {
     ExitTestMode();
-    if (!HasFatalFailure()) {
+    if (!HasFailure()) {
       ExpectClean();
     }
     PrintLog();

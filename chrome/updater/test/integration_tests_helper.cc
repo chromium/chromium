@@ -409,7 +409,7 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
 // command, which is typical a step of an integration test.
 TEST(TestHelperCommandRunner, Run) {
   base::test::TaskEnvironment environment;
-  EXPECT_EQ(MakeAppTestHelper()->Run(), 0);
+  ASSERT_EQ(MakeAppTestHelper()->Run(), 0);
 }
 
 }  // namespace

@@ -122,29 +122,29 @@ absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
                       : product_path;
 }
 
-bool RegKeyExists(HKEY root, const std::wstring& path) {
+[[nodiscard]] bool RegKeyExists(HKEY root, const std::wstring& path) {
   return base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
       .Valid();
 }
 
-bool RegKeyExistsCOM(HKEY root, const std::wstring& path) {
+[[nodiscard]] bool RegKeyExistsCOM(HKEY root, const std::wstring& path) {
   return base::win::RegKey(root, path.c_str(), KEY_QUERY_VALUE).Valid();
 }
 
-bool DeleteRegKey(HKEY root, const std::wstring& path) {
+[[nodiscard]] bool DeleteRegKey(HKEY root, const std::wstring& path) {
   LONG result =
       base::win::RegKey(root, L"", Wow6432(KEY_READ)).DeleteKey(path.c_str());
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
-bool DeleteRegKeyCOM(HKEY root, const std::wstring& path) {
+[[nodiscard]] bool DeleteRegKeyCOM(HKEY root, const std::wstring& path) {
   LONG result = base::win::RegKey(root, L"", KEY_READ).DeleteKey(path.c_str());
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
-bool DeleteRegValue(HKEY root,
-                    const std::wstring& path,
-                    const std::wstring& value) {
+[[nodiscard]] bool DeleteRegValue(HKEY root,
+                                  const std::wstring& path,
+                                  const std::wstring& value) {
   if (!base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
            .Valid()) {
     return true;
@@ -155,7 +155,7 @@ bool DeleteRegValue(HKEY root,
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
-bool DeleteService(const std::wstring& service_name) {
+[[nodiscard]] bool DeleteService(const std::wstring& service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
   if (!scm)
@@ -171,15 +171,16 @@ bool DeleteService(const std::wstring& service_name) {
 
     ::CloseServiceHandle(service);
   }
-
-  DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name);
-
   ::CloseServiceHandle(scm);
+
+  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name)) {
+    return false;
+  }
 
   return is_service_deleted;
 }
 
-bool IsServiceGone(const std::wstring& service_name) {
+[[nodiscard]] bool IsServiceGone(const std::wstring& service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
   if (!scm)
@@ -673,13 +674,13 @@ void Uninstall(UpdaterScope scope) {
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(0, exit_code);
+  Run(scope, command_line, &exit_code);
 
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
   // TODO(crbug.com/1217765): Figure out a way to replace this.
   SleepFor(base::Seconds(5));
+  ASSERT_EQ(0, exit_code);
 }
 
 void SetActive(UpdaterScope /*scope*/, const std::string& id) {
@@ -1387,7 +1388,7 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
       old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe")));
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  Run(scope, command_line, &exit_code);
   ASSERT_EQ(exit_code, 0);
 }
 

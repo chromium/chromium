@@ -268,8 +268,8 @@ void Uninstall(UpdaterScope scope) {
   base::CommandLine command_line(*path);
   command_line.AppendSwitch(kUninstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, 0);
+  Run(scope, command_line, &exit_code);
+  ASSERT_EQ(exit_code, 0);
 }
 
 absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
@@ -338,7 +338,7 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
           .Append(PRODUCT_FULLNAME_STRING "_test"));
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  Run(scope, command_line, &exit_code);
   ASSERT_EQ(exit_code, 0);
 }
 
