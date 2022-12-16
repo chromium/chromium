@@ -1,0 +1,31 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_driver.h"
+
+namespace media::internal {
+
+FakeDriver::FakeDriver() = default;
+FakeDriver::~FakeDriver() = default;
+
+FakeConfig::IdType FakeDriver::CreateConfig(
+    VAProfile profile,
+    VAEntrypoint entrypoint,
+    std::vector<VAConfigAttrib> attrib_list) {
+  return config_.CreateObject(profile, entrypoint, std::move(attrib_list));
+}
+
+bool FakeDriver::ConfigExists(FakeConfig::IdType id) {
+  return config_.ObjectExists(id);
+}
+
+const FakeConfig& FakeDriver::GetConfig(FakeConfig::IdType id) {
+  return config_.GetObject(id);
+}
+
+void FakeDriver::DestroyConfig(FakeConfig::IdType id) {
+  config_.DestroyObject(id);
+}
+
+}  // namespace media::internal

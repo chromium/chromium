@@ -8,6 +8,22 @@ import("//testing/test.gni")
 shared_library("fake_drv_video") {
   sources = [ "fake_drv_video.cc" ]
 
+  deps = [
+    ":fake_libva_driver_internals",
+    "//base",
+  ]
+}
+
+source_set("fake_libva_driver_internals") {
+  visibility = [ ":fake_drv_video" ]
+  sources = [
+    "fake_config.cc",
+    "fake_config.h",
+    "fake_driver.cc",
+    "fake_driver.h",
+    "object_tracker.h",
+  ]
+
   deps = [ "//base" ]
 }
 
