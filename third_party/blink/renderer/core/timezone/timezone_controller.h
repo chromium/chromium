@@ -46,6 +46,7 @@ class CORE_EXPORT TimeZoneController final
       const String& timezone_id);
 
   static bool HasTimeZoneOverride();
+  static const String& TimeZoneIdOverride();
 
   static void ChangeTimeZoneForTesting(const String&);
 

@@ -14,7 +14,6 @@
   const attachedEvent = await target.onceAttachedToTarget();
   testRunner.log('Attached to window, waitingForDebugger=' + attachedEvent.params.waitingForDebugger);
   const popupSession = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
-  const changedPromise = target.onceTargetInfoChanged();
   popupSession.protocol.Page.enable();
   await popupSession.protocol.Emulation.setUserAgentOverride({userAgent: 'Lynx v0.1'});
   popupSession.protocol.Runtime.runIfWaitingForDebugger();

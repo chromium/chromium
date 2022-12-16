@@ -739,7 +739,9 @@ Response InspectorEmulationAgent::setLocaleOverride(
 
 Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
-  if (timezone_id.empty()) {
+  if (timezone_id == TimeZoneController::TimeZoneIdOverride()) {
+    // Do nothing.
+  } else if (timezone_id.empty()) {
     timezone_override_.reset();
   } else {
     if (timezone_override_) {

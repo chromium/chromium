@@ -162,6 +162,11 @@ bool TimeZoneController::HasTimeZoneOverride() {
 }
 
 // static
+const String& TimeZoneController::TimeZoneIdOverride() {
+  return instance().override_timezone_id_;
+}
+
+// static
 void TimeZoneController::ClearTimeZoneOverride() {
   DCHECK(HasTimeZoneOverride());
 

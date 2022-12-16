@@ -1,0 +1,6 @@
+Tests that the same timezone emulated in a page and popup is retained after cross-process popup navigation
+main page time: Thu May 09 2019 11:25:22 GMT-1000 (Hawaii-Aleutian Standard Time)
+Opened the window
+popup time before cross-process navigation: Thu May 09 2019 11:25:22 GMT-1000 (Hawaii-Aleutian Standard Time)
+popup time  after cross-process navigation: Thu May 09 2019 11:25:22 GMT-1000 (Hawaii-Aleutian Standard Time)
+
