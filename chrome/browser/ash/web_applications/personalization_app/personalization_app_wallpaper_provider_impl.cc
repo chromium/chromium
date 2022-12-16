@@ -13,7 +13,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -33,13 +32,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
@@ -61,7 +57,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/type_converter.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
