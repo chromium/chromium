@@ -3224,7 +3224,8 @@ bool NavigationRequest::IsIsolationImplied() {
 }
 
 void NavigationRequest::DetermineOriginAgentClusterEndResult() {
-  DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
+  DCHECK(state_ == WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST ||
+         state_ == CANCELING);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin origin = GetOriginToCommit().value();
   const IsolationContext& isolation_context =
@@ -5032,6 +5033,8 @@ void NavigationRequest::OnCommitDeferringConditionChecksComplete(
 void NavigationRequest::CommitErrorPage(
     const absl::optional<std::string>& error_page_content) {
   DCHECK(!IsSameDocument());
+
+  DetermineOriginAgentClusterEndResult();
 
   UpdateCommitNavigationParamsHistory();
 
