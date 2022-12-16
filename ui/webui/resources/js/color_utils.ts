@@ -36,3 +36,18 @@ export function hexColorToSkColor(hexColor: string): SkColor {
   const b = parseInt(hexColor.substring(5, 7), 16);
   return {value: 0xff000000 + (r << 16) + (g << 8) + b};
 }
+
+/**
+ * Converts a string of the form "<red>, <green>, <blue>" to an SkColor
+ * object.
+ * @param rgb The rgb color string.
+ * @return The SkColor object,
+ */
+export function rgbToSkColor(rgb: string): SkColor {
+  const rgbValues = rgb.split(',');
+  const hex = rgbValues.map((bit) => {
+    bit = parseInt(bit).toString(16);
+    return (bit.length === 1) ? '0' + bit : bit;
+  });
+  return hexColorToSkColor('#' + hex.join(''));
+}
