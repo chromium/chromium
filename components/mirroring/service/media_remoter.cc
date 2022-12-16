@@ -164,6 +164,10 @@ void MediaRemoter::Start() {
   client_->RequestRemotingStreaming();
 }
 
+void MediaRemoter::StartWithPermissionAlreadyGranted() {
+  NOTIMPLEMENTED();
+}
+
 void MediaRemoter::StartDataStreams(
     mojo::ScopedDataPipeConsumerHandle audio_pipe,
     mojo::ScopedDataPipeConsumerHandle video_pipe,

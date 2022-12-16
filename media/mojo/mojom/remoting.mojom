@@ -43,6 +43,10 @@ interface Remoter {
   // messages from the remote via RemotingSource.OnMessageFromSink().
   Start();
 
+  // Same as `Start()` except that Remoting will start without asking for users'
+  // permission.
+  StartWithPermissionAlreadyGranted();
+
   // Starts remoting the media data streams. This is called after Start() to
   // provide data pipes from which the audio/video bitstream data is consumed
   // and then transported to the remote device. RemotingDataStreamSenders are

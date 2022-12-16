@@ -99,6 +99,11 @@ class CastRemotingConnector::RemotingBridge final
     if (connector_)
       connector_->StartRemoting(this);
   }
+  void StartWithPermissionAlreadyGranted() final {
+    if (connector_) {
+      connector_->StartRemotingWithoutPermission(this);
+    }
+  }
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,
@@ -267,6 +272,29 @@ void CastRemotingConnector::DeregisterBridge(RemotingBridge* bridge,
 }
 
 void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
+  if (!StartRemotingCommon(bridge)) {
+    return;
+  }
+
+  if (remoting_allowed_.has_value()) {
+    StartRemotingIfPermitted();
+    return;
+  }
+  dialog_coordinator_->Show(base::BindOnce(
+      &CastRemotingConnector::OnDialogClosed, weak_factory_.GetWeakPtr()));
+}
+
+void CastRemotingConnector::StartRemotingWithoutPermission(
+    RemotingBridge* bridge) {
+  if (!StartRemotingCommon(bridge)) {
+    return;
+  }
+
+  DCHECK(remoter_);
+  remoter_->Start();
+}
+
+bool CastRemotingConnector::StartRemotingCommon(RemotingBridge* bridge) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bridges_.find(bridge) != bridges_.end());
 
@@ -275,12 +303,12 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
   if (!remoter_) {
     DVLOG(2) << "Remoting start failed: Invalid ANSWER message.";
     bridge->OnStartFailed(RemotingStartFailReason::INVALID_ANSWER_MESSAGE);
-    return;
+    return false;
   }
   if (active_bridge_) {
     DVLOG(2) << "Remoting start failed: Cannot start multiple.";
     bridge->OnStartFailed(RemotingStartFailReason::CANNOT_START_MULTIPLE);
-    return;
+    return false;
   }
 
   // Notify all other sources that the sink is no longer available for remoting.
@@ -294,15 +322,8 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
   }
 
   active_bridge_ = bridge;
-
-  if (remoting_allowed_.has_value()) {
-    StartRemotingIfPermitted();
-    return;
-  }
-  dialog_coordinator_->Show(base::BindOnce(
-      &CastRemotingConnector::OnDialogClosed, weak_factory_.GetWeakPtr()));
+  return true;
 }
-
 void CastRemotingConnector::OnDialogClosed(bool remoting_allowed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   remoting_allowed_ = remoting_allowed;

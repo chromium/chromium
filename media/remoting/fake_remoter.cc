@@ -137,6 +137,10 @@ void FakeRemoter::Start() {
   }
 }
 
+void FakeRemoter::StartWithPermissionAlreadyGranted() {
+  Start();
+}
+
 void FakeRemoter::StartDataStreams(
     mojo::ScopedDataPipeConsumerHandle audio_pipe,
     mojo::ScopedDataPipeConsumerHandle video_pipe,

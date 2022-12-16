@@ -103,6 +103,7 @@ class MockMediaRemoter final : public media::mojom::Remoter {
 
   // media::mojom::Remoter implementation.
   MOCK_METHOD0(RequestStart, void());
+  MOCK_METHOD0(StartWithPermissionAlreadyGranted, void());
   MOCK_METHOD1(Stop, void(RemotingStopReason));
   MOCK_METHOD1(SendMessageToSink, void(const std::vector<uint8_t>&));
   MOCK_METHOD1(
@@ -298,6 +299,10 @@ TEST_F(CastRemotingConnectorTest, NoPermissionToStart) {
               OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
       .Times(1);
   remoter->Start();
+  RunUntilIdle();
+
+  EXPECT_CALL(source, OnStarted()).Times(1);
+  remoter->StartWithPermissionAlreadyGranted();
   RunUntilIdle();
 }
 

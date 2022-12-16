@@ -169,6 +169,8 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // source is allowed to be in a remoting session at a time, and that no source
   // may interfere with any other.
   void StartRemoting(RemotingBridge* bridge);
+  void StartRemotingWithoutPermission(RemotingBridge* bridge);
+  bool StartRemotingCommon(RemotingBridge* bridge);
   void StartRemotingDataStreams(
       RemotingBridge* bridge,
       mojo::ScopedDataPipeConsumerHandle audio_pipe,

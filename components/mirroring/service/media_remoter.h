@@ -108,6 +108,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
  private:
   // media::mojom::Remoter implementation.
   void Start() override;
+  void StartWithPermissionAlreadyGranted() override;
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,
