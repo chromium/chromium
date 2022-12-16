@@ -54,7 +54,7 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
 // When web apps are disabled, there is no WebAppProvider.
 web_app::WebAppSyncBridge* GetWebAppSyncBridgeForProfile(Profile* profile) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  return provider ? &provider->sync_bridge() : nullptr;
+  return provider ? &provider->sync_bridge_unsafe() : nullptr;
 }
 
 }  // namespace

@@ -75,7 +75,7 @@ class BadgeManagerUnittest : public ::testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     badge_manager_ = std::make_unique<TestBadgeManager>(
-        profile(), &provider().sync_bridge());
+        profile(), &provider().sync_bridge_unsafe());
 
     // Delegate lifetime is managed by BadgeManager
     auto owned_delegate = std::make_unique<TestBadgeManagerDelegate>(
@@ -203,7 +203,7 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   web_app::test::AwaitStartWebAppProviderAndSubsystems(other_profile.get());
 
   auto other_badge_manager = std::make_unique<TestBadgeManager>(
-      other_profile.get(), &new_provider->sync_bridge());
+      other_profile.get(), &new_provider->sync_bridge_unsafe());
 
   auto owned_other_delegate = std::make_unique<TestBadgeManagerDelegate>(
       other_profile.get(), other_badge_manager.get());
