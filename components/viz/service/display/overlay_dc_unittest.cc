@@ -197,6 +197,14 @@ SkM44 GetIdentityColorMatrix() {
 
 class DCLayerOverlayTest : public testing::Test {
  protected:
+  DCLayerOverlayTest() {
+    // With DisableVideoOverlayIfMoving, videos are required to be stable for a
+    // certain number of frames to be considered for overlay promotion. This
+    // complicates tests since it adds behavior dependent on the number of times
+    // |Process| is called.
+    feature_list_.InitAndDisableFeature(features::kDisableVideoOverlayIfMoving);
+  }
+
   void SetUp() override {
     output_surface_ = MockDCLayerOutputSurface::Create();
     output_surface_->BindToClient(&output_surface_client_);
@@ -228,6 +236,7 @@ class DCLayerOverlayTest : public testing::Test {
     output_surface_ = nullptr;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;

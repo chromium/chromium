@@ -178,7 +178,7 @@ BASE_FEATURE(kGpuProcessHighPriorityWin,
 // move.
 BASE_FEATURE(kDisableVideoOverlayIfMoving,
              "DisableVideoOverlayIfMoving",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoUndamagedOverlayPromotion,
              "NoUndamagedOverlayPromotion",
