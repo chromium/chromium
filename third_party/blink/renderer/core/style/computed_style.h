@@ -461,8 +461,6 @@ class ComputedStyle : public ComputedStyleBase,
     return this;
   }
 
-  StyleHighlightData& MutableHighlightData();
-
   HashSet<AtomicString>* CustomHighlightNames() const {
     return CustomHighlightNamesInternal().get();
   }
@@ -2111,6 +2109,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Pseudo element styles.
   bool HasAnyPseudoElementStyles() const;
+  bool HasAnyHighlightPseudoElementStyles() const;
   bool HasPseudoElementStyle(PseudoId) const;
 
   // Note: CanContainAbsolutePositionObjects should return true if
@@ -2607,6 +2606,34 @@ class ComputedStyle : public ComputedStyleBase,
 
 inline bool ComputedStyle::HasAnyPseudoElementStyles() const {
   return !!PseudoElementStylesInternal();
+}
+
+inline bool ComputedStyle::HasAnyHighlightPseudoElementStyles() const {
+  return !!PseudoElementStylesInternal();
+
+  static_assert(kPseudoIdSelection >= kFirstPublicPseudoId &&
+                    kPseudoIdSelection <= kLastTrackedPublicPseudoId,
+                "kPseudoIdSelection must be public");
+  static_assert(kPseudoIdTargetText >= kFirstPublicPseudoId &&
+                    kPseudoIdTargetText <= kLastTrackedPublicPseudoId,
+                "kPseudoIdTargetText must be public");
+  static_assert(kPseudoIdSpellingError >= kFirstPublicPseudoId &&
+                    kPseudoIdSpellingError <= kLastTrackedPublicPseudoId,
+                "kPseudoIdSpellingError must be public");
+  static_assert(kPseudoIdGrammarError >= kFirstPublicPseudoId &&
+                    kPseudoIdGrammarError <= kLastTrackedPublicPseudoId,
+                "kPseudoIdGrammarError must be public");
+  static_assert(kPseudoIdHighlight >= kFirstPublicPseudoId &&
+                    kPseudoIdHighlight <= kLastTrackedPublicPseudoId,
+                "kPseudoIdHighlight must be public");
+
+  const unsigned mask = (1 << (kPseudoIdSelection - kFirstPublicPseudoId)) |
+                        (1 << (kPseudoIdTargetText - kFirstPublicPseudoId)) |
+                        (1 << (kPseudoIdSpellingError - kFirstPublicPseudoId)) |
+                        (1 << (kPseudoIdGrammarError - kFirstPublicPseudoId)) |
+                        (1 << (kPseudoIdHighlight - kFirstPublicPseudoId));
+
+  return mask & PseudoElementStylesInternal();
 }
 
 inline bool ComputedStyle::HasPseudoElementStyle(PseudoId pseudo) const {
@@ -3121,6 +3148,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     if (!CallbackSelectors().Contains(selector))
       MutableCallbackSelectorsInternal().push_back(selector);
   }
+
+  // ::selection, etc
+  StyleHighlightData& MutableHighlightData();
 
   // CustomHighlightNames
   void SetCustomHighlightNames(

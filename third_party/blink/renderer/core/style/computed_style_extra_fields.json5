@@ -508,7 +508,6 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: [],
-      writable: true,
     },
     {
       name: "InitialData",

@@ -642,15 +642,6 @@ const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
   return nullptr;
 }
 
-StyleHighlightData& ComputedStyle::MutableHighlightData() {
-  scoped_refptr<StyleHighlightData>& data = MutableHighlightDataInternal();
-  if (!data)
-    data = StyleHighlightData::Create();
-  else if (!data->HasOneRef())
-    data = data->Copy();
-  return *data;
-}
-
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
   return IndependentInheritedEqual(other) &&
          NonIndependentInheritedEqual(other);
@@ -2464,6 +2455,16 @@ bool ComputedStyleBuilder::SetEffectiveZoom(float f) {
       "Blink.EffectiveZoom",
       base::clamp<float>(clamped_effective_zoom * 100, 0, 400));
   return true;
+}
+
+StyleHighlightData& ComputedStyleBuilder::MutableHighlightData() {
+  scoped_refptr<StyleHighlightData>& data = MutableHighlightDataInternal();
+  if (!data) {
+    data = StyleHighlightData::Create();
+  } else if (!data->HasOneRef()) {
+    data = data->Copy();
+  }
+  return *data;
 }
 
 // Compute the FontOrientation from this style. It's derived from WritingMode
