@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -29,6 +30,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/prefs/pref_registry_simple.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/profiles/profile_types_ash.h"
 #endif
 
 namespace media_router {
@@ -85,6 +90,12 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   if (!base::FeatureList::IsEnabled(kMediaRouter))
     return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1380828): Make the Media Router feature configurable via a
+  // policy for non-user profiles, i.e. sign-in and lock screen profiles.
+  if (!IsUserProfile(Profile::FromBrowserContext(context)))
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The MediaRouter service is shared across the original and the incognito
   // profiles, so we must use the original context for consistency between them.
