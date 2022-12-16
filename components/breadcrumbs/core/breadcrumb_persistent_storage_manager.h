@@ -61,12 +61,9 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // been written into.
   void WriteEvents();
 
-  // Writes events from BreadcrumbManager to `breadcrumbs_file_`, overwriting
-  // any existing persisted breadcrumbs.
-  void RewriteAllExistingBreadcrumbs();
-
-  // Writes breadcrumbs stored in |pending_breadcrumbs_| to |breadcrumbs_file_|.
-  void WritePendingBreadcrumbs();
+  // Writes the given `events` to `breadcrumbs_file_`. If `append` is false,
+  // overwrites the file.
+  void Write(const std::string& events, bool append);
 
   // BreadcrumbManagerObserver
   void EventAdded(const std::string& event) override;
