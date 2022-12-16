@@ -9,59 +9,55 @@
 
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @type {number} */
-const MAX_INPUT_LENGTH = 32;
+import {getTemplate} from './os_bluetooth_change_device_name_dialog.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+const MAX_INPUT_LENGTH: number = 32;
+
+interface SettingsBluetoothChangeDeviceNameDialogElement {
+  $: {dialog: CrDialogElement};
+}
+
 const SettingsBluetoothChangeDeviceNameDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    I18nMixin(PolymerElement);
 
-/** @polymer */
 class SettingsBluetoothChangeDeviceNameDialogElement extends
     SettingsBluetoothChangeDeviceNameDialogElementBase {
   static get is() {
-    return 'os-settings-bluetooth-change-device-name-dialog';
+    return 'os-settings-bluetooth-change-device-name-dialog' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @private {!PairedBluetoothDeviceProperties}
-       */
       device: {
         type: Object,
         observer: 'onDeviceChanged_',
       },
 
-      /** Used to reference the MAX_INPUT_LENGTH constant in HTML. */
-      MAX_INPUT_LENGTH: {
+      /** Used to reference the maxInputLength constant in HTML. */
+      maxInputLength: {
         type: Number,
         value: MAX_INPUT_LENGTH,
       },
 
-      /** @private */
       deviceName_: {
         type: String,
         value: '',
         observer: 'onDeviceNameChanged_',
       },
 
-      /** @private */
       isInputInvalid_: {
         type: Boolean,
         value: false,
@@ -69,19 +65,20 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
       },
     };
   }
+  private device: PairedBluetoothDeviceProperties;
+  private maxInputLength: number;
+  private deviceName_: string;
+  private isInputInvalid_: boolean;
 
-  /** @private */
-  onDeviceChanged_() {
+  private onDeviceChanged_(): void {
     this.deviceName_ = getDeviceName(this.device);
   }
 
-  /** @private */
-  onCancelClick_(event) {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onDoneClick_() {
+  private onDoneClick_(): void {
     getBluetoothConfig().setDeviceNickname(
         this.device.deviceProperties.id, this.deviceName_);
     this.$.dialog.close();
@@ -90,11 +87,8 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
   /**
    * Returns a formatted string containing the current number of characters
    * entered in the input compared to the maximum number of characters allowed.
-   * @param {string} deviceName
-   * @return {string}
-   * @private
    */
-  getInputCountString_(deviceName) {
+  private getInputCountString_(deviceName: string): string {
     // minimumIntegerDigits is 2 because we want to show a leading zero if
     // length is less than 10.
     return this.i18n(
@@ -106,15 +100,12 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
 
   /**
    * Observer for deviceName_ that sanitizes its value by truncating it to
-   * MAX_INPUT_LENGTH. This method will be recursively called until deviceName_
+   * maxInputLength. This method will be recursively called until deviceName_
    * is fully sanitized.
-   * @param {string} newValue
-   * @param {string} oldValue
-   * @private
    */
-  onDeviceNameChanged_(newValue, oldValue) {
+  private onDeviceNameChanged_(_newValue: string, oldValue: string): void {
     if (oldValue) {
-      // If oldValue.length > MAX_INPUT_LENGTH, the user attempted to
+      // If oldValue.length > maxInputLength, the user attempted to
       // enter more than the max limit, this method was called and it was
       // truncated, and then this method was called one more time.
       this.isInputInvalid_ = oldValue.length > MAX_INPUT_LENGTH;
@@ -122,15 +113,11 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
       this.isInputInvalid_ = false;
     }
 
-    // Truncate the name to MAX_INPUT_LENGTH.
+    // Truncate the name to maxInputLength.
     this.deviceName_ = this.deviceName_.substring(0, MAX_INPUT_LENGTH);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isDoneDisabled_() {
+  private isDoneDisabled_(): boolean {
     if (this.deviceName_ === getDeviceName(this.device)) {
       return true;
     }
@@ -140,6 +127,13 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
     }
 
     return false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothChangeDeviceNameDialogElement.is]:
+        SettingsBluetoothChangeDeviceNameDialogElement;
   }
 }
 

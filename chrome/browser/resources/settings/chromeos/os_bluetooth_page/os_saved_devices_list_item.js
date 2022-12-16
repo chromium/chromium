@@ -17,9 +17,9 @@ import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chr
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/ash/common/cr.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './os_saved_devices_list_item.html.js';
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
 
 /**
@@ -40,7 +40,7 @@ class SettingsSavedDevicesListItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

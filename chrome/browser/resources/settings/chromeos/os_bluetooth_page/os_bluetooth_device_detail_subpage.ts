@@ -19,67 +19,47 @@ import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://reso
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
-/** @enum {number} */
-const PageState = {
-  DISCONNECTED: 1,
-  DISCONNECTING: 2,
-  CONNECTING: 3,
-  CONNECTED: 4,
-  CONNECTION_FAILED: 5,
-};
+import {getTemplate} from './os_bluetooth_device_detail_subpage.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsBluetoothDeviceDetailSubpageElementBase = mixinBehaviors(
-    [
-      RouteObserverBehavior,
-      RouteOriginBehavior,
-      I18nBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+enum PageState {
+  DISCONNECTED = 1,
+  DISCONNECTING = 2,
+  CONNECTING = 3,
+  CONNECTED = 4,
+  CONNECTION_FAILED = 5
+}
 
-/** @polymer */
+const SettingsBluetoothDeviceDetailSubpageElementBase =
+    RouteOriginMixin(WebUiListenerMixin(I18nMixin((PolymerElement))));
+
 class SettingsBluetoothDeviceDetailSubpageElement extends
     SettingsBluetoothDeviceDetailSubpageElementBase {
   static get is() {
-    return 'os-settings-bluetooth-device-detail-subpage';
+    return 'os-settings-bluetooth-device-detail-subpage' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothSystemProperties}
-       */
       systemProperties: {
         type: Object,
       },
 
-      /**
-       * @private {?PairedBluetoothDeviceProperties}
-       */
       device_: {
         type: Object,
         observer: 'onDeviceChanged_',
@@ -88,33 +68,28 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       /**
        * Id of the currently paired device. This is set from the route query
        * parameters.
-       * @private
        */
       deviceId_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isDeviceConnected_: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsDeviceConnected_(device_.*)',
       },
 
-      /** @private */
       shouldShowChangeDeviceNameDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!PageState} */
       pageState_: {
         type: Object,
         value: PageState.DISCONNECTED,
       },
 
-      /** @protected */
       shouldShowForgetDeviceDialog_: {
         type: Boolean,
         value: false,
@@ -128,6 +103,16 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     ];
   }
 
+  systemProperties: BluetoothSystemProperties;
+
+  private deviceId_: string;
+  private device_: PairedBluetoothDeviceProperties|null;
+  private isDeviceConnected_: boolean;
+  private pageState_: PageState;
+  private route_: Route;
+  private shouldShowChangeDeviceNameDialog_: boolean;
+  private shouldShowForgetDeviceDialog_: boolean;
+
   constructor() {
     super();
 
@@ -135,8 +120,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.route_ = routes.BLUETOOTH_DEVICE_DETAIL;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener(
@@ -146,13 +130,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
   }
 
-  /**
-   * RouteObserverBehaviorInterface override
-   * @param {!Route} route
-   * @param {!Route=} opt_oldRoute
-   */
-  currentRouteChanged(route, opt_oldRoute) {
-    super.currentRouteChanged(route, opt_oldRoute);
+  override currentRouteChanged(route: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(route, oldRoute);
 
     if (route !== this.route_) {
       return;
@@ -173,8 +152,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         BluetoothUiSurface.SETTINGS_DEVICE_DETAIL_SUBPAGE);
   }
 
-  /** @private */
-  onSystemPropertiesOrDeviceIdChanged_() {
+  private onSystemPropertiesOrDeviceIdChanged_(): void {
     if (!this.systemProperties || !this.deviceId_) {
       return;
     }
@@ -195,11 +173,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     Router.getInstance().navigateToPreviousRoute();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDeviceConnected_() {
+  private computeIsDeviceConnected_(): boolean {
     if (!this.device_) {
       return false;
     }
@@ -207,29 +181,17 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         DeviceConnectionState.kConnected;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBluetoothStateIcon_() {
+  private getBluetoothStateIcon_(): string {
     return this.isDeviceConnected_ ? 'os-settings:bluetooth-connected' :
                                      'os-settings:bluetooth-disabled';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBluetoothConnectDisconnectBtnLabel_() {
+  private getBluetoothConnectDisconnectBtnLabel_(): string {
     return this.isDeviceConnected_ ? this.i18n('bluetoothDisconnect') :
                                      this.i18n('bluetoothConnect');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBluetoothStateTextLabel_() {
+  private getBluetoothStateTextLabel_(): string {
     if (this.pageState_ === PageState.CONNECTING) {
       return this.i18n('bluetoothConnecting');
     }
@@ -239,22 +201,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         this.i18n('bluetoothDeviceDetailDisconnected');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceName_() {
+  private getDeviceName_(): string {
     if (!this.device_) {
       return '';
     }
     return getDeviceName(this.device_);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowConnectDisconnectBtn_() {
+  private shouldShowConnectDisconnectBtn_(): boolean {
     if (!this.device_) {
       return false;
     }
@@ -262,20 +216,16 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         AudioOutputCapability.kCapableOfAudioOutput;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowForgetBtn_() {
+  private shouldShowForgetBtn_(): boolean {
     return !!this.device_;
   }
 
-  /** @private */
-  onDeviceChanged_() {
+  private onDeviceChanged_(): void {
     if (!this.device_) {
       return;
     }
-    this.parentNode.pageTitle = getDeviceName(this.device_);
+    (this.parentNode as OsSettingsSubpageElement).pageTitle =
+        getDeviceName(this.device_);
 
     // Special case a where user is still on detail page and has
     // tried to connect to device but failed. The current |pageState_|
@@ -302,11 +252,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowNonAudioOutputDeviceMessage_() {
+  private shouldShowNonAudioOutputDeviceMessage_(): boolean {
     if (!this.device_) {
       return false;
     }
@@ -316,10 +262,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
   /**
    * Message displayed for devices that are human interactive.
-   * @return {string}
-   * @private
    */
-  getNonAudioOutputDeviceMessage_() {
+  private getNonAudioOutputDeviceMessage_(): string {
     if (!this.device_) {
       return '';
     }
@@ -332,21 +276,15 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return this.i18n('bluetoothDeviceDetailHIDMessageDisconnected');
   }
 
-  /** @private */
-  onChangeNameClick_() {
+  private onChangeNameClick_() {
     this.shouldShowChangeDeviceNameDialog_ = true;
   }
 
-  /** @private */
-  onCloseChangeDeviceNameDialog_() {
+  private onCloseChangeDeviceNameDialog_() {
     this.shouldShowChangeDeviceNameDialog_ = false;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getChangeDeviceNameBtnA11yLabel_() {
+  private getChangeDeviceNameBtnA11yLabel_(): string {
     if (!this.device_) {
       return '';
     }
@@ -356,11 +294,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         this.getDeviceName_());
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getMultipleBatteryInfoA11yLabel_() {
+  private getMultipleBatteryInfoA11yLabel_(): string {
+    assert(this.device_);
     let label = '';
 
     const leftBudBatteryPercentage = getBatteryPercentage(
@@ -393,11 +328,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return label;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBatteryInfoA11yLabel_() {
+  private getBatteryInfoA11yLabel_(): string {
     if (!this.device_) {
       return '';
     }
@@ -415,11 +346,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         'bluetoothDeviceDetailBatteryPercentageA11yLabel', batteryPercentage);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceStatusA11yLabel_() {
+  private getDeviceStatusA11yLabel_(): string {
     if (!this.device_) {
       return '';
     }
@@ -445,11 +372,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowChangeMouseDeviceSettings_() {
+  private shouldShowChangeMouseDeviceSettings_(): boolean {
     if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
@@ -458,11 +381,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         DeviceType.kKeyboardMouseCombo;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowChangeKeyboardDeviceSettings_() {
+  private shouldShowChangeKeyboardDeviceSettings_(): boolean {
     if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
@@ -471,11 +390,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         DeviceType.kKeyboardMouseCombo;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowBlockedByPolicyIcon_() {
+  private shouldShowBlockedByPolicyIcon_(): boolean {
     if (!this.device_) {
       return false;
     }
@@ -483,11 +398,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return this.device_.deviceProperties.isBlockedByPolicy;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowBatteryInfo_() {
+  private shouldShowBatteryInfo_(): boolean {
     if (!this.device_ || this.pageState_ === PageState.CONNECTING ||
         this.pageState_ === PageState.CONNECTION_FAILED) {
       return false;
@@ -507,11 +418,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return hasAnyDetailedBatteryInfo(this.device_.deviceProperties);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowTrueWirelessImages_() {
+  private shouldShowTrueWirelessImages_(): boolean {
     if (!this.device_) {
       return false;
     }
@@ -537,11 +444,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         hasAnyDetailedBatteryInfo(this.device_.deviceProperties);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onConnectDisconnectBtnClick_(event) {
+  private onConnectDisconnectBtnClick_(event: Event): void {
     event.stopPropagation();
     if (this.pageState_ === PageState.DISCONNECTED ||
         this.pageState_ === PageState.CONNECTION_FAILED) {
@@ -551,98 +454,66 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.disconnectDevice_();
   }
 
-  /** @private */
-  connectDevice_() {
+  private connectDevice_(): void {
     this.pageState_ = PageState.CONNECTING;
     getBluetoothConfig().connect(this.deviceId_).then(response => {
       this.handleConnectResult_(response.success);
     });
   }
 
-  /**
-   * @param {boolean} success
-   * @private
-   */
-  handleConnectResult_(success) {
+  private handleConnectResult_(success: boolean): void {
     this.pageState_ =
         success ? PageState.CONNECTED : PageState.CONNECTION_FAILED;
   }
 
-  /** @private */
-  disconnectDevice_() {
+  private disconnectDevice_(): void {
     this.pageState_ = PageState.DISCONNECTING;
     getBluetoothConfig().disconnect(this.deviceId_).then(response => {
       this.handleDisconnectResult_(response.success);
     });
   }
 
-  /**
-   * @param {boolean} success
-   * @private
-   */
-  handleDisconnectResult_(success) {
+  private handleDisconnectResult_(success: boolean): void {
     if (success) {
       this.pageState_ = PageState.DISCONNECTED;
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isConnectDisconnectBtnDisabled() {
+  private isConnectDisconnectBtnDisabled(): boolean {
     return this.pageState_ === PageState.CONNECTING ||
         this.pageState_ === PageState.DISCONNECTING;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowErrorMessage_() {
+  private shouldShowErrorMessage_(): boolean {
     return this.pageState_ === PageState.CONNECTION_FAILED;
   }
 
-  /**
-   * @return {?PairedBluetoothDeviceProperties}
-   */
-  getDeviceForTest() {
+  getDeviceForTest(): PairedBluetoothDeviceProperties|null {
     return this.device_;
   }
 
-  /**
-   * @return {string}
-   */
-  getDeviceIdForTest() {
+  getDeviceIdForTest(): string {
     return this.deviceId_;
   }
 
-  /** @return {boolean} */
-  getIsDeviceConnectedForTest() {
+  getIsDeviceConnectedForTest(): boolean {
     return this.isDeviceConnected_;
   }
 
-  /** @private */
-  onMouseRowClick_() {
+  private onMouseRowClick_(): void {
     Router.getInstance().navigateTo(routes.POINTERS);
   }
 
-  /** @private */
-  onKeyboardRowClick_() {
+  private onKeyboardRowClick_(): void {
     Router.getInstance().navigateTo(routes.KEYBOARD);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getForgetA11yLabel_() {
+  private getForgetA11yLabel_(): string {
     return this.i18n(
         'bluetoothDeviceDetailForgetA11yLabel', this.getDeviceName_());
   }
 
-  /** @private */
-  onForgetButtonClicked_() {
+  private onForgetButtonClicked_(): void {
     if (loadTimeData.getBoolean('enableFastPairFlag')) {
       this.shouldShowForgetDeviceDialog_ = true;
     } else {
@@ -650,14 +521,22 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
   }
 
-  /** @private */
-  onCloseForgetDeviceDialog_() {
+  private onCloseForgetDeviceDialog_(): void {
     this.shouldShowForgetDeviceDialog_ = false;
   }
 
-  /** @private */
-  forgetDeviceConfirmed_() {
+  private forgetDeviceConfirmed_(): void {
     getBluetoothConfig().forget(this.deviceId_);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothDeviceDetailSubpageElement.is]:
+        SettingsBluetoothDeviceDetailSubpageElement;
+  }
+  interface HTMLElementEventMap {
+    'forget-bluetooth-device': Event;
   }
 }
 

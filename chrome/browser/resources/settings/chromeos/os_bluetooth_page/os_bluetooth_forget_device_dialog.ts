@@ -8,62 +8,54 @@
  */
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+import {getTemplate} from './os_bluetooth_forget_device_dialog.html.js';
+
+interface SettingsBluetoothForgetDeviceDialogElement {
+  $: {dialog: CrDialogElement};
+}
+
 const SettingsBluetoothForgetDeviceDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
-/** @polymer */
+    I18nMixin(PolymerElement);
+
 class SettingsBluetoothForgetDeviceDialogElement extends
     SettingsBluetoothForgetDeviceDialogElementBase {
   static get is() {
-    return 'os-settings-bluetooth-forget-device-dialog';
+    return 'os-settings-bluetooth-forget-device-dialog' as const;
   }
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
   static get properties() {
     return {
-      /**
-       * @private {!PairedBluetoothDeviceProperties}
-       */
       device_: {
         type: Object,
       },
     };
   }
-  /**
-   * @private
-   */
-  getForgetDeviceDialogBodyText_() {
+
+  private device_: PairedBluetoothDeviceProperties;
+
+  private getForgetDeviceDialogBodyText_(): string {
     return this.i18n(
         'bluetoothDevicesDialogLabel', this.getDeviceName_(),
         loadTimeData.getString('primaryUserEmail'));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceName_() {
+  private getDeviceName_(): string {
     return getDeviceName(this.device_);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onForgetTap_(event) {
+  private onForgetTap_(event: Event): void {
     const fireEvent = new CustomEvent(
         'forget-bluetooth-device', {bubbles: true, composed: true});
     this.dispatchEvent(fireEvent);
@@ -71,11 +63,18 @@ class SettingsBluetoothForgetDeviceDialogElement extends
     event.stopPropagation();
   }
 
-  /** @private */
-  onCancelClick_(event) {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothForgetDeviceDialogElement.is]:
+        SettingsBluetoothForgetDeviceDialogElement;
+  }
+}
+
 customElements.define(
     SettingsBluetoothForgetDeviceDialogElement.is,
     SettingsBluetoothForgetDeviceDialogElement);

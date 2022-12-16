@@ -11,13 +11,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
-import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/ash/common/cr.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
+import {getTemplate} from './os_remove_saved_device_dialog.html.js';
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
 
 /**
@@ -36,7 +36,7 @@ class SettingsBluetoothRemoveSavedDeviceDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
