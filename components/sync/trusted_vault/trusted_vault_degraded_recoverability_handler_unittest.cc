@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -103,6 +104,33 @@ class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
 };
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
+       ShouldRecordTheDegradedRecoverabilityValueOnStart) {
+  base::HistogramTester histogram_tester;
+  testing::NiceMock<MockTrustedVaultConnection> connection;
+  testing::NiceMock<MockDelegate> delegate;
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_degraded_recoverability_value(
+      sync_pb::DegradedRecoverabilityValue::kNotDegraded);
+
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler> scheduler =
+      std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+          &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
+          degraded_recoverability_state);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      /*sample=*/sync_pb::DegradedRecoverabilityValue::kNotDegraded,
+      /*expected_bucket_count=*/0);
+
+  // Start the scheduler.
+  scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      /*sample=*/sync_pb::DegradedRecoverabilityValue::kNotDegraded,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
        ShouldPendTheCallbackUntilTheFirstRefreshIsCalled) {
   testing::NiceMock<MockTrustedVaultConnection> connection;
   testing::NiceMock<MockDelegate> delegate;
@@ -153,7 +181,8 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
-       ShouldRefreshImmediately) {
+       ShouldRefreshImmediatelyAndRecordTheReason) {
+  base::HistogramTester histogram_tester;
   testing::NiceMock<MockTrustedVaultConnection> connection;
   ON_CALL(connection, DownloadIsRecoverabilityDegraded(
                           Eq(MakeAccountInfoWithGaiaId("user")), _))
@@ -180,7 +209,15 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   task_environment().FastForwardBy(base::Milliseconds(1));
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
-  scheduler->RefreshImmediately();
+  scheduler->HintDegradedRecoverabilityChanged(
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+          kPersistentAuthErrorResolved);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2",
+      /*sample=*/
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
+          kPersistentAuthErrorResolved,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -365,7 +402,8 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   EXPECT_CALL(delegate,
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
-  scheduler->RefreshImmediately();
+  scheduler->HintDegradedRecoverabilityChanged(
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
 }
 
 TEST_F(
@@ -416,7 +454,8 @@ TEST_F(
   EXPECT_CALL(delegate,
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
-  scheduler->RefreshImmediately();
+  scheduler->HintDegradedRecoverabilityChanged(
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,

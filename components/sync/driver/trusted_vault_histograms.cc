@@ -39,7 +39,7 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason) {
   base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason",
+      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2",
       hint_degraded_recoverability_changed_reason);
 }
 
