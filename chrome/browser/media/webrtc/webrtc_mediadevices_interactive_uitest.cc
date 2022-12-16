@@ -132,7 +132,6 @@ class WebRtcMediaDevicesInteractiveUITest
         found_video_input = true;
       }
 
-      EXPECT_FALSE(device.group_id.empty());
       devices->push_back(device);
     }
 
@@ -177,9 +176,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   std::vector<MediaDeviceInfo> devices;
   EnumerateDevices(tab, &devices);
 
-  // Labels should be empty if access has not been allowed.
+  // Label, deviceId and groupId should be empty if access has not been allowed.
   for (const auto& device_info : devices) {
     EXPECT_TRUE(device_info.label.empty());
+    EXPECT_TRUE(device_info.device_id.empty());
+    EXPECT_TRUE(device_info.group_id.empty());
   }
 }
 
@@ -196,9 +197,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   std::vector<MediaDeviceInfo> devices;
   EnumerateDevices(tab, &devices);
 
-  // Labels should be non-empty if access has been allowed.
+  // Labels, deviceId and groupId should be non-empty if access has been
+  // allowed.
   for (const auto& device_info : devices) {
     EXPECT_TRUE(!device_info.label.empty());
+    EXPECT_TRUE(!device_info.device_id.empty());
+    EXPECT_TRUE(!device_info.group_id.empty());
   }
 }
 
@@ -236,36 +240,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
-                       DeviceIdSameGroupIdDiffersAfterReload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  std::vector<MediaDeviceInfo> devices;
-  EnumerateDevices(tab, &devices);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::vector<MediaDeviceInfo> devices2;
-  EnumerateDevices(tab, &devices2);
-
-  EXPECT_EQ(devices.size(), devices2.size());
-  for (auto& device : devices) {
-    EXPECT_TRUE(base::Contains(devices2, device.device_id,
-                               &MediaDeviceInfo::device_id));
-
-    EXPECT_FALSE(
-        base::Contains(devices2, device.group_id, &MediaDeviceInfo::group_id));
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
                        DeviceIdSameGroupIdDiffersAcrossTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(GetUserMediaAndAccept(tab1));
   std::vector<MediaDeviceInfo> devices;
   EnumerateDevices(tab1, &devices);
 
@@ -273,6 +254,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
+      tab2, kAudioVideoCallConstraints));
   std::vector<MediaDeviceInfo> devices2;
   EnumerateDevices(tab2, &devices2);
 
@@ -335,6 +318,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
+      tab2, kAudioVideoCallConstraints));
   std::vector<MediaDeviceInfo> devices2;
   EnumerateDevices(tab2, &devices2);
 
@@ -354,12 +339,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_TRUE(GetUserMediaAndAccept(tab));
-
   std::vector<MediaDeviceInfo> devices;
   EnumerateDevices(tab, &devices);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
+      tab, kAudioVideoCallConstraints));
   std::vector<MediaDeviceInfo> devices2;
   EnumerateDevices(tab, &devices2);
 
