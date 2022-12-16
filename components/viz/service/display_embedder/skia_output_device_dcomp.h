@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
-#include "ui/gfx/frame_data.h"
 
 namespace gl {
 class DCLayerOverlayImage;
@@ -30,10 +29,6 @@ namespace gles2 {
 class FeatureInfo;
 }  // namespace gles2
 }  // namespace gpu
-
-namespace ui {
-struct DCRendererLayerParams;
-}  // namespace ui
 
 namespace viz {
 
@@ -78,7 +73,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
 
   virtual gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
                                           BufferPresentedCallback feedback,
-                                          gfx::FrameData data) = 0;
+                                          gl::FrameData data) = 0;
 
   // Mailboxes of overlays scheduled in the current frame.
   base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
@@ -130,7 +125,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
   gfx::Size GetRootSurfaceSize() const override;
   gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
                                   BufferPresentedCallback feedback,
-                                  gfx::FrameData data) override;
+                                  gl::FrameData data) override;
 
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;

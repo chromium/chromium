@@ -68,7 +68,7 @@ bool GLSurfaceCast::SupportsSwapBuffersWithBounds() {
 gfx::SwapResult GLSurfaceCast::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   DCHECK(supports_swap_buffer_with_bounds_);
 
   // TODO(halliwell): Request new EGL extension so we're not abusing

@@ -223,7 +223,7 @@ void* DirectCompositionChildSurfaceWin::GetHandle() {
 
 gfx::SwapResult DirectCompositionChildSurfaceWin::SwapBuffers(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }

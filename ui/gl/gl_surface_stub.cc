@@ -27,7 +27,7 @@ bool GLSurfaceStub::IsOffscreen() {
 }
 
 gfx::SwapResult GLSurfaceStub::SwapBuffers(PresentationCallback callback,
-                                           gfx::FrameData data) {
+                                           FrameData data) {
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::TimeDelta(),
                                      0 /* flags */);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

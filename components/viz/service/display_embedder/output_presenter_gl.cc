@@ -233,7 +233,7 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
 void OutputPresenterGL::SwapBuffers(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   if (supports_async_swap_) {
     presenter_->SwapBuffersAsync(std::move(completion_callback),
                                  std::move(presentation_callback), data);
@@ -248,7 +248,7 @@ void OutputPresenterGL::PostSubBuffer(
     const gfx::Rect& rect,
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
 #if BUILDFLAG(IS_MAC)
   presenter_->SetCALayerErrorCode(ca_layer_error_code_);
 #endif
@@ -296,7 +296,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
 void OutputPresenterGL::CommitOverlayPlanes(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   if (supports_async_swap_) {
     presenter_->CommitOverlayPlanesAsync(
         std::move(completion_callback), std::move(presentation_callback), data);

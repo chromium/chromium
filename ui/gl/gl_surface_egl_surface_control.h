@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
-#include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/presenter.h"
 
@@ -67,29 +66,29 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
 
   // Sync versions of frame update, should never be used.
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
+                                      FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                gfx::FrameData data) override;
+                                FrameData data) override;
 
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
+                        FrameData data) override;
   void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
-                                gfx::FrameData data) override;
+                                FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
+                          FrameData data) override;
 
   bool SupportsAsyncSwap() override;
   bool SupportsPlaneGpuFences() const override;

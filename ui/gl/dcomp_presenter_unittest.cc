@@ -19,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -209,7 +208,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   ASSERT_FALSE(swap_chain);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -231,7 +230,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -255,7 +254,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -294,7 +293,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -309,7 +308,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   // Must do Clear first because the swap chain won't resize immediately if
   // a new size is given unless this is the very first time after Clear.
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   // The input texture size is bigger than the window size.
   quad_rect = gfx::Rect(32, 48);
@@ -324,7 +323,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -361,7 +360,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -385,7 +384,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -422,7 +421,7 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         surface_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
@@ -446,7 +445,7 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         surface_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
@@ -549,7 +548,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     Sleep(1000);
   }
@@ -586,7 +585,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     }
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     // Scaling up the swapchain with the same image should cause it to be
     // transformed again, but not presented again.
@@ -600,7 +599,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     }
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Sleep(1000);
 
     if (check_color) {
@@ -662,7 +661,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Sleep(1000);
 
   SkColor expected_color = SkColorSetRGB(0xff, 0xb7, 0xff);
@@ -739,7 +738,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Sleep(1000);
 
@@ -898,7 +897,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
@@ -921,7 +920,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
@@ -947,7 +946,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   // Swap chain is set to monitor/onscreen size.
@@ -979,7 +978,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   // Swap chain is set to monitor size (100, 100).
@@ -1081,7 +1080,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1107,7 +1106,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorGREEN;
     SkColor actual_color =
@@ -1131,7 +1130,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1155,7 +1154,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1217,7 +1216,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   EXPECT_TRUE(surface_->ScheduleDCLayer(std::move(params)));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   auto swap_chain = surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);

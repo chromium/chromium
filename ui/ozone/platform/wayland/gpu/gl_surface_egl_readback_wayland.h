@@ -48,11 +48,11 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
               bool has_alpha) override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              gl::FrameData data) override;
   bool SupportsAsyncSwap() override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
+                        gl::FrameData data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:

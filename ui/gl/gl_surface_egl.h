@@ -21,7 +21,6 @@
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/time/time.h"
-#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
@@ -92,7 +91,7 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
   bool Recreate() override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   gfx::Size GetSize() override;
   EGLSurface GetHandle() override;
   bool SupportsPostSubBuffer() override;
@@ -101,10 +100,10 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                gfx::FrameData data) override;
+                                FrameData data) override;
   bool SupportsCommitOverlayPlanes() override;
   gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
+                                      FrameData data) override;
   bool OnMakeCurrent(GLContext* context) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
@@ -143,7 +142,7 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 
   gfx::SwapResult SwapBuffersWithDamage(const std::vector<int>& rects,
                                         PresentationCallback callback,
-                                        gfx::FrameData data);
+                                        FrameData data);
 
  private:
   struct SwapInfo {
@@ -196,7 +195,7 @@ class GL_EXPORT PbufferGLSurfaceEGL : public GLSurfaceEGL {
   void Destroy() override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   gfx::Size GetSize() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
@@ -229,7 +228,7 @@ class GL_EXPORT SurfacelessEGL : public GLSurfaceEGL {
   bool IsOffscreen() override;
   bool IsSurfaceless() const override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   gfx::Size GetSize() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,

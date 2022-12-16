@@ -179,14 +179,14 @@ bool GLSurfaceEGLSurfaceControl::IsOffscreen() {
 
 gfx::SwapResult GLSurfaceEGLSurfaceControl::SwapBuffers(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
 
 gfx::SwapResult GLSurfaceEGLSurfaceControl::CommitOverlayPlanes(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -197,7 +197,7 @@ gfx::SwapResult GLSurfaceEGLSurfaceControl::PostSubBuffer(
     int width,
     int height,
     PresentationCallback callback,
-    gfx::FrameData data) {
+    FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -205,7 +205,7 @@ gfx::SwapResult GLSurfaceEGLSurfaceControl::PostSubBuffer(
 void GLSurfaceEGLSurfaceControl::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    FrameData data) {
   CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }
@@ -213,7 +213,7 @@ void GLSurfaceEGLSurfaceControl::SwapBuffersAsync(
 void GLSurfaceEGLSurfaceControl::CommitOverlayPlanesAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    FrameData data) {
   CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }
@@ -225,7 +225,7 @@ void GLSurfaceEGLSurfaceControl::PostSubBufferAsync(
     int height,
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    FrameData data) {
   CommitPendingTransaction(std::move(completion_callback),
                            std::move(presentation_callback));
 }

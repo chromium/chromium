@@ -16686,11 +16686,11 @@ void GLES2DecoderImpl::DoSwapBuffers(uint64_t swap_id, GLbitfield flags) {
     surface_->SwapBuffersAsync(
         base::BindOnce(&GLES2DecoderImpl::FinishAsyncSwapBuffers,
                        weak_ptr_factory_.GetWeakPtr(), swap_id),
-        base::DoNothing(), gfx::FrameData());
+        base::DoNothing(), gl::FrameData());
   } else {
     client()->OnSwapBuffers(swap_id, flags);
     FinishSwapBuffers(
-        surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
+        surface_->SwapBuffers(base::DoNothing(), gl::FrameData()));
   }
 
   // This may be a slow command.  Exit command processing to allow for

@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/overlay_plane_data.h"
@@ -296,7 +295,7 @@ void SurfacelessGlRenderer::RenderFrame() {
   gl_surface_->SwapBuffersAsync(
       base::BindOnce(&SurfacelessGlRenderer::PostRenderFrameTask,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing(), gfx::FrameData());
+      base::DoNothing(), gl::FrameData());
 }
 
 void SurfacelessGlRenderer::PostRenderFrameTask(

@@ -53,17 +53,17 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                gfx::FrameData data) override;
+                                gl::FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
+                        gl::FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
+                          gl::FrameData data) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   bool SupportsPlaneGpuFences() const override;
@@ -149,7 +149,7 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
 
     SwapCompletionCallback completion_callback;
     PresentationCallback presentation_callback;
-    gfx::FrameData data;
+    gl::FrameData data;
 
     // Says if scheduling succeeded.
     bool schedule_planes_succeeded = true;

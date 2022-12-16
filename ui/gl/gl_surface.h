@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
-#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -76,6 +75,19 @@ using OverlayImage =
 using OverlayImage = GLImage*;
 #endif
 
+// Contains per frame data, and is passed along with SwapBuffer, PostSubbuffer,
+// CommitOverlayPlanes type methods.
+struct FrameData {
+  explicit FrameData(int64_t seq = -1) : seq(seq) {}
+  ~FrameData() = default;
+
+  // Sequence number for this frame. The reserved value of -1 means that there
+  // is no sequence number specified (that is, corresponds to no sequence
+  // point). This may happen for some cases, like the ozone demo, tests, or
+  // users of GLSurface other than SkiaRenderer.
+  int64_t seq = -1;
+};
+
 // Encapsulates a surface that can be rendered to with GL, hiding platform
 // specific management.
 class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
@@ -136,7 +148,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // contexts. If it returns SWAP_FAILED, it is possible that the context is no
   // longer current.
   virtual gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                                      gfx::FrameData data) = 0;
+                                      FrameData data) = 0;
 
   // Get the size of the surface.
   virtual gfx::Size GetSize() = 0;
@@ -181,14 +193,14 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // the calling thread (i.e. same thread SwapBuffersAsync is called)
   virtual void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
-                                gfx::FrameData data);
+                                FrameData data);
 
   // Swap buffers with content bounds. If it returns SWAP_FAILED, it is possible
   // that the context is no longer current.
   virtual gfx::SwapResult SwapBuffersWithBounds(
       const std::vector<gfx::Rect>& rects,
       PresentationCallback callback,
-      gfx::FrameData data);
+      FrameData data);
 
   // Copy part of the backbuffer to the frontbuffer. If it returns SWAP_FAILED,
   // it is possible that the context is no longer current.
@@ -197,7 +209,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                         int width,
                                         int height,
                                         PresentationCallback callback,
-                                        gfx::FrameData data);
+                                        FrameData data);
 
   // Copy part of the backbuffer to the frontbuffer. On some platforms, we want
   // to send SwapBufferAck only after the surface is displayed on screen. The
@@ -210,14 +222,14 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                   int height,
                                   SwapCompletionCallback completion_callback,
                                   PresentationCallback presentation_callback,
-                                  gfx::FrameData data);
+                                  FrameData data);
 
   // Show overlay planes but don't swap the front and back buffers. This acts
   // like SwapBuffers from the point of view of the client, but is cheaper when
   // overlays account for all the damage. If it returns SWAP_FAILED,
   // it is possible that the context is no longer current.
   virtual gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                              gfx::FrameData data);
+                                              FrameData data);
 
   // Show overlay planes but don't swap the front and back buffers. On some
   // platforms, we want to send SwapBufferAck only after the overlays are
@@ -227,7 +239,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual void CommitOverlayPlanesAsync(
       SwapCompletionCallback completion_callback,
       PresentationCallback presentation_callback,
-      gfx::FrameData data);
+      FrameData data);
 
   // Called after a context is made current with this surface. Returns false
   // on error.
@@ -394,31 +406,31 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool DeferDraws() override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
+                        FrameData data) override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
                                         PresentationCallback callback,
-                                        gfx::FrameData data) override;
+                                        FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                gfx::FrameData data) override;
+                                FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
+                          FrameData data) override;
   gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
+                                      FrameData data) override;
   void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
-                                gfx::FrameData data) override;
+                                FrameData data) override;
   bool SupportsSwapBuffersWithBounds() override;
   bool SupportsPostSubBuffer() override;
   bool SupportsCommitOverlayPlanes() override;
@@ -490,8 +502,7 @@ GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurface(
     scoped_refptr<GLSurface> surface);
 
 GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
-    scoped_refptr<GLSurface> surface,
-    GLSurfaceFormat format);
+    scoped_refptr<GLSurface> surface, GLSurfaceFormat format);
 
 }  // namespace gl
 

@@ -69,7 +69,7 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
   bool IsOffscreen() override { return true; }
 
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override {
+                              gl::FrameData data) override {
     NOTREACHED()
         << "Attempted to call SwapBuffers on a D3DTextureGLSurfaceEGL.";
     return gfx::SwapResult::SWAP_FAILED;

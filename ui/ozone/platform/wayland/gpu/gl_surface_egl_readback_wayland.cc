@@ -96,7 +96,7 @@ bool GLSurfaceEglReadbackWayland::SupportsAsyncSwap() {
 
 gfx::SwapResult GLSurfaceEglReadbackWayland::SwapBuffers(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -104,7 +104,7 @@ gfx::SwapResult GLSurfaceEglReadbackWayland::SwapBuffers(
 void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   DCHECK(pending_frames_ < kMaxBuffers);
 
   // Increase pending frames number.

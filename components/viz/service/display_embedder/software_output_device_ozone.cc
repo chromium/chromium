@@ -51,7 +51,7 @@ void SoftwareOutputDeviceOzone::EndPaint() {
 
 void SoftwareOutputDeviceOzone::OnSwapBuffers(
     SwapBuffersCallback swap_ack_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   if (surface_ozone_->SupportsAsyncBufferSwap())
     surface_ozone_->OnSwapBuffers(std::move(swap_ack_callback), data);
   else

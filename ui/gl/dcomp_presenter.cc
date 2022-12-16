@@ -121,7 +121,7 @@ bool DCompPresenter::Resize(const gfx::Size& size,
 }
 
 gfx::SwapResult DCompPresenter::SwapBuffers(PresentationCallback callback,
-                                            gfx::FrameData data) {
+                                            FrameData data) {
   TRACE_EVENT0("gpu", "DCompPresenter::SwapBuffers");
 
   // Callback will be dequeued on next vsync.
@@ -140,7 +140,7 @@ gfx::SwapResult DCompPresenter::PostSubBuffer(int x,
                                               int width,
                                               int height,
                                               PresentationCallback callback,
-                                              gfx::FrameData data) {
+                                              FrameData data) {
   // The arguments are ignored because SetDrawRectangle specified the area to
   // be swapped.
   return SwapBuffers(std::move(callback), data);

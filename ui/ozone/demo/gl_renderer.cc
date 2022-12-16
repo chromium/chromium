@@ -68,12 +68,12 @@ void GlRenderer::RenderFrame() {
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&GlRenderer::OnPresentation,
                        weak_ptr_factory_.GetWeakPtr()),
-        gfx::FrameData());
+        gl::FrameData());
   } else {
     PostRenderFrameTask(gfx::SwapCompletionResult(
         gl_surface_->SwapBuffers(base::BindOnce(&GlRenderer::OnPresentation,
                                                 weak_ptr_factory_.GetWeakPtr()),
-                                 gfx::FrameData())));
+                                 gl::FrameData())));
   }
 }
 

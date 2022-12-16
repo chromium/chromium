@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_SURFACE_STUB_H_
 #define UI_GL_GL_SURFACE_STUB_H_
 
-#include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
 
@@ -29,7 +28,7 @@ class GL_EXPORT GLSurfaceStub : public GLSurface {
               bool has_alpha) override;
   bool IsOffscreen() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
+                              FrameData data) override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
   bool BuffersFlipped() const override;

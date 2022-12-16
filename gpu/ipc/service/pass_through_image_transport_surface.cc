@@ -49,7 +49,7 @@ bool PassThroughImageTransportSurface::Initialize(gl::GLSurfaceFormat format) {
 
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffers(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffers(
@@ -66,7 +66,7 @@ gfx::SwapResult PassThroughImageTransportSurface::SwapBuffers(
 void PassThroughImageTransportSurface::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
 
@@ -87,7 +87,7 @@ void PassThroughImageTransportSurface::SwapBuffersAsync(
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
     const std::vector<gfx::Rect>& rects,
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffersWithBounds(
@@ -108,7 +108,7 @@ gfx::SwapResult PassThroughImageTransportSurface::PostSubBuffer(
     int width,
     int height,
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::PostSubBuffer(
@@ -131,7 +131,7 @@ void PassThroughImageTransportSurface::PostSubBufferAsync(
     int height,
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gl::GLSurfaceAdapter::PostSubBufferAsync(
@@ -147,7 +147,7 @@ void PassThroughImageTransportSurface::PostSubBufferAsync(
 
 gfx::SwapResult PassThroughImageTransportSurface::CommitOverlayPlanes(
     PresentationCallback callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gfx::SwapResult result = gl::GLSurfaceAdapter::CommitOverlayPlanes(
@@ -164,7 +164,7 @@ gfx::SwapResult PassThroughImageTransportSurface::CommitOverlayPlanes(
 void PassThroughImageTransportSurface::CommitOverlayPlanesAsync(
     SwapCompletionCallback callback,
     PresentationCallback presentation_callback,
-    gfx::FrameData data) {
+    gl::FrameData data) {
   gfx::SwapResponse response;
   StartSwapBuffers(&response);
   gl::GLSurfaceAdapter::CommitOverlayPlanesAsync(
