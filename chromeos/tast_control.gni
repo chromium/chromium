@@ -310,6 +310,11 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardJapaneseTyping.jp",
   "inputs.PhysicalKeyboardJapaneseTyping.us",
 
+  # http://b/262693819
+  "inputs.VirtualKeyboardAutocorrect.es_es_a11y",
+  "inputs.VirtualKeyboardAutocorrect.fr_rf_a11y",
+  "inputs.VirtualKeyboardAutocorrect.fr_fr_tablet",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
