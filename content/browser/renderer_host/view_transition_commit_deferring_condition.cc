@@ -41,12 +41,20 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
   if (!navigation_request.IsInPrimaryMainFrame())
     return nullptr;
 
-  const bool is_same_origin =
+  const url::Origin& current_request_origin =
       navigation_request.frame_tree_node()
           ->current_frame_host()
-          ->GetLastCommittedOrigin() == navigation_request.GetOriginToCommit();
-  if (!is_same_origin)
+          ->GetLastCommittedOrigin();
+  const url::Origin& new_request_origin =
+      navigation_request.state() >= NavigationRequest::WILL_PROCESS_RESPONSE
+          ? navigation_request.GetOriginToCommit().value_or(url::Origin())
+          : navigation_request.GetTentativeOriginAtRequestTime();
+  // Only support same origin.
+  // TODO(khushalsagar): We need to be able to deal with redirects.
+  // https://github.com/WICG/view-transitions/issues/200
+  if (current_request_origin != new_request_origin) {
     return nullptr;
+  }
 
   return base::WrapUnique(
       new ViewTransitionCommitDeferringCondition(navigation_request));

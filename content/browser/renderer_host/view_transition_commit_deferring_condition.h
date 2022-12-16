@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {
 class NavigationRequest;
 
-class ViewTransitionCommitDeferringCondition : public CommitDeferringCondition {
+class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
+    : public CommitDeferringCondition {
  public:
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request);

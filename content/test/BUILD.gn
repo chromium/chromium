@@ -2453,6 +2453,7 @@ test("content_unittests") {
     "../browser/renderer_host/render_widget_host_view_child_frame_unittest.cc",
     "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
     "../browser/renderer_host/transient_allow_popup_unittest.cc",
+    "../browser/renderer_host/view_transition_commit_deferring_condition_unittest.cc",
     "../browser/renderer_host/visible_time_request_trigger_unittest.cc",
     "../browser/scheduler/browser_io_thread_delegate_unittest.cc",
     "../browser/scheduler/browser_task_executor_unittest.cc",
