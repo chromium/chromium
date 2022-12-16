@@ -1633,6 +1633,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.ValidBundledExtensionIds"
+    units="boolean" expires_after="2023-07-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>phancke@microsoft.com</owner>
+  <summary>
+    Measures whether the remote description contains a RTP header extension id
+    collision that is not allowed by the IETFs BUNDLE specification. Recorded
+    for every remote description.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes"
     units="boolean" expires_after="2023-06-01">
   <owner>hbos@chromium.org</owner>
