@@ -6977,3 +6977,10 @@ crbug.com/1401318 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-
 
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
+
+# image-set() failures (sheriff 2022-12-16)
+external/wpt/css/css-images/image-set/image-set-empty-url-rendering.html [ Failure Pass ]
+external/wpt/css/css-images/image-set/image-set-invalid-resolution-rendering-2.html [ Failure Pass ]
+external/wpt/css/css-images/image-set/image-set-content-rendering.html [ Failure Pass ]
+external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering-2.html [ Failure Pass ]
+external/wpt/css/css-images/image-set/image-set-unordered-res-rendering.html [ Failure Pass ]
