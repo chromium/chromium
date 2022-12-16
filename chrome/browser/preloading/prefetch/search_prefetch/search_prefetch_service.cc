@@ -255,7 +255,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
     return false;
   }
 
-  auto eligibility = prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
+  auto eligibility =
+      prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs(), web_contents);
   if (eligibility != content::PreloadingEligibility::kEligible) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
     SetEligibility(attempt, eligibility);

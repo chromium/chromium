@@ -251,10 +251,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
-// Tests that Devtools open overrides PreloadingHoldback on non-Android
-// platforms.
-// TODO(crbug/1391411): revisit for Android platforms.
-#if !BUILDFLAG(IS_ANDROID)
+// Tests that Devtools open overrides PreloadingHoldback.
 IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
                        PreloadingHoldbackOverridden) {
   base::HistogramTester histogram_tester;
@@ -262,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
-  // Emulating Devtools attached to make PreloadingHoldback overridden.
-  ASSERT_NE(content::DevToolsAgentHost::GetOrCreateFor(GetActiveWebContents()),
-            nullptr);
-
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   ASSERT_EQ(prefetch::IsSomePreloadingEnabled(*prefs),
             content::PreloadingEligibility::kPreloadingDisabled);
+
+  // Emulating Devtools attached to make PreloadingHoldback overridden.
+  ASSERT_NE(content::DevToolsAgentHost::GetOrCreateFor(GetActiveWebContents()),
+            nullptr);
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
@@ -287,7 +284,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       kFinalStatusActivated, 1);
 }
-#endif
 
 // Tests that Prerender2 cannot be triggered when PreloadingHoldback is not
 // overridden by Devtools.
