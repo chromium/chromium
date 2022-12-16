@@ -18,13 +18,6 @@ public class DisplayStyleObserverAdapter
     /** Current display style, gets updated as the UiConfig detects changes and notifies us. */
     private UiConfig.DisplayStyle mCurrentDisplayStyle;
 
-    /**
-     * Latest value that we transmitted to the adapted observer. If we didn't transfer any yet,
-     * the value is {@code null}.
-     * @see UiConfig.DisplayStyle
-     */
-    private UiConfig.DisplayStyle mNotifiedDisplayStyle;
-
     private boolean mIsViewAttached;
 
     private final UiConfig mUiConfig;
@@ -40,10 +33,7 @@ public class DisplayStyleObserverAdapter
     public DisplayStyleObserverAdapter(View view, UiConfig config, DisplayStyleObserver observer) {
         mUiConfig = config;
         mObserver = observer;
-
-        // TODO(dgn): getParent() is not a good way to test that, but isAttachedToWindow()
-        // requires API 19.
-        mIsViewAttached = view.getParent() != null;
+        mIsViewAttached = view.isAttachedToWindow();
 
         view.addOnAttachStateChangeListener(this);
     }
@@ -69,9 +59,6 @@ public class DisplayStyleObserverAdapter
         mCurrentDisplayStyle = newDisplayStyle;
 
         if (!mIsViewAttached) return;
-
-        mNotifiedDisplayStyle = mCurrentDisplayStyle;
-
         mObserver.onDisplayStyleChanged(mCurrentDisplayStyle);
     }
 
