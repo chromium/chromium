@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -43,6 +44,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       {"title", IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE},
       {"uploadedImage", IDS_NTP_CUSTOMIZE_UPLOADED_IMAGE_LABEL},
+      {"backButton", IDS_ACCNAME_BACK},
+      {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
+      {"uploadImage", IDS_NTP_CUSTOM_BG_UPLOAD_AN_IMAGE},
+      {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
+      {"chromeColors", IDS_NTP_CUSTOMIZE_CHROME_COLORS_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
