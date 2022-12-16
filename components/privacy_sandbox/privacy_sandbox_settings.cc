@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include <cstddef>
 
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
@@ -115,10 +116,10 @@ bool PrivacySandboxSettings::IsTopicsAllowed() const {
 
 bool PrivacySandboxSettings::IsTopicsAllowedForContext(
     const GURL& url,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const url::Origin& top_frame_origin) const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return IsTopicsAllowed() && IsSiteDataAllowed(url);
+    return IsTopicsAllowed() && IsAccessAllowed(url, top_frame_origin);
   }
 
   // If the Topics API is disabled completely, it is not available in any
@@ -308,7 +309,7 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     return IsM1PrivacySandboxApiEnabled(
                prefs::kPrivacySandboxM1FledgeEnabled) &&
-           IsSiteDataAllowed(auction_party.GetURL());
+           IsAccessAllowed(auction_party.GetURL(), top_frame_origin);
   }
 
   return IsPrivacySandboxEnabledForContext(auction_party.GetURL(),
@@ -439,15 +440,16 @@ void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
     observer.OnTopicsDataAccessibleSinceUpdated();
 }
 
-bool PrivacySandboxSettings::IsSiteDataAllowed(const GURL& url) const {
+bool PrivacySandboxSettings::IsAccessAllowed(
+    const GURL& url,
+    const url::Origin& top_frame_origin) const {
   // Relying on |host_content_settings_map_| instead of |cookie_settings_|
   // allows to query whether the site associated with the |url| is allowed to
-  // access Site data (aka ContentSettingsType::COOKIES) from a stand-alone
-  // point of view. This is not possible via |cookies_settings_|, which _also_
-  // takes into account third party context.
-  return host_content_settings_map_->GetContentSetting(
-             url, GURL(), ContentSettingsType::COOKIES) !=
-         ContentSetting::CONTENT_SETTING_BLOCK;
+  // access Site data (aka ContentSettingsType::COOKIES) without considering any
+  // 3P cookie blocking setting.
+  return content_settings::CookieSettingsBase::IsAllowed(
+      host_content_settings_map_->GetContentSetting(
+          url, top_frame_origin.GetURL(), ContentSettingsType::COOKIES));
 }
 
 bool PrivacySandboxSettings::IsM1PrivacySandboxApiEnabled(

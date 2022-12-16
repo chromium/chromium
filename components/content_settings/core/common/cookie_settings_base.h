@@ -101,6 +101,8 @@ class CookieSettingsBase {
     // Storage Access API permission grants will not be considered when
     // answering the query.
     kSetting = 0,
+    // Deprecated from M111. Rely directly on the individual Privacy sandbox
+    // APIs in `PrivacySandboxSettings`.
     // The query is to determine whether Privacy Sandbox APIs should be enabled,
     // based on the cookies content setting. Storage Access API permission
     // grants will not be considered when answering the query.

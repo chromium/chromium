@@ -368,7 +368,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"), absl::nullopt));
+      GURL("https://embedded.com"),
+      url::Origin::Create(GURL("https://top-level-origin.com"))));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -404,7 +405,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"), absl::nullopt));
+      GURL("https://embedded.com"),
+      url::Origin::Create(GURL("https://top-level-origin.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
