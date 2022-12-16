@@ -19,8 +19,8 @@ class FullscreenAllowedTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome(self.win_config['client'])
     self.EnableUITest(self.win_config['client'])
+    self.InstallChrome(self.win_config['client'])
 
     # Enable the bookmark bar so we can see the Apps Shortcut that lives there.
     self.SetPolicy(self.win_config['dc'], 'BookmarkBarEnabled', 1, 'DWORD')

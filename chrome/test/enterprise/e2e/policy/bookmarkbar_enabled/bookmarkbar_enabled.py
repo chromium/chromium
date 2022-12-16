@@ -26,8 +26,8 @@ class BookmarkBarEnabledTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome(self.win_config['client'])
     self.EnableUITest(self.win_config['client'])
+    self.InstallChrome(self.win_config['client'])
 
   def _getUIStructure(self, instance_name):
     local_dir = os.path.dirname(os.path.abspath(__file__))

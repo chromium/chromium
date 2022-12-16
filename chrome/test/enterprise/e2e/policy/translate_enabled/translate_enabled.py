@@ -19,8 +19,8 @@ class TranslateEnabledTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome(self.win_config['client'])
     self.EnableUITest(self.win_config['client'])
+    self.InstallChrome(self.win_config['client'])
 
   def isChromeTranslateEnabled(self, incognito=False):
     dir = os.path.dirname(os.path.abspath(__file__))

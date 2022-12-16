@@ -26,8 +26,8 @@ class ReportingConnectorwithSplunkTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome(self.win_config['client'])
     self.EnableUITest(self.win_config['client'])
+    self.InstallChrome(self.win_config['client'])
 
   @test
   def test_browser_enrolled_prod(self):

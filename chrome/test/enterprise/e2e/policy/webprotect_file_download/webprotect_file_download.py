@@ -23,8 +23,8 @@ class WebProtectFileDownloadTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('webprotect-1')
     self.EnableUITest('webprotect-1')
+    self.InstallChrome('webprotect-1')
 
   @test
   def test_malware_scan_download(self):
