@@ -104,11 +104,14 @@ found in the LICENSE file.
         <item name="android:paddingStart">16dp</item>
     </style>
 
-    <style name="ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
+    <style name="ModernToolbar" parent="Base.ModernToolbar">
+    <item name="android:background">@macro/default_bg_color</item>
+    </style>
+
+    <style name="Base.ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:background">@macro/default_bg_color</item>
     </style>
 
     <style name="TextButton.OnAccent1" tools:ignore="UnusedResources">
