@@ -498,7 +498,8 @@ public abstract class SyncConsentFragmentBase
 
         if (hasAccounts) {
             final boolean hideAccountPicker = mIsSignedInWithoutSync
-                    || (FREMobileIdentityConsistencyFieldTrial.isEnabled() && mIsChild);
+                    || (FREMobileIdentityConsistencyFieldTrial.isEnabled()
+                            && mSigninAccessPoint == SigninAccessPoint.START_PAGE && mIsChild);
             mSigninView.getAccountPickerView().setVisibility(
                     hideAccountPicker ? View.GONE : View.VISIBLE);
             mConsentTextTracker.setText(
