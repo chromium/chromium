@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT AbstractTexture {
   //
   // The context must be current.
   virtual void SetUnboundImage(gl::GLImage* image) = 0;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   // Attaches |image| to the AbstractTexture. The decoder does not call
   // GLImage::Copy/Bind. Further, the decoder guarantees that
   // ScheduleOverlayPlane will be called if the texture is ever promoted to an

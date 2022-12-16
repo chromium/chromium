@@ -28,7 +28,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_bindings.h"
@@ -37,6 +36,10 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_observer.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
+#endif
 
 namespace gl {
 class GLFence;
@@ -50,8 +53,8 @@ namespace gles2 {
 
 class ContextGroup;
 class GPUTracer;
-class MultiDrawManager;
 class PassthroughAbstractTextureImpl;
+class MultiDrawManager;
 class GLES2ExternalFramebuffer;
 
 struct MappedBuffer {
@@ -386,7 +389,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
                                              uint32_t texture_target,
                                              gl::GLImage* image) override;

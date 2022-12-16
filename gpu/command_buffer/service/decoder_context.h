@@ -155,7 +155,7 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
       uint32_t client_texture_id,
       uint32_t texture_target,
       gl::GLImage* image) = 0;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   // Attaches |image| to the texture referred to by |client_texture_id|, marking
   // the image as not needing on-demand binding by the decoder.
   virtual void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,

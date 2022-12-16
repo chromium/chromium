@@ -188,7 +188,7 @@ class MockGLES2Decoder : public GLES2Decoder {
                void(uint32_t client_texture_id,
                     uint32_t texture_target,
                     gl::GLImage* image));
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD3(AttachImageToTextureWithClientBinding,
                void(uint32_t client_texture_id,
                     uint32_t texture_target,

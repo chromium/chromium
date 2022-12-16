@@ -75,7 +75,7 @@ void AbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
 void AbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
 void AbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
@@ -156,7 +156,7 @@ void AbstractTextureImplPassthrough::BindStreamTextureImage(gl::GLImage* image,
 void AbstractTextureImplPassthrough::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
 void AbstractTextureImplPassthrough::SetBoundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }

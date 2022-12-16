@@ -81,7 +81,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
-#include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
 #include "gpu/command_buffer/service/vertex_array_manager.h"
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -115,6 +114,10 @@
 #include "ui/gl/gpu_timing.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/scoped_make_current.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include <IOSurface/IOSurface.h>
@@ -1231,7 +1234,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
                                              uint32_t texture_target,
                                              gl::GLImage* image) override;
@@ -2531,8 +2534,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void UnbindTexture(TextureRef* texture_ref,
                      bool supports_separate_framebuffer_binds);
 
+#if !BUILDFLAG(IS_ANDROID)
   void OnAbstractTextureDestroyed(ValidatingAbstractTextureImpl* texture,
                                   scoped_refptr<TextureRef> texture_ref);
+#endif
 
   void ReadBackBuffersIntoShadowCopies(
       base::flat_set<scoped_refptr<Buffer>> buffers_to_shadow_copy);
@@ -18587,7 +18592,7 @@ void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
   BindImageInternal(client_texture_id, texture_target, image,
                     /*can_bind_to_sampler=*/false);
 }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
 void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,

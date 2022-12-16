@@ -258,7 +258,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                               gl::GLImage* image) override {
     NOTREACHED();
   }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
                                              uint32_t texture_target,
                                              gl::GLImage* image) override {

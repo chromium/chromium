@@ -475,7 +475,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
                                              uint32_t texture_target,
                                              gl::GLImage* image) override;
@@ -1584,7 +1584,7 @@ void RasterDecoderImpl::AttachImageToTextureWithDecoderBinding(
     gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
 void RasterDecoderImpl::AttachImageToTextureWithClientBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,

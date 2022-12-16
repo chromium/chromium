@@ -43,7 +43,7 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetUnboundImage(gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void SetBoundImage(gl::GLImage* image) override;
 #endif
   gl::GLImage* GetImageForTesting() const override;
@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetUnboundImage(gl::GLImage* image) override;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   void SetBoundImage(gl::GLImage* image) override;
 #endif
   gl::GLImage* GetImageForTesting() const override;

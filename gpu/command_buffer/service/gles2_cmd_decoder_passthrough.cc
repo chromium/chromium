@@ -2091,7 +2091,7 @@ void GLES2DecoderPassthroughImpl::AttachImageToTextureWithDecoderBinding(
   BindImageInternal(client_texture_id, texture_target, image,
                     /*can_bind_to_sampler=*/false);
 }
-#else
+#elif !BUILDFLAG(IS_ANDROID)
 void GLES2DecoderPassthroughImpl::AttachImageToTextureWithClientBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,
