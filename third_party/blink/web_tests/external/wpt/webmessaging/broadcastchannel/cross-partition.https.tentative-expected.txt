@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL BroadcastChannel messages aren't received from a cross-partition iframe assert_equals: expected "iframe2 msg" but got "iframe1 msg"
-FAIL BroadcastChannel messages aren't received from a nested iframe with a cross-site ancestor assert_equals: expected "iframe2 msg" but got "iframe1 msg"
-FAIL BroadcastChannel messages aren't received from a cross-partition dedicated worker assert_equals: expected "worker2 msg" but got "worker1 msg"
-FAIL BroadcastChannel messages aren't received from a cross-partition shared worker assert_equals: expected "worker2 msg" but got "worker1 msg"
-FAIL BroadcastChannel messages aren't received from a cross-partition service worker assert_equals: expected "worker2 msg" but got "worker1 msg"
-Harness: the test ran to completion.
-

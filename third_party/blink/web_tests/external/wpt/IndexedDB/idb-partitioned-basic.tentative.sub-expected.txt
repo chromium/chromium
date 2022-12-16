@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Simple test for partitioned IndexedDB assert_false: The cross-site iframe should not see the same-site database expected false got true
-Harness: the test ran to completion.
-

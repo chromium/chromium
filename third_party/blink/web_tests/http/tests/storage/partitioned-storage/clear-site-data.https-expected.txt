@@ -1,6 +1,0 @@
-CONSOLE MESSAGE: Clear-Site-Data header on 'https://storage.not-example.test:8443/storage/resources/clear-site-data.php': Cleared data types: "storage".
-This is a testharness.js-based test.
-PASS Clearing partitioned storage
-FAIL Clearing partitioned storage in another partition assert_equals: expected 0 but got 1
-Harness: the test ran to completion.
-

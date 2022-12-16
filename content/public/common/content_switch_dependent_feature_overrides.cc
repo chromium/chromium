@@ -105,6 +105,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(blink::features::kPendingBeaconAPI),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+    {switches::kEnableExperimentalWebPlatformFeatures,
+     std::cref(net::features::kThirdPartyStoragePartitioning),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     // Overrides for --enable-experimental-cookie-features.
     {switches::kEnableExperimentalCookieFeatures,
