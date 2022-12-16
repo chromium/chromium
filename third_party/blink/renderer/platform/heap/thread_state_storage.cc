@@ -24,7 +24,7 @@ class ThreadLocal {
     CHECK(rv == 0);
   }
 
-  T& operator*() {
+  T& get() {
     T* v = (T*)pthread_getspecific(key_);
     if (!v) {
       v = new T(default_value_);
@@ -36,7 +36,7 @@ class ThreadLocal {
 
 ThreadStateStorage*& GetThreadStateStorage() {
   static ThreadLocal<ThreadStateStorage*> instance(nullptr);
-  return instance;
+  return instance.get();
 }
 
 // static
