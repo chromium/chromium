@@ -65,10 +65,23 @@ void NetworkConnectDelegate::ShowCarrierAccountDetail(
   ash::cellular_setup::MobileSetupDialog::ShowByNetworkId(network_id);
 }
 
-void NetworkConnectDelegate::ShowPortalSignin(const std::string& network_id) {
+void NetworkConnectDelegate::ShowPortalSignin(
+    const std::string& network_id,
+    ash::NetworkConnect::Source source) {
   if (!IsUIAvailable())
     return;
-  network_portal_signin_controller_->ShowSignin();
+  ash::NetworkPortalSigninController::SigninSource signin_source;
+  switch (source) {
+    case ash::NetworkConnect::Source::kSettings:
+      signin_source =
+          ash::NetworkPortalSigninController::SigninSource::kSettings;
+      break;
+    case ash::NetworkConnect::Source::kQuickSettings:
+      signin_source =
+          ash::NetworkPortalSigninController::SigninSource::kQuickSettings;
+      break;
+  }
+  network_portal_signin_controller_->ShowSignin(signin_source);
 }
 
 void NetworkConnectDelegate::ShowNetworkConnectError(

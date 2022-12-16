@@ -185,7 +185,8 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
         chromeos::network_config::StateIsConnected(network->connection_state) &&
         IsNetworkBehindPortalOrProxy(network->portal_state)) {
       RecordNetworkRowClickedAction(NetworkRowClickedAction::kOpenPortalSignin);
-      NetworkConnect::Get()->ShowPortalSignin(network->guid);
+      NetworkConnect::Get()->ShowPortalSignin(
+          network->guid, NetworkConnect::Source::kQuickSettings);
       return;
     }
 

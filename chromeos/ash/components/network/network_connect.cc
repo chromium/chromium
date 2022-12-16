@@ -65,7 +65,7 @@ class NetworkConnectImpl : public NetworkConnect {
                             bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
   void ShowCarrierAccountDetail(const std::string& network_id) override;
-  void ShowPortalSignin(const std::string& network_id) override;
+  void ShowPortalSignin(const std::string& network_id, Source source) override;
   void ConfigureNetworkIdAndConnect(const std::string& network_id,
                                     const base::Value& shill_properties,
                                     bool shared) override;
@@ -480,7 +480,8 @@ void NetworkConnectImpl::ShowCarrierAccountDetail(
   delegate_->ShowCarrierAccountDetail(network_id);
 }
 
-void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id) {
+void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id,
+                                          Source source) {
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network || !network->IsConnectedState() ||
       !NetworkState::StateIsPortalled(network->connection_state())) {
@@ -488,7 +489,7 @@ void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id) {
                    << NetworkGuidId(network_id);
     return;
   }
-  delegate_->ShowPortalSignin(network_id);
+  delegate_->ShowPortalSignin(network_id, source);
 }
 
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(

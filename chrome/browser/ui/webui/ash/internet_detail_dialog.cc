@@ -95,7 +95,8 @@ class PortalNetworkMessageHandler : public content::WebUIMessageHandler {
       return;
     }
     const std::string& guid = args[0].GetString();
-    NetworkConnect::Get()->ShowPortalSignin(guid);
+    NetworkConnect::Get()->ShowPortalSignin(guid,
+                                            NetworkConnect::Source::kSettings);
   }
 };
 

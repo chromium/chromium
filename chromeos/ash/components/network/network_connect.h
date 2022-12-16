@@ -22,6 +22,14 @@ class NetworkTypePattern;
 // of UI is handled by the NetworkConnect::Delegate implementation.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
  public:
+  // Track the source of NetworkConnect calls for metrics.
+  enum class Source {
+    // Opened from the Settings UI.
+    kSettings = 1,
+    // Opened from the QuickSettings UI.
+    kQuickSettings = 2,
+  };
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) Delegate {
    public:
     // Shows UI to configure or activate the network specified by |network_id|,
@@ -43,7 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
     virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
 
     // Shows portal signin.
-    virtual void ShowPortalSignin(const std::string& network_id) = 0;
+    virtual void ShowPortalSignin(const std::string& network_id,
+                                  Source source) = 0;
 
     // Shows an error notification. |error_name| is an error defined in
     // NetworkConnectionHandler. |network_id| may be empty.
@@ -95,7 +104,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
 
   // Opens the portal signin.
-  virtual void ShowPortalSignin(const std::string& network_id) = 0;
+  virtual void ShowPortalSignin(const std::string& network_id,
+                                Source source) = 0;
 
   // Configures a network with a dictionary of Shill properties, then sends a
   // connect request. The profile is set according to 'shared' if allowed.

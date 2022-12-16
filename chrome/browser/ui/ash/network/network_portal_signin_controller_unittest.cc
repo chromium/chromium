@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -173,6 +174,13 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void ShowSignin(
+      NetworkPortalSigninController::SigninSource source =
+          NetworkPortalSigninController::SigninSource::kNotification) {
+    // The SigninSource is only used for histograms.
+    controller_->ShowSignin(source);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_helper_;
   std::unique_ptr<TestSigninController> controller_;
@@ -183,7 +191,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
 };
 
 TEST_F(NetworkPortalSigninControllerTest, LoginScreen) {
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_FALSE(controller_->dialog_url().empty());
 }
 
@@ -193,14 +201,14 @@ TEST_F(NetworkPortalSigninControllerTest, KioskMode) {
       AccountId::FromUserEmail("fake_user@test"));
   user_manager_->LoginUser(user->GetAccountId());
 
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_FALSE(controller_->dialog_url().empty());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, AuthenticationIgnoresProxyTrue) {
   SimulateLogin();
   // kCaptivePortalAuthenticationIgnoresProxy defaults to true
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_FALSE(controller_->dialog_url().empty());
 }
 
@@ -208,21 +216,21 @@ TEST_F(NetworkPortalSigninControllerTest, AuthenticationIgnoresProxyFalse) {
   SimulateLogin();
   GetPrefs()->SetBoolean(prefs::kCaptivePortalAuthenticationIgnoresProxy,
                          false);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_FALSE(controller_->singleton_tab_url().empty());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProbeUrl) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->dialog_url(), expected_url);
 }
 
 TEST_F(NetworkPortalSigninControllerTest, NoProbeUrl) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(std::string());
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->dialog_url(), expected_url);
 }
 
@@ -236,14 +244,14 @@ class NetworkPortalSigninControllerTest2022Update
 };
 
 TEST_F(NetworkPortalSigninControllerTest2022Update, LoginScreen) {
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_FALSE(controller_->dialog_url().empty());
 }
 
 TEST_F(NetworkPortalSigninControllerTest2022Update, NoProxy) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
@@ -252,7 +260,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, ProxyDirect) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
   SetNetworkProxyDirect();
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
@@ -263,7 +271,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update,
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
   SetNetworkProxy();
   // kCaptivePortalAuthenticationIgnoresProxy defaults to true
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
@@ -275,7 +283,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update,
   SetNetworkProxy();
   GetPrefs()->SetBoolean(prefs::kCaptivePortalAuthenticationIgnoresProxy,
                          false);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
 }
@@ -287,7 +295,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update,
   SetNetworkProxy();
   IncognitoModePrefs::SetAvailability(
       GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->dialog_url(), expected_url);
 }
 
@@ -298,7 +306,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, ProxyPref) {
   proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
   proxy_config.Set("pac_url", "http://proxy");
   GetPrefs()->SetDict(::proxy_config::prefs::kProxy, std::move(proxy_config));
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
@@ -306,14 +314,14 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, ProxyPref) {
 TEST_F(NetworkPortalSigninControllerTest2022Update, NoProbeUrl) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(std::string());
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
 }
 
 TEST_F(NetworkPortalSigninControllerTest2022Update, IsNewOTRProfile) {
   SimulateLogin();
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   Profile* profile = ProfileManager::GetActiveUserProfile();
   Profile* default_otr_profile =
@@ -327,9 +335,27 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, IsNewOTRProfile) {
 TEST_F(NetworkPortalSigninControllerTest2022Update, GuestLogin) {
   SimulateLoginAsGuest();
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
-  controller_->ShowSignin();
+  ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
+}
+
+TEST_F(NetworkPortalSigninControllerTest2022Update, Metrics) {
+  base::HistogramTester histogram_tester;
+  SimulateLogin();
+  std::string expected_url = SetProbeUrl(std::string());
+  ShowSignin(NetworkPortalSigninController::SigninSource::kSettings);
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
+
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalSigninMode", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Network.NetworkPortalSigninMode",
+      NetworkPortalSigninController::SigninMode::kIncognitoTab, 1);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalSigninSource", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Network.NetworkPortalSigninSource",
+      NetworkPortalSigninController::SigninSource::kSettings, 1);
 }
 
 }  // namespace ash

@@ -146,8 +146,10 @@ class NotificationDelegateImpl : public message_center::NotificationDelegate {
 void NotificationDelegateImpl::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  if (signin_controller_)
-    signin_controller_->ShowSignin();
+  if (signin_controller_) {
+    signin_controller_->ShowSignin(
+        NetworkPortalSigninController::SigninSource::kNotification);
+  }
   CloseNotification();
 }
 

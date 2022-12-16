@@ -25,14 +25,35 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
     kSingletonTab = 2,
     // Show in a new tab using the active user profile.
     kNormalTab = 3,
-    // Show in a new tab in an incognito window.
+    // Show in a new tab in an OTR window with the portal signin profile.
     kIncognitoTab = 4,
-    // Show in a dialog window using an incognito profile.
-    kIncognitoDialog = 5,
-    kMaxValue = 5,
+    // DEPRECATED: kIncognitoDialog = 5,
+    // Show in a dialog window using the portal signin profile due to Incognito
+    // browsing disabled.
+    kIncognitoDialogDisabled = 6,
+    // Show in a dialog window using the portal signin profile due to parential
+    // controls disabling incognito browsing.
+    kIncognitoDialogParental = 7,
+    kMaxValue = 7,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const SigninMode& signin_mode);
+
+  // Keep this in sync with the NetworkPortalSigninSource enum in
+  // tools/metrics/histograms/enums.xml.
+  enum class SigninSource {
+    // Opened from a notification.
+    kNotification = 1,
+    // Opened from the Settings UI.
+    kSettings = 2,
+    // Opened from the QuickSettings UI.
+    kQuickSettings = 3,
+    // Opened from the Chrome error page.
+    kErrorPage = 4,
+    kMaxValue = 4,
+  };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const SigninSource& signin_mode);
 
   NetworkPortalSigninController();
   NetworkPortalSigninController(const NetworkPortalSigninController&) = delete;
@@ -44,7 +65,7 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   virtual base::WeakPtr<NetworkPortalSigninController> GetWeakPtr();
 
   // Shows the signin UI.
-  void ShowSignin();
+  void ShowSignin(SigninSource source);
 
   // Closes the signin UI if appropriate.
   void CloseSignin();

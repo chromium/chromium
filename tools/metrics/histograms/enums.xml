@@ -71956,8 +71956,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Dialog using the signin Profile"/>
   <int value="2" label="Singleton tab using the active user Profile"/>
   <int value="3" label="Browser tab using the active user Profile"/>
-  <int value="4" label="Browser tab using an incognito Profile"/>
-  <int value="5" label="Dialog using an incognito Profile"/>
+  <int value="4" label="Browser tab using an OTR Profile"/>
+  <int value="5" label="Dialog using an incognito Profile (deprecated)"/>
+  <int value="6" label="Dialog using an OTR Profile due to policy"/>
+  <int value="7" label="Dialog using an OTR Profile due to parential controls"/>
+</enum>
+
+<enum name="NetworkPortalSigninSource">
+  <summary>
+    Corresponds to NetworkPortalSigninController::SigninSource used to determine
+    how the signin UI was shown.
+  </summary>
+  <int value="1" label="Notification"/>
+  <int value="2" label="Settings"/>
+  <int value="3" label="Quick Settings"/>
+  <int value="4" label="Error Page"/>
 </enum>
 
 <enum name="NetworkPortalStatus">

@@ -82,7 +82,7 @@ NetworkPortalSigninController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void NetworkPortalSigninController::ShowSignin() {
+void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   GURL url;
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -92,8 +92,9 @@ void NetworkPortalSigninController::ShowSignin() {
     url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
 
   SigninMode mode = GetSigninMode();
-  NET_LOG(EVENT) << "Show signin mode: " << mode;
+  NET_LOG(EVENT) << "Show signin mode: " << mode << " from: " << source;
   base::UmaHistogramEnumeration("Network.NetworkPortalSigninMode", mode);
+  base::UmaHistogramEnumeration("Network.NetworkPortalSigninSource", source);
   switch (mode) {
     case SigninMode::kSigninDialog:
       ShowDialog(ProfileHelper::GetSigninProfile(), url);
@@ -108,7 +109,8 @@ void NetworkPortalSigninController::ShowSignin() {
       ShowTab(GetOTROrActiveProfile(), url);
       break;
     }
-    case SigninMode::kIncognitoDialog: {
+    case SigninMode::kIncognitoDialogDisabled:
+    case SigninMode::kIncognitoDialogParental: {
       ShowDialog(GetOTROrActiveProfile(), url);
       break;
     }
@@ -155,15 +157,25 @@ NetworkPortalSigninController::GetSigninMode() const {
     return SigninMode::kNormalTab;
   }
 
-  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-      IncognitoModePrefs::Availability::kDisabled) {
-    // Show an incognito tab to ignore any proxies if available.
-    return SigninMode::kIncognitoTab;
+  IncognitoModePrefs::Availability availability;
+  IncognitoModePrefs::IntToAvailability(
+      profile->GetPrefs()->GetInteger(prefs::kIncognitoModeAvailability),
+      &availability);
+  if (availability == IncognitoModePrefs::Availability::kDisabled) {
+    // Use a dialog to prevent navigation and use an OTR profile due to
+    // Incognito browsing disabled by policy preference.
+    return SigninMode::kIncognitoDialogDisabled;
   }
 
-  // Otherwise use a dialog to prevent navigation and use an OTR profile if
-  // available.
-  return SigninMode::kIncognitoDialog;
+  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+      IncognitoModePrefs::Availability::kDisabled) {
+    // Use a dialog to prevent navigation and use an OTR profile due to
+    // Incognito browsing disabled by parental controls.
+    return SigninMode::kIncognitoDialogParental;
+  }
+
+  // Show an incognito tab to ignore any proxies.
+  return SigninMode::kIncognitoTab;
 }
 
 void NetworkPortalSigninController::CloseSignin() {
@@ -227,10 +239,33 @@ std::ostream& operator<<(
       stream << "Normal Tab";
       break;
     case NetworkPortalSigninController::SigninMode::kIncognitoTab:
-      stream << "Incognito Tab";
+      stream << "OTR Tab";
       break;
-    case NetworkPortalSigninController::SigninMode::kIncognitoDialog:
-      stream << "Incognito Dialog";
+    case NetworkPortalSigninController::SigninMode::kIncognitoDialogDisabled:
+      stream << "OTR Dialog (Disabled)";
+      break;
+    case NetworkPortalSigninController::SigninMode::kIncognitoDialogParental:
+      stream << "OTR Dialog (Parental)";
+      break;
+  }
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const NetworkPortalSigninController::SigninSource& signin_source) {
+  switch (signin_source) {
+    case NetworkPortalSigninController::SigninSource::kNotification:
+      stream << "Notification";
+      break;
+    case NetworkPortalSigninController::SigninSource::kSettings:
+      stream << "Settings";
+      break;
+    case NetworkPortalSigninController::SigninSource::kQuickSettings:
+      stream << "Quick Settings";
+      break;
+    case NetworkPortalSigninController::SigninSource::kErrorPage:
+      stream << "Error page";
       break;
   }
   return stream;

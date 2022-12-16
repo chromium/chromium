@@ -200,7 +200,8 @@ class WifiHotspotConnectorTest : public testing::Test {
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
     void ShowCarrierAccountDetail(const std::string& network_id) override {}
-    void ShowPortalSignin(const std::string& service_path) override {}
+    void ShowPortalSignin(const std::string& service_path,
+                          NetworkConnect::Source source) override {}
     void ConfigureNetworkIdAndConnect(const std::string& network_id,
                                       const base::Value& shill_properties,
                                       bool shared) override {}

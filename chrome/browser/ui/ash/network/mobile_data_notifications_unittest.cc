@@ -56,7 +56,8 @@ class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
-  void ShowPortalSignin(const std::string& network_id) override {}
+  void ShowPortalSignin(const std::string& network_id,
+                        ash::NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override {}
   void ShowMobileActivationError(const std::string& network_id) override {}

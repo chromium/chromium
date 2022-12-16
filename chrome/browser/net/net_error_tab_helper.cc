@@ -176,7 +176,8 @@ void NetErrorTabHelper::ShowPortalSignin() {
     portal_signin_controller_ =
         std::make_unique<ash::NetworkPortalSigninController>();
   }
-  portal_signin_controller_->ShowSignin();
+  portal_signin_controller_->ShowSignin(
+      ash::NetworkPortalSigninController::SigninSource::kErrorPage);
 #endif
 }
 #endif

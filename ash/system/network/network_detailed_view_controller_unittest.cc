@@ -79,7 +79,8 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
-  void ShowPortalSignin(const std::string& network_id) override {
+  void ShowPortalSignin(const std::string& network_id,
+                        NetworkConnect::Source source) override {
     portal_signin_guid_ = network_id;
   }
   void ShowNetworkConnectError(const std::string& error_name,
