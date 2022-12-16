@@ -42,6 +42,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -540,19 +542,25 @@ TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
       CookieSettingsFactory::GetForProfile(&profile).get();
 
   GURL host_ending_with_dot("http://example.com./");
+  url::Origin origin = url::Origin::Create(host_ending_with_dot);
+  net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromOrigin(origin);
 
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
-      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
+      host_ending_with_dot, site_for_cookies, origin,
+      net::CookieSettingOverrides(), QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_DEFAULT);
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
-      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
+      host_ending_with_dot, site_for_cookies, origin,
+      net::CookieSettingOverrides(), QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
-      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
+      host_ending_with_dot, site_for_cookies, origin,
+      net::CookieSettingOverrides(), QueryReason::kSetting));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(

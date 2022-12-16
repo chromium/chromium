@@ -269,30 +269,34 @@ TEST_F(WebUIAllowlistProviderTest,
   // cookies.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), QueryReason::kCookies));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
 
   // Allowlisted origin on its own can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), absl::nullopt,
-      QueryReason::kCookies));
+      net::CookieSettingOverrides(), QueryReason::kCookies));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
-      url::Origin::Create(url_no_permission_webui), QueryReason::kCookies));
+      url::Origin::Create(url_no_permission_webui),
+      net::CookieSettingOverrides(), QueryReason::kCookies));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -320,30 +324,34 @@ TEST_F(WebUIAllowlistProviderTest,
 
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), QueryReason::kCookies));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
   // Allowlisted origin on its own can use cookies, because only third-party
   // cookies are blocked.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      QueryReason::kCookies));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
-      url::Origin::Create(url_no_permission_webui), QueryReason::kCookies));
+      url::Origin::Create(url_no_permission_webui),
+      net::CookieSettingOverrides(), QueryReason::kCookies));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), absl::nullopt,
-      QueryReason::kCookies));
+      net::CookieSettingOverrides(), QueryReason::kCookies));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,

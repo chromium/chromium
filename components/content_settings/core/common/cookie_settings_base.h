@@ -117,37 +117,6 @@ class CookieSettingsBase {
     kCookies,
   };
 
-  // Returns true if the page identified by (|url|, |first_party_url|) is
-  // allowed to access (i.e., read or write) cookies. |first_party_url|
-  // is used to determine third-party-ness of |url|.
-  //
-  // This may be called on any thread.
-  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, SiteForCookies,
-  // Origin, bool, QueryRason).
-  // TODO(crbug.com/1386190): Update callers and remove.
-  bool IsFullCookieAccessAllowed(const GURL& url,
-                                 const GURL& first_party_url,
-                                 QueryReason query_reason) const;
-
-  // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
-  // to specify a separate `site_for_cookies`, which is used to determine
-  // whether a request is in a third_party context and `top_frame_origin`, which
-  // is used to check if there are any content_settings exceptions.
-  // `top_frame_origin` should at least be specified when `site_for_cookies` is
-  // non-empty.
-  // DEPRECATED: Replace with IsFullCookieAccessAllowed(GURL, SiteForCookies,
-  // Origin, bool, QueryReason)
-  // TODO(crbug.com/1386190): Update callers and remove.
-  bool IsFullCookieAccessAllowed(
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      QueryReason query_reason) const {
-    return IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin,
-                                     net::CookieSettingOverrides(),
-                                     query_reason);
-  }
-
   // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
   // to specify a separate `site_for_cookies`, which is used to determine
   // whether a request is in a third_party context and `top_frame_origin`, which

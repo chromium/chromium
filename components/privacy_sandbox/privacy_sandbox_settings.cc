@@ -429,6 +429,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
   // for cookies is provided so the context is always treated as a third party.
   return cookie_settings_->IsFullCookieAccessAllowed(
       url, net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides(),
       content_settings::CookieSettings::QueryReason::kPrivacySandbox);
 }
 

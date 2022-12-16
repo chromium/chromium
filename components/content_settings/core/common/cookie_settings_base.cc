@@ -96,20 +96,6 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
-    const GURL& first_party_url,
-    QueryReason query_reason) const {
-#if !BUILDFLAG(IS_IOS)
-  // IOS uses this method with an empty |first_party_url| but we don't have
-  // content settings on IOS, so it does not matter.
-  DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;
-#endif
-  return IsAllowed(GetCookieSetting(url, first_party_url,
-                                    net::CookieSettingOverrides(), nullptr,
-                                    query_reason));
-}
-
-bool CookieSettingsBase::IsFullCookieAccessAllowed(
-    const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     net::CookieSettingOverrides overrides,

@@ -22,8 +22,11 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using bookmarks::BookmarkModel;
 
@@ -70,7 +73,8 @@ void DurableStoragePermissionContext::DecidePermission(
           requesting_origin,
           content_settings::CookieSettings::QueryReason::kSiteStorage) ||
       !cookie_settings->IsFullCookieAccessAllowed(
-          requesting_origin, requesting_origin,
+          requesting_origin, net::SiteForCookies::FromUrl(requesting_origin),
+          url::Origin::Create(requesting_origin), net::CookieSettingOverrides(),
           content_settings::CookieSettings::QueryReason::kSiteStorage)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,

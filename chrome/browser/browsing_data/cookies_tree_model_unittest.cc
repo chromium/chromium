@@ -1441,7 +1441,8 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
   origin->CreateContentException(
       cookie_settings, CONTENT_SETTING_SESSION_ONLY);
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
-      host, host, QueryReason::kSetting));
+      host, net::SiteForCookies::FromUrl(host), url::Origin::Create(host),
+      net::CookieSettingOverrides(), QueryReason::kSetting));
   EXPECT_TRUE(
       cookie_settings->IsCookieSessionOnly(host, QueryReason::kSetting));
 }

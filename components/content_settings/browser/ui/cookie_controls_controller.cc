@@ -117,7 +117,7 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   return !cookie_settings_->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      CookieSettings::QueryReason::kCookies);
+      net::CookieSettingOverrides(), CookieSettings::QueryReason::kCookies);
 }
 
 int CookieControlsController::GetAllowedCookieCount() {

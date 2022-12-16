@@ -6769,6 +6769,7 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
              Profile::FromBrowserContext(browser_context))
       ->IsFullCookieAccessAllowed(
           url, site_for_cookies, top_frame_origin,
+          net::CookieSettingOverrides(),
           content_settings::CookieSettings::QueryReason::kSiteStorage);
 }
 

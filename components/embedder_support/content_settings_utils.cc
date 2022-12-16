@@ -27,7 +27,7 @@ bool AllowWorkerStorageAccess(
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      QueryReason::kSiteStorage);
+      net::CookieSettingOverrides(), QueryReason::kSiteStorage);
 
   for (const auto& it : render_frames) {
     content_settings::PageSpecificContentSettings::StorageAccessed(
@@ -58,7 +58,8 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 
   // Check if cookies are allowed.
   bool allow_cookies = cookie_settings->IsFullCookieAccessAllowed(
-      scope, site_for_cookies, top_frame_origin, QueryReason::kSiteStorage);
+      scope, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      QueryReason::kSiteStorage);
 
   return content::AllowServiceWorkerResult::FromPolicy(!allow_javascript,
                                                        !allow_cookies);
@@ -75,7 +76,7 @@ bool AllowSharedWorker(
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       worker_url, site_for_cookies, top_frame_origin,
-      QueryReason::kSiteStorage);
+      net::CookieSettingOverrides(), QueryReason::kSiteStorage);
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, storage_key,
