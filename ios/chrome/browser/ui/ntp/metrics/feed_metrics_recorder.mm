@@ -680,6 +680,20 @@ using feed::FeedUserActionType;
                                 asInteraction:NO];
 }
 
+- (void)recordSignInPromoUIContinueTapped {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedFeedSignInPromoUIContinue
+                                asInteraction:NO];
+  base::RecordAction(base::UserMetricsAction(kFeedSignInPromoUIContinueTapped));
+}
+
+- (void)recordSignInPromoUICancelTapped {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedFeedSignInPromoUICancel
+                                asInteraction:NO];
+  base::RecordAction(base::UserMetricsAction(kFeedSignInPromoUICancelTapped));
+}
+
 #pragma mark - Private
 
 // Returns the UserSettingsOnStart value based on the user settings.

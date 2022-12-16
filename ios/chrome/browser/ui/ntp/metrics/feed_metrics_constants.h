@@ -352,4 +352,9 @@ extern const char kUnfollowFromMenu[];
 extern const char kFollowingFeedGroupByPublisher[];
 extern const char kFollowingFeedSortByLatest[];
 
+// User actions triggered when a user clicks the buttons on the Feed sign-in
+// promo UI.
+extern const char kFeedSignInPromoUIContinueTapped[];
+extern const char kFeedSignInPromoUICancelTapped[];
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_CONSTANTS_H_

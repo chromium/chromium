@@ -168,3 +168,7 @@ const char kFollowingFeedGroupByPublisher[] =
     "ContentSuggestions.Feed.WebFeed.SortType.GroupByPublisher";
 const char kFollowingFeedSortByLatest[] =
     "ContentSuggestions.Feed.WebFeed.SortType.SortByLatest";
+const char kFeedSignInPromoUIContinueTapped[] =
+    "ContentSuggestions.Feed.SignIn.FeedSignInPromoUIContinueTapped";
+const char kFeedSignInPromoUICancelTapped[] =
+    "ContentSuggestions.Feed.SignIn.FeedSignInPromoUICancelTapped";

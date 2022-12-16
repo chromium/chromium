@@ -42357,6 +42357,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="63"
       label="User requested to refresh the Following feed using the
              post-follow snackbar 'refresh' action."/>
+  <int value="64" label="User action caused a sign-in promo UI to be shown."/>
+  <int value="65"
+      label="User tapped on the 'Continue' of the sign-in promo UI."/>
+  <int value="66" label="User tapped on the 'Cancel' of the sign-in promo UI."/>
 </enum>
 
 <enum name="FeedUserCommandType">
