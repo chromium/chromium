@@ -1,0 +1,75 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bitmap_fetcher") {
+  sources = [
+    "bitmap_fetcher.cc",
+    "bitmap_fetcher.h",
+    "bitmap_fetcher_delegate.h",
+    "bitmap_fetcher_service.cc",
+    "bitmap_fetcher_service.h",
+    "bitmap_fetcher_service_factory.cc",
+    "bitmap_fetcher_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//content/public/browser",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//skia",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "bitmap_fetcher_service_unittest.cc" ]
+
+  deps = [
+    ":bitmap_fetcher",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//skia",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "bitmap_fetcher_browsertest.cc" ]
+
+    deps = [
+      ":bitmap_fetcher",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//net/traffic_annotation:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/gfx:gfx_skia",
+      "//ui/gfx/codec",
+      "//ui/gfx/geometry",
+    ]
+  }
+}

@@ -400,6 +400,7 @@ static_library("ui") {
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser:resource_prefetch_predictor_proto",
     "//chrome/browser/autofill",
+    "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/chrome_for_testing:buildflags",
     "//chrome/browser/devtools",
