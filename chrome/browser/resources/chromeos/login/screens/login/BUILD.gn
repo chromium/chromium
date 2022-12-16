@@ -31,7 +31,7 @@ js_type_check("closure_compile") {
 js_library("active_directory_password_change") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/active_directory_password_change.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
@@ -46,7 +46,7 @@ js_library("active_directory_password_change") {
 js_library("cryptohome_recovery") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/cryptohome_recovery.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -58,7 +58,7 @@ js_library("cryptohome_recovery") {
 js_library("encryption_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/encryption_migration.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
@@ -72,7 +72,7 @@ js_library("encryption_migration") {
 js_library("gaia_password_changed") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/gaia_password_changed.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
@@ -89,7 +89,7 @@ js_library("lacros_data_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.js" ]
   deps = [
     "../../components:oobe_slide",
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -100,7 +100,7 @@ js_library("lacros_data_backward_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_backward_migration.js" ]
   deps = [
     "../../components:oobe_slide",
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -110,7 +110,7 @@ js_library("lacros_data_backward_migration") {
 js_library("management_transition") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
@@ -123,7 +123,7 @@ js_library("management_transition") {
 js_library("offline_login") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/offline_login.js" ]
   deps = [
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
@@ -139,7 +139,7 @@ js_library("update_required_card") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/update_required_card.js" ]
   deps = [
     ":checking_downloading_update",
-    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",

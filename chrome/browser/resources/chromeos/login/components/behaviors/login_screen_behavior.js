@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OOBE_UI_STATE} from '../display_manager_types.js';
-// #import {OobeTypes} from '../oobe_types.js';
-// #import {Oobe} from '../../cr_ui.js';
+import {Oobe} from '../../cr_ui.js';
+import {OOBE_UI_STATE} from '../display_manager_types.js';
+import {OobeTypes} from '../oobe_types.js';
 
 /**
  * @fileoverview
@@ -14,7 +14,7 @@
 const CALLBACK_USER_ACTED = 'userActed';
 
 /** @polymerBehavior */
-/* #export */ var LoginScreenBehavior = {
+export var LoginScreenBehavior = {
   // List of methods exported to login.screenName.<method> API.
   // This is expected to be overridden by the Polymer object using this
   // behavior.
@@ -148,7 +148,7 @@ const CALLBACK_USER_ACTED = 'userActed';
 LoginScreenBehavior.Proto;
 
 /** @interface */
-/* #export */ class LoginScreenBehaviorInterface {
+export class LoginScreenBehaviorInterface {
   /**
    * @param {string} screenName
    */
