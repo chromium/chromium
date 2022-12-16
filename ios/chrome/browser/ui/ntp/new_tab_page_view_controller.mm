@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
@@ -200,7 +199,7 @@
     self.shouldScrollIntoFeed = NO;
   }
 
-  [self updateFeedTopSectionIsVisible];
+  [self updateFeedSigninPromoIsVisible];
 
   // Since this VC is shared across web states, the stickiness might have
   // changed in another tab. This ensures that the sticky elements are correct
@@ -531,7 +530,7 @@
   [self handleStickyElementsForScrollPosition:scrollPosition force:NO];
 
   if (self.viewDidAppear) {
-    [self updateFeedTopSectionIsVisible];
+    [self updateFeedSigninPromoIsVisible];
   }
 }
 
@@ -801,17 +800,27 @@
 
 // Checks whether the feed top section is visible and updates the
 // `ntpContentDelegate`.
-- (void)updateFeedTopSectionIsVisible {
+- (void)updateFeedSigninPromoIsVisible {
   if (!self.feedTopSectionViewController) {
     return;
   }
-  BOOL isFeedTopSectionVisible =
-      ([self scrollPosition] + self.view.frame.size.height -
-           self.view.safeAreaInsets.top >
-       -[self feedTopSectionHeight]) &&
-      ([self scrollPosition] < -[self stickyContentHeight]);
+
+  // The y-position where NTP content starts being visible.
+  CGFloat visibleContentStartingPoint = [self scrollPosition] +
+                                        self.view.frame.size.height -
+                                        self.view.safeAreaInsets.top;
+
+  // Signin promo is logged as visible when at least the top 2/3 or bottom 1/3
+  // of it can be seen. This is not logged if the user focuses the omnibox since
+  // the suggestion sheet covers the NTP content.
+  BOOL isFeedSigninPromoVisible =
+      (visibleContentStartingPoint > -([self feedTopSectionHeight] * 2) / 3 &&
+       ([self scrollPosition] <
+        -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
+      ![self.headerController isOmniboxFocused];
+
   [self.ntpContentDelegate
-      feedTopSectionHasChangedVisibility:isFeedTopSectionVisible];
+      signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports

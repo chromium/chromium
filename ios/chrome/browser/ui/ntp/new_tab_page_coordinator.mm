@@ -1008,8 +1008,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible];
 }
 
-- (void)feedTopSectionHasChangedVisibility:(BOOL)visible {
-  [self.feedTopSectionCoordinator feedTopSectionHasChangedVisibility:visible];
+- (void)signinPromoHasChangedVisibility:(BOOL)visible {
+  [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
 }
 
 #pragma mark - NewTabPageDelegate
