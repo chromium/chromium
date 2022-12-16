@@ -18,6 +18,12 @@
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
        currentlyTracking:(BOOL)currentlyTracking;
 
+// In the event that the trackable item was successfully subscribed to, this
+// function moves the trackable item from its current section to the tracked
+// section.
+- (void)didStartPriceTrackingForItem:
+    (PriceNotificationsTableViewItem*)trackableItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_

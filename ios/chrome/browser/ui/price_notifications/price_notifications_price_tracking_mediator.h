@@ -8,7 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <memory>
 
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
+
+@protocol PriceNotificationsConsumer;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -26,7 +28,8 @@ namespace web {
 class WebState;
 }  // namespace web
 
-@interface PriceNotificationsPriceTrackingMediator : NSObject
+@interface PriceNotificationsPriceTrackingMediator
+    : NSObject <PriceNotificationsMutator>
 
 // The designated initializer. `ShoppingService`, `BookmarkModel`,
 // `ImageDataFetcher` and `WebState` must not be nil.

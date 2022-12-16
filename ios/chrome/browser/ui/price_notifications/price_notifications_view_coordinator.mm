@@ -62,6 +62,7 @@
                  imageFetcher:std::move(imageFetcher)
                      webState:webState];
   self.mediator.consumer = self.tableViewController;
+  self.tableViewController.mutator = self.mediator;
 
   // Add the "Done" button and hook it up to stop.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]

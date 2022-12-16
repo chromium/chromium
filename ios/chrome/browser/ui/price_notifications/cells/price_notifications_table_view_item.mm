@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_menu_button.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_cell_delegate.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -14,6 +17,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,12 +43,13 @@ const CGFloat kCellContentSpacing = 14;
   [super configureCell:tableCell withStyler:styler];
 
   tableCell.titleLabel.text = self.title;
-  tableCell.URLLabel.text = self.entryURL;
+  tableCell.entryURL = self.entryURL;
   [tableCell setImage:self.productImage];
   [tableCell.priceNotificationsChip setPriceDrop:self.currentPrice
                                    previousPrice:self.previousPrice];
   tableCell.tracking = self.tracking;
   tableCell.accessibilityTraits |= UIAccessibilityTraitButton;
+  tableCell.delegate = self.delegate;
 }
 
 @end
@@ -56,6 +61,8 @@ const CGFloat kCellContentSpacing = 14;
 // The imageview that is displayed on the leading edge of the cell.
 @property(nonatomic, strong)
     PriceNotificationsImageContainerView* priceNotificationsImageContainerView;
+// The button that starts the price tracking process.
+@property(nonatomic, strong) UIButton* trackButton;
 
 @end
 
@@ -82,6 +89,10 @@ const CGFloat kCellContentSpacing = 14;
         [[PriceNotificationsImageContainerView alloc] init];
     _priceNotificationsImageContainerView
         .translatesAutoresizingMaskIntoConstraints = NO;
+
+    [_trackButton addTarget:self
+                     action:@selector(trackItem)
+           forControlEvents:UIControlEventTouchUpInside];
 
     // Use stack views to layout the subviews except for the Price Notification
     // Image.
@@ -154,6 +165,30 @@ const CGFloat kCellContentSpacing = 14;
   self.trackButton.hidden = NO;
   self.menuButton.hidden = YES;
   _tracking = tracking;
+}
+
+- (void)setEntryURL:(GURL)URL {
+  if (URL != _entryURL) {
+    _entryURL = URL;
+    _URLLabel.text = base::SysUTF16ToNSString(
+        url_formatter::
+            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                _entryURL));
+  }
+}
+
+#pragma mark - UITableViewCell
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.delegate = nil;
+}
+
+#pragma mark - Private
+
+// Initiates the user's subscription to the product's price tracking events.
+- (void)trackItem {
+  [self.delegate trackItemForCell:self];
 }
 
 @end

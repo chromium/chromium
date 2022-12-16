@@ -11,6 +11,7 @@ source_set("cells") {
     "price_notifications_menu_button.mm",
     "price_notifications_price_chip_view.h",
     "price_notifications_price_chip_view.mm",
+    "price_notifications_table_view_cell_delegate.h",
     "price_notifications_table_view_item.h",
     "price_notifications_table_view_item.mm",
     "price_notifications_track_button.h",
@@ -18,6 +19,7 @@ source_set("cells") {
   ]
 
   deps = [
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/price_notifications:constants",
@@ -28,6 +30,7 @@ source_set("cells") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//url",
   ]
 
   frameworks = [ "UIKit.framework" ]

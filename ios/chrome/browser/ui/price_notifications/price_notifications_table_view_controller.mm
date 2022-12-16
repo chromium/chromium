@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -26,7 +27,7 @@
 #error "This file requires ARC support."
 #endif
 
-using PriceNotificationItems = NSArray<PriceNotificationsTableViewItem*>*;
+using PriceNotificationItems = NSMutableArray<PriceNotificationsTableViewItem*>;
 
 namespace {
 
@@ -57,9 +58,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // already tracked or the item is already being price tracked.
 @property(nonatomic, assign) BOOL itemOnCurrentSiteIsTracked;
 // The array of trackable items offered on the current site.
-@property(nonatomic, strong) PriceNotificationItems trackableItems;
+@property(nonatomic, strong) PriceNotificationItems* trackableItems;
 // The array of items that the user is tracking.
-@property(nonatomic, strong) PriceNotificationItems trackedItems;
+@property(nonatomic, strong) PriceNotificationItems* trackedItems;
 
 @end
 
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // TODO(crbug.com/1362349) This array will be dynamically populated in a
   // future CL.
-  _trackedItems = [NSArray array];
+  _trackedItems = [NSMutableArray array];
 
   self.title =
       l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
@@ -105,18 +106,62 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
        currentlyTracking:(BOOL)currentlyTracking {
-  self.trackableItems = trackableItem ? @[ trackableItem ] : @[];
+  self.trackableItems = trackableItem ? [[NSMutableArray alloc]
+                                            initWithObjects:trackableItem, nil]
+                                      : [[NSMutableArray alloc] init];
   self.itemOnCurrentSiteIsTracked = currentlyTracking;
 
   [self loadModel];
   [self.tableView reloadData];
 }
 
+- (void)didStartPriceTrackingForItem:
+    (PriceNotificationsTableViewItem*)trackableItem {
+  TableViewModel* model = self.tableViewModel;
+  SectionIdentifier trackableSectionID =
+      SectionIdentifierTrackableItemsOnCurrentSite;
+  SectionIdentifier trackedSectionID = SectionIdentifierTrackedItems;
+
+  // This code removes the price trackable item from the trackable section and
+  // adds it to the tracked section at the beginning of the list. It assumes
+  // that there exists only one trackable item per page.
+  NSIndexPath* trackableItemIndexPath = [model indexPathForItem:trackableItem];
+  [model removeItemWithType:ItemTypeListItem
+      fromSectionWithIdentifier:trackableSectionID
+                        atIndex:0];
+  self.itemOnCurrentSiteIsTracked = YES;
+  [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
+                                             isEmpty:YES]
+      forSectionWithIdentifier:trackableSectionID];
+  [model insertItem:trackableItem
+      inSectionWithIdentifier:trackedSectionID
+                      atIndex:0];
+  [model setHeader:[self createHeaderForSectionIndex:trackedSectionID
+                                             isEmpty:NO]
+      forSectionWithIdentifier:trackedSectionID];
+  [self.trackedItems addObject:trackableItem];
+
+  NSRange range = NSMakeRange(trackableItemIndexPath.section, 2);
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:range];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
+#pragma mark - PriceNotificationsTableViewCellDelegate
+
+- (void)trackItemForCell:(PriceNotificationsTableViewCell*)cell {
+  NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+  PriceNotificationsTableViewItem* item =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
+  [self.mutator trackItem:item];
+}
+
 #pragma mark - Item Loading Helpers
 
 // Adds `items` to self.tableViewModel for the section designated by
 // `sectionID`.
-- (void)loadItemsFromArray:(PriceNotificationItems)items
+- (void)loadItemsFromArray:(PriceNotificationItems*)items
                  toSection:(SectionIdentifier)sectionID {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:sectionID];
@@ -131,6 +176,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   for (PriceNotificationsTableViewItem* item in items) {
     item.type = ItemTypeListItem;
+    item.delegate = self;
     [model addItem:item toSectionWithIdentifier:sectionID];
   }
 }
