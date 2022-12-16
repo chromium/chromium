@@ -1593,7 +1593,8 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
     adapter.GetProperties(&adapterProperties);
 
     if (force_fallback &&
-        adapterProperties.adapterType != WGPUAdapterType_CPU) {
+        (adapterProperties.adapterType != WGPUAdapterType_CPU ||
+         adapterProperties.backendType != WGPUBackendType_Vulkan)) {
       continue;
     }
 
