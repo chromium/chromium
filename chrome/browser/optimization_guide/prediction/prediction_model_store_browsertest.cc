@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 // be redownloaded, based on server returned model cache key.
 IN_PROC_BROWSER_TEST_F(
     PredictionModelStoreBrowserTest,
-    TestDissimilarProfilesNotShareModelWithServerModelCacheKey) {
+    // TODO(crbug.com/1401928): Re-enable this test
+    DISABLED_TestDissimilarProfilesNotShareModelWithServerModelCacheKey) {
   ModelFileObserver model_file_observer_foo, model_file_observer_bar;
   {
     set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
@@ -394,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that when a second similar profile is loaded, model is downloaded when
 // the model version has been updated. The old model should not be used.
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       TestSimilarProfilesOnModelVersionUpdate) {
+                       // TODO(crbug.com/1401928): Re-enable this test
+                       DISABLED_TestSimilarProfilesOnModelVersionUpdate) {
   ModelFileObserver model_file_observer_foo, model_file_observer_bar;
   set_server_model_cache_key(CreateModelCacheKey(kTestLocaleFoo));
   {
