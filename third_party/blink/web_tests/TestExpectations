@@ -6991,3 +6991,6 @@ external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering-2.htm
 external/wpt/css/css-images/image-set/image-set-unordered-res-rendering.html [ Failure Pass ]
 external/wpt/css/css-images/image-set/image-set-first-match-rendering.html [ Failure Pass ]
 external/wpt/css/css-images/image-set/image-set-rendering.html [ Failure Pass ]
+
+# TODO(crbug.com/1401590): Re-enable this test
+[ Mac11 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
