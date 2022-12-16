@@ -2088,6 +2088,8 @@ static_library("ui") {
       "../ash/app_list/search/cros_action_history/cros_action_recorder.h",
       "../ash/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.cc",
       "../ash/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h",
+      "../ash/app_list/search/federated_metrics_manager.cc",
+      "../ash/app_list/search/federated_metrics_manager.h",
       "../ash/app_list/search/files/drive_file_suggestion_provider.cc",
       "../ash/app_list/search/files/drive_file_suggestion_provider.h",
       "../ash/app_list/search/files/drive_search_provider.cc",

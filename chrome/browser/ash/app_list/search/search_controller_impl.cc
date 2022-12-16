@@ -62,6 +62,8 @@ SearchControllerImpl::SearchControllerImpl(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
       session_metrics_manager_(
           std::make_unique<SearchSessionMetricsManager>(profile, notifier)),
+      federated_metrics_manager_(
+          std::make_unique<FederatedMetricsManager>(notifier)),
       app_search_data_source_(std::make_unique<AppSearchDataSource>(
           profile,
           list_controller,

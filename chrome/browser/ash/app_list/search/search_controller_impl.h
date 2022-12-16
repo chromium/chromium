@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/burn_in_controller.h"
+#include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -150,6 +151,7 @@ class SearchControllerImpl : public SearchController {
 
   std::unique_ptr<SearchMetricsManager> metrics_manager_;
   std::unique_ptr<SearchSessionMetricsManager> session_metrics_manager_;
+  std::unique_ptr<FederatedMetricsManager> federated_metrics_manager_;
   std::unique_ptr<AppSearchDataSource> app_search_data_source_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
