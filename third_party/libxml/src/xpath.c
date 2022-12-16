@@ -13644,8 +13644,6 @@ xmlXPathRunStreamEval(xmlXPathContextPtr ctxt, xmlPatternPtr comp,
     xmlNodePtr cur = NULL, limit = NULL;
     xmlStreamCtxtPtr patstream = NULL;
 
-    int nb_nodes = 0;
-
     if ((ctxt == NULL) || (comp == NULL))
         return(-1);
     max_depth = xmlPatternMaxDepth(comp);
@@ -13762,8 +13760,6 @@ next_node:
             ctxt->opCount++;
         }
 
-        nb_nodes++;
-
 	switch (cur->type) {
 	    case XML_ELEMENT_NODE:
 	    case XML_TEXT_NODE:
@@ -13854,11 +13850,6 @@ scan_children:
     } while ((cur != NULL) && (depth >= 0));
 
 done:
-
-#if 0
-    printf("stream eval: checked %d nodes selected %d\n",
-           nb_nodes, retObj->nodesetval->nodeNr);
-#endif
 
     if (patstream)
 	xmlFreeStreamCtxt(patstream);

@@ -8,7 +8,6 @@
 void __xmlIOErr(int domain, int code, const char *extra);
 void __xmlLoaderErr(void *ctx, const char *msg,
                     const char *filename) LIBXML_ATTR_FORMAT(2,0);
-int xmlInputReadCallbackNop(void *context, char *buffer, int len);
 
 #ifdef LIBXML_OUTPUT_ENABLED
 xmlOutputBufferPtr

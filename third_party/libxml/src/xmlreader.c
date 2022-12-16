@@ -41,6 +41,9 @@
 
 #include "private/buf.h"
 #include "private/tree.h"
+#ifdef LIBXML_XINCLUDE_ENABLED
+#include "private/xinclude.h"
+#endif
 
 #define MAX_ERR_MSG_SIZE 64000
 
@@ -837,7 +840,7 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
      * Discard the consumed input when needed and possible
      */
     if (reader->mode == XML_TEXTREADER_MODE_INTERACTIVE) {
-        if (alloc != XML_BUFFER_ALLOC_IMMUTABLE) {
+        if (reader->input->readcallback != NULL) {
 	    if ((reader->cur >= 4096) &&
 		(xmlBufUse(inbuf) - reader->cur <= CHUNK_SIZE)) {
 		val = xmlBufShrink(inbuf, reader->cur);
@@ -1454,6 +1457,7 @@ node_found:
 	    reader->xincctxt = xmlXIncludeNewContext(reader->ctxt->myDoc);
 	    xmlXIncludeSetFlags(reader->xincctxt,
 	                        reader->parserFlags & (~XML_PARSE_NOXINCNODE));
+            xmlXIncludeSetStreamingMode(reader->xincctxt, 1);
 	}
 	/*
 	 * expand that node and process it

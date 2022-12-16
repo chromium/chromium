@@ -741,7 +741,6 @@ xmlDictQLookup
 xmlDictReference
 xmlDictSetLimit
 xmlDictSize
-xmlDllMain
 xmlDocCopyNode
 xmlDocCopyNodeList
 xmlDocDump

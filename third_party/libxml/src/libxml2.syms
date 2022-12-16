@@ -2185,19 +2185,12 @@ LIBXML2_2.6.28 {
   xmlTextReaderSetup;
 } LIBXML2_2.6.27;
 
-LIBXML2_2.6.29 {
-    global:
-
-# threads
-  xmlDllMain;
-} LIBXML2_2.6.28;
-
 LIBXML2_2.6.32 {
     global:
 
 # schematron
   xmlSchematronSetValidStructuredErrors;
-} LIBXML2_2.6.29;
+} LIBXML2_2.6.28;
 
 LIBXML2_2.7.0 {
     global:

@@ -2,6 +2,47 @@ NEWS file for libxml2
 
 v2.10.0: Aug 17 2022
 
+### Breaking changes
+
+The Docbook parser module and all related symbols habe been removed completely.
+This was experimental code which never worked and generated a deprecation
+warning for 15+ years. The library's soname wasn't changed in order to allow
+seamless upgrades to later versions. If this concerns you, consider bumping
+soname yourself.
+
+Some other modules are now disabled by default and will eventually be removed
+completely:
+
+- Support for XPointer locations (ranges and points): This was based on
+  a W3C specification which never got beyond Working Draft status. To my
+  knowledge, there's no software supporting this spec which is still
+  maintained. You now have to enable this code by passing the
+  `--with-xptr-locs` configuration option. Be warned that this part of
+  the code base is buggy and had many security issues in the past.
+
+- Support for the built-in FTP client (`--with-ftp`).
+
+- Support for "legacy" functions (`--with-legacy`).
+
+If you're concerned about ABI stability and haven't disabled these modules
+already, add the following configuration options or bump soname yourself:
+
+    --with-ftp
+    --with-legacy
+    --with-xptr-locs
+
+Several functions of the public API were deprecated. Most of them should be
+completely unused and will generate a deprecation warning now.
+
+The autoconf build now uses the sysconfdir variable for the location of
+the default catalog file. The path changed from hardcoded /etc/xml/catalog
+to ${sysconfdir}/xml/catalog. The sysconfdir variable defaults to
+${prefix}/etc, prefix defaults to /usr/local, so without other options
+the path becomes /usr/local/etc/xml/catalog. If you want the old behavior,
+configure with
+
+    --sysconfdir=/etc
+
 ### Security
 
 - [CVE-2022-2309] Reset nsNr in xmlCtxtReset

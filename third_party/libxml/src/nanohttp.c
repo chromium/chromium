@@ -16,6 +16,7 @@
 
 #ifdef LIBXML_HTTP_ENABLED
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -1259,6 +1260,107 @@ xmlNanoHTTPClose(void *ctx) {
     xmlNanoHTTPFreeCtxt(ctxt);
 }
 
+
+/**
+ * xmlNanoHTTPHostnameMatch:
+ * @pattern: The pattern as it appears in no_proxy environment variable
+ * @hostname: The hostname to test as it appears in the URL
+ *
+ * This function tests whether a given hostname matches a pattern. The pattern
+ * usually is a token from the no_proxy environment variable. Wildcards in the
+ * pattern are not supported.
+ *
+ * Returns true, iff hostname matches the pattern.
+ */
+
+static int 
+xmlNanoHTTPHostnameMatch(const char *pattern, const char *hostname) {
+    int idx_pattern, idx_hostname;
+    const char * pattern_start;
+
+    if (!pattern || *pattern == '\0' || !hostname)
+	return 0;
+
+    /* Ignore trailing '.' */
+    if (*pattern == '.') {
+        idx_pattern = strlen(pattern) -1;
+        pattern_start = pattern + 1;
+    }
+    else {
+        idx_pattern = strlen(pattern);
+        pattern_start = pattern;
+    }
+    idx_hostname = strlen(hostname);
+
+    for (; idx_pattern >= 0 && idx_hostname >= 0; 
+           --idx_pattern, --idx_hostname) {
+	if (tolower(pattern_start[idx_pattern]) != tolower(hostname[idx_hostname]))
+	    break;
+    }
+
+    return idx_pattern == -1 && (idx_hostname == -1|| hostname[idx_hostname] == '.');
+}
+
+
+/**
+ * xmlNanoHTTPBypassProxy:
+ * @hostname: The hostname as it appears in the URL
+ *
+ * This function evaluates the no_proxy environment variable and returns
+ * whether the proxy server should be bypassed for a given host.
+ *
+ * Returns true, iff a proxy server should be bypassed for the given hostname.
+ */
+
+static int
+xmlNanoHTTPBypassProxy(const char *hostname) {
+    size_t envlen;
+    char *env = getenv("no_proxy"), *cpy=NULL, *p=NULL;
+    if (!env)
+	return 0;
+
+    /* (Avoid strdup because it's not portable.) */
+    envlen = strlen(env) + 1;
+    cpy = xmlMalloc(envlen);
+    memcpy(cpy, env, envlen);
+    env = cpy;
+
+    /* The remainder of the function is basically a tokenizing: */
+    while (isspace(*env))
+    	++env;
+    if (*env == '\0') {
+    	xmlFree(cpy);
+	return 0;
+    }
+
+    p = env;
+    while (*env) {
+
+    	if (*env != ',') {
+	    ++env;
+	    continue;
+	}
+
+	*(env++) = '\0';
+	if (xmlNanoHTTPHostnameMatch(p, hostname)) {
+	    xmlFree(cpy);
+	    return 1;
+	}
+
+	while (isspace(*env))
+	    ++env;
+	p = env;
+    }
+    if (xmlNanoHTTPHostnameMatch(p, hostname)) {
+    	xmlFree(cpy);
+    	return 1;
+    }
+
+    xmlFree(cpy);
+    return 0;
+}
+
+
 /**
  * xmlNanoHTTPMethodRedir:
  * @URL:  The URL to load
@@ -1286,6 +1388,7 @@ xmlNanoHTTPMethodRedir(const char *URL, const char *method, const char *input,
     int blen;
     SOCKET ret;
     int nbRedirects = 0;
+    int use_proxy;
     char *redirURL = NULL;
 #ifdef DEBUG_HTTP
     int xmt_bytes;
@@ -1320,7 +1423,8 @@ retry:
 	if (redirURL != NULL) xmlFree(redirURL);
         return(NULL);
     }
-    if (proxy) {
+    use_proxy = proxy && !xmlNanoHTTPBypassProxy(ctxt->hostname);
+    if (use_proxy) {
 	blen = strlen(ctxt->hostname) * 2 + 16;
 	ret = xmlNanoHTTPConnectHost(proxy, proxyPort);
     }
@@ -1355,7 +1459,7 @@ retry:
 #endif
     if (ctxt->port != 80) {
 	/* reserve space for ':xxxxx', incl. potential proxy */
-	if (proxy)
+	if (use_proxy)
 	    blen += 17;
 	else
 	    blen += 11;
@@ -1369,7 +1473,7 @@ retry:
 
     p = bp;
 
-    if (proxy) {
+    if (use_proxy) {
 	if (ctxt->port != 80) {
 	    p += snprintf( p, blen - (p - bp), "%s http://%s:%d%s",
 			method, ctxt->hostname,
@@ -1410,7 +1514,7 @@ retry:
 
 #ifdef DEBUG_HTTP
     xmlGenericError(xmlGenericErrorContext,
-	    "-> %s%s", proxy? "(Proxy) " : "", bp);
+	    "-> %s%s", use_proxy ? "(Proxy) " : "", bp);
     if ((blen -= strlen(bp)+1) < 0)
 	xmlGenericError(xmlGenericErrorContext,
 		"ERROR: overflowed buffer by %d bytes\n", -blen);

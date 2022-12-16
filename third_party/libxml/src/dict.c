@@ -1007,7 +1007,7 @@ xmlDictLookup(xmlDictPtr dict, const xmlChar *name, int len) {
  */
 const xmlChar *
 xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
-    unsigned long key, okey, nbi = 0;
+    unsigned long key, okey;
     xmlDictEntryPtr insert;
     unsigned int l;
 
@@ -1042,7 +1042,6 @@ xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
 	        (!xmlStrncmp(insert->name, name, l)))
 		return(insert->name);
 #endif
-	    nbi++;
 	}
 #ifdef __GNUC__
 	if ((insert->okey == okey) && (insert->len == l)) {
@@ -1084,7 +1083,6 @@ xmlDictExists(xmlDictPtr dict, const xmlChar *name, int len) {
 		    (!xmlStrncmp(tmp->name, name, l)))
 		    return(tmp->name);
 #endif
-		nbi++;
 	    }
 #ifdef __GNUC__
 	    if ((tmp->okey == skey) && (tmp->len == l)) {

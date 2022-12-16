@@ -20,6 +20,7 @@ XML_SEED_CORPUS_SRC = \
     '$(top_srcdir)/test/VC/*' \
     '$(top_srcdir)/test/VCM/*' \
     '$(top_srcdir)/test/XInclude/docs/*' \
+    '$(top_srcdir)/test/XInclude/without-reader/*' \
     '$(top_srcdir)/test/xmlid/*'
 
 testFuzzer_SOURCES = testFuzzer.c fuzz.c

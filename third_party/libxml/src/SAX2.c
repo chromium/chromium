@@ -415,6 +415,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	                 xmlMalloc(5 * sizeof(xmlParserInputPtr));
 	if (ctxt->inputTab == NULL) {
 	    xmlSAX2ErrMemory(ctxt, "xmlSAX2ExternalSubset");
+            xmlFreeInputStream(input);
 	    ctxt->input = oldinput;
 	    ctxt->inputNr = oldinputNr;
 	    ctxt->inputMax = oldinputMax;

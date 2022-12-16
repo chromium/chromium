@@ -8,4 +8,10 @@
  */
 extern int __xmlRegisterCallbacks;
 
+xmlNodePtr
+xmlStaticCopyNode(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent,
+                  int extended);
+xmlNodePtr
+xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent);
+
 #endif /* XML_TREE_H_PRIVATE__ */

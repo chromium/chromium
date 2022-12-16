@@ -1490,9 +1490,9 @@ out:
  */
 xmlNodePtr
 xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
-    xmlNodePtr ret = NULL, last = NULL;
+    xmlNodePtr ret = NULL, head = NULL, last = NULL;
     xmlNodePtr node;
-    xmlChar *val;
+    xmlChar *val = NULL;
     const xmlChar *cur = value;
     const xmlChar *q;
     xmlEntityPtr ent;
@@ -1590,14 +1590,12 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			 */
 			if (!xmlBufIsEmpty(buf)) {
 			    node = xmlNewDocText(doc, NULL);
-			    if (node == NULL) {
-				if (val != NULL) xmlFree(val);
-				goto out;
-			    }
+                            if (node == NULL)
+                                goto out;
 			    node->content = xmlBufDetach(buf);
 
 			    if (last == NULL) {
-				last = ret = node;
+				last = head = node;
 			    } else {
 				last = xmlAddNextSibling(last, node);
 			    }
@@ -1607,11 +1605,9 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			 * Create a new REFERENCE_REF node
 			 */
 			node = xmlNewReference(doc, val);
-			if (node == NULL) {
-			    if (val != NULL) xmlFree(val);
+			if (node == NULL)
 			    goto out;
-			}
-			else if ((ent != NULL) && (ent->children == NULL)) {
+			if ((ent != NULL) && (ent->children == NULL)) {
 			    xmlNodePtr temp;
 
                             /* Set to non-NULL value to avoid recursion. */
@@ -1627,12 +1623,13 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			    }
 			}
 			if (last == NULL) {
-			    last = ret = node;
+			    last = head = node;
 			} else {
 			    last = xmlAddNextSibling(last, node);
 			}
 		    }
 		    xmlFree(val);
+                    val = NULL;
 		}
 		cur++;
 		q = cur;
@@ -1651,7 +1648,7 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 	} else
 	    cur++;
     }
-    if ((cur != q) || (ret == NULL)) {
+    if ((cur != q) || (head == NULL)) {
         /*
 	 * Handle the last piece of text.
 	 */
@@ -1660,21 +1657,24 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 
     if (!xmlBufIsEmpty(buf)) {
 	node = xmlNewDocText(doc, NULL);
-        if (node == NULL) {
-            xmlBufFree(buf);
-            return(NULL);
-        }
+        if (node == NULL)
+            goto out;
 	node->content = xmlBufDetach(buf);
 
 	if (last == NULL) {
-	    ret = node;
+	    head = node;
 	} else {
 	    xmlAddNextSibling(last, node);
 	}
     }
 
+    ret = head;
+    head = NULL;
+
 out:
     xmlBufFree(buf);
+    if (val != NULL) xmlFree(val);
+    if (head != NULL) xmlFreeNodeList(head);
     return(ret);
 }
 
@@ -1860,7 +1860,7 @@ xmlNewPropInternal(xmlNodePtr node, xmlNsPtr ns,
 
     if ((node != NULL) && (node->type != XML_ELEMENT_NODE)) {
         if ((eatname == 1) &&
-	    ((node->doc == NULL) ||
+	    ((node->doc == NULL) || (node->doc->dict == NULL) ||
 	     (!(xmlDictOwns(node->doc->dict, name)))))
             xmlFree((xmlChar *) name);
         return (NULL);
@@ -1873,6 +1873,7 @@ xmlNewPropInternal(xmlNodePtr node, xmlNsPtr ns,
     if (cur == NULL) {
         if ((eatname == 1) &&
 	    ((node == NULL) || (node->doc == NULL) ||
+             (node->doc->dict == NULL) ||
 	     (!(xmlDictOwns(node->doc->dict, name)))))
             xmlFree((xmlChar *) name);
         xmlTreeErrMemory("building attribute");
@@ -2383,8 +2384,9 @@ xmlNewDocNodeEatName(xmlDocPtr doc, xmlNsPtr ns,
 	}
     } else {
         /* if name don't come from the doc dictionary free it here */
-        if ((name != NULL) && (doc != NULL) &&
-	    (!(xmlDictOwns(doc->dict, name))))
+        if ((name != NULL) &&
+            ((doc == NULL) || (doc->dict == NULL) ||
+	     (!(xmlDictOwns(doc->dict, name)))))
 	    xmlFree(name);
     }
     return(cur);
@@ -4085,9 +4087,6 @@ xmlCopyNamespaceList(xmlNsPtr cur) {
     return(ret);
 }
 
-static xmlNodePtr
-xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent);
-
 static xmlAttrPtr
 xmlCopyPropInternal(xmlDocPtr doc, xmlNodePtr target, xmlAttrPtr cur) {
     xmlAttrPtr ret;
@@ -4251,7 +4250,7 @@ xmlCopyPropList(xmlNodePtr target, xmlAttrPtr cur) {
  * namespace info, but don't recurse on children.
  */
 
-static xmlNodePtr
+xmlNodePtr
 xmlStaticCopyNode(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent,
                   int extended) {
     xmlNodePtr ret;
@@ -4450,7 +4449,7 @@ out:
     return(ret);
 }
 
-static xmlNodePtr
+xmlNodePtr
 xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
     xmlNodePtr ret = NULL;
     xmlNodePtr p = NULL,q;
@@ -4464,7 +4463,7 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
 	    }
 	    if (doc->intSubset == NULL) {
 		q = (xmlNodePtr) xmlCopyDtd( (xmlDtdPtr) node );
-		if (q == NULL) return(NULL);
+		if (q == NULL) goto error;
 		q->doc = doc;
 		q->parent = parent;
 		doc->intSubset = (xmlDtdPtr) q;
@@ -4476,7 +4475,7 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
 	} else
 #endif /* LIBXML_TREE_ENABLED */
 	    q = xmlStaticCopyNode(node, doc, parent, 1);
-	if (q == NULL) return(NULL);
+	if (q == NULL) goto error;
 	if (ret == NULL) {
 	    q->prev = NULL;
 	    ret = p = q;
@@ -4489,6 +4488,9 @@ xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent) {
 	node = node->next;
     }
     return(ret);
+error:
+    xmlFreeNodeList(ret);
+    return(NULL);
 }
 
 /**

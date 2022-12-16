@@ -733,7 +733,11 @@ xmlInitThreads(void)
             (pthread_cond_init != NULL) &&
             (pthread_cond_destroy != NULL) &&
             (pthread_cond_wait != NULL) &&
-            (pthread_equal != NULL) &&
+            /*
+             * pthread_equal can be inline, resuting in -Waddress warnings.
+             * Let's assume it's available if all the other functions are.
+             */
+            /* (pthread_equal != NULL) && */
             (pthread_self != NULL) &&
             (pthread_cond_signal != NULL)) {
             libxml_is_threaded = 1;

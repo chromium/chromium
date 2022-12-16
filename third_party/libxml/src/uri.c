@@ -1673,8 +1673,8 @@ xmlURIUnescapeString(const char *str, int len, char *target) {
  * @str:  string to escape
  * @list: exception list string of chars not to escape
  *
- * This routine escapes a string to hex, ignoring reserved characters (a-z)
- * and the characters in the exception list.
+ * This routine escapes a string to hex, ignoring reserved characters
+ * (a-z, A-Z, 0-9, "@-_.!~*'()") and the characters in the exception list.
  *
  * Returns a new escaped string or NULL in case of error.
  */
