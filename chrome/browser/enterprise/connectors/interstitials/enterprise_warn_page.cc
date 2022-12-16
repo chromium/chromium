@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/grit/components_resources.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/urls.h"
@@ -23,15 +24,20 @@ const security_interstitials::SecurityInterstitialPage::TypeID
     EnterpriseWarnPage::kTypeForTesting = &EnterpriseWarnPage::kTypeForTesting;
 
 EnterpriseWarnPage::EnterpriseWarnPage(
+    safe_browsing::BaseUIManager* ui_manager,
     content::WebContents* web_contents,
     const GURL& request_url,
+    const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
+        unsafe_resources,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
-          std::move(controller_client)) {}
+          std::move(controller_client)),
+      ui_manager_(ui_manager),
+      unsafe_resources_(unsafe_resources) {}
 
 EnterpriseWarnPage::~EnterpriseWarnPage() = default;
 
@@ -83,9 +89,14 @@ void EnterpriseWarnPage::CommandReceived(const std::string& command) {
     case security_interstitials::CMD_DONT_PROCEED:
       controller()->GoBack();
       break;
-    case security_interstitials::CMD_PROCEED:
+    case security_interstitials::CMD_PROCEED: {
+      // Add to allowlist.
+      ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/true,
+                                      web_contents(), request_url(),
+                                      /*showed_interstitial=*/true);
       controller()->Proceed();
       break;
+    }
     case security_interstitials::CMD_OPEN_HELP_CENTER:
       controller()->OpenUrlInNewForegroundTab(
           GURL(security_interstitials::kEnterpriseInterstitialHelpLink));
