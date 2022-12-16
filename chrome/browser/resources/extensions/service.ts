@@ -160,13 +160,15 @@ export class Service implements ServiceInterface {
     }
     chrome.metricsPrivate.recordUserAction('Extensions.RemoveExtensionClick');
     this.isDeleting_ = true;
-    chrome.management.uninstall(id, {showConfirmDialog: true}, () => {
-      // The "last error" was almost certainly the user canceling the dialog.
-      // Do nothing. We only check it so we don't get noisy logs.
-      /** @suppress {suspiciousCode} */
-      chrome.runtime.lastError;
-      this.isDeleting_ = false;
-    });
+    chrome.management.uninstall(id, {showConfirmDialog: true})
+        .catch(
+            _ => {
+                // The error was almost certainly the user canceling the dialog.
+                // Do nothing. We only check it so we don't get noisy logs.
+            })
+        .finally(() => {
+          this.isDeleting_ = false;
+        });
   }
 
   setItemEnabled(id: string, isEnabled: boolean) {
