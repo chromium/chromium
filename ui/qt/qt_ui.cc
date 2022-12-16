@@ -448,10 +448,12 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
   for (const auto& map : kMaps)
     mixer[map.id] = {shim_->GetColor(map.role, map.state)};
 
+  const bool use_custom_frame =
+      key.frame_type == ui::ColorProviderManager::FrameType::kChromium;
   mixer[ui::kColorFrameActive] = {
-      shim_->GetFrameColor(ColorState::kNormal, true)};
+      shim_->GetFrameColor(ColorState::kNormal, use_custom_frame)};
   mixer[ui::kColorFrameInactive] = {
-      shim_->GetFrameColor(ColorState::kInactive, true)};
+      shim_->GetFrameColor(ColorState::kInactive, use_custom_frame)};
 }
 
 DISABLE_CFI_VCALL
