@@ -773,12 +773,13 @@ export class FakeNetworkConfig {
    * @param {!ApnProperties} apn
    */
   createCustomApn(guid, apn) {
-    const managedProp = this.managedProperties_.get(guid);
+    const properties = this.managedProperties_.get(guid);
+    assert(properties);
     apn.id = `${this.apnIdCounter_++}`;
-    if (!managedProp.typeProperties.cellular.customApnList) {
-      managedProp.typeProperties.cellular.customApnList = [];
+    if (!properties.typeProperties.cellular.customApnList) {
+      properties.typeProperties.cellular.customApnList = [];
     }
-    managedProp.typeProperties.cellular.customApnList.push(apn);
+    properties.typeProperties.cellular.customApnList.unshift(apn);
     this.methodCalled('createCustomApn');
   }
 

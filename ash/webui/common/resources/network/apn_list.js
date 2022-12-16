@@ -61,6 +61,16 @@ export class ApnList extends ApnListBase {
         value: false,
       },
 
+      /**
+       * The mode in which the apn detail dialog is opened.
+       * @type {ApnDetailDialogMode}
+       * @private
+       */
+      apnDetailDialogMode_: {
+        type: Object,
+        value: ApnDetailDialogMode.CREATE,
+      },
+
       /** @private */
       isConnectedApnAutoDetected_: {
         type: Boolean,
@@ -222,16 +232,13 @@ export class ApnList extends ApnListBase {
    * @private
    */
   showApnDetailDialog_(mode, apn) {
-    assert(this.guid);
     this.shouldShowApnDetailDialog_ = true;
+    this.apnDetailDialogMode_ = mode;
     // Added to ensure dom-if stamping.
     afterNextRender(this, () => {
       const apnDetailDialog = /** @type {ApnDetailDialog} */ (
           this.shadowRoot.querySelector('#apnDetailDialog'));
       assert(!!apnDetailDialog);
-
-      apnDetailDialog.guid = this.guid;
-      apnDetailDialog.mode = mode;
       apnDetailDialog.apnProperties = apn;
     });
   }

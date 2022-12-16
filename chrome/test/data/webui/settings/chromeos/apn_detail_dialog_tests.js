@@ -187,10 +187,10 @@ suite('ApnDetailDialog', function() {
     /**
      * @type {!ManagedProperties}
      */
-    const managedProp =
+    const properties =
         await mojoApi_.getManagedProperties(apnDetailDialog.guid);
-    assertTrue(!!managedProp);
-    assertFalse(!!managedProp.result.typeProperties.cellular.customApnList);
+    assertTrue(!!properties);
+    assertFalse(!!properties.result.typeProperties.cellular.customApnList);
 
     const actionBtn =
         apnDetailDialog.shadowRoot.querySelector('#apnDetailActionBtn');
@@ -200,9 +200,9 @@ suite('ApnDetailDialog', function() {
     await mojoApi_.whenCalled('createCustomApn');
 
     assertEquals(
-        1, managedProp.result.typeProperties.cellular.customApnList.length);
+        1, properties.result.typeProperties.cellular.customApnList.length);
 
-    const apn = managedProp.result.typeProperties.cellular.customApnList[0];
+    const apn = properties.result.typeProperties.cellular.customApnList[0];
     assertEquals(TEST_APN.accessPointName, apn.accessPointName);
     assertEquals(TEST_APN.username, apn.username);
     assertEquals(TEST_APN.password, apn.password);
