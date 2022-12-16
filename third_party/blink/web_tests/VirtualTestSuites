@@ -989,7 +989,7 @@
       "http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js",
       "http/tests/storage/partitioned-storage"
     ],
-    "args": [ "--enable-features=ThirdPartyStoragePartitioning" ],
+    "args": [ "--disable-features=ThirdPartyStoragePartitioning" ],
     "expires": "Jul 1, 2023"
   },
   {

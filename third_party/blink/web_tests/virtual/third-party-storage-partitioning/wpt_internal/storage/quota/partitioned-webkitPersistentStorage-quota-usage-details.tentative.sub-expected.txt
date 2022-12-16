@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-PASS Partitioned webkitPersistentStorage quota and usage details test.
+FAIL Partitioned webkitPersistentStorage quota and usage details test. assert_true: Usage should be 0 expected true got false
 Harness: the test ran to completion.
 

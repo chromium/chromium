@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-PASS Simple test for partitioned sessionStorage
+FAIL Simple test for partitioned sessionStorage assert_true: IDs pulled from two partitioned iframes are different. expected true got false
 Harness: the test ran to completion.
 

@@ -4,5 +4,5 @@ Set storage item on an iframe of page with one origin:
 item set
 
 Read item from an iframe of page with other origin: 
-item value: undefined
+item value: test-data
 

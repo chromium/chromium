@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-PASS Test partitioning of shared workers
+FAIL Test partitioning of shared workers assert_equals: expected 1 but got 2
 Harness: the test ran to completion.
 
