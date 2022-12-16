@@ -55,11 +55,6 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// Auxiliary search for Android. See http://crbug/1310100 for more details.
-BASE_FEATURE(kAndroidAuxiliarySearch,
-             "AndroidAuxiliarySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables various tweaks to `AutocompleteController` autocompletion twiddling
 // that may improve autocompletion stability. Feature params control which
 // tweaks specifically are enabled. Enabling this feature without params is a

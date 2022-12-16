@@ -16,7 +16,6 @@ namespace omnibox {
 BASE_DECLARE_FEATURE(kExperimentalKeywordMode);
 BASE_DECLARE_FEATURE(kImageSearchSuggestionThumbnail);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
-BASE_DECLARE_FEATURE(kAndroidAuxiliarySearch);
 
 // Flags that affect the "twiddle" step of AutocompleteResult, e.g.,
 // `SortAndCull()`.

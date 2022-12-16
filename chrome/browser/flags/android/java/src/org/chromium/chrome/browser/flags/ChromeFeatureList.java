@@ -394,8 +394,6 @@ public abstract class ChromeFeatureList {
     public static final String OFFLINE_PAGES_LIVE_PAGE_SHARING = "OfflinePagesLivePageSharing";
     public static final String OFFLINE_PAGES_PREFETCHING = "OfflinePagesPrefetching";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
-    public static final String OMNIBOX_ANDROID_AUXILIARY_SEARCH =
-            "AndroidAuxiliarySearch";
     public static final String OMNIBOX_ASSISTANT_VOICE_SEARCH = "OmniboxAssistantVoiceSearch";
     public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
             "OmniboxMatchToolbarAndStatusBarColor";
@@ -588,8 +586,6 @@ public abstract class ChromeFeatureList {
             "SkipServiceWorkerForInstallPromot";
 
     /* Alphabetical: */
-    public static final CachedFlag sAndroidAuxiliarySearch =
-            new CachedFlag(OMNIBOX_ANDROID_AUXILIARY_SEARCH, false);
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sBackGestureRefactorAndroid =

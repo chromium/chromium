@@ -74,7 +74,6 @@ public class ChromeCachedFlags {
         // Workaround for crbug.com/1223545: Do not use Arrays.asList().
         List<CachedFlag> featuresToCache = new ArrayList<CachedFlag>() {
             {
-                add(ChromeFeatureList.sAndroidAuxiliarySearch);
                 add(ChromeFeatureList.sAppMenuMobileSiteOption);
                 add(ChromeFeatureList.sBackGestureRefactorAndroid);
                 add(ChromeFeatureList.sCctAutoTranslate);
