@@ -153,6 +153,26 @@ class GritNodeUnittest(unittest.TestCase):
     output = ''.join(rc_header.Format(grd, 'fr', '.'))
     self.assertIn('#define IDS_A 2378\n#define IDS_B 2379', output)
 
+  def testMaxIds(self):
+    xml = u'''<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="2" source_lang_id="en-US" current_release="3"
+      base_dir="." first_ids_file="%s">
+  <release seq="3">
+    <messages>
+      <message name="IDS_TEST1" desc="test1">test1</message>
+      <message name="IDS_TEST2" desc="test2">test2</message>
+    </messages>
+  </release>
+</grit>''' % 'GRIT_DIR/grit/testdata/tools/grit/resource_ids_for_overflow_test'
+    pseudo_file = StringIO(xml)
+    grit_root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                                 '..', '..')
+    fake_input_path = os.path.join(
+        grit_root_dir, "grit/testdata/chrome/app/generated_resources.grd")
+    root = grd_reader.Parse(pseudo_file, os.path.split(fake_input_path)[0])
+    root.AssignFirstIds(fake_input_path, {})
+    self.assertRaises(grit.exception.IdRangeOverflow, root.InitializeIds)
+
   def testExplicitFirstIdOverlaps(self):
     # second first_id will overlap preexisting range
     self.assertRaises(grit.exception.IdRangeOverlap,
