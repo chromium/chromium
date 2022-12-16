@@ -80,16 +80,6 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
 
   DCHECK_NE(WebStateList::kInvalidIndex, web_state_list->active_index());
 
-  web::NavigationManager* active_navigation_manager =
-      web_state_list->GetActiveWebState()->GetNavigationManager();
-  int lastIndex = active_navigation_manager->GetLastCommittedItemIndex();
-  UMA_HISTOGRAM_COUNTS_100("Prerender.PrerenderLoadedOnIndex", lastIndex);
-
-  BOOL onFirstNTP =
-      IsVisibleURLNewTabPage(web_state_list->GetActiveWebState()) &&
-      lastIndex == 0;
-  UMA_HISTOGRAM_BOOLEAN("Prerender.PrerenderLoadedOnFirstNTP", onFirstNTP);
-
   loading_prerender_ = true;
   web_state_list->ReplaceWebStateAt(web_state_list->active_index(),
                                     std::move(new_web_state));
