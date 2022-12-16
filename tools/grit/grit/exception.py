@@ -119,6 +119,11 @@ encoding="" attribute) if it is not in the default Windows-1252 encoding. \
   pass
 
 
+class IdRangeOverflow(Base):
+  '''ID range overflow.'''
+  pass
+
+
 class IdRangeOverlap(Base):
   '''ID range overlap.'''
   pass
