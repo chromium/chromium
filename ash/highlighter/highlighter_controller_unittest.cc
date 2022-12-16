@@ -11,9 +11,6 @@
 #include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
-#include "ash/system/palette/mock_palette_tool_delegate.h"
-#include "ash/system/palette/palette_tool.h"
-#include "ash/system/palette/tools/metalayer_mode.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
@@ -76,13 +73,9 @@ class HighlighterControllerTest : public AssistantAshTestBase {
     controller_ = Shell::Get()->highlighter_controller();
     controller_test_api_ =
         std::make_unique<HighlighterControllerTestApi>(controller_);
-
-    palette_tool_delegate_ = std::make_unique<MockPaletteToolDelegate>();
-    tool_ = std::make_unique<MetalayerMode>(palette_tool_delegate_.get());
   }
 
   void TearDown() override {
-    tool_.reset();
     // This needs to be called first to reset the controller state before the
     // shell instance gets torn down.
     controller_test_api_.reset();
@@ -114,8 +107,6 @@ class HighlighterControllerTest : public AssistantAshTestBase {
   }
 
   std::unique_ptr<HighlighterControllerTestApi> controller_test_api_;
-  std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
-  std::unique_ptr<PaletteTool> tool_;
 
   HighlighterController* controller_ = nullptr;  // Not owned.
 };
@@ -560,129 +551,6 @@ TEST_F(HighlighterControllerTest, DetachedClient) {
   controller_test_api_->ResetSelection();
   TraceRect(trace);
   EXPECT_TRUE(controller_test_api_->HandleSelectionCalled());
-}
-
-// Test enabling/disabling metalayer mode by selecting/deselecting on palette
-// tool and calling UpdateEnabledState notify observers properly.
-TEST_F(HighlighterControllerTest, UpdateEnabledState) {
-  TestHighlighterObserver observer;
-  controller_->AddObserver(&observer);
-
-  // Assert initial state.
-  ASSERT_EQ(0, observer.enabled_count_);
-  ASSERT_EQ(0, observer.disabled_by_user_count_);
-  ASSERT_EQ(0, observer.disabled_by_session_abort_);
-  ASSERT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Test enabling.
-  tool_->OnEnable();
-  EXPECT_EQ(1, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(0, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Test disabling by user.
-  tool_->OnDisable();
-  EXPECT_EQ(1, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(0, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Test disabling by session abort.
-  tool_->OnEnable();
-  EXPECT_EQ(2, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(0, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-  controller_->UpdateEnabledState(
-      HighlighterEnabledState::kDisabledBySessionAbort);
-  EXPECT_EQ(2, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Test disabling by session complete.
-  tool_->OnEnable();
-  EXPECT_EQ(3, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-  controller_->UpdateEnabledState(
-      HighlighterEnabledState::kDisabledBySessionComplete);
-  EXPECT_EQ(3, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
-
-  controller_->RemoveObserver(&observer);
-}
-
-// Test aborting a metalayer session and notifying observers properly.
-TEST_F(HighlighterControllerTest, AbortSession) {
-  TestHighlighterObserver observer;
-  controller_->AddObserver(&observer);
-
-  // Assert initial state.
-  ASSERT_EQ(0, observer.enabled_count_);
-  ASSERT_EQ(0, observer.disabled_by_user_count_);
-  ASSERT_EQ(0, observer.disabled_by_session_abort_);
-  ASSERT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Start metalayer session.
-  tool_->OnEnable();
-  EXPECT_EQ(1, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(0, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Abort metalayer session.
-  controller_->AbortSession();
-  EXPECT_EQ(1, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Assert no-op when aborting an aborted session.
-  controller_->AbortSession();
-  EXPECT_EQ(1, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-
-  // Assert no-op when aborting a completed session.
-  tool_->OnEnable();
-  EXPECT_EQ(2, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(0, observer.disabled_by_session_complete_);
-  controller_->UpdateEnabledState(
-      HighlighterEnabledState::kDisabledBySessionComplete);
-  EXPECT_EQ(2, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
-  controller_->AbortSession();
-  EXPECT_EQ(2, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
-
-  // Assert no-op when aborting a disabled session.
-  tool_->OnEnable();
-  EXPECT_EQ(3, observer.enabled_count_);
-  EXPECT_EQ(0, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
-  tool_->OnDisable();
-  EXPECT_EQ(3, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
-  controller_->AbortSession();
-  EXPECT_EQ(3, observer.enabled_count_);
-  EXPECT_EQ(1, observer.disabled_by_user_count_);
-  EXPECT_EQ(1, observer.disabled_by_session_abort_);
-  EXPECT_EQ(1, observer.disabled_by_session_complete_);
 }
 
 }  // namespace ash

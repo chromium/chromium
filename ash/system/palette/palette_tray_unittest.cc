@@ -7,17 +7,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/assistant/assistant_controller_impl.h"
-#include "ash/assistant/test/test_assistant_service.h"
-#include "ash/assistant/util/assistant_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/projector_controller_impl.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -35,8 +30,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -52,10 +45,7 @@ namespace ash {
 
 class PaletteTrayTest : public AshTestBase {
  public:
-  PaletteTrayTest() {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kDeprecateAssistantStylusFeatures);
-  }
+  PaletteTrayTest() = default;
 
   PaletteTrayTest(const PaletteTrayTest&) = delete;
   PaletteTrayTest& operator=(const PaletteTrayTest&) = delete;
@@ -111,8 +101,6 @@ class PaletteTrayTest : public AshTestBase {
   PaletteTray* palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify the palette tray button exists and but is not visible initially.
@@ -302,305 +290,6 @@ TEST_F(PaletteTrayTest, WelcomeBubbleVisibility) {
   generator->PressTouch();
   generator->ReleaseTouch();
   EXPECT_TRUE(test_api_->welcome_bubble()->GetBubbleViewForTesting());
-}
-
-// Base class for tests that rely on Assistant enabled.
-class PaletteTrayTestWithAssistant : public PaletteTrayTest {
- public:
-  PaletteTrayTestWithAssistant() = default;
-
-  PaletteTrayTestWithAssistant(const PaletteTrayTestWithAssistant&) = delete;
-  PaletteTrayTestWithAssistant& operator=(const PaletteTrayTestWithAssistant&) =
-      delete;
-
-  ~PaletteTrayTestWithAssistant() override = default;
-
-  // PaletteTrayTest:
-  void SetUp() override {
-    assistant::util::OverrideIsGoogleDeviceForTesting(true);
-
-    PaletteTrayTest::SetUp();
-
-    // Instantiate EventGenerator now so that its constructor does not overwrite
-    // the simulated clock that is being installed below.
-    GetEventGenerator();
-
-    // Tests fail if event time is ever 0.
-    simulated_clock_.Advance(base::Milliseconds(10));
-    ui::SetEventTickClockForTesting(&simulated_clock_);
-
-    highlighter_test_api_ = std::make_unique<HighlighterControllerTestApi>(
-        Shell::Get()->highlighter_controller());
-  }
-
-  void TearDown() override {
-    assistant::util::OverrideIsGoogleDeviceForTesting(false);
-    ui::SetEventTickClockForTesting(nullptr);
-    // This needs to be called first to reset the controller state before the
-    // shell instance gets torn down.
-    highlighter_test_api_.reset();
-    PaletteTrayTest::TearDown();
-  }
-
- protected:
-  bool metalayer_enabled() const {
-    return test_api_->palette_tool_manager()->IsToolActive(
-        PaletteToolId::METALAYER);
-  }
-
-  bool highlighter_showing() const {
-    return highlighter_test_api_->IsShowingHighlighter();
-  }
-
-  AssistantState* assistant_state() const { return AssistantState::Get(); }
-
-  void DragAndAssertMetalayer(const std::string& context,
-                              const gfx::Point& origin,
-                              int event_flags,
-                              bool expected,
-                              bool expected_on_press) {
-    SCOPED_TRACE(context);
-
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    gfx::Point pos = origin;
-    generator->MoveTouch(pos);
-    generator->set_flags(event_flags);
-    generator->PressTouch();
-    // If this gesture is supposed to enable the tool, it should have done it by
-    // now.
-    EXPECT_EQ(expected, metalayer_enabled());
-    // Unlike the tool, the highlighter might become visible only after the
-    // first move, hence a separate parameter to check against.
-    EXPECT_EQ(expected_on_press, highlighter_showing());
-    pos += gfx::Vector2d(1, 1);
-    generator->MoveTouch(pos);
-    // If this gesture is supposed to show the highlighter, it should have done
-    // it by now.
-    EXPECT_EQ(expected, highlighter_showing());
-    EXPECT_EQ(expected, metalayer_enabled());
-    generator->set_flags(ui::EF_NONE);
-    pos += gfx::Vector2d(1, 1);
-    generator->MoveTouch(pos);
-    EXPECT_EQ(expected, highlighter_showing());
-    EXPECT_EQ(expected, metalayer_enabled());
-    generator->ReleaseTouch();
-    // If the tool is not enabled, the gesture may open a context menu instead.
-    // Press escape to close the menu.
-    generator->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  }
-
-  void WaitDragAndAssertMetalayer(const std::string& context,
-                                  const gfx::Point& origin,
-                                  int event_flags,
-                                  bool expected,
-                                  bool expected_on_press) {
-    const int kStrokeGap = 1000;
-    simulated_clock_.Advance(base::Milliseconds(kStrokeGap));
-    DragAndAssertMetalayer(context, origin, event_flags, expected,
-                           expected_on_press);
-  }
-
-  std::unique_ptr<HighlighterControllerTestApi> highlighter_test_api_;
-
- private:
-  base::SimpleTestTickClock simulated_clock_;
-  assistant::ScopedAssistantBrowserDelegate delegate_;
-};
-
-TEST_F(PaletteTrayTestWithAssistant, MetalayerToolViewCreated) {
-  EXPECT_TRUE(
-      test_api_->palette_tool_manager()->HasTool(PaletteToolId::METALAYER));
-}
-
-TEST_F(PaletteTrayTestWithAssistant, MetalayerToolActivatesHighlighter) {
-  ui::ScopedAnimationDurationScaleMode animation_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_state()->NotifyFeatureAllowed(
-      assistant::AssistantAllowedState::ALLOWED);
-  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
-  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
-  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, true);
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->EnterPenPointerMode();
-
-  const gfx::Point origin(1, 1);
-  const gfx::Vector2d step(1, 1);
-  EXPECT_FALSE(palette_utils::PaletteContainsPointInScreen(origin + step));
-  EXPECT_FALSE(
-      palette_utils::PaletteContainsPointInScreen(origin + step + step));
-
-  // Press/drag does not activate the highlighter unless the palette tool is
-  // activated.
-  DragAndAssertMetalayer("tool disabled", origin, ui::EF_NONE,
-                         false /* no metalayer */,
-                         false /* no highlighter on press */);
-
-  // Activate the palette tool, still no highlighter.
-  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::METALAYER);
-  EXPECT_FALSE(highlighter_showing());
-
-  // Press/drag over a regular (non-palette) location. This should activate the
-  // highlighter. Note that a diagonal stroke does not create a valid selection.
-  highlighter_test_api_->ResetSelection();
-  DragAndAssertMetalayer("tool enabled", origin, ui::EF_NONE,
-                         true /* metalayer stays enabled after the press */,
-                         true /* highlighter shown on press */);
-  // When metalayer is entered normally (not via stylus button), a failed
-  // selection should not exit the mode.
-  EXPECT_FALSE(highlighter_test_api_->HandleSelectionCalled());
-  EXPECT_TRUE(metalayer_enabled());
-
-  // A successfull selection should exit the metalayer mode.
-  SCOPED_TRACE("horizontal stroke");
-  highlighter_test_api_->ResetSelection();
-  generator->MoveTouch(gfx::Point(100, 100));
-  generator->PressTouch();
-  EXPECT_TRUE(metalayer_enabled());
-  generator->MoveTouch(gfx::Point(300, 100));
-  generator->ReleaseTouch();
-  EXPECT_TRUE(highlighter_test_api_->HandleSelectionCalled());
-  EXPECT_FALSE(metalayer_enabled());
-
-  SCOPED_TRACE("drag over palette");
-  highlighter_test_api_->DestroyPointerView();
-  // Press/drag over the palette button. This should not activate the
-  // highlighter, but should disable the palette tool instead.
-  gfx::Point palette_point = palette_tray_->GetBoundsInScreen().CenterPoint();
-  EXPECT_TRUE(palette_utils::PaletteContainsPointInScreen(palette_point));
-  generator->MoveTouch(palette_point);
-  generator->PressTouch();
-  EXPECT_FALSE(highlighter_showing());
-  palette_point += gfx::Vector2d(1, 1);
-  EXPECT_TRUE(palette_utils::PaletteContainsPointInScreen(palette_point));
-  generator->MoveTouch(palette_point);
-  EXPECT_FALSE(highlighter_showing());
-  generator->ReleaseTouch();
-  EXPECT_FALSE(metalayer_enabled());
-
-  // Disabling metalayer support in the delegate should disable the palette
-  // tool.
-  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::METALAYER);
-  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, false);
-  EXPECT_FALSE(metalayer_enabled());
-
-  // With the metalayer disabled again, press/drag does not activate the
-  // highlighter.
-  DragAndAssertMetalayer("tool disabled again", origin, ui::EF_NONE,
-                         false /* no metalayer */,
-                         false /* no highlighter on press */);
-}
-
-TEST_F(PaletteTrayTestWithAssistant, StylusBarrelButtonActivatesHighlighter) {
-  ui::ScopedAnimationDurationScaleMode animation_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::NOT_READY);
-  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, false);
-  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, false);
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->EnterPenPointerMode();
-
-  const gfx::Point origin(1, 1);
-  const gfx::Vector2d step(1, 1);
-
-  EXPECT_FALSE(palette_utils::PaletteContainsPointInScreen(origin));
-  EXPECT_FALSE(palette_utils::PaletteContainsPointInScreen(origin + step));
-  EXPECT_FALSE(
-      palette_utils::PaletteContainsPointInScreen(origin + step + step));
-
-  // Press and drag while holding down the stylus button, no highlighter unless
-  // the metalayer support is fully enabled and the the framework is ready.
-  WaitDragAndAssertMetalayer("nothing enabled", origin,
-                             ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Enable one of the two user prefs, should not be sufficient.
-  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, true);
-  WaitDragAndAssertMetalayer("one pref enabled", origin,
-                             ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Enable the other user pref, still not sufficient.
-  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
-  WaitDragAndAssertMetalayer("two prefs enabled", origin,
-                             ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Once the service is ready, the button should start working.
-  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
-
-  // Press and drag with no button, still no highlighter.
-  WaitDragAndAssertMetalayer("all enabled, no button ", origin, ui::EF_NONE,
-                             false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Press/drag with while holding down the stylus button, but over the palette
-  // tray. This should activate neither the palette tool nor the highlighter.
-  gfx::Point palette_point = palette_tray_->GetBoundsInScreen().CenterPoint();
-  EXPECT_TRUE(palette_utils::PaletteContainsPointInScreen(palette_point));
-  EXPECT_TRUE(
-      palette_utils::PaletteContainsPointInScreen(palette_point + step));
-  EXPECT_TRUE(
-      palette_utils::PaletteContainsPointInScreen(palette_point + step + step));
-  WaitDragAndAssertMetalayer("drag over palette", palette_point,
-                             ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Perform a regular stroke (no button), followed by a button-down stroke
-  // without a pause. This should not trigger metalayer.
-  DragAndAssertMetalayer("writing, no button", origin, ui::EF_NONE,
-                         false /* no metalayer */,
-                         false /* no highlighter on press */);
-  DragAndAssertMetalayer("writing, with button ", origin,
-                         ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
-                         false /* no highlighter on press */);
-
-  // Wait, then press/drag while holding down the stylus button over a regular
-  // location. This should activate the palette tool and the highlighter.
-  WaitDragAndAssertMetalayer("with button", origin, ui::EF_LEFT_MOUSE_BUTTON,
-                             true /* enables metalayer */,
-                             false /* no highlighter on press */);
-  // Metalayer mode entered via the stylus button should not be sticky.
-  EXPECT_FALSE(metalayer_enabled());
-
-  // Repeat the previous step without a pause, make sure that the palette tool
-  // is not toggled, and the highlighter is enabled immediately.
-  DragAndAssertMetalayer("with button, again", origin, ui::EF_LEFT_MOUSE_BUTTON,
-                         true /* enables metalayer */,
-                         true /* highlighter shown on press */);
-
-  // Same after a pause.
-  WaitDragAndAssertMetalayer(
-      "with button, after a pause", origin, ui::EF_LEFT_MOUSE_BUTTON,
-      true /* enables metalayer */, true /* highlighter shown on press */);
-
-  // The barrel button should not work on the lock screen.
-  highlighter_test_api_->DestroyPointerView();
-  GetSessionControllerClient()->LockScreen();
-  EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
-      PaletteToolId::METALAYER));
-  WaitDragAndAssertMetalayer("screen locked", origin, ui::EF_LEFT_MOUSE_BUTTON,
-                             false /* no metalayer */,
-                             false /* no highlighter on press */);
-
-  // Unlock the screen, the barrel button should work again.
-  GetSessionControllerClient()->UnlockScreen();
-  WaitDragAndAssertMetalayer(
-      "screen unlocked", origin, ui::EF_LEFT_MOUSE_BUTTON,
-      true /* enables metalayer */, false /* no highlighter on press */);
-
-  // Disable the metalayer support.
-  // This should deactivate both the palette tool and the highlighter.
-  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, false);
-  EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
-      PaletteToolId::METALAYER));
-
-  highlighter_test_api_->DestroyPointerView();
-  EXPECT_FALSE(highlighter_showing());
-  DragAndAssertMetalayer("disabled", origin, ui::EF_LEFT_MOUSE_BUTTON,
-                         false /* no metalayer */,
-                         false /* no highlighter on press */);
 }
 
 // Base class for tests that need to simulate an internal stylus.

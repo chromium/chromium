@@ -235,7 +235,7 @@ enum class ToastCatalogName {
   kDeskTemplateTooLarge = 33,
   kUndoCloseAll = 34,
   kEcheAppToast = 35,
-  kDeprecateAssistantStylus = 36,
+  // [Deprecated] kDeprecateAssistantStylus = 36,
   kEcheTrayCopyPasteNotImplemented = 37,
   kEcheTrayTabletModeNotSupported = 38,
   kNotificationCenterTrayNoNotifications = 39,

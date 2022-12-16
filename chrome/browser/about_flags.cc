@@ -6510,11 +6510,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-assistant-dsp", flag_descriptions::kEnableGoogleAssistantDspName,
      flag_descriptions::kEnableGoogleAssistantDspDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::assistant::features::kEnableDspHotword)},
-
-    {"deprecate-assistant-stylus-features",
-     flag_descriptions::kDeprecateAssistantStylusFeaturesName,
-     flag_descriptions::kDeprecateAssistantStylusFeaturesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDeprecateAssistantStylusFeatures)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
