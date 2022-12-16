@@ -100,11 +100,4 @@ bool SetSafeInt(base::Value::Dict& dict,
                 const base::StringPiece path,
                 int64_t in_value_64);
 
-// Provides WindowHandle to WebView method to maintain consistency across
-// ChromeDriver.
-std::string WebViewIdToWindowHandle(const std::string& web_view_id);
-
-bool WindowHandleToWebViewId(const std::string& window_handle,
-                             std::string* web_view_id);
-
 #endif  // CHROME_TEST_CHROMEDRIVER_UTIL_H_

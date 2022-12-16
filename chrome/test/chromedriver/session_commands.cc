@@ -392,11 +392,9 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       if (status.IsError())
         return status;
 
-      std::string handle = WebViewIdToWindowHandle(web_view_id);
-
       std::unique_ptr<base::Value> result;
       base::Value::Dict body;
-      body.Set("handle", handle);
+      body.Set("handle", web_view_id);
 
       status = ExecuteSwitchToWindow(session, body, &result);
     }
@@ -719,8 +717,7 @@ Status ExecuteGetCurrentWindowHandle(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
-  *value =
-      std::make_unique<base::Value>(WebViewIdToWindowHandle(web_view->GetId()));
+  *value = std::make_unique<base::Value>(web_view->GetId());
   return Status(kOk);
 }
 
@@ -818,7 +815,7 @@ Status ExecuteGetWindowHandles(Session* session,
       new base::Value(base::Value::Type::LIST));
   for (std::list<std::string>::const_iterator it = web_view_ids.begin();
        it != web_view_ids.end(); ++it) {
-    window_ids->Append(WebViewIdToWindowHandle(*it));
+    window_ids->Append(*it);
   }
   *value = std::move(window_ids);
   return Status(kOk);
@@ -846,16 +843,16 @@ Status ExecuteSwitchToWindow(Session* session,
 
   std::string web_view_id;
   bool found = false;
-  if (WindowHandleToWebViewId(*name, &web_view_id)) {
-    // Check if any web_view matches |web_view_id|.
-    for (std::list<std::string>::const_iterator it = web_view_ids.begin();
-         it != web_view_ids.end(); ++it) {
-      if (*it == web_view_id) {
-        found = true;
-        break;
-      }
+  // Check if any web_view matches |name|.
+  for (std::list<std::string>::const_iterator it = web_view_ids.begin();
+       it != web_view_ids.end(); ++it) {
+    if (*it == *name) {
+      web_view_id = *name;
+      found = true;
+      break;
     }
-  } else {
+  }
+  if (!found) {
     // Check if any of the tab window names match |name|.
     const char* kGetWindowNameScript = "function() { return window.name; }";
     base::Value::List args;

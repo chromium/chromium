@@ -2045,9 +2045,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(old_rect_list, self._driver.GetWindowRect())
 
   def testWindowMinimize(self):
-    handle_prefix = "CDwindow-"
     handle = self._driver.GetCurrentWindowHandle()
-    target = handle[len(handle_prefix):]
     self._driver.SetWindowRect(640, 400, 100, 200)
     rect = self._driver.MinimizeWindow()
     expected_rect = {'y': 200, 'width': 640, 'height': 400, 'x': 100}
@@ -2058,7 +2056,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     # check its minimized
     res = self._driver.SendCommandAndGetResult('Browser.getWindowForTarget',
-                                               {'targetId': target})
+                                               {'targetId': handle})
     self.assertEqual('minimized', res['bounds']['windowState'])
 
   def testWindowFullScreen(self):

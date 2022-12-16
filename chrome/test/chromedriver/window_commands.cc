@@ -850,7 +850,7 @@ Status ExecuteNewWindow(Session* session,
     return status;
 
   base::Value::Dict dict;
-  dict.Set("handle", WebViewIdToWindowHandle(handle));
+  dict.Set("handle", handle);
   dict.Set("type",
            (window_type == Chrome::WindowType::kWindow) ? "window" : "tab");
   auto results = std::make_unique<base::Value>(std::move(dict));

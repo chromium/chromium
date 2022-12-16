@@ -60,7 +60,17 @@ _MULTI_SESSION = ('[1531428669.535][INFO]: [b15232d5497ec0d8300a5a1ea56f33ce] '
                   '[1531428670.535][INFO]: [a81dc5521092a5ba132b9c0b6cf6e84f] '
                   'RESPONSE GetSessions {\n"param2": 42\n}\n' + _COMMAND_ONLY)
 
-_WINDOW_IDS = ["CDwindow-00", "CDwindow-98", "other thing"]
+_WINDOW_ID_1 = "11111111111111111111111111111111"
+_WINDOW_ID_2 = "22222222222222222222222222222222"
+_WINDOW_IDS = [
+    _WINDOW_ID_1,
+    _WINDOW_ID_2,
+    "other thing",  # Random string not in the targetID format.
+    "1234567890123456789012345678901",  # Too short string.
+    "123456789012345678901234567890123",  # Too long string.
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",  # String with not allowed symbol.
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",  # String with not allowed symbol.
+]
 _ELEMENT_ID = {"element-6066-11e4-a52e-4f735466cecf": "0.87-1"}
 _ELEMENT_IDS = [{"element-6066-11e4-a52e-4f735466cecf": "0.87-1"},
                 {"element-6066-11e4-a52e-4f735466cecf": "0.87-2"}]
@@ -221,10 +231,10 @@ class ChromeDriverClientReplayUnitTest(unittest.TestCase):
                      [{"ELEMENT": "0.00-0"}, {"ELEMENT": "0.00-1"}])
 
   def testSubstitutePayloadIds_windows(self):
-    id_map = {"CDwindow-98": "CDwindow-00"}
-    substituted = ["CDwindow-98"]
+    id_map = {_WINDOW_ID_2: _WINDOW_ID_1}
+    substituted = [_WINDOW_ID_2]
     client_replay._ReplaceWindowAndElementIds(substituted, id_map)
-    self.assertEqual(substituted, ["CDwindow-00"])
+    self.assertEqual(substituted, [_WINDOW_ID_1])
 
   def testSubstitutePayloadIds_recursion(self):
     id_map = {"0.78-1": "0.00-0", "0.78-2": "0.00-1"}
@@ -234,7 +244,7 @@ class ChromeDriverClientReplayUnitTest(unittest.TestCase):
 
   def testGetAnyElementids_window(self):
     ids = client_replay._GetAnyElementIds(_WINDOW_IDS)
-    self.assertEqual(ids, ["CDwindow-00", "CDwindow-98"])
+    self.assertEqual(ids, [_WINDOW_ID_1, _WINDOW_ID_2])
 
   def testGetAnyElementids_element(self):
     ids = client_replay._GetAnyElementIds(_ELEMENT_ID)
