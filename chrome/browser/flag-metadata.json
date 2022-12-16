@@ -483,7 +483,7 @@
   {
     "name": "autofill-enable-remade-downstream-metrics",
     "owners": [ "siyua" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-sticky-manual-fallback-for-cards",
@@ -518,7 +518,7 @@
   {
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua", "siashah"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enforce-delays-in-strike-database",
