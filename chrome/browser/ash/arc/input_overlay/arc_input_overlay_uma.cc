@@ -20,4 +20,14 @@ void RecordInputOverlayCustomizedUsage() {
   base::UmaHistogramBoolean("Arc.InputOverlay.Customized", true);
 }
 
+void RecordInputOverlayActionReposition(RepositionType type) {
+  base::UmaHistogramEnumeration(
+      "Arc.InputOverlay.ActionRepositionOperationType", type);
+}
+
+void RecordInputOverlayMenuEntryReposition(RepositionType type) {
+  base::UmaHistogramEnumeration(
+      "Arc.InputOverlay.MenuEntryRepositionOperationType", type);
+}
+
 }  // namespace arc::input_overlay

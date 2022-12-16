@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -199,6 +200,7 @@ void ActionView::OnMouseReleased(const ui::MouseEvent& event) {
   if (!allow_reposition_)
     return;
   OnDragEnd();
+  RecordInputOverlayActionReposition(RepositionType::kMouseDragRepostion);
 }
 
 void ActionView::OnGestureEvent(ui::GestureEvent* event) {
@@ -217,6 +219,8 @@ void ActionView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_SCROLL_FLING_START:
       OnDragEnd();
       event->SetHandled();
+      RecordInputOverlayActionReposition(
+          RepositionType::kTouchscreenDragRepostion);
       break;
     default:
       break;
@@ -240,6 +244,8 @@ bool ActionView::OnKeyReleased(const ui::KeyEvent& event) {
 
   ChangePositionBinding(
       gfx::Point(origin().x() + center_.x(), origin().y() + center_.y()));
+  RecordInputOverlayActionReposition(
+      RepositionType::kKeyboardArrowKeyReposition);
   return true;
 }
 

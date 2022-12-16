@@ -4335,6 +4335,15 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="An image dragged from browser"/>
 </enum>
 
+<enum name="ArcInputOverlayRepositionOperationType">
+  <summary>
+    Defines how the view reposition operation is achieved for ARC input overlay.
+  </summary>
+  <int value="0" label="Reposition by touchscreen drag"/>
+  <int value="1" label="Reposition by mouse drag"/>
+  <int value="2" label="Reposition by keyboard arrow keys"/>
+</enum>
+
 <enum name="ArcIntentHandlerAction">
   <summary>Defines Arc intent handler actions</summary>
   <int value="0" label="Error after showing picker"/>

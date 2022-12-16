@@ -6,6 +6,7 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "base/cxx17_backports.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/events/event.h"
@@ -39,6 +40,7 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
     views::Button::OnMouseReleased(event);
   } else {
     OnDragEnd();
+    RecordInputOverlayMenuEntryReposition(RepositionType::kMouseDragRepostion);
   }
 }
 
@@ -58,6 +60,8 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_SCROLL_FLING_START:
       OnDragEnd();
       event->SetHandled();
+      RecordInputOverlayMenuEntryReposition(
+          RepositionType::kTouchscreenDragRepostion);
       break;
     default:
       views::Button::OnGestureEvent(event);
@@ -82,6 +86,8 @@ bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
 
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
+  RecordInputOverlayMenuEntryReposition(
+      RepositionType::kKeyboardArrowKeyReposition);
   return true;
 }
 

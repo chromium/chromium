@@ -1285,6 +1285,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.InputOverlay.ActionRepositionOperationType"
+    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records the Action reposition operation types, including touchscreen drag,
+    mouse drag and keyboard arrow keys, when users move action views to adjust
+    touch points. Records the events when users release touch, mouse or key.
+  </summary>
+</histogram>
+
 <histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
     expires_after="2023-06-11">
   <owner>cuicuiruan@google.com</owner>
@@ -1319,6 +1330,17 @@ chromium-metrics-reviews@google.com.
     the associated apps and when users have menu state changed upon on closing
     the input menu only. Refer to TouchInjector::RecordMenuStateOnLaunch() and
     TouchInjector::OnInputMenuViewRemoved().
+  </summary>
+</histogram>
+
+<histogram name="Arc.InputOverlay.MenuEntryRepositionOperationType"
+    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records the menu entry button reposition operation types, including
+    touchscreen drag, mouse drag and keyboard arrow keys, when users move menu
+    entry button. Records the events when users release touch, mouse or key.
   </summary>
 </histogram>
 
