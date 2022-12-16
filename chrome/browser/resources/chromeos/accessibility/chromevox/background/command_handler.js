@@ -1657,17 +1657,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   reportIssue_() {
-    let url = 'https://code.google.com/p/chromium/issues/entry?' +
-        'labels=Type-Bug,Pri-2,OS-Chrome&' +
-        'components=OS>Accessibility>ChromeVox&' +
-        'description=';
-
-    const description = {};
-    description['Version'] = chrome.runtime.getManifest().version;
-    description['Reproduction Steps'] = '%0a1.%0a2.%0a3.';
-    for (const key in description) {
-      url += key + ':%20' + description[key] + '%0a';
-    }
+    const url = 'https://issuetracker.google.com/issues/new?component=1272895';
     chrome.tabs.create({url});
   }
 
