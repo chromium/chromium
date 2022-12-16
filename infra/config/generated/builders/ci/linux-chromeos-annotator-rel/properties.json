@@ -37,12 +37,6 @@
           "builder": "linux-chromeos-annotator-rel",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-chromeos-annotator-rel",
-          "group": "tryserver.chromium.chromiumos"
-        }
       ]
     }
   },
@@ -59,5 +53,8 @@
     ]
   },
   "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

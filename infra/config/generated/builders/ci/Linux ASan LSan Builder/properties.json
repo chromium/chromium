@@ -109,10 +109,6 @@
         {
           "builder": "linux_chromium_asan_rel_ng",
           "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_asan_rel_ng-inverse-fyi",
-          "group": "tryserver.chromium.linux"
         }
       ]
     }
@@ -132,6 +128,6 @@
   "builder_group": "chromium.memory",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
