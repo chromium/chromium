@@ -13,7 +13,7 @@ class ObsoleteSystem {
   ObsoleteSystem(const ObsoleteSystem&) = delete;
   ObsoleteSystem& operator=(const ObsoleteSystem&) = delete;
 
-  // true if the system is already considered obsolete, or if it'll be
+  // Returns true if the system is already considered obsolete, or if it'll be
   // considered obsolete soon. Used to control whether to show messaging about
   // deprecation within the app.
   static bool IsObsoleteNowOrSoon();
@@ -25,8 +25,16 @@ class ObsoleteSystem {
   // true.
   static std::u16string LocalizedObsoleteString();
 
-  // true if this is the final release. This is only valid when
-  // IsObsoleteNowOrSoon() returns true.
+  // Returns true if this is the final release milestone. This is only valid
+  // when IsObsoleteNowOrSoon() returns true.
+  // If true, about:help will stop showing "Checking for updates... Chrome is up
+  // to date", and users can no longer manually check for updates by refreshing
+  // about:help. This is typically done when the last milestone supporting an
+  // obsolete OS version is reached, to make it clear that Chrome will no longer
+  // check for major updates. Note that even if the implementation returns true
+  // when the last supported milestone has been reached, users will continue to
+  // get any released minor updates for that milestone despite the lack of a
+  // "Checking for updates..." message on about:help.
   static bool IsEndOfTheLine();
 
   // A help URL to explain the deprecation. Do not use the returned string

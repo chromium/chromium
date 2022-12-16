@@ -47,7 +47,10 @@ std::u16string ObsoleteSystem::LocalizedObsoleteString() {
 
 // static
 bool ObsoleteSystem::IsEndOfTheLine() {
-  return true;
+  // M109 was the last milestone to support Win 7/8/8.1, the last deprecated
+  // Windows version. Future deprecations should update this to the last
+  // milestone that supports the soon-to-be-deprecated Windows version.
+  return CHROME_VERSION_MAJOR >= 109;
 }
 
 // static
