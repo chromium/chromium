@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
+#include "dbus/object_path.h"
 
 namespace ash {
 
@@ -44,10 +45,27 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
   // ModemMessagingClient::TestInterface overrides.
   void ReceiveSms(const dbus::ObjectPath& object_path,
                   const dbus::ObjectPath& sms_path) override;
+  std::string GetPendingDeleteRequestSmsPath() const override;
+  void CompletePendingDeleteRequest(bool success) override;
 
  private:
+  struct DeleteRequest {
+    DeleteRequest(dbus::ObjectPath object_path,
+                  dbus::ObjectPath sms_path,
+                  chromeos::VoidDBusMethodCallback callback);
+    DeleteRequest(DeleteRequest&& other);
+    DeleteRequest& operator=(DeleteRequest&& other);
+    ~DeleteRequest();
+
+    dbus::ObjectPath object_path;
+    dbus::ObjectPath sms_path;
+    chromeos::VoidDBusMethodCallback callback;
+  };
+
   std::map<dbus::ObjectPath, SmsReceivedHandler> sms_received_handlers_;
   std::map<dbus::ObjectPath, std::vector<dbus::ObjectPath>> message_paths_map_;
+
+  absl::optional<DeleteRequest> delete_request_;
 };
 
 }  // namespace ash

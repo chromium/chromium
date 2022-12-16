@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "dbus/object_path.h"
 
 namespace ash {
 
@@ -39,11 +38,8 @@ void FakeModemMessagingClient::Delete(
     const dbus::ObjectPath& object_path,
     const dbus::ObjectPath& sms_path,
     chromeos::VoidDBusMethodCallback callback) {
-  std::vector<dbus::ObjectPath> message_paths = message_paths_map_[object_path];
-  auto iter = find(message_paths.begin(), message_paths.end(), sms_path);
-  if (iter != message_paths.end())
-    message_paths.erase(iter);
-  std::move(callback).Run(true);
+  DCHECK(!delete_request_.has_value());
+  delete_request_ = DeleteRequest{object_path, sms_path, std::move(callback)};
 }
 
 void FakeModemMessagingClient::List(const std::string& service_name,
@@ -69,5 +65,55 @@ void FakeModemMessagingClient::ReceiveSms(const dbus::ObjectPath& object_path,
   message_paths_map_[object_path].push_back(sms_path);
   sms_received_handlers_[object_path].Run(sms_path, true);
 }
+
+std::string FakeModemMessagingClient::GetPendingDeleteRequestSmsPath() const {
+  if (!delete_request_.has_value()) {
+    return std::string();
+  }
+  return delete_request_->sms_path.value();
+}
+
+void FakeModemMessagingClient::CompletePendingDeleteRequest(bool success) {
+  DCHECK(delete_request_.has_value());
+  DeleteRequest delete_request = std::move(delete_request_.value());
+  delete_request_.reset();
+  if (!success) {
+    std::move(delete_request.callback).Run(false);
+    return;
+  }
+
+  std::vector<dbus::ObjectPath> message_paths =
+      message_paths_map_[delete_request.object_path];
+  auto iter =
+      find(message_paths.begin(), message_paths.end(), delete_request.sms_path);
+  if (iter != message_paths.end()) {
+    message_paths.erase(iter);
+  }
+  std::move(delete_request.callback).Run(true);
+}
+
+FakeModemMessagingClient::DeleteRequest::DeleteRequest(
+    dbus::ObjectPath object_path_param,
+    dbus::ObjectPath sms_path_param,
+    chromeos::VoidDBusMethodCallback callback_param)
+    : object_path(object_path_param),
+      sms_path(sms_path_param),
+      callback(std::move(callback_param)) {}
+
+FakeModemMessagingClient::DeleteRequest::DeleteRequest(DeleteRequest&& other) {
+  object_path = other.object_path;
+  sms_path = other.sms_path;
+  callback = std::move(other.callback);
+}
+
+FakeModemMessagingClient::DeleteRequest&
+FakeModemMessagingClient::DeleteRequest::operator=(DeleteRequest&& other) {
+  object_path = other.object_path;
+  sms_path = other.sms_path;
+  callback = std::move(other.callback);
+  return *this;
+}
+
+FakeModemMessagingClient::DeleteRequest::~DeleteRequest() = default;
 
 }  // namespace ash
