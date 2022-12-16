@@ -79,7 +79,6 @@ void TabletModeFloatWindowResizer::Drag(const gfx::PointF& location_in_parent,
       /*minimum_drag_distance=*/kMinDragDistance,
       /*horizontal_edge_inset=*/kScreenEdgeInsetForSnap,
       /*vertical_edge_inset=*/kScreenEdgeInsetForSnap);
-  // TODO(crbug.com/1351562): Ensure that this works for all orientations.
   split_view_drag_indicators_->SetWindowDraggingState(
       SplitViewDragIndicators::ComputeWindowDraggingState(
           /*is_dragging=*/true,
