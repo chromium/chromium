@@ -394,9 +394,13 @@ class AudioSinkAudioTrackImpl {
     @CalledByNative
     private void setVolume(float volume) {
         Log.i(mTag, "Setting volume to " + volume);
-        int ret = mAudioTrack.setVolume(volume);
-        if (ret != AudioTrack.SUCCESS) {
-            Log.e(mTag, "Cannot set volume: ret=" + ret);
+        try {
+            int ret = mAudioTrack.setVolume(volume);
+            if (ret != AudioTrack.SUCCESS) {
+                Log.e(mTag, "Cannot set volume: ret=" + ret);
+            }
+        } catch (IllegalArgumentException e) {
+            Log.e(mTag, "Cannot set volume", e);
         }
     }
 
