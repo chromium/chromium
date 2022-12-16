@@ -119,6 +119,21 @@ class BASE_EXPORT CommandLine {
   StringType GetCommandLineString() const;
 
 #if BUILDFLAG(IS_WIN)
+  // Quotes and escapes `arg` if necessary so that it will be interpreted as a
+  // single command-line parameter according to the following rules in line with
+  // `::CommandLineToArgvW` and C++ `main`:
+  // * Returns `arg` unchanged if `arg` does not include any characters that may
+  // need encoding, which is spaces, tabs, backslashes, and double-quotes.
+  // * Otherwise, double-quotes `arg` and in addition:
+  //   * Escapes any double-quotes in `arg` with backslashes.
+  //   * Escapes backslashes in `arg` if:
+  //     * `arg` ends with backslashes , or
+  //     * the backslashes end in a pre-existing double quote.
+  //
+  // https://learn.microsoft.com/en-us/search/?terms=CommandLineToArgvW and
+  // http://msdn.microsoft.com/en-us/library/17w5ykft.aspx#parsing-c-command-line-arguments.
+  static std::wstring QuoteForCommandLineToArgvW(const std::wstring& arg);
+
   // Returns the command-line string in the proper format for the Windows shell,
   // ending with the argument placeholder "--single-argument %1". The single-
   // argument switch prevents unexpected parsing of arguments from other

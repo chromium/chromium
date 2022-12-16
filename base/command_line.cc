@@ -107,53 +107,52 @@ bool IsSwitchWithKey(CommandLine::StringPieceType string,
 }
 
 #if BUILDFLAG(IS_WIN)
-// Quote a string as necessary for CommandLineToArgvW compatibility *on
+// Quotes a string as necessary for CommandLineToArgvW compatibility *on
 // Windows*.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& arg,
-                                        bool allow_unsafe_insert_sequences) {
-  // Ensure that GetCommandLineString isn't used to generate command-line
+// http://msdn.microsoft.com/en-us/library/17w5ykft.aspx#parsing-c-command-line-arguments.
+std::wstring QuoteForCommandLineToArgvWInternal(
+    const std::wstring& arg,
+    bool allow_unsafe_insert_sequences) {
+  // Ensures that GetCommandLineString isn't used to generate command-line
   // strings for the Windows shell by checking for Windows insert sequences like
   // "%1". GetCommandLineStringForShell should be used instead to get a string
   // with the correct placeholder format for the shell.
   DCHECK(arg.size() != 2 || arg[0] != L'%' || allow_unsafe_insert_sequences);
 
-  // We follow the quoting rules of CommandLineToArgvW.
-  // http://msdn.microsoft.com/en-us/library/17w5ykft.aspx
-  std::wstring quotable_chars(L" \\\"");
-  if (arg.find_first_of(quotable_chars) == std::wstring::npos) {
-    // No quoting necessary.
+  constexpr wchar_t kQuotableCharacters[] = L" \t\\\"";
+  if (arg.find_first_of(kQuotableCharacters) == std::wstring::npos) {
     return arg;
   }
 
-  std::wstring out;
-  out.push_back('"');
+  std::wstring out(1, L'"');
   for (size_t i = 0; i < arg.size(); ++i) {
-    if (arg[i] == '\\') {
-      // Find the extent of this run of backslashes.
-      size_t start = i, end = start + 1;
-      for (; end < arg.size() && arg[end] == '\\'; ++end) {}
-      size_t backslash_count = end - start;
+    if (arg[i] == L'\\') {
+      // Finds the extent of this run of backslashes.
+      size_t end = i + 1;
+      while (end < arg.size() && arg[end] == L'\\') {
+        ++end;
+      }
 
-      // Backslashes are escapes only if the run is followed by a double quote.
+      const size_t backslash_count = end - i;
+
+      // Backslashes are escaped only if the run is followed by a double quote.
       // Since we also will end the string with a double quote, we escape for
       // either a double quote or the end of the string.
-      if (end == arg.size() || arg[end] == '"') {
-        // To quote, we need to output 2x as many backslashes.
-        backslash_count *= 2;
-      }
-      for (size_t j = 0; j < backslash_count; ++j)
-        out.push_back('\\');
+      const size_t backslash_multiplier =
+          (end == arg.size() || arg[end] == L'"') ? 2 : 1;
 
-      // Advance i to one before the end to balance i++ in loop.
+      out.append(std::wstring(backslash_count * backslash_multiplier, L'\\'));
+
+      // Advances `i` to one before `end` to balance `++i` in loop.
       i = end - 1;
-    } else if (arg[i] == '"') {
-      out.push_back('\\');
-      out.push_back('"');
+    } else if (arg[i] == L'"') {
+      out.append(LR"(\")");
     } else {
       out.push_back(arg[i]);
     }
   }
-  out.push_back('"');
+
+  out.push_back(L'"');
 
   return out;
 }
@@ -570,7 +569,7 @@ CommandLine::StringType CommandLine::GetArgumentsStringInternal(
       params.append(switch_string);
       if (!switch_value.empty()) {
 #if BUILDFLAG(IS_WIN)
-        switch_value = QuoteForCommandLineToArgvW(
+        switch_value = QuoteForCommandLineToArgvWInternal(
             switch_value, allow_unsafe_insert_sequences);
 #endif
         params.append(kSwitchValueSeparator + switch_value);
@@ -585,7 +584,8 @@ CommandLine::StringType CommandLine::GetArgumentsStringInternal(
         params.append(base::StrCat(
             {kSwitchPrefixes[0], kSingleArgument, FILE_PATH_LITERAL(" ")}));
       } else {
-        arg = QuoteForCommandLineToArgvW(arg, allow_unsafe_insert_sequences);
+        arg = QuoteForCommandLineToArgvWInternal(arg,
+                                                 allow_unsafe_insert_sequences);
       }
 #endif
       params.append(arg);
@@ -597,8 +597,9 @@ CommandLine::StringType CommandLine::GetArgumentsStringInternal(
 CommandLine::StringType CommandLine::GetCommandLineString() const {
   StringType string(argv_[0]);
 #if BUILDFLAG(IS_WIN)
-  string = QuoteForCommandLineToArgvW(string,
-                                      /*allow_unsafe_insert_sequences=*/false);
+  string = QuoteForCommandLineToArgvWInternal(
+      string,
+      /*allow_unsafe_insert_sequences=*/false);
 #endif
   StringType params(GetArgumentsString());
   if (!params.empty()) {
@@ -609,6 +610,12 @@ CommandLine::StringType CommandLine::GetCommandLineString() const {
 }
 
 #if BUILDFLAG(IS_WIN)
+// static
+std::wstring CommandLine::QuoteForCommandLineToArgvW(const std::wstring& arg) {
+  return QuoteForCommandLineToArgvWInternal(
+      arg, /*allow_unsafe_insert_sequences=*/false);
+}
+
 // NOTE: this function is used to set Chrome's open command in the registry
 // during update. Any change to the syntax must be compatible with the prior
 // version (i.e., any new syntax must be understood by older browsers expecting
@@ -627,8 +634,9 @@ CommandLine::StringType CommandLine::GetCommandLineStringForShell() const {
 CommandLine::StringType
 CommandLine::GetCommandLineStringWithUnsafeInsertSequences() const {
   StringType string(argv_[0]);
-  string = QuoteForCommandLineToArgvW(string,
-                                      /*allow_unsafe_insert_sequences=*/true);
+  string = QuoteForCommandLineToArgvWInternal(
+      string,
+      /*allow_unsafe_insert_sequences=*/true);
   StringType params(
       GetArgumentsStringInternal(/*allow_unsafe_insert_sequences=*/true));
   if (!params.empty()) {

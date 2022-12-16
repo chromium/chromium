@@ -10,10 +10,19 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <shellapi.h>
+
+#include "base/win/scoped_localalloc.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 
@@ -312,6 +321,63 @@ TEST(CommandLineTest, AppendSwitchesDashDash) {
 }
 
 #if BUILDFLAG(IS_WIN)
+TEST(CommandLineTest, QuoteForCommandLineToArgvW) {
+ const struct {
+   const wchar_t* input_arg;
+   const wchar_t* expected_output_arg;
+ } test_cases[] = {
+     {L"", L""},
+     {L"abc = xyz", LR"("abc = xyz")"},
+     {LR"(C:\AppData\Local\setup.exe)", LR"("C:\AppData\Local\setup.exe")"},
+     {LR"(C:\Program Files\setup.exe)", LR"("C:\Program Files\setup.exe")"},
+     {LR"("C:\Program Files\setup.exe")",
+      LR"("\"C:\Program Files\setup.exe\"")"},
+ };
+
+ for (const auto& test_case : test_cases) {
+   EXPECT_EQ(CommandLine::QuoteForCommandLineToArgvW(test_case.input_arg),
+             test_case.expected_output_arg);
+ }
+}
+
+TEST(CommandLineTest, QuoteForCommandLineToArgvW_After_CommandLineToArgvW) {
+ const struct {
+   std::vector<std::wstring> input_args;
+   const wchar_t* expected_output;
+ } test_cases[] = {
+     {{L"abc=1"}, L"abc=1"},
+     {{L"abc=1", L"xyz=2"}, L"abc=1 xyz=2"},
+     {{L"abc=1", L"xyz=2", L"q"}, L"abc=1 xyz=2 q"},
+     {{L" abc=1  ", L"  xyz=2", L"q "}, L"abc=1 xyz=2 q"},
+     {{LR"("abc = 1")"}, LR"("abc = 1")"},
+     {{LR"(abc" = "1)", L"xyz=2"}, LR"("abc = 1" xyz=2)"},
+     {{LR"(abc" = "1)"}, LR"("abc = 1")"},
+     {{LR"(\\)", LR"(\\\")"}, LR"("\\\\" "\\\"")"},
+ };
+
+ for (const auto& test_case : test_cases) {
+   std::wstring input_command_line =
+       base::StrCat({LR"(c:\test\process.exe )",
+                     base::JoinString(test_case.input_args, L" ")});
+   int num_args = 0;
+   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+       ::CommandLineToArgvW(&input_command_line[0], &num_args));
+   ASSERT_EQ(num_args - 1U, test_case.input_args.size());
+
+   std::wstring recreated_command_line;
+   for (int i = 1; i < num_args; ++i) {
+     recreated_command_line.append(
+         CommandLine::QuoteForCommandLineToArgvW(argv.get()[i]));
+
+     if (i + 1 < num_args) {
+       recreated_command_line.push_back(L' ');
+     }
+   }
+
+   EXPECT_EQ(recreated_command_line, test_case.expected_output);
+ }
+}
+
 TEST(CommandLineTest, GetCommandLineStringForShell) {
   CommandLine cl = CommandLine::FromString(
       FILE_PATH_LITERAL("program --switch /switch2 --"));
