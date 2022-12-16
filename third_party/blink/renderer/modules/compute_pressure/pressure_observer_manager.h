@@ -61,6 +61,9 @@ class MODULES_EXPORT PressureObserverManager final
  private:
   void EnsureServiceConnection();
 
+  // Verifies if the data should be delivered according to privacy status.
+  bool PassesPrivacyTest() const;
+
   // Called when `pressure_service_` is disconnected.
   void OnServiceConnectionError();
 

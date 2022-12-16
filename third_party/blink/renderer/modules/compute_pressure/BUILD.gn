@@ -14,5 +14,8 @@ blink_modules_sources("compute_pressure") {
     "pressure_record.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/platform" ]
+  deps = [
+    "//third_party/blink/renderer/modules/document_picture_in_picture",
+    "//third_party/blink/renderer/platform",
+  ]
 }

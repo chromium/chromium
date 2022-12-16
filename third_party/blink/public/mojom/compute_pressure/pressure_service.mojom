@@ -9,14 +9,8 @@ import "services/device/public/mojom/pressure_update.mojom";
 // Implemented by renderers to receive compute pressure info from the browser.
 //
 interface PressureObserver {
-  // Called in the following circumstances.
-  //
-  // 1. Once after an observer is created.
-  // 2. When the PressureState differs from the previously reported state.
-  //
-  // Updates to an observer are rate-limited. Observers that belong to visible
-  // pages receive updates at most once a second, while other observers are
-  // limited to at most one update in 10 seconds.
+  // Updates to an observer are rate-limited. Observers receive updates at most
+  // once per second.
   OnUpdate(device.mojom.PressureUpdate update);
 };
 

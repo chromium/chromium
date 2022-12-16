@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -147,6 +151,9 @@ void PressureObserverManager::ContextLifecycleStateChanged(
 
 void PressureObserverManager::OnUpdate(
     device::mojom::blink::PressureUpdatePtr update) {
+  if (!PassesPrivacyTest())
+    return;
+
   // TODO(crbug.com/1342184): Consider other sources.
   // For now, "cpu" is the only source.
   const wtf_size_t source_index =
@@ -196,6 +203,46 @@ void PressureObserverManager::EnsureServiceConnection() {
   pressure_service_.set_disconnect_handler(
       WTF::BindOnce(&PressureObserverManager::OnServiceConnectionError,
                     WrapWeakPersistent(this)));
+}
+
+// https://wicg.github.io/compute-pressure/#dfn-passes-privacy-test
+bool PressureObserverManager::PassesPrivacyTest() const {
+  LocalFrame* this_frame = GetSupplementable()->GetFrame();
+  // 2. If associated document is not fully active, return false.
+  if (GetSupplementable()->IsContextDestroyed() || !this_frame)
+    return false;
+
+  // 4. If associated document is same-domain with initiators of active
+  // Picture-in-Picture sessions, return true.
+  //
+  // TODO(crbug.com/1396177): A frame should be able to access to
+  // PressureRecord if it is same-domain with initiators of active
+  // Picture-in-Picture sessions. However, it is hard to implement now. In
+  // current implementation, only the frame that triggers Picture-in-Picture
+  // can access to PressureRecord.
+  auto& pip_controller =
+      PictureInPictureControllerImpl::From(*(this_frame->GetDocument()));
+  if (pip_controller.PictureInPictureElement())
+    return true;
+
+  // 5. If browsing context is capturing, return true.
+  if (this_frame->IsCapturingMedia())
+    return true;
+
+  // 7. If top-level browsing context does not have system focus, return false.
+  DCHECK(this_frame->GetPage());
+  LocalFrame* focused_frame =
+      this_frame->GetPage()->GetFocusController().FocusedFrame();
+  if (!focused_frame || !focused_frame->IsOutermostMainFrame())
+    return false;
+
+  // 9. If origin is same origin-domain with focused document, return true.
+  // 10. Otherwise, return false.
+  const SecurityOrigin* focused_frame_origin =
+      focused_frame->GetSecurityContext()->GetSecurityOrigin();
+  const SecurityOrigin* this_origin =
+      this_frame->GetSecurityContext()->GetSecurityOrigin();
+  return focused_frame_origin->CanAccess(this_origin);
 }
 
 void PressureObserverManager::OnServiceConnectionError() {

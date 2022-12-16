@@ -234,38 +234,6 @@ TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
   observer.updates().clear();
 }
 
-// TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
-// implemented.
-TEST_F(PressureServiceImplTest, NoVisibility) {
-  FakePressureObserver observer;
-  ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
-                observer.BindNewPipeAndPassRemote()),
-            blink::mojom::PressureStatus::kOk);
-
-  const base::Time time = base::Time::Now();
-
-  test_rvh()->SimulateWasHidden();
-
-  // The first two updates should be blocked due to invisibility.
-  PressureUpdate update1(PressureState::kNominal, {}, time);
-  pressure_manager_overrider_->UpdateClients(update1);
-  PressureUpdate update2(PressureState::kCritical, {PressureFactor::kThermal},
-                         time + kSampleInterval);
-  pressure_manager_overrider_->UpdateClients(update2);
-  task_environment()->RunUntilIdle();
-
-  test_rvh()->SimulateWasShown();
-
-  // The third update should be dispatched.
-  PressureUpdate update3(PressureState::kFair, {PressureFactor::kThermal},
-                         time + kSampleInterval * 2);
-  pressure_manager_overrider_->UpdateClients(update3);
-  observer.WaitForUpdate();
-
-  ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0], update3);
-}
-
 class PressureServiceImplFencedFrameTest : public PressureServiceImplTest {
  public:
   PressureServiceImplFencedFrameTest() {

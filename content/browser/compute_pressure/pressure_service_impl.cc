@@ -97,25 +97,12 @@ void PressureServiceImpl::BindObserver(
       &PressureServiceImpl::ResetObserverState, base::Unretained(this)));
 }
 
+// TODO(crbug.com/1391848): PressureUpdate can be sent from PressureManagerImpl
+// to PressureObserverManager directly, because PressureUpdate is not filtered
+// in PressureServiceImpl any more.
 void PressureServiceImpl::PressureStateChanged(
     device::mojom::PressureUpdatePtr update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
-  // implemented.
-  if (!render_frame_host().IsActive()) {
-    // TODO(jsbell): Is it safe to disconnect observers in this state?
-    return;
-  }
-
-  // TODO(crbug.com/1385588): Remove this when "passes privacy test" steps are
-  // implemented.
-  if (render_frame_host().GetVisibilityState() !=
-      blink::mojom::PageVisibilityState::kVisible) {
-    // TODO(jsbell): Rate-limit observers in non-visible frames instead of
-    //               cutting off their updates completely.
-    return;
-  }
 
   observer_->OnUpdate(update.Clone());
 }

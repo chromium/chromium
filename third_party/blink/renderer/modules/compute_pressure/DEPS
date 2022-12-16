@@ -1,5 +1,6 @@
 include_rules = [
     "-third_party/blink/renderer/modules",
-    "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/compute_pressure",
+    "+third_party/blink/renderer/modules/document_picture_in_picture",
+    "+third_party/blink/renderer/modules/modules_export.h",
 ]
