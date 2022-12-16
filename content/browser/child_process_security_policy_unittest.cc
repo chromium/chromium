@@ -24,6 +24,7 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1183,7 +1184,15 @@ TEST_F(ChildProcessSecurityPolicyTest, RemoveRace) {
 // threads to capture permission state from the UI & IO threads during the
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
+//
+// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// CanAccessDataForOrigin on the IO thread, by checking for the presence of
+// security state instead.
 TEST_F(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
+  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
+    return;
+  }
+
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1307,7 +1316,15 @@ TEST_F(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
 // threads to capture permission state from the UI & IO threads during the
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
+//
+// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// CanAccessDataForOrigin on the IO thread, by checking for the presence of
+// security state instead.
 TEST_F(ChildProcessSecurityPolicyTest, HandleExtendsSecurityStateLifetime) {
+  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
+    return;
+  }
+
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 

@@ -32,6 +32,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/url_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -1550,8 +1551,16 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
 bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
     int child_id,
     const url::Origin& origin) {
+  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
+    // Ensure this is only called on the UI thread, which is the only thread
+    // with sufficient information to do the full set of checks.
+    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  } else {
+    // For legacy cases, this may be called on multiple threads.
+    DCHECK(IsRunningOnExpectedThread());
+  }
+
   GURL url_to_check;
-  DCHECK(IsRunningOnExpectedThread());
   if (origin.opaque()) {
     auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
     if (!precursor_tuple.IsValid()) {
@@ -1587,7 +1596,15 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin) {
-  DCHECK(IsRunningOnExpectedThread());
+  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
+    // Ensure this is only called on the UI thread, which is the only thread
+    // with sufficient information to do the full set of checks.
+    DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  } else {
+    // For legacy cases, this may be called on multiple threads.
+    DCHECK(IsRunningOnExpectedThread());
+  }
+
   base::AutoLock lock(lock_);
 
   SecurityState* security_state = GetSecurityState(child_id);

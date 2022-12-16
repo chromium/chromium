@@ -30,6 +30,11 @@ BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
 // See https://crbug.com/838348 and https://crbug.com/1220337.
 BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 
+// When enabled, CanAccessDataForOrigin can only be called from the UI thread.
+// This is related to Citadel desktop protections. See
+// https://crbug.com/1286501.
+BASE_DECLARE_FEATURE(kRestrictCanAccessDataForOriginToUIThread);
+
 // (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
 BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
 

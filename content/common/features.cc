@@ -22,6 +22,10 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              "QueueNavigationsWhileWaitingForPendingCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
+             "RestrictCanAccessDataForOriginToUIThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSpeculativeServiceWorkerStartup,
              "SpeculativeServiceWorkerStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);

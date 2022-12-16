@@ -106,6 +106,9 @@ CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
 // TODO(https://crbug.com/1072817): Stop allowing this.
 CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
 
+// As part of the Citadel desktop protections, we want to stop allowing calls to
+// CanAccessDataForOrigin on the IO thread, and only allow it on the UI thread.
+CONTENT_EXPORT bool ShouldRestrictCanAccessDataForOriginToUIThread();
 }  // namespace content
 
 #endif  // CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_

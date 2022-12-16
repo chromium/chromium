@@ -10,8 +10,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/features.h"
 
 namespace features {
 BASE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial,
@@ -196,4 +198,12 @@ bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
   return skip_early_commit_pending_for_crashed_frame;
 }
 
+bool ShouldRestrictCanAccessDataForOriginToUIThread() {
+  // Only restrict calls to the UI thread if the feature is enabled, and if the
+  // new blob URL support is enabled.
+  return base::FeatureList::IsEnabled(
+             kRestrictCanAccessDataForOriginToUIThread) &&
+         base::FeatureList::IsEnabled(
+             net::features::kSupportPartitionedBlobUrl);
+}
 }  // namespace content
