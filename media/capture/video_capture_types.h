@@ -294,6 +294,8 @@ struct CAPTURE_EXPORT VideoCaptureParams {
     gfx::Size max_frame_size;
     bool fixed_aspect_ratio;
 
+    std::string ToString() const;
+
     bool operator==(const SuggestedConstraints& other) const {
       return min_frame_size == other.min_frame_size &&
              max_frame_size == other.max_frame_size &&
@@ -335,6 +337,10 @@ struct CAPTURE_EXPORT VideoCaptureParams {
   // Android platform with Camera2 driver support.
   bool enable_face_detection;
 };
+
+CAPTURE_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const VideoCaptureParams::SuggestedConstraints& constraints);
 
 }  // namespace media
 

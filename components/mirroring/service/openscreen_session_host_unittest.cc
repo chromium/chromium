@@ -582,12 +582,13 @@ TEST_F(OpenscreenSessionHostTest, AudioAndVideoMirroring) {
   StopSession();
 }
 
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
 TEST_F(OpenscreenSessionHostTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
-      .min_frame_size = gfx::Size(2, 2),
+      .min_frame_size = gfx::Size(320, 180),
       .max_frame_size = gfx::Size(1920, 1080),
-      .fixed_aspect_ratio = false};
+      .fixed_aspect_ratio = true};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   StopSession();
@@ -595,15 +596,14 @@ TEST_F(OpenscreenSessionHostTest, AnswerWithConstraints) {
             expected_constraints);
 }
 
-// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
-TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxEnabled) {
+TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  feature_list.InitAndEnableFeature(features::kCastDisableLetterboxing);
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
-      .min_frame_size = gfx::Size(320, 180),
+      .min_frame_size = gfx::Size(2, 2),
       .max_frame_size = gfx::Size(1920, 1080),
-      .fixed_aspect_ratio = true};
+      .fixed_aspect_ratio = false};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   StopSession();

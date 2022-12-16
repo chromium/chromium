@@ -199,6 +199,8 @@ class SessionTest : public mojom::ResourceProvider,
     OnConnectToRemotingSource();
   }
 
+  void ForceLetterboxing() { force_letterboxing_ = true; }
+
   void SendAnswer() {
     ASSERT_TRUE(session_);
     std::vector<FrameSenderConfig> audio_configs;
@@ -265,6 +267,9 @@ class SessionTest : public mojom::ResourceProvider,
     if (target_playout_delay_ms_ != kDefaultPlayoutDelay) {
       session_params->target_playout_delay =
           base::Milliseconds(target_playout_delay_ms_);
+    }
+    if (force_letterboxing_) {
+      session_params->force_letterboxing = true;
     }
     session_params->is_remote_playback = is_remote_playback_;
     cast_mode_ = "mirroring";
@@ -488,6 +493,7 @@ class SessionTest : public mojom::ResourceProvider,
   int32_t offer_sequence_number_ = -1;
   int32_t capability_sequence_number_ = -1;
   int32_t target_playout_delay_ms_ = kDefaultPlayoutDelay;
+  bool force_letterboxing_{false};
 
   std::unique_ptr<Session> session_;
   std::unique_ptr<MockNetworkContext> network_context_;
@@ -515,7 +521,25 @@ TEST_F(SessionTest, AudioAndVideoMirroring) {
   StopSession();
 }
 
-TEST_F(SessionTest, AnswerWithConstraints) {
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(320, 180),
+      .max_frame_size = gfx::Size(1280, 720),
+      .fixed_aspect_ratio = true};
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
+}
+
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCastDisableLetterboxing);
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(2, 2),
@@ -529,9 +553,8 @@ TEST_F(SessionTest, AnswerWithConstraints) {
 }
 
 // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
-TEST_F(SessionTest, AnswerWithConstraintsLetterboxEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxForced) {
+  ForceLetterboxing();
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(320, 180),
