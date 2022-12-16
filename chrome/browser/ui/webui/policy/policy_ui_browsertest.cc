@@ -466,19 +466,19 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_WritePoliciesToJSONFile) {
                     std::string(), false, base::Value(2));
 
   // This also checks that we save complex policies correctly.
-  base::Value unknown_policy(base::Value::Type::DICTIONARY);
-  base::Value* body =
-      unknown_policy.SetKey("body", base::Value(base::Value::Type::DICTIONARY));
-  body->SetIntKey("first", 0);
-  body->SetBoolKey("second", true);
-  unknown_policy.SetIntKey("head", 12);
+  base::Value::Dict unknown_policy;
+  base::Value::Dict* body = unknown_policy.EnsureDict("body");
+  body->Set("first", 0);
+  body->Set("second", true);
+  unknown_policy.Set("head", 12);
   const std::string kUnknownPolicy = "NoSuchThing";
   values.Set(kUnknownPolicy, policy::POLICY_LEVEL_RECOMMENDED,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value(unknown_policy.Clone()), nullptr);
   SetExpectedPolicy(expected_values, kUnknownPolicy, "recommended", "user",
                     "cloud", l10n_util::GetStringUTF8(IDS_POLICY_UNKNOWN),
-                    std::string(), false, unknown_policy);
+                    std::string(), false,
+                    base::Value(std::move(unknown_policy)));
 
   // Set the extension policies to an empty dictionary as we haven't added any
   // such policies.
@@ -607,11 +607,14 @@ bool PolicyUIStatusTest::ReadStatusFor(
   absl::optional<base::Value> statuses = base::JSONReader::Read(json);
   if (!statuses.has_value() || !statuses->is_dict())
     return false;
-  const base::Value* actual_entries = statuses->FindDictKey(policy_legend);
-  if (!actual_entries || !actual_entries->is_dict())
+  const base::Value::Dict& status_dict = statuses->GetDict();
+  const base::Value::Dict* actual_entries = status_dict.FindDict(policy_legend);
+  if (!actual_entries) {
     return false;
-  for (const auto entry : actual_entries->DictItems())
+  }
+  for (const auto entry : *actual_entries) {
     policy_status->insert_or_assign(entry.first, entry.second.GetString());
+  }
   return true;
 }
 
@@ -785,13 +788,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
   std::map<std::string, std::string> expected_values;
 
   // Set the values of four existing policies.
-  base::Value blocked_urls(base::Value::Type::LIST);
+  base::Value::List blocked_urls;
   blocked_urls.Append("site1.com");
   blocked_urls.Append("site2.com");
   blocked_urls.Append("site3.com");
   values.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::move(blocked_urls), nullptr);
+             base::Value(std::move(blocked_urls)), nullptr);
   expected_values[policy::key::kURLBlocklist] =
       R"(["site1.com","site2.com","site3.com"])";
   values.Set(policy::key::kHomepageLocation, policy::POLICY_LEVEL_MANDATORY,
@@ -1141,9 +1144,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   // Verify if policy UI includes policy that extension have.
   VerifyPolicies(expected_policies);
 
-  base::Value object_value(base::Value::Type::DICTIONARY);
-  object_value.SetBoolKey("objectProperty", true);
-  base::Value array_value(base::Value::Type::LIST);
+  base::Value::Dict object_value;
+  object_value.Set("objectProperty", true);
+  base::Value::List array_value;
   array_value.Append(true);
 
   policy::PolicyMap values;
@@ -1152,7 +1155,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
              base::Value(true), nullptr);
   values.Set(kSensitiveArrayPolicy, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::move(array_value), nullptr);
+             base::Value(std::move(array_value)), nullptr);
   values.Set(kSensitiveBooleanPolicy, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value(true), nullptr);
@@ -1164,7 +1167,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
              base::Value(3.141), nullptr);
   values.Set(kSensitiveObjectPolicy, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::move(object_value), nullptr);
+             base::Value(std::move(object_value)), nullptr);
   values.Set(kSensitiveStringPolicy, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value("value"), nullptr);
