@@ -3076,6 +3076,8 @@ test("ash_unittests") {
     "system/network/active_network_icon_unittest.cc",
     "system/network/auto_connect_notifier_unittest.cc",
     "system/network/cellular_setup_notifier_unittest.cc",
+    "system/network/fake_cros_network_config.cc",
+    "system/network/fake_cros_network_config.h",
     "system/network/managed_sim_lock_notifier_unittest.cc",
     "system/network/network_detailed_network_view_unittest.cc",
     "system/network/network_detailed_view_controller_unittest.cc",

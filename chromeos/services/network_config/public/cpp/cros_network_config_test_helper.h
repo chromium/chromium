@@ -38,11 +38,11 @@ class CrosNetworkConfigTestHelper {
 
   ~CrosNetworkConfigTestHelper();
 
-  mojom::NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
+  static mojom::NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
       const std::string& id,
       mojom::NetworkType type,
       mojom::ConnectionStateType connection_state,
-      int signal_strength);
+      int signal_strength = 0);
 
   NetworkStateTestHelper& network_state_helper() {
     return network_state_helper_;

@@ -30,6 +30,7 @@ void CrosNetworkConfigTestHelper::Shutdown() {
   cros_network_config_impl_.reset();
 }
 
+// static
 network_config::mojom::NetworkStatePropertiesPtr
 CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
     const std::string& id,
@@ -56,8 +57,12 @@ CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           NetworkTypeStateProperties::NewCellular(std::move(cellular));
       break;
     }
-    case NetworkType::kEthernet:
+    case NetworkType::kEthernet: {
+      auto ethernet = mojom::EthernetStateProperties::New();
+      network->type_state =
+          mojom::NetworkTypeStateProperties::NewEthernet(std::move(ethernet));
       break;
+    }
     case NetworkType::kTether: {
       auto tether = mojom::TetherStateProperties::New();
       tether->signal_strength = signal_strength;
@@ -65,8 +70,11 @@ CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
           NetworkTypeStateProperties::NewTether(std::move(tether));
       break;
     }
-    case NetworkType::kVPN:
+    case NetworkType::kVPN: {
+      auto vpn = mojom::VPNStateProperties::New();
+      network->type_state = NetworkTypeStateProperties::NewVpn(std::move(vpn));
       break;
+    }
     case NetworkType::kWiFi: {
       auto wifi = mojom::WiFiStateProperties::New();
       wifi->signal_strength = signal_strength;

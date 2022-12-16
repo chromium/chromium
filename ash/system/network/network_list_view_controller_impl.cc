@@ -25,8 +25,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,6 +51,7 @@ using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::OncSource;
 using ::chromeos::network_config::mojom::ProxyMode;
 
 // Delay between scan requests.
@@ -103,9 +102,10 @@ bool IsESimSupported() {
   // Check both the SIM slot infos and the number of EUICCs because the former
   // comes from Shill and the latter from Hermes, and so there may be instances
   // where one may be true while they other isn't.
-  if (HermesManagerClient::Get()->GetAvailableEuiccs().empty())
+  if (HermesManagerClient::Get() &&
+      HermesManagerClient::Get()->GetAvailableEuiccs().empty()) {
     return false;
-
+  }
   for (const auto& sim_info : *cellular_device->sim_infos) {
     if (!sim_info->eid.empty())
       return true;
@@ -257,11 +257,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> known_networks;
     std::vector<NetworkStatePropertiesPtr> unknown_networks;
     for (NetworkStatePropertiesPtr& network : networks) {
-      const NetworkState* network_state =
-          NetworkHandler::Get()
-              ->network_state_handler()
-              ->GetNetworkStateFromGuid(network->guid);
-      if (network_state && network_state->IsInProfile() &&
+      if (network->source != OncSource::kNone &&
           NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
         known_networks.push_back(std::move(network));
       } else if (NetworkTypeMatchesType(network->type, NetworkType::kWiFi)) {
@@ -334,7 +330,7 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
 
 size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
     size_t index) {
-  const NetworkStateProperties* default_network = GetDefaultNetwork();
+  const NetworkStateProperties* default_network = model()->default_network();
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
   bool dns_queries_monitored =
@@ -356,25 +352,15 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
   return index;
 }
 
-void NetworkListViewControllerImpl::SetDefaultNetworkForTesting(
-    NetworkStatePropertiesPtr default_network) {
-  default_network_for_testing_ = std::move(default_network);
-}
-
-void NetworkListViewControllerImpl::SetManagedNetworkPropertiesForTesting(
-    ManagedPropertiesPtr managed_properties) {
-  managed_network_properties_for_testing_ = std::move(managed_properties);
-}
-
 void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
     bool using_proxy) {
   is_proxy_managed_.reset();
   is_vpn_managed_.reset();
 
   // If the proxy is set, check if it's a managed setting.
-  const NetworkStateProperties* default_network = GetDefaultNetwork();
+  const NetworkStateProperties* default_network = model()->default_network();
   if (using_proxy && default_network) {
-    GetManagedProperties(
+    model()->cros_network_config()->GetManagedProperties(
         default_network->guid,
         base::BindOnce(
             &NetworkListViewControllerImpl::OnGetManagedPropertiesResult,
@@ -385,7 +371,7 @@ void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
 
   // If the vpn is set, check if it's a managed setting.
   if (!connected_vpn_guid_.empty()) {
-    GetManagedProperties(
+    model()->cros_network_config()->GetManagedProperties(
         connected_vpn_guid_,
         base::BindOnce(
             &NetworkListViewControllerImpl::OnGetManagedPropertiesResult,
@@ -399,7 +385,7 @@ void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
     const std::string& guid,
     ManagedPropertiesPtr properties) {
   // Check if the proxy is managed.
-  const NetworkStateProperties* default_network = GetDefaultNetwork();
+  const NetworkStateProperties* default_network = model()->default_network();
   if (default_network && default_network->guid == guid) {
     is_proxy_managed_ =
         properties && properties->proxy_settings &&
@@ -451,27 +437,6 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
       NetworkListViewControllerViewChildId::kConnectionWarningIcon));
   connection_warning_icon_ = image_view.get();
   parent->AddView(TriView::Container::START, image_view.release());
-}
-
-const NetworkStateProperties*
-NetworkListViewControllerImpl::GetDefaultNetwork() {
-  if (default_network_for_testing_)
-    return default_network_for_testing_.get();
-  return model()->default_network();
-}
-
-void NetworkListViewControllerImpl::GetManagedProperties(
-    const std::string& guid,
-    CrosNetworkConfig::GetManagedPropertiesCallback callback) {
-  if (managed_network_properties_for_testing_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       managed_network_properties_for_testing_.Clone()));
-    return;
-  }
-  model()->cros_network_config()->GetManagedProperties(guid,
-                                                       std::move(callback));
 }
 
 bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {

@@ -108,6 +108,16 @@ class TrayNetworkStateModel::Impl
     return remote_cros_network_config_.get();
   }
 
+  void ConfigureRemoteForTesting(  // IN-TEST
+      mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+          cros_network_config) {
+    remote_cros_network_config_.reset();
+    cros_network_config_observer_receiver_.reset();
+    remote_cros_network_config_.Bind(std::move(cros_network_config));
+    remote_cros_network_config_->AddObserver(
+        cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
+  }
+
  private:
   // CrosNetworkConfigObserver
   void OnActiveNetworksChanged(
@@ -156,6 +166,12 @@ TrayNetworkStateModel::~TrayNetworkStateModel() {
   vpn_list_.reset();
 }
 
+void TrayNetworkStateModel::ConfigureRemoteForTesting(
+    mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+        cros_network_config) {
+  impl_->ConfigureRemoteForTesting(std::move(cros_network_config));  // IN-TEST
+}
+
 void TrayNetworkStateModel::AddObserver(TrayNetworkStateObserver* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -180,10 +196,6 @@ DeviceStateType TrayNetworkStateModel::GetDeviceState(NetworkType type) const {
 void TrayNetworkStateModel::SetNetworkTypeEnabledState(NetworkType type,
                                                        bool enabled) {
   impl_->SetNetworkTypeEnabledState(type, enabled);
-}
-
-void TrayNetworkStateModel::FlushGlobalPolicyForTesting() {
-  impl_->GetGlobalPolicy();
 }
 
 bool TrayNetworkStateModel::IsBuiltinVpnProhibited() const {

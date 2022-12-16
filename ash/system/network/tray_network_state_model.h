@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
 namespace ash {
@@ -53,11 +54,12 @@ class ASH_EXPORT TrayNetworkStateModel {
   // Note: Currently only built-in VPNs can be prohibited by policy.
   bool IsBuiltinVpnProhibited() const;
 
-  // Used in tests, updates currently cached global policies.
-  void FlushGlobalPolicyForTesting();
-
   // This used to be inlined but now requires details from the Impl class.
   chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config();
+
+  void ConfigureRemoteForTesting(
+      mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+          cros_network_config);
 
   const chromeos::network_config::mojom::NetworkStateProperties*
   default_network() const {
