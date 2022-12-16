@@ -2286,6 +2286,41 @@ TEST_F(CookieMonsterTest, DeleteExpiredPartitionedCookiesOnlyOnGet) {
   EXPECT_EQ(1u, cookies.size());
 }
 
+TEST_F(CookieMonsterTest, DeletePartitionedCookie) {
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, net::NetLog::Get());
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
+
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-A=B; secure; path=/; partitioned",
+                        cookie_partition_key));
+  // Set another partitioned and an unpartitioned cookie and make sure they are
+  // unaffected.
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-C=D; secure; path=/; partitioned",
+                        cookie_partition_key));
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-E=F; secure; path=/", absl::nullopt));
+
+  auto cookie = CanonicalCookie::Create(
+      https_www_bar_.url(), "__Host-A=B; secure; path=/; partitioned",
+      /*creation_time=*/Time::Now(), /*server_time=*/absl::nullopt,
+      cookie_partition_key);
+  ASSERT_TRUE(cookie);
+
+  ResultSavingCookieCallback<unsigned int> delete_callback;
+  cm->DeleteCanonicalCookieAsync(*cookie, delete_callback.MakeCallback());
+  delete_callback.WaitUntilDone();
+
+  CookieList cookies =
+      GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
+                          CookiePartitionKeyCollection(cookie_partition_key));
+  EXPECT_EQ(2u, cookies.size());
+  EXPECT_EQ(cookies[0].Name(), "__Host-C");
+  EXPECT_EQ(cookies[1].Name(), "__Host-E");
+}
+
 // Tests importing from a persistent cookie store that contains duplicate
 // equivalent cookies. This situation should be handled by removing the
 // duplicate cookie (both from the in-memory cache, and from the backing store).
