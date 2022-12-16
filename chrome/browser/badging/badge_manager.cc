@@ -46,7 +46,7 @@ bool IsLastBadgingTimeWithin(base::TimeDelta time_frame,
                              Profile* profile) {
   const base::Time last_badging_time =
       WebAppProvider::GetForLocalAppsUnchecked(profile)
-          ->registrar()
+          ->registrar_unsafe()
           .GetAppLastBadgingTime(app_id);
   return clock->Now() < last_badging_time + time_frame;
 }
@@ -274,7 +274,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   const absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
   if (!app_id)
@@ -297,7 +297,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<std::tuple<web_app::AppId, GURL>> app_ids_urls{};
   for (const auto& app_id : registrar.FindAppsInScope(scope_)) {
     app_ids_urls.push_back(

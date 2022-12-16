@@ -138,7 +138,8 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
   constexpr uint64_t kOtherContents = 2;
 
   std::vector<web_app::AppId> updated_apps;
-  web_app::WebAppTestRegistryObserverAdapter observer(&provider().registrar());
+  web_app::WebAppTestRegistryObserverAdapter observer(
+      &provider().registrar_unsafe());
   observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
       [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
         updated_apps.push_back(app_id);
@@ -212,14 +213,15 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::vector<web_app::AppId> updated_apps;
   std::vector<web_app::AppId> other_updated_apps;
   web_app::WebAppTestRegistryObserverAdapter other_observer(
-      &new_provider->registrar());
+      &new_provider->registrar_unsafe());
   other_observer.SetWebAppLastBadgingTimeChangedDelegate(
       base::BindLambdaForTesting(
           [&other_updated_apps](const web_app::AppId& app_id,
                                 const base::Time& time) {
             other_updated_apps.push_back(app_id);
           }));
-  web_app::WebAppTestRegistryObserverAdapter observer(&provider().registrar());
+  web_app::WebAppTestRegistryObserverAdapter observer(
+      &provider().registrar_unsafe());
   observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
       [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
         updated_apps.push_back(app_id);
