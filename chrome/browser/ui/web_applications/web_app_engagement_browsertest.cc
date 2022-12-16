@@ -392,7 +392,13 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
                      /*tabLaunches=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DefaultApp) {
+// TODO(crbug.com/1401607): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DefaultApp DISABLED_DefaultApp
+#else
+#define MAYBE_DefaultApp DefaultApp
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
