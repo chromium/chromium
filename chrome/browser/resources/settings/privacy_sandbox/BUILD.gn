@@ -17,7 +17,6 @@ if (optimize_webui) {
       "privacy_sandbox/icons.html.js",
       "privacy_sandbox/interest_item.js",
       "privacy_sandbox/interest_item.html.js",
-      "privacy_sandbox/privacy_sandbox_browser_proxy.js",
     ]
     input_files_base_dir = rebase_path("$target_gen_dir/../tsc", root_build_dir)
     deps = [ "..:build_ts" ]

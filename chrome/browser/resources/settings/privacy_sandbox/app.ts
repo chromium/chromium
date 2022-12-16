@@ -15,10 +15,9 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TooltipMixin, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, FledgeState, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, SettingsToggleButtonElement, TooltipMixin, TopicsState, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
-import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 
 /** Views of the PrivacySandboxSettings page. */
 export enum PrivacySandboxSettingsView {

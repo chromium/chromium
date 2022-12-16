@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CanonicalTopic, PrivacySandboxBrowserProxy} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {CanonicalTopic, PrivacySandboxBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements

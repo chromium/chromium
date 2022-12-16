@@ -14,10 +14,9 @@ import '../settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../settings.js';
+import {loadTimeData, PrivacySandboxInterest} from '../settings.js';
 
 import {getTemplate} from './interest_item.html.js';
-import {PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 
 export class PrivacySandboxInterestItemElement extends PolymerElement {
   static get is() {
