@@ -149,21 +149,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
 }
 
 void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
-  supported_types->insert(ADDRESS_HOME_LINE1);
-  supported_types->insert(ADDRESS_HOME_LINE2);
-  supported_types->insert(ADDRESS_HOME_LINE3);
-  supported_types->insert(ADDRESS_HOME_STREET_ADDRESS);
-  supported_types->insert(ADDRESS_HOME_DEPENDENT_LOCALITY);
-  supported_types->insert(ADDRESS_HOME_CITY);
-  supported_types->insert(ADDRESS_HOME_STATE);
-  supported_types->insert(ADDRESS_HOME_ZIP);
-  supported_types->insert(ADDRESS_HOME_SORTING_CODE);
-  supported_types->insert(ADDRESS_HOME_COUNTRY);
-  supported_types->insert(ADDRESS_HOME_STREET_NAME);
-  supported_types->insert(ADDRESS_HOME_DEPENDENT_STREET_NAME);
-  supported_types->insert(ADDRESS_HOME_HOUSE_NUMBER);
-  supported_types->insert(ADDRESS_HOME_PREMISE_NAME);
-  supported_types->insert(ADDRESS_HOME_SUBPREMISE);
+  structured_address_.GetSupportedTypes(supported_types);
 }
 
 std::u16string Address::GetInfoImpl(const AutofillType& type,

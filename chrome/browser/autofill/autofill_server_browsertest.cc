@@ -258,16 +258,12 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // The resulting bit mask in this test is hard-coded to capture regressions in
   // the calculation of the mask.
 
-  const bool honorific_prefix = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForHonorificPrefixes);
-
-  // Combinations of honorific_prefix without structured_names are omitted
-  // because honorific_prefix can only be enabled on top of structured_names.
   std::string data_present;
-  if (!honorific_prefix) {
-    data_present = "1f7e0003780000080004000001c40018";
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHonorificPrefixes)) {
+    data_present = "1f7e0003f80000080004000001c40418";
   } else {
-    data_present = "1f7e0003780000080004000001c40418";
+    data_present = "1f7e0003f80000080004000001c40018";
   }
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present

@@ -1763,20 +1763,23 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
                        "johnwayne@me.xyz", nullptr, "123 Zoo St.", nullptr,
                        "Hollywood", "CA", "91601", "US", "14155678910");
 
-  std::vector<ServerFieldType> expected_raw_types{NAME_FIRST,
-                                                  NAME_LAST,
-                                                  NAME_FULL,
-                                                  EMAIL_ADDRESS,
-                                                  PHONE_HOME_WHOLE_NUMBER,
-                                                  ADDRESS_HOME_LINE1,
-                                                  ADDRESS_HOME_CITY,
-                                                  ADDRESS_HOME_STATE,
-                                                  ADDRESS_HOME_ZIP,
-                                                  ADDRESS_HOME_COUNTRY,
-                                                  ADDRESS_HOME_STREET_ADDRESS,
-                                                  ADDRESS_HOME_STREET_NAME,
-                                                  ADDRESS_HOME_HOUSE_NUMBER,
-                                                  NAME_LAST_SECOND};
+  std::vector<ServerFieldType> expected_raw_types{
+      NAME_FIRST,
+      NAME_LAST,
+      NAME_FULL,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      ADDRESS_HOME_ADDRESS,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      NAME_LAST_SECOND};
 
   ServerFieldTypeSet non_empty_raw_types;
   profile.GetNonEmptyRawTypes(&non_empty_raw_types);
