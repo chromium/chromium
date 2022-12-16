@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -38,13 +39,19 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
+    auto* transformer_script_state = transformer_->GetScriptState();
+    if (!transformer_script_state->ContextIsValid()) {
+      return PromiseReject(script_state,
+                           V8ThrowException::CreateTypeError(
+                               script_state->GetIsolate(), "invalid realm"));
+    }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise promise;
     {
       // This is needed because the realm of the transformer can be different
       // from the realm of the transform stream.
-      ScriptState::Scope scope(transformer_->GetScriptState());
+      ScriptState::Scope scope(transformer_script_state);
       promise = transformer_->Flush(controller_, exception_state);
     }
     if (exception_state.HadException()) {
@@ -84,13 +91,19 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     DCHECK(controller_);
+    auto* transformer_script_state = transformer_->GetScriptState();
+    if (!transformer_script_state->ContextIsValid()) {
+      return PromiseReject(script_state,
+                           V8ThrowException::CreateTypeError(
+                               script_state->GetIsolate(), "invalid realm"));
+    }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise promise;
     {
       // This is needed because the realm of the transformer can be different
       // from the realm of the transform stream.
-      ScriptState::Scope scope(transformer_->GetScriptState());
+      ScriptState::Scope scope(transformer_script_state);
       promise = transformer_->Transform(argv[0], controller_, exception_state);
     }
     if (exception_state.HadException()) {
