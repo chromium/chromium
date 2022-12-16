@@ -486,13 +486,6 @@ public abstract class ChromeFeatureList {
     public static final String SAFE_MODE_FOR_CACHED_FLAGS = "SafeModeForCachedFlags";
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";
 
-    public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
-            "SearchEnginePromo.ExistingDevice";
-    public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE_V2 =
-            "SearchEnginePromo.ExistingDeviceVer2";
-    public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
-    public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE_V2 =
-            "SearchEnginePromo.NewDeviceVer2";
     public static final String SEND_TAB_TO_SELF_SIGNIN_PROMO = "SendTabToSelfSigninPromo";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHARE_CROW_BUTTON = "ShareCrowButton";

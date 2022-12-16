@@ -382,22 +382,6 @@
             ]
         }
     ],
-    "AndroidSearchEnginePromoV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchEnginePromo.ExistingDeviceVer2",
-                        "SearchEnginePromo.NewDeviceVer2"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSystemTracing": [
         {
             "platforms": [

@@ -281,10 +281,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteOptInSynthetic,
     &kRequestDesktopSiteDefaultsDowngrade,
     &kSafeModeForCachedFlags,
-    &kSearchEnginePromoExistingDevice,
-    &kSearchEnginePromoExistingDeviceV2,
-    &kSearchEnginePromoNewDevice,
-    &kSearchEnginePromoNewDeviceV2,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
@@ -774,22 +770,6 @@ BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIsVoiceSearchEnabledCache,
              "IsVoiceSearchEnabledCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchEnginePromoExistingDevice,
-             "SearchEnginePromo.ExistingDevice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchEnginePromoExistingDeviceV2,
-             "SearchEnginePromo.ExistingDeviceVer2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchEnginePromoNewDevice,
-             "SearchEnginePromo.NewDevice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchEnginePromoNewDeviceV2,
-             "SearchEnginePromo.NewDeviceVer2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageTilesTitleWrapAround,

@@ -370,7 +370,6 @@ public class ReengagementNotificationControllerIntegrationTest {
         features.put(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, enabled);
         // TODO(crbug.com/1111584): Remove these overrides when FeatureList#isInitialized() works
         // as expected with test values.
-        features.put(ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE, false);
         features.put(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
         FeatureList.setTestFeatures(features);
     }
