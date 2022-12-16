@@ -81,7 +81,10 @@ mojom::MuteState CrosAudioConfigImpl::GetOutputMuteState() const {
 }
 
 void CrosAudioConfigImpl::GetAudioDevices(
-    std::vector<mojom::AudioDevicePtr>* output_devices_out) const {
+    std::vector<mojom::AudioDevicePtr>* output_devices_out,
+    std::vector<mojom::AudioDevicePtr>* input_devices_out) const {
+  DCHECK(output_devices_out);
+  DCHECK(input_devices_out);
   AudioDeviceList audio_devices_list;
   CrasAudioHandler::Get()->GetAudioDevices(&audio_devices_list);
   for (const auto& device : audio_devices_list) {
@@ -89,8 +92,9 @@ void CrosAudioConfigImpl::GetAudioDevices(
       continue;
     }
 
-    // TODO(crbug.com/1092970): Add input_devices.
-    if (!device.is_input) {
+    if (device.is_input) {
+      input_devices_out->push_back(GenerateMojoAudioDevice(device));
+    } else {
       output_devices_out->push_back(GenerateMojoAudioDevice(device));
     }
   }

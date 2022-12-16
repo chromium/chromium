@@ -23,7 +23,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   uint8_t GetOutputVolumePercent() const override;
   mojom::MuteState GetOutputMuteState() const override;
   void GetAudioDevices(
-      std::vector<mojom::AudioDevicePtr>* output_devices_out) const override;
+      std::vector<mojom::AudioDevicePtr>* output_devices_out,
+      std::vector<mojom::AudioDevicePtr>* input_devices_out) const override;
   void SetOutputVolumePercent(int8_t volume) override;
 
   // CrasAudioHandler::AudioObserver:

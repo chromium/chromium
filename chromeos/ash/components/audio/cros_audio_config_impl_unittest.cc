@@ -329,4 +329,34 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
                 ->id);
 }
 
+TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+
+  // Test default audio node list, which includes one input and one output node.
+  SetAudioNodes({kInternalSpeaker});
+
+  ASSERT_EQ(3u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(0u, fake_observer->last_audio_system_properties_.value()
+                    ->input_devices.size());
+
+  InsertAudioNode(kMicJack);
+
+  ASSERT_EQ(4u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(1u, fake_observer->last_audio_system_properties_.value()
+                    ->input_devices.size());
+  EXPECT_EQ(kMicJackId, fake_observer->last_audio_system_properties_.value()
+                            ->input_devices[0]
+                            ->id);
+
+  RemoveAudioNode(kMicJackId);
+
+  ASSERT_EQ(5u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(0u, fake_observer->last_audio_system_properties_.value()
+                    ->input_devices.size());
+}
+
 }  // namespace ash::audio_config

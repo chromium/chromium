@@ -67,6 +67,10 @@ struct AudioSystemProperties {
 
   // The mute state of the active output device.
   MuteState output_mute_state;
+
+  // List of input devices. UI surfaces should display devices in the order
+  // indicated by this array.
+  array<AudioDevice> input_devices;
 };
 
 // Observer for changes to audio system properties.
