@@ -67,6 +67,8 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   void SetMouseCursor(
       std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
+  void BoostFramerate(base::TimeDelta capture_interval,
+                      base::TimeDelta boost_duration) override;
 
   // VideoChannelStateObserver interface.
   void OnTargetFramerateChanged(int framerate) override;

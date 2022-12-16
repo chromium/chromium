@@ -53,6 +53,19 @@ void WebrtcFrameSchedulerConstantRate::SetMaxFramerateFps(int max_framerate) {
   ScheduleNextFrame();
 }
 
+void WebrtcFrameSchedulerConstantRate::BoostCaptureRate(
+    base::TimeDelta capture_interval,
+    base::TimeDelta duration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Clamp |boost_capture_interval_| as the capture pipeline starts acting weird
+  // when we try to capture at sub-millisecond intervals.
+  boost_capture_interval_ = std::max(capture_interval, base::Milliseconds(1));
+  boost_window_ = base::TimeTicks::Now() + duration;
+
+  ScheduleNextFrame();
+}
+
 void WebrtcFrameSchedulerConstantRate::ScheduleNextFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -91,6 +104,16 @@ void WebrtcFrameSchedulerConstantRate::ScheduleNextFrame() {
   // affect some unittests.
   base::TimeDelta capture_interval =
       std::max(base::Seconds(1) / max_framerate_fps_, base::Milliseconds(1));
+
+  // Use the boosted capture interval if we are within |boost_window_|.
+  if (!boost_window_.is_null()) {
+    if (boost_window_ > now) {
+      capture_interval = boost_capture_interval_;
+    } else {
+      boost_window_ = {};
+    }
+  }
+
   base::TimeDelta delay;
   if (!last_capture_started_time_.is_null()) {
     base::TimeTicks target_capture_time =

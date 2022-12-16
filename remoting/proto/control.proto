@@ -39,6 +39,27 @@ message VideoControl {
   // Enables the video channel if true, pauses if false.
   optional bool enable = 1;
 
+  message FramerateBoost {
+    // Indicates whether to enable or disable this feature. When enabled, the
+    // capture interval will be adjusted when remote input is received. The goal
+    // is to reduce the latency between when input is received and a new frame
+    // is generated which will lead to higher responsiveness when the user
+    // interacts with the host.
+    optional bool enabled = 1;
+
+    // Adjusting the capture interval will change the framerate, a lower
+    // interval value will typically lead to a higher FPS from the host.
+    // The minimum value is 1, maximum is 1000 but that would lead to 1 FPS
+    // which would be silly.
+    optional int32 capture_interval_ms = 2;
+
+    // Indicates the amount of time the capture interval will be boosted after
+    // each remote input event is received.  Minimum value is 1, maximum is
+    // 1000 (1 second).
+    optional int32 boost_duration_ms = 3;
+  }
+  optional FramerateBoost framerate_boost = 4;
+
   // Lossless encode and color settings are no longer set via this message.
   reserved 2, 3;
   reserved "lossless_encode", "lossless_color";
