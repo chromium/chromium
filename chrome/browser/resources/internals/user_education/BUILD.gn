@@ -28,8 +28,8 @@ preprocess_if_expr("preprocess_src") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_ts__generator" ]
+  sources = [ "$root_gen_dir/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.ts" ]
   outputs = [ "$preprocess_folder/{{source_file_part}}" ]
 }
 
@@ -40,7 +40,7 @@ ts_library("build_ts") {
   in_files = [
     "user_education_internals.ts",
     "user_education_internals.html.ts",
-    "user_education_internals.mojom-webui.js",
+    "user_education_internals.mojom-webui.ts",
   ]
   deps = [
     "//ui/webui/resources:library",

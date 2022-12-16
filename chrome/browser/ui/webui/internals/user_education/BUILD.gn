@@ -7,4 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "user_education_internals.mojom" ]
   webui_module_path = "/chrome/browser/ui/webui/internals/user_education"
+  use_typescript_sources = true
 }
