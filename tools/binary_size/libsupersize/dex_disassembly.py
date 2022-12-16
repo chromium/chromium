@@ -65,8 +65,8 @@ def _DisassembleApk(mapping, apk_path):
     tmp_file.flush()
 
     cmd = [
-        'java', '-cp', r8_path, 'com.android.tools.r8.Disassemble', '--pg-map',
-        mapping, tmp_file.name
+        path_util.GetJavaExec(), '-cp', r8_path,
+        'com.android.tools.r8.Disassemble', '--pg-map', mapping, tmp_file.name
     ]
     try:
       r8_output = subprocess.check_output(cmd, encoding='utf8')

@@ -197,6 +197,10 @@ def GetJavaHome():
   return FromToolsSrcRoot('third_party', 'jdk', 'current')
 
 
+def GetJavaExec():
+  return os.path.join(GetJavaHome(), 'bin', 'java')
+
+
 def GetDefaultJsonConfigPath():
   return FromToolsSrcRoot('tools', 'binary_size', 'supersize.json')
 
