@@ -125,6 +125,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"Dummy", "Dummy for testing"};
     case WebSchedulerTrackedFeature::kAuthorizationHeader:
       return {"AuthorizationHeader", "Authorization header used"};
+    case WebSchedulerTrackedFeature::kIndexedDBEvent:
+      return {"IndexedDBEvent", "IndexedDB event is pending"};
   }
   return {};
 }

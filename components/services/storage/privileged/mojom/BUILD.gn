@@ -18,6 +18,7 @@ mojom("mojom_bucket") {
 
 mojom("mojom") {
   sources = [
+    "indexed_db_client_state_checker.mojom",
     "indexed_db_control.mojom",
     "indexed_db_control_test.mojom",
   ]

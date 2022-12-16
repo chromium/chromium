@@ -164,6 +164,7 @@ constexpr WebSchedulerTrackedFeatures kDisallowedFeatures(
     WebSchedulerTrackedFeature::kDummy,
     WebSchedulerTrackedFeature::kIdleManager,
     WebSchedulerTrackedFeature::kIndexedDBConnection,
+    WebSchedulerTrackedFeature::kIndexedDBEvent,
     WebSchedulerTrackedFeature::kKeyboardLock,
     WebSchedulerTrackedFeature::kKeepaliveRequest,
     WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction,

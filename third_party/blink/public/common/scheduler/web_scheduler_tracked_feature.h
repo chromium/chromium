@@ -125,12 +125,15 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // from is same-origin with the main frame and the main frame used
   // "Cache-Control: no-store".
   kAuthorizationHeader = 60,
+  // There is a pending IndexedDB event (e.g. versionchange event sent but the
+  // connection is not closed yet) that requires the page not to enter BFCache.
+  kIndexedDBEvent = 61,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kAuthorizationHeader,
+  kMaxValue = kIndexedDBEvent,
 };
 
 using WebSchedulerTrackedFeatures =
