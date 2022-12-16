@@ -218,8 +218,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after print preview works even when the PDF plugin is
 // disabled for webpages.
+// TODO(crbug.com/1401532): Flaky on Mac12 Test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PdfPluginDisabled DISABLED_PdfPluginDisabled
+#else
+#define MAYBE_PdfPluginDisabled PdfPluginDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       PdfPluginDisabled) {
+                       MAYBE_PdfPluginDisabled) {
   // Make sure plugins are loaded.
   {
     base::RunLoop run_loop;
