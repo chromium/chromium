@@ -557,15 +557,6 @@ static bool ParseJsonPath(
   return true;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DevToolsMutatingHttpActionVerb {
-  kGet = 0,
-  kPost = 1,
-  kOther = 2,
-  kMaxValue = kOther,
-};
-
 void DevToolsHttpHandler::OnJsonRequest(
     int connection_id,
     const net::HttpServerRequestInfo& info) {
@@ -627,22 +618,14 @@ void DevToolsHttpHandler::OnJsonRequest(
   }
 
   if (command == "new") {
-    DevToolsMutatingHttpActionVerb verb;
-    if (base::EqualsCaseInsensitiveASCII(info.method,
-                                         net::HttpRequestHeaders::kGetMethod)) {
-      verb = DevToolsMutatingHttpActionVerb::kGet;
-    } else if (base::EqualsCaseInsensitiveASCII(
-                   info.method, net::HttpRequestHeaders::kPostMethod)) {
-      verb = DevToolsMutatingHttpActionVerb::kPost;
-    } else {
-      verb = DevToolsMutatingHttpActionVerb::kOther;
-    }
-
-    UMA_HISTOGRAM_ENUMERATION("DevTools.MutatingHttpAction", verb);
-    if (verb != DevToolsMutatingHttpActionVerb::kOther) {
-      LOG(ERROR) << "Using unsafe HTTP verb " << info.method
-                 << " to invoke /json/new. This action will stop supporting "
-                    "GET and POST verbs in future versions.";
+    if (!base::EqualsCaseInsensitiveASCII(
+            info.method, net::HttpRequestHeaders::kPutMethod)) {
+      SendJson(
+          connection_id, net::HTTP_METHOD_NOT_ALLOWED, absl::nullopt,
+          base::StringPrintf("Using unsafe HTTP verb %s to invoke /json/new. "
+                             "This action supports only PUT verb.",
+                             info.method.c_str()));
+      return;
     }
 
     std::vector<base::StringPiece> query_components = base::SplitStringPiece(
