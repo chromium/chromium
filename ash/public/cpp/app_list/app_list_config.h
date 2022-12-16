@@ -85,6 +85,12 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   int search_tile_height() const { return search_tile_height_; }
 
+  size_t max_results_with_categorical_search() const {
+    return max_results_with_categorical_search_;
+  }
+
+  int answer_card_max_results() const { return answer_card_max_results_; }
+
   // Returns the maximum number of items allowed in a page in the apps grid.
   int GetMaxNumOfItemsPerPage() const;
 
@@ -132,6 +138,13 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The height of tiles in search result.
   const int search_tile_height_ = 92;
+
+  // The maximum number of filtered results within categorical search
+  const size_t max_results_with_categorical_search_ = 3;
+
+  // The maximum number of filtered results of type answer card within
+  // categorical search
+  const int answer_card_max_results_ = 1;
 };
 
 // Contains app list layout information for an app list view. `AppListConfig`

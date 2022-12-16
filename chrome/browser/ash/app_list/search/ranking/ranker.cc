@@ -16,25 +16,20 @@ void Ranker::Start(const std::u16string& query,
 // length as |results|.
 std::vector<double> Ranker::GetResultRanks(const ResultsMap& results,
                                            ProviderType provider) {
-  // TODO(crbug.com/1199206): Add a NOTREACHED once all rankers have been
-  // appropriately set up using the new methods.
+  NOTREACHED() << "This function should be overridden by its child ranker.";
   return std::vector<double>(results.size(), 0.0);
 }
 
 // Ranks search results. Implementations should modify the scoring structs of
 // |results|, but not modify the ordering of the vector itself.
-void Ranker::UpdateResultRanks(ResultsMap& results, ProviderType provider) {
-  // TODO(crbug.com/1199206): Add a NOTREACHED once all rankers have been
-  // appropriately set up using the new methods.
-}
+void Ranker::UpdateResultRanks(ResultsMap& results, ProviderType provider) {}
 
 // Ranks categories. Should return a vector of scores that is the same
 // length as |categories|.
 std::vector<double> Ranker::GetCategoryRanks(const ResultsMap& results,
                                              const CategoriesList& categories,
                                              ProviderType provider) {
-  // TODO(crbug.com/1199206): Add a NOTREACHED once all rankers have been
-  // appropriately set up using the new methods.
+  NOTREACHED() << "This function should be overridden by its child ranker.";
   return std::vector<double>(categories.size(), 0.0);
 }
 
@@ -42,10 +37,7 @@ std::vector<double> Ranker::GetCategoryRanks(const ResultsMap& results,
 // structs in |categories|, but not modify the ordering of the vector itself.
 void Ranker::UpdateCategoryRanks(const ResultsMap& results,
                                  CategoriesList& categories,
-                                 ProviderType provider) {
-  // TODO(crbug.com/1199206): Add a NOTREACHED once all rankers have been
-  // appropriately set up using the new methods.
-}
+                                 ProviderType provider) {}
 
 void Ranker::Train(const LaunchData& launch) {}
 
