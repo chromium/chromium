@@ -480,6 +480,19 @@ struct PaymentsCustomerData;
 //                      from a structured subcomponent, or if the value was
 //                      observed in a form submission, or even validated by the
 //                      user in the settings.
+//
+// virtual_card_usage_data
+//                      Contains data related to retrieval attempts of a virtual
+//                      card on a particular merchant domain
+//
+//  id                  Unique identifier for retrieval data. Generated
+//                      originally in chrome sync server.
+//  instrument_id       The instrument id of the actual card that the virtual
+//                      card is related to.
+//  merchant_domain     The merchant domain the usage data is linked to.
+//  last_four           The last four digits of the virtual card number. This is
+//                      tied to the usage data because the virtual card number
+//                      may vary depending on merchants.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -788,6 +801,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion106RecreateAutofillIBANTable();
   bool MigrateToVersion107AddContactInfoTables();
   bool MigrateToVersion108AddCardIssuerIdColumn();
+  bool MigrateToVersion109AddVirtualCardUsageDataTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -903,6 +917,7 @@ class AutofillTable : public WebDatabaseTable,
   bool InitOfferMerchantDomainTable();
   bool InitContactInfoTable();
   bool InitContactInfoTypeTokensTable();
+  bool InitVirtualCardUsageDataTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };

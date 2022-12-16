@@ -295,15 +295,22 @@ constexpr base::StringPiece kType = "type";
 // kValue = "value"
 constexpr base::StringPiece kVerificationStatus = "verification_status";
 
+constexpr base::StringPiece kVirtualCardUsageDataTable =
+    "virtual_card_usage_data";
+// kId = "id"
+// kInstrumentId = "instrument_id"
+// kMerchantDomain = "merchant_domain"
+// kLastFour = "last_four"
+
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
 //   directly and return if it was successful.
 // - Builder functions only assign the statement, which enables binding
 //   values to placeholders before running it.
 
-// Executes a CREATE TABLE statement on `db` which the provided `table_name`.
-// The columns are described in `column_names_and_types` as pairs of
-// (name, type), where type can include modifiers such as NOT NULL.
+// Executes a CREATE TABLE statement on `db` which the provided
+// `table_name`. The columns are described in `column_names_and_types` as
+// pairs of (name, type), where type can include modifiers such as NOT NULL.
 // By specifying `compositive_primary_key`, a PRIMARY KEY (col1, col2, ..)
 // clause is generated.
 // Returns true if successful.
@@ -1139,7 +1146,8 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitPaymentsUPIVPATable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
-         InitContactInfoTable() && InitContactInfoTypeTokensTable();
+         InitContactInfoTable() && InitContactInfoTypeTokensTable() &&
+         InitVirtualCardUsageDataTable();
 }
 
 bool AutofillTable::IsSyncable() {
@@ -1224,6 +1232,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 108:
       *update_compatible_version = false;
       return MigrateToVersion108AddCardIssuerIdColumn();
+    case 109:
+      *update_compatible_version = false;
+      return MigrateToVersion109AddVirtualCardUsageDataTable();
   }
   return true;
 }
@@ -3283,6 +3294,14 @@ bool AutofillTable::MigrateToVersion108AddCardIssuerIdColumn() {
   return transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
+  return CreateTable(db_, kVirtualCardUsageDataTable,
+                     {{kId, "VARCHAR PRIMARY KEY"},
+                      {kInstrumentId, "INTEGER DEFAULT 0"},
+                      {kMerchantDomain, "VARCHAR"},
+                      {kLastFour, "VARCHAR"}});
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3763,6 +3782,14 @@ bool AutofillTable::InitContactInfoTypeTokensTable() {
                                  {kValue, "VARCHAR"},
                                  {kVerificationStatus, "INTEGER DEFAULT 0"}},
                                 /*composite_primary_key=*/{kGuid, kType});
+}
+
+bool AutofillTable::InitVirtualCardUsageDataTable() {
+  return CreateTableIfNotExists(db_, kVirtualCardUsageDataTable,
+                                {{kId, "VARCHAR PRIMARY KEY"},
+                                 {kInstrumentId, "INTEGER DEFAULT 0"},
+                                 {kMerchantDomain, "VARCHAR"},
+                                 {kLastFour, "VARCHAR"}});
 }
 
 }  // namespace autofill

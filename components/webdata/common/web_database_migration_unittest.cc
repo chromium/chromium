@@ -141,7 +141,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 108;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 109;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1014,5 +1014,38 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion107ToCurrent) {
     // The card_issuer_id column and should exist.
     EXPECT_TRUE(
         connection.DoesColumnExist("masked_credit_cards", "card_issuer_id"));
+  }
+}
+
+// Tests verifying the Virtual Card Usage Data table is created.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion108ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_108.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(108, VersionFromConnection(&connection));
+
+    // The virtual_card_usage_data table should not exist.
+    EXPECT_FALSE(connection.DoesTableExist("virtual_card_usage_data"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The virtual_card_usage_data tables should exist.
+    EXPECT_TRUE(connection.DoesTableExist("virtual_card_usage_data"));
   }
 }
