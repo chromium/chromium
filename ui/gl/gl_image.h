@@ -55,14 +55,20 @@ FORWARD_DECLARE_TEST(D3DImageBackingFactoryTest, CreateFromSharedMemory);
 }  // namespace gpu
 
 namespace gpu::gles2 {
+class BackTexture;
 class GLES2DecoderImpl;
 class GLES2DecoderPassthroughImpl;
+class PassthroughAbstractTextureImpl;
 class Texture;
+class ValidatingAbstractTextureImpl;
 }
 
 namespace media {
 class GLImagePbuffer;
 class DXVAVideoDecodeAccelerator;
+class VaapiPictureNativePixmapAngle;
+class VaapiPictureNativePixmapEgl;
+class VaapiPictureNativePixmapOzone;
 class VTVideoDecodeAccelerator;
 }
 
@@ -116,9 +122,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // It is valid for an implementation to always return false.
   virtual bool BindTexImage(unsigned target);
 
-  // Release image from texture currently bound to |target|.
-  virtual void ReleaseTexImage(unsigned target);
-
  protected:
   // NOTE: We are in the process of eliminating client usage of GLImage. As part
   // of this effort, we are incrementally moving its public interface to be
@@ -129,6 +132,15 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
   virtual ~GLImage() = default;
 
+  // Release image from texture currently bound to |target|.
+  virtual void ReleaseTexImage(unsigned target);
+
+ public:
+  // Allow usage of this method from text sites that are inconvenient to
+  // friend.
+  void ReleaseTexImageForTesting(unsigned target) { ReleaseTexImage(target); }
+
+ protected:
   // Define texture currently bound to |target| by copying image into it.
   // Returns true on success. It is valid for an implementation to always
   // return false.
@@ -196,10 +208,16 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class gpu::IOSurfaceImageBackingFactoryNewTestBase;
   friend class gpu::OverlayD3DImageRepresentation;
   friend class gpu::TestOverlayImageRepresentation;
+  friend class gpu::gles2::BackTexture;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
+  friend class gpu::gles2::PassthroughAbstractTextureImpl;
   friend class gpu::gles2::Texture;
+  friend class gpu::gles2::ValidatingAbstractTextureImpl;
   friend class media::DXVAVideoDecodeAccelerator;
+  friend class media::VaapiPictureNativePixmapAngle;
+  friend class media::VaapiPictureNativePixmapEgl;
+  friend class media::VaapiPictureNativePixmapOzone;
   friend class media::VTVideoDecodeAccelerator;
   friend class ui::NativePixmapEGLBinding;
   friend class ui::SurfacelessGlRenderer;

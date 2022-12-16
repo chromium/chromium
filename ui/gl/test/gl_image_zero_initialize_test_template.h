@@ -45,7 +45,7 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   internal::DrawTextureQuad(target, image_size);
 
   // Release |image| from |texture|.
-  image->ReleaseTexImage(target);
+  image->ReleaseTexImageForTesting(target);
 
   // Read back pixels to check expectations.
   const uint8_t zero_color[] = {0, 0, 0, 0};
