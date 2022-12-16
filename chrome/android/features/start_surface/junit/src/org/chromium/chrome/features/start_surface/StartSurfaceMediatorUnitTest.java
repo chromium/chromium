@@ -1576,8 +1576,6 @@ public class StartSurfaceMediatorUnitTest {
      * showing but Tab switcher hasn't been created yet.
      */
     @Test
-    // TODO(1347089): Fix the back operation behaviours when the refactoring is enabled.
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testBackPressHandlerOnStartSurfaceWithoutTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();

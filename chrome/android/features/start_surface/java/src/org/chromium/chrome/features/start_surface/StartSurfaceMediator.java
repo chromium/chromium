@@ -568,6 +568,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // LayoutManager.
         RecordUserAction.record("StartSurface.Shown");
         RecordUserAction.record("StartSurface.SinglePane.Home");
+        mayRecordHomepageSessionBegin();
     }
 
     void setSecondaryTasksSurfacePropertyModel(PropertyModel propertyModel) {
@@ -838,7 +839,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private boolean onBackPressedInternal() {
-        boolean isOnHomepage = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        boolean isOnHomepage = isHomepageShown();
 
         // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
         // mSecondaryTasksSurfaceController, while the TabSelectionEditor dialog is controlled
@@ -885,10 +886,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             if (feedReliabilityLogger != null) {
                 feedReliabilityLogger.onNavigateBack();
             }
-        }
-
-        if (mIsStartSurfaceRefactorEnabled && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
-            return false;
         }
 
         boolean ret = mController.onBackPressed(isOnHomepage);
@@ -941,6 +938,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         }
     }
 
+    @Deprecated
+    // TODO(1347089): Removes this test after the refactoring is enabled by default. This is because
+    // the StartSurfaceState will go away.
     boolean isShowingStartSurfaceHomepage() {
         // When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage
         // is showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
@@ -1021,7 +1021,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     // inside. Implements View.OnClickListener, which listens for the more tabs button.
     @Override
     public void onClick(View v) {
-        assert mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        assert isHomepageShown();
 
         if (mSecondaryTasksSurfacePropertyModel == null) {
             TabSwitcher.Controller controller = mSecondaryTasksSurfaceInitializer.initialize();
@@ -1166,7 +1166,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private boolean hasFakeSearchBox() {
-        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        return isHomepageShown();
     }
 
     @VisibleForTesting
@@ -1228,7 +1228,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             if (mIsNativeInitialized) mLogoCoordinator.initWithNative();
         }
         if (mLogoCoordinator != null) {
-            boolean isShowingHomepage = isShowingStartSurfaceHomepage();
+            boolean isShowingHomepage = isHomepageShown();
             mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
                     isShowingHomepage && isVisible, !isShowingHomepage, false);
         }
@@ -1424,7 +1424,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
                 mLogoContainerView.findViewById(R.id.search_provider_logo), true, null, null,
-                isShowingStartSurfaceHomepage(), this);
+                isHomepageShown(), this);
         return mLogoCoordinator;
     }
 
@@ -1490,8 +1490,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private void mayRecordHomepageSessionBegin() {
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                && mLastShownTimeMs == LAST_SHOW_TIME_NOT_SET) {
+        if (isHomepageShown() && mLastShownTimeMs == LAST_SHOW_TIME_NOT_SET) {
             mLastShownTimeMs = System.currentTimeMillis();
         }
     }
