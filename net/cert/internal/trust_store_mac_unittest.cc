@@ -38,6 +38,10 @@ namespace net {
 
 namespace {
 
+constexpr CertificateTrust ExpectedTrustForAnchor() {
+  return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+}
+
 // The PEM block header used for DER certificates
 const char kCertificateHeader[] = "CERTIFICATE";
 
@@ -210,7 +214,8 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
        {a_by_b, b_by_c, b_by_f, c_by_d, c_by_e, f_by_e, d_by_d, e_by_e}) {
     DebugData debug_data;
     CertificateTrust trust = trust_store.GetTrust(cert.get(), &debug_data);
-    EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+    EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+              trust.ToDebugString());
     // The combined_trust_debug_info should be 0 since no trust records
     // should exist for these test certs.
     const TrustStoreMac::ResultDebugData* trust_debug_data =
@@ -298,8 +303,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     CertificateTrust cert_trust = trust_store.GetTrust(cert.get(), &debug_data);
     bool is_trust_anchor = cert_trust.IsTrustAnchor();
     if (is_trust_anchor) {
-      EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION,
-                cert_trust.type);
+      EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+                cert_trust.ToDebugString());
     }
 
     // Check if this cert is considered a trust anchor by the OS.
@@ -357,7 +362,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     DebugData debug_data2;
     CertificateTrust cert_trust2 =
         trust_store.GetTrust(cert.get(), &debug_data2);
-    EXPECT_EQ(cert_trust.type, cert_trust2.type);
+    EXPECT_EQ(cert_trust.ToDebugString(), cert_trust2.ToDebugString());
     auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
     ASSERT_TRUE(trust_debug_data);
     auto* trust_debug_data2 = TrustStoreMac::ResultDebugData::Get(&debug_data2);

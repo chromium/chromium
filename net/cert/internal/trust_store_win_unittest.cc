@@ -29,6 +29,10 @@ namespace net {
 
 namespace {
 
+constexpr CertificateTrust ExpectedTrustForAnchor() {
+  return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+}
+
 // These tests use a series of cross-signed certificates. The overall
 // hierarchy is documented in
 // //net/data/ssl/scripts/generate-multi-root-test-chains.sh.
@@ -128,7 +132,8 @@ TEST(TrustStoreWin, GetTrustInitializationError) {
   auto parsed_cert = ParseCertFromFile(kMultiRootDByD);
   CertificateTrust trust =
       trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 TEST(TrustStoreWin, GetTrust) {
@@ -137,15 +142,15 @@ TEST(TrustStoreWin, GetTrust) {
 
   constexpr struct TestData {
     base::StringPiece file_name;
-    CertificateTrustType expected_result;
+    CertificateTrust expected_result;
   } kTestData[] = {
       // Explicitly trusted root should be trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      {kMultiRootDByD, ExpectedTrustForAnchor()},
       // Intermediate for path building should not be trusted.
-      {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
+      {kMultiRootCByD, CertificateTrust::ForUnspecified()},
       // Unknown roots should not be trusted (e.g. just because they're
       // self-signed doesn't make them a root)
-      {kMultiRootEByE, CertificateTrustType::UNSPECIFIED},
+      {kMultiRootEByE, CertificateTrust::ForUnspecified()},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
@@ -153,7 +158,7 @@ TEST(TrustStoreWin, GetTrust) {
     ASSERT_TRUE(parsed_cert);
     CertificateTrust trust =
         trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result, trust.type);
+    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
   }
 }
 
@@ -188,21 +193,21 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
 
   constexpr struct TestData {
     base::StringPiece file_name;
-    CertificateTrustType expected_result;
+    CertificateTrust expected_result;
   } kTestData[] = {
       // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
       // trusted.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      {kMultiRootDByD, ExpectedTrustForAnchor()},
       // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
       // trusted.
-      {kMultiRootCByE, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      {kMultiRootCByE, ExpectedTrustForAnchor()},
       // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
       // cert for server auth, return UNSPECIFIED.
-      {kMultiRootEByE, CertificateTrustType::UNSPECIFIED},
+      {kMultiRootEByE, CertificateTrust::ForUnspecified()},
       // Root cert with no EKU usages, return UNSPECIFIED.
-      {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
+      {kMultiRootCByD, CertificateTrust::ForUnspecified()},
       // Unknown cert has unspecified trust.
-      {kMultiRootFByE, CertificateTrustType::UNSPECIFIED},
+      {kMultiRootFByE, CertificateTrust::ForUnspecified()},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
@@ -210,7 +215,7 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
     ASSERT_TRUE(parsed_cert);
     CertificateTrust trust =
         trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result, trust.type);
+    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
   }
 }
 
@@ -247,10 +252,10 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
 
   constexpr struct TestData {
     base::StringPiece file_name;
-    CertificateTrustType expected_result;
+    CertificateTrust expected_result;
   } kTestData[] = {
       // One copy of the Root cert is trusted for TLS Server Auth.
-      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION},
+      {kMultiRootDByD, ExpectedTrustForAnchor()},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
@@ -258,7 +263,7 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
     ASSERT_TRUE(parsed_cert);
     CertificateTrust trust =
         trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result, trust.type);
+    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
   }
 }
 
@@ -284,12 +289,12 @@ TEST(TrustStoreWin, GetTrustDisallowedCerts) {
 
   constexpr struct TestData {
     base::StringPiece file_name;
-    CertificateTrustType expected_result;
+    CertificateTrust expected_result;
   } kTestData[] = {
       // dByD in root, distrusted but without szOID_PKIX_KP_SERVER_AUTH set.
-      {kMultiRootDByD, CertificateTrustType::DISTRUSTED},
+      {kMultiRootDByD, CertificateTrust::ForDistrusted()},
       // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
-      {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
+      {kMultiRootEByE, CertificateTrust::ForDistrusted()},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
@@ -297,7 +302,7 @@ TEST(TrustStoreWin, GetTrustDisallowedCerts) {
     ASSERT_TRUE(parsed_cert);
     CertificateTrust trust =
         trust_store_win->GetTrust(parsed_cert.get(), nullptr);
-    EXPECT_EQ(test_data.expected_result, trust.type);
+    EXPECT_EQ(test_data.expected_result.ToDebugString(), trust.ToDebugString());
   }
 }
 

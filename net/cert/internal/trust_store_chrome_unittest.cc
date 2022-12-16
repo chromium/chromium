@@ -46,7 +46,8 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
     ASSERT_TRUE(trust_store_chrome->Contains(parsed.get()));
     CertificateTrust trust =
         trust_store_chrome->GetTrust(parsed.get(), /*debug_data=*/nullptr);
-    EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+    EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+              trust.ToDebugString());
   }
 
   // Other certificates should not be included. Which test cert used here isn't
@@ -60,7 +61,8 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   ASSERT_FALSE(trust_store_chrome->Contains(other_parsed.get()));
   CertificateTrust trust = trust_store_chrome->GetTrust(other_parsed.get(),
                                                         /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 }  // namespace

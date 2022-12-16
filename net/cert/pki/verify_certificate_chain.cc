@@ -1302,15 +1302,16 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
       break;
     case CertificateTrustType::TRUSTED_ANCHOR:
       break;
-    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
-      VerifyTimeValidity(cert, time, errors);
-      break;
-    case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
-      ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
-      break;
   }
   if (*shortcircuit_chain_validation)
     return;
+
+  if (trust.enforce_anchor_expiry) {
+    VerifyTimeValidity(cert, time, errors);
+  }
+  if (trust.enforce_anchor_constraints) {
+    ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
+  }
 
   // Use the certificate's SPKI and subject when verifying the next certificate.
   working_public_key_ = ParseAndCheckPublicKey(cert.tbs().spki_tlv, errors);

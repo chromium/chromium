@@ -5,8 +5,6 @@
 #ifndef NET_CERT_PKI_TRUST_STORE_H_
 #define NET_CERT_PKI_TRUST_STORE_H_
 
-#include <vector>
-
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_issuer_source.h"
@@ -22,40 +20,59 @@ enum class CertificateTrustType {
   // its issuer).
   UNSPECIFIED,
 
-  // This certificate is a trust anchor (as defined by RFC 5280). The only
-  // fields in the certificate that are meaningful are its name and SPKI.
+  // This certificate is a trust anchor (as defined by RFC 5280).
   TRUSTED_ANCHOR,
 
-  // This certificate is a trust anchor which additionally has expiration
-  // enforced. The only fields in the certificate that are meaningful are its
-  // name, SPKI, and validity period.
-  TRUSTED_ANCHOR_WITH_EXPIRATION,
-
-  // This certificate is a trust anchor for which some of the fields in the
-  // certificate (in addition to the name and SPKI) should be used during the
-  // verification process. See VerifyCertificateChain() for details on how
-  // constraints are applied.
-  TRUSTED_ANCHOR_WITH_CONSTRAINTS,
-
-  LAST = TRUSTED_ANCHOR_WITH_CONSTRAINTS
+  LAST = TRUSTED_ANCHOR
 };
 
-// Describes the level of trust in a certificate. See CertificateTrustType for
-// details.
-//
-// TODO(eroman): Right now this is just a glorified wrapper around an enum...
+// Describes the level of trust in a certificate.
 struct NET_EXPORT CertificateTrust {
-  static CertificateTrust ForTrustAnchor();
-  static CertificateTrust ForTrustAnchorEnforcingExpiration();
-  static CertificateTrust ForTrustAnchorEnforcingConstraints();
-  static CertificateTrust ForUnspecified();
-  static CertificateTrust ForDistrusted();
+  static constexpr CertificateTrust ForTrustAnchor() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::TRUSTED_ANCHOR;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForTrustAnchorEnforcingExpiration() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::TRUSTED_ANCHOR;
+    result.enforce_anchor_expiry = true;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForTrustAnchorEnforcingConstraints() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::TRUSTED_ANCHOR;
+    result.enforce_anchor_constraints = true;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForUnspecified() {
+    CertificateTrust result;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForDistrusted() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::DISTRUSTED;
+    return result;
+  }
 
   bool IsTrustAnchor() const;
   bool IsDistrusted() const;
   bool HasUnspecifiedTrust() const;
 
+  std::string ToDebugString() const;
+
+  // The overall type of trust.
   CertificateTrustType type = CertificateTrustType::UNSPECIFIED;
+
+  // Optionally, enforce extra bits on trust anchors. If these are false, the
+  // only fields in a trust anchor certificate that are meaningful are its
+  // name and SPKI.
+  bool enforce_anchor_expiry = false;
+  bool enforce_anchor_constraints = false;
 };
 
 // Interface for finding intermediates / trust anchors, and testing the

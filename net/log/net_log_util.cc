@@ -184,28 +184,6 @@ base::Value::Dict GetNetConstants() {
     constants_dict.Set("certPathBuilderDigestPolicy", std::move(dict));
   }
 
-  {
-    base::Value::Dict dict;
-
-    dict.Set("DISTRUSTED", static_cast<int>(CertificateTrustType::DISTRUSTED));
-    dict.Set("UNSPECIFIED",
-             static_cast<int>(CertificateTrustType::UNSPECIFIED));
-    dict.Set("TRUSTED_ANCHOR",
-             static_cast<int>(CertificateTrustType::TRUSTED_ANCHOR));
-    dict.Set(
-        "TRUSTED_ANCHOR_WITH_EXPIRATION",
-        static_cast<int>(CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION));
-    dict.Set("TRUSTED_ANCHOR_WITH_CONSTRAINTS",
-             static_cast<int>(
-                 CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS));
-
-    static_assert(CertificateTrustType::LAST ==
-                      CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS,
-                  "Update with new flags");
-
-    constants_dict.Set("certificateTrustType", std::move(dict));
-  }
-
   // Add a dictionary with information about the relationship between load flag
   // enums and their symbolic names.
   {

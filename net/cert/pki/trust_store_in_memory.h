@@ -29,6 +29,11 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   // Empties the trust store, resetting it to original state.
   void Clear();
 
+  // Adds a certificate with the specified trust settings. Both trusted and
+  // distrusted certificates require a full DER match.
+  void AddCertificate(std::shared_ptr<const ParsedCertificate> cert,
+                      const CertificateTrust& trust);
+
   // Adds a certificate as a trust anchor (only the SPKI and subject will be
   // used during verification).
   void AddTrustAnchor(std::shared_ptr<const ParsedCertificate> cert);
@@ -75,11 +80,6 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
 
   // Multimap from normalized subject -> Entry.
   std::unordered_multimap<std::string_view, Entry> entries_;
-
-  // Adds a certificate with the specified trust settings. Both trusted and
-  // distrusted certificates require a full DER match.
-  void AddCertificate(std::shared_ptr<const ParsedCertificate> cert,
-                      const CertificateTrust& trust);
 
   // Returns the `Entry` matching `cert`, or `nullptr` if not in the trust
   // store.

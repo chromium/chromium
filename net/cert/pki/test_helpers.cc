@@ -260,6 +260,10 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       } else if (value == "TRUSTED_ANCHOR_WITH_CONSTRAINTS") {
         test->last_cert_trust =
             CertificateTrust::ForTrustAnchorEnforcingConstraints();
+      } else if (value == "TRUSTED_ANCHOR_WITH_EXPIRATION_AND_CONSTRAINTS") {
+        test->last_cert_trust = CertificateTrust::ForTrustAnchor();
+        test->last_cert_trust.enforce_anchor_expiry = true;
+        test->last_cert_trust.enforce_anchor_constraints = true;
       } else if (value == "DISTRUSTED") {
         test->last_cert_trust = CertificateTrust::ForDistrusted();
       } else if (value == "UNSPECIFIED") {

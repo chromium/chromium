@@ -28,6 +28,10 @@ namespace net {
 
 namespace {
 
+constexpr CertificateTrust ExpectedTrustForAnchor() {
+  return CertificateTrust::ForTrustAnchor();
+}
+
 // Returns true if the provided slot looks like a built-in root.
 bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
   if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot))
@@ -251,13 +255,15 @@ class TrustStoreNSSTestBase : public ::testing::Test {
   }
 
   bool HasTrust(const ParsedCertificateList& certs,
-                CertificateTrustType expected_trust) {
+                CertificateTrust expected_trust) {
     bool success = true;
     for (const std::shared_ptr<const ParsedCertificate>& cert : certs) {
       CertificateTrust trust =
           trust_store_nss_->GetTrust(cert.get(), /*debug_data=*/nullptr);
-      if (trust.type != expected_trust) {
-        EXPECT_EQ(expected_trust, trust.type) << GetCertString(cert);
+      std::string trust_string = trust.ToDebugString();
+      std::string expected_trust_string = expected_trust.ToDebugString();
+      if (trust_string != expected_trust_string) {
+        EXPECT_EQ(expected_trust_string, trust_string) << GetCertString(cert);
         success = false;
       }
     }
@@ -337,8 +343,7 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, TempCertPresent) {
 TEST_P(TrustStoreNSSTestWithSlotFilterType, TrustAllowedForBuiltinRootCerts) {
   auto builtin_root_cert = GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(builtin_root_cert);
-  EXPECT_TRUE(
-      HasTrust({builtin_root_cert}, CertificateTrustType::TRUSTED_ANCHOR));
+  EXPECT_TRUE(HasTrust({builtin_root_cert}, ExpectedTrustForAnchor()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -364,20 +369,20 @@ class TrustStoreNSSTestIgnoreSystemCerts : public TrustStoreNSSTestBase {
 TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootTrusted) {
   AddCertsToNSS();
   TrustCert(newroot_.get());
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+  EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
 TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootDistrusted) {
   AddCertsToNSS();
   DistrustCert(newroot_.get());
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::DISTRUSTED));
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForDistrusted()));
 }
 
 TEST_F(TrustStoreNSSTestIgnoreSystemCerts, SystemRootCertsIgnored) {
   std::shared_ptr<const ParsedCertificate> system_root =
       GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(system_root);
-  EXPECT_TRUE(HasTrust({system_root}, CertificateTrustType::UNSPECIFIED));
+  EXPECT_TRUE(HasTrust({system_root}, CertificateTrust::ForUnspecified()));
 }
 
 // Tests a TrustStoreNSS that does not filter which certificates
@@ -401,7 +406,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, CertsPresentButNotTrusted) {
   // None of the certificates are trusted.
   EXPECT_TRUE(HasTrust({oldroot_, newroot_, target_, oldintermediate_,
                         newintermediate_, newrootrollover_},
-                       CertificateTrustType::UNSPECIFIED));
+                       CertificateTrust::ForUnspecified()));
 }
 
 // Trust a single self-signed CA certificate.
@@ -412,9 +417,9 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedCA) {
   // Only one of the certificates are trusted.
   EXPECT_TRUE(HasTrust(
       {oldroot_, target_, oldintermediate_, newintermediate_, newrootrollover_},
-      CertificateTrustType::UNSPECIFIED));
+      CertificateTrust::ForUnspecified()));
 
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+  EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
 // Distrust a single self-signed CA certificate.
@@ -425,9 +430,9 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedCA) {
   // Only one of the certificates are trusted.
   EXPECT_TRUE(HasTrust(
       {oldroot_, target_, oldintermediate_, newintermediate_, newrootrollover_},
-      CertificateTrustType::UNSPECIFIED));
+      CertificateTrust::ForUnspecified()));
 
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::DISTRUSTED));
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForDistrusted()));
 }
 
 // Trust a single intermediate certificate.
@@ -437,9 +442,8 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedIntermediate) {
 
   EXPECT_TRUE(HasTrust(
       {oldroot_, newroot_, target_, oldintermediate_, newrootrollover_},
-      CertificateTrustType::UNSPECIFIED));
-  EXPECT_TRUE(
-      HasTrust({newintermediate_}, CertificateTrustType::TRUSTED_ANCHOR));
+      CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({newintermediate_}, ExpectedTrustForAnchor()));
 }
 
 // Distrust a single intermediate certificate.
@@ -449,8 +453,8 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedIntermediate) {
 
   EXPECT_TRUE(HasTrust(
       {oldroot_, newroot_, target_, oldintermediate_, newrootrollover_},
-      CertificateTrustType::UNSPECIFIED));
-  EXPECT_TRUE(HasTrust({newintermediate_}, CertificateTrustType::DISTRUSTED));
+      CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({newintermediate_}, CertificateTrust::ForDistrusted()));
 }
 
 // Trust a single server certificate.
@@ -463,7 +467,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedServer) {
   // https://crbug.com/814994.
   EXPECT_TRUE(HasTrust({oldroot_, newroot_, target_, oldintermediate_,
                         newintermediate_, newrootrollover_},
-                       CertificateTrustType::UNSPECIFIED));
+                       CertificateTrust::ForUnspecified()));
 }
 
 // Trust multiple self-signed CA certificates with the same name.
@@ -474,9 +478,8 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, MultipleTrustedCAWithSameSubject) {
 
   EXPECT_TRUE(
       HasTrust({target_, oldintermediate_, newintermediate_, newrootrollover_},
-               CertificateTrustType::UNSPECIFIED));
-  EXPECT_TRUE(
-      HasTrust({oldroot_, newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+               CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({oldroot_, newroot_}, ExpectedTrustForAnchor()));
 }
 
 // Different trust settings for multiple self-signed CA certificates with the
@@ -488,9 +491,9 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
 
   EXPECT_TRUE(
       HasTrust({target_, oldintermediate_, newintermediate_, newrootrollover_},
-               CertificateTrustType::UNSPECIFIED));
-  EXPECT_TRUE(HasTrust({oldroot_}, CertificateTrustType::DISTRUSTED));
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+               CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({oldroot_}, CertificateTrust::ForDistrusted()));
+  EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
 // Tests for a TrustStoreNSS which does not allow certificates on user slots
@@ -512,7 +515,7 @@ class TrustStoreNSSTestDoNotAllowUserSlots : public TrustStoreNSSTestBase {
 TEST_F(TrustStoreNSSTestDoNotAllowUserSlots, CertOnUserSlot) {
   AddCertToNSSSlot(newroot_.get(), test_nssdb_.slot());
   TrustCert(newroot_.get());
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::UNSPECIFIED));
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
 }
 
 // Tests for a TrustStoreNSS which does allows certificates on user slots to
@@ -534,7 +537,7 @@ class TrustStoreNSSTestAllowSpecifiedUserSlot : public TrustStoreNSSTestBase {
 TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnUserSlot) {
   AddCertToNSSSlot(newroot_.get(), test_nssdb_.slot());
   TrustCert(newroot_.get());
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+  EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
 // A certificate that is stored on a "user slot" is not trusted if the
@@ -543,7 +546,7 @@ TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnUserSlot) {
 TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, CertOnOtherUserSlot) {
   AddCertToNSSSlot(newroot_.get(), other_test_nssdb_.slot());
   TrustCert(newroot_.get());
-  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::UNSPECIFIED));
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForUnspecified()));
 }
 
 // TODO(https://crbug.com/980443): If the internal non-removable slot is

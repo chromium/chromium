@@ -109,7 +109,8 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
   CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
                                                     /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+            trust.ToDebugString());
 }
 
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
@@ -125,7 +126,8 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
   CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
                                                     /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 // Tests that SystemTrustStore created for NSS without allowing trust for
@@ -139,7 +141,8 @@ TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
   CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
                                                     /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 }  // namespace

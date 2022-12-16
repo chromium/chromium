@@ -97,8 +97,7 @@ base::Value NetLogPathBuilderResultPath(
     const CertPathBuilderResultPath& result_path) {
   base::Value::Dict dict;
   dict.Set("is_valid", result_path.IsValid());
-  dict.Set("last_cert_trust",
-           static_cast<int>(result_path.last_cert_trust.type));
+  dict.Set("last_cert_trust", result_path.last_cert_trust.ToDebugString());
   dict.Set("certificates", PEMCertListValue(result_path.certs));
   // TODO(crbug.com/634484): netlog user_constrained_policy_set.
   std::string errors_string =

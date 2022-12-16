@@ -78,11 +78,13 @@ TEST_F(TrustStoreCollectionTest, OneStore) {
   // newroot_ is trusted.
   CertificateTrust trust =
       collection.GetTrust(newroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+            trust.ToDebugString());
 
   // oldroot_ is not.
   trust = collection.GetTrust(oldroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 // SyncGetIssuersOf() should append to its output parameters rather than assign
@@ -105,11 +107,13 @@ TEST_F(TrustStoreCollectionTest, OutputVectorsAppendedTo) {
   // newroot_ is trusted.
   CertificateTrust trust =
       collection.GetTrust(newroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+            trust.ToDebugString());
 
   // newrootrollover_ is not.
   trust = collection.GetTrust(newrootrollover_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 // Collection contains two stores.
@@ -132,15 +136,18 @@ TEST_F(TrustStoreCollectionTest, TwoStores) {
   // newroot_ is trusted.
   CertificateTrust trust =
       collection.GetTrust(newroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+            trust.ToDebugString());
 
   // oldroot_ is trusted.
   trust = collection.GetTrust(oldroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
+  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+            trust.ToDebugString());
 
   // newrootrollover_ is not.
   trust = collection.GetTrust(newrootrollover_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 // Collection contains two stores. The certificate is marked as trusted in one,
@@ -166,15 +173,18 @@ TEST_F(TrustStoreCollectionTest, DistrustTakesPriority) {
   // newroot_ is distrusted..
   CertificateTrust trust =
       collection.GetTrust(newroot_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::DISTRUSTED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
+            trust.ToDebugString());
 
   // oldintermediate_ is distrusted.
   trust = collection.GetTrust(oldintermediate_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::DISTRUSTED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
+            trust.ToDebugString());
 
   // newrootrollover_ is unspecified.
   trust = collection.GetTrust(newrootrollover_.get(), /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
 }
 
 }  // namespace

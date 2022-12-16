@@ -113,6 +113,8 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Expired) {
   this->RunTest("expired-root/not-after.test");
   this->RunTest("expired-root/not-after-ta-with-expiration.test");
   this->RunTest("expired-root/not-after-ta-with-constraints.test");
+  this->RunTest(
+      "expired-root/not-after-ta-with-expiration-and-constraints.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, TargetNotEndEntity) {
@@ -170,6 +172,9 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, ExtendedKeyUsage) {
   this->RunTest("root-eku-clientauth/serverauth.test");
   this->RunTest("root-eku-clientauth/serverauth-strict.test");
   this->RunTest("root-eku-clientauth/serverauth-ta-with-constraints.test");
+  this->RunTest("root-eku-clientauth/serverauth-ta-with-expiration.test");
+  this->RunTest(
+      "root-eku-clientauth/serverauth-ta-with-expiration-and-constraints.test");
   this->RunTest(
       "root-eku-clientauth/serverauth-ta-with-constraints-strict.test");
   this->RunTest("intermediate-eku-server-gated-crypto/sha1-eku-any.test");
