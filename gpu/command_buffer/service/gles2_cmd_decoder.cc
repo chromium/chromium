@@ -119,6 +119,10 @@
 #include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "gpu/command_buffer/service/image_factory_native_pixmap.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include <IOSurface/IOSurface.h>
 // Note that this must be included after gl_bindings.h to avoid conflicts.
@@ -643,11 +647,12 @@ class GLES2DecoderImpl : public GLES2Decoder,
                          public ErrorStateClient,
                          public ui::GpuSwitchingObserver {
  public:
-  GLES2DecoderImpl(DecoderClient* client,
-                   CommandBufferServiceBase* command_buffer_service,
-                   Outputter* outputter,
-                   ContextGroup* group,
-                   ImageFactory* image_factory_for_nacl_swapchain);
+  GLES2DecoderImpl(
+      DecoderClient* client,
+      CommandBufferServiceBase* command_buffer_service,
+      Outputter* outputter,
+      ContextGroup* group,
+      std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain);
 
   GLES2DecoderImpl(const GLES2DecoderImpl&) = delete;
   GLES2DecoderImpl& operator=(const GLES2DecoderImpl&) = delete;
@@ -2497,7 +2502,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   unsigned int RequiredTextureTypeForAnonymousImage();
 
   ImageFactory* image_factory_for_nacl_swapchain() {
-    return image_factory_for_nacl_swapchain_;
+    return image_factory_for_nacl_swapchain_.get();
   }
 
   // Helper method to call glClear workaround.
@@ -2821,7 +2826,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
 #endif
 
-  const raw_ptr<ImageFactory> image_factory_for_nacl_swapchain_;
+  const std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain_;
 
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
 };
@@ -3443,14 +3448,34 @@ GLES2Decoder* GLES2Decoder::Create(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     Outputter* outputter,
+    ContextGroup* group) {
+  if (group->use_passthrough_cmd_decoder()) {
+    return new GLES2DecoderPassthroughImpl(client, command_buffer_service,
+                                           outputter, group);
+  }
+
+  std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain;
+#if BUILDFLAG(IS_OZONE)
+  image_factory_for_nacl_swapchain =
+      std::make_unique<ImageFactoryNativePixmap>();
+#endif
+
+  return new GLES2DecoderImpl(client, command_buffer_service, outputter, group,
+                              std::move(image_factory_for_nacl_swapchain));
+}
+
+GLES2Decoder* GLES2Decoder::CreateForTesting(
+    DecoderClient* client,
+    CommandBufferServiceBase* command_buffer_service,
+    Outputter* outputter,
     ContextGroup* group,
-    ImageFactory* image_factory_for_nacl_swapchain) {
+    std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain) {
   if (group->use_passthrough_cmd_decoder()) {
     return new GLES2DecoderPassthroughImpl(client, command_buffer_service,
                                            outputter, group);
   }
   return new GLES2DecoderImpl(client, command_buffer_service, outputter, group,
-                              image_factory_for_nacl_swapchain);
+                              std::move(image_factory_for_nacl_swapchain));
 }
 
 GLES2DecoderImpl::GLES2DecoderImpl(
@@ -3458,7 +3483,7 @@ GLES2DecoderImpl::GLES2DecoderImpl(
     CommandBufferServiceBase* command_buffer_service,
     Outputter* outputter,
     ContextGroup* group,
-    ImageFactory* image_factory_for_nacl_swapchain)
+    std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain)
     : GLES2Decoder(client, command_buffer_service, outputter),
       group_(group),
       logger_(&debug_marker_manager_,
@@ -3525,7 +3550,8 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       validation_fbo_multisample_(0),
       validation_fbo_(0),
       texture_manager_service_id_generation_(0),
-      image_factory_for_nacl_swapchain_(image_factory_for_nacl_swapchain) {
+      image_factory_for_nacl_swapchain_(
+          std::move(image_factory_for_nacl_swapchain)) {
   DCHECK(client);
   DCHECK(group);
 }

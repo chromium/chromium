@@ -263,6 +263,8 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash) {
       "command_buffer/tests/gl_test_utils.cc",
       "command_buffer/tests/gl_test_utils.h",
       "command_buffer/tests/lpm/gl_lpm_fuzzer.cc",
+      "command_buffer/tests/texture_image_factory.cc",
+      "command_buffer/tests/texture_image_factory.h",
     ]
 
     defines = [ "GL_GLEXT_PROTOTYPES" ]

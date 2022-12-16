@@ -36,6 +36,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
+#include "gpu/command_buffer/tests/texture_image_factory.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -319,7 +320,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   attribs.sample_buffers = options.multisampled ? 1 : 0;
   attribs.alpha_size = options.backbuffer_alpha ? 8 : 0;
   attribs.should_use_native_gmb_for_backbuffer =
-      options.image_factory != nullptr;
+      options.should_use_native_gmb_for_backbuffer;
   attribs.offscreen_framebuffer_size = options.size;
   attribs.buffer_preserved = options.preserve_backbuffer;
   attribs.bind_generates_resource = options.bind_generates_resource;
@@ -348,9 +349,15 @@ void GLManager::InitializeWithWorkaroundsImpl(
   command_buffer_.reset(
       new CommandBufferCheckLostContext(options.context_lost_allowed));
 
-  decoder_.reset(::gpu::gles2::GLES2Decoder::Create(
+  std::unique_ptr<TextureImageFactory> image_factory;
+  if (options.should_use_native_gmb_for_backbuffer) {
+    image_factory = std::make_unique<TextureImageFactory>();
+    image_factory->SetRequiredTextureType(GL_TEXTURE_RECTANGLE_ARB);
+  }
+
+  decoder_.reset(::gpu::gles2::GLES2Decoder::CreateForTesting(
       command_buffer_.get(), command_buffer_->service(), &outputter_,
-      context_group, options.image_factory));
+      context_group, std::move(image_factory)));
   if (options.force_shader_name_hashing) {
     decoder_->SetForceShaderNameHashingForTest(true);
   }

@@ -22,9 +22,11 @@ class GLES2DecoderImpl;
 }
 
 class GPU_EXPORT ImageFactory {
+ public:
+  virtual ~ImageFactory();
+
  protected:
   ImageFactory();
-  virtual ~ImageFactory();
 
  private:
   // This class is used by validating command decoder for NaCL swapchain and

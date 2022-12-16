@@ -190,7 +190,7 @@ class RecordReplayContext : public GpuControl {
 
     decoder_.reset(gles2::GLES2Decoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get(), /*image_factory_for_nacl_swapchain=*/nullptr));
+        context_group.get()));
     command_buffer_->set_handler(decoder_.get());
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);

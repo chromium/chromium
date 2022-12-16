@@ -9,7 +9,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,9 +76,7 @@ class TextureStorageTest : public testing::Test {
   static const GLsizei kResolution = 64;
   void SetUp() override {
     GLManager::Options options;
-    image_factory_.SetRequiredTextureType(GL_TEXTURE_2D);
     options.size = gfx::Size(kResolution, kResolution);
-    options.image_factory = &image_factory_;
     gl_.Initialize(options);
     gl_.MakeCurrent();
 
@@ -98,7 +95,6 @@ class TextureStorageTest : public testing::Test {
 
   void TearDown() override { gl_.Destroy(); }
 
-  TextureImageFactory image_factory_;
   GLManager gl_;
   GLuint tex_ = 0;
   GLuint fbo_ = 0;

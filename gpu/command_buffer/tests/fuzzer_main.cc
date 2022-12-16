@@ -462,7 +462,7 @@ class CommandBufferSetup {
     auto* context = context_.get();
     decoder_.reset(gles2::GLES2Decoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get(), /*image_factory_for_nacl_swapchain=*/nullptr));
+        context_group.get()));
 #endif
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
@@ -470,8 +470,9 @@ class CommandBufferSetup {
     auto result = decoder_->Initialize(surface_.get(), context, true,
                                        gles2::DisallowedFeatures(),
                                        config_.attrib_helper);
-    if (result != gpu::ContextResult::kSuccess)
+    if (result != gpu::ContextResult::kSuccess) {
       return false;
+    }
     decoder_initialized_ = true;
 
     command_buffer_->set_handler(decoder_.get());

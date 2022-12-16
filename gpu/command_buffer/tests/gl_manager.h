@@ -38,7 +38,6 @@ namespace gpu {
 
 class CommandBufferDirect;
 class GpuMemoryBufferFactory;
-class ImageFactory;
 class MailboxManager;
 class TransferBuffer;
 
@@ -74,8 +73,8 @@ class GLManager : private GpuControl {
     bool multisampled = false;
     // Whether the backbuffer has an alpha channel.
     bool backbuffer_alpha = true;
-    // The ImageFactory to use to generate images for the backbuffer.
-    raw_ptr<gpu::ImageFactory> image_factory = nullptr;
+    // If we should use native gmb for backbuffer.
+    bool should_use_native_gmb_for_backbuffer = false;
     // Whether to preserve the backbuffer after a call to SwapBuffers().
     bool preserve_backbuffer = false;
     // Shared memory limits

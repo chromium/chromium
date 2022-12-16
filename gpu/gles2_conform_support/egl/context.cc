@@ -261,9 +261,9 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   auto command_buffer = std::make_unique<gpu::CommandBufferDirect>();
 
   std::unique_ptr<gpu::gles2::GLES2Decoder> decoder(
-      gpu::gles2::GLES2Decoder::Create(
-          command_buffer.get(), command_buffer->service(), &outputter_,
-          group.get(), /*image_factory_for_nacl_swapchain=*/nullptr));
+      gpu::gles2::GLES2Decoder::Create(command_buffer.get(),
+                                       command_buffer->service(), &outputter_,
+                                       group.get()));
 
   command_buffer->set_handler(decoder.get());
 

@@ -104,8 +104,15 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   static GLES2Decoder* Create(DecoderClient* client,
                               CommandBufferServiceBase* command_buffer_service,
                               Outputter* outputter,
-                              ContextGroup* group,
-                              ImageFactory* image_factory_for_nacl_swapchain);
+                              ContextGroup* group);
+
+  // Allows to override ImageFactory for nacl swapchain.
+  static GLES2Decoder* CreateForTesting(
+      DecoderClient* client,
+      CommandBufferServiceBase* command_buffer_service,
+      Outputter* outputter,
+      ContextGroup* group,
+      std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain);
 
   GLES2Decoder(const GLES2Decoder&) = delete;
   GLES2Decoder& operator=(const GLES2Decoder&) = delete;

@@ -18,10 +18,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
-#endif
-
 namespace gpu {
 
 class GLNativeGMBTest : public testing::Test {
@@ -83,6 +79,7 @@ class GLNativeGMBTest : public testing::Test {
   GLManager gl_;
 };
 
+#if !BUILDFLAG(IS_MAC)
 TEST_F(GLNativeGMBTest, TestNativeGMBBackbufferWithDifferentConfigurations) {
   if (!GLTestHelper::HasExtension("GL_ARB_texture_rectangle")) {
     LOG(INFO) << "GL_ARB_texture_rectangle not supported. Skipping test...";
@@ -93,23 +90,16 @@ TEST_F(GLNativeGMBTest, TestNativeGMBBackbufferWithDifferentConfigurations) {
   // (crbug.com/1099768)
   gpu::GPUTestBotConfig bot_config;
   if (bot_config.LoadCurrentConfig(nullptr) &&
-      bot_config.Matches("linux mac passthrough")) {
+      bot_config.Matches("linux passthrough")) {
     return;
   }
-
-#if BUILDFLAG(IS_MAC)
-  GpuMemoryBufferFactoryIOSurface image_factory;
-#else
-  TextureImageFactory image_factory;
-  image_factory.SetRequiredTextureType(GL_TEXTURE_RECTANGLE_ARB);
-#endif
 
   for (int has_alpha = 0; has_alpha <= 1; ++has_alpha) {
     for (int msaa = 0; msaa <= 1; ++msaa) {
       for (int preserve_backbuffer = 0; preserve_backbuffer <= 1;
            ++preserve_backbuffer) {
         GLManager::Options options;
-        options.image_factory = &image_factory;
+        options.should_use_native_gmb_for_backbuffer = true;
         options.multisampled = msaa == 1;
         options.backbuffer_alpha = has_alpha == 1;
         options.preserve_backbuffer = preserve_backbuffer;
@@ -119,5 +109,6 @@ TEST_F(GLNativeGMBTest, TestNativeGMBBackbufferWithDifferentConfigurations) {
     }
   }
 }
+#endif
 
 }  // namespace gpu
