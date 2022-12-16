@@ -2120,11 +2120,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.VideoEncodeAcceleratorInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2021-10-17">
-  <owner>posciak@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-12-15">
+  <owner>fiorito@google.com</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Indicates whether initialization of a video encode accelerator for Cast
     sender was successful.
+
+    Warning: this histogram was expired from 2021-10-17 to 2022-12-15; data may
+    be missing.
   </summary>
 </histogram>
 
