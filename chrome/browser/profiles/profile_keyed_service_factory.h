@@ -9,6 +9,10 @@
 
 #include "chrome/browser/profiles/profile_selections.h"
 
+namespace profiles::testing {
+class ScopedProfileSelectionsForFactoryTesting;
+}
+
 // Purpose of this API:
 // Provide a Profile type specific implementation logic for
 // `KeyedServiceFactory` under chrome/.
@@ -74,7 +78,9 @@ class ProfileKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const final;
 
  private:
-  const ProfileSelections profile_selections_;
+  friend class profiles::testing::ScopedProfileSelectionsForFactoryTesting;
+
+  ProfileSelections profile_selections_;
 };
 
 #endif  // !CHROME_BROWSER_PROFILES_PROFILE_KEYED_SERVICE_FACTORY_H_

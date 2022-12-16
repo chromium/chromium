@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_TEST_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_selections.h"
 
 class Profile;
+class ProfileKeyedServiceFactory;
 class ProfileManager;
 
 namespace profiles::testing {
@@ -37,6 +40,20 @@ class ScopedNonEnterpriseDomainSetterForTesting {
   virtual ~ScopedNonEnterpriseDomainSetterForTesting();
 };
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Overrides the ProfileSelections that a ProfileKeyedServiceFactory uses to
+// determine which profiles to create a service for.
+class ScopedProfileSelectionsForFactoryTesting {
+ public:
+  ScopedProfileSelectionsForFactoryTesting(ProfileKeyedServiceFactory* factory,
+                                           ProfileSelections selections);
+
+  ~ScopedProfileSelectionsForFactoryTesting();
+
+ private:
+  raw_ptr<ProfileKeyedServiceFactory> factory_;
+  ProfileSelections old_selections_;
+};
 
 }  // namespace profiles::testing
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_TEST_UTIL_H_

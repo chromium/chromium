@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -48,5 +49,18 @@ ScopedNonEnterpriseDomainSetterForTesting::
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+ScopedProfileSelectionsForFactoryTesting::
+    ScopedProfileSelectionsForFactoryTesting(
+        ProfileKeyedServiceFactory* factory,
+        ProfileSelections selections)
+    : factory_(factory),
+      old_selections_(std::exchange(factory->profile_selections_, selections)) {
+}
+
+ScopedProfileSelectionsForFactoryTesting::
+    ~ScopedProfileSelectionsForFactoryTesting() {
+  factory_->profile_selections_ = old_selections_;
+}
 
 }  // namespace profiles::testing
