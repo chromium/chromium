@@ -1331,6 +1331,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature)},
+    {"autofill-offer-to-save-card-with-same-last-four",
+     flag_descriptions::kAutofillOfferToSaveCardWithSameLastFourName,
+     flag_descriptions::kAutofillOfferToSaveCardWithSameLastFourDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillOfferToSaveCardWithSameLastFour)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

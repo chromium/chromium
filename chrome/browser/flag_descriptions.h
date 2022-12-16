@@ -256,6 +256,9 @@ extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 
+extern const char kAutofillOfferToSaveCardWithSameLastFourName[];
+extern const char kAutofillOfferToSaveCardWithSameLastFourDescription[];
+
 extern const char kAutofillParseIBANFieldsName[];
 extern const char kAutofillParseIBANFieldsDescription[];
 

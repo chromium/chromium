@@ -9522,6 +9522,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillRemoveCardExpirationAndTypeTitles)},
+
+    {"autofill-offer-to-save-card-with-same-last-four",
+     flag_descriptions::kAutofillOfferToSaveCardWithSameLastFourName,
+     flag_descriptions::kAutofillOfferToSaveCardWithSameLastFourDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillOfferToSaveCardWithSameLastFour)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

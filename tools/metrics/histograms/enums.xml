@@ -60859,6 +60859,8 @@ from previous Chrome versions.
   <int value="57255632" label="site-isolation-for-password-sites:disabled"/>
   <int value="57639188" label="SoundContentSetting:disabled"/>
   <int value="57791920" label="MemoryCoordinator:enabled"/>
+  <int value="57874550"
+      label="AutofillOfferToSaveCardWithSameLastFour:disabled"/>
   <int value="58099178" label="SecondaryUiMd:enabled"/>
   <int value="58619646" label="AndroidMultipleDisplay:disabled"/>
   <int value="58695502" label="NTPButton:disabled"/>
@@ -63259,6 +63261,8 @@ from previous Chrome versions.
   <int value="1467583815" label="AVIF:disabled"/>
   <int value="1469407485" label="disable-accelerated-2d-canvas"/>
   <int value="1471169381" label="kWebSQLAccess:enabled"/>
+  <int value="1471491886"
+      label="AutofillOfferToSaveCardWithSameLastFour:enabled"/>
   <int value="1472798894" label="UseIDNA2008NonTransitional:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
