@@ -18,6 +18,7 @@ export interface CategoriesElement {
     backButton: HTMLElement,
     classicChromeTile: HTMLElement,
     uploadImageTile: HTMLElement,
+    chromeWebStoreTile: HTMLElement,
   };
 }
 
@@ -63,6 +64,10 @@ export class CategoriesElement extends PolymerElement {
   private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
     this.dispatchEvent(new CustomEvent<BackgroundCollection>(
         'collection-select', {detail: e.model.item}));
+  }
+
+  private onChromeWebStoreClick_() {
+    this.pageHandler_.openChromeWebStore();
   }
 
   private onBackClick_() {

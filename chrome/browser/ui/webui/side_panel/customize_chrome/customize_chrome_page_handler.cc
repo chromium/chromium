@@ -13,6 +13,8 @@
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -168,6 +170,15 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
       profile_->last_selected_directory(), &file_types, 0,
       base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
       nullptr);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStore() {
+  NavigateParams navigate_params(
+      profile_, GURL("https://chrome.google.com/webstore?category=theme"),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(

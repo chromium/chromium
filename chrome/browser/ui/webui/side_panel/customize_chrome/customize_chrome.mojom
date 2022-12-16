@@ -86,6 +86,9 @@ interface CustomizeChromePageHandler {
 
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);
+
+  // Open Chrome Web Store in a new tab.
+  OpenChromeWebStore();
 };
 
 // WebUI-side handler for requests from the browser.

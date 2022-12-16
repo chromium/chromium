@@ -88,7 +88,7 @@
     padding-top: 12px;
   }
 
-  .image-container { 
+  .image-container {
     border-radius: 12px;
   }
 
@@ -96,6 +96,16 @@
     font-size: 11px;
     line-height: 16px;
     padding-top: 7px;
+  }
+
+  .icon-external {
+    --cr-icon-size: 13px;
+    display: inline-block;
+    height: 13px;
+    margin-bottom: -2px;
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+    width: 13px;
   }
 </style>
 <div id="container">
@@ -138,10 +148,14 @@
         <div class="label">[[item.label]]</div>
       </div>
     </template>
-    <div class="tile" tabindex="0" role="button">
+    <div class="tile" tabindex="0" role="button"
+        on-click="onChromeWebStoreClick_" id="chromeWebStoreTile">
       <div class="image-container"></div>
       <!-- TODO(crbug.com/1399596): use i18n for label -->
-      <div class="label">Chrome Web Store</div>
+      <div class="label">
+        <div class="cr-icon icon-external"></div>
+        Chrome Web Store
+      </div>
     </div>
   </cr-grid>
 </div>

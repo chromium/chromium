@@ -110,4 +110,11 @@ suite('CategoriesTest', () => {
     assertTrue(!!event);
     assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
   });
+
+  test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
+    await setInitialSettings(0);
+
+    categoriesElement.$.chromeWebStoreTile.click();
+    assertEquals(1, handler.getCallCount('openChromeWebStore'));
+  });
 });

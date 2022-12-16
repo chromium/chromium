@@ -58,6 +58,7 @@ class CustomizeChromePageHandler
   void SetClassicChromeDefaultTheme() override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
+  void OpenChromeWebStore() override;
 
  private:
   // ui::NativeThemeObserver:
