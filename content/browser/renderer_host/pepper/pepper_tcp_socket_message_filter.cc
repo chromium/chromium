@@ -1195,8 +1195,8 @@ void PepperTCPSocketMessageFilter::OpenFirewallHole(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   pepper_socket_utils::OpenTCPFirewallHole(
       bind_output_ip_endpoint_,
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnFirewallHoleOpened, this,
-                     context));
+      base::BindOnce(&PepperTCPSocketMessageFilter::OnFirewallHoleOpened,
+                     weak_ptr_factory_.GetWeakPtr(), context));
 }
 
 void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(

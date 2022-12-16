@@ -94,7 +94,7 @@ void OpenTCPFirewallHole(const net::IPEndPoint& address,
     std::move(callback).Run(nullptr);
     return;
   }
-  content::OpenTCPFirewallHole(std::string(), address.port(),
+  content::OpenTCPFirewallHole("" /* all interfaces */, address.port(),
                                std::move(callback));
 }
 
@@ -104,7 +104,7 @@ void OpenUDPFirewallHole(const net::IPEndPoint& address,
     std::move(callback).Run(nullptr);
     return;
   }
-  content::OpenUDPFirewallHole(std::string(), address.port(),
+  content::OpenUDPFirewallHole("" /* all interfaces */, address.port(),
                                std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

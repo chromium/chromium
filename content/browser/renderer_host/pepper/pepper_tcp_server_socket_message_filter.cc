@@ -269,7 +269,7 @@ void PepperTCPServerSocketMessageFilter::OpenFirewallHole(
   pepper_socket_utils::OpenTCPFirewallHole(
       local_addr,
       base::BindOnce(&PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened,
-                     this, context));
+                     weak_ptr_factory_.GetWeakPtr(), context));
 }
 
 void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
