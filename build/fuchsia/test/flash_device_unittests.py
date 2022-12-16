@@ -213,6 +213,8 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update calls pave if specified."""
         with mock.patch('time.sleep'), \
                 mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device.running_unattended',
+                           return_value=True), \
                 mock.patch('flash_device.pave') as mock_pave:
             flash_device.update(_TEST_IMAGE_DIR,
                                 'update',

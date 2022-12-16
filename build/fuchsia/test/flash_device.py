@@ -168,6 +168,7 @@ def update(system_image_dir: str,
             if running_unattended():
                 assert target, ('Target ID must be specified on swarming when'
                                 ' paving.')
+                run_ffx_command(('target', 'reboot', '-r'), target)
             pave(system_image_dir, target)
             time.sleep(120)
         else:
