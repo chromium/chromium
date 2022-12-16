@@ -16,6 +16,7 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 
@@ -343,10 +344,13 @@ JNI_DialogOverlayImpl_LookupSurfaceForTesting(
     JNIEnv* env,
     jint surfaceId) {
   bool can_be_used_with_surface_control = false;
-  gl::ScopedJavaSurface surface =
-      gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(
-          surfaceId, &can_be_used_with_surface_control);
-  return ScopedJavaLocalRef<jobject>(surface.j_surface());
+  auto surface_variant = gpu::GpuSurfaceTracker::Get()->AcquireJavaSurface(
+      surfaceId, &can_be_used_with_surface_control);
+  if (!absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant)) {
+    return nullptr;
+  }
+  return ScopedJavaLocalRef<jobject>(
+      absl::get<gl::ScopedJavaSurface>(surface_variant).j_surface());
 }
 
 }  // namespace content

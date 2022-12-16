@@ -4,6 +4,7 @@
 
 #include "content/common/android/surface_wrapper.h"
 
+#include "base/check.h"
 #include "content/public/android/content_jni_headers/SurfaceWrapper_jni.h"
 
 namespace content {
@@ -15,16 +16,41 @@ base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_create(
   return Java_SurfaceWrapper_create(env, surface, canBeUsedWithSurfaceControl);
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+JNI_SurfaceWrapper_createFromSurfaceControl(
+    JNIEnv* env,
+    gl::ScopedJavaSurfaceControl surface_control) {
+  bool release_on_destroy = false;
+  auto java_surface_control =
+      surface_control.TakeJavaSurfaceControl(release_on_destroy);
+  CHECK(!release_on_destroy);
+  return Java_SurfaceWrapper_createFromSurfaceControl(env,
+                                                      java_surface_control);
+}
+
 jboolean JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   return Java_SurfaceWrapper_canBeUsedWithSurfaceControl(env, obj);
 }
 
+jboolean JNI_SurfaceWrapper_getWrapsSurface(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
+  return Java_SurfaceWrapper_getWrapsSurface(env, obj);
+}
+
 base::android::ScopedJavaLocalRef<jobject> JNI_SurfaceWrapper_takeSurface(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   return Java_SurfaceWrapper_takeSurface(env, obj);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+JNI_SurfaceWrapper_takeSurfaceControl(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
+  return Java_SurfaceWrapper_takeSurfaceControl(env, obj);
 }
 
 }  // namespace content.

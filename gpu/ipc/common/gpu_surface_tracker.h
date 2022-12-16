@@ -16,6 +16,7 @@
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gl/android/scoped_java_surface.h"
+#include "ui/gl/android/scoped_java_surface_control.h"
 
 namespace gpu {
 
@@ -33,15 +34,17 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
   struct SurfaceRecord {
     SurfaceRecord(gl::ScopedJavaSurface surface,
                   bool can_be_used_with_surface_control);
+    explicit SurfaceRecord(gl::ScopedJavaSurfaceControl surface_control);
+    ~SurfaceRecord();
 
     SurfaceRecord(SurfaceRecord&&);
     SurfaceRecord(const SurfaceRecord&) = delete;
 
-    gl::ScopedJavaSurface surface;
-    bool can_be_used_with_surface_control;
+    JavaSurfaceVariant surface_variant;
+    bool can_be_used_with_surface_control = false;
   };
 
-  gl::ScopedJavaSurface AcquireJavaSurface(
+  JavaSurfaceVariant AcquireJavaSurface(
       gpu::SurfaceHandle surface_handle,
       bool* can_be_used_with_surface_control) override;
 

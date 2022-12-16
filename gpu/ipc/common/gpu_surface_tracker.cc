@@ -4,7 +4,10 @@
 
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 
+#include <utility>
+
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "ui/gl/android/scoped_java_surface.h"
 
@@ -13,9 +16,15 @@ namespace gpu {
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
     gl::ScopedJavaSurface surface,
     bool can_be_used_with_surface_control)
-    : surface(std::move(surface)),
+    : surface_variant(std::move(surface)),
       can_be_used_with_surface_control(can_be_used_with_surface_control) {}
 
+GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
+    gl::ScopedJavaSurfaceControl surface_control)
+    : surface_variant(std::move(surface_control)),
+      can_be_used_with_surface_control(true) {}
+
+GpuSurfaceTracker::SurfaceRecord::~SurfaceRecord() = default;
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(SurfaceRecord&&) = default;
 
 GpuSurfaceTracker::GpuSurfaceTracker()
@@ -50,7 +59,7 @@ void GpuSurfaceTracker::RemoveSurface(gpu::SurfaceHandle surface_handle) {
   surface_map_.erase(surface_handle);
 }
 
-gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
+GpuSurfaceTracker::JavaSurfaceVariant GpuSurfaceTracker::AcquireJavaSurface(
     gpu::SurfaceHandle surface_handle,
     bool* can_be_used_with_surface_control) {
   base::AutoLock lock(surface_map_lock_);
@@ -58,12 +67,18 @@ gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
   if (it == surface_map_.end())
     return gl::ScopedJavaSurface();
 
-  const gl::ScopedJavaSurface& j_surface = it->second.surface;
-  DCHECK(j_surface.IsValid());
-
   *can_be_used_with_surface_control =
       it->second.can_be_used_with_surface_control;
-  return j_surface.CopyRetainOwnership();
+  return absl::visit(
+      base::Overloaded{
+          [&](const gl::ScopedJavaSurface& surface) {
+            DCHECK(surface.IsValid());
+            return JavaSurfaceVariant(surface.CopyRetainOwnership());
+          },
+          [&](const gl::ScopedJavaSurfaceControl& surface_control) {
+            return JavaSurfaceVariant(surface_control.CopyRetainOwnership());
+          }},
+      it->second.surface_variant);
 }
 
 std::size_t GpuSurfaceTracker::GetSurfaceCount() {

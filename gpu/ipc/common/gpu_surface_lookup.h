@@ -7,8 +7,10 @@
 
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/android/scoped_java_surface.h"
+#include "ui/gl/android/scoped_java_surface_control.h"
 
 namespace gpu {
 
@@ -26,7 +28,9 @@ class GPU_EXPORT GpuSurfaceLookup {
   static GpuSurfaceLookup* GetInstance();
   static void InitInstance(GpuSurfaceLookup* lookup);
 
-  virtual gl::ScopedJavaSurface AcquireJavaSurface(
+  using JavaSurfaceVariant =
+      absl::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
+  virtual JavaSurfaceVariant AcquireJavaSurface(
       int surface_id,
       bool* can_be_used_with_surface_control) = 0;
 };

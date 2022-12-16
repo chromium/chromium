@@ -23,6 +23,7 @@
 #include "gpu/ipc/common/android/scoped_surface_request_conduit.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gl/android/scoped_java_surface.h"
+#include "ui/gl/android/scoped_java_surface_control.h"
 #include "ui/gl/android/surface_texture.h"
 
 using base::android::AttachCurrentThread;
@@ -65,7 +66,7 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
   }
 
   // Overridden from GpuSurfaceLookup:
-  gl::ScopedJavaSurface AcquireJavaSurface(
+  JavaSurfaceVariant AcquireJavaSurface(
       int surface_id,
       bool* can_be_used_with_surface_control) override {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -75,15 +76,22 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
     if (!surface_wrapper)
       return gl::ScopedJavaSurface();
 
-    gl::ScopedJavaSurface surface(
-        content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
-        /*auto_release=*/true);
-    DCHECK(!surface.j_surface().is_null());
-
     *can_be_used_with_surface_control =
-        content::JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(
-            env, surface_wrapper);
-    return surface;
+        JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(env, surface_wrapper);
+    bool wraps_surface =
+        JNI_SurfaceWrapper_getWrapsSurface(env, surface_wrapper);
+
+    if (wraps_surface) {
+      gl::ScopedJavaSurface surface(
+          content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
+          /*auto_release=*/true);
+      DCHECK(!surface.j_surface().is_null());
+      return surface;
+    } else {
+      return gl::ScopedJavaSurfaceControl(
+          JNI_SurfaceWrapper_takeSurfaceControl(env, surface_wrapper),
+          /*release_on_destroy=*/true);
+    }
   }
 
  private:

@@ -4,15 +4,21 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
+#include <android/native_window_jni.h>
 #include <utility>
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"
@@ -40,22 +46,35 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
   bool can_be_used_with_surface_control = false;
-  gl::ScopedJavaSurface scoped_java_surface =
-      GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-          surface_handle, &can_be_used_with_surface_control);
-  gl::ScopedANativeWindow window(scoped_java_surface);
-  if (!window) {
-    LOG(WARNING) << "Failed to acquire ANativeWindow";
-    return nullptr;
-  }
+  auto surface_variant = GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
+      surface_handle, &can_be_used_with_surface_control);
 
   if (!can_be_used_with_surface_control) {
     return nullptr;
   }
 
-  scoped_refptr<gl::Presenter> surface = new gl::GLSurfaceEGLSurfaceControl(
-      display->GetAs<gl::GLDisplayEGL>(), std::move(window),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+  scoped_refptr<gl::Presenter> surface;
+  absl::visit(base::Overloaded{
+                  [&](gl::ScopedJavaSurface&& scoped_java_surface) {
+                    gl::ScopedANativeWindow window(scoped_java_surface);
+                    if (!window) {
+                      LOG(WARNING) << "Failed to acquire ANativeWindow";
+                      return;
+                    }
+                    surface = new gl::GLSurfaceEGLSurfaceControl(
+                        display->GetAs<gl::GLDisplayEGL>(), std::move(window),
+                        base::ThreadTaskRunnerHandle::Get());
+                  },
+                  [&](gl::ScopedJavaSurfaceControl&& surface_control) {
+                    surface = new gl::GLSurfaceEGLSurfaceControl(
+                        display->GetAs<gl::GLDisplayEGL>(),
+                        std::move(surface_control),
+                        base::SingleThreadTaskRunner::GetCurrentDefault());
+                  }},
+              std::move(surface_variant));
+  if (!surface) {
+    return nullptr;
+  }
 
   bool initialize_success = surface->Initialize(format);
   if (!initialize_success)
@@ -75,13 +94,20 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     return new gl::GLSurfaceStub;
   DCHECK(GpuSurfaceLookup::GetInstance());
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
+
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
   bool can_be_used_with_surface_control = false;
-  gl::ScopedJavaSurface scoped_java_surface =
-      GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-          surface_handle, &can_be_used_with_surface_control);
+  auto surface_variant = GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
+      surface_handle, &can_be_used_with_surface_control);
+  if (!absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant)) {
+    LOG(WARNING) << "Expected Java Surface";
+    return nullptr;
+  }
+  gl::ScopedJavaSurface& scoped_java_surface =
+      absl::get<gl::ScopedJavaSurface>(surface_variant);
   gl::ScopedANativeWindow window(scoped_java_surface);
+
   if (!window) {
     LOG(WARNING) << "Failed to acquire ANativeWindow";
     return nullptr;
