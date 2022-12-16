@@ -617,22 +617,21 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
                   frame_header.buffer_removal_time);
   v4l2_frame_params.refresh_frame_flags = frame_header.refresh_frame_flags;
 
-  static_assert(std::size(decltype(v4l2_frame_params.order_hints){}) ==
-                    libgav1::kNumReferenceFrameTypes,
-                "Invalid size of |order_hints| array");
-
   // |reference_frame_index| indicates which reference frame slot is used for
   // different reference frame types: L(1), L2(2), L3(3), G(4), BWD(5), A2(6),
   // A(7). As |ref_frames[i]| is a |AV1Picture| with frame header info, we can
   // extract |order_hint| directly for each reference frame type instead of
   // maintaining |RefOrderHint| array in the AV1 spec.
-  if (frame_header.frame_type != libgav1::kFrameKey) {
+  static_assert(std::size(decltype(v4l2_frame_params.order_hints){}) ==
+                    libgav1::kNumInterReferenceFrameTypes + 1,
+                "Invalid size of |order_hints| array");
+  if (!libgav1::IsIntraFrame(frame_header.frame_type)) {
     for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
       const int8_t reference_frame_index =
           frame_header.reference_frame_index[i];
 
-      // TODO(b/253676775): Add safety check to guarantee DCHECK()s
-      // in AV1Decoder::CheckAndCleanUpReferenceFrames()
+      // The DCHECK()s are guaranteed by
+      // AV1Decoder::CheckAndCleanUpReferenceFrames().
       DCHECK_GE(reference_frame_index, 0);
       DCHECK_LT(reference_frame_index, libgav1::kNumReferenceFrameTypes);
       DCHECK(ref_frames[reference_frame_index]);
