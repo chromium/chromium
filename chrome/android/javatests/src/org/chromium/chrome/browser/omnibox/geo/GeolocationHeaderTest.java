@@ -13,19 +13,23 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
@@ -33,6 +37,7 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for GeolocationHeader and GeolocationTracker.
@@ -40,9 +45,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.OPTIMIZE_GEOLOCATION_HEADER_GENERATION})
+@Batch(Batch.PER_CLASS)
 public class GeolocationHeaderTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public @ClassRule static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+    public @ClassRule static DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
+    public @Rule BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private OmniboxTestUtils mOmniboxTestUtils;
 
@@ -58,8 +68,8 @@ public class GeolocationHeaderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mOmniboxTestUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        mOmniboxTestUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
     }
 
     @Test
@@ -165,7 +175,6 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
         setPermission(ContentSettingValues.ALLOW);
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         checkHeaderPriming(true /* shouldPrimeHeader */);
     }
 
@@ -174,7 +183,6 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     public void testGeolocationHeaderPrimingDisabledPermissionBlock() {
         setPermission(ContentSettingValues.BLOCK);
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         checkHeaderPriming(false /* shouldPrimeHeader */);
     }
 
@@ -183,13 +191,13 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         checkHeaderPriming(false /* shouldPrimeHeader */);
     }
 
     @Test
     @SmallTest
     @Feature({"Location"})
+    @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
     public void testGeolocationHeaderPrimingDisabledOSPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
@@ -203,7 +211,7 @@ public class GeolocationHeaderTest {
                     new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
             infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), httpsPermission);
             String header = GeolocationHeader.getGeoHeader(
-                    SEARCH_URL_1, mActivityTestRule.getActivity().getActivityTab());
+                    SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
             assertHeaderState(header, locationTime, shouldBeNull);
         });
     }
@@ -212,13 +220,13 @@ public class GeolocationHeaderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             setMockLocation(locationTime);
             String header = GeolocationHeader.getGeoHeader(
-                    SEARCH_URL_1, mActivityTestRule.getActivity().getActivityTab());
+                    SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
             assertHeaderState(header, locationTime, shouldBeNull);
         });
     }
 
     private void checkHeaderPriming(boolean shouldPrimeHeader) {
-        mActivityTestRule.loadUrlInNewTab("about:blank", false);
+        sActivityTestRule.loadUrlInNewTab("about:blank", false);
         mOmniboxTestUtils.requestFocus();
         mOmniboxTestUtils.typeText("aaaaaaaaaa", false);
         mOmniboxTestUtils.waitAnimationsComplete();
@@ -263,14 +271,14 @@ public class GeolocationHeaderTest {
     }
 
     private void assertNullHeader(final String url, final boolean isIncognito) {
-        final Tab tab = mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertNull(GeolocationHeader.getGeoHeader(url, tab)); });
     }
 
     private void assertNonNullHeader(
             final String url, final boolean isIncognito, final long locationTime) {
-        final Tab tab = mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertHeaderEquals(locationTime, GeolocationHeader.getGeoHeader(url, tab));
         });
