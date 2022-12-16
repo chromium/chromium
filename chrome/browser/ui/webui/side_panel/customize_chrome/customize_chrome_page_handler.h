@@ -13,6 +13,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,6 +53,7 @@ class CustomizeChromePageHandler
   void GetChromeColors(GetChromeColorsCallback callback) override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
+  void UpdateModulesSettings() override;
   void UpdateTheme() override;
   void SetDefaultColor() override;
   void SetForegroundColor(SkColor foreground_color) override;
@@ -59,6 +61,8 @@ class CustomizeChromePageHandler
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
   void OpenChromeWebStore() override;
+  void SetModulesVisible(bool visible) override;
+  void SetModuleDisabled(const std::string& module_id, bool disabled) override;
 
  private:
   // ui::NativeThemeObserver:
@@ -91,7 +95,9 @@ class CustomizeChromePageHandler
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
+  const std::vector<std::pair<const std::string, int>> module_id_names_;
 
+  PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
