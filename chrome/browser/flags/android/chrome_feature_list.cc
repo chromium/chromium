@@ -111,7 +111,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kDownloadAutoResumptionNative,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
-    &embedder_support::kShowTrustedPublisherURL,
     &features::kPWAsDefaultOfflinePage,
     &features::kAnonymousUpdateChecks,
     &features::kEarlyLibraryLoad,

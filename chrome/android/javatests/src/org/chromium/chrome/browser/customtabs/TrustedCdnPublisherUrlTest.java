@@ -44,7 +44,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -55,7 +54,6 @@ import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -138,7 +136,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttps() throws Exception {
@@ -150,7 +147,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttp() throws Exception {
@@ -162,7 +158,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testRtl() throws Exception {
@@ -181,7 +176,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     public void testNoHeader() throws Exception {
         runTrustedCdnPublisherUrlTest(null, "com.example.test", null, getDefaultSecurityIcon());
@@ -190,7 +184,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     public void testMalformedHeader() throws Exception {
         runTrustedCdnPublisherUrlTest(
@@ -200,7 +193,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     // No @OverrideTrustedCdn
     public void testUntrustedCdn() throws Exception {
         runTrustedCdnPublisherUrlTest(
@@ -210,7 +202,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testPageInfo() throws Exception {
@@ -227,7 +218,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testNavigateAway() throws Exception {
@@ -246,7 +236,6 @@ public class TrustedCdnPublisherUrlTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testReparent() throws Exception {
@@ -293,7 +282,6 @@ public class TrustedCdnPublisherUrlTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testOfflinePage() throws TimeoutException {

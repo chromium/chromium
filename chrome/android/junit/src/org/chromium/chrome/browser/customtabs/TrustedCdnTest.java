@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -46,7 +45,6 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL})
 public class TrustedCdnTest {
     private static final String PUBLISHER_URL = "https://www.publisher.com/";
 
@@ -102,12 +100,6 @@ public class TrustedCdnTest {
     @Test
     public void publisherUrlIsNotUsed_untrustedClient() {
         mShouldPackageShowPublisherUrl = false;
-        assertNull(TrustedCdn.getPublisherUrl(mTab));
-    }
-
-    @Test
-    @Features.DisableFeatures({ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL})
-    public void publisherUrlIsNotUsed_featureDisabled() {
         assertNull(TrustedCdn.getPublisherUrl(mTab));
     }
 

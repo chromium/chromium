@@ -495,7 +495,6 @@ public abstract class ChromeFeatureList {
     public static final String SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION =
             "ShoppingListEnableDesyncResolution";
     public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
-    public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SNOOZABLE_IPH = "IPH_Snooze";

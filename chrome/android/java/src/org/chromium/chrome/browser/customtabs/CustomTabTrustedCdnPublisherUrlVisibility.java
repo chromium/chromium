@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import org.chromium.base.UnownedUserData;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,10 +33,6 @@ class CustomTabTrustedCdnPublisherUrlVisibility
 
     @Override
     public boolean canShowPublisherUrl(Tab tab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)) {
-            return false;
-        }
-
         return mIsPublisherPackageForSession.getAsBoolean();
     }
 

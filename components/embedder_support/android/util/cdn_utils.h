@@ -15,8 +15,6 @@ class Page;
 
 namespace embedder_support {
 
-BASE_DECLARE_FEATURE(kShowTrustedPublisherURL);
-
 // This should be called from content::WebContentsObserver::PrimaryPageChanged
 // to get a publisher url for the committed navigation, else an empty GURL().
 GURL GetPublisherURL(content::Page& page);
