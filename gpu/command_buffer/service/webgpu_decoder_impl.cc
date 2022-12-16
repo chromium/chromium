@@ -1954,6 +1954,11 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     // before destroy.
     // TODO(crbug.com/1242712): Use the C++ WebGPU API.
     const auto& procs = dawn::native::GetProcs();
+
+    // Push an error scope to capture errors here. The texture may be
+    // an error texture, so this code would produce additional errors
+    // which should not be visible to the client.
+    procs.devicePushErrorScope(device, WGPUErrorFilter_Validation);
     WGPUTextureView view = procs.textureCreateView(texture, nullptr);
 
     WGPURenderPassColorAttachment color_attachment = {};
@@ -1987,6 +1992,16 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     procs.renderPassEncoderRelease(pass);
     procs.commandEncoderRelease(encoder);
     procs.textureViewRelease(view);
+
+    // Pop the error scope and log errors.
+    procs.devicePopErrorScope(
+        device,
+        [](WGPUErrorType, const char* message, void*) {
+          if (message) {
+            DLOG(ERROR) << "Clear contents to black had error: " << message;
+          }
+        },
+        nullptr);
   }
 
   associated_shared_image_map_.erase(it);
