@@ -47,7 +47,9 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual void Open(const std::u16string& name,
                     std::unique_ptr<IndexedDBPendingConnection> connection,
                     const storage::BucketLocator& bucket_locator,
-                    const base::FilePath& data_directory) = 0;
+                    const base::FilePath& data_directory,
+                    scoped_refptr<IndexedDBClientStateCheckerWrapper>
+                        client_state_checker) = 0;
 
   virtual void DeleteDatabase(const std::u16string& name,
                               scoped_refptr<IndexedDBCallbacks> callbacks,

@@ -235,7 +235,8 @@ void IndexedDBFactoryImpl::Open(
     const std::u16string& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,
     const storage::BucketLocator& bucket_locator,
-    const base::FilePath& data_directory) {
+    const base::FilePath& data_directory,
+    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::Open");
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
@@ -257,7 +258,8 @@ void IndexedDBFactoryImpl::Open(
   auto it = factory->databases().find(name);
   if (it != factory->databases().end()) {
     it->second->ScheduleOpenConnection(std::move(bucket_state_handle),
-                                       std::move(connection));
+                                       std::move(connection),
+                                       std::move(client_state_checker));
     return;
   }
   std::unique_ptr<IndexedDBDatabase> database;
@@ -284,7 +286,8 @@ void IndexedDBFactoryImpl::Open(
   auto* database_ptr = database.get();
   factory->AddDatabase(name, std::move(database));
   database_ptr->ScheduleOpenConnection(std::move(bucket_state_handle),
-                                       std::move(connection));
+                                       std::move(connection),
+                                       std::move(client_state_checker));
 }
 
 void IndexedDBFactoryImpl::DeleteDatabase(

@@ -5,6 +5,7 @@
 module storage.mojom;
 
 import "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
@@ -49,13 +50,20 @@ interface IndexedDBObserver {
 // implementation will eventually live in the storage service which may run
 // out-of-process.
 interface IndexedDBControl {
-  // Binds an IDBFactory to the given `storage_key` for the default bucket.
-  BindIndexedDB(blink.mojom.StorageKey storage_key,
-                pending_receiver<blink.mojom.IDBFactory> receiver);
+  // Binds an IDBFactory to the given `storage_key` and ids that identify
+  // the `RenderFrameHost` for the default bucket.
+  BindIndexedDB(
+    blink.mojom.StorageKey storage_key,
+    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
+      client_state_checker_remote,
+    pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Binds an IDBFactory for the given bucket.
-  BindIndexedDBForBucket(storage.mojom.BucketLocator bucket_locator,
-                         pending_receiver<blink.mojom.IDBFactory> receiver);
+  BindIndexedDBForBucket(
+    storage.mojom.BucketLocator bucket_locator,
+    pending_associated_remote<storage.mojom.IndexedDBClientStateChecker>
+      client_state_checker_remote,
+    pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Retrieves some basic usage information about the IndexedDB state. The
   // returned array has one StorageUsageInfo per `storage_key` in the

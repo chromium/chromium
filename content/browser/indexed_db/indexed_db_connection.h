@@ -16,6 +16,7 @@
 #include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
@@ -26,12 +27,14 @@ class IndexedDBBucketStateHandle;
 
 class CONTENT_EXPORT IndexedDBConnection {
  public:
-  IndexedDBConnection(IndexedDBBucketStateHandle bucket_state_handle,
-                      IndexedDBClassFactory* indexed_db_class_factory,
-                      base::WeakPtr<IndexedDBDatabase> database,
-                      base::RepeatingClosure on_version_change_ignored,
-                      base::OnceCallback<void(IndexedDBConnection*)> on_close,
-                      scoped_refptr<IndexedDBDatabaseCallbacks> callbacks);
+  IndexedDBConnection(
+      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBClassFactory* indexed_db_class_factory,
+      base::WeakPtr<IndexedDBDatabase> database,
+      base::RepeatingClosure on_version_change_ignored,
+      base::OnceCallback<void(IndexedDBConnection*)> on_close,
+      scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
+      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
   IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
@@ -83,6 +86,10 @@ class CONTENT_EXPORT IndexedDBConnection {
   // TODO(dmurph): Change that so this doesn't need to ignore unknown ids.
   void RemoveTransaction(int64_t id);
 
+  // Checks if the client is in inactive state and disallow it from activation
+  // if so.
+  void RequireClientToBeActive(base::OnceCallback<void(bool)> callback);
+
   const base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>>&
   transactions() const {
     return transactions_;
@@ -109,6 +116,10 @@ class CONTENT_EXPORT IndexedDBConnection {
   scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker_;
+  mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>
+      client_keep_active_remotes_;
 
   base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
 };

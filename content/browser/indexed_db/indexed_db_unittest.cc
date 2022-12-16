@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -20,6 +21,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
@@ -27,6 +29,8 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -228,6 +232,14 @@ class IndexedDBTest : public testing::Test,
 
   bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
 
+  scoped_refptr<IndexedDBClientStateCheckerWrapper>
+  CreateTestClientStateWrapper() {
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        remote;
+    return base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
+        std::move(remote));
+  }
+
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -406,7 +418,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
                 std::make_unique<IndexedDBPendingConnection>(
                     open_callbacks, open_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback1)),
-                bucket_locator, context()->GetDataPath(bucket_locator));
+                bucket_locator, context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   EXPECT_TRUE(base::DirectoryExists(test_path));
 
   auto create_transaction_callback2 =
@@ -415,7 +428,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
                 std::make_unique<IndexedDBPendingConnection>(
                     closed_callbacks, closed_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback2)),
-                bucket_locator, context()->GetDataPath(bucket_locator));
+                bucket_locator, context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   RunPostedTasks();
   ASSERT_TRUE(closed_callbacks->connection());
   closed_callbacks->connection()->AbortTransactionsAndClose(
@@ -467,7 +481,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
                 std::make_unique<IndexedDBPendingConnection>(
                     open_callbacks, open_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback1)),
-                bucket_locator, context()->GetDataPath(bucket_locator));
+                bucket_locator, context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   EXPECT_TRUE(base::DirectoryExists(test_path));
 
   auto create_transaction_callback2 =
@@ -476,7 +491,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
                 std::make_unique<IndexedDBPendingConnection>(
                     closed_callbacks, closed_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback2)),
-                bucket_locator, context()->GetDataPath(bucket_locator));
+                bucket_locator, context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   RunPostedTasks();
   ASSERT_TRUE(closed_callbacks->connection());
   closed_callbacks->connection()->AbortTransactionsAndClose(
@@ -574,7 +590,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
-                context()->GetDataPath(bucket_locator));
+                context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   RunPostedTasks();
 
   ASSERT_TRUE(callbacks->connection());
@@ -614,7 +631,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
       IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
-                context()->GetDataPath(bucket_locator));
+                context()->GetDataPath(bucket_locator),
+                CreateTestClientStateWrapper());
   RunPostedTasks();
 
   ASSERT_TRUE(callbacks->connection());

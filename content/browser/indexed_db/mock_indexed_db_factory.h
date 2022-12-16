@@ -40,7 +40,9 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
             const storage::BucketLocator& bucket_locator,
-            const base::FilePath& data_directory) override {
+            const base::FilePath& data_directory,
+            scoped_refptr<IndexedDBClientStateCheckerWrapper>
+                client_state_checker) override {
     OpenProxy(name, connection.get(), bucket_locator.storage_key,
               data_directory);
   }

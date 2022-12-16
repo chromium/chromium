@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -84,9 +85,13 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
+      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void BindIndexedDBForBucket(
       const storage::BucketLocator& bucket_locator,
+      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
   void DeleteForStorageKey(const blink::StorageKey& storage_key,
@@ -232,6 +237,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // mojom::IndexedDBControl internal implementation:
   void BindIndexedDBImpl(
+      mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
   void GetUsageImpl(GetUsageCallback usage_callback);

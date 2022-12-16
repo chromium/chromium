@@ -25,7 +25,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_factory.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -226,6 +225,7 @@ class MockRenderProcessHost : public RenderProcessHost {
           callback) override;
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
+      const GlobalRenderFrameHostId& rfh_id,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void BindBucketManagerHost(
       base::WeakPtr<BucketContext> bucket_context,

@@ -110,6 +110,7 @@
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
+#include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
@@ -1936,6 +1937,7 @@ void RenderProcessHostImpl::BindCacheStorage(
 
 void RenderProcessHostImpl::BindIndexedDB(
     const blink::StorageKey& storage_key,
+    const GlobalRenderFrameHostId& rfh_id,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (storage_key.origin().opaque()) {
@@ -1945,8 +1947,12 @@ void RenderProcessHostImpl::BindIndexedDB(
     // freed, we expect the pipe on the client will be closed.
     return;
   }
+
   storage_partition_impl_->GetIndexedDBControl().BindIndexedDB(
-      storage_key, std::move(receiver));
+      storage_key,
+      IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
+          rfh_id),
+      std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -113,7 +114,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   void ScheduleOpenConnection(
       IndexedDBBucketStateHandle bucket_state_handle,
-      std::unique_ptr<IndexedDBPendingConnection> connection);
+      std::unique_ptr<IndexedDBPendingConnection> connection,
+      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
+
   void ScheduleDeleteDatabase(IndexedDBBucketStateHandle bucket_state_handle,
                               scoped_refptr<IndexedDBCallbacks> callbacks,
                               base::OnceClosure on_deletion_complete);
@@ -354,7 +357,8 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   std::unique_ptr<IndexedDBConnection> CreateConnection(
       IndexedDBBucketStateHandle bucket_state_handle,
-      scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks);
+      scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
+      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   // Ack that one of the connections notified with a "versionchange" event did
   // not promptly close. Therefore a "blocked" event should be fired at the

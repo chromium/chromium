@@ -10781,7 +10781,8 @@ void RenderFrameHostImpl::CreateLockManager(
 
 void RenderFrameHostImpl::CreateIDBFactory(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  GetProcess()->BindIndexedDB(storage_key(), std::move(receiver));
+  GetProcess()->BindIndexedDB(storage_key(), GetGlobalId(),
+                              std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateBucketManagerHost(

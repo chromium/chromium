@@ -69,7 +69,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/shared_worker_instance.h"
@@ -452,6 +451,31 @@ BindWorkerReceiverForStorageKey(
 }
 
 template <typename Interface>
+using StorageKeyAndRenderFrameHostIdMethod =
+    void (RenderProcessHostImpl::*)(const blink::StorageKey&,
+                                    const GlobalRenderFrameHostId&,
+                                    mojo::PendingReceiver<Interface>);
+
+template <typename WorkerHost, typename Interface>
+base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
+BindWorkerReceiverForStorageKeyAndRenderFrameHostId(
+    StorageKeyAndRenderFrameHostIdMethod<Interface> method,
+    WorkerHost* host) {
+  return base::BindRepeating(
+      [](WorkerHost* host,
+         StorageKeyAndRenderFrameHostIdMethod<Interface> method,
+         mojo::PendingReceiver<Interface> receiver) {
+        auto* process_host =
+            static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
+        if (process_host)
+          (process_host->*method)(host->GetStorageKey(),
+                                  host->GetAssociatedRenderFrameHostId(),
+                                  std::move(receiver));
+      },
+      base::Unretained(host), method);
+}
+
+template <typename Interface>
 base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
 BindServiceWorkerReceiver(
     void (RenderProcessHostImpl::*method)(mojo::PendingReceiver<Interface>),
@@ -517,6 +541,34 @@ BindServiceWorkerReceiverForStorageKey(
         if (!process_host)
           return;
         (process_host->*method)(info.storage_key, std::move(receiver));
+      },
+      base::Unretained(host), method);
+}
+
+template <typename Interface>
+base::RepeatingCallback<void(const ServiceWorkerVersionBaseInfo&,
+                             mojo::PendingReceiver<Interface>)>
+BindServiceWorkerReceiverForStorageKeyAndRenderFrameHostId(
+    void (RenderProcessHostImpl::*method)(const blink::StorageKey&,
+                                          const GlobalRenderFrameHostId&,
+                                          mojo::PendingReceiver<Interface>),
+    ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return base::BindRepeating(
+      [](ServiceWorkerHost* host,
+         void (RenderProcessHostImpl::*method)(
+             const blink::StorageKey&, const GlobalRenderFrameHostId&,
+             mojo::PendingReceiver<Interface>),
+         const ServiceWorkerVersionBaseInfo& info,
+         mojo::PendingReceiver<Interface> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        if (!process_host)
+          return;
+        (process_host->*method)(info.storage_key,
+                                host->GetAssociatedRenderFrameHostId(),
+                                std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -1209,8 +1261,9 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindFileSystemManager, host));
-  map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::IDBFactory>(
+      BindWorkerReceiverForStorageKeyAndRenderFrameHostId(
+          &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
@@ -1302,8 +1355,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindFileSystemManager, host));
-  map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::IDBFactory>(
+      BindWorkerReceiverForStorageKeyAndRenderFrameHostId(
+          &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForStorageKey(
@@ -1433,8 +1487,9 @@ void PopulateBinderMapWithContext(
   // RenderProcessHost binders taking a storage key
   map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::IDBFactory>(BindServiceWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::IDBFactory>(
+      BindServiceWorkerReceiverForStorageKeyAndRenderFrameHostId(
+          &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::FileSystemAccessManager>(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));

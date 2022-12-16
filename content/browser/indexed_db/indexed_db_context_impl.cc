@@ -52,6 +52,7 @@
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/database/database_util.h"
@@ -178,31 +179,43 @@ void IndexedDBContextImpl::Bind(
 
 void IndexedDBContextImpl::BindIndexedDB(
     const blink::StorageKey& storage_key,
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   quota_manager_proxy()->UpdateOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key),
       idb_task_runner_,
-      base::BindOnce(&IndexedDBContextImpl::BindIndexedDBImpl,
-                     weak_factory_.GetWeakPtr(), std::move(receiver)));
+      base::BindOnce(
+          &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
+          std::move(client_state_checker_remote), std::move(receiver)));
 }
 
 void IndexedDBContextImpl::BindIndexedDBForBucket(
     const storage::BucketLocator& bucket_locator,
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   // Query the database to make sure the bucket still exists.
+
   quota_manager_proxy()->GetBucketById(
       bucket_locator.id, idb_task_runner_,
-      base::BindOnce(&IndexedDBContextImpl::BindIndexedDBImpl,
-                     weak_factory_.GetWeakPtr(), std::move(receiver)));
+      base::BindOnce(
+          &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
+          std::move(client_state_checker_remote), std::move(receiver)));
 }
 
 void IndexedDBContextImpl::BindIndexedDBImpl(
+    mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   absl::optional<storage::BucketInfo> bucket;
   if (bucket_info.ok())
     bucket = bucket_info.value();
-  dispatcher_host_.AddReceiver(bucket, std::move(receiver));
+  dispatcher_host_.AddReceiver(
+      IndexedDBDispatcherHost::ReceiverContext(
+          bucket, std::move(client_state_checker_remote)),
+      std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {

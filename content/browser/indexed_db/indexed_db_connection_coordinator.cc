@@ -123,16 +123,19 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
 class IndexedDBConnectionCoordinator::OpenRequest
     : public IndexedDBConnectionCoordinator::ConnectionRequest {
  public:
-  OpenRequest(IndexedDBBucketStateHandle bucket_state_handle,
-              IndexedDBDatabase* db,
-              std::unique_ptr<IndexedDBPendingConnection> pending_connection,
-              IndexedDBConnectionCoordinator* connection_coordinator,
-              TasksAvailableCallback tasks_available_callback)
+  OpenRequest(
+      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBDatabase* db,
+      std::unique_ptr<IndexedDBPendingConnection> pending_connection,
+      IndexedDBConnectionCoordinator* connection_coordinator,
+      TasksAvailableCallback tasks_available_callback,
+      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
       : ConnectionRequest(std::move(bucket_state_handle),
                           db,
                           connection_coordinator,
                           std::move(tasks_available_callback)),
-        pending_(std::move(pending_connection)) {
+        pending_(std::move(pending_connection)),
+        client_state_checker_(std::move(client_state_checker)) {
     db_->metadata_.was_cold_open = pending_->was_cold_open;
   }
 
@@ -176,7 +179,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
       DCHECK(is_new_database);
       pending_->callbacks->OnSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
-                                pending_->database_callbacks),
+                                pending_->database_callbacks,
+                                std::move(client_state_checker_)),
           db_->metadata_);
       state_ = RequestState::kDone;
       return;
@@ -187,7 +191,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
       pending_->callbacks->OnSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
-                                pending_->database_callbacks),
+                                pending_->database_callbacks,
+                                std::move(client_state_checker_)),
           db_->metadata_);
       state_ = RequestState::kDone;
       return;
@@ -280,7 +285,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
     DCHECK(!lock_receiver_.locks.empty());
     connection_ = db_->CreateConnection(std::move(bucket_state_handle_),
-                                        pending_->database_callbacks);
+                                        pending_->database_callbacks,
+                                        std::move(client_state_checker_));
     DCHECK(!connection_ptr_for_close_comparision_);
     connection_ptr_for_close_comparision_ = connection_.get();
     DCHECK_EQ(db_->connections().count(connection_.get()), 1UL);
@@ -379,6 +385,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
   // This raw pointer is stored solely for comparison to the connection in
   // OnConnectionClosed. It is not guaranteed to be pointing to a live object.
   raw_ptr<IndexedDBConnection> connection_ptr_for_close_comparision_ = nullptr;
+
+  // A pointer referencing to the checker that can be used to obtain some state
+  // information of the IndexedDB client.
+  scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker_;
 
   base::WeakPtrFactory<OpenRequest> weak_factory_{this};
 };
@@ -526,10 +536,11 @@ IndexedDBConnectionCoordinator::~IndexedDBConnectionCoordinator() = default;
 
 void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
     IndexedDBBucketStateHandle bucket_state_handle,
-    std::unique_ptr<IndexedDBPendingConnection> connection) {
+    std::unique_ptr<IndexedDBPendingConnection> connection,
+    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   request_queue_.push(std::make_unique<OpenRequest>(
       std::move(bucket_state_handle), db_, std::move(connection), this,
-      tasks_available_callback_));
+      tasks_available_callback_, std::move(client_state_checker)));
   tasks_available_callback_.Run();
 }
 

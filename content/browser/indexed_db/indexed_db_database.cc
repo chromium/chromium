@@ -352,9 +352,11 @@ void IndexedDBDatabase::TransactionFinished(
 
 void IndexedDBDatabase::ScheduleOpenConnection(
     IndexedDBBucketStateHandle bucket_state_handle,
-    std::unique_ptr<IndexedDBPendingConnection> connection) {
-  connection_coordinator_.ScheduleOpenConnection(std::move(bucket_state_handle),
-                                                 std::move(connection));
+    std::unique_ptr<IndexedDBPendingConnection> connection,
+    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
+  connection_coordinator_.ScheduleOpenConnection(
+      std::move(bucket_state_handle), std::move(connection),
+      std::move(client_state_checker));
 }
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
@@ -1716,7 +1718,8 @@ Status IndexedDBDatabase::OpenInternal() {
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     IndexedDBBucketStateHandle bucket_state_handle,
-    scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks) {
+    scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
+    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   std::unique_ptr<IndexedDBConnection> connection =
       std::make_unique<IndexedDBConnection>(
           std::move(bucket_state_handle), class_factory_,
@@ -1725,7 +1728,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
                               weak_factory_.GetWeakPtr()),
           base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
                          weak_factory_.GetWeakPtr()),
-          database_callbacks);
+          database_callbacks, std::move(client_state_checker));
   connections_.insert(connection.get());
   return connection;
 }
