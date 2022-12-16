@@ -109,6 +109,35 @@ void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
   }
 }
 
+bool IsValidSize(const gfx::Size& size, int32_t max_texture_size) {
+  if (size.width() < 1 || size.height() < 1 ||
+      size.width() > max_texture_size || size.height() > max_texture_size) {
+    LOG(ERROR) << "Invalid size=" << size.ToString()
+               << ", max_texture_size=" << max_texture_size;
+    return false;
+  }
+  return true;
+}
+
+bool IsPixelDataValid(viz::SharedImageFormat format,
+                      const gfx::Size& size,
+                      base::span<const uint8_t> pixel_data) {
+  if (pixel_data.empty()) {
+    return true;
+  }
+  // If we have initial data to upload, ensure it is sized appropriately
+  size_t estimated_size;
+  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
+    DLOG(ERROR) << "Failed to calculate SharedImage size";
+    return false;
+  }
+  if (pixel_data.size() != estimated_size) {
+    LOG(ERROR) << "Initial data does not have expected size.";
+    return false;
+  }
+  return true;
+}
+
 }  // anonymous namespace
 
 // Representation of a SharedImageBackingIOSurface as a Dawn Texture.
@@ -328,34 +357,6 @@ IOSurfaceImageBackingFactory::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-// static
-bool IOSurfaceImageBackingFactory::InitializePixels(
-    SharedImageBacking* backing,
-    gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane,
-    const uint8_t* src_data) {
-  IOReturn r = IOSurfaceLock(io_surface, kIOSurfaceLockAvoidSync, nullptr);
-  DCHECK_EQ(kIOReturnSuccess, r);
-
-  uint8_t* dst_data = reinterpret_cast<uint8_t*>(
-      IOSurfaceGetBaseAddressOfPlane(io_surface, io_surface_plane));
-  size_t dst_stride =
-      IOSurfaceGetBytesPerRowOfPlane(io_surface, io_surface_plane);
-  const size_t src_stride =
-      (BitsPerPixel(backing->format()) / 8) * backing->size().width();
-
-  size_t height = backing->size().height();
-  for (size_t y = 0; y < height; ++y) {
-    memcpy(dst_data, src_data, src_stride);
-    dst_data += dst_stride;
-    src_data += src_stride;
-  }
-
-  r = IOSurfaceUnlock(io_surface, 0, nullptr);
-  DCHECK_EQ(kIOReturnSuccess, r);
-  return true;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBackingFactory
 
@@ -365,13 +366,28 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     ImageFactory* image_factory,
     gl::ProgressReporter* progress_reporter)
-    : GLCommonImageBackingFactory(gpu_preferences,
-                                  workarounds,
-                                  feature_info,
-                                  progress_reporter),
-      image_factory_(image_factory) {
+    : image_factory_(image_factory),
+      progress_reporter_(progress_reporter),
+      angle_texture_usage_(feature_info->feature_flags().angle_texture_usage) {
   gpu_memory_buffer_formats_ =
       feature_info->feature_flags().gpu_memory_buffer_formats;
+
+  gl::GLApi* api = gl::g_current_gl_context;
+  api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);
+  // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
+  // can be used to accurately represent all valid sub-rects, with overflow
+  // cases, clamped to INT_MAX, always invalid.
+  max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
+
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
+    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
+    const viz::ResourceFormat resource_format =
+        viz::GetResourceFormat(buffer_format);
+    if (gpu_memory_buffer_formats_.Has(buffer_format) &&
+        IsFormatSupported(resource_format)) {
+      supported_formats_.insert(resource_format);
+    }
+  }
 }
 
 IOSurfaceImageBackingFactory::~IOSurfaceImageBackingFactory() = default;
@@ -481,10 +497,9 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
 
   const bool framebuffer_attachment_angle =
-      for_framebuffer_attachment && texture_usage_angle_;
+      for_framebuffer_attachment && angle_texture_usage_;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(plane_resource_format);
-  DCHECK(use_passthrough_);
   return std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, plane_buffer_format, io_surface_id, mailbox,
       si_format, plane_size, color_space, surface_origin, alpha_type, usage,
@@ -548,20 +563,14 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  const FormatInfo& format_info = GetFormatInfo(format);
-  const gfx::BufferFormat buffer_format =
-      viz::BufferFormat(format.resource_format());
-
-  if (!IsFormatSupported(format.resource_format()) ||
-      !gpu_memory_buffer_formats_.Has(buffer_format)) {
+  if (!base::Contains(supported_formats_, format.resource_format())) {
     LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable. "
                   "Format= "
                << format.ToString();
     return nullptr;
   }
-
-  GLenum texture_target = gpu::GetPlatformSpecificTextureTarget();
-  if (!CanCreateSharedImage(size, pixel_data, format_info, texture_target)) {
+  if (!IsValidSize(size, max_texture_size_) ||
+      !IsPixelDataValid(format, size, pixel_data)) {
     return nullptr;
   }
 
@@ -576,6 +585,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   gfx::ScopedIOSurface io_surface;
   const uint32_t io_surface_plane = 0;
   const gfx::GenericSharedMemoryId io_surface_id;
+  const gfx::BufferFormat buffer_format =
+      viz::BufferFormat(format.resource_format());
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     const bool should_clear = false;
@@ -589,20 +600,18 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
 
   const bool is_cleared = !pixel_data.empty();
   const bool framebuffer_attachment_angle =
-      for_framebuffer_attachment && texture_usage_angle_;
+      for_framebuffer_attachment && angle_texture_usage_;
+  GLenum texture_target = gpu::GetPlatformSpecificTextureTarget();
 
-  DCHECK(!format_info.swizzle);
-  DCHECK(use_passthrough_);
-  auto result = std::make_unique<IOSurfaceImageBacking>(
+  auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, buffer_format, io_surface_id, mailbox,
       format, size, color_space, surface_origin, alpha_type, usage,
       texture_target, framebuffer_attachment_angle, is_cleared);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-    result->InitializePixels(format_info.adjusted_format, format_info.gl_type,
-                             pixel_data.data());
+    backing->InitializePixels(pixel_data);
   }
-  return std::move(result);
+  return std::move(backing);
 }
 
 }  // namespace gpu

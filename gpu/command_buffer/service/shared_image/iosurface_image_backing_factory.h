@@ -7,12 +7,13 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/mac/io_surface.h"
@@ -38,7 +39,7 @@ class ImageFactory;
 // Helper functions used used by SharedImageRepresentationGLImage to do
 // IOSurface-specific sharing.
 class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
-    : public GLCommonImageBackingFactory {
+    : public SharedImageBackingFactory {
  public:
   static sk_sp<SkPromiseImageTexture> ProduceSkiaPromiseTextureMetal(
       SharedImageBacking* backing,
@@ -53,10 +54,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       std::vector<WGPUTextureFormat> view_formats,
       gfx::ScopedIOSurface io_surface,
       uint32_t io_surface_plane);
-  static bool InitializePixels(SharedImageBacking* backing,
-                               gfx::ScopedIOSurface io_surface,
-                               uint32_t io_surface_plane,
-                               const uint8_t* pixel_data);
 
   // It is used for migrating GLImage backing, for part that works with
   // SharedMemory GMB with SharedMemoryImageBacking and Composite backings, and
@@ -129,7 +126,15 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   // Factory used to generate GLImages for SCANOUT backings.
   const raw_ptr<ImageFactory> image_factory_ = nullptr;
 
+  // Used to notify the watchdog before a buffer allocation in case it takes
+  // long.
+  const raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
+
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
+  base::flat_set<viz::ResourceFormat> supported_formats_ = {};
+
+  int32_t max_texture_size_ = 0;
+  bool angle_texture_usage_ = false;
 };
 
 }  // namespace gpu

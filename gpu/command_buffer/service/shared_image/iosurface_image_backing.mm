@@ -800,12 +800,28 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingDestroyed(
   egl_state_map_.erase(found);
 }
 
-void IOSurfaceImageBacking::InitializePixels(GLenum format,
-                                             GLenum type,
-                                             const uint8_t* data) {
-  if (IOSurfaceImageBackingFactory::InitializePixels(this, io_surface_,
-                                                     io_surface_plane_, data))
-    return;
+bool IOSurfaceImageBacking::InitializePixels(
+    base::span<const uint8_t> pixel_data) {
+  IOReturn r = IOSurfaceLock(io_surface_, kIOSurfaceLockAvoidSync, nullptr);
+  DCHECK_EQ(kIOReturnSuccess, r);
+
+  uint8_t* dst_data = reinterpret_cast<uint8_t*>(
+      IOSurfaceGetBaseAddressOfPlane(io_surface_, io_surface_plane_));
+  size_t dst_stride =
+      IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_);
+  const size_t src_stride = (BitsPerPixel(format()) / 8) * size().width();
+
+  const uint8_t* src_data = pixel_data.data();
+  size_t height = size().height();
+  for (size_t y = 0; y < height; ++y) {
+    memcpy(dst_data, src_data, src_stride);
+    dst_data += dst_stride;
+    src_data += src_stride;
+  }
+
+  r = IOSurfaceUnlock(io_surface_, 0, nullptr);
+  DCHECK_EQ(kIOReturnSuccess, r);
+  return true;
 }
 
 }  // namespace gpu

@@ -209,7 +209,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;
 
-  void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
+  bool InitializePixels(base::span<const uint8_t> pixel_data);
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
