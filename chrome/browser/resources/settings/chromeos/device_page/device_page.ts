@@ -11,6 +11,7 @@ import './audio.js';
 import './display.js';
 import './keyboard.js';
 import './per_device_keyboard.js';
+import './per_device_mouse.js';
 import './pointers.js';
 import './power.js';
 import './storage.js';
@@ -130,9 +131,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.POINTERS) {
             map.set(routes.POINTERS.path, '#pointersRow');
           }
-          // TODO(@wangdanny): Add route for mouse settings page.
           if (routes.PER_DEVICE_KEYBOARD) {
             map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
+          }
+          if (routes.PER_DEVICE_MOUSE) {
+            map.set(routes.PER_DEVICE_MOUSE.path, '#perDeviceMouseRow');
           }
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');
@@ -239,6 +242,13 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
    */
   private onPerDeviceKeyboardTap_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
+  }
+
+  /**
+   * Handler for tapping the Mouse settings menu item.
+   */
+  private onPerDeviceMouseTap_() {
+    Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   /**

@@ -297,6 +297,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::AUDIO,
       base_url.Resolve(chromeos::settings::mojom::kAudioSubpagePath));
   TestOpenOSSettingsChromePage(
+      ChromePage::PERDEVICEMOUSE,
+      base_url.Resolve(chromeos::settings::mojom::kPerDeviceMouseSubpagePath));
+  TestOpenOSSettingsChromePage(
       ChromePage::HELP,
       base_url.Resolve(chromeos::settings::mojom::kAboutChromeOsSectionPath));
   TestOpenOSSettingsChromePage(

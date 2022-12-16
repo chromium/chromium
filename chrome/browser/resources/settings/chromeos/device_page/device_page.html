@@ -8,7 +8,8 @@
         on-click="onPointersTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
-      <cr-link-row class="hr" id="mouseRow" label="$i18n{mouseTitle}"
+      <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
+          on-click="onPerDeviceMouseTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
@@ -55,6 +56,13 @@
           has-touchpad="[[hasTouchpad_]]"
           has-haptic-touchpad="[[hasHapticTouchpad_]]">
       </settings-pointers>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/per-device-mouse">
+    <os-settings-subpage page-title="$i18n{mouseTitle}">
+      <settings-per-device-mouse
+          is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]">
+      </settings-per-device-mouse>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/per-device-keyboard">

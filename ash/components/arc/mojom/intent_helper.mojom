@@ -175,8 +175,9 @@ enum ChromePage {
   CURSORANDTOUCHPAD = 83,
   AUDIOANDCAPTIONS = 84,
   PERDEVICEKEYBOARD = 85,
+  PERDEVICEMOUSE = 86,
 
-  // Next value to be used is 86.
+  // Next value to be used is 87.
 };
 
 // Describes an unique chrome app.

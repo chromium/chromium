@@ -23,6 +23,7 @@ const TestNames = {
   Audio: 'audio',
   Display: 'display',
   Keyboard: 'keyboard',
+  PerDeviceMouse: 'per-device mouse',
   NightLight: 'night light',
   PerDeviceKeyboard: 'per-device keyboard',
   Pointers: 'pointers',
@@ -482,7 +483,8 @@ suite('SettingsDevicePage', function() {
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
     // enableInputDeviceSettingsSplit feature flag by default is turned on.
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
+    assertTrue(
+        isVisible(devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
     assertTrue(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
 
@@ -507,9 +509,11 @@ suite('SettingsDevicePage', function() {
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
   });
 
-  test('mouse row visibility', async function() {
+  test('per-device-mouse row visibility', async function() {
+    setDeviceSplitEnabled(false);
     await init();
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
+    assertFalse(
+        isVisible(devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
   });
 
   test('per-device-keyboard row visibility', async function() {
@@ -596,6 +600,32 @@ suite('SettingsDevicePage', function() {
       const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
           '#audioInputNoiseCancellationToggle');
       assertTrue(isVisible(noiseCancellationToggle));
+    });
+  });
+
+  suite(assert(TestNames.PerDeviceMouse), function() {
+    let perDeviceMousePage;
+
+    setup(async function() {
+      await init();
+      const row = assert(
+          devicePage.shadowRoot.querySelector(`#main #perDeviceMouseRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      const page =
+          devicePage.shadowRoot.querySelector('settings-per-device-mouse');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDeviceMousePage = page;
+      });
+    });
+
+    test('per-device mouse subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
+          '#perDeviceMouseSubpageTitle')));
     });
   });
 

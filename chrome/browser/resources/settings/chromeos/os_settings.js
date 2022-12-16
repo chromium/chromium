@@ -11,6 +11,7 @@ import './device_page/display_layout.js';
 import './device_page/display_overscan_dialog.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
+import './device_page/per_device_mouse.js';
 import './device_page/pointers.js';
 import './device_page/power.js';
 import './device_page/storage.js';
@@ -124,7 +125,6 @@ export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_p
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
-export {Route, Router} from './router.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.js';
@@ -175,6 +175,7 @@ export {routes} from './os_route.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
+export {Route, Router} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {
