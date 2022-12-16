@@ -182,13 +182,20 @@ TEST_F(CocoaImmersiveModeControllerTest,
 
   EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
   immersive_mode_controller->TitlebarLock();
-  immersive_mode_controller->TitlebarLock();
-  immersive_mode_controller->TitlebarLock();
-  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 3);
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 1);
 
   // One controller for Top Chrome, one for an AppKit workaround
-  // (https://crbug.com/1369643) and another hidden controller that pins the
-  // titlebar.
+  // (https://crbug.com/1369643).
+  // The titlebar is not fully visible, the pinning clear contoller should not
+  // be present.
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+
+  immersive_mode_controller->SetTitlebarFullyVisibleForTesting(true);
+  immersive_mode_controller->TitlebarLock();
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 2);
+
+  // The titlebar is fully visible, the pinning clear contoller should now be
+  // present.
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
 
   // Ensure the clear controller's view covers the browser view.
@@ -206,9 +213,8 @@ TEST_F(CocoaImmersiveModeControllerTest,
   EXPECT_EQ(clear_controller.view.frame.size.width,
             browser().contentView.frame.size.width);
 
-  // There is still an outstanding lock, make sure we still have the hidden
+  // There is still an outstanding lock, make sure we still have the clear
   // controller.
-  immersive_mode_controller->TitlebarUnlock();
   immersive_mode_controller->TitlebarUnlock();
   EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 1);
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
@@ -247,7 +253,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
           initWithController:weak_ptr_factory.GetWeakPtr()
                  overlayView:overlay_view]);
 
-  // Observer the fake fake titlebar container view.
+  // Observer the fake titlebar container view.
   [titlebar_container_view addObserver:titlebar_observer
                             forKeyPath:@"frame"
                                options:NSKeyValueObservingOptionInitial |

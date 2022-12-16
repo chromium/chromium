@@ -15,6 +15,7 @@
 
 @class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
+@class ImmersiveModeTitlebarObserver;
 @class ImmersiveModeTitlebarViewController;
 @class ImmersiveModeWindowObserver;
 
@@ -61,6 +62,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 
   NSWindow* browser_window() { return browser_window_; }
   NSWindow* overlay_window() { return overlay_window_; }
+
+  // When true the titlebar is assumed to be fully visible. For testing only.
+  void SetTitlebarFullyVisibleForTesting(bool fully_visible) {
+    titlebar_fully_visible_for_testing_ = fully_visible;
+  }
 
  private:
   // Pin or unpin the titlebar.
@@ -111,6 +117,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   mojom::ToolbarVisibilityStyle last_used_style_ =
       mojom::ToolbarVisibilityStyle::kAutohide;
 
+  bool titlebar_fully_visible_for_testing_ = false;
+
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };
 
@@ -134,6 +142,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver : NSObject
                     (base::WeakPtr<remote_cocoa::ImmersiveModeController>)
                         controller
                        overlayView:(NSView*)overlay_view;
+
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_

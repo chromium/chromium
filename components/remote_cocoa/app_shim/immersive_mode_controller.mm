@@ -43,6 +43,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   base::WeakPtr<remote_cocoa::ImmersiveModeController> _controller;
   NSView* _overlay_view;
   BOOL _barrier;
+  BOOL _titlebarFullyVisible;
 }
 @end
 
@@ -74,6 +75,9 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     return;
   }
 
+  NSRect frame = [change[@"new"] rectValue];
+  _titlebarFullyVisible = frame.origin.y == 0;
+
   // Find the overlay view's point on screen (bottom left).
   NSPoint point_in_window = [_overlay_view convertPoint:NSZeroPoint toView:nil];
   NSPoint point_on_screen =
@@ -94,8 +98,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     // If there are sub-windows and the titlebar is fully visible (a y origin of
     // 0), pin the titlebar. This will prevent the titlebar from autohiding and
     // causing the sub-windows from moving up when the mouse leaves top chrome.
-    NSRect frame = [change[@"new"] rectValue];
-    if (!_barrier && frame.origin.y == 0 &&
+    if (!_barrier && _titlebarFullyVisible &&
         _controller->titlebar_lock_count() > 0) {
       // Add a barrier to prevent re-entry, which is a byproduct of
       // TitlebarLock() and TitlebarUnlock().
@@ -113,6 +116,10 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   }
 
   [_controller->overlay_window() setFrameOrigin:point_on_screen];
+}
+
+- (BOOL)titlebarFullyVisible {
+  return _titlebarFullyVisible;
 }
 
 @end
@@ -189,6 +196,10 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
             options:NSKeyValueObservingOptionInitial |
                     NSKeyValueObservingOptionNew
             context:NULL];
+}
+
+- (BOOL)titlebarFullyVisible {
+  return [_immersive_mode_titlebar_observer titlebarFullyVisible];
 }
 
 @end
@@ -552,7 +563,10 @@ void ImmersiveModeController::ReparentChildWindows(NSWindow* source,
 
 void ImmersiveModeController::TitlebarLock() {
   titlebar_lock_count_++;
-  SetTitlebarPinned(true);
+  if (titlebar_fully_visible_for_testing_ ||
+      [immersive_mode_titlebar_view_controller_ titlebarFullyVisible]) {
+    SetTitlebarPinned(true);
+  }
 }
 
 void ImmersiveModeController::TitlebarUnlock() {
