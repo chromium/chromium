@@ -41,22 +41,22 @@ void TrackedSplitPreference::OnNewValue(
     NOTREACHED();
     return;
   }
-  const base::DictionaryValue* dict_value =
-      value ? &base::Value::AsDictionaryValue(*value) : nullptr;
-  transaction->StoreSplitHash(pref_path_, dict_value);
+
+  transaction->StoreSplitHash(pref_path_, value ? &value->GetDict() : nullptr);
 }
 
 bool TrackedSplitPreference::EnforceAndReport(
-    base::DictionaryValue* pref_store_contents,
+    base::Value::Dict& pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction) const {
-  base::DictionaryValue* dict_value = nullptr;
-  if (!pref_store_contents->GetDictionary(pref_path_, &dict_value) &&
-      pref_store_contents->FindPath(pref_path_)) {
+  base::Value* value = pref_store_contents.FindByDottedPath(pref_path_);
+  if (value && !value->is_dict()) {
     // There should be a dictionary or nothing at |pref_path_|.
     NOTREACHED();
     return false;
   }
+
+  base::Value::Dict* dict_value = value ? &value->GetDict() : nullptr;
 
   std::vector<std::string> invalid_keys;
   ValueState value_state =
@@ -91,28 +91,26 @@ bool TrackedSplitPreference::EnforceAndReport(
 
       for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
            it != invalid_keys.end(); ++it) {
-        dict_value->RemoveKey(*it);
+        dict_value->Remove(*it);
       }
     } else {
-      pref_store_contents->RemovePath(pref_path_);
+      pref_store_contents.RemoveByDottedPath(pref_path_);
     }
     was_reset = true;
   }
 
   if (value_state != ValueState::UNCHANGED) {
     // Store the hash for the new value (whether it was reset or not).
-    const base::DictionaryValue* new_dict_value = NULL;
-    pref_store_contents->GetDictionary(pref_path_, &new_dict_value);
-    transaction->StoreSplitHash(pref_path_, new_dict_value);
+    transaction->StoreSplitHash(
+        pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
   }
 
   // Update MACs in the external store if there is one and there either was a
   // reset or external validation failed.
   if (external_validation_transaction &&
       (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
-    const base::DictionaryValue* new_dict_value = nullptr;
-    pref_store_contents->GetDictionary(pref_path_, &new_dict_value);
-    external_validation_transaction->StoreSplitHash(pref_path_, new_dict_value);
+    external_validation_transaction->StoreSplitHash(
+        pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
   }
 
   return was_reset;

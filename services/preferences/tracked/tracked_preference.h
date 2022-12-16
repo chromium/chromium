@@ -5,12 +5,9 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_TRACKED_PREFERENCE_H_
 #define SERVICES_PREFERENCES_TRACKED_TRACKED_PREFERENCE_H_
 
-class PrefHashStoreTransaction;
+#include "base/values.h"
 
-namespace base {
-class DictionaryValue;
-class Value;
-}
+class PrefHashStoreTransaction;
 
 enum class TrackedPreferenceType { ATOMIC, SPLIT };
 
@@ -36,7 +33,7 @@ class TrackedPreference {
   // |external_validation_transaction| and its associated state and as such
   // should only be called before any other subsystem is made aware of it.
   virtual bool EnforceAndReport(
-      base::DictionaryValue* pref_store_contents,
+      base::Value::Dict& pref_store_contents,
       PrefHashStoreTransaction* transaction,
       PrefHashStoreTransaction* external_validation_transaction) const = 0;
 };

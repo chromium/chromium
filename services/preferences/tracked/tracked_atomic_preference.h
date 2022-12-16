@@ -43,7 +43,7 @@ class TrackedAtomicPreference : public TrackedPreference {
   void OnNewValue(const base::Value* value,
                   PrefHashStoreTransaction* transaction) const override;
   bool EnforceAndReport(
-      base::DictionaryValue* pref_store_contents,
+      base::Value::Dict& pref_store_contents,
       PrefHashStoreTransaction* transaction,
       PrefHashStoreTransaction* external_validation_transaction) const override;
 

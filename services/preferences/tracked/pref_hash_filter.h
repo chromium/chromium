@@ -95,7 +95,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // PrefFilter remaining implementation.
   void FilterUpdate(const std::string& path) override;
   OnWriteCallbackPair FilterSerializeData(
-      base::DictionaryValue* pref_store_contents) override;
+      base::Value::Dict& pref_store_contents) override;
 
   void OnStoreDeletionFromDisk() override;
 
@@ -103,13 +103,13 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      std::unique_ptr<base::DictionaryValue> pref_store_contents,
+      base::Value::Dict pref_store_contents,
       bool prefs_altered) override;
 
   // Helper function to generate FilterSerializeData()'s pre-write and
   // post-write callbacks. The returned callbacks are thread-safe.
   OnWriteCallbackPair GetOnWriteSynchronousCallbacks(
-      base::Value::Dict* pref_store_contents);
+      base::Value::Dict& pref_store_contents);
 
   // Clears the MACs contained in |external_validation_hash_store_contents|
   // which are present in |paths_to_clear|.

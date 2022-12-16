@@ -5,16 +5,12 @@
 #ifndef COMPONENTS_PREFS_PREF_FILTER_H_
 #define COMPONENTS_PREFS_PREF_FILTER_H_
 
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/callback_forward.h"
+#include "base/values.h"
 #include "components/prefs/prefs_export.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 // Filters preferences as they are loaded from disk or updated at runtime.
 // Currently supported only by JsonPrefStore.
@@ -29,8 +25,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // builder. |schedule_write| indicates whether a write should be immediately
   // scheduled (typically because the |prefs| were pre-modified).
   using PostFilterOnLoadCallback =
-      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> prefs,
-                              bool schedule_write)>;
+      base::OnceCallback<void(base::Value::Dict prefs, bool schedule_write)>;
 
   virtual ~PrefFilter() {}
 
@@ -43,7 +38,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // to external users (see SegregatedPrefStore::ReadPrefs() for an example).
   virtual void FilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      std::unique_ptr<base::DictionaryValue> pref_store_contents) = 0;
+      base::Value::Dict pref_store_contents) = 0;
 
   // Receives notification when a pref store value is changed, before Observers
   // are notified.
@@ -57,7 +52,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // invoked synchronously after the next write (from the I/O TaskRunner so they
   // must not be bound to thread-unsafe member state).
   virtual OnWriteCallbackPair FilterSerializeData(
-      base::DictionaryValue* pref_store_contents) = 0;
+      base::Value::Dict& pref_store_contents) = 0;
 
   // Cleans preference data that may have been saved outside of the store.
   virtual void OnStoreDeletionFromDisk() = 0;

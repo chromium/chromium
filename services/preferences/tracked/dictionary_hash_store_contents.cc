@@ -19,7 +19,7 @@ const char kSuperMACPref[] = "protection.super_mac";
 }
 
 DictionaryHashStoreContents::DictionaryHashStoreContents(
-    base::Value::Dict* storage)
+    base::Value::Dict& storage)
     : storage_(storage) {}
 
 // static

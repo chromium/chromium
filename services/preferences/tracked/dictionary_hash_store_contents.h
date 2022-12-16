@@ -5,7 +5,7 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 #define SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
@@ -21,7 +21,7 @@ class DictionaryHashStoreContents : public HashStoreContents {
  public:
   // Constructs a DictionaryHashStoreContents that reads from and writes to
   // |storage|.
-  explicit DictionaryHashStoreContents(base::Value::Dict* storage);
+  explicit DictionaryHashStoreContents(base::Value::Dict& storage);
 
   DictionaryHashStoreContents(const DictionaryHashStoreContents&) = delete;
   DictionaryHashStoreContents& operator=(const DictionaryHashStoreContents&) =
@@ -50,7 +50,7 @@ class DictionaryHashStoreContents : public HashStoreContents {
   void SetSuperMac(const std::string& super_mac) override;
 
  private:
-  raw_ptr<base::Value::Dict> storage_;
+  const raw_ref<base::Value::Dict> storage_;
 
   // Helper function to get a mutable version of the macs from |storage_|,
   // creating it if needed and |create_if_null| is true.

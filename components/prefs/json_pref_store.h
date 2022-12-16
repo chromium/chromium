@@ -178,7 +178,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   // (typically because the |pref_filter_| has already altered the |prefs|) --
   // this will be ignored if this store is read-only.
   void FinalizeFileRead(bool initialization_successful,
-                        std::unique_ptr<base::DictionaryValue> prefs,
+                        base::Value::Dict prefs,
                         bool schedule_write);
 
   // Schedule a write with the file writer as long as |flags| doesn't contain
@@ -188,7 +188,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   const base::FilePath path_;
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  base::Value::Dict prefs_;
 
   bool read_only_;
 
