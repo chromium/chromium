@@ -160,8 +160,8 @@ class RemotingSenderTest : public ::testing::Test {
   void RunPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
-  media::cast::FrameId latest_acked_frame_id() const {
-    return remoting_sender_->frame_sender_->LatestAckedFrameId();
+  media::cast::FrameId last_acked_frame_id() const {
+    return remoting_sender_->frame_sender_->LastAckedFrameId();
   }
 
   int NumberOfFramesInFlight() {
@@ -210,7 +210,7 @@ class RemotingSenderTest : public ::testing::Test {
   }
 
   void AckOldestInFlightFrames(int count) {
-    AckUpToAndIncluding(latest_acked_frame_id() + count);
+    AckUpToAndIncluding(last_acked_frame_id() + count);
   }
 
   // Blocks the caller indefinitely, until a kickstart frame is sent, and then
@@ -274,7 +274,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
   RunPendingTasks();
   EXPECT_TRUE(ExpectOneFrameWasSent(256));
   AckOldestInFlightFrames(1);
-  EXPECT_EQ(media::cast::FrameId::first(), latest_acked_frame_id());
+  EXPECT_EQ(media::cast::FrameId::first(), last_acked_frame_id());
 
   // Four 256-byte chunks pushed through the data pipe to make one frame.
   SendFrame(1024);
@@ -284,7 +284,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
   RunPendingTasks();
   EXPECT_TRUE(ExpectOneFrameWasSent(1024));
   AckOldestInFlightFrames(1);
-  EXPECT_EQ(media::cast::FrameId::first() + 1, latest_acked_frame_id());
+  EXPECT_EQ(media::cast::FrameId::first() + 1, last_acked_frame_id());
 
   // 10 differently-sized chunks pushed through the data pipe to make one frame
   // that is larger than the data pipe's total capacity.
@@ -299,7 +299,7 @@ TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
   RunPendingTasks();
   EXPECT_TRUE(ExpectOneFrameWasSent(6665));
   AckOldestInFlightFrames(1);
-  EXPECT_EQ(media::cast::FrameId::first() + 2, latest_acked_frame_id());
+  EXPECT_EQ(media::cast::FrameId::first() + 2, last_acked_frame_id());
 }
 
 TEST_F(RemotingSenderTest, SendsMultipleFramesWithDelayedAcks) {

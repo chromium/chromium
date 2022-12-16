@@ -133,8 +133,8 @@ class FrameSender {
   // When the last frame was sent.
   virtual base::TimeTicks LastSendTime() const = 0;
 
-  // The latest acknowledged frame ID.
-  virtual FrameId LatestAckedFrameId() const = 0;
+  // The last acknowledged frame ID.
+  virtual FrameId LastAckedFrameId() const = 0;
 
   // RTCP client-specific methods.
   // TODO(https://crbug.com/1318499): these assume we are using an RTCP client,

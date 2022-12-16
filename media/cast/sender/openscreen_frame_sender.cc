@@ -104,12 +104,13 @@ base::TimeDelta OpenscreenFrameSender::GetTargetPlayoutDelay() const {
 
 void OpenscreenFrameSender::OnFrameCanceled(
     openscreen::cast::FrameId frame_id) {
+  if (frame_id > last_acked_frame_id_) {
+    last_acked_frame_id_ = frame_id;
+  }
   client_->OnFrameCanceled(frame_id);
 }
 
-void OpenscreenFrameSender::OnPictureLost() {
-  NOTIMPLEMENTED();
-}
+void OpenscreenFrameSender::OnPictureLost() {}
 
 void OpenscreenFrameSender::RecordLatestFrameTimestamps(
     FrameId frame_id,
@@ -173,11 +174,8 @@ base::TimeTicks OpenscreenFrameSender::LastSendTime() const {
   return last_send_time_;
 }
 
-FrameId OpenscreenFrameSender::LatestAckedFrameId() const {
-  // TODO(https://crbug.com/1318499): this field is only used for testing
-  // the RemotingSender, and should be refactored since this property is not
-  // available from the openscreen::cast::Sender.
-  return {};
+FrameId OpenscreenFrameSender::LastAckedFrameId() const {
+  return last_acked_frame_id_;
 }
 
 base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {

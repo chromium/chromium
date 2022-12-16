@@ -48,7 +48,7 @@ class FrameSenderImpl : public FrameSender {
   base::TimeDelta TargetPlayoutDelay() const override;
   base::TimeDelta CurrentRoundTripTime() const override;
   base::TimeTicks LastSendTime() const override;
-  FrameId LatestAckedFrameId() const override;
+  FrameId LastAckedFrameId() const override;
   void OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) override;
   void OnReceivedPli() override;
   void OnMeasuredRoundTripTime(base::TimeDelta rtt) override;

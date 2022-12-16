@@ -61,7 +61,7 @@ class OpenscreenFrameSender : public FrameSender,
   base::TimeDelta TargetPlayoutDelay() const override;
   base::TimeDelta CurrentRoundTripTime() const override;
   base::TimeTicks LastSendTime() const override;
-  FrameId LatestAckedFrameId() const override;
+  FrameId LastAckedFrameId() const override;
 
  private:
   // TODO(https://crbug.com/1318499): these should be removed from the
@@ -72,6 +72,8 @@ class OpenscreenFrameSender : public FrameSender,
 
   // openscreen::cast::Sender::Observer overrides.
   void OnFrameCanceled(openscreen::cast::FrameId frame_id) override;
+  // NOTE: this is a no-op since the encoder checks if it should generate a key
+  // frame when the next raw frame is inserted.
   void OnPictureLost() override;
 
   // Helper for getting the reference time recorded on the frame associated
@@ -120,6 +122,9 @@ class OpenscreenFrameSender : public FrameSender,
   // The ID of the last enqueued frame. This member is invalid until
   // |!last_send_time_.is_null()|.
   FrameId last_enqueued_frame_id_;
+
+  // The ID of the last acknowledged/"cancelled" frame.
+  FrameId last_acked_frame_id_;
 
   // Since the encoder emits frames that depend on each other, and the Open
   // Screen sender demands that we use its FrameIDs for enqueued frames, we

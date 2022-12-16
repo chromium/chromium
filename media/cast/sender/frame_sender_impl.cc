@@ -293,7 +293,7 @@ base::TimeDelta FrameSenderImpl::CurrentRoundTripTime() const {
 base::TimeTicks FrameSenderImpl::LastSendTime() const {
   return last_send_time_;
 }
-FrameId FrameSenderImpl::LatestAckedFrameId() const {
+FrameId FrameSenderImpl::LastAckedFrameId() const {
   return latest_acked_frame_id_;
 }
 
