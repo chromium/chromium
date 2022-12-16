@@ -29,6 +29,7 @@ class ASH_EXPORT NetworkListMobileHeaderViewImpl
 
  private:
   friend class NetworkListMobileHeaderViewTest;
+  friend class NetworkListViewControllerTest;
 
   // Used for testing.
   static constexpr int kAddESimButtonId =

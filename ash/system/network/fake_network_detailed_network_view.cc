@@ -15,6 +15,10 @@
 
 namespace ash {
 
+namespace {
+using ::chromeos::network_config::mojom::NetworkType;
+}
+
 FakeNetworkDetailedNetworkView::FakeNetworkDetailedNetworkView(
     Delegate* delegate)
     : NetworkDetailedNetworkView(delegate),
@@ -26,7 +30,7 @@ void FakeNetworkDetailedNetworkView::NotifyNetworkListChanged() {
   notify_network_list_changed_call_count_++;
 }
 
-views::View* FakeNetworkDetailedNetworkView::network_list() {
+views::View* FakeNetworkDetailedNetworkView::GetNetworkList(NetworkType type) {
   return network_list_.get();
 }
 
@@ -38,10 +42,10 @@ void FakeNetworkDetailedNetworkView::OnViewClicked(views::View* view) {
   last_clicked_network_list_item_ = static_cast<NetworkListItemView*>(view);
 }
 
-NetworkListNetworkItemView*
-FakeNetworkDetailedNetworkView::AddNetworkListItem() {
+NetworkListNetworkItemView* FakeNetworkDetailedNetworkView::AddNetworkListItem(
+    NetworkType type) {
   return network_list_->AddChildView(
-      new NetworkListNetworkItemView(/*listener=*/nullptr));
+      std::make_unique<NetworkListNetworkItemView>(/*listener=*/nullptr));
 }
 
 NetworkListWifiHeaderView*
