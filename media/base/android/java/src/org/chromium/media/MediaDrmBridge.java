@@ -958,6 +958,8 @@ public class MediaDrmBridge {
             Log.e(TAG, "failed to provide key response", e);
         } catch (java.lang.IllegalStateException e) {
             Log.e(TAG, "failed to provide key response", e);
+        } catch (java.lang.IllegalArgumentException e) {
+            Log.e(TAG, "failed to provide key response", e);
         }
         onPromiseRejected(promiseId, "Update session failed.");
         release();
