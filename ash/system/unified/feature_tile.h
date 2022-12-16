@@ -94,11 +94,16 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the tooltip text of `drill_container_` and `drill_in_button_`.
   void SetDrillInButtonTooltipText(const std::u16string& text);
 
+  views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
   views::LabelButton* drill_in_button() { return drill_in_button_; }
 
  private:
+  friend class BluetoothFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
+
+  // The vector icon for the tile, if one is set.
+  const gfx::VectorIcon* vector_icon_ = nullptr;
 
   // Owned by views hierarchy.
   views::ImageView* icon_ = nullptr;

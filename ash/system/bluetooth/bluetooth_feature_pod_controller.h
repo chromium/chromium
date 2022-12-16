@@ -9,6 +9,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,6 +37,7 @@ class ASH_EXPORT BluetoothFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
@@ -60,8 +62,19 @@ class ASH_EXPORT BluetoothFeaturePodController
   std::u16string ComputeButtonSubLabel() const;
   std::u16string ComputeTooltip() const;
 
+  // Returns true if `button_` or `tile_` is enabled, depending on feature
+  // QsRevamp.
+  bool IsButtonEnabled() const;
+
+  // Returns true if `button_` or `tile_` is toggled, depending on feature
+  // QsRevamp.
+  bool IsButtonToggled() const;
+
   // Updates |button_| state to reflect the cached Bluetooth state.
   void UpdateButtonStateIfExists();
+
+  // Updates `tile_` state to reflect the cached Bluetooth state.
+  void UpdateTileStateIfExists();
 
   // bluetooth_config::mojom::SystemPropertiesObserver
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
@@ -79,8 +92,11 @@ class ASH_EXPORT BluetoothFeaturePodController
           kCannotModifyBluetooth;
   bluetooth_config::mojom::BluetoothSystemState system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
-  FeaturePodButton* button_ = nullptr;
+  FeaturePodButton* button_ = nullptr;  // Owned by views hierarchy.
+  FeatureTile* tile_ = nullptr;         // Owned by views hierarchy.
   UnifiedSystemTrayController* tray_controller_;
+
+  base::WeakPtrFactory<BluetoothFeaturePodController> weak_factory_{this};
 };
 
 }  // namespace ash

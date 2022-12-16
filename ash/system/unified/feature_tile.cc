@@ -189,6 +189,7 @@ bool FeatureTile::IsToggled() const {
 }
 
 void FeatureTile::SetVectorIcon(const gfx::VectorIcon& icon) {
+  vector_icon_ = &icon;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       icon, cros_tokens::kCrosSysOnSurface, kIconSize));
 }
