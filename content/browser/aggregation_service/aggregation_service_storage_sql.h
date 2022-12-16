@@ -27,7 +27,6 @@ class GURL;
 
 namespace base {
 class Clock;
-class ElapsedTimer;
 }  // namespace base
 
 namespace sql {
@@ -88,10 +87,10 @@ class CONTENT_EXPORT AggregationServiceStorageSql
       base::Time now,
       base::TimeDelta min_delay,
       base::TimeDelta max_delay) override;
-  void ClearDataBetween(base::Time delete_begin,
-                        base::Time delete_end,
-                        StoragePartition::StorageKeyMatcherFunction filter,
-                        base::ElapsedTimer elapsed_timer) override;
+  void ClearDataBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter) override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing)
       VALID_CONTEXT_REQUIRED(sequence_checker_) {
