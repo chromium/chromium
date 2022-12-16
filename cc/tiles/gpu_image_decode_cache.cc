@@ -1125,6 +1125,11 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     scoped_refptr<TileTask> task =
         GetTaskFromMapForClientId(client_id, image_data->upload.task_map);
     if (!task) {
+      // Given it's a new task for this |client_id|, the image must be reffed
+      // before creating a task - this ref is owned by the caller, and it is
+      // their responsibility to release it by calling UnrefImage.
+      RefImage(draw_image, cache_key);
+
       task = base::MakeRefCounted<ImageUploadTaskImpl>(
           this, draw_image,
           GetImageDecodeTaskAndRef(client_id, draw_image, tracing_info,
@@ -1151,6 +1156,10 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     scoped_refptr<TileTask> task = GetTaskFromMapForClientId(
         client_id, image_data->decode.stand_alone_task_map);
     if (!task) {
+      // Even though it's a new task for this client, we don't need to have
+      // additional reference here (which the caller is responsible for) as
+      // GetImageDecodeTaskAndRef does that for us.
+
       task = GetImageDecodeTaskAndRef(client_id, draw_image, tracing_info,
                                       task_type);
 #if DCHECK_IS_ON()

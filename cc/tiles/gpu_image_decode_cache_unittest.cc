@@ -783,20 +783,19 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
     // Ensure each client gets own task.
     EXPECT_NE(result1.task, result2.task);
 
-    DrawImage another_draw_image =
+    DrawImage draw_image2 =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
-    EXPECT_EQ(another_draw_image.frame_index(), PaintImage::kDefaultFrameIndex);
+    EXPECT_EQ(draw_image2.frame_index(), PaintImage::kDefaultFrameIndex);
     ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
-        kClientId1, another_draw_image, ImageDecodeCache::TracingInfo());
+        kClientId1, draw_image2, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(another_result.need_unref);
     EXPECT_TRUE(result1.task.get() == another_result.task.get());
 
-    DrawImage another_draw_image2 =
+    DrawImage draw_image3 =
         CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(1.5f, 1.5f)));
-    EXPECT_EQ(another_draw_image2.frame_index(),
-              PaintImage::kDefaultFrameIndex);
+    EXPECT_EQ(draw_image3.frame_index(), PaintImage::kDefaultFrameIndex);
     ImageDecodeCache::TaskResult another_result2 = cache->GetTaskForImageAndRef(
-        kClientId2, another_draw_image, ImageDecodeCache::TracingInfo());
+        kClientId2, draw_image3, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(another_result2.need_unref);
     EXPECT_TRUE(result2.task.get() == another_result2.task.get());
 
@@ -844,12 +843,19 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
       EXPECT_EQ(transfer_cache_helper_.num_of_entries(), 0u);
     }
 
+    EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
+    EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image2));
+    EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image3));
+    cache->UnrefImage(draw_image);
+    EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
     cache->UnrefImage(draw_image);
     EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
     cache->UnrefImage(draw_image);
     EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
     cache->UnrefImage(draw_image);
     EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image));
+    EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image2));
+    EXPECT_FALSE(cache->IsInInUseCacheForTesting(draw_image3));
 
     cache->ClearCache();
   }
@@ -2931,6 +2937,43 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadTaskCancelled) {
   TestTileTaskRunner::CompleteTask(result.task.get());
 
   cache->UnrefImage(draw_image);
+}
+
+TEST_P(GpuImageDecodeCacheTest,
+       NonLazyImageUploadTaskCancelledMultipleClients) {
+  if (do_yuv_decode_) {
+    // YUV bitmap images do not happen, so this test will always skip for YUV.
+    GTEST_SKIP();
+  }
+
+  auto cache = CreateCache();
+  const uint32_t client_id = cache->GenerateClientId();
+  const uint32_t client_id2 = cache->GenerateClientId();
+
+  PaintImage image = CreateBitmapImageInternal(GetNormalImageSize());
+  DrawImage draw_image = CreateDrawImageInternal(image);
+  auto result = cache->GetTaskForImageAndRef(client_id, draw_image,
+                                             ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result.need_unref);
+  EXPECT_TRUE(result.task);
+  EXPECT_TRUE(result.task->dependencies().empty());
+
+  DrawImage draw_image2 = CreateDrawImageInternal(image);
+  auto result2 = cache->GetTaskForImageAndRef(client_id2, draw_image2,
+                                              ImageDecodeCache::TracingInfo());
+
+  EXPECT_TRUE(result2.need_unref);
+  EXPECT_TRUE(result2.task);
+  EXPECT_TRUE(result2.task->dependencies().empty());
+
+  TestTileTaskRunner::CancelTask(result.task.get());
+  TestTileTaskRunner::CompleteTask(result.task.get());
+
+  TestTileTaskRunner::CancelTask(result2.task.get());
+  TestTileTaskRunner::CompleteTask(result2.task.get());
+
+  cache->UnrefImage(draw_image);
+  cache->UnrefImage(draw_image2);
 }
 
 TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageNotColorConverted) {
