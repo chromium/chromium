@@ -406,8 +406,9 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
   // for example, an <img> has a user agent shadow root containing a <span> for
   // the alt text. Do not create an accessible for that as it would be unable
   // to have a parent that has it as a child.
-  if (!AXNodeObject::CanHaveChildren(To<Element>(*node->OwnerShadowHost())))
+  if (!AXObject::CanHaveChildren(To<Element>(*node->OwnerShadowHost()))) {
     return false;
+  }
 
   // Native <img> create extra child nodes to hold alt text, which are not
   // allowed as children. Note: images can have image map children, but these
@@ -1543,9 +1544,9 @@ AXObject* AXObjectCacheImpl::CreateAndInit(
   }
 #endif
 
-  AXObject* parent = parent_if_known ? parent_if_known
-                                     : AXObject::ComputeNonARIAParent(
-                                           *this, node, layout_object);
+  AXObject* parent = parent_if_known
+                         ? parent_if_known
+                         : AXObject::ComputeNonARIAParent(*this, node);
   if (node == document_)
     DCHECK(!parent);
   else if (!parent)
@@ -2411,6 +2412,14 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   // Ensure that this object is touched, so that Get() can Invalidate() it if
   // necessary, e.g. to change whether it's an AXNodeObject <--> AXLayoutObject.
   Get(layout_object);
+
+  // When pseudo element layout changes, we need to make sure we clear up all
+  // descendant objects, because we may not receive ChildrenChanged() calls for
+  // all of them, and we don't want to leave any parentless objects around. This
+  // will force re-creation of any AXObjects for this subtree.
+  if (layout_object->IsPseudoElement()) {
+    RemoveAXObjectsInLayoutSubtree(Get(layout_object));
+  }
 
   // Update using nearest node (walking ancestors if necessary).
   Node* node = GetClosestNodeForLayoutObject(layout_object);

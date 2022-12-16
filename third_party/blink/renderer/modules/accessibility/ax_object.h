@@ -1077,24 +1077,29 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* ComputeParentOrNull() const;
 
   // Can this node be used to compute the natural parent of an object?
-  // These are objects that can have some children, but the children are
-  // only of a certain type or from another part of the tree, and therefore
-  // the parent-child relationships are not natural and must be handled
-  // specially. For example, a <select> may be an innapropriate natural parent
-  // for all of its child nodes as determined by LayoutTreeBuilderTraversal,
-  // such as an <optgroup> or <div> in the shadow DOM, because an AXMenuList, if
-  // used, only allows <option>/AXMenuListOption children.
+  // A natural parent is one where the LayoutTreeBuilderTraversal::Parent()
+  // matches the DOM node for the AXObject parent.
+  // Counter examples:
+  // * Objects that can have some children, but the children are only of a
+  // certain type or from another part of the tree. For example, a <select> may
+  // be an innapropriate natural parent for all of its child nodes as determined
+  // by LayoutTreeBuilderTraversal, such as an <optgroup> or <div> in the shadow
+  // DOM, because an AXMenuList, if used, only allows <option>/AXMenuListOption
+  // children.
+  // * An image cannot be a natural parent, because while it can be the parent
+  // of <area> elements, there isn't a matching DOM parent-child relationship,
+  // as the areas are associated via a <map> element.
   static bool CanComputeAsNaturalParent(Node*);
 
   // For a given image, return a <map> that's actually used for it.
   static HTMLMapElement* GetMapForImage(Node* image);
 
-  // Compute the AXObject parent for the given node or layout_object.
-  // The layout object is only necessary if the node is null, which is the case
-  // only for pseudo elements. ** Does not take aria-owns into account. **
-  static AXObject* ComputeNonARIAParent(AXObjectCacheImpl& cache,
-                                        Node* node,
-                                        LayoutObject* layout_object = nullptr);
+  // Can AXObjects backed by this element have AXObject children?
+  static bool CanHaveChildren(Element& element);
+
+  // Compute the AXObject parent for the given node.
+  // Does not take aria-owns into account.
+  static AXObject* ComputeNonARIAParent(AXObjectCacheImpl& cache, Node* node);
 
   // Compute parent for an AccessibleNode, which is not backed up a DOM node
   // or layout object.
@@ -1437,6 +1442,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;
 
  private:
+  // Given the candidate parent node, return a node that can be used for the
+  // parent, or null if no parent is possible. For example, passing in a <map>
+  // will return the associated <img>, because the image would parent any of the
+  // map's descendants.
+  static Node* GetParentNodeForComputeParent(AXObjectCacheImpl&, Node*);
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
 
@@ -1500,6 +1510,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   LayoutObject* GetLayoutObjectForNativeScrollAction() const;
 
   static unsigned number_of_live_ax_objects_;
+
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
 };
 
 MODULES_EXPORT bool operator==(const AXObject& first, const AXObject& second);
