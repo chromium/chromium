@@ -109,6 +109,11 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
   void ExitRmaThenRestartChrome() override {}
   void ShowDiagnosticsDialog() override {}
   void RefreshAccessibilityManagerProfile() override {}
+  void GenerateQrCode(const std::string& url,
+                      base::OnceCallback<void(const std::string& qr_code_image)>
+                          callback) override {
+    std::move(callback).Run(url);
+  }
 };
 
 }  // namespace

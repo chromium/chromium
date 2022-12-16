@@ -5,8 +5,11 @@
 #ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
 #define ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
 
-namespace ash {
-namespace shimless_rma {
+#include <string>
+
+#include "base/functional/callback.h"
+
+namespace ash::shimless_rma {
 
 // A delegate which exposes browser functionality from //chrome to the Shimless
 // RMA UI.
@@ -23,9 +26,13 @@ class ShimlessRmaDelegate {
   // Sets the AccessibilityManager profile to the active profile to enable
   // accessibility features.
   virtual void RefreshAccessibilityManagerProfile() = 0;
+
+  // Returns a string encoded QR code image of `url`.
+  virtual void GenerateQrCode(
+      const std::string& url,
+      base::OnceCallback<void(const std::string& qr_code_image)> callback) = 0;
 };
 
-}  // namespace shimless_rma
-}  // namespace ash
+}  // namespace ash::shimless_rma
 
 #endif  // ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_

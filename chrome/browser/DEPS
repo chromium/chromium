@@ -33,6 +33,7 @@ include_rules = [
   "+chrome/services/machine_learning/public",
   "+chrome/services/media_gallery_util/public",
   "+chrome/services/printing/public",
+  "+chrome/services/qrcode_generator/public",
   "+chrome/services/sharing/public",
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
