@@ -204,6 +204,7 @@ export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from './site_settings/protocol_handlers.js';
 export {SettingsReviewNotificationPermissionsElement} from './site_settings/review_notification_permissions.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
+export {SettingsSiteDataElement} from './site_settings/site_data.js';
 export {SiteDetailsElement} from './site_settings/site_details.js';
 export {SiteDetailsPermissionElement} from './site_settings/site_details_permission.js';
 export {SiteEntryElement} from './site_settings/site_entry.js';

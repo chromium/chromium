@@ -1,1 +1,41 @@
-<div>$i18n{privacyPageTitle}</div>
+<style include="settings-shared">
+  #exceptionHeader {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #exceptionHeaderSubLabel {
+    padding-bottom: 10px;
+  }
+</style>
+<div id="exceptionHeader">
+  <!-- TODO(crbug.com/1378703): Update all strings in this page. -->
+  <h2>$i18n{privacyPageTitle}</h2>
+  <div id="exceptionHeaderSubLabel" class="secondary">
+    $i18n{privacyPageTitle}
+  </div>
+</div>
+<site-list id="allowExceptionsList"
+    category="[[cookiesContentSettingType_]]"
+    category-subtype="[[contentSettingEnum_.ALLOW]]"
+    category-header="$i18n{privacyPageTitle}"
+    read-only-list="[[exceptionListsReadOnly_]]"
+    search-filter="[[searchTerm]]"
+    cookies-exception-type="site-data">
+</site-list>
+<site-list id="sessionOnlyExceptionsList"
+    category="[[cookiesContentSettingType_]]"
+    category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
+    category-header="$i18n{privacyPageTitle}"
+    read-only-list="[[exceptionListsReadOnly_]]"
+    search-filter="[[searchTerm]]"
+    cookies-exception-type="site-data">
+</site-list>
+<!-- Shows all block-exceptions (in contrast to allow and session above). -->
+<site-list id="blockExceptionsList"
+    category="[[cookiesContentSettingType_]]"
+    category-subtype="[[contentSettingEnum_.BLOCK]]"
+    category-header="$i18n{privacyPageTitle}"
+    read-only-list="[[exceptionListsReadOnly_]]"
+    search-filter="[[searchTerm]]"
+    cookies-exception-type="combined">
+</site-list>

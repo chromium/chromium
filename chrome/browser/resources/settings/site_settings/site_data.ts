@@ -7,12 +7,18 @@
  * 'settings-site-data' is the polymer element for showing the
  * settings for site data under Site Settings.
  */
+import './site_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
+
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_data.html.js';
 
-class SettingsSiteDataElement extends PolymerElement {
+const SettingsSiteDataElementBase = PrefsMixin(PolymerElement);
+
+export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
   static get is() {
     return 'settings-site-data';
   }
@@ -34,7 +40,46 @@ class SettingsSiteDataElement extends PolymerElement {
         notify: true,
         value: '',
       },
+
+      cookiesContentSettingType_: {
+        type: String,
+        value: ContentSettingsTypes.COOKIES,
+      },
+
+      contentSettingEnum_: {
+        type: Object,
+        value: ContentSetting,
+      },
+
+      exceptionListsReadOnly_: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  static get observers() {
+    return [`onGeneratedPrefsUpdated_(
+        prefs.generated.cookie_default_content_setting)`];
+  }
+
+  searchTerm: string;
+  private cookiesContentSettingType_: ContentSettingsTypes;
+  private exceptionListsReadOnly_: boolean;
+
+  private onGeneratedPrefsUpdated_() {
+    const pref = this.getPref('generated.cookie_default_content_setting');
+
+    // If the pref is managed this implies a content setting policy is present
+    // and the exception lists should be disabled.
+    this.exceptionListsReadOnly_ =
+        pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-site-data': SettingsSiteDataElement;
   }
 }
 

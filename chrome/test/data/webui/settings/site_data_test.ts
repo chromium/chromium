@@ -1,0 +1,126 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// clang-format off
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ContentSetting, ContentSettingsTypes, SettingsSiteDataElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
+
+// clang-format on
+
+suite('SiteDataTest', function() {
+  let page: SettingsSiteDataElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-data');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('ExceptionListsReadOnly', function() {
+    // Check all exception lists are read only when the preference
+    // reports as managed.
+    page.set('prefs.generated.cookie_default_content_setting', {
+      value: ContentSetting.ALLOW,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    let exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
+    assertEquals(exceptionLists.length, 3);
+    for (const list of exceptionLists) {
+      assertTrue(!!list.readOnlyList);
+    }
+
+    // Return preference to unmanaged state and check all exception lists
+    // are no longer read only.
+    page.set('prefs.generated.cookie_default_content_setting', {
+      value: ContentSetting.ALLOW,
+    });
+    exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
+    assertEquals(exceptionLists.length, 3);
+    for (const list of exceptionLists) {
+      assertFalse(!!list.readOnlyList);
+    }
+  });
+
+  test('ExceptionsSearch', async function() {
+    const exceptionPrefs = createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          ContentSettingsTypes.COOKIES,
+          [
+            createRawSiteException('http://foo-allow.com', {
+              embeddingOrigin: '',
+            }),
+            createRawSiteException('http://foo-session.com', {
+              embeddingOrigin: '',
+              setting: ContentSetting.SESSION_ONLY,
+            }),
+            createRawSiteException('http://foo-block.com', {
+              embeddingOrigin: '',
+              setting: ContentSetting.BLOCK,
+            }),
+          ]),
+    ]);
+    page.searchTerm = 'foo';
+    siteSettingsBrowserProxy.setPrefs(exceptionPrefs);
+    await siteSettingsBrowserProxy.whenCalled('getExceptionList');
+    flush();
+
+    const exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
+    assertEquals(exceptionLists.length, 3);
+
+    for (const list of exceptionLists) {
+      assertTrue(isChildVisible(list, 'site-list-entry'));
+    }
+
+    page.searchTerm = 'unrelated.com';
+    flush();
+
+    for (const list of exceptionLists) {
+      assertFalse(isChildVisible(list, 'site-list-entry'));
+    }
+  });
+
+  test('ExceptionListsHaveCorrectCookieExceptionType', function() {
+    const allowExceptionsList =
+        page.shadowRoot!.querySelector('#allowExceptionsList');
+    assertTrue(!!allowExceptionsList);
+    assertEquals(
+        'site-data',
+        allowExceptionsList.getAttribute('cookies-exception-type'));
+
+    const sessionOnlyExceptionsList =
+        page.shadowRoot!.querySelector('#sessionOnlyExceptionsList');
+    assertTrue(!!sessionOnlyExceptionsList);
+    assertEquals(
+        'site-data',
+        sessionOnlyExceptionsList.getAttribute('cookies-exception-type'));
+
+    const blockExceptionsList =
+        page.shadowRoot!.querySelector('#blockExceptionsList');
+    assertTrue(!!blockExceptionsList);
+    assertEquals(
+        'combined', blockExceptionsList.getAttribute('cookies-exception-type'));
+  });
+});
