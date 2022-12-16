@@ -43,6 +43,7 @@ namespace {
 
 constexpr char kRequestAbortedMessage[] = "The request was aborted.";
 constexpr char kSecurityErrorMessage[] = "The request was denied.";
+constexpr char kInvalidStateErrorMessage[] = "The document is not active.";
 
 LockInfo* ToLockInfo(const mojom::blink::LockInfoPtr& record) {
   LockInfo* info = LockInfo::Create();
@@ -270,8 +271,11 @@ ScriptPromise LockManager::request(ScriptState* script_state,
                                    V8LockGrantedCallback* callback,
                                    ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidStateErrorMessage);
     return ScriptPromise();
+  }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -423,6 +427,8 @@ ScriptPromise LockManager::query(ScriptState* script_state,
                                  ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
   if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidStateErrorMessage);
     return ScriptPromise();
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
