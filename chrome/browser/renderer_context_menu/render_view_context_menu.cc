@@ -1646,7 +1646,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Only applies to apps that open in an app window.
-  if (provider->registrar().GetAppUserDisplayMode(*link_app_id) ==
+  if (provider->registrar_unsafe().GetAppUserDisplayMode(*link_app_id) ==
       web_app::UserDisplayMode::kBrowser) {
     return;
   }
@@ -1665,7 +1665,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
       l10n_util::GetStringFUTF16(
           open_in_app_string_id,
           base::UTF8ToUTF16(
-              provider->registrar().GetAppShortName(*link_app_id))));
+              provider->registrar_unsafe().GetAppShortName(*link_app_id))));
 
   gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
       provider->icon_manager().GetFavicon(*link_app_id));
