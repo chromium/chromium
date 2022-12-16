@@ -165,6 +165,8 @@ source_set("internal") {
     "policy_load_status.h",
     "policy_loader_command_line.cc",
     "policy_loader_command_line.h",
+    "policy_logger.cc",
+    "policy_logger.h",
     "policy_map.cc",
     "policy_map.h",
     "policy_merger.cc",
@@ -554,6 +556,7 @@ source_set("unit_tests") {
       "android/policy_converter_unittest.cc",
       "android/policy_map_android_unittest.cc",
       "android/policy_service_android_unittest.cc",
+      "policy_logger_unittest.cc",
     ]
   } else {
     sources += [ "async_policy_provider_unittest.cc" ]
