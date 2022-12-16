@@ -1498,7 +1498,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     /**
      * Returns whether the Start surface homepage is showing.
      */
-    private boolean isHomepageShown() {
+    @VisibleForTesting
+    boolean isHomepageShown() {
         return mIsStartSurfaceRefactorEnabled
                 ? mIsHomepageShown
                 : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
