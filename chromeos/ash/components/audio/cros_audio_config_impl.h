@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void OnOutputMuteChanged(bool mute_on) override;
   void OnAudioNodesChanged() override;
   void OnActiveOutputNodeChanged() override;
+  void OnActiveInputNodeChanged() override;
 };
 
 }  // namespace ash::audio_config

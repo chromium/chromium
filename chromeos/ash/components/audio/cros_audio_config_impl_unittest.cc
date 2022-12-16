@@ -31,6 +31,7 @@ const int8_t kDefaultOutputVolumePercent =
 const uint64_t kInternalSpeakerId = 10001;
 const uint64_t kMicJackId = 10010;
 const uint64_t kHDMIOutputId = 10020;
+const uint64_t kUsbMicId = 10030;
 
 struct AudioNodeInfo {
   bool is_input;
@@ -55,6 +56,9 @@ const AudioNodeInfo kMicJack[] = {
 
 const AudioNodeInfo kHDMIOutput[] = {
     {false, kHDMIOutputId, "HDMI output", "HDMI", "HDMI output"}};
+
+const AudioNodeInfo kUsbMic[] = {
+    {true, kUsbMicId, "Fake USB Mic", "USB", "USB Mic"}};
 
 class FakeAudioSystemPropertiesObserver
     : public mojom::AudioSystemPropertiesObserver {
@@ -130,6 +134,11 @@ class CrosAudioConfigImplTest : public testing::Test {
         audio_pref_handler_->SetAudioOutputAllowedValue(false);
         break;
     }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetActiveInputNodes(const std::vector<uint64_t>& ids) {
+    cras_audio_handler_->SetActiveInputNodes(ids);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -314,7 +323,7 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
   SetAudioNodes({kInternalSpeaker, kMicJack});
   // Multiple calls to observer triggered by setting active nodes triggered by
   // AudioObserver events volume, active output, and nodes changed.
-  expected_observer_calls += 3u;
+  expected_observer_calls += 4u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -361,7 +370,7 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
   SetAudioNodes({kInternalSpeaker});
   // Multiple calls to observer triggered by setting active nodes triggered by
   // AudioObserver events volume, active output, and nodes changed.
-  expected_observer_calls += 3u;
+  expected_observer_calls += 4u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -370,7 +379,9 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
                     ->input_devices.size());
 
   InsertAudioNode(kMicJack);
-  expected_observer_calls++;
+  // Multiple calls to observer triggered by setting active nodes triggered by
+  // AudioObserver events active input and nodes changed.
+  expected_observer_calls += 2;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -382,7 +393,9 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
                             ->id);
 
   RemoveAudioNode(kMicJackId);
-  expected_observer_calls++;
+  // Multiple calls to observer triggered by setting active nodes triggered by
+  // AudioObserver events active input and nodes changed.
+  expected_observer_calls += 2;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -419,6 +432,36 @@ TEST_F(CrosAudioConfigImplTest, HandleExternalActiveOutputDeviceUpdate) {
                 ->id);
   ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
                    ->output_devices[1]
+                   ->is_active);
+}
+
+TEST_F(CrosAudioConfigImplTest, HandleExternalActiveInputDeviceUpdate) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  // Setup test with two input and one output device. CrasAudioHandler will set
+  // the first device to active.
+  SetAudioNodes({kInternalSpeaker, kMicJack, kUsbMic});
+  SetActiveInputNodes({kUsbMicId});
+
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->input_devices[0]
+                   ->is_active);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->input_devices[1]
+                  ->is_active);
+  ASSERT_EQ(kUsbMicId, fake_observer->last_audio_system_properties_.value()
+                           ->input_devices[1]
+                           ->id);
+
+  SetActiveInputNodes({kMicJackId});
+
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->input_devices[0]
+                  ->is_active);
+  ASSERT_EQ(kMicJackId, fake_observer->last_audio_system_properties_.value()
+                            ->input_devices[0]
+                            ->id);
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->input_devices[1]
                    ->is_active);
 }
 
