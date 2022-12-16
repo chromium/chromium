@@ -180,7 +180,7 @@ grit("help_app_bundle_resources") {
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # TODO(https://crbug.com/1401565): Prefix of outputs should be changed to ash
   # when .grd from internal CIPD package is updated.
   outputs = [
     "grit/chromeos_help_app_bundle_resources.h",
@@ -200,7 +200,7 @@ grit("help_app_kids_magazine_bundle_resources") {
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # TODO(https://crbug.com/1401565): Prefix of outputs should be changed to ash
   # when .grd from internal CIPD package is updated.
   outputs = [
     "grit/chromeos_help_app_kids_magazine_bundle_resources.h",
@@ -244,7 +244,7 @@ grit("media_app_bundle_resources") {
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # TODO(https://crbug.com/1401565): Prefix of outputs should be changed to ash
   # when .grd from internal CIPD package is updated.
   outputs = [
     "grit/chromeos_media_app_bundle_resources.h",
@@ -286,7 +286,7 @@ grit("projector_app_bundle_resources") {
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # TODO(https://crbug.com/1401565): Prefix of outputs should be changed to ash
   # when .grd from internal CIPD package is updated.
   outputs = [
     "grit/chromeos_projector_app_bundle_resources.h",
