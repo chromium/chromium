@@ -350,8 +350,7 @@ VAStatus FakeCreateSurfaces(VADriverContextP ctx,
                             int format,
                             int num_surfaces,
                             VASurfaceID* surfaces) {
-  for (int index = 0; index < num_surfaces; ++index)
-    surfaces[index] = index;
+  CHECK(false);
 
   return VA_STATUS_SUCCESS;
 }
@@ -359,6 +358,13 @@ VAStatus FakeCreateSurfaces(VADriverContextP ctx,
 VAStatus FakeDestroySurfaces(VADriverContextP ctx,
                              VASurfaceID* surface_list,
                              int num_surfaces) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  for (int i = 0; i < num_surfaces; i++) {
+    fdrv->DestroySurface(surface_list[i]);
+  }
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -374,6 +380,10 @@ VAStatus FakeCreateContext(VADriverContextP ctx,
       static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
 
   CHECK(fdrv->ConfigExists(config_id));
+
+  for (int i = 0; i < num_render_targets; i++) {
+    CHECK(fdrv->SurfaceExists(render_targets[i]));
+  }
 
   return VA_STATUS_SUCCESS;
 }
@@ -413,6 +423,11 @@ VAStatus FakeDestroyBuffer(VADriverContextP ctx, VABufferID buffer_id) {
 VAStatus FakeBeginPicture(VADriverContextP ctx,
                           VAContextID context,
                           VASurfaceID render_target) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(render_target));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -428,12 +443,22 @@ VAStatus FakeEndPicture(VADriverContextP ctx, VAContextID context) {
 }
 
 VAStatus FakeSyncSurface(VADriverContextP ctx, VASurfaceID render_target) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(render_target));
+
   return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeQuerySurfaceStatus(VADriverContextP ctx,
                                 VASurfaceID render_target,
                                 VASurfaceStatus* status) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(render_target));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -451,6 +476,11 @@ VAStatus FakePutSurface(VADriverContextP ctx,
                         VARectangle* cliprects,
                         unsigned int number_cliprects,
                         unsigned int flags) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(surface));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -486,6 +516,11 @@ VAStatus FakeGetImage(VADriverContextP ctx,
                       unsigned int width,
                       unsigned int height,
                       VAImageID image) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(surface));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -500,12 +535,22 @@ VAStatus FakePutImage(VADriverContextP ctx,
                       int dest_y,
                       unsigned int dest_width,
                       unsigned int dest_height) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(surface));
+
   return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeDeriveImage(VADriverContextP ctx,
                          VASurfaceID surface,
                          VAImage* image) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->SurfaceExists(surface));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -561,6 +606,13 @@ VAStatus FakeAssociateSubpicture(VADriverContextP ctx,
                                  uint16_t dest_width,
                                  uint16_t dest_height,
                                  uint32_t flags) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  for (int i = 0; i < num_surfaces; i++) {
+    CHECK(fdrv->SurfaceExists(target_surfaces[i]));
+  }
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -568,6 +620,13 @@ VAStatus FakeDeassociateSubpicture(VADriverContextP ctx,
                                    VASubpictureID subpicture,
                                    VASurfaceID* target_surfaces,
                                    int num_surfaces) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  for (int i = 0; i < num_surfaces; i++) {
+    CHECK(fdrv->SurfaceExists(target_surfaces[i]));
+  }
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -664,6 +723,15 @@ VAStatus FakeCreateSurfaces2(VADriverContextP ctx,
                              unsigned int num_surfaces,
                              VASurfaceAttrib* attrib_list,
                              unsigned int num_attribs) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  for (unsigned int i = 0; i < num_surfaces; i++) {
+    surfaces[i] = fdrv->CreateSurface(
+        format, width, height,
+        std::vector<VASurfaceAttrib>(attrib_list, attrib_list + num_attribs));
+  }
+
   return VA_STATUS_SUCCESS;
 }
 

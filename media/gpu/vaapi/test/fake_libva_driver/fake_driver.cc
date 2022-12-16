@@ -28,4 +28,24 @@ void FakeDriver::DestroyConfig(FakeConfig::IdType id) {
   config_.DestroyObject(id);
 }
 
+FakeSurface::IdType FakeDriver::CreateSurface(
+    unsigned int format,
+    unsigned int width,
+    unsigned int height,
+    std::vector<VASurfaceAttrib> attrib_list) {
+  return surface_.CreateObject(format, width, height, std::move(attrib_list));
+}
+
+bool FakeDriver::SurfaceExists(FakeSurface::IdType id) {
+  return surface_.ObjectExists(id);
+}
+
+const FakeSurface& FakeDriver::GetSurface(FakeSurface::IdType id) {
+  return surface_.GetObject(id);
+}
+
+void FakeDriver::DestroySurface(FakeSurface::IdType id) {
+  surface_.DestroyObject(id);
+}
+
 }  // namespace media::internal

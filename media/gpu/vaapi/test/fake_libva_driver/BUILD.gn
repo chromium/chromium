@@ -21,6 +21,8 @@ source_set("fake_libva_driver_internals") {
     "fake_config.h",
     "fake_driver.cc",
     "fake_driver.h",
+    "fake_surface.cc",
+    "fake_surface.h",
     "object_tracker.h",
   ]
 

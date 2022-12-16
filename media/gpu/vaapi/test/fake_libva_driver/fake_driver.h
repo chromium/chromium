@@ -8,6 +8,7 @@
 #include <va/va.h>
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/object_tracker.h"
 
 namespace media::internal {
@@ -29,8 +30,17 @@ class FakeDriver {
   const FakeConfig& GetConfig(FakeConfig::IdType id);
   void DestroyConfig(FakeConfig::IdType id);
 
+  FakeSurface::IdType CreateSurface(unsigned int format,
+                                    unsigned int width,
+                                    unsigned int height,
+                                    std::vector<VASurfaceAttrib> attrib_list);
+  bool SurfaceExists(FakeSurface::IdType id);
+  const FakeSurface& GetSurface(FakeSurface::IdType id);
+  void DestroySurface(FakeSurface::IdType id);
+
  private:
   ObjectTracker<FakeConfig> config_;
+  ObjectTracker<FakeSurface> surface_;
 };
 
 }  // namespace media::internal
