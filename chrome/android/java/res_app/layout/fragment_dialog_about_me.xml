@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="#40000000">
+
+    <ImageView
+        android:id="@+id/iv_blur"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:scaleType="centerCrop"
+        android:tint="?attr/backgroundTintColor" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false">
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_author" />
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_name"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_below="@+id/iv_icon"-->
+        <!--                android:layout_centerHorizontal="true"-->
+        <!--                android:layout_marginTop="16dp"-->
+        <!--                android:text="Z-P-J"-->
+        <!--                android:textColor="@color/white"-->
+        <!--                android:textSize="18sp" />-->
+
+        <ImageView
+            android:id="@+id/iv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_below="@+id/iv_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginVertical="16dp"
+            android:src="@drawable/ic_author_name"
+            android:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_sign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_name"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="没有人是一座孤岛"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_sign"
+            android:layout_marginTop="60dp"
+            android:clipChildren="false"
+            android:orientation="vertical">
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_github"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:z_setting_infoText="https://github.com/Z-P-J"
+                app:z_setting_infoTextColor="@color/white"
+                app:z_setting_leftIcon="@drawable/ic_github"
+                app:z_setting_titleText="我的Github主页"
+                app:z_setting_titleTextColor="@color/white" />
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_sjly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:z_setting_infoText="https://m.shouji.com.cn/user/5544802/home.html"
+                app:z_setting_infoTextColor="@color/white"
+                app:z_setting_leftIcon="@drawable/ic_friend"
+                app:z_setting_titleText="乐园ID：天蓝蓝的"
+                app:z_setting_titleTextColor="@color/white" />
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:z_setting_infoText="2571490256@qq.com"
+                app:z_setting_infoTextColor="@color/white"
+                app:z_setting_leftIcon="@drawable/ic_message"
+                app:z_setting_titleText="我的邮箱"
+                app:z_setting_titleTextColor="@color/white" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <com.zpj.widget.toolbar.ZToolBar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:z_toolbar_centerText="关于作者"
+        app:z_toolbar_centerTextColor="@color/color_text_major"
+        app:z_toolbar_centerType="textView"
+        app:z_toolbar_fillStatusBar="true"
+        app:z_toolbar_leftImageResource="@drawable/ic_arrow_back_black_24dp"
+        app:z_toolbar_leftType="imageButton"
+        app:z_toolbar_statusBarColor="@color/transparent"
+        app:z_toolbar_titleBarColor="@color/transparent" />
+
+</FrameLayout>

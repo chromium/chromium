@@ -96,4 +96,15 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="setting_item_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">16dp</item>
+        <item name="app:z_setting_titleTextSize">15sp</item>
+        <item name="app:z_setting_titleTextColor">?attr/textColorMajor</item>
+        <item name="app:z_setting_infoTextColor">?attr/textColorMinor</item>
+        <item name="app:z_setting_rightTextColor">?attr/textColorNormal</item>
+    </style>
+
 </resources>

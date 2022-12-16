@@ -95,6 +95,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
 
+  "java/src/com/ark/browser/ui/fragment/dialog/AboutMeDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/BookmarkFolderPickerDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ClipboardInterceptDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/CollectionEditorDialog.java",
@@ -112,6 +113,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/search/FlowHeaderMultiData.java",
   "java/src/com/ark/browser/ui/fragment/search/SearchFragment2.java",
   "java/src/com/ark/browser/ui/fragment/search/VerticalTranslateAnimator.java",
+
+  "java/src/com/ark/browser/ui/fragment/settings/SettingsFragment.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/drawable/CircleDrawable.java",

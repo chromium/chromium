@@ -209,6 +209,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
+    "//chrome/android/java/res_app/layout/fragment_dialog_about_me.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_bookmark_folder_select.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_clipboard_intercept.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_collection_editor.xml",
@@ -220,6 +221,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_dialog_tool_box.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
     "//chrome/android/java/res_app/layout/fragment_search2.xml",
+    "//chrome/android/java/res_app/layout/fragment_settings.xml",
 
     "//chrome/android/java/res_app/layout/item_checkbox.xml",
     "//chrome/android/java/res_app/layout/item_collection.xml",
@@ -287,6 +289,13 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_cancel.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_add_bookmark.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_close.webp",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_h5.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_notifications.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_author_name.webp",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_github.webp",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_friend.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_message.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/logo_author.png",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/icon_list_folder.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/wechat_icon_apk.png",
@@ -301,9 +310,15 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/wechat_icon_word.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/wechat_icon_zip.png",
 
+
     "//chrome/android/java/res_app/drawable-xxhdpi/icon_add_bookmark.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/icon_add_desktop.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/icon_add_mainpage.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/icon_browser.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/icon_browser_manager.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/icon_collections.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/icon_download_manager.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/icon_settings.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/icon_selected_default.png",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_360.png",

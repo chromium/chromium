@@ -12,6 +12,7 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.ui.dialog.BookmarkManagerDialog;
 import com.ark.browser.ui.dialog.DownloadManagerDialog;
 import com.ark.browser.ui.dialog.HistoryManagerDialog;
+import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.utils.SkinChangeAnimation;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
@@ -112,7 +113,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
         } else if (R.id.ib_close == id) {
 
         } else if (R.id.ib_setting == id) {
-//            new SettingFragment().show(context);
+            start(new SettingsFragment());
         } else if (R.id.tv_offline == id) {
 //            CollectionFragment2.start(context, 2);
         } else if (R.id.tv_night_mode == id) {

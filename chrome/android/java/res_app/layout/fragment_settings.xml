@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColorAccent"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_marginTop="36dp"
+        app:elevation="0dp"
+        >
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/collapsingToolbar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/transparent"
+            app:contentScrim="@color/transparent">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="140dp"/>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                app:layout_collapseMode="pin"
+                android:layout_width="match_parent"
+                app:title="设置"
+                app:contentInsetStartWithNavigation="0dp"
+                app:titleMarginStart="0dp"
+                app:navigationIcon="@drawable/btn_back"
+                android:minHeight="?android:attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
+                app:titleTextColor="@color/colorPrimary">
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginHorizontal="16dp"
+            app:cardBackgroundColor="?attr/backgroundColor"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="16dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+                <!--            android:background="@drawable/round_rect_search"-->
+
+                <ImageView
+                    android:id="@+id/btn_qsb_search"
+                    android:layout_width="36dp"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_search_v2"
+                    android:tint="@color/colorPrimary"
+                    android:layout_marginStart="6dp"
+                    />
+
+                <TextView
+                    android:id="@+id/btn_qsb_text"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:text="搜索设置"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="?attr/textColorMajor"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <LinearLayout
+            android:id="@+id/ll_container"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardUseCompatPadding="false"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                android:layout_margin="16dp"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <com.ark.browser.ui.widget.TitleHeaderLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title_header_title="基本设置"
+                        />
+
+                    <!--                    <View-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="1px"-->
+                    <!--                        android:layout_marginStart="15dp"-->
+                    <!--                        android:layout_marginEnd="15dp"-->
+                    <!--                        android:background="#80eeeeee"-->
+                    <!--                        />-->
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_search_engine"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="搜索引擎"
+                        app:z_setting_infoText="百度"
+                        app:z_setting_leftIcon="@drawable/ic_browser_engine_google"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_user_agent"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="浏览器标识"
+                        app:z_setting_infoText="手机UA"
+                        app:z_setting_leftIcon="@drawable/ic_h5"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_auto_fill"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="自动填充和付款"
+                        app:z_setting_infoText="自动填充保存的密码"
+                        app:z_setting_leftIcon="@drawable/icon_collections"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_save_password"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="保存密码"
+                        app:z_setting_leftIcon="@drawable/icon_browser_manager"
+                        app:z_setting_infoText="管理保存的网页登录密码"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_notification"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="通知"
+                        app:z_setting_leftIcon="@drawable/ic_notifications"
+                        app:z_setting_infoText="系统通知设置"
+                        />
+
+                    <com.zpj.widget.setting.SwitchSettingItem
+                        android:id="@+id/item_translate"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="Google 翻译"
+                        app:z_setting_infoText="该功能处于开启状态时，Chrome 将使用 Google 翻译对其他语言的网页进行翻译。"
+                        app:z_setting_leftIcon="@drawable/infobar_translate"
+                        />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardUseCompatPadding="false"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                android:layout_margin="16dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <com.ark.browser.ui.widget.TitleHeaderLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title_header_title="高级设置"
+                        />
+
+                    <!--                    <View-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="1px"-->
+                    <!--                        android:layout_marginStart="15dp"-->
+                    <!--                        android:layout_marginEnd="15dp"-->
+                    <!--                        android:background="#80eeeeee"/>-->
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_privacy"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="隐私设置"
+                        app:z_setting_infoText="浏览器隐私管理"
+                        app:z_setting_leftIcon="@drawable/ic_private_mode"
+                        app:z_setting_leftIconTint="@color/red5"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_accessibility"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="无障碍"
+                        app:z_setting_infoText="浏览器无障碍功能"
+                        app:z_setting_leftIcon="@drawable/infobar_accessibility_events"
+                        app:z_setting_leftIconTint="@color/colorPrimary"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_website"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="网页管理"
+                        app:z_setting_infoText="管理每一个访问的网页"
+                        app:z_setting_leftIcon="@drawable/icon_browser"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_data_reduction"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="流量节省程序"
+                        app:z_setting_infoText="节省您的网络流量"
+                        app:z_setting_leftIcon="@drawable/icon_download_manager"
+                        />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardUseCompatPadding="false"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                android:layout_margin="16dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <com.ark.browser.ui.widget.TitleHeaderLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title_header_title="更多"
+                        />
+
+
+                    <!--                    <View-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="1px"-->
+                    <!--                        android:layout_marginStart="15dp"-->
+                    <!--                        android:layout_marginEnd="15dp"-->
+                    <!--                        android:background="#80eeeeee"/>-->
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_about_me"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="关于作者"
+                        app:z_setting_infoText="这人很懒，什么都没有写"
+                        app:z_setting_leftIcon="@drawable/logo_author"
+                        />
+
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_check_update"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="检查更新"
+                        app:z_setting_infoText="获取最新千寻浏览器"
+                        app:z_setting_leftIcon="@drawable/ic_launcher"
+                        />
+
+<!--                    <com.qianxun.browser.ui.widget.DetailLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:left_text_color="?attr/textColorMajor"-->
+<!--                        app:right_text_color="?attr/textColorNormal"-->
+<!--                        app:left_text="应用版本"-->
+<!--                        app:right_text="千寻浏览器 65.0.3325.230"-->
+<!--                        />-->
+
+<!--                    <com.qianxun.browser.ui.widget.DetailLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:left_text_color="?attr/textColorMajor"-->
+<!--                        app:right_text_color="?attr/textColorNormal"-->
+<!--                        app:left_text="操作系统"-->
+<!--                        app:right_text="Android"-->
+<!--                        />-->
+
+<!--                    <com.qianxun.browser.ui.widget.DetailLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:left_text_color="?attr/textColorMajor"-->
+<!--                        app:right_text_color="?attr/textColorNormal"-->
+<!--                        app:left_text="法律信息"-->
+<!--                        app:right_text="https://github.com/Z-P-J/ScuTimetable"-->
+<!--                        />-->
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+<!--    <include layout="@layout/layout_shadow_bottom"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="4dp"-->
+<!--        android:layout_below="@id/tool_bar"-->
+<!--        />-->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
