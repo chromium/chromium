@@ -3454,20 +3454,10 @@ RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToParent() {
 RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
   // Only the main frame should be able to reach the outer WebContents.
   DCHECK(is_main_frame());
-  int outer_contents_frame_tree_node_id =
-      frame_tree_node_->frame_tree()
-          .delegate()
-          ->GetOuterDelegateFrameTreeNodeId();
-  FrameTreeNode* outer_contents_frame_tree_node =
-      FrameTreeNode::GloballyFindByID(outer_contents_frame_tree_node_id);
-  if (!outer_contents_frame_tree_node ||
-      !outer_contents_frame_tree_node->parent()) {
-    return nullptr;
-  }
-
-  return browsing_context_state_->GetRenderFrameProxyHost(
-      outer_contents_frame_tree_node->parent()->GetSiteInstance()->group(),
-      BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
+  // `owner_` should not be null since we don't allow to update the parent on
+  // behalf of the inactive document.
+  CHECK(owner_);
+  return owner_->GetRenderFrameHostManager().GetProxyToOuterDelegate();
 }
 
 void RenderFrameHostImpl::DidChangeReferrerPolicy(
@@ -5303,6 +5293,13 @@ void RenderFrameHostImpl::FocusPage() {
 void RenderFrameHostImpl::TakeFocus(bool reverse) {
   // TODO(crbug.com/1225366): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
+
+  // Do not update the parent on behalf of the inactive document.
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kDispatchLoad)) {
+    return;
+  }
+
   // If we are representing an inner frame tree call advance on our outer
   // delegate's parent's RenderFrameHost.
   RenderFrameHostImpl* parent_or_outer_document =
@@ -6744,6 +6741,12 @@ void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
 void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
     const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
+  // Do not update the parent on behalf of inactive RenderFrameHost.
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kDispatchLoad)) {
+    return;
+  }
+
   RenderFrameProxyHost* proxy = nullptr;
 
   if (IsFencedFrameRoot()) {
@@ -6774,8 +6777,9 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
     ui::ScrollGranularity granularity) {
   // Do not update the parent on behalf of inactive RenderFrameHost.
   if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kDispatchLoad))
+          DisallowActivationReasonId::kDispatchLoad)) {
     return;
+  }
 
   // TODO(bokan): This is overly trusting of the renderer. Ideally we'd check
   // that a keyboard event was recently sent. https://crbug.com/1123606. I&S

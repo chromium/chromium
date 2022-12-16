@@ -2638,6 +2638,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Retrieve proxies in a way that is no longer dependent on access to
   // FrameTreeNode or RenderFrameHostManager.
   RenderFrameProxyHost* GetProxyToParent();
+
+  // Returns the proxy to inner WebContents in the outer WebContents's
+  // SiteInstance. Note that this is not allowed to call this function on
+  // inactive RenderFrameHost.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
   void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
