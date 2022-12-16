@@ -107,7 +107,8 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
         IsBrowserAppId(app_id) &&
         (!restore_data.second->app_type_browser.has_value() ||
          !restore_data.second->app_type_browser.value());
-    const int activation_index = restore_data.second->activation_index.value();
+    const int activation_index =
+        restore_data.second->activation_index.value_or(0);
     const int active_tab_index =
         restore_data.second->active_tab_index.value_or(-1);
     const std::u16string app_title = restore_data.second->title.value_or(u"");
