@@ -67,11 +67,8 @@ class ModelExecutorImpl : public ModelExecutor {
       const absl::optional<ModelProvider::Response>& result);
 
   // Helper function for synchronously invoking the callback with the given
-  // result and status. Before invoking this, it is required to move the
-  // ExecutionState::callback out as a separate parameter, e.g.:
-  // `RunModelExecutionCallback(*state, std::move(state->callback), ...)`.
-  void RunModelExecutionCallback(const ExecutionState& state,
-                                 ModelExecutionCallback callback,
+  // result and status.
+  void RunModelExecutionCallback(std::unique_ptr<ExecutionState> state,
                                  std::unique_ptr<ModelExecutionResult> result);
 
   const raw_ptr<base::Clock> clock_;

@@ -30,8 +30,8 @@ struct ModelExecutorImpl::ModelExecutionTraceEvent {
                            const ModelExecutorImpl::ExecutionState& state);
   ~ModelExecutionTraceEvent();
 
-  // Which track to add this trace event to.
-  perfetto::Track track;
+  const raw_ref<const ModelExecutorImpl::ExecutionState, DanglingUntriaged>
+      state;
 };
 
 struct ModelExecutorImpl::ExecutionState {
@@ -71,13 +71,14 @@ struct ModelExecutorImpl::ExecutionState {
 ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
     const char* event_name,
     const ModelExecutorImpl::ExecutionState& state)
-    : track(perfetto::Track::FromPointer(&state)) {
+    : state(state) {
   TRACE_EVENT_BEGIN("segmentation_platform", perfetto::StaticString(event_name),
-                    track);
+                    perfetto::Track::FromPointer(&state));
 }
 
 ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
-  TRACE_EVENT_END("segmentation_platform", track);
+  TRACE_EVENT_END("segmentation_platform",
+                  perfetto::Track::FromPointer(&*state));
 }
 
 ModelExecutorImpl::ModelExecutorImpl(
@@ -108,7 +109,7 @@ void ModelExecutorImpl::ExecuteModel(
                                        *state);
 
   if (!state->model_provider || !state->model_provider->ModelAvailable()) {
-    RunModelExecutionCallback(*state, std::move(state->callback),
+    RunModelExecutionCallback(std::move(state),
                               std::make_unique<ModelExecutionResult>(
                                   ModelExecutionStatus::kSkippedModelNotReady));
     return;
@@ -118,9 +119,8 @@ void ModelExecutorImpl::ExecuteModel(
   if (metadata_utils::ValidateSegmentInfo(segment_info) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     RunModelExecutionCallback(
-        *state, std::move(state->callback),
-        std::make_unique<ModelExecutionResult>(
-            ModelExecutionStatus::kSkippedInvalidMetadata));
+        std::move(state), std::make_unique<ModelExecutionResult>(
+                              ModelExecutionStatus::kSkippedInvalidMetadata));
     return;
   }
 
@@ -141,9 +141,8 @@ void ModelExecutorImpl::OnProcessingFeatureListComplete(
   if (error) {
     // Validation error occurred on model's metadata.
     RunModelExecutionCallback(
-        *state, std::move(state->callback),
-        std::make_unique<ModelExecutionResult>(
-            ModelExecutionStatus::kSkippedInvalidMetadata));
+        std::move(state), std::make_unique<ModelExecutionResult>(
+                              ModelExecutionStatus::kSkippedInvalidMetadata));
     return;
   }
   state->input_tensor.insert(state->input_tensor.end(), input_tensor.begin(),
@@ -206,29 +205,28 @@ void ModelExecutorImpl::OnModelExecutionComplete(
       }
     }
     ModelProvider::Request input_tensor = state->input_tensor;
-    RunModelExecutionCallback(*state, std::move(state->callback),
+    RunModelExecutionCallback(std::move(state),
                               std::make_unique<ModelExecutionResult>(
                                   std::move(input_tensor), *result));
   } else {
     VLOG(1) << "Segmentation model returned no result for segment "
             << proto::SegmentId_Name(state->segment_info.segment_id());
-    RunModelExecutionCallback(*state, std::move(state->callback),
+    RunModelExecutionCallback(std::move(state),
                               std::make_unique<ModelExecutionResult>(
                                   ModelExecutionStatus::kExecutionError));
   }
 }
 
 void ModelExecutorImpl::RunModelExecutionCallback(
-    const ExecutionState& state,
-    ModelExecutionCallback callback,
+    std::unique_ptr<ExecutionState> state,
     std::unique_ptr<ModelExecutionResult> result) {
   stats::RecordModelExecutionDurationTotal(
-      state.segment_info.segment_id(), result->status,
-      clock_->Now() - state.total_execution_start_time);
-  stats::RecordModelExecutionStatus(state.segment_info.segment_id(),
-                                    state.record_metrics_for_default,
+      state->segment_info.segment_id(), result->status,
+      clock_->Now() - state->total_execution_start_time);
+  stats::RecordModelExecutionStatus(state->segment_info.segment_id(),
+                                    state->record_metrics_for_default,
                                     result->status);
-  std::move(callback).Run(std::move(result));
+  std::move(state->callback).Run(std::move(result));
 }
 
 }  // namespace segmentation_platform

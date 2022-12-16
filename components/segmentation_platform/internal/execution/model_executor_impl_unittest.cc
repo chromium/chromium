@@ -34,7 +34,6 @@
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using ::base::test::RunOnceCallback;
 using segmentation_platform::processing::FeatureListQueryProcessor;
@@ -55,10 +54,6 @@ class ModelExecutorTest : public testing::Test {
   ~ModelExecutorTest() override = default;
 
   void SetUp() override {
-    // TODO(khokhlov): Replace with a test environment for tracing after the
-    // SDK migration
-    perfetto::internal::TrackRegistry::InitializeInstance();
-
     signal_database_ = std::make_unique<MockSignalDatabase>();
     clock_.SetNow(base::Time::Now());
   }
