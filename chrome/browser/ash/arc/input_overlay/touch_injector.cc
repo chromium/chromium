@@ -7,6 +7,7 @@
 #include <list>
 #include <utility>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/utility/transformer_util.h"
 #include "base/bind.h"
@@ -111,6 +112,24 @@ Action* FindActionWithOverlapInputElement(
   return nullptr;
 }
 
+bool AllowReposition() {
+  return ash::features::IsArcInputOverlayAlphaV2Enabled() ||
+         ash::features::IsArcInputOverlayBetaEnabled();
+}
+
+bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
+  const auto key_code = event.key_code();
+  // If it is allowed to move, the arrow key event moves the position
+  // instead of getting back to view mode.
+  if ((AllowReposition() && ash::IsArrowKey(key_code)) ||
+      key_code == ui::KeyboardCode::VKEY_SPACE ||
+      key_code == ui::KeyboardCode::VKEY_RETURN ||
+      event.type() != ui::ET_KEY_PRESSED) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 // Calculate the window content bounds (excluding caption if it exists) in the
@@ -162,7 +181,8 @@ TouchInjector::TouchInjector(aura::Window* top_level_window,
     : window_(top_level_window),
       package_name_(package_name),
       content_bounds_(CalculateWindowContentBounds(window_)),
-      save_file_callback_(save_file_callback) {}
+      save_file_callback_(save_file_callback),
+      allow_reposition_(AllowReposition()) {}
 
 TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
@@ -580,14 +600,9 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     return SendEvent(continuation, &event);
   } else if (display_mode_ == DisplayMode::kPreMenu) {
     if (event.IsKeyEvent()) {
-      auto* key_event = event.AsKeyEvent();
-      if (key_event->key_code() != ui::KeyboardCode::VKEY_SPACE &&
-          key_event->key_code() != ui::KeyboardCode::VKEY_RETURN &&
-          key_event->type() == ui::ET_KEY_PRESSED) {
-        display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
-      } else {
+      if (ProcessKeyEventOnFocusedMenuEntry(*event.AsKeyEvent()))
         return SendEvent(continuation, &event);
-      }
+      display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
     } else if (LocatedEventOnMenuEntry(event, content_bounds_,
                                        /*press_required=*/false)) {
       return SendEvent(continuation, &event);
@@ -606,7 +621,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
     CleanupTouchEvents();
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kPreMenu);
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }
 

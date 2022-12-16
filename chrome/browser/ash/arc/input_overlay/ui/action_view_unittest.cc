@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -189,6 +190,47 @@ TEST_F(ActionViewTest, TestDragMove) {
   auto touch_moved = root_location_ - origin_touch_pos;
   updated_pos += touch_moved;
   // Check if touch position is updated after drag move.
+  EXPECT_POINTF_NEAR(updated_pos, action_->touch_down_positions()[0],
+                     kTolerance);
+}
+
+TEST_F(ActionViewTest, TestArrowKeyMove) {
+  // Arrow key left single press & release.
+  auto updated_pos = action_->touch_down_positions()[0];
+  action_view_->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE));
+  action_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_LEFT, ui::EF_NONE));
+  action_->BindPending();
+  auto move_left = gfx::Vector2d(-kArrowKeyMoveDistance, 0);
+  updated_pos += move_left;
+  EXPECT_POINTF_NEAR(updated_pos, action_->touch_down_positions()[0],
+                     kTolerance);
+
+  // Arrow key down single press & release.
+  updated_pos = action_->touch_down_positions()[0];
+  action_view_->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE));
+  action_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_DOWN, ui::EF_NONE));
+  action_->BindPending();
+  auto move_down = gfx::Vector2d(0, kArrowKeyMoveDistance);
+  updated_pos += move_down;
+  EXPECT_POINTF_NEAR(updated_pos, action_->touch_down_positions()[0],
+                     kTolerance);
+
+  // Arrow key right repeat press & release.
+  updated_pos = action_->touch_down_positions()[0];
+  int key_press_times = 5;
+  auto move_right = gfx::Vector2d(kArrowKeyMoveDistance, 0);
+  for (int i = 0; i < key_press_times; i++) {
+    action_view_->OnKeyPressed(
+        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE));
+    updated_pos += move_right;
+  }
+  action_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RIGHT, ui::EF_NONE));
+  action_->BindPending();
   EXPECT_POINTF_NEAR(updated_pos, action_->touch_down_positions()[0],
                      kTolerance);
 }

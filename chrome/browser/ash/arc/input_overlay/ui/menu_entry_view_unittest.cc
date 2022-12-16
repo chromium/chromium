@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -22,11 +23,6 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace arc::input_overlay {
-
-namespace {
-// Consider two points are at the same position within kTolerance.
-constexpr const float kTolerance = 0.999f;
-}  // namespace
 
 class MenuEntryViewTest : public exo::test::ExoTestBase {
  protected:
@@ -156,10 +152,10 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
   std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
 };
 
-TEST_F(MenuEntryViewTest, RepositionTest) {
+TEST_F(MenuEntryViewTest, TestDragMove) {
   // Get initial positions.
   auto bounds = GetInputMappingViewBounds();
-  auto initial_pos = menu_entry_view_->bounds().CenterPoint();
+  auto initial_pos = menu_entry_view_->origin();
   auto move_vector = gfx::Vector2d(5, 5);
   // Drag move by mouse.
   PressLeftMouseAtMenuEntryView();
@@ -168,9 +164,7 @@ TEST_F(MenuEntryViewTest, RepositionTest) {
   // Check that input menu view does not open as a result of mouse dragging.
   EXPECT_FALSE(DisplayControllerHasInputMenuView());
   // Verify that the initial position is within expectation.
-  auto final_pos = menu_entry_view_->bounds().CenterPoint();
-  EXPECT_POINTF_NEAR(gfx::PointF(final_pos),
-                     gfx::PointF(initial_pos + move_vector), kTolerance);
+  EXPECT_EQ(menu_entry_view_->origin(), initial_pos + move_vector);
   // Click menu entry view.
   PressLeftMouseAtMenuEntryView();
   ReleaseLeftMouseAtMenuEntryView();
@@ -183,7 +177,7 @@ TEST_F(MenuEntryViewTest, RepositionTest) {
   CloseInputMenuView();
 
   // Get initial positions again.
-  initial_pos = menu_entry_view_->bounds().CenterPoint();
+  initial_pos = menu_entry_view_->origin();
   move_vector = gfx::Vector2d(-5, -5);
   // Drag move by touch.
   TouchPressAtMenuEntryView();
@@ -192,9 +186,7 @@ TEST_F(MenuEntryViewTest, RepositionTest) {
   // Check that input menu view does not open as a result of touch dragging.
   EXPECT_FALSE(DisplayControllerHasInputMenuView());
   // Verify that the initial position is within expectation.
-  final_pos = menu_entry_view_->bounds().CenterPoint();
-  EXPECT_POINTF_NEAR(gfx::PointF(final_pos),
-                     gfx::PointF(initial_pos + move_vector), kTolerance);
+  EXPECT_EQ(menu_entry_view_->origin(), initial_pos + move_vector);
   // Tap menu entry view.
   TapAtMenuEntryView();
   // Check that input menu view exists as a result of a touch.
@@ -204,27 +196,58 @@ TEST_F(MenuEntryViewTest, RepositionTest) {
   EXPECT_LE(input_menu_view->y() + input_menu_view->height(), bounds.height());
 }
 
-TEST_F(MenuEntryViewTest, PersistentPositionTest) {
+TEST_F(MenuEntryViewTest, TestArrowKeyMove) {
+  // Arrow key left single press & release.
+  auto updated_pos = menu_entry_view_->origin();
+  menu_entry_view_->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE));
+  menu_entry_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_LEFT, ui::EF_NONE));
+  auto move_left = gfx::Vector2d(-kArrowKeyMoveDistance, 0);
+  updated_pos += move_left;
+  EXPECT_EQ(updated_pos, menu_entry_view_->origin());
+
+  // Arrow key down single press & release.
+  updated_pos = menu_entry_view_->origin();
+  menu_entry_view_->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE));
+  menu_entry_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_DOWN, ui::EF_NONE));
+  auto move_down = gfx::Vector2d(0, kArrowKeyMoveDistance);
+  updated_pos += move_down;
+  EXPECT_EQ(updated_pos, menu_entry_view_->origin());
+
+  // Arrow key right single press & release.
+  updated_pos = menu_entry_view_->origin();
+  int key_press_times = 5;
+  auto move_right = gfx::Vector2d(kArrowKeyMoveDistance, 0);
+  for (int i = 0; i < key_press_times; i++) {
+    menu_entry_view_->OnKeyPressed(
+        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE));
+    updated_pos += move_right;
+  }
+  menu_entry_view_->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RIGHT, ui::EF_NONE));
+  EXPECT_EQ(updated_pos, menu_entry_view_->origin());
+}
+
+TEST_F(MenuEntryViewTest, TestPersistentPosition) {
   // Move menu entry to another location.
-  auto initial_pos = menu_entry_view_->bounds().CenterPoint();
+  auto initial_pos = menu_entry_view_->origin();
   auto move_vector = gfx::Vector2d(5, 5);
   PressLeftMouseAtMenuEntryView();
   MouseDragMenuEntryViewBy(move_vector);
   ReleaseLeftMouseAtMenuEntryView();
   // Verify that the resulting position is within expectation.
-  auto final_pos = menu_entry_view_->bounds().CenterPoint();
   auto expected_pos = initial_pos + move_vector;
-  EXPECT_POINTF_NEAR(gfx::PointF(final_pos), gfx::PointF(expected_pos),
-                     kTolerance);
+  EXPECT_EQ(menu_entry_view_->origin(), expected_pos);
 
   // Simulate minimizing and restoring the test application.
   SimulateMinimizeAndRestoreApp();
 
   // Check that the position of the menu entry view persisted from the last
   // customization.
-  final_pos = menu_entry_view_->bounds().CenterPoint();
-  EXPECT_POINTF_NEAR(gfx::PointF(final_pos), gfx::PointF(expected_pos),
-                     kTolerance);
+  EXPECT_EQ(menu_entry_view_->origin(), expected_pos);
 }
 
 }  // namespace arc::input_overlay

@@ -116,7 +116,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
-  void OnMenuEntryDragEnd(absl::optional<gfx::Point> location);
+  void OnMenuEntryPositionChanged(bool leave_focus,
+                                  absl::optional<gfx::Point> location);
   void FocusOnMenuEntry();
   void ClearFocusOnMenuEntry();
   void RemoveInputMenuView();

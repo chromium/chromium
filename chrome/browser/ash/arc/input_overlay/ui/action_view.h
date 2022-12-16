@@ -87,6 +87,10 @@ class ActionView : public views::View {
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  bool OnKeyReleased(const ui::KeyEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
 
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }

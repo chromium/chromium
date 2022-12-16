@@ -322,8 +322,7 @@ class TouchInjector : public ui::EventRewriter {
 
   // TODO(b/260937747): Update or remove when removing flags
   // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_ = ash::features::IsArcInputOverlayAlphaV2Enabled() ||
-                           ash::features::IsArcInputOverlayBetaEnabled();
+  bool allow_reposition_ = false;
   // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
   bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();

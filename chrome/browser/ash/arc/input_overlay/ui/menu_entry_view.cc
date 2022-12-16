@@ -4,18 +4,21 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 
+#include "ash/app_list/app_list_util.h"
 #include "base/cxx17_backports.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace arc::input_overlay {
 
-MenuEntryView::MenuEntryView(PressedCallback pressed_callback,
-                             OnDragEndCallback on_drag_end_callback)
+MenuEntryView::MenuEntryView(
+    PressedCallback pressed_callback,
+    OnPositionChangedCallback on_position_changed_callback)
     : views::ImageButton(std::move(pressed_callback)),
-      on_drag_end_callback_(on_drag_end_callback) {}
+      on_position_changed_callback_(on_position_changed_callback) {}
 
 MenuEntryView::~MenuEntryView() = default;
 
@@ -62,6 +65,26 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
+  auto current_pos = origin();
+  if (!allow_reposition_ ||
+      !UpdatePositionByArrowKey(event.key_code(), current_pos)) {
+    return views::ImageButton::OnKeyPressed(event);
+  }
+
+  SetPosition(current_pos);
+  return true;
+}
+
+bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
+  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event))
+    return views::ImageButton::OnKeyReleased(event);
+
+  on_position_changed_callback_.Run(/*leave_focus=*/false,
+                                    absl::make_optional(origin()));
+  return true;
+}
+
 void MenuEntryView::OnDragStart(const ui::LocatedEvent& event) {
   start_drag_event_pos_ = event.location();
   start_drag_view_pos_ = origin();
@@ -80,9 +103,14 @@ void MenuEntryView::OnDragUpdate(const ui::LocatedEvent& event) {
 
 void MenuEntryView::OnDragEnd() {
   is_dragging_ = false;
-  on_drag_end_callback_.Run(origin() != start_drag_view_pos_
-                                ? absl::make_optional(origin())
-                                : absl::nullopt);
+  // When menu entry is in dragging, input events target at overlay layer. When
+  // finishing drag, input events should target on the app content layer
+  // underneath the overlay. So it needs to leave focus to make event target
+  // leave from the overlay layer.
+  on_position_changed_callback_.Run(/*leave_focus=*/true,
+                                    origin() != start_drag_view_pos_
+                                        ? absl::make_optional(origin())
+                                        : absl::nullopt);
 }
 
 }  // namespace arc::input_overlay

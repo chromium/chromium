@@ -205,7 +205,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   auto menu_entry = std::make_unique<MenuEntryView>(
       base::BindRepeating(&DisplayOverlayController::OnMenuEntryPressed,
                           base::Unretained(this)),
-      base::BindRepeating(&DisplayOverlayController::OnMenuEntryDragEnd,
+      base::BindRepeating(&DisplayOverlayController::OnMenuEntryPositionChanged,
                           base::Unretained(this)));
   menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
   menu_entry->SetBackground(views::CreateRoundedRectBackground(
@@ -256,13 +256,12 @@ void DisplayOverlayController::OnMenuEntryPressed() {
   menu_entry_->SetVisible(false);
 }
 
-void DisplayOverlayController::OnMenuEntryDragEnd(
+void DisplayOverlayController::OnMenuEntryPositionChanged(
+    bool leave_focus,
     absl::optional<gfx::Point> location) {
-  // When menu entry is in dragging, input events target at overlay layer. When
-  // finishing drag, input events should target on the app content layer
-  // underneath the overlay. Set display mode to |kView| to make event target
-  // leave from the overlay layer.
-  SetDisplayMode(DisplayMode::kView);
+  if (leave_focus)
+    SetDisplayMode(DisplayMode::kView);
+
   if (location)
     touch_injector_->SaveMenuEntryLocation(*location);
 }
