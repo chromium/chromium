@@ -9,6 +9,7 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("./cr_elements/cr_elements.gni")
+import("./js/js.gni")
 
 generate_grd("build_grd") {
   grd_prefix = "webui_generated"
@@ -143,30 +144,11 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
   extra_deps = []
 
-  in_files = cr_elements_files + [
-               "js/action_link.ts",
-               "js/assert_ts.ts",
-               "js/color_utils.ts",
-               "js/cr.ts",
-               "js/custom_element.ts",
-               "js/drag_wrapper.ts",
-               "js/event_tracker.ts",
-               "js/focus_grid.ts",
-               "js/focus_row.ts",
-               "js/focus_outline_manager.ts",
-               "js/icon.ts",
-               "js/keyboard_shortcut_list.ts",
-               "js/load_time_data.ts",
-               "js/parse_html_subset.ts",
-               "js/promise_resolver.ts",
-               "js/platform.ts",
-               "js/plural_string_proxy.ts",
-               "js/static_types.ts",
-               "js/store_ts.ts",
-               "js/test_loader.ts",
-               "js/test_loader_util.ts",
-               "js/util_ts.ts",
-             ]
+  in_files = cr_elements_files
+
+  foreach(f, ts_files) {
+    in_files += [ "js/" + f ]
+  }
 
   if (include_polymer) {
     in_files += [
@@ -176,14 +158,7 @@ ts_library("library") {
       "cr_components/managed_dialog/managed_dialog.ts",
       "cr_components/managed_footnote/managed_footnote.html.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
-      "js/focus_row_mixin.ts",
-      "js/focus_without_ink.ts",
-      "js/search_highlight_utils.ts",
     ]
-  }
-
-  if (is_chromeos) {
-    in_files += [ "js/os_about.ts" ]
   }
 
   definitions = [

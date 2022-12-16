@@ -31,10 +31,10 @@ group("preprocess") {
 preprocess_if_expr("preprocess_ts") {
   in_folder = "."
   out_folder = preprocess_folder
-  in_files = web_component_files_native_ts + native_html_files +
-             non_web_component_files_ts
+  in_files =
+      web_component_files_native + native_html_files + non_web_component_files
   if (include_polymer) {
-    in_files += web_component_files_polymer_ts + polymer_html_files +
+    in_files += web_component_files_polymer + polymer_html_files +
                 icons_html_files + css_files
   }
 }

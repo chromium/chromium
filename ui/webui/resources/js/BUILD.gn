@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./js.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
@@ -35,49 +36,14 @@ group("preprocess") {
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
 preprocess_if_expr("preprocess_src_ts") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  in_files = [
-    "action_link.ts",
-    "assert_ts.ts",
-    "color_utils.ts",
-    "cr.ts",
-    "custom_element.ts",
-    "drag_wrapper.ts",
-    "event_tracker.ts",
-    "focus_grid.ts",
-    "focus_outline_manager.ts",
-    "focus_row.ts",
-    "icon.ts",
-    "keyboard_shortcut_list.ts",
-    "load_time_data.ts",
-    "parse_html_subset.ts",
-    "platform.ts",
-    "plural_string_proxy.ts",
-    "promise_resolver.ts",
-    "search_highlight_utils.ts",
-    "static_types.ts",
-    "store_ts.ts",
-    "test_loader.ts",
-    "test_loader_util.ts",
-    "util_ts.ts",
-  ]
-
-  if (is_chromeos) {
-    in_files += [ "os_about.ts" ]
-  }
-
-  if (include_polymer) {
-    in_files += [
-      "focus_row_mixin.ts",
-      "focus_without_ink.ts",
-    ]
-  }
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
+  in_folder = "."
+  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [ "load_time_data_deprecated.js" ]
 

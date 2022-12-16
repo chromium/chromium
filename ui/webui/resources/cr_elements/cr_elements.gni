@@ -7,7 +7,7 @@ import("//ui/webui/resources/include_polymer.gni")
 
 # TS files holding a non-Polymer element definition and have an equivalent .html
 # file.
-web_component_files_native_ts = [
+web_component_files_native = [
   "cr_tab_box/cr_tab_box.ts",
   "cr_tree/cr_tree.ts",
   "cr_tree/cr_tree_item.ts",
@@ -15,7 +15,7 @@ web_component_files_native_ts = [
 
 # Files that are passed as input to html_to_wrapper().
 native_html_files = []
-foreach(f, web_component_files_native_ts) {
+foreach(f, web_component_files_native) {
   native_html_files += [ string_replace(f, ".ts", ".html") ]
 }
 
@@ -28,7 +28,7 @@ foreach(f, native_html_files) {
 if (include_polymer) {
   # TS files holding a Polymer element definition and have an equivalent .html
   # file.
-  web_component_files_polymer_ts = [
+  web_component_files_polymer = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_action_menu/cr_action_menu.ts",
     "cr_button/cr_button.ts",
@@ -64,7 +64,7 @@ if (include_polymer) {
   ]
 
   if (is_chromeos) {
-    web_component_files_polymer_ts +=
+    web_component_files_polymer +=
         [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
   }
 
@@ -76,7 +76,7 @@ if (include_polymer) {
 
   # Polymer HTML files that are passed as input to html_to_wrapper().
   polymer_html_files = []
-  foreach(f, web_component_files_polymer_ts) {
+  foreach(f, web_component_files_polymer) {
     polymer_html_files += [ string_replace(f, ".ts", ".html") ]
   }
 
@@ -89,14 +89,14 @@ if (include_polymer) {
 
 # Files that either dont hold a custom element definition or the custom element
 # does not have an equivalent .html file.
-non_web_component_files_ts = [
+non_web_component_files = [
   "cr_lazy_render/cr_lazy_render.ts",
   "cr_splitter/cr_splitter.ts",
   "cr_tree/cr_tree_base.ts",
 ]
 
 if (include_polymer) {
-  non_web_component_files_ts += [
+  non_web_component_files += [
     "cr_auto_img/cr_auto_img.ts",
     "cr_container_shadow_mixin.ts",
     "cr_menu_selector/cr_menu_selector.ts",
@@ -145,14 +145,14 @@ if (include_polymer) {
 # BUILD.gn file.
 cr_elements_files = []
 foreach(f,
-        web_component_files_native_ts + native_html_wrapper_files +
-            non_web_component_files_ts) {
+        web_component_files_native + native_html_wrapper_files +
+            non_web_component_files) {
   cr_elements_files += [ "cr_elements/" + f ]
 }
 
 if (include_polymer) {
   foreach(f,
-          web_component_files_polymer_ts + polymer_html_wrapper_files +
+          web_component_files_polymer + polymer_html_wrapper_files +
               css_wrapper_files) {
     cr_elements_files += [ "cr_elements/" + f ]
   }
