@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 68 tests; 63 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 122 tests; 117 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Can set 'break-after' to CSS-wide keywords: initial
 PASS Can set 'break-after' to CSS-wide keywords: inherit
 PASS Can set 'break-after' to CSS-wide keywords: unset
@@ -17,14 +17,32 @@ PASS Can set 'break-after' to the 'recto' keyword: recto
 FAIL Can set 'break-after' to the 'region' keyword: region Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Can set 'break-after' to the 'right' keyword: right
 PASS Can set 'break-after' to the 'verso' keyword: verso
-PASS Setting 'break-after' to a length throws TypeError
-PASS Setting 'break-after' to a percent throws TypeError
-PASS Setting 'break-after' to a time throws TypeError
-PASS Setting 'break-after' to an angle throws TypeError
-PASS Setting 'break-after' to a flexible length throws TypeError
-PASS Setting 'break-after' to a number throws TypeError
-PASS Setting 'break-after' to a URL throws TypeError
-PASS Setting 'break-after' to a transform throws TypeError
+PASS Setting 'break-after' to a length: 0px throws TypeError
+PASS Setting 'break-after' to a length: -3.14em throws TypeError
+PASS Setting 'break-after' to a length: 3.14cm throws TypeError
+PASS Setting 'break-after' to a length: calc(0px + 0em) throws TypeError
+PASS Setting 'break-after' to a percent: 0% throws TypeError
+PASS Setting 'break-after' to a percent: -3.14% throws TypeError
+PASS Setting 'break-after' to a percent: 3.14% throws TypeError
+PASS Setting 'break-after' to a percent: calc(0% + 0%) throws TypeError
+PASS Setting 'break-after' to a time: 0s throws TypeError
+PASS Setting 'break-after' to a time: -3.14ms throws TypeError
+PASS Setting 'break-after' to a time: 3.14s throws TypeError
+PASS Setting 'break-after' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'break-after' to an angle: 0deg throws TypeError
+PASS Setting 'break-after' to an angle: 3.14rad throws TypeError
+PASS Setting 'break-after' to an angle: -3.14deg throws TypeError
+PASS Setting 'break-after' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'break-after' to a flexible length: 0fr throws TypeError
+PASS Setting 'break-after' to a flexible length: 1fr throws TypeError
+PASS Setting 'break-after' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'break-after' to a number: 0 throws TypeError
+PASS Setting 'break-after' to a number: -3.14 throws TypeError
+PASS Setting 'break-after' to a number: 3.14 throws TypeError
+PASS Setting 'break-after' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'break-after' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'break-after' to a transform: perspective(10em) throws TypeError
+PASS Setting 'break-after' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 PASS Can set 'break-before' to CSS-wide keywords: initial
 PASS Can set 'break-before' to CSS-wide keywords: inherit
 PASS Can set 'break-before' to CSS-wide keywords: unset
@@ -42,14 +60,32 @@ PASS Can set 'break-before' to the 'recto' keyword: recto
 FAIL Can set 'break-before' to the 'region' keyword: region Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Can set 'break-before' to the 'right' keyword: right
 PASS Can set 'break-before' to the 'verso' keyword: verso
-PASS Setting 'break-before' to a length throws TypeError
-PASS Setting 'break-before' to a percent throws TypeError
-PASS Setting 'break-before' to a time throws TypeError
-PASS Setting 'break-before' to an angle throws TypeError
-PASS Setting 'break-before' to a flexible length throws TypeError
-PASS Setting 'break-before' to a number throws TypeError
-PASS Setting 'break-before' to a URL throws TypeError
-PASS Setting 'break-before' to a transform throws TypeError
+PASS Setting 'break-before' to a length: 0px throws TypeError
+PASS Setting 'break-before' to a length: -3.14em throws TypeError
+PASS Setting 'break-before' to a length: 3.14cm throws TypeError
+PASS Setting 'break-before' to a length: calc(0px + 0em) throws TypeError
+PASS Setting 'break-before' to a percent: 0% throws TypeError
+PASS Setting 'break-before' to a percent: -3.14% throws TypeError
+PASS Setting 'break-before' to a percent: 3.14% throws TypeError
+PASS Setting 'break-before' to a percent: calc(0% + 0%) throws TypeError
+PASS Setting 'break-before' to a time: 0s throws TypeError
+PASS Setting 'break-before' to a time: -3.14ms throws TypeError
+PASS Setting 'break-before' to a time: 3.14s throws TypeError
+PASS Setting 'break-before' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'break-before' to an angle: 0deg throws TypeError
+PASS Setting 'break-before' to an angle: 3.14rad throws TypeError
+PASS Setting 'break-before' to an angle: -3.14deg throws TypeError
+PASS Setting 'break-before' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'break-before' to a flexible length: 0fr throws TypeError
+PASS Setting 'break-before' to a flexible length: 1fr throws TypeError
+PASS Setting 'break-before' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'break-before' to a number: 0 throws TypeError
+PASS Setting 'break-before' to a number: -3.14 throws TypeError
+PASS Setting 'break-before' to a number: 3.14 throws TypeError
+PASS Setting 'break-before' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'break-before' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'break-before' to a transform: perspective(10em) throws TypeError
+PASS Setting 'break-before' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 PASS Can set 'break-inside' to CSS-wide keywords: initial
 PASS Can set 'break-inside' to CSS-wide keywords: inherit
 PASS Can set 'break-inside' to CSS-wide keywords: unset
@@ -60,13 +96,31 @@ PASS Can set 'break-inside' to the 'avoid' keyword: avoid
 PASS Can set 'break-inside' to the 'avoid-column' keyword: avoid-column
 PASS Can set 'break-inside' to the 'avoid-page' keyword: avoid-page
 FAIL Can set 'break-inside' to the 'avoid-region' keyword: avoid-region Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Setting 'break-inside' to a length throws TypeError
-PASS Setting 'break-inside' to a percent throws TypeError
-PASS Setting 'break-inside' to a time throws TypeError
-PASS Setting 'break-inside' to an angle throws TypeError
-PASS Setting 'break-inside' to a flexible length throws TypeError
-PASS Setting 'break-inside' to a number throws TypeError
-PASS Setting 'break-inside' to a URL throws TypeError
-PASS Setting 'break-inside' to a transform throws TypeError
+PASS Setting 'break-inside' to a length: 0px throws TypeError
+PASS Setting 'break-inside' to a length: -3.14em throws TypeError
+PASS Setting 'break-inside' to a length: 3.14cm throws TypeError
+PASS Setting 'break-inside' to a length: calc(0px + 0em) throws TypeError
+PASS Setting 'break-inside' to a percent: 0% throws TypeError
+PASS Setting 'break-inside' to a percent: -3.14% throws TypeError
+PASS Setting 'break-inside' to a percent: 3.14% throws TypeError
+PASS Setting 'break-inside' to a percent: calc(0% + 0%) throws TypeError
+PASS Setting 'break-inside' to a time: 0s throws TypeError
+PASS Setting 'break-inside' to a time: -3.14ms throws TypeError
+PASS Setting 'break-inside' to a time: 3.14s throws TypeError
+PASS Setting 'break-inside' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'break-inside' to an angle: 0deg throws TypeError
+PASS Setting 'break-inside' to an angle: 3.14rad throws TypeError
+PASS Setting 'break-inside' to an angle: -3.14deg throws TypeError
+PASS Setting 'break-inside' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'break-inside' to a flexible length: 0fr throws TypeError
+PASS Setting 'break-inside' to a flexible length: 1fr throws TypeError
+PASS Setting 'break-inside' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'break-inside' to a number: 0 throws TypeError
+PASS Setting 'break-inside' to a number: -3.14 throws TypeError
+PASS Setting 'break-inside' to a number: 3.14 throws TypeError
+PASS Setting 'break-inside' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'break-inside' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'break-inside' to a transform: perspective(10em) throws TypeError
+PASS Setting 'break-inside' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 Harness: the test ran to completion.
 

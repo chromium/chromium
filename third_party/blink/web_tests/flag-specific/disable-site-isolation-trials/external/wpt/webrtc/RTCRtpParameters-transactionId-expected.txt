@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL sender.getParameters() should return the same transaction ID if called back-to-back without relinquishing the event loop, even if the microtask queue runs assert_equals: expected "ddc439b0-f8dc-440c-a0a4-9529083c3801" but got "341e5d76-aab3-4a95-82ef-61c8f4c026bf"
+FAIL sender.getParameters() should return the same transaction ID if called back-to-back without relinquishing the event loop, even if there is an intervening call to setParameters assert_equals: expected "2c2ab3a5-85a0-4416-a291-552e1a43e838" but got "e4e17359-18fc-49e5-8c62-bdc5fb8f77e1"
+PASS sender.getParameters() should return a different transaction ID if the event loop is relinquished between multiple calls
+PASS sender.setParameters() with transaction ID different from last getParameters() should reject with InvalidModificationError
+PASS sender.setParameters() with transaction ID unset should reject with TypeError
+PASS setParameters() twice with the same parameters should reject with InvalidStateError
+PASS setParameters() with parameters older than last getParameters() should reject with InvalidModificationError
+FAIL setParameters() when the event loop has been relinquished since the last getParameters() should reject with InvalidStateError assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+
