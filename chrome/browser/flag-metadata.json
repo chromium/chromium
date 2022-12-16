@@ -1298,11 +1298,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "deprecate-assistant-stylus-features",
-    "owners": [ "croissant-eng", "angelaxiao" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "desktop-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115

@@ -61,17 +61,12 @@ class PaletteWelcomeBubble::WelcomeBubbleView
   void Init() override {
     SetUseDefaultFillLayout(true);
     views::Builder<views::BubbleDialogDelegateView>(this)
-        .AddChild(
-            views::Builder<views::Label>()
-                .SetText(l10n_util::GetStringUTF16(
-                    assistant::util::IsGoogleDevice() &&
-                            !ash::features::
-                                IsDeprecateAssistantStylusFeaturesEnabled()
-                        ? IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_WITH_ASSISTANT_DESCRIPTION
-                        : IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_DESCRIPTION))
-                .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                .SetMultiLine(true)
-                .SizeToFit(kBubbleContentLabelPreferredWidthDp))
+        .AddChild(views::Builder<views::Label>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_DESCRIPTION))
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                      .SetMultiLine(true)
+                      .SizeToFit(kBubbleContentLabelPreferredWidthDp))
         .BuildChildren();
   }
 };

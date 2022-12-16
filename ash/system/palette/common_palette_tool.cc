@@ -29,9 +29,6 @@ void AddHistogramTimes(PaletteToolId id, base::TimeDelta duration) {
   } else if (id == PaletteToolId::MAGNIFY) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Shelf.Palette.InMagnifyMode", duration,
                                base::Milliseconds(100), base::Hours(1), 50);
-  } else if (id == PaletteToolId::METALAYER) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Shelf.Palette.InAssistantMode", duration,
-                               base::Milliseconds(100), base::Hours(1), 50);
   }
 }
 

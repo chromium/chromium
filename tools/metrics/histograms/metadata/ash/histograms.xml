@@ -4271,6 +4271,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Shelf.Palette.Assistant.DeprecateStylusFeaturesToastEvent"
     units="dp" expires_after="2023-04-23">
+  <obsolete>
+    Deprecated in M111.
+  </obsolete>
   <owner>angelaxiao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

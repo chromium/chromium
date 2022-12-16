@@ -25342,6 +25342,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DeprecateStylusFeaturesToastEvent">
+  <obsolete>
+    Deprecated in M111.
+  </obsolete>
   <int value="0" label="Features not deprecated, toast not shown"/>
   <int value="1" label="Features deprecated, toast shown (first time)"/>
   <int value="2" label="Features deprecated, toast not shown (already shown)"/>

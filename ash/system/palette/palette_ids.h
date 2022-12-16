@@ -19,7 +19,6 @@ enum class PaletteToolId {
   CREATE_NOTE,
   LASER_POINTER,
   MAGNIFY,
-  METALAYER,
   ENTER_CAPTURE_MODE,
 };
 
