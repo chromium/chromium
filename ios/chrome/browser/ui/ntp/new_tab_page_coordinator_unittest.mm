@@ -17,12 +17,16 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
+#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -61,6 +65,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
+    NewTabPageTabHelper::CreateForWebState(&web_state_);
   }
 
   void CreateCoordinator(bool off_the_record) {
@@ -72,6 +77,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       browser_ = std::make_unique<TestBrowser>(browser_state_.get());
       scene_state_ = OCMClassMock([SceneState class]);
       SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+      StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     }
     NewTabPageTabHelper::CreateForWebState(&web_state_);
     coordinator_ =
@@ -117,4 +123,67 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
   [coordinator_ start];
   UIViewController* viewController = [coordinator_ viewController];
   EXPECT_TRUE([viewController isKindOfClass:[IncognitoViewController class]]);
+}
+
+// Tests that if the NTP should/shouldn't be showing Start upon -start, that it
+// properly configures the ContentSuggestionsHeaderViewController property.
+TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
+  NewTabPageTabHelper::FromWebState(&web_state_)->SetShowStartSurface(true);
+  CreateCoordinator(/*off_the_record=*/false);
+  id omniboxCommandsHandlerMock = OCMProtocolMock(@protocol(OmniboxCommands));
+  id snackbarCommandsHandlerMock = OCMProtocolMock(@protocol(SnackbarCommands));
+  id fakeboxFocuserHandlerMock = OCMProtocolMock(@protocol(FakeboxFocuser));
+
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:omniboxCommandsHandlerMock
+                   forProtocol:@protocol(OmniboxCommands)];
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:snackbarCommandsHandlerMock
+                   forProtocol:@protocol(SnackbarCommands)];
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:fakeboxFocuserHandlerMock
+                   forProtocol:@protocol(FakeboxFocuser)];
+
+  [coordinator_ start];
+  EXPECT_TRUE(coordinator_.headerController.isStartShowing);
+  [coordinator_ stop];
+
+  NewTabPageTabHelper::FromWebState(&web_state_)->SetShowStartSurface(false);
+  [coordinator_ start];
+  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
+  [coordinator_ stop];
+}
+
+// Tests that calls to the coordinator's -ntpDidChangeVisibility: passing YES
+// when Start should also show updates the state of the
+// ContentSuggestionsHeaderViewController and passing NO when Start was showing
+// updates ContentSuggestionsHeaderViewController and NewTabPageTabHelper
+// correctly.
+TEST_F(NewTabPageCoordinatorTest, DidChangeVisibility) {
+  CreateCoordinator(/*off_the_record=*/false);
+  id omniboxCommandsHandlerMock = OCMProtocolMock(@protocol(OmniboxCommands));
+  id snackbarCommandsHandlerMock = OCMProtocolMock(@protocol(SnackbarCommands));
+  id fakeboxFocuserHandlerMock = OCMProtocolMock(@protocol(FakeboxFocuser));
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:omniboxCommandsHandlerMock
+                   forProtocol:@protocol(OmniboxCommands)];
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:snackbarCommandsHandlerMock
+                   forProtocol:@protocol(SnackbarCommands)];
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:fakeboxFocuserHandlerMock
+                   forProtocol:@protocol(FakeboxFocuser)];
+  [coordinator_ start];
+  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
+
+  NewTabPageTabHelper::FromWebState(&web_state_)->SetShowStartSurface(true);
+  [coordinator_ ntpDidChangeVisibility:YES];
+  EXPECT_TRUE(coordinator_.headerController.isStartShowing);
+
+  [coordinator_ ntpDidChangeVisibility:NO];
+  EXPECT_FALSE(
+      NewTabPageTabHelper::FromWebState(&web_state_)->ShouldShowStartSurface());
+  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
+
+  [coordinator_ stop];
 }
