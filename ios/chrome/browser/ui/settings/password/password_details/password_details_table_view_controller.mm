@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -65,6 +67,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFederation,
   ItemTypeChangePasswordButton,
   ItemTypeChangePasswordRecommendation,
+  ItemTypeDeleteButton,
 };
 
 typedef NS_ENUM(NSInteger, ReauthenticationReason) {
@@ -353,6 +356,18 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   return item;
 }
 
+- (TableViewTextButtonItem*)deleteButtonItem {
+  TableViewTextButtonItem* item =
+      [[TableViewTextButtonItem alloc] initWithType:ItemTypeDeleteButton];
+  item.buttonText = l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_DELETE);
+  item.boldButtonText = NO;
+  item.disableButtonIntrinsicWidth = YES;
+  item.buttonTextColor = [UIColor colorNamed:kRedColor];
+  item.buttonBackgroundColor = [UIColor clearColor];
+  item.buttonAccessibilityIdentifier = kSettingsToolbarDeleteButtonId;
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -407,6 +422,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
                                 PasswordCheckInteraction::kChangePassword);
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
+      break;
+    case ItemTypeDeleteButton:
       break;
   }
 }
@@ -492,10 +509,19 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
       break;
-
-    case ItemTypeChangePasswordRecommendation:
+    case ItemTypeChangePasswordRecommendation: {
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
+    }
+    case ItemTypeDeleteButton: {
+      TableViewTextButtonCell* tableViewTextButtonCell =
+          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+      [tableViewTextButtonCell.button addTarget:self
+                                         action:@selector(didTapDeleteButton:)
+                               forControlEvents:UIControlEventTouchUpInside];
+      [tableViewTextButtonCell.button setTag:indexPath.section];
+      break;
+    }
   }
   return cell;
 }
@@ -558,7 +584,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 // Called when user tapped Delete button during editing. It means presented
 // password should be deleted.
-// TODO(crbug.com/1358988): Fix delete logic.
+// TODO(crbug.com/1359392): Remove this toolbar delete button logic.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
   // Remove this verification when it is implemented for password grouping.
   if (!IsPasswordGroupingEnabled()) {
@@ -749,6 +775,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
+    case ItemTypeDeleteButton:
       return NO;
   }
 }
@@ -946,6 +973,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
       break;
     }
   }
+
+  if (IsPasswordGroupingEnabled() && self.tableView.editing) {
+    [model addItem:[self deleteButtonItem]
+        toSectionWithIdentifier:sectionForPassword];
+  }
   [self.passwordDetailsInfoItems addObject:passwordItem];
 }
 
@@ -1077,6 +1109,14 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     // away once we switch to `UIEditMenuInteraction`.
     [self logCopyPasswordDetailsFailure:YES];
   }
+}
+
+- (void)didTapDeleteButton:(UIButton*)buttonView {
+  int position = buttonView.tag;
+  DCHECK(position >= 0);
+  DCHECK(self.handler);
+  [self.handler
+      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]];
 }
 
 #pragma mark - UIResponder

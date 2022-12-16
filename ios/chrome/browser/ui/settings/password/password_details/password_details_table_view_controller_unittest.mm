@@ -73,6 +73,11 @@ constexpr char kPassword[] = "test";
   self.deletionCalledOnCompromisedPassword = compromisedPassword;
 }
 
+- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password {
+  self.deletionCalled = YES;
+  self.deletionCalledOnCompromisedPassword = password.isCompromised;
+}
+
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
   self.editingCalled = YES;
 }
