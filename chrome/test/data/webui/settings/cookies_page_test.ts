@@ -498,6 +498,19 @@ suite('PrivacySandboxSettings4Disabled', function() {
     }
   });
 
+  test('ExceptionListsHaveCorrectCookieExceptionType', function() {
+    for (const listId
+             of ['#allowExceptionsList',
+                 '#sessionOnlyExceptionsList',
+                 '#blockExceptionsList',
+    ]) {
+      const exceptionList = page.shadowRoot!.querySelector(listId);
+      assertTrue(!!exceptionList);
+      assertEquals(
+          'combined', exceptionList.getAttribute('cookies-exception-type'));
+    }
+  });
+
   test('BlockAll_ManagementSource', async function() {
     // Test that controlledBy for the blockAll_ preference is set to
     // the same value as the generated.cookie_session_only preference.
