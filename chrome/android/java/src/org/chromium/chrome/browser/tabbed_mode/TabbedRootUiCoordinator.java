@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogLaunchContext;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -675,17 +674,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            // hasNewNoticeBeenShownInCurrentSession is needed to assure a PrivacySandbox promo
-            // already ran in this session, outside the initializeIPH promo logic (e.g. in a NTP
-            // page), and thus avoiding other different promos to run in the same session.
-            // NB: This logic holds as long as the Privacy Sandbox promo has the highest priority,
-            // we need to update the logic otherwise.
-            didTriggerPromo = PrivacySandboxDialogController.hasNewNoticeBeenShownInCurrentSession()
-                    || PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            PrivacySandboxDialogLaunchContext.BROWSER_START, mActivity,
-                            new SettingsLauncherImpl(),
-                            mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                            getBottomSheetController());
+            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                    mActivity, new SettingsLauncherImpl(),
+                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
+                    getBottomSheetController());
         }
 
         if (!didTriggerPromo) {
