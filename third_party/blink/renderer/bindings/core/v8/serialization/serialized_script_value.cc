@@ -625,6 +625,7 @@ SerializedScriptValue::TransferArrayBufferContents(
                                           "ArrayBuffer at index " +
                                               String::Number(index) +
                                               " could not be transferred.");
+        return ArrayBufferContentsArray();
       } else if (!array_buffer->Transfer(isolate, contents.at(index),
                                          exception_state)) {
         return ArrayBufferContentsArray();
