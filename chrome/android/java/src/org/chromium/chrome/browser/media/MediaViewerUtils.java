@@ -30,7 +30,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Locale;
@@ -236,9 +235,8 @@ public class MediaViewerUtils {
     }
 
     private static boolean shouldEnableMediaLauncherActivity() {
-        return sIsMediaLauncherActivityForceEnabledForTest
-                || ((SysUtils.isAndroidGo() || isEnterpriseManaged())
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.HANDLE_MEDIA_INTENTS));
+        return sIsMediaLauncherActivityForceEnabledForTest || SysUtils.isAndroidGo()
+                || isEnterpriseManaged();
     }
 
     private static boolean shouldEnableAudioLauncherActivity() {
