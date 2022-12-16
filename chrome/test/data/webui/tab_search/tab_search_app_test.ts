@@ -228,7 +228,6 @@ suite('TabSearchAppTest', () => {
       title: 'PayPal',
       url: {url: 'https://www.paypal.com'},
       lastActiveElapsedText: '',
-      groupId: undefined,
       lastActiveTime: {internalValue: BigInt(11)},
     };
 
@@ -494,7 +493,6 @@ suite('TabSearchAppTest', () => {
         url: {url: 'https://www.sampletab.com'},
         lastActiveTime: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',
-        groupId: undefined,
       }],
     });
     await flushTasks();

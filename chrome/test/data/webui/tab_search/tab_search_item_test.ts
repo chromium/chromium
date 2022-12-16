@@ -84,7 +84,6 @@ suite('TabSearchItemTest', () => {
           tabId: 0,
           title: 'Example.com site',
           url: {url: 'https://example.com'},
-          groupId: undefined,
           lastActiveTime: {internalValue: BigInt(0)},
           lastActiveElapsedText: '',
         } as RecentlyClosedTab,

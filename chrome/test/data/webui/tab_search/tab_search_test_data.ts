@@ -12,8 +12,6 @@ export function createTab(overrides: Partial<Tab>): Tab {
       {
         active: false,
         alertStates: [],
-        faviconUrl: undefined,
-        groupId: undefined,
         index: 0,
         isDefaultFavicon: false,
         lastActiveElapsedText: '',
@@ -121,7 +119,6 @@ export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
     url: {url: 'https://www.paypal.com'},
     lastActiveTime: {internalValue: BigInt(11)},
     lastActiveElapsedText: '',
-    groupId: undefined,
   },
   {
     tabId: 101,
@@ -129,7 +126,6 @@ export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
     url: {url: 'https://www.stripe.com'},
     lastActiveTime: {internalValue: BigInt(12)},
     lastActiveElapsedText: '',
-    groupId: undefined,
   },
 ];
 
@@ -173,7 +169,6 @@ export function generateSampleRecentlyClosedTabsFromSiteNames(
   return siteNames.map((siteName, i) => {
     return {
       tabId: i + 1,
-      groupId: undefined,
       title: siteName,
       url: {url: 'https://www.' + siteName.toLowerCase() + '.com'},
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
@@ -193,7 +188,6 @@ export function generateSampleRecentlyClosedTabs(
       url: {url: `https://www.sampletab.com?q=${tabId}`},
       lastActiveTime: {internalValue: BigInt(count - i)},
       lastActiveElapsedText: '',
-      groupId: undefined,
     };
 
     if (groupId !== undefined) {

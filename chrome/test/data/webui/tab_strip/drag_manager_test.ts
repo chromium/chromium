@@ -46,11 +46,7 @@ class MockDataTransfer extends DataTransfer {
   constructor() {
     super();
 
-    this.dragImageData = {
-      image: undefined,
-      offsetX: undefined,
-      offsetY: undefined,
-    };
+    this.dragImageData = {};
   }
 
   override get dropEffect() {
