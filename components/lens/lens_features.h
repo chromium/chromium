@@ -40,10 +40,6 @@ BASE_DECLARE_FEATURE(kEnableLatencyLogging);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 
-// Enable the Lens Region Search feature on the PDF viewer.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableRegionSearchOnPdfViewer);
-
 // Enables the modification of the instruction chip UI that is presented when
 // region search is opened.
 COMPONENT_EXPORT(LENS_FEATURES)

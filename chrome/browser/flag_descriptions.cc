@@ -1279,11 +1279,6 @@ const char kEnableLensStandaloneDescription[] =
     "Enables Lens image and region search to learn about the visual content "
     "you see while you browse and shop on the web.";
 
-const char kEnableRegionSearchOnPdfViewerName[] =
-    "Enable Region Search on PDF viewer.";
-const char kEnableRegionSearchOnPdfViewerDescription[] =
-    "Enable the Lens Region Search feature on the PDF viewer.";
-
 const char kEnableManagedConfigurationWebApiName[] =
     "Enable Managed Configuration Web API";
 const char kEnableManagedConfigurationWebApiDescription[] =

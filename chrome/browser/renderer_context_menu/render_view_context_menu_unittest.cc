@@ -1192,31 +1192,9 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
-TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({lens::features::kLensStandalone},
-                            {lens::features::kEnableRegionSearchOnPdfViewer});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true);
-  content::RenderFrameHost* render_frame_host =
-      web_contents()->GetPrimaryMainFrame();
-  OverrideLastCommittedOrigin(
-      render_frame_host,
-      url::Origin::Create(
-          GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
-  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*render_frame_host, params);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
-}
-
 TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({lens::features::kLensStandalone,
-                             lens::features::kEnableRegionSearchOnPdfViewer},
-                            {});
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::RenderFrameHost* render_frame_host =
@@ -1274,9 +1252,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabledOnImage) {
 // browser.
 TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabledNoBrowser) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({lens::features::kLensStandalone,
-                             lens::features::kEnableRegionSearchOnPdfViewer},
-                            {});
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::RenderFrameHost* render_frame_host =
