@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.content.Context;
 import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Xml;
@@ -34,16 +33,6 @@ public abstract class RequestGenerator {
 
     private static final String SALT = "omahaSalt";
     private static final String URL_OMAHA_SERVER = "https://update.googleapis.com/service/update2";
-
-    // TODO(agrieve): Delete when downstream reference is removed.
-    protected RequestGenerator(Context unused) {
-        this();
-    }
-
-    // TODO(agrieve): Delete when downstream reference is removed.
-    protected Context getContext() {
-        return null;
-    }
 
     protected RequestGenerator() {
         UniqueIdentificationGeneratorFactory.registerGenerator(
