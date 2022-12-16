@@ -13,8 +13,10 @@ GLTextureAndroidImageRepresentation::GLTextureAndroidImageRepresentation(
     SharedImageManager* manager,
     AndroidImageBacking* backing,
     MemoryTypeTracker* tracker,
+    ui::ScopedEGLImage egl_image,
     gles2::Texture* texture)
     : GLTextureImageRepresentation(manager, backing, tracker),
+      egl_image_(std::move(egl_image)),
       texture_(texture) {}
 
 GLTextureAndroidImageRepresentation::~GLTextureAndroidImageRepresentation() {

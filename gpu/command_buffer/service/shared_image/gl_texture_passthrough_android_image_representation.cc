@@ -14,8 +14,10 @@ GLTexturePassthroughAndroidImageRepresentation::
         SharedImageManager* manager,
         AndroidImageBacking* backing,
         MemoryTypeTracker* tracker,
+        ui::ScopedEGLImage egl_image,
         scoped_refptr<gles2::TexturePassthrough> texture)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+      egl_image_(std::move(egl_image)),
       texture_(std::move(texture)) {
   // TODO(https://crbug.com/1172769): Remove this CHECK.
   CHECK(texture_);

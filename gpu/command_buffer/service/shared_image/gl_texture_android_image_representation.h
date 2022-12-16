@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "ui/gl/scoped_egl_image.h"
 
 namespace gpu {
 class AndroidImageBacking;
@@ -20,6 +21,7 @@ class GLTextureAndroidImageRepresentation
   GLTextureAndroidImageRepresentation(SharedImageManager* manager,
                                       AndroidImageBacking* backing,
                                       MemoryTypeTracker* tracker,
+                                      ui::ScopedEGLImage egl_image,
                                       gles2::Texture* texture);
   ~GLTextureAndroidImageRepresentation() override;
 
@@ -38,6 +40,7 @@ class GLTextureAndroidImageRepresentation
     return static_cast<AndroidImageBacking*>(backing());
   }
 
+  ui::ScopedEGLImage egl_image_;
   const raw_ptr<gles2::Texture, DanglingUntriaged> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };

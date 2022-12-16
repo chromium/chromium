@@ -33,7 +33,6 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gl/android/egl_fence_utils.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
@@ -43,12 +42,12 @@ void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   DCHECK(buffer);
 
   AHardwareBuffer_Desc desc;
+
   base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
-  auto egl_image = base::MakeRefCounted<gl::GLImageAHardwareBuffer>(
-      gfx::Size(desc.width, desc.height));
-  if (egl_image->Initialize(buffer, false)) {
+  auto egl_image = CreateEGLImageFromAHardwareBuffer(buffer);
+  if (egl_image.is_valid()) {
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, service_id);
-    egl_image->BindTexImage(GL_TEXTURE_EXTERNAL_OES);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
   } else {
     LOG(ERROR) << "Failed to create EGL image ";
   }

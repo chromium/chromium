@@ -7,6 +7,7 @@
 
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "ui/gl/scoped_egl_image.h"
 
 namespace gpu {
 class AndroidImageBacking;
@@ -18,6 +19,7 @@ class GLTexturePassthroughAndroidImageRepresentation
       SharedImageManager* manager,
       AndroidImageBacking* backing,
       MemoryTypeTracker* tracker,
+      ui::ScopedEGLImage egl_image,
       scoped_refptr<gles2::TexturePassthrough> texture);
   ~GLTexturePassthroughAndroidImageRepresentation() override;
 
@@ -37,6 +39,7 @@ class GLTexturePassthroughAndroidImageRepresentation
     return static_cast<AndroidImageBacking*>(backing());
   }
 
+  ui::ScopedEGLImage egl_image_;
   scoped_refptr<gles2::TexturePassthrough> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };
