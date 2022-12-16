@@ -67,8 +67,4 @@ bool GpuMemoryBufferFactoryAndroidHardwareBuffer::
   return false;
 }
 
-ImageFactory* GpuMemoryBufferFactoryAndroidHardwareBuffer::AsImageFactory() {
-  return nullptr;
-}
-
 }  // namespace gpu

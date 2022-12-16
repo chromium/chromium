@@ -5,14 +5,12 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_IO_SURFACE_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_IO_SURFACE_H_
 
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 
 namespace gpu {
 
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
-    : public GpuMemoryBufferFactory,
-      public ImageFactory {
+    : public GpuMemoryBufferFactory {
  public:
   GpuMemoryBufferFactoryIOSurface();
 
@@ -37,7 +35,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) override;
-  ImageFactory* AsImageFactory() override;
 };
 
 }  // namespace gpu

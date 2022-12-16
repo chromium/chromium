@@ -12,7 +12,6 @@
 
 #include "base/hash/hash.h"
 #include "base/synchronization/lock.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/native_pixmap.h"
@@ -57,7 +56,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) override;
-  ImageFactory* AsImageFactory() override;
 
  private:
   using NativePixmapMapKey = std::pair<int, int>;

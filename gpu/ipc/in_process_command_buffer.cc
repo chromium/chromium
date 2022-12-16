@@ -211,7 +211,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
         task_executor_->gpu_preferences(),
         context_group_->feature_info()->workarounds(),
         task_executor_->gpu_feature_info(), context_state_.get(),
-        task_executor_->shared_image_manager(), /*image_factory=*/nullptr,
+        task_executor_->shared_image_manager(),
         /*is_for_display_compositor=*/false);
   }
 

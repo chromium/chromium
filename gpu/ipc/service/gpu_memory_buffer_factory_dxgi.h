@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,7 +49,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
   bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) override;
-  ImageFactory* AsImageFactory() override;
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();

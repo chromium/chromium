@@ -485,14 +485,11 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
     return ContextResult::kTransientFailure;
   }
 
-  gpu::GpuMemoryBufferFactory* gmb_factory =
-      channel_manager->gpu_memory_buffer_factory();
   factory_ = std::make_unique<SharedImageFactory>(
       channel_manager->gpu_preferences(),
       channel_manager->gpu_driver_bug_workarounds(),
       channel_manager->gpu_feature_info(), context_state_.get(),
-      channel_manager->shared_image_manager(),
-      gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
+      channel_manager->shared_image_manager(), this,
       /*is_for_display_compositor=*/false);
   return ContextResult::kSuccess;
 }

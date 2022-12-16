@@ -6,15 +6,12 @@
 
 #include <vector>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_io_surface.h"
 
 namespace gpu {
 
@@ -67,10 +64,6 @@ bool GpuMemoryBufferFactoryIOSurface::FillSharedMemoryRegionWithBufferContents(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
   return false;
-}
-
-ImageFactory* GpuMemoryBufferFactoryIOSurface::AsImageFactory() {
-  return this;
 }
 
 }  // namespace gpu

@@ -234,8 +234,4 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
                                d3d11_device.Get(), &staging_texture_);
 }
 
-ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
-  return nullptr;
-}
-
 }  // namespace gpu

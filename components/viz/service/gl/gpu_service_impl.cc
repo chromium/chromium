@@ -667,12 +667,6 @@ scoped_refptr<gpu::SharedContextState> GpuServiceImpl::GetContextState() {
   return gpu_channel_manager_->GetSharedContextState(&result);
 }
 
-gpu::ImageFactory* GpuServiceImpl::gpu_image_factory() {
-  return gpu_memory_buffer_factory_
-             ? gpu_memory_buffer_factory_->AsImageFactory()
-             : nullptr;
-}
-
 // static
 void GpuServiceImpl::InstallPreInitializeLogHandler() {
   GetLogMessageManager()->InstallPreInitializeLogHandler();

@@ -21,8 +21,6 @@ class VulkanContextProvider;
 
 namespace gpu {
 
-class ImageFactory;
-
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
  public:
   GpuMemoryBufferFactory(const GpuMemoryBufferFactory&) = delete;
@@ -75,9 +73,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
   virtual bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) = 0;
-
-  // Type-checking downcast routine.
-  virtual ImageFactory* AsImageFactory() = 0;
 
  protected:
   GpuMemoryBufferFactory() = default;

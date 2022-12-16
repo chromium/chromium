@@ -101,10 +101,6 @@ SkiaOutputSurfaceDependencyWebView::GetClientTaskRunner() {
   return task_queue_->GetClientTaskRunner();
 }
 
-gpu::ImageFactory* SkiaOutputSurfaceDependencyWebView::GetGpuImageFactory() {
-  return nullptr;
-}
-
 bool SkiaOutputSurfaceDependencyWebView::IsOffscreen() {
   return false;
 }

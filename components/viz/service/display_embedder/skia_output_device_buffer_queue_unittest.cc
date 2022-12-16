@@ -323,8 +323,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         dependency_->GetGpuDriverBugWorkarounds(),
         dependency_->GetGpuFeatureInfo(),
         dependency_->GetSharedContextState().get(),
-        dependency_->GetSharedImageManager(), dependency_->GetGpuImageFactory(),
-        memory_tracker_.get(),
+        dependency_->GetSharedImageManager(), memory_tracker_.get(),
         /*is_for_display_compositor=*/true),
     shared_image_factory_->RegisterSharedImageBackingFactoryForTesting(
         &test_backing_factory_);

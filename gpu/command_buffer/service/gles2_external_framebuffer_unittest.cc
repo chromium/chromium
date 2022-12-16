@@ -87,7 +87,7 @@ class GLES2ExternalFrameBufferTest
 
     backing_factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
-        shared_image_manager_.get(), nullptr, context_state_->memory_tracker(),
+        shared_image_manager_.get(), context_state_->memory_tracker(),
         /*is_for_display_compositor=*/false);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);

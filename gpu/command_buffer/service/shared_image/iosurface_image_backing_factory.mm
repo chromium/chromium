@@ -12,7 +12,6 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
@@ -364,10 +363,8 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
-    ImageFactory* image_factory,
     gl::ProgressReporter* progress_reporter)
-    : image_factory_(image_factory),
-      progress_reporter_(progress_reporter),
+    : progress_reporter_(progress_reporter),
       angle_texture_usage_(feature_info->feature_flags().angle_texture_usage) {
   gpu_memory_buffer_formats_ =
       feature_info->feature_flags().gpu_memory_buffer_formats;

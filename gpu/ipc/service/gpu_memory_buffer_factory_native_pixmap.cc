@@ -84,10 +84,6 @@ bool GpuMemoryBufferFactoryNativePixmap::
   return false;
 }
 
-ImageFactory* GpuMemoryBufferFactoryNativePixmap::AsImageFactory() {
-  return nullptr;
-}
-
 VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_context_provider_)

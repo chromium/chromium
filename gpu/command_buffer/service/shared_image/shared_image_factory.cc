@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
@@ -122,7 +121,6 @@ SharedImageFactory::SharedImageFactory(
     const GpuFeatureInfo& gpu_feature_info,
     SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
-    ImageFactory* image_factory,
     MemoryTracker* memory_tracker,
     bool is_for_display_compositor)
     : shared_image_manager_(shared_image_manager),
@@ -288,7 +286,7 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_MAC)
   auto iosurface_backing_factory =
       std::make_unique<IOSurfaceImageBackingFactory>(
-          gpu_preferences, workarounds, feature_info.get(), image_factory,
+          gpu_preferences, workarounds, feature_info.get(),
           shared_context_state_ ? shared_context_state_->progress_reporter()
                                 : nullptr);
   factories_.push_back(std::move(iosurface_backing_factory));

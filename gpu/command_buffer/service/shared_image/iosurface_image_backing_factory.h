@@ -34,7 +34,6 @@ class SharedImageBacking;
 class GpuDriverBugWorkarounds;
 struct GpuPreferences;
 struct Mailbox;
-class ImageFactory;
 
 // Helper functions used used by SharedImageRepresentationGLImage to do
 // IOSurface-specific sharing.
@@ -61,7 +60,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
   IOSurfaceImageBackingFactory(const GpuPreferences& gpu_preferences,
                                const GpuDriverBugWorkarounds& workarounds,
                                const gles2::FeatureInfo* feature_info,
-                               ImageFactory* image_factory,
                                gl::ProgressReporter* progress_reporter);
   ~IOSurfaceImageBackingFactory() override;
 
@@ -122,9 +120,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
-
-  // Factory used to generate GLImages for SCANOUT backings.
-  const raw_ptr<ImageFactory> image_factory_ = nullptr;
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.

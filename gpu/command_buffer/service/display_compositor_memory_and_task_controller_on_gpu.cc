@@ -28,7 +28,6 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
     DisplayCompositorMemoryAndTaskControllerOnGpu(
         scoped_refptr<SharedContextState> shared_context_state,
         MailboxManager* mailbox_manager,
-        ImageFactory* image_factory,
         SharedImageManager* shared_image_manager,
         SyncPointManager* sync_point_manager,
         const GpuPreferences& gpu_preferences,
@@ -37,7 +36,6 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
     : shared_context_state_(std::move(shared_context_state)),
       command_buffer_id_(g_next_shared_route_id.GetNext() + 1),
       mailbox_manager_(mailbox_manager),
-      image_factory_(image_factory),
       shared_image_manager_(shared_image_manager),
       sync_point_manager_(sync_point_manager),
       gpu_preferences_(gpu_preferences),

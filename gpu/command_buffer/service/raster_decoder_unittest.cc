@@ -231,7 +231,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     workarounds.webgl_or_caps_max_texture_size = INT_MAX - 1;
     shared_image_factory_ = std::make_unique<SharedImageFactory>(
         GpuPreferences(), workarounds, GpuFeatureInfo(), context_state_.get(),
-        &shared_image_manager_, nullptr, nullptr,
+        &shared_image_manager_, nullptr,
         /*is_for_display_compositor=*/false);
 
     client_texture_mailbox_ =

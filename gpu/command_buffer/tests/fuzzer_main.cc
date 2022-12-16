@@ -415,7 +415,7 @@ class CommandBufferSetup {
     shared_image_factory_ = std::make_unique<SharedImageFactory>(
         gpu_preferences_, config_.workarounds, gpu_feature_info,
         context_state_.get(), shared_image_manager_.get(),
-        /*image_factory=*/nullptr, /*memory_tracker=*/nullptr,
+        /*memory_tracker=*/nullptr,
         /*is_for_display_compositor=*/false);
     for (uint32_t usage = SHARED_IMAGE_USAGE_GLES2; usage <= LAST_CLIENT_USAGE;
          usage <<= 1) {

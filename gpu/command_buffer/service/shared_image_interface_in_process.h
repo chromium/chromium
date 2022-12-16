@@ -28,7 +28,6 @@ class SyncPointManager;
 struct GpuPreferences;
 class GpuDriverBugWorkarounds;
 struct GpuFeatureInfo;
-class ImageFactory;
 struct SyncToken;
 
 // This is an implementation of the SharedImageInterface to be used on the viz
@@ -57,7 +56,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                 const GpuFeatureInfo& gpu_feature_info,
                                 gpu::SharedContextState* context_state,
                                 SharedImageManager* shared_image_manager,
-                                ImageFactory* image_factory,
                                 bool is_for_display_compositor);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;

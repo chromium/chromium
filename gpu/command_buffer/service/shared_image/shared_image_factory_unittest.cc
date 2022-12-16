@@ -9,7 +9,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -41,7 +40,7 @@ class SharedImageFactoryTest : public testing::Test {
     GpuDriverBugWorkarounds workarounds;
     factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), nullptr,
-        &shared_image_manager_, &image_factory_, nullptr,
+        &shared_image_manager_, nullptr,
         /*is_for_display_compositor=*/false);
   }
 
@@ -53,7 +52,6 @@ class SharedImageFactoryTest : public testing::Test {
  protected:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-  TextureImageFactory image_factory_;
   std::unique_ptr<SharedImageFactory> factory_;
   SharedImageManager shared_image_manager_;
 };
@@ -91,7 +89,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   GpuDriverBugWorkarounds workarounds;
   auto other_factory = std::make_unique<SharedImageFactory>(
       preferences, workarounds, GpuFeatureInfo(), nullptr,
-      &shared_image_manager_, &image_factory_, nullptr,
+      &shared_image_manager_, nullptr,
       /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,

@@ -117,7 +117,7 @@ class GmbVideoFramePoolContext
         gpu_service_->gpu_preferences(),
         gpu_service_->gpu_driver_bug_workarounds(),
         gpu_service_->gpu_feature_info(), shared_context_state_.get(),
-        gpu_service_->shared_image_manager(), gpu_service_->gpu_image_factory(),
+        gpu_service_->shared_image_manager(),
         /*is_for_display_compositor=*/false);
     DCHECK(sii_in_process_);
 

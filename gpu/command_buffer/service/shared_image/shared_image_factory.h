@@ -30,7 +30,6 @@ class VulkanContextProvider;
 
 namespace gpu {
 class GpuDriverBugWorkarounds;
-class ImageFactory;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
@@ -48,7 +47,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                      const GpuFeatureInfo& gpu_feature_info,
                      SharedContextState* context_state,
                      SharedImageManager* manager,
-                     ImageFactory* image_factory,
                      MemoryTracker* tracker,
                      bool is_for_display_compositor);
   ~SharedImageFactory();

@@ -16,12 +16,10 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_test_config.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -85,7 +83,6 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(),
-        &image_factory_,
         /*progress_reporter=*/nullptr);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
@@ -105,7 +102,6 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
-  GpuMemoryBufferFactoryIOSurface image_factory_;
 
   void CheckSkiaPixels(const Mailbox& mailbox,
                        const gfx::Size& size,
@@ -675,8 +671,7 @@ class IOSurfaceImageBackingFactoryNewTestBase
     context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
   }
 
-  void SetUpBase(const GpuDriverBugWorkarounds& workarounds,
-                 ImageFactory* factory) {
+  void SetUpBase(const GpuDriverBugWorkarounds& workarounds) {
     scoped_refptr<gles2::FeatureInfo> feature_info;
     CreateSharedContext(workarounds, surface_, context_, context_state_,
                         feature_info);
@@ -689,7 +684,7 @@ class IOSurfaceImageBackingFactoryNewTestBase
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = true;
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
-        preferences, workarounds, context_state_->feature_info(), factory,
+        preferences, workarounds, context_state_->feature_info(),
         &progress_reporter_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
@@ -738,11 +733,10 @@ class IOSurfaceImageBackingFactoryNewTest
       : IOSurfaceImageBackingFactoryNewTestBase(false) {}
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds, &image_factory_);
+    SetUpBase(workarounds);
   }
 
  protected:
-  TextureImageFactory image_factory_;
 };
 
 TEST_P(IOSurfaceImageBackingFactoryNewTest, Basic) {

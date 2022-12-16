@@ -211,7 +211,7 @@ std::unique_ptr<gpu::SharedImageFactory> CreateSharedImageFactory(
   return std::make_unique<gpu::SharedImageFactory>(
       deps->GetGpuPreferences(), deps->GetGpuDriverBugWorkarounds(),
       deps->GetGpuFeatureInfo(), deps->GetSharedContextState().get(),
-      deps->GetSharedImageManager(), deps->GetGpuImageFactory(), memory_tracker,
+      deps->GetSharedImageManager(), memory_tracker,
       /*is_for_display_compositor=*/true);
 }
 

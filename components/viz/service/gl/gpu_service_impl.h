@@ -292,7 +292,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return compositor_gpu_thread_.get();
   }
 
-  gpu::ImageFactory* gpu_image_factory();
   gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
   }
