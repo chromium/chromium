@@ -29,6 +29,11 @@ import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.
 // `cros_audio_config.mojom-webui.js` once mojo updated to handle audio input.
 import {AudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
+/** Utility for keeping percent in inclusive range of [0,100].  */
+function clampPercent(percent: number): number {
+  return Math.max(0, Math.min(percent, 100));
+}
+
 const SettingsAudioElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
 
 class SettingsAudioElement extends SettingsAudioElementBase {
@@ -156,7 +161,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     const sliderValue = this.shadowRoot!
                             .querySelector<CrSliderElement>(
                                 '#audioInputGainVolumeSlider')!.value;
-    this.crosAudioConfig_.setInputVolumePercent(sliderValue);
+    this.crosAudioConfig_.setInputVolumePercent(clampPercent(sliderValue));
   }
 
   /**
@@ -166,7 +171,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     const sliderValue =
         this.shadowRoot!.querySelector<CrSliderElement>(
                             '#outputVolumeSlider')!.value;
-    this.crosAudioConfig_.setOutputVolumePercent(sliderValue);
+    this.crosAudioConfig_.setOutputVolumePercent(clampPercent(sliderValue));
   }
 
   /** Handles updating active output device. */

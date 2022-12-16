@@ -791,6 +791,7 @@ suite('SettingsDevicePage', function() {
 
     test('simulate setting output volume slider mojo test', async function() {
       const sliderSelector = '#outputVolumeSlider';
+      const outputSlider = audioPage.shadowRoot.querySelector(sliderSelector);
 
       // Test clicking to min volume case.
       const minOutputVolumePercent = 0;
@@ -815,6 +816,26 @@ suite('SettingsDevicePage', function() {
           nonBoundaryOutputVolumePercent,
           audioPage.audioSystemProperties_.outputVolumePercent,
       );
+
+      // Ensure value clamps to min.
+      outputSlider.value = -1;
+      outputSlider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+      await flushTasks();
+
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .outputVolumePercent,
+          minOutputVolumePercent);
+
+      // Ensure value clamps to min.
+      outputSlider.value = 101;
+      outputSlider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+      await flushTasks();
+
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .outputVolumePercent,
+          maxOutputVolumePercent);
     });
 
     test('output mute state changes slider disabled state', async function() {
@@ -1016,6 +1037,26 @@ suite('SettingsDevicePage', function() {
           fakeCrosAudioConfig.defaultFakeAudioSystemProperties
               .inputVolumePercent,
           inputSlider.value);
+
+      // Ensure value clamps to min.
+      inputSlider.value = -1;
+      inputSlider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+      await flushTasks();
+
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          minimumValue);
+
+      // Ensure value clamps to min.
+      inputSlider.value = 101;
+      inputSlider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+      await flushTasks();
+
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          maximumValue);
     });
   });
 
