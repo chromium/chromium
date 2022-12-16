@@ -61,6 +61,117 @@ TEST_F(FakeDriverTest, VerifyQueryConfigProfiles) {
   EXPECT_EQ(va_profiles.size(), unique_profiles.size());
 }
 
+TEST_F(FakeDriverTest, CanCreateConfig) {
+  VAConfigID config_id = VA_INVALID_ID;
+  const VAStatus va_res =
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr,
+                     /*num_attribs=*/0, &config_id);
+  ASSERT_EQ(VA_STATUS_SUCCESS, va_res);
+  EXPECT_NE(VA_INVALID_ID, config_id);
+}
+
+TEST_F(FakeDriverTest, QueryConfigAttributesForValidConfigID) {
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  VAProfile profile = VAProfileNone;
+  VAEntrypoint entrypoint = VAEntrypointProtectedContent;
+  VAConfigAttrib config_attribs[base::checked_cast<size_t>(
+      vaMaxNumConfigAttributes(display_))];
+  memset(config_attribs, 0, sizeof(config_attribs));
+  int num_attribs = 0;
+  const VAStatus va_res = vaQueryConfigAttributes(
+      display_, config_id, &profile, &entrypoint, config_attribs, &num_attribs);
+  ASSERT_EQ(VA_STATUS_SUCCESS, va_res);
+  EXPECT_EQ(VAProfileVP8Version0_3, profile);
+  EXPECT_EQ(VAEntrypointVLD, entrypoint);
+  EXPECT_NE(0, num_attribs);
+}
+
+TEST_F(FakeDriverTest, QueryConfigAttributesCrashesForInvalidConfigID) {
+  VAProfile profile;
+  VAEntrypoint entrypoint;
+  VAConfigAttrib config_attribs[base::checked_cast<size_t>(
+      vaMaxNumConfigAttributes(display_))];
+  memset(config_attribs, 0, sizeof(config_attribs));
+  int num_attribs;
+  EXPECT_DEATH(
+      vaQueryConfigAttributes(display_, /*config_id=*/0, &profile, &entrypoint,
+                              config_attribs, &num_attribs);
+      , "");
+}
+
+TEST_F(FakeDriverTest, CreateContextForValidConfigID) {
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  VAContextID context_id = VA_INVALID_ID;
+  const VAStatus va_res = vaCreateContext(
+      display_, config_id, /*picture_width=*/1280, /*picture_height=*/720,
+      /*flag=*/0, /*render_targets=*/nullptr,
+      /*num_render_targets=*/0, &context_id);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, CreateContextCrashesForInvalidConfigID) {
+  VAContextID context_id;
+  EXPECT_DEATH(
+      vaCreateContext(display_, /*config_id=*/0, /*picture_width=*/1280,
+                      /*picture_height=*/720, /*flag=*/0,
+                      /*render_targets=*/nullptr,
+                      /*num_render_targets=*/0, &context_id),
+      "");
+}
+
+TEST_F(FakeDriverTest, QuerySurfaceAttributesForValidConfigID) {
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  VASurfaceAttrib surface_attribs[32];
+  unsigned int num_attribs = 32;
+  memset(surface_attribs, 0, sizeof(surface_attribs));
+
+  const VAStatus va_res = vaQuerySurfaceAttributes(
+      display_, config_id, surface_attribs, &num_attribs);
+  ASSERT_EQ(VA_STATUS_SUCCESS, va_res);
+  EXPECT_NE(0u, num_attribs);
+}
+
+TEST_F(FakeDriverTest, QuerySurfaceAttributesCrashesForInvalidConfigID) {
+  VASurfaceAttrib surface_attribs[32];
+  unsigned int num_attribs = 32;
+  memset(surface_attribs, 0, sizeof(surface_attribs));
+
+  EXPECT_DEATH(vaQuerySurfaceAttributes(display_, /*config_id=*/0,
+                                        surface_attribs, &num_attribs),
+               "");
+}
+
+TEST_F(FakeDriverTest, DestroyConfigForValidConfigID) {
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  const VAStatus va_res = vaDestroyConfig(display_, config_id);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, DestroyConfigCrashesForInvalidConfigID) {
+  EXPECT_DEATH(vaDestroyConfig(display_, /*config_id=*/0), "");
+}
+
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
