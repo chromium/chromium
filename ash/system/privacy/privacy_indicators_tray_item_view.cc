@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -49,6 +50,8 @@ const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
 const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
 const int kPrivacyIndicatorsViewExpandedWithScreenShareSize = 68;
 const int kPrivacyIndicatorsViewSize = 8;
+
+constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
 
 constexpr auto kDwellInExpandDuration = base::Milliseconds(1000);
 constexpr auto kShorterSizeShrinkAnimationDelay =
@@ -119,6 +122,17 @@ void FadeInView(views::View* view,
       .SetOpacity(view, 1.0f);
 }
 
+// Returns true if the widget is in the primary display.
+bool IsInPrimaryDisplay(views::Widget* widget) {
+  if (!widget) {
+    return false;
+  }
+
+  auto* screen = display::Screen::GetScreen();
+  return screen->GetDisplayNearestWindow(widget->GetNativeWindow()) ==
+         screen->GetPrimaryDisplay();
+}
+
 }  // namespace
 
 PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
@@ -134,7 +148,12 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
       shorter_side_shrink_animation_(std::make_unique<gfx::LinearAnimation>(
           kSizeChangeAnimationDuration,
           gfx::LinearAnimation::kDefaultFrameRate,
-          this)) {
+          this)),
+      repeated_shows_timer_(
+          FROM_HERE,
+          kRepeatedShowTimerInterval,
+          this,
+          &PrivacyIndicatorsTrayItemView::RecordRepeatedShows) {
   SetVisible(false);
 
   auto container_view = std::make_unique<views::View>();
@@ -413,13 +432,8 @@ void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
   if (count_visible_per_session_ == 0)
     return;
 
-  // `GetWidget()` might be null in unit tests.
-  if (!GetWidget())
-    return;
-  auto* screen = display::Screen::GetScreen();
   // Only record this metric on primary screen.
-  if (screen->GetDisplayNearestWindow(GetWidget()->GetNativeWindow()) !=
-      screen->GetPrimaryDisplay()) {
+  if (!IsInPrimaryDisplay(GetWidget())) {
     return;
   }
 
@@ -508,10 +522,24 @@ void PrivacyIndicatorsTrayItemView::UpdateAccessStatus(
 void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
   // We only hide the view when all the sets are empty.
   bool visible = IsCameraUsed() || IsMicrophoneUsed() || is_screen_sharing_;
+
+  if (GetVisible() == visible) {
+    return;
+  }
+
   SetVisible(visible);
 
-  if (visible)
-    count_visible_per_session_++;
+  if (!visible) {
+    return;
+  }
+
+  ++count_visible_per_session_;
+
+  // Keeps increment the count to track the number of times the view flickers.
+  // When the delay of `kRepeatedShowTimerInterval` has reached, record that
+  // count.
+  ++count_repeated_shows_;
+  repeated_shows_timer_.Reset();
 }
 
 void PrivacyIndicatorsTrayItemView::EndAllAnimations() {
@@ -549,6 +577,19 @@ void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
         "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone",
         use_microphone_apps_.size());
   }
+}
+
+void PrivacyIndicatorsTrayItemView::RecordRepeatedShows() {
+  // We are only interested in more than 1 repeated shows per 100ms. Also only
+  // records in primary display.
+  if (count_repeated_shows_ <= 1 || !IsInPrimaryDisplay(GetWidget())) {
+    count_repeated_shows_ = 0;
+    return;
+  }
+
+  base::UmaHistogramCounts100("Ash.PrivacyIndicators.NumberOfRepeatedShows",
+                              count_repeated_shows_);
+  count_repeated_shows_ = 0;
 }
 
 }  // namespace ash

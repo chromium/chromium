@@ -16,6 +16,8 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
@@ -35,6 +37,8 @@ constexpr char kCountAppsAccessCameraHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingCamera";
 constexpr char kCountAppsAccessMicrophoneHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone";
+constexpr char kRepeatedShowsHistogramName[] =
+    "Ash.PrivacyIndicators.NumberOfRepeatedShows";
 
 // Get the expected size in expand animation, given the animation value.
 int GetExpectedSizeInExpandAnimation(double progress) {
@@ -74,7 +78,8 @@ namespace ash {
 
 class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
  public:
-  PrivacyIndicatorsTrayItemViewTest() = default;
+  PrivacyIndicatorsTrayItemViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   PrivacyIndicatorsTrayItemViewTest(const PrivacyIndicatorsTrayItemViewTest&) =
       delete;
   PrivacyIndicatorsTrayItemViewTest& operator=(
@@ -633,6 +638,70 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
                                     /*is_microphone_used=*/true);
   histograms.ExpectBucketCount(kCountAppsAccessCameraHistogramName, 3, 1);
   histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 2, 1);
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
+  // Set up 2 displays. Note that only one instance should be recorded for the
+  // primary display when session changes.
+  UpdateDisplay("100x200,300x400");
+
+  base::HistogramTester histograms;
+
+  int expected_sample = 6;
+
+  // Makes the view flicker (show then hide) for `expected_sample` of times.
+  // Metric should be recorded for this repeated shows.
+  for (auto i = 0; i < expected_sample; i++) {
+    for (auto* controller : Shell::Get()->GetAllRootWindowControllers()) {
+      auto* indicator_view = controller->GetStatusAreaWidget()
+                                 ->unified_system_tray()
+                                 ->privacy_indicators_view();
+      indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/true,
+                             /*is_microphone_used=*/true);
+      indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/false,
+                             /*is_microphone_used=*/false);
+    }
+    task_environment()->FastForwardBy(base::Milliseconds(80));
+  }
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
+
+  // Makes one more flickering after 100ms. This flicker should not count
+  // towards the previous ones.
+  for (auto* controller : Shell::Get()->GetAllRootWindowControllers()) {
+    auto* indicator_view = controller->GetStatusAreaWidget()
+                               ->unified_system_tray()
+                               ->privacy_indicators_view();
+    indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/true,
+                           /*is_microphone_used=*/true);
+    indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/false,
+                           /*is_microphone_used=*/false);
+  }
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample + 1,
+                               0);
+
+  // Make sure it works again.
+  expected_sample = 8;
+
+  // Makes the view flicker (show then hide) for `expected_sample` of times.
+  // Metric should be recorded for this repeated shows.
+  for (auto i = 0; i < expected_sample; i++) {
+    for (auto* controller : Shell::Get()->GetAllRootWindowControllers()) {
+      auto* indicator_view = controller->GetStatusAreaWidget()
+                                 ->unified_system_tray()
+                                 ->privacy_indicators_view();
+      indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/true,
+                             /*is_microphone_used=*/true);
+      indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/false,
+                             /*is_microphone_used=*/false);
+    }
+    task_environment()->FastForwardBy(base::Milliseconds(80));
+  }
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
 }
 
 }  // namespace ash
