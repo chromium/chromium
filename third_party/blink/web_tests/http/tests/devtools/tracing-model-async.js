@@ -469,7 +469,16 @@
       'tid': mainThread + 100,
       'pid': pid + 2
     },
-
+    {
+      'cat': 'devtools.timeline',
+      'name': 'RunTask',
+      'ph': 'E',
+      'ts': 191000,
+      'args': {},
+      'id': 1,
+      'tid': mainThread + 100,
+      'pid': pid + 2
+    },
   ];
 
   var model = PerformanceTestRunner.createTracingModel(testData);
