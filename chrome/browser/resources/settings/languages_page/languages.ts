@@ -335,12 +335,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       return;
     }
 
-    const spellCheckSet =
-        this.makeSetFromArray_(this.getPref('spellcheck.dictionaries').value);
+    const spellCheckSet = this.makeSetFromArray_(
+        this.getPref<string[]>('spellcheck.dictionaries').value);
     const spellCheckForcedSet = this.makeSetFromArray_(
-        this.getPref('spellcheck.forced_dictionaries').value);
+        this.getPref<string[]>('spellcheck.forced_dictionaries').value);
     const spellCheckBlockedSet = this.makeSetFromArray_(
-        this.getPref('spellcheck.blocked_dictionaries').value);
+        this.getPref<string[]>('spellcheck.blocked_dictionaries').value);
 
     for (let i = 0; i < this.languages.enabled.length; i++) {
       const languageState = this.languages.enabled[i];
@@ -380,7 +380,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
      */
     const getPrefAndDedupe = (prefName: string): string[] => {
       const result =
-          this.getPref(prefName).value.filter((x: string) => !seenCodes.has(x));
+          this.getPref<string[]>(prefName).value.filter(x => !seenCodes.has(x));
       result.forEach((code: string) => seenCodes.add(code));
       return result;
     };
@@ -464,9 +464,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       return;
     }
     const neverTranslateCodes =
-        this.getPref('translate_blocked_languages').value;
+        this.getPref<string[]>('translate_blocked_languages').value;
     const neverTranslateLanguages =
-        neverTranslateCodes.map((code: string) => this.getLanguage(code));
+        neverTranslateCodes.map(code => this.getLanguage(code));
     this.set('languages.neverTranslate', neverTranslateLanguages);
   }
 
@@ -529,7 +529,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     let prospectiveUILanguage;
     // <if expr="is_win">
     // eslint-disable-next-line prefer-const
-    prospectiveUILanguage = this.getPref('intl.app_locale').value ||
+    prospectiveUILanguage = this.getPref<string>('intl.app_locale').value ||
         this.originalProspectiveUILanguage_;
     // </if>
 
@@ -581,13 +581,14 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       prospectiveUILanguage: string|undefined): LanguageState[] {
     assert(CrSettingsPrefs.isInitialized);
 
-    const pref = this.getPref('intl.accept_languages');
+    const pref = this.getPref<string>('intl.accept_languages');
     const enabledLanguageCodes = pref.value.split(',');
-    const languagesForcedPref = this.getPref('intl.forced_languages');
-    const spellCheckPref = this.getPref('spellcheck.dictionaries');
-    const spellCheckForcedPref = this.getPref('spellcheck.forced_dictionaries');
+    const languagesForcedPref = this.getPref<string[]>('intl.forced_languages');
+    const spellCheckPref = this.getPref<string[]>('spellcheck.dictionaries');
+    const spellCheckForcedPref =
+        this.getPref<string[]>('spellcheck.forced_dictionaries');
     const spellCheckBlockedPref =
-        this.getPref('spellcheck.blocked_dictionaries');
+        this.getPref<string[]>('spellcheck.blocked_dictionaries');
     const languageForcedSet = this.makeSetFromArray_(languagesForcedPref.value);
     const spellCheckSet = this.makeSetFromArray_(
         spellCheckPref.value.concat(spellCheckForcedPref.value));

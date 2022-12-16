@@ -134,7 +134,8 @@ export class TabDiscardExceptionListElement extends
     if (this.selectedRule_) {
       // edit dialog
       if (newRule !== this.selectedRule_) {
-        if (this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value.includes(newRule)) {
+        if (this.getPref<string[]>(TAB_DISCARD_EXCEPTIONS_PREF)
+                .value.includes(newRule)) {
           // delete instead of update, otherwise there would be a duplicate
           this.deletePrefListItem(
               TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
@@ -167,7 +168,7 @@ export class TabDiscardExceptionListElement extends
                  TAB_DISCARD_EXCEPTIONS_PREF]) {
       // Annotate sites with their managed status and append them to newSites
       // with managed sites first.
-      const {value: sites, enforcement} = this.getPref(pref);
+      const {value: sites, enforcement} = this.getPref<string[]>(pref);
       const siteToExceptionEntry = (site: string) => ({
         site,
         managed: enforcement === chrome.settingsPrivate.Enforcement.ENFORCED,

@@ -98,7 +98,7 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
 
   private onChange_() {
     this.metricsProxy_.recordBatterySaverModeChanged(
-        this.getPref(BATTERY_SAVER_MODE_PREF).value);
+        this.getPref<number>(BATTERY_SAVER_MODE_PREF).value);
   }
 }
 

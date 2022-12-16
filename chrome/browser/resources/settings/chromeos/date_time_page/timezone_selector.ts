@@ -173,7 +173,8 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
         value: timeZonePair[0],
       };
     });
-    this.updateActiveTimeZoneName_(this.getPref('cros.system.timezone').value);
+    this.updateActiveTimeZoneName_(
+        this.getPref<string>('cros.system.timezone').value);
   }
 
   /**

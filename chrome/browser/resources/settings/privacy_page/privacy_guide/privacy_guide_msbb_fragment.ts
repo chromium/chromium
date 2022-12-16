@@ -65,12 +65,14 @@ export class PrivacyGuideMsbbFragmentElement extends
 
   private onViewEnterStart_() {
     this.startStateMsbbOn_ =
-        this.getPref('url_keyed_anonymized_data_collection.enabled').value;
+        this.getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
+            .value;
   }
 
   private onViewExitFinish_() {
     const endStateMsbbOn =
-        this.getPref('url_keyed_anonymized_data_collection.enabled').value;
+        this.getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
+            .value;
 
     let state: PrivacyGuideSettingsStates|null = null;
     if (this.startStateMsbbOn_) {

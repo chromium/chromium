@@ -488,7 +488,8 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
     const currentAction = (this.assignmentContentsElement.firstChild as
                            SettingsSwitchAccessActionAssignmentPaneElement)
                               .action;
-    const pref = this.getPref<Object>(actionToPref[currentAction]);
+    const pref =
+        this.getPref<Record<string, string[]>>(actionToPref[currentAction]);
     const hasSwitchAssigned = Object.keys(pref.value).length > 0;
 
     if (hasSwitchAssigned) {

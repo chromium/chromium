@@ -238,7 +238,8 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the font family as a CSS property value.
    */
   private getFontFamily_(): string {
-    const fontFamily = this.getPref('accessibility.captions.text_font').value;
+    const fontFamily =
+        this.getPref<string>('accessibility.captions.text_font').value;
 
     // Return the preference value or the default font family for
     // video::-webkit-media-text-track-container defined in mediaControls.css.
@@ -288,7 +289,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     }
 
     return 'rgba(' + color + ',' +
-        parseInt(this.getPref(opacityPreference).value, 10) / 100.0 + ')';
+        this.getPref<number>(opacityPreference).value / 100.0 + ')';
   }
 
   /**

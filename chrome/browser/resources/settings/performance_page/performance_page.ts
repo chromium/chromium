@@ -58,7 +58,7 @@ export class SettingsPerformancePageElement extends
 
   private onChange_() {
     this.metricsProxy_.recordHighEfficiencyModeChanged(
-        this.getPref(HIGH_EFFICIENCY_MODE_PREF).value);
+        this.getPref<boolean>(HIGH_EFFICIENCY_MODE_PREF).value);
   }
 }
 

@@ -99,7 +99,7 @@ export class SettingsDownloadsPageElement extends
   private handleDownloadLocationChanged_() {
     this.browserProxy_
         .getDownloadLocationText(
-            this.getPref('download.default_directory').value)
+            this.getPref<string>('download.default_directory').value)
         .then(text => {
           this.downloadLocation_ = text;
         });

@@ -264,7 +264,7 @@ class SettingsSchedulerSliderElement extends
    */
   private hourFormatChanged_() {
     this.shouldUse24Hours_ =
-        this.getPref('settings.clock.use_24hour_clock').value;
+        this.getPref<boolean>('settings.clock.use_24hour_clock').value;
   }
 
   /**
