@@ -42,6 +42,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
 
 using sync_pb::UserConsentTypes;
@@ -131,6 +133,15 @@ constexpr char kEventOnRunNetworkTestsClicked[] = "onRunNetworkTestsClicked";
 // settings link.
 constexpr char kEventOnOpenPrivacySettingsPageClicked[] =
     "onOpenPrivacySettingsPageClicked";
+
+// "requestWindowBound" is fired when new opt-in window is created.
+constexpr char kEventRequestWindowBounds[] = "requestWindowBounds";
+
+// x,y,width,height to define current work area.
+constexpr char kDisplayWorkareaX[] = "displayWorkareaX";
+constexpr char kDisplayWorkareaY[] = "displayWorkareaY";
+constexpr char kDisplayWorkareaWidth[] = "displayWorkareaWidth";
+constexpr char kDisplayWorkareaHeight[] = "displayWorkareaHeight";
 
 void RequestOpenApp(Profile* profile) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -659,11 +670,19 @@ bool ArcSupportHost::Initialize() {
 
 void ArcSupportHost::OnDisplayMetricsChanged(const display::Display& display,
                                              uint32_t changed_metrics) {
+  SetWindowBound(display);
+}
+
+void ArcSupportHost::SetWindowBound(const display::Display& display) {
   if (!message_host_)
     return;
 
   base::Value::Dict message;
   message.Set(kAction, kActionSetWindowBounds);
+  message.Set(kDisplayWorkareaX, display.work_area().x());
+  message.Set(kDisplayWorkareaY, display.work_area().y());
+  message.Set(kDisplayWorkareaWidth, display.work_area().width());
+  message.Set(kDisplayWorkareaHeight, display.work_area().height());
   message_host_->SendMessage(message);
 }
 
@@ -814,6 +833,8 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     error_delegate_->OnRunNetworkTestsClicked();
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
+  } else if (*event == kEventRequestWindowBounds) {
+    SetWindowBound(display::Screen::GetScreen()->GetDisplayForNewWindows());
   } else {
     LOG(ERROR) << "Unknown message: " << *event;
     NOTREACHED();

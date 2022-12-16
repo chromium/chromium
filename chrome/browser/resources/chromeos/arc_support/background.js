@@ -812,7 +812,9 @@ function onNativeMessage(message) {
   } else if (message.action == 'closeWindow') {
     closeWindow();
   } else if (message.action == 'setWindowBounds') {
-    setWindowBounds();
+    setWindowBounds(
+        message.displayWorkareaX, message.displayWorkareaY,
+        message.displayWorkareaWidth, message.displayWorkareaHeight);
   }
 }
 
@@ -976,24 +978,24 @@ function hideOverlay() {
   }
 }
 
-function setWindowBounds() {
+function setWindowBounds(x, y, width, height) {
   if (!appWindow) {
     return;
   }
 
   var outerWidth = OUTER_WIDTH;
   var outerHeight = OUTER_HEIGHT;
-  if (outerWidth > screen.availWidth) {
-    outerWidth = screen.availWidth;
+  if (outerWidth > width) {
+    outerWidth = width;
   }
-  if (outerHeight > screen.availHeight) {
-    outerHeight = screen.availHeight;
+  if (outerHeight > height) {
+    outerHeight = height;
   }
 
   appWindow.outerBounds.width = outerWidth;
   appWindow.outerBounds.height = outerHeight;
-  appWindow.outerBounds.left = Math.ceil((screen.availWidth - outerWidth) / 2);
-  appWindow.outerBounds.top = Math.ceil((screen.availHeight - outerHeight) / 2);
+  appWindow.outerBounds.left = Math.ceil(x + (width - outerWidth) / 2);
+  appWindow.outerBounds.top = Math.ceil(y + (height - outerHeight) / 2);
 }
 
 function closeWindow() {
@@ -1046,13 +1048,13 @@ chrome.app.runtime.onLaunched.addListener(function() {
     focusManager.initialize();
 
     connectPort();
+    sendNativeMessage('requestWindowBounds');
   };
 
   var onWindowCreated = function(createdWindow) {
     appWindow = createdWindow;
     appWindow.contentWindow.onload = onAppContentLoad;
     appWindow.onClosed.addListener(onWindowClosed);
-    setWindowBounds();
   };
 
   var onWindowClosed = function() {

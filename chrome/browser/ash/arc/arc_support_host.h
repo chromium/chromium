@@ -231,6 +231,8 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // Requests to start the ARC support Chrome app.
   void RequestAppStart();
 
+  void SetWindowBound(const display::Display& display);
+
   bool Initialize();
 
   // Requests to ARC support Chrome app to show the specified page.
