@@ -203,6 +203,9 @@ class CORE_EXPORT CompositorAnimations {
 
   static bool CanStartTransformAnimationOnCompositorForSVG(const SVGElement&);
 
+  static bool CompositedPropertyRequiresSnapshot(
+      const PropertyHandle& property);
+
  private:
   static FailureReasons CheckCanStartEffectOnCompositor(
       const Timing&,

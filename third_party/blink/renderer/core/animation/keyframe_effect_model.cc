@@ -116,11 +116,11 @@ bool KeyframeEffectModelBase::SnapshotNeutralCompositorKeyframes(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
     const ComputedStyle* parent_style) const {
-  auto should_snapshot_property = [&old_style,
-                                   &new_style](const PropertyHandle& property) {
-    return !CSSPropertyEquality::PropertiesEqual(property, old_style,
-                                                 new_style);
-  };
+  auto should_snapshot_property =
+      [&old_style, &new_style](const PropertyHandle& property) {
+        return !CSSPropertyEquality::PropertiesEqual(property, old_style,
+                                                     new_style);
+      };
   auto should_snapshot_keyframe = [](const PropertySpecificKeyframe& keyframe) {
     return keyframe.IsNeutral();
   };
@@ -140,7 +140,7 @@ bool KeyframeEffectModelBase::SnapshotAllCompositorKeyframesIfNecessary(
 
   bool has_neutral_compositable_keyframe = false;
   auto should_snapshot_property = [](const PropertyHandle& property) {
-    return true;
+    return CompositorAnimations::CompositedPropertyRequiresSnapshot(property);
   };
   auto should_snapshot_keyframe =
       [&has_neutral_compositable_keyframe](

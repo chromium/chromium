@@ -63,7 +63,10 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
     CHECK(merge_);
     cached_interpolable_value_ = merge_.start_interpolable_value->Clone();
     DCHECK_EQ(compositor_start_ && compositor_end_,
-              property_.GetCSSProperty().IsCompositableProperty());
+
+              property_.GetCSSProperty().IsCompositableProperty() &&
+                  CompositorAnimations::CompositedPropertyRequiresSnapshot(
+                      property_));
   }
 
   void Apply(InterpolationEnvironment&) const;
