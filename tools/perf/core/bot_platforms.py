@@ -416,6 +416,11 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
     ])
+_MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('rendering.desktop'),
+])
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
@@ -621,10 +626,9 @@ MAC_M1_MINI_2020 = PerfPlatform(
 MAC_M1_MINI_2020_PGO = PerfPlatform(
     'mac-m1_mini_2020-perf-pgo',
     'Mac M1 Mini 2020',
-    _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
-    26,
-    'mac',
-    executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS)
+    _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
+    4,
+    'mac')
 
 # Win
 WIN_10_LOW_END = PerfPlatform(

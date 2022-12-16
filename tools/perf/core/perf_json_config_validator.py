@@ -17,6 +17,7 @@ _VALID_SWARMING_DIMENSIONS = {
 }
 _DEFAULT_VALID_PERF_POOLS = {
     'chrome.tests.perf',
+    'chrome.tests.perf-pgo',
     'chrome.tests.perf-webview',
     'chrome.tests.perf-fyi',
     'chrome.tests.perf-webview-fyi',
@@ -40,6 +41,7 @@ _VALID_PERF_POOLS = {
     'fuchsia-perf-shk': {'chrome.tests'},
     'linux-builder-perf': {'chrome.tests'},
     'mac-arm-builder-perf': {'chrome.tests'},
+    'mac-arm-builder-perf-pgo': {'chrome.tests'},
     'mac-builder-perf': {'chrome.tests'},
     'win64-builder-perf': {'chrome.tests'},
 }

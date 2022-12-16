@@ -1205,7 +1205,7 @@ BUILDERS = {
             'cpu': 'arm',
             'mac_model': 'Macmini9,1',
             'os': 'Mac',
-            'pool': 'chrome.tests.perf',
+            'pool': 'chrome.tests.perf-pgo',
         },
     },
     'linux-perf': {
