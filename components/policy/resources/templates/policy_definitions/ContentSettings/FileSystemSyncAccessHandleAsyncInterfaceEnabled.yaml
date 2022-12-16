@@ -1,5 +1,6 @@
 caption: Re-enable the deprecated async interface for <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph>
   in File System Access API
+deprecated: true
 default: false
 desc: |-
   Starting in M108, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods will be invoked synchronously.
