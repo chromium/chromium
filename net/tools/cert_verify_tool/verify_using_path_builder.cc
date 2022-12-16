@@ -24,6 +24,8 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace {
 
@@ -98,6 +100,21 @@ void PrintResultPath(const net::CertPathBuilderResultPath* result_path,
   for (const auto& cert : result_path->certs) {
     std::cout << " " << FingerPrintParsedCertificate(cert.get()) << " "
               << SubjectFromParsedCertificate(cert.get()) << "\n";
+  }
+
+  // Print the certificate policies.
+  if (!result_path->user_constrained_policy_set.empty()) {
+    std::cout << "Certificate policies:\n";
+    for (const auto& policy : result_path->user_constrained_policy_set) {
+      CBS cbs;
+      CBS_init(&cbs, policy.UnsafeData(), policy.Length());
+      bssl::UniquePtr<char> policy_text(CBS_asn1_oid_to_text(&cbs));
+      if (policy_text) {
+        std::cout << " " << policy_text.get() << "\n";
+      } else {
+        std::cout << " (invalid OID)\n";
+      }
+    }
   }
 
   // Print the errors/warnings if there were any.
