@@ -84,7 +84,7 @@ js_library("adb_sideloading") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/adb_sideloading.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -162,7 +162,7 @@ js_library("choobe") {
     "../../components:oobe_screens_list",
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
@@ -184,7 +184,7 @@ js_library("consolidated_consent") {
     "../../components:web_view_helper",
     "../../components:web_view_loader",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
@@ -206,7 +206,7 @@ js_library("cryptohome_recovery_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/cryptohome_recovery_setup.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
@@ -257,7 +257,7 @@ js_library("fingerprint_setup") {
     "../../components:display_manager_types",
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -274,7 +274,7 @@ js_library("gesture_navigation") {
   deps = [
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
@@ -295,7 +295,7 @@ js_library("gaia_signin") {
     "../../components:oobe_types",
     "../../components:security_token_pin",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:cr.m",
@@ -311,7 +311,7 @@ js_library("guest_tos") {
     "../../components:web_view_helper",
     "../../components:web_view_loader",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
@@ -357,7 +357,7 @@ js_library("managed_terms_of_service") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/managed_terms_of_service.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
@@ -381,7 +381,7 @@ js_library("marketing_opt_in") {
     "../../components:oobe_a11y_option",
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -395,7 +395,7 @@ js_library("multidevice_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
@@ -435,7 +435,7 @@ js_library("oobe_eula") {
     "../../:display_manager",
     "../../components:web_view_helper",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
@@ -469,7 +469,7 @@ js_library("os_install") {
   deps = [
     "../../:display_manager",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
@@ -524,7 +524,7 @@ js_library("pin_setup") {
   deps = [
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
@@ -544,7 +544,7 @@ js_library("recommend_apps") {
     "../../components:oobe_apps_list",
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
@@ -603,7 +603,7 @@ js_library("sync_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/sync_consent.js" ]
   deps = [
     "../../components:display_manager_types",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -632,7 +632,7 @@ js_library("tpm_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/tpm_error.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -645,7 +645,7 @@ js_library("user_creation") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/user_creation.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

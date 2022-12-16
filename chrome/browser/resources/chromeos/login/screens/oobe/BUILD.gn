@@ -66,7 +66,7 @@ js_library("demo_setup") {
   deps = [
     "../../components:progress_list_item",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
@@ -81,7 +81,7 @@ js_library("enable_debugging") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enable_debugging.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -98,7 +98,7 @@ js_library("enterprise_enrollment") {
     "../../components:gaia_dialog",
     "../../components:keyboard_utils_for_injection.m",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
@@ -129,7 +129,7 @@ js_library("quick_start") {
   deps = [
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/dialogs:oobe_loading_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -167,7 +167,7 @@ js_library("update") {
   deps = [
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
@@ -186,7 +186,7 @@ js_library("welcome") {
     "../../components:oobe_select",
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",

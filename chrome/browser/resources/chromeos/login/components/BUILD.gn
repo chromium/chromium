@@ -51,7 +51,6 @@ group("closure_compile") {
 
 group("polymer3_elements") {
   public_deps = [
-                  "behaviors:modulize",
                   "common_styles:polymer3_elements",
                   "oobe_vars:polymer3_elements",
 
