@@ -24,13 +24,11 @@ class WebDragDestDelegate;
 }  // namespace content
 
 // A typedef for a RenderViewHost used for comparison purposes only.
-typedef content::RenderViewHost* RenderViewHostIdentifier;
+using RenderViewHostIdentifier = content::RenderViewHost*;
 
-namespace remote_cocoa {
-namespace mojom {
+namespace remote_cocoa::mojom {
 class DraggingInfo;
-}  // namespace mojom
-}  // namespace remote_cocoa
+}  // namespace remote_cocoa::mojom
 
 namespace content {
 class WebContentsViewDelegate;
@@ -39,27 +37,26 @@ class WebContentsViewDelegate;
 // operation. This is required because some drop event data can change before
 // completeDropAsync is called.
 struct DropContext {
-  DropContext(const content::DropData drop_data,
+  DropContext(const DropData drop_data,
               const gfx::PointF client_pt,
               const gfx::PointF screen_pt,
               int modifier_flags,
-              base::WeakPtr<content::RenderWidgetHostImpl> target_rwh);
+              base::WeakPtr<RenderWidgetHostImpl> target_rwh);
   DropContext(const DropContext& other);
   DropContext(DropContext&& other);
   ~DropContext();
 
-  content::DropData drop_data;
+  DropData drop_data;
   const gfx::PointF client_pt;
   const gfx::PointF screen_pt;
   const int modifier_flags;
-  base::WeakPtr<content::RenderWidgetHostImpl> target_rwh;
+  base::WeakPtr<RenderWidgetHostImpl> target_rwh;
 };
 
-// Given |data|, which should not be nil, fill it in using the contents of the
-// given pasteboard. The types handled by this method should be kept in sync
-// with [WebContentsViewCocoa registerDragTypes].
-void CONTENT_EXPORT PopulateDropDataFromPasteboard(content::DropData* data,
-                                                   NSPasteboard* pboard);
+// Given a pasteboard, returns a `DropData` filled using its contents. The types
+// handled by this method must be kept in sync with `-[WebContentsViewCocoa
+// registerDragTypes]`.
+DropData CONTENT_EXPORT PopulateDropDataFromPasteboard(NSPasteboard* pboard);
 
 }  // namespace content
 
@@ -120,7 +117,7 @@ CONTENT_EXPORT
 // next time |-draggingUpdated:| is called.
 - (void)setCurrentOperation:(NSDragOperation)operation;
 
-// Messages to send during the tracking of a drag, ususally upon receiving
+// Messages to send during the tracking of a drag, usually upon receiving
 // calls from the view system. Communicates the drag messages to WebCore.
 - (void)setDropData:(const content::DropData&)dropData;
 - (NSDragOperation)draggingEntered:
@@ -151,7 +148,7 @@ CONTENT_EXPORT
 @end
 
 // Public use only for unit tests.
-@interface WebDragDest(Testing)
+@interface WebDragDest (Testing)
 // Given a point in window coordinates and a view in that window, return a
 // flipped point in the coordinate system of |view|.
 - (NSPoint)flipWindowPointToView:(const NSPoint&)windowPoint

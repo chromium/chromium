@@ -35,16 +35,16 @@ TEST_F(WebDragDestTest, Init) {
 }
 
 TEST_F(WebDragDestTest, Data) {
-  content::DropData data;
   scoped_refptr<ui::UniquePasteboard> pboard = new ui::UniquePasteboard;
-
   NSString* html_string = @"<html><body><b>hi there</b></body></html>";
   NSString* text_string = @"hi there";
   [pboard->get() setString:@"http://www.google.com"
                    forType:NSPasteboardTypeURL];
   [pboard->get() setString:html_string forType:NSPasteboardTypeHTML];
   [pboard->get() setString:text_string forType:NSPasteboardTypeString];
-  content::PopulateDropDataFromPasteboard(&data, pboard->get());
+
+  content::DropData data =
+      content::PopulateDropDataFromPasteboard(pboard->get());
 
   EXPECT_EQ(data.url.spec(), "http://www.google.com/");
   EXPECT_EQ(base::SysNSStringToUTF16(text_string), data.text);

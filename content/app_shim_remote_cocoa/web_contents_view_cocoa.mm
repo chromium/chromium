@@ -298,9 +298,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
     return NSDragOperationNone;
 
   // Fill out a DropData from pasteboard.
-  DropData dropData;
-  content::PopulateDropDataFromPasteboard(&dropData,
-                                          [sender draggingPasteboard]);
+  DropData dropData =
+      content::PopulateDropDataFromPasteboard(sender.draggingPasteboard);
 
   // Work around screen shot drag-drop permission bugs.
   // https://crbug.com/1148078
