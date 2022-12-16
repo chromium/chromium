@@ -429,7 +429,8 @@ void DlpContentManager::OnScreenShareSourceChanging(
     const content::DesktopMediaID& new_media_id) {
   for (auto& screen_share : running_screen_shares_) {
     if (screen_share->label() == label &&
-        screen_share->media_id() == old_media_id) {
+        screen_share->media_id() == old_media_id &&
+        screen_share->new_media_id() != new_media_id) {
       screen_share->ChangeStateBeforeSourceChange();
       screen_share->set_new_media_id(new_media_id);
     }
