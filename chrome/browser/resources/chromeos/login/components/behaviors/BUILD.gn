@@ -14,7 +14,7 @@ js_type_check("closure_compile") {
     ":oobe_dialog_host_behavior",
     ":oobe_focus_behavior",
     ":oobe_i18n_behavior",
-    ":oobe_scrollable_behavior.m",
+    ":oobe_scrollable_behavior",
   ]
 }
 
@@ -59,19 +59,18 @@ js_library("oobe_i18n_behavior") {
   extra_deps = [ ":copy_js" ]
 }
 
-js_library("oobe_scrollable_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_scrollable_behavior.m.js" ]
+js_library("oobe_scrollable_behavior") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_scrollable_behavior.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":copy_js" ]
 }
 
 js_modulizer("modulize") {
   input_files = [
     "login_screen_behavior.js",
     "multi_step_behavior.js",
-    "oobe_scrollable_behavior.js",
   ]
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -82,6 +81,7 @@ copy("copy_js") {
     "oobe_dialog_host_behavior.js",
     "oobe_focus_behavior.js",
     "oobe_i18n_behavior.js",
+    "oobe_scrollable_behavior.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

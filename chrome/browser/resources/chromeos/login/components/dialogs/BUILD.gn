@@ -27,7 +27,7 @@ js_library("oobe_content_dialog") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.js" ]
   deps = [
     "../behaviors:oobe_focus_behavior",
-    "../behaviors:oobe_scrollable_behavior.m",
+    "../behaviors:oobe_scrollable_behavior",
     "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
