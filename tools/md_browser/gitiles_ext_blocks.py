@@ -12,8 +12,8 @@ https://gerrit.googlesource.com/gitiles/+/master/Documentation/markdown.md#Notif
 
 from markdown.blockprocessors import BlockProcessor
 from markdown.extensions import Extension
-from markdown.util import etree
 import re
+import xml.etree.ElementTree as etree
 
 
 class _GitilesExtBlockProcessor(BlockProcessor):
@@ -73,12 +73,12 @@ class _GitilesExtBlockProcessor(BlockProcessor):
 
 
 class _GitilesExtBlockExtension(Extension):
-  """Add Gitiles' extended blocks to Markdown."""
+  """Add Gitiles' extended blocks to Markdown, with a priority higher than the
+  highest builtin."""
 
   def extendMarkdown(self, md):
-    md.parser.blockprocessors.add('gitilesextblocks',
-                                  _GitilesExtBlockProcessor(md.parser),
-                                  '_begin')
+    md.parser.blockprocessors.register(_GitilesExtBlockProcessor(md.parser),
+                                       'gitilesextblocks', 101)
 
 
 def makeExtension(*args, **kwargs):
