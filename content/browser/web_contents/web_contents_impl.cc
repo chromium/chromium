@@ -5976,10 +5976,10 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
   TRACE_EVENT1("content,navigation",
                "WebContentsImpl::DidNavigateMainFramePreCommit",
                "navigation_is_within_page", navigation_is_within_page);
-  const bool is_primary =
-      frame_tree_node->frame_tree().type() == FrameTree::Type::kPrimary;
+  const bool is_primary_mainframe =
+      frame_tree_node->GetFrameType() == FrameType::kPrimaryMainFrame;
   // If running for a non-primary main frame, early out.
-  if (!is_primary)
+  if (!is_primary_mainframe)
     return;
 
   // Ensure fullscreen mode is exited before committing the navigation to a
