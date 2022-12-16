@@ -4680,6 +4680,15 @@
         ]
        ]
       },
+      "the-frameset-and-frame-elements": {
+       "multicol-table-crash.html": [
+        "adfb76e15a4d7af987e7d5493ce678a015a8fb87",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "the-page": {
        "crashtests": {
         "body-huge-attr-value-crash.html": [
@@ -236380,6 +236389,45 @@
        {}
       ]
      ],
+     "prefers-color-scheme-svg-image-normal-with-meta-dark.html": [
+      "be633826ece7b29ff698d67bc6f919cbea29f94c",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/prefers-color-scheme-svg-image-normal-with-meta-dark-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "prefers-color-scheme-svg-image-normal-with-meta-light.html": [
+      "ca73ddafdea293fba097fcf53e6ba8c3384a5796",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/prefers-color-scheme-svg-image-normal-with-meta-light-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "prefers-color-scheme-svg-image-normal.html": [
+      "9b68142e91513535395b56547e98fb60766bee34",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/prefers-color-scheme-svg-image-normal-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "prefers-color-scheme-svg-image.html": [
       "ce7babe6318f4456709dae0925064c6b8e55296d",
       [
@@ -259830,16 +259878,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "559b5b0b8a2efb2ce9354eb683610ab9a8023dec",
-     []
-    ],
-    "mtime.json": [
-     "cf437328a5621fc74d6ce3582c733939c35b66e9",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -260102,11 +260140,11 @@
      []
     ],
     "back-forward-cache-open-connection.window-expected.txt": [
-     "2dcffa0f1274add67549e79ac56681157cfb95b2",
+     "be226ad7d267d3a5f680ac91d62d3779f92748c0",
      []
     ],
     "back-forward-cache-open-connection.window.js.ini": [
-     "732d3cef746bdf091879b397dd85af527b168170",
+     "e9ec6bf98544bbbf3bf03b0aca3ccbfdef063eb6",
      []
     ],
     "bindings-inject-values-bypass-chain.html.ini": [
@@ -260175,7 +260213,7 @@
       []
      ],
      "support.js": [
-      "8dbfa6f1e37d7631bf5f69b9da9b906876c5d2cf",
+      "18ed971ad7cb886caee0142e830f25e13f8354ac",
       []
      ]
     },
@@ -329762,6 +329800,18 @@
       "c4b3aa5891b9af4c238e65a92128769ecd072452",
       []
      ],
+     "prefers-color-scheme-svg-image-normal-ref.html": [
+      "ef7fa1b366d3a6b9a5a578c542fb864238b55859",
+      []
+     ],
+     "prefers-color-scheme-svg-image-normal-with-meta-dark-ref.html": [
+      "008c66e47d9a876680b31ce11cca4e66258166d0",
+      []
+     ],
+     "prefers-color-scheme-svg-image-normal-with-meta-light-ref.html": [
+      "4b47a7fd6ed8d04f8dc43d819ce35a3e2dde268c",
+      []
+     ],
      "prefers-color-scheme-svg-image-ref.html": [
       "7da496cf8831819c0e75d73f07004e8d96e5b65a",
       []
@@ -344342,6 +344392,14 @@
          []
         ]
        },
+       "regression-1399759-opt-out.https.sub.html.headers": [
+        "e007de4d7bfd8bd5a26b503f338e1da696ddb941",
+        []
+       ],
+       "regression-1399759.https.sub.html.headers": [
+        "79a20f30fc0f486014c8b93edef7483605101504",
+        []
+       ],
        "removing-iframes.sub.https.html.headers": [
         "79a20f30fc0f486014c8b93edef7483605101504",
         []
@@ -386742,7 +386800,7 @@
        []
       ],
       "asserts.py": [
-       "bc59d7b39664fe57e31f1e1aaf0f370aed651633",
+       "f5812bc8932360a68fa40237ca8a4e1b8ef2d205",
        []
       ],
       "authentication.py": [
@@ -386758,7 +386816,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "f4a5b9ad80ebd22a019af9ee9891cbdb08053e9d",
+       "7842e325a026ae7b49fbb06609b7b2db078c7038",
        []
       ],
       "fixtures_http.py": [
@@ -386786,6 +386844,10 @@
         "b5916148b558e5077338bf77575d3677bdffa764",
         []
        ],
+       "render.html": [
+        "d0408480dafbbeb34856553f176034489c51907a",
+        []
+       ],
        "subframe.html": [
         "2019485529f64c778081b542646d36b55e4c4a39",
         []
@@ -386796,7 +386858,7 @@
        []
       ],
       "image.py": [
-       "2e7ad8c1309b2b4a1e02b424cbd74a610535a4ed",
+       "e4fc88f5b817cb3e576337da903616fd903fe494",
        []
       ],
       "inline.py": [
@@ -386805,6 +386867,10 @@
       ],
       "merge_dictionaries.py": [
        "72f1cab352dec4f333aa9f5498d6115276a3f836",
+       []
+      ],
+      "screenshot.py": [
+       "374e5ed539cb4c3558b92268c4e3e370331ed98f",
        []
       ],
       "sync.py": [
@@ -396255,14 +396321,14 @@
      ]
     ],
     "back-forward-cache-open-connection.window.js": [
-     "b0abd651feba6894996798726c2431142300ed1e",
+     "397eadab8763fe884f877da63b75a06c8dcc023a",
      [
       "IndexedDB/back-forward-cache-open-connection.window.html",
       {
        "script_metadata": [
         [
          "title",
-         "BFCache support test for page with open IndexedDB connection"
+         "Testing BFCache support for page with open IndexedDB connection, and eviction behavior when receiving versionchange event."
         ],
         [
          "script",
@@ -396271,6 +396337,10 @@
         [
          "script",
          "/common/utils.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
         ],
         [
          "script",
@@ -504715,6 +504785,20 @@
          ]
         ]
        },
+       "regression-1399759-opt-out.https.sub.html": [
+        "381f4a5d79f34600f88fa30ddf45233b5ed930ab",
+        [
+         null,
+         {}
+        ]
+       ],
+       "regression-1399759.https.sub.html": [
+        "81f1ebc951f71b1963f5ffaf07dd2fb0d4125e5c",
+        [
+         null,
+         {}
+        ]
+       ],
        "removing-iframes.sub.https.html": [
         "b83aa9f5bedbaf64c7af9215d926d86013894cab",
         [
@@ -661493,7 +661577,7 @@
      },
      "take_screenshot": {
       "iframe.py": [
-       "81881c1dae7345b41f6301b880d06141b12624c9",
+       "258e764407a7e936455c3c00fdfafb063bf231b8",
        [
         null,
         {}
