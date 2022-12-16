@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -203,23 +204,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Gets the minimum timestamp allowed for referrer chains.
   virtual double GetMinAllowedTimestampForReferrerChains() const = 0;
 
-  // Returns the duration of the next backoff. Starts at
-  // |kMinBackOffResetDurationInSeconds| and increases exponentially until
-  // it reaches |kMaxBackOffResetDurationInSeconds|.
-  size_t GetBackoffDurationInSeconds() const;
-
-  // Called when the request to remote endpoint fails. May initiate or extend
-  // backoff.
-  void HandleLookupError();
-
-  // Called when the request to remote endpoint succeeds. Resets error count and
-  // ends backoff.
-  void HandleLookupSuccess();
-
-  // Resets the error count and ends backoff mode. Functionally same as
-  // |HandleLookupSuccess| for now.
-  void ResetFailures();
-
   // Called to get cache from |cache_manager|. Returns the cached response if
   // there's a cache hit; nullptr otherwise.
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
@@ -267,25 +251,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Count of consecutive failures to complete URL lookup requests. When it
-  // reaches |kMaxFailuresToEnforceBackoff|, we enter the backoff mode. It gets
-  // reset when we complete a lookup successfully or when the backoff reset
-  // timer fires.
-  size_t consecutive_failures_ = 0;
-
-  // If true, represents that one or more real time lookups did complete
-  // successfully since the last backoff or Chrome never entered the breakoff;
-  // if false and Chrome re-enters backoff period, the backoff duration is
-  // increased exponentially (capped at |kMaxBackOffResetDurationInSeconds|).
-  bool did_successful_lookup_since_last_backoff_ = true;
-
-  // The current duration of backoff. Increases exponentially until it reaches
-  // |kMaxBackOffResetDurationInSeconds|.
-  size_t next_backoff_duration_secs_ = 0;
-
-  // If this timer is running, backoff is in effect.
-  base::OneShotTimer backoff_timer_;
-
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -300,6 +265,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Unowned object used to retrieve referrer chains.
   raw_ptr<ReferrerChainProvider> referrer_chain_provider_;
+
+  // Helper object that manages backoff state.
+  std::unique_ptr<BackoffOperator> backoff_operator_;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

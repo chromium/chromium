@@ -99,9 +99,9 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
               population.set_user_population(
                   IsEnhancedProtectionEnabled(*pref_service)
                       ? ChromeUserPopulation::ENHANCED_PROTECTION
-                      : IsExtendedReportingEnabled(*pref_service)
-                            ? ChromeUserPopulation::EXTENDED_REPORTING
-                            : ChromeUserPopulation::SAFE_BROWSING);
+                  : IsExtendedReportingEnabled(*pref_service)
+                      ? ChromeUserPopulation::EXTENDED_REPORTING
+                      : ChromeUserPopulation::SAFE_BROWSING);
               population.set_profile_management_status(
                   ChromeUserPopulation::NOT_MANAGED);
               population.set_is_history_sync_enabled(true);
@@ -129,8 +129,6 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   bool CanCheckUrl(const GURL& url) {
     return RealTimeUrlLookupServiceBase::CanCheckUrl(url);
   }
-  void HandleLookupError() { rt_service_->HandleLookupError(); }
-  void HandleLookupSuccess() { rt_service_->HandleLookupSuccess(); }
   bool IsInBackoffMode() { return rt_service_->IsInBackoffMode(); }
   bool CanSendRTSampleRequest() {
     return rt_service_->CanSendRTSampleRequest();
@@ -190,6 +188,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void SetUpFailureResponse(net::HttpStatusCode status) {
+    test_url_loader_factory_.ClearResponses();
     test_url_loader_factory_.AddResponse(kRealTimeLookupUrlPrefix, "", status);
   }
 
@@ -370,285 +369,6 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
     EXPECT_EQ("url_page_load_token",
               request->population().page_load_tokens(0).token_value());
   }
-}
-
-TEST_F(RealTimeUrlLookupServiceTest, TestBackoffAndTimerReset) {
-  // Not in backoff at the beginning.
-  ASSERT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 3: Entered backoff.
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::Seconds(298));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-}
-
-TEST_F(RealTimeUrlLookupServiceTest, TestBackoffAndLookupSuccessReset) {
-  // Not in backoff at the beginning.
-  ASSERT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Lookup success resets the backoff counter.
-  HandleLookupSuccess();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Lookup success resets the backoff counter.
-  HandleLookupSuccess();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 3: Entered backoff.
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Lookup success resets the backoff counter.
-  HandleLookupSuccess();
-  EXPECT_FALSE(IsInBackoffMode());
-}
-
-TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoff) {
-  ///////////////////////////////
-  // Initial backoff: 300 seconds
-  ///////////////////////////////
-
-  // Not in backoff at the beginning.
-  ASSERT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 3: Entered backoff.
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::Seconds(298));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  /////////////////////////////////////
-  // Exponential backoff 1: 600 seconds
-  /////////////////////////////////////
-
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 599 seconds.
-  task_environment_.FastForwardBy(base::Seconds(598));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 600 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  //////////////////////////////////////
-  // Exponential backoff 2: 1200 seconds
-  //////////////////////////////////////
-
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1199 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1198));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 1200 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  ///////////////////////////////////////////////////
-  // Exponential backoff 3: 1800 seconds (30 minutes)
-  ///////////////////////////////////////////////////
-
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1799 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1798));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 1800 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  ///////////////////////////////////////////////////
-  // Exponential backoff 4: 1800 seconds (30 minutes)
-  ///////////////////////////////////////////////////
-
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1799 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1798));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 1800 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-}
-
-TEST_F(RealTimeUrlLookupServiceTest, TestExponentialBackoffWithResetOnSuccess) {
-  ///////////////////////////////
-  // Initial backoff: 300 seconds
-  ///////////////////////////////
-
-  // Not in backoff at the beginning.
-  ASSERT_FALSE(IsInBackoffMode());
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 3: Entered backoff.
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::Seconds(298));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  /////////////////////////////////////
-  // Exponential backoff 1: 600 seconds
-  /////////////////////////////////////
-
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 599 seconds.
-  task_environment_.FastForwardBy(base::Seconds(598));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 600 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // The next lookup is a success. This should reset the backoff duration to
-  // |kMinBackOffResetDurationInSeconds|
-  HandleLookupSuccess();
-
-  // Failure 1: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 2: No backoff.
-  HandleLookupError();
-  EXPECT_FALSE(IsInBackoffMode());
-
-  // Failure 3: Entered backoff.
-  HandleLookupError();
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 1 second.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff not reset after 299 seconds.
-  task_environment_.FastForwardBy(base::Seconds(298));
-  EXPECT_TRUE(IsInBackoffMode());
-
-  // Backoff should have been reset after 300 seconds.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(IsInBackoffMode());
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestGetSBThreatTypeForRTThreatType) {
@@ -1251,4 +971,53 @@ TEST_F(RealTimeUrlLookupServiceTest,
   rt_service()->set_bypass_probability_for_tests(true);
   EXPECT_TRUE(CanSendRTSampleRequest());
 }
+
+TEST_F(RealTimeUrlLookupServiceTest, TestBackoffMode) {
+  EnableMbb();
+  auto perform_lookup = [this](bool make_fail) {
+    GURL url(kTestUrl);
+    SetUpFailureResponse(make_fail ? net::HTTP_INTERNAL_SERVER_ERROR
+                                   : net::HTTP_OK);
+    base::MockCallback<RTLookupRequestCallback> request_callback;
+    base::MockCallback<RTLookupResponseCallback> response_callback;
+    rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                              request_callback.Get(), response_callback.Get(),
+                              base::SequencedTaskRunner::GetCurrentDefault());
+    EXPECT_CALL(request_callback, Run(_, _)).Times(1);
+    EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ !make_fail,
+                                       /* is_cached_response */ false, _));
+    task_environment_.RunUntilIdle();
+  };
+  auto perform_failing_lookup = [perform_lookup]() { perform_lookup(true); };
+  auto perform_successful_lookup = [perform_lookup]() {
+    perform_lookup(false);
+  };
+
+  // Failing lookups 1 and 2 don't trigger backoff mode. Lookup 3 does.
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_TRUE(IsInBackoffMode());
+
+  // Backoff mode should still be set until 5 minutes later.
+  task_environment_.FastForwardBy(base::Seconds(299));
+  EXPECT_TRUE(IsInBackoffMode());
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(IsInBackoffMode());
+
+  // Backoff mode only occurs after 3 *consecutive* failures.
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_successful_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+  perform_failing_lookup();
+  EXPECT_FALSE(IsInBackoffMode());
+}
+
 }  // namespace safe_browsing

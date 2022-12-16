@@ -35,7 +35,7 @@ namespace safe_browsing {
 
 namespace {
 
-const size_t kMaxFailuresToEnforceBackoff = 3;
+const size_t kNumFailuresToEnforceBackoff = 3;
 
 const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
 const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
@@ -131,7 +131,13 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
       get_user_population_callback_(get_user_population_callback),
-      referrer_chain_provider_(referrer_chain_provider) {}
+      referrer_chain_provider_(referrer_chain_provider),
+      backoff_operator_(std::make_unique<BackoffOperator>(
+          /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
+          /*min_backoff_reset_duration_in_seconds=*/
+          kMinBackOffResetDurationInSeconds,
+          /*max_backoff_reset_duration_in_seconds=*/
+          kMaxBackOffResetDurationInSeconds)) {}
 
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
@@ -236,67 +242,12 @@ RealTimeUrlLookupServiceBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-size_t RealTimeUrlLookupServiceBase::GetBackoffDurationInSeconds() const {
-  return did_successful_lookup_since_last_backoff_
-             ? kMinBackOffResetDurationInSeconds
-             : std::min(kMaxBackOffResetDurationInSeconds,
-                        2 * next_backoff_duration_secs_);
-}
-
-void RealTimeUrlLookupServiceBase::HandleLookupError() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  consecutive_failures_++;
-
-  // Any successful lookup clears both |consecutive_failures_| as well as
-  // |did_successful_lookup_since_last_backoff_|.
-  // On a failure, the following happens:
-  // 1) if |consecutive_failures_| < |kMaxFailuresToEnforceBackoff|:
-  //    Do nothing more.
-  // 2) if already in the backoff mode:
-  //    Do nothing more. This can happen if we had some outstanding real time
-  //    requests in flight when we entered the backoff mode.
-  // 3) if |did_successful_lookup_since_last_backoff_| is true:
-  //    Enter backoff mode for |kMinBackOffResetDurationInSeconds| seconds.
-  // 4) if |did_successful_lookup_since_last_backoff_| is false:
-  //    This indicates that we've had |kMaxFailuresToEnforceBackoff| since
-  //    exiting the last backoff with no successful lookups since so do an
-  //    exponential backoff.
-
-  if (consecutive_failures_ < kMaxFailuresToEnforceBackoff)
-    return;
-
-  if (IsInBackoffMode()) {
-    return;
-  }
-
-  // Enter backoff mode, calculate duration.
-  next_backoff_duration_secs_ = GetBackoffDurationInSeconds();
-  backoff_timer_.Start(FROM_HERE, base::Seconds(next_backoff_duration_secs_),
-                       this, &RealTimeUrlLookupServiceBase::ResetFailures);
-  did_successful_lookup_since_last_backoff_ = false;
-}
-
-void RealTimeUrlLookupServiceBase::HandleLookupSuccess() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ResetFailures();
-
-  // |did_successful_lookup_since_last_backoff_| is set to true only when we
-  // complete a lookup successfully.
-  did_successful_lookup_since_last_backoff_ = true;
-}
-
 bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool in_backoff = backoff_timer_.IsRunning();
+  bool in_backoff = backoff_operator_->IsInBackoffMode();
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.Backoff.State",
                                     GetMetricSuffix(), in_backoff);
   return in_backoff;
-}
-
-void RealTimeUrlLookupServiceBase::ResetFailures() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  consecutive_failures_ = 0;
-  backoff_timer_.Stop();
 }
 
 std::unique_ptr<RTLookupResponse>
@@ -509,7 +460,8 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   base::UmaHistogramBoolean(
       "SafeBrowsing.RT.IsLookupSuccessful" + report_type_suffix,
       is_rt_lookup_successful);
-  is_rt_lookup_successful ? HandleLookupSuccess() : HandleLookupError();
+  is_rt_lookup_successful ? backoff_operator_->ReportSuccess()
+                          : backoff_operator_->ReportError();
 
   MayBeCacheRealTimeUrlVerdict(url, *response);
 

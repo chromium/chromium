@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "backoff_operator.cc",
+    "backoff_operator.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "backoff_operator_unittest.cc" ]
+  deps = [
+    ":utils",
+    "//base/test:test_support",
+  ]
+}
