@@ -11019,6 +11019,21 @@
             ]
         }
     ],
+    "TerminalXtermRollout": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TerminalAlternativeEmulator"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
