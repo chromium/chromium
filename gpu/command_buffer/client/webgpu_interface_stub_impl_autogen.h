@@ -12,13 +12,6 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_
 
-void WebGPUInterfaceStub::AssociateMailbox(GLuint /* device_id */,
-                                           GLuint /* device_generation */,
-                                           GLuint /* id */,
-                                           GLuint /* generation */,
-                                           GLuint /* usage */,
-                                           MailboxFlags /* flags */,
-                                           const GLbyte* /* mailbox */) {}
 void WebGPUInterfaceStub::DissociateMailbox(GLuint /* texture_id */,
                                             GLuint /* texture_generation */) {}
 void WebGPUInterfaceStub::DissociateMailboxForPresent(

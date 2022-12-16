@@ -207,7 +207,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   DCHECK_EQ(desc.size.depthOrArrayLayers, 1u);
   DCHECK_EQ(desc.mipLevelCount, 1u);
   DCHECK_EQ(desc.sampleCount, 1u);
-  DCHECK_EQ(desc.viewFormatCount, 0u);
 
   auto context_provider = GetContextProviderWeakPtr();
   if (!context_provider) {

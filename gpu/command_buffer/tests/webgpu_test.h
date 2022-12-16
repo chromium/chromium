@@ -32,6 +32,7 @@ namespace webgpu {
 class WebGPUCmdHelper;
 class WebGPUDecoder;
 class WebGPUImplementation;
+class WebGPUInterface;
 
 }  // namespace webgpu
 
@@ -58,7 +59,8 @@ class WebGPUTest : public testing::Test {
 
   void Initialize(const Options& options);
 
-  webgpu::WebGPUImplementation* webgpu() const;
+  webgpu::WebGPUInterface* webgpu() const;
+  webgpu::WebGPUImplementation* webgpu_impl() const;
   webgpu::WebGPUCmdHelper* webgpu_cmds() const;
   SharedImageInterface* GetSharedImageInterface() const;
   webgpu::WebGPUDecoder* GetDecoder() const;

@@ -26,14 +26,17 @@ void AssociateMailboxImmediate(GLuint device_id,
                                GLuint generation,
                                GLuint usage,
                                MailboxFlags flags,
-                               const GLbyte* mailbox) {
-  const uint32_t size = webgpu::cmds::AssociateMailboxImmediate::ComputeSize();
+                               GLuint view_format_count,
+                               GLuint count,
+                               const GLuint* mailbox_and_view_formats) {
+  const uint32_t size =
+      webgpu::cmds::AssociateMailboxImmediate::ComputeSize(count);
   webgpu::cmds::AssociateMailboxImmediate* c =
       GetImmediateCmdSpaceTotalSize<webgpu::cmds::AssociateMailboxImmediate>(
           size);
   if (c) {
     c->Init(device_id, device_generation, id, generation, usage, flags,
-            mailbox);
+            view_format_count, count, mailbox_and_view_formats);
   }
 }
 

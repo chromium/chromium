@@ -30,40 +30,37 @@ TEST_F(WebGPUFormatTest, DawnCommands) {
 
 TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
   const int kSomeBaseValueToTestWith = 51;
-  static GLbyte data[] = {
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 1),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 2),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 3),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 4),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 5),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 6),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 7),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 8),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 9),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 10),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 11),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 12),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 13),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 14),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 15),
+  static GLuint data[] = {
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 3),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 4),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 5),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 6),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 7),
   };
   cmds::AssociateMailboxImmediate& cmd =
       *GetBufferAs<cmds::AssociateMailboxImmediate>();
+  const GLsizei kNumElements = 8;
+  const size_t kExpectedCmdSize =
+      sizeof(cmd) + kNumElements * sizeof(GLuint) * 1;
   void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
-              static_cast<GLuint>(13), static_cast<GLuint>(14),
-              static_cast<GLuint>(15), static_cast<MailboxFlags>(16), data);
+      cmd.Set(&cmd, static_cast<GLuint>(1), static_cast<GLuint>(2),
+              static_cast<GLuint>(3), static_cast<GLuint>(4),
+              static_cast<GLuint>(5), static_cast<MailboxFlags>(6),
+              static_cast<GLuint>(7), static_cast<GLuint>(8), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::AssociateMailboxImmediate::kCmdId),
             cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
-            cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.device_id);
-  EXPECT_EQ(static_cast<GLuint>(12), cmd.device_generation);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.id);
-  EXPECT_EQ(static_cast<GLuint>(14), cmd.generation);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.usage);
-  EXPECT_EQ(static_cast<MailboxFlags>(16), cmd.flags);
+  EXPECT_EQ(kExpectedCmdSize, cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(1), cmd.device_id);
+  EXPECT_EQ(static_cast<GLuint>(2), cmd.device_generation);
+  EXPECT_EQ(static_cast<GLuint>(3), cmd.id);
+  EXPECT_EQ(static_cast<GLuint>(4), cmd.generation);
+  EXPECT_EQ(static_cast<GLuint>(5), cmd.usage);
+  EXPECT_EQ(static_cast<MailboxFlags>(6), cmd.flags);
+  EXPECT_EQ(static_cast<GLuint>(7), cmd.view_format_count);
+  EXPECT_EQ(static_cast<GLuint>(8), cmd.count);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

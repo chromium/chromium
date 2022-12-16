@@ -513,6 +513,10 @@ class PixelTestPages():
                         base_name + '_WebGPUDisplayP3',
                         test_rect=[0, 0, 300, 300],
                         browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_canvas_format_reinterpretation.html',
+                        base_name + '_WebGPUCanvasFormatReinterpretation',
+                        test_rect=[0, 0, 300, 300],
+                        browser_args=webgpu_args),
       ]
 
     return (webgpu_pages_helper(base_name, mode=Mode.WEBGPU_DEFAULT) +

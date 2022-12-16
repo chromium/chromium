@@ -1836,21 +1836,45 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   uint32_t generation = static_cast<uint32_t>(c.generation);
   WGPUTextureUsage usage = static_cast<WGPUTextureUsage>(c.usage);
   MailboxFlags flags = static_cast<MailboxFlags>(c.flags);
+  uint32_t view_format_count = static_cast<uint32_t>(c.view_format_count);
+
+  GLuint packed_entry_count = c.count;
+  // The immediate_data should be uint32_t-sized words that exactly matches
+  // the packed_entry_count.
+  if (immediate_data_size % sizeof(uint32_t) != 0 ||
+      immediate_data_size / sizeof(uint32_t) != packed_entry_count) {
+    return error::kOutOfBounds;
+  }
+
+  volatile const uint32_t* packed_data =
+      gles2::GetImmediateDataAs<volatile const uint32_t*>(
+          c, immediate_data_size, immediate_data_size);
+
+  // Compute the expected number of packed entries. Cast to uint64_t to
+  // avoid overflow.
+  static_assert(sizeof(Mailbox) % sizeof(uint32_t) == 0u);
+  constexpr uint32_t kMailboxNumEntries = sizeof(Mailbox) / sizeof(uint32_t);
+  uint64_t expected_packed_entries =
+      static_cast<uint64_t>(kMailboxNumEntries) + view_format_count;
+
+  // The packed data should be non-empty and exactly match the expected number
+  // of entries.
+  if (packed_data == nullptr || packed_entry_count != expected_packed_entries) {
+    return error::kOutOfBounds;
+  }
 
   // Unpack the mailbox
-  if (sizeof(Mailbox) > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailbox_bytes =
-      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, sizeof(Mailbox),
-                                                        immediate_data_size);
-  if (mailbox_bytes == nullptr) {
-    return error::kOutOfBounds;
-  }
   Mailbox mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox_bytes));
+      *reinterpret_cast<const volatile Mailbox*>(packed_data));
+  packed_data += kMailboxNumEntries;
   DLOG_IF(ERROR, !mailbox.Verify())
       << "AssociateMailbox was passed an invalid mailbox";
+
+  // Copy the view formats into a vector.
+  static_assert(sizeof(WGPUTextureFormat) == sizeof(uint32_t));
+  std::vector<WGPUTextureFormat> view_formats(view_format_count);
+  memcpy(view_formats.data(), const_cast<const uint32_t*>(packed_data),
+         view_format_count * sizeof(WGPUTextureFormat));
 
   if (usage & ~kAllowedMailboxTextureUsages) {
     DLOG(ERROR) << "AssociateMailbox: Invalid usage";
@@ -1866,11 +1890,12 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   auto it = known_device_metadata_.find(device);
   DCHECK(it != known_device_metadata_.end());
   if (it->second.adapterType == WGPUAdapterType_CPU) {
-    representation_and_access =
-        AssociateMailboxUsingSkiaFallback(mailbox, flags, device, usage, {});
+    representation_and_access = AssociateMailboxUsingSkiaFallback(
+        mailbox, flags, device, usage, std::move(view_formats));
   } else {
-    representation_and_access = AssociateMailboxDawn(
-        mailbox, flags, device, it->second.backendType, usage, {});
+    representation_and_access =
+        AssociateMailboxDawn(mailbox, flags, device, it->second.backendType,
+                             usage, std::move(view_formats));
   }
 
   if (!representation_and_access) {

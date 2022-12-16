@@ -184,8 +184,8 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
   // representation.
   webgpu->AssociateMailbox(wire_device_id_, wire_device_generation_,
                            wire_texture_id_, wire_texture_generation_,
-                           desc.usage, mailbox_flags,
-                           reinterpret_cast<const GLbyte*>(&mailbox));
+                           desc.usage, desc.viewFormats, desc.viewFormatCount,
+                           mailbox_flags, mailbox);
 }
 
 void WebGPUMailboxTexture::SetAlphaClearer(

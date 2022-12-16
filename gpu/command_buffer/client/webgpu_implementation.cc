@@ -409,21 +409,43 @@ WGPUDevice WebGPUImplementation::DeprecatedEnsureDefaultDeviceSync() {
   return nullptr;
 }
 
-void WebGPUImplementation::AssociateMailbox(GLuint device_id,
-                                            GLuint device_generation,
-                                            GLuint texture_id,
-                                            GLuint texture_generation,
-                                            GLuint usage,
-                                            MailboxFlags flags,
-                                            const GLbyte* mailbox) {
+void WebGPUImplementation::AssociateMailbox(
+    GLuint device_id,
+    GLuint device_generation,
+    GLuint texture_id,
+    GLuint texture_generation,
+    GLuint usage,
+    const WGPUTextureFormat* view_formats,
+    GLuint view_format_count,
+    MailboxFlags flags,
+    const Mailbox& mailbox) {
 #if BUILDFLAG(USE_DAWN)
   // Commit previous Dawn commands as they may manipulate texture object IDs
   // and need to be resolved prior to the AssociateMailbox command. Otherwise
   // the service side might not know, for example that the previous texture
   // using that ID has been released.
   dawn_wire_->serializer()->Commit();
-  helper_->AssociateMailboxImmediate(device_id, device_generation, texture_id,
-                                     texture_generation, usage, flags, mailbox);
+
+  // The command buffer transfer data in 4-byte "entries". So the array of data
+  // we pass must have a byte-length that's a multiple of 4.
+  constexpr size_t kEntrySize = 4u;
+  static_assert(sizeof(mailbox.name) % kEntrySize == 0u);
+  static_assert(sizeof(WGPUTextureFormat) % kEntrySize == 0u);
+
+  size_t num_bytes =
+      sizeof(mailbox.name) + sizeof(WGPUTextureFormat) * view_format_count;
+  std::vector<char> immediate_data(num_bytes);
+
+  uint32_t num_entries = ComputeNumEntries(immediate_data.size());
+
+  memcpy(immediate_data.data(), mailbox.name, sizeof(mailbox.name));
+  memcpy(immediate_data.data() + sizeof(mailbox.name), view_formats,
+         sizeof(WGPUTextureFormat) * view_format_count);
+
+  helper_->AssociateMailboxImmediate(
+      device_id, device_generation, texture_id, texture_generation, usage,
+      flags, view_format_count, num_entries,
+      reinterpret_cast<GLuint*>(immediate_data.data()));
 #endif
 }
 

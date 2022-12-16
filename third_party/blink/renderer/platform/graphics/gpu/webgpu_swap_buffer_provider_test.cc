@@ -42,8 +42,10 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
                         GLuint,
                         GLuint,
                         GLuint,
+                        const WGPUTextureFormat*,
+                        GLuint,
                         gpu::webgpu::MailboxFlags,
-                        const GLbyte*) override {
+                        const gpu::Mailbox&) override {
     num_associated_mailboxes++;
   }
   void DissociateMailbox(GLuint, GLuint) override {

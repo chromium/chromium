@@ -13,13 +13,6 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_
 
-virtual void AssociateMailbox(GLuint device_id,
-                              GLuint device_generation,
-                              GLuint id,
-                              GLuint generation,
-                              GLuint usage,
-                              MailboxFlags flags,
-                              const GLbyte* mailbox) = 0;
 virtual void DissociateMailbox(GLuint texture_id,
                                GLuint texture_generation) = 0;
 virtual void DissociateMailboxForPresent(GLuint device_id,

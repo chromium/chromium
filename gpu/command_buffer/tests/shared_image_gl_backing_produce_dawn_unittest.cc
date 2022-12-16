@@ -140,10 +140,10 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     gpu::webgpu::ReservedTexture reservation =
         webgpu()->ReserveTexture(device.Get());
 
-    webgpu()->AssociateMailbox(
-        reservation.deviceId, reservation.deviceGeneration, reservation.id,
-        reservation.generation, WGPUTextureUsage_CopySrc,
-        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&gl_mailbox));
+    webgpu()->AssociateMailbox(reservation.deviceId,
+                               reservation.deviceGeneration, reservation.id,
+                               reservation.generation, WGPUTextureUsage_CopySrc,
+                               webgpu::WEBGPU_MAILBOX_NONE, gl_mailbox);
     wgpu::Texture wgpu_texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.

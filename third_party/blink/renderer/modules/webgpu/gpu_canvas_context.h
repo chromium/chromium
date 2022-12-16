@@ -154,6 +154,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // Matches [[texture_descriptor]] in the WebGPU specification except that it
   // never becomes null.
   WGPUTextureDescriptor texture_descriptor_;
+  std::unique_ptr<WGPUTextureFormat[]> view_formats_;
 };
 
 }  // namespace blink

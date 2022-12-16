@@ -63,6 +63,17 @@ WGPUDevice WebGPUInterfaceStub::DeprecatedEnsureDefaultDeviceSync() {
   return nullptr;
 }
 
+void WebGPUInterfaceStub::AssociateMailbox(
+    GLuint device_id,
+    GLuint device_generation,
+    GLuint id,
+    GLuint generation,
+    GLuint usage,
+    const WGPUTextureFormat* view_formats,
+    GLuint view_format_count,
+    MailboxFlags flags,
+    const Mailbox& mailbox) {}
+
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.

@@ -81,6 +81,16 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_implementation_autogen.h"
 
+  void AssociateMailbox(GLuint device_id,
+                        GLuint device_generation,
+                        GLuint id,
+                        GLuint generation,
+                        GLuint usage,
+                        const WGPUTextureFormat* view_formats,
+                        GLuint view_format_count,
+                        MailboxFlags flags,
+                        const Mailbox& mailbox) override;
+
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
   uint64_t ShareGroupTracingGUID() const override;

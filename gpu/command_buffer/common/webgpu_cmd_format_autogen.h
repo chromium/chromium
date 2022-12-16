@@ -63,15 +63,18 @@ struct AssociateMailboxImmediate {
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
 
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 16);
+  static uint32_t ComputeDataSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(GLuint) * 1 * _n);  // NOLINT
   }
 
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  static uint32_t ComputeSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(ValueType) +
+                                 ComputeDataSize(_n));  // NOLINT
   }
 
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+  void SetHeader(GLsizei _n) {
+    header.SetCmdByTotalSize<ValueType>(ComputeSize(_n));
+  }
 
   void Init(GLuint _device_id,
             GLuint _device_generation,
@@ -79,15 +82,20 @@ struct AssociateMailboxImmediate {
             GLuint _generation,
             GLuint _usage,
             MailboxFlags _flags,
-            const GLbyte* _mailbox) {
-    SetHeader();
+            GLuint _view_format_count,
+            GLuint _count,
+            const GLuint* _mailbox_and_view_formats) {
+    SetHeader(_count);
     device_id = _device_id;
     device_generation = _device_generation;
     id = _id;
     generation = _generation;
     usage = _usage;
     flags = _flags;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+    view_format_count = _view_format_count;
+    count = _count;
+    memcpy(ImmediateDataAddress(this), _mailbox_and_view_formats,
+           ComputeDataSize(_count));
   }
 
   void* Set(void* cmd,
@@ -97,10 +105,13 @@ struct AssociateMailboxImmediate {
             GLuint _generation,
             GLuint _usage,
             MailboxFlags _flags,
-            const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation, _id,
-                                       _generation, _usage, _flags, _mailbox);
-    const uint32_t size = ComputeSize();
+            GLuint _view_format_count,
+            GLuint _count,
+            const GLuint* _mailbox_and_view_formats) {
+    static_cast<ValueType*>(cmd)->Init(
+        _device_id, _device_generation, _id, _generation, _usage, _flags,
+        _view_format_count, _count, _mailbox_and_view_formats);
+    const uint32_t size = ComputeSize(_count);
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
@@ -111,10 +122,12 @@ struct AssociateMailboxImmediate {
   uint32_t generation;
   uint32_t usage;
   uint32_t flags;
+  uint32_t view_format_count;
+  uint32_t count;
 };
 
-static_assert(sizeof(AssociateMailboxImmediate) == 28,
-              "size of AssociateMailboxImmediate should be 28");
+static_assert(sizeof(AssociateMailboxImmediate) == 36,
+              "size of AssociateMailboxImmediate should be 36");
 static_assert(offsetof(AssociateMailboxImmediate, header) == 0,
               "offset of AssociateMailboxImmediate header should be 0");
 static_assert(offsetof(AssociateMailboxImmediate, device_id) == 4,
@@ -130,6 +143,11 @@ static_assert(offsetof(AssociateMailboxImmediate, usage) == 20,
               "offset of AssociateMailboxImmediate usage should be 20");
 static_assert(offsetof(AssociateMailboxImmediate, flags) == 24,
               "offset of AssociateMailboxImmediate flags should be 24");
+static_assert(
+    offsetof(AssociateMailboxImmediate, view_format_count) == 28,
+    "offset of AssociateMailboxImmediate view_format_count should be 28");
+static_assert(offsetof(AssociateMailboxImmediate, count) == 32,
+              "offset of AssociateMailboxImmediate count should be 32");
 
 struct DissociateMailbox {
   typedef DissociateMailbox ValueType;

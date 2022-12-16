@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<!--
+Clears a WebGPU canvas to color(linear-srgb 234 51 35).
+When displayed, this appears as rgb(246 124 104).
+Display the canvas next to the correct color and a likely incorrect color.
+-->
+<head>
+  <style type="text/css">
+    .nomargin {
+      margin: 0;
+    }
+  </style>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        sendResult("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    function sendResult(status) {
+      if (window.domAutomationController) {
+        window.domAutomationController.send(status);
+      } else {
+        console.log(status);
+      }
+    }
+
+    var g_swapsBeforeAck = 15;
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        sendResult("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    async function main() {
+      const canvas = document.getElementById('canvas_gpu');
+      const adapter = await navigator.gpu?.requestAdapter();
+      const device = await adapter?.requestDevice();
+      const context = canvas.getContext('webgpu');
+      if (!device || !context) {
+        console.error("Failed to initialize WebGPU");
+        sendResult("FAILURE");
+      }
+
+      context.configure({
+        device: device,
+        format: 'bgra8unorm',
+        viewFormats: ['bgra8unorm-srgb'],
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        alphaMode: 'premultiplied',
+      });
+
+      const renderPassDescriptor = {
+        colorAttachments: [
+          {
+            view: context.getCurrentTexture().createView({
+              format: 'bgra8unorm-srgb'
+            }),
+            clearValue: { r: 234 / 255, g: 51 / 255, b: 35 / 255, a: 1.0 },
+            loadOp: 'clear',
+            storeOp: 'store',
+          },
+        ],
+      };
+
+      const commandEncoder = device.createCommandEncoder();
+      const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+      passEncoder.end();
+      device.queue.submit([commandEncoder.finish()]);
+
+      waitForFinish();
+    }
+  </script>
+</head>
+
+<body onload="main()" style="background:white;">
+  <canvas id="canvas_gpu" style="width:150px; height:150px; position:absolute; top:0px; left:0px; background: rgb(0% 100% 0%);"></canvas>
+  <div style="width:150px; height:150px; position:absolute; top:150px; left:0px; background: rgb(234 51 35);">
+    <p>The canvas above SHOULD NOT match this color</p>
+  </div>
+  <div style="width:150px; height:150px; position:absolute; top:0px; left:150px; background: rgb(246 124 104);">
+    <p>The canvas to the left SHOULD match this color</p>
+  </div>
+</body>
+
+</html>

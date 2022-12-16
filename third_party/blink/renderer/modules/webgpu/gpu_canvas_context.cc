@@ -314,6 +314,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   texture_descriptor_.usage =
       AsDawnFlags<WGPUTextureUsage>(descriptor->usage());
 
+  view_formats_ = AsDawnEnum<WGPUTextureFormat>(descriptor->viewFormats());
+  texture_descriptor_.viewFormats = view_formats_.get();
+  texture_descriptor_.viewFormatCount = descriptor->viewFormats().size();
+
   // This needs to happen early so that if any validation fails the swapbuffers
   // are not created and getCurrentTexture() will return an error GPUTexture.
   DetachSwapBuffers();
@@ -356,15 +360,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
         "\"premultiplied\" to \"opaque\". "
         "Please explicitly set alphaMode to \"premultiplied\" if you would "
         "like to continue using that compositing mode.");
-  }
-
-  // TODO(crbug.com/1326473): Implement support for context viewFormats.
-  if (descriptor->viewFormats().size()) {
-    device_->InjectError(
-        WGPUErrorType_Validation,
-        "Specifying additional viewFormats for GPUCanvasContexts is not "
-        "supported yet.");
-    return;
   }
 
   if (!ValidateAndConvertColorSpace(descriptor->colorSpace(), color_space_,
@@ -605,7 +600,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       reservation.deviceId, reservation.deviceGeneration, reservation.id,
       reservation.generation,
       WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment,
-      reinterpret_cast<const GLbyte*>(&dst_mailbox));
+      dst_mailbox);
   WGPUImageCopyTexture source = {
       .nextInChain = nullptr,
       .texture = texture,
