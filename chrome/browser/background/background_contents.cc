@@ -95,8 +95,7 @@ bool BackgroundContents::ShouldSuppressDialogs(WebContents* source) {
   return true;
 }
 
-void BackgroundContents::DidNavigatePrimaryMainFramePostCommit(
-    WebContents* tab) {
+void BackgroundContents::PrimaryPageChanged(content::Page& page) {
   // Note: because BackgroundContents are only available to extension apps,
   // navigation is limited to urls within the app's extent. This is enforced in
   // RenderView::decidePolicyForNavigation. If BackgroundContents become

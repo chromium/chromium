@@ -22,6 +22,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
@@ -79,6 +80,7 @@ class BrowserCommandController;
 }
 
 namespace content {
+class NavigationHandle;
 class SessionStorageNamespace;
 }
 
@@ -104,6 +106,7 @@ class WebContentsModalDialogHost;
 }
 
 class Browser : public TabStripModelObserver,
+                public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
                 public ChromeWebModalDialogManagerDelegate,
                 public base::SupportsUserData,
@@ -871,8 +874,6 @@ class Browser : public TabStripModelObserver,
   void RendererResponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host) override;
-  void DidNavigatePrimaryMainFramePostCommit(
-      content::WebContents* web_contents) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
   bool GuestSaveFrame(content::WebContents* guest_web_contents) override;
@@ -953,6 +954,11 @@ class Browser : public TabStripModelObserver,
       const base::UnguessableToken& guid,
       content::RenderFrameHost* render_frame_host) override;
 #endif
+
+  // WebContentsCollection::Observer:
+  void DidFinishNavigation(
+      content::WebContents* web_contents,
+      content::NavigationHandle* navigation_handle) override;
 
   // Overridden from WebContentsModalDialogManagerDelegate:
   void SetWebContentsBlocked(content::WebContents* web_contents,
@@ -1300,6 +1306,8 @@ class Browser : public TabStripModelObserver,
 #endif
 
   const base::ElapsedTimer creation_timer_;
+
+  WebContentsCollection web_contents_collection_{this};
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

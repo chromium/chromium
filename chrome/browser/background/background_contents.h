@@ -83,8 +83,6 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   // content::WebContentsDelegate implementation:
   void CloseContents(content::WebContents* source) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
-  void DidNavigatePrimaryMainFramePostCommit(
-      content::WebContents* tab) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
@@ -97,6 +95,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   // content::WebContentsObserver implementation:
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  protected:
   // Exposed for testing.

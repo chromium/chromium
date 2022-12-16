@@ -147,7 +147,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
 #if BUILDFLAG(IS_MAC)
-  void DidNavigatePrimaryMainFramePostCommit(WebContents* contents) override;
   bool HandleKeyboardEvent(WebContents* source,
                            const NativeWebKeyboardEvent& event) override;
 #endif
@@ -216,6 +215,9 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
 #endif
   void TitleWasSet(NavigationEntry* entry) override;
   void RenderFrameCreated(RenderFrameHost* frame_host) override;
+#if BUILDFLAG(IS_MAC)
+  void PrimaryPageChanged(content::Page& page) override;
+#endif
 
   std::unique_ptr<JavaScriptDialogManager> dialog_manager_;
 

@@ -6025,9 +6025,6 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
       rwhvb->OnDidNavigateMainFrameToNewPage();
   }
 
-  if (is_primary_main_frame && delegate_)
-    delegate_->DidNavigatePrimaryMainFramePostCommit(this);
-
   PageImpl& page = render_frame_host->GetPage();
   if (page.IsPrimary()) {
     // The following events will not fire again if the this is a back-forward

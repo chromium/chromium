@@ -595,8 +595,9 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
 }
 
 #if BUILDFLAG(IS_MAC)
-void Shell::DidNavigatePrimaryMainFramePostCommit(WebContents* contents) {
-  g_platform->DidNavigatePrimaryMainFramePostCommit(this, contents);
+void Shell::PrimaryPageChanged(content::Page& page) {
+  g_platform->DidNavigatePrimaryMainFramePostCommit(
+      this, content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
 }
 
 bool Shell::HandleKeyboardEvent(WebContents* source,

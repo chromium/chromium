@@ -392,9 +392,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void RendererResponsive(WebContents* source,
                                   RenderWidgetHost* render_widget_host) {}
 
-  // Invoked when a primary main frame navigation occurs.
-  virtual void DidNavigatePrimaryMainFramePostCommit(WebContents* source) {}
-
   // Returns a pointer to a service to manage JavaScript dialogs. May return
   // nullptr in which case dialogs aren't shown.
   virtual JavaScriptDialogManager* GetJavaScriptDialogManager(
