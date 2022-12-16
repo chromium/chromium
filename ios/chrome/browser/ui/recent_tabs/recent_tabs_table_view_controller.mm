@@ -1792,6 +1792,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
   return [super canPerformAction:action withSender:sender];
 }
+
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
