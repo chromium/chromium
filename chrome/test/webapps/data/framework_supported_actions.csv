@@ -37,6 +37,8 @@ install_locally,                                       🌓, 🌓,  🌓,   🌓
 install_menu_option,                                   🌕, 🌕,  🌕,   🌕,
 install_omnibox_icon,                                  🌕, 🌕,  🌕,   🌕,
 install_policy_app,                                    🌓, 🌓,  🌓,   🌓,
+launch_file_expect_dialog,                             🌕, 🌕,  🌕,   🌑,
+launch_file_expect_no_dialog,                          🌕, 🌕,  🌕,   🌑,
 launch_from_chrome_apps,                               🌓, 🌓,  🌓,   🌓,
 launch_from_launch_icon,                               🌕, 🌕,  🌕,   🌕,
 launch_from_menu_option,                               🌕, 🌕,  🌕,   🌕,
