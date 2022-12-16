@@ -22,7 +22,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 
 import java.io.ByteArrayInputStream;
@@ -193,9 +192,6 @@ public class OmahaBaseTest {
     @Before
     public void setUp() {
         OmahaBase.setIsDisabledForTesting(false);
-        FeatureList.TestValues overrides = new FeatureList.TestValues();
-        overrides.addFeatureFlagOverride(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
-        FeatureList.setTestValues(overrides);
         mDelegate = new MockOmahaDelegate(DeviceType.HANDSET, InstallSource.ORGANIC);
     }
 

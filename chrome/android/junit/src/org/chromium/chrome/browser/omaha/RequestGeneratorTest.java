@@ -9,9 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +17,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
@@ -39,17 +35,6 @@ public class RequestGeneratorTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
-    @Before
-    public void setUp() {
-        CachedFeatureFlags.resetFlagsForTesting();
-        ChromeFeatureList.sAnonymousUpdateChecks.setForTesting(true);
-    }
-
-    @After
-    public void tearDown() {
-        CachedFeatureFlags.resetFlagsForTesting();
-    }
 
     @Test
     @Feature({"Omaha"})
@@ -118,26 +103,6 @@ public class RequestGeneratorTest {
     @Feature({"Omaha"})
     public void testTabletXMLCreationWithoutInstall() {
         createAndCheckXML(DeviceType.TABLET, false);
-    }
-
-    @Test
-    @Feature({"Omaha"})
-    public void testXMLCreationWithUID() {
-        ChromeFeatureList.sAnonymousUpdateChecks.setForTesting(false);
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mock(IdentityManager.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
-                .thenReturn(true);
-        MockRequestGenerator generator = new MockRequestGenerator(DeviceType.TABLET);
-        String xml = null;
-        try {
-            xml = generator.generateXML(
-                    "", "", 0, 0, new RequestData(false, 0, "", INSTALL_SOURCE));
-        } catch (RequestFailureException e) {
-            Assert.fail("XML generation failed.");
-        }
-        checkForAttributeAndValue(xml, "request", "userid", "{" + generator.getDeviceID() + "}");
     }
 
     /**

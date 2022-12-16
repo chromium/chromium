@@ -45,12 +45,6 @@ BASE_FEATURE(kAllowTouchpadHapticClickSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAnonymousUpdateChecks,
-             "AnonymousUpdateChecks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppManagementAppDetails,
              "AppManagementAppDetails",

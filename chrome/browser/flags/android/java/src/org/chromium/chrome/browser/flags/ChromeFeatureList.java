@@ -192,7 +192,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ENABLE_CARD_PRODUCT_NAME = "AutofillEnableCardProductName";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
-    public static final String ANONYMOUS_UPDATE_CHECKS = "AnonymousUpdateChecks";
     public static final String APP_LANGUAGE_PROMPT = "AppLanguagePrompt";
     public static final String APP_LANGUAGE_PROMPT_ULP = "AppLanguagePromptULP";
     public static final String ASSISTANT_CONSENT_SIMPLIFIED_TEXT = "AssistantConsentSimplifiedText";
@@ -592,8 +591,6 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final CachedFlag sAndroidAuxiliarySearch =
             new CachedFlag(OMNIBOX_ANDROID_AUXILIARY_SEARCH, false);
-    public static final CachedFlag sAnonymousUpdateChecks =
-            new CachedFlag(ANONYMOUS_UPDATE_CHECKS, true);
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sBackGestureRefactorAndroid =

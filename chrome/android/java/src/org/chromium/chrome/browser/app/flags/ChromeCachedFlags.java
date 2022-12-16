@@ -75,7 +75,6 @@ public class ChromeCachedFlags {
         List<CachedFlag> featuresToCache = new ArrayList<CachedFlag>() {
             {
                 add(ChromeFeatureList.sAndroidAuxiliarySearch);
-                add(ChromeFeatureList.sAnonymousUpdateChecks);
                 add(ChromeFeatureList.sAppMenuMobileSiteOption);
                 add(ChromeFeatureList.sBackGestureRefactorAndroid);
                 add(ChromeFeatureList.sCctAutoTranslate);
