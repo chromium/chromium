@@ -198,6 +198,10 @@
 #include "third_party/cpuinfo/src/include/cpuinfo.h"
 #endif
 
+#if defined(ADDRESS_SANITIZER)
+#include "base/debug/asan_service.h"
+#endif
+
 namespace content {
 extern int GpuMain(MainFunctionParams);
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -1038,6 +1042,10 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
+
+#if defined(ADDRESS_SANITIZER)
+  base::debug::AsanService::GetInstance()->Initialize();
+#endif
 
   // Run this logic on all child processes.
   if (!process_type.empty()) {
