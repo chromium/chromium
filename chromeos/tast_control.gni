@@ -315,6 +315,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardAutocorrect.fr_rf_a11y",
   "inputs.VirtualKeyboardAutocorrect.fr_fr_tablet",
 
+  # https://crbug.com/1401566
+  "lockscreen.CloseLid.finch_on",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
