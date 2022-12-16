@@ -47,60 +47,58 @@ found in the LICENSE file.
             android:id="@+id/privacy_sandbox_dialog_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/privacy_sandbox_consent_eea_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/list_item_default_margin"
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
-                    android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                     android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
+                    android:layout_gravity="center"
                     app:srcCompat="@drawable/chrome_sync_logo"
+                    android:layout_marginVertical="@dimen/privacy_sandbox_dialog_logo_margin"
                     android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/privacy_sandbox_m1_consent_title"
                     android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_consent_title"
+                    android:layout_gravity="center"
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
 
                 <TextView
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_consent_description_1"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <TextView
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_consent_description_2"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
-                    android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
-                    android:layout_marginBottom="@dimen/privacy_sandbox_dialog_illustration_margin_bottom"
-                    android:layout_height="@dimen/privacy_sandbox_interests_illustration_height"
+                    android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     app:srcCompat="@drawable/privacy_sandbox_interests_illustration_v4"
+                    android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
 
                 <TextView
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_consent_description_3"
@@ -108,7 +106,6 @@ found in the LICENSE file.
 
                 <LinearLayout
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:id="@+id/dropdown_element"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -132,14 +129,12 @@ found in the LICENSE file.
 
                 <LinearLayout
                     android:id="@+id/dropdown_container"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
                 <TextView
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_consent_description_4"
@@ -156,9 +151,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:text="@string/privacy_sandbox_m1_dialog_more_button"
             android:visibility="invisible"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="@dimen/promo_dialog_padding"
-            android:layout_marginBottom="@dimen/promo_dialog_padding"
+            android:layout_margin="@dimen/promo_dialog_padding"
             style="@style/FilledButton.Flat" />
 
         <LinearLayout
@@ -168,7 +161,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:weightSum="2"
             android:layout_margin="@dimen/promo_dialog_padding"
-            android:layout_marginHorizontal="24dp"
             android:visibility="gone">
 
             <org.chromium.ui.widget.ButtonCompat

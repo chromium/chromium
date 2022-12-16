@@ -33,12 +33,12 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/list_item_default_margin"
                 android:orientation="vertical">
 
                 <ImageView
                     android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
                     android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                     android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
                     android:layout_gravity="center"
@@ -48,7 +48,6 @@ found in the LICENSE file.
                 <TextView
                     android:id="@+id/privacy_sandbox_notice_title"
                     android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -58,30 +57,27 @@ found in the LICENSE file.
 
                 <TextView
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_1"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <TextView
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_2"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
-                    android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
-                    android:layout_marginBottom="@dimen/privacy_sandbox_dialog_illustration_margin_bottom"
-                    android:layout_height="@dimen/privacy_sandbox_interests_illustration_height"
+                    android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     app:srcCompat="@drawable/privacy_sandbox_interests_illustration_v4"
+                    android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
 
                 <TextView
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_3"
@@ -89,7 +85,6 @@ found in the LICENSE file.
 
                 <LinearLayout
                     android:layout_marginBottom="@dimen/list_item_default_margin"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:id="@+id/dropdown_element"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,7 +108,6 @@ found in the LICENSE file.
 
                 <LinearLayout
                     android:id="@+id/dropdown_container"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,7 +115,6 @@ found in the LICENSE file.
 
                 <TextView
                     android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
-                    android:layout_marginHorizontal="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_4"

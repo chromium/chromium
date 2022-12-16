@@ -10,6 +10,8 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_illustration_width">120dp</dimen>
   <dimen name="privacy_sandbox_dialog_illustration_margin_top">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_illustration_margin_bottom">16dp</dimen>
+  <dimen name="privacy_sandbox_dialog_logo_margin">8dp</dimen>
+  <dimen name="privacy_sandbox_dialog_illustration_margin_vertical">16dp</dimen>
   <dimen name="privacy_sandbox_dialog_max_width">600dp</dimen>
   <dimen name="privacy_sandbox_consent_button_margin_between">8dp</dimen>
   <dimen name="privacy_sandbox_notice_button_margin_between">4dp</dimen>
@@ -17,9 +19,8 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_notice_dialog_dropdown_button_height">24dp</dimen>
   <dimen name="privacy_sandbox_notice_margin_bottom">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_title_margin">20dp</dimen>
-  <dimen name="privacy_sandbox_chrome_logo_width">60dp</dimen>
-  <dimen name="privacy_sandbox_chrome_logo_height">61dp</dimen>
-  <dimen name="privacy_sandbox_interests_illustration_height">185dp</dimen>
+  <dimen name="privacy_sandbox_chrome_logo_width">40dp</dimen>
+  <dimen name="privacy_sandbox_chrome_logo_height">40dp</dimen>
   <dimen name="privacy_sandbox_spinner_dimension">20dp</dimen>
   <dimen name="custom_preference_category_paddingVertical">8dp</dimen>
   <dimen name="custom_preference_category_title_marginBottom">8dp</dimen>
