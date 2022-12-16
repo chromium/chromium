@@ -1014,6 +1014,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (user_is_active)
       UpdateAutoRepeatRate();
   }
+
+  if (reason == REASON_INITIALIZATION)
+    SetInputMethodList();
+
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kLanguageAllowedInputMethods) {
     const std::vector<std::string> allowed_input_methods =
@@ -1043,9 +1047,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     // values.
     locale_util::RemoveDisallowedLanguagesFromPreferred(prefs_);
   }
-
-  if (reason == REASON_INITIALIZATION)
-    SetInputMethodList();
 
   if (pref_name == ::prefs::kLanguagePreloadEngines &&
       reason == REASON_PREF_CHANGED) {
