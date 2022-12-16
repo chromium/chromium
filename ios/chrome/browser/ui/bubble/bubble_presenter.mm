@@ -198,34 +198,6 @@ const CGFloat kBubblePresentationDelay = 1;
   self.discoverFeedHeaderMenuTipBubblePresenter = presenter;
 }
 
-- (void)presentReadingListBottomToolbarTipBubble {
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_IPH);
-  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
-                                           direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `readingListTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHReadingListMessagesFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentTrailing
-                         text:text
-        voiceOverAnnouncement:l10n_util::GetNSString(
-                                  IDS_IOS_READING_LIST_MESSAGES_IPH)
-                  anchorPoint:toolsMenuAnchor];
-  if (!presenter)
-    return;
-
-  self.readingListTipBubblePresenter = presenter;
-}
-
 - (void)presentFollowWhileBrowsingTipBubble {
   if (![self canPresentBubble])
     return;

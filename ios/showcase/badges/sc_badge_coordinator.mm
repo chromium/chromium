@@ -43,9 +43,6 @@
   return self.containerViewController.consumer;
 }
 
-- (void)addToReadingListBadgeButtonTapped:(id)sender {
-}
-
 - (void)passwordsBadgeButtonTapped:(id)sender {
 }
 

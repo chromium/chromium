@@ -2147,30 +2147,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_CANCEL_BUTTON" desc="Label of the button to stop editing the reading list entries (delete, mark as read/unread) [Length: 25em]" meaning="Stop editing. [Length: 25em]">
         Cancel
       </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_IPH" desc="In-product help that points at the tools menu where the user can find the entry point to Reading List. [Length: 35em]">
-        When you're ready, find your reading list here
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_BANNER_SUBTITLE" desc="Subtitle of the banner indicating the estimated time to read of the page [iOS only]">
-          <ph name="TIME">$1</ph> minute read
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_BANNER_TITLE" desc="Title of the banner asking the user to add the current page to Reading List [iOS only]">
-          Add to Reading List for Later?
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_MAIN_ACTION" desc="Button text to indicate the user to add this page to Reading List [iOS only]">
-        Add
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION" desc="Informational text explaining the utility of Reading List. [iOS only]">
-          You can save pages to read later or offline. Chrome will ask if you want to save long pages.
-        </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_NEVER_ASK" desc="Button text to indicate the user wants to be never shown the Add to Reading List prompt [iOS only]">
-        Never Ask
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE" desc="Title of the Add to Reading List Messages Modal [Length: 25em] [iOS only]">
-        Add to Reading List
-      </message>
-      <message name="IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE" desc="Title of the setting to toggle the Add to Reading List Messages prompt on and off [iOS only]">
-        Ask to Add to Reading List
-      </message>
       <message name="IDS_IOS_SCANNER_ALERT_CANCEL" desc="Title for a button to cancel a Scanner error dialog. The dialog will be dismissed and no action will be taken. [Length: 20em] [iOS only]" meaning="A button to cancel a Scanner error dialog.">
         Cancel
       </message>

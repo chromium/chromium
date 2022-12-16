@@ -53,8 +53,6 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       return [self overflowBadgeButton];
     case kBadgeTypeSaveAddressProfile:
       return [self saveAddressProfileBadgeButton];
-    case kBadgeTypeAddToReadingList:
-      return [self readingListBadgeButton];
     case kBadgeTypePermissionsCamera:
       return [self permissionsCameraBadgeButton];
     case kBadgeTypePermissionsMicrophone:
@@ -252,21 +250,6 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       forControlEvents:UIControlEventTouchUpInside];
   button.accessibilityIdentifier =
       kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
-  // TODO(crbug.com/1014652): Create a11y label hint.
-  return button;
-}
-
-- (BadgeButton*)readingListBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:kBadgeTypeAddToReadingList
-                          image:[[UIImage imageNamed:@"infobar_reading_list"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
-  [button addTarget:self.delegate
-                action:@selector(addToReadingListBadgeButtonTapped:)
-      forControlEvents:UIControlEventTouchUpInside];
-  button.accessibilityIdentifier =
-      kBadgeButtonReadingListAccessibilityIdentifier;
   // TODO(crbug.com/1014652): Create a11y label hint.
   return button;
 }

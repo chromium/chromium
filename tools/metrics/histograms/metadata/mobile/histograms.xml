@@ -41,8 +41,6 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Update Password Messages."/>
   <variant name="InfobarTypePermissions"
       summary="Recorded for PermissionsInfobar."/>
-  <variant name="InfobarTypeReadingList"
-      summary="Recorded for Reading List Infobar."/>
   <variant name="InfobarTypeSaveCard"
       summary="Recorded for Save Card Infobar."/>
   <variant name="InfobarTypeTranslate"

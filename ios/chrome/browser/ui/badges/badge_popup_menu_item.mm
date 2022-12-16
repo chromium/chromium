@@ -77,11 +77,6 @@ const CGFloat kBadgeCornerRadius = 5.0;
         _actionIdentifier = PopupMenuActionShowTranslateOptions;
         _title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
         break;
-      case kBadgeTypeAddToReadingList:
-        _actionIdentifier = PopupMenuActionAddToReadingListOptions;
-        _title =
-            l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
-        break;
       case kBadgeTypePermissionsCamera:
         // Falls through.
       case kBadgeTypePermissionsMicrophone:
@@ -142,10 +137,6 @@ const CGFloat kBadgeCornerRadius = 5.0;
                                                    kInfobarSymbolPointSize)
                        : [UIImage imageNamed:@"infobar_translate_icon"];
       badgeImage = [badgeImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      break;
-    case kBadgeTypeAddToReadingList:
-      badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypePermissionsCamera:

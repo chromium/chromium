@@ -108,9 +108,6 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
     case kBadgeTypeTranslate:
       return accepted ? kBadgeButtonTranslateAcceptedAccessibilityIdentifier
                       : kBadgeButtonTranslateAccessibilityIdentifier;
-    case kBadgeTypeAddToReadingList:
-      return accepted ? kBadgeButtonReadingListAcceptedAccessibilityIdentifier
-                      : kBadgeButtonReadingListAccessibilityIdentifier;
     case kBadgeTypePermissionsCamera:
       return accepted
                  ? kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier

@@ -20,8 +20,7 @@ enum class InfobarType {
   kInfobarTypeTranslate = 4,
   // Message Infobar for Saving an address profile.
   kInfobarTypeSaveAutofillAddressProfile = 5,
-  // Message Infobar for Adding to Reading List.
-  kInfobarTypeAddToReadingList = 6,
+  // 6 was used for a Reading List Message, do not use.
   // Message Infobar for media permissions.
   kInfobarTypePermissions = 7,
   // Message Infobar for Tailored Security Service.

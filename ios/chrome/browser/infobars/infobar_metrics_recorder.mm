@@ -93,19 +93,6 @@ const char kInfobarAutofillAddressModalEventHistogram[] =
 const char kInfobarAutofillAddressBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeAutofillAddressProfile";
 
-// Histogram names for InfobarTypeReadingList.
-// Banner.
-const char kInfobarReadingListBannerEventHistogram[] =
-    "Mobile.Messages.Banner.Event.InfobarTypeReadingList";
-const char kInfobarReadingListBannerDismissTypeHistogram[] =
-    "Mobile.Messages.Banner.Dismiss.InfobarTypeReadingList";
-// Modal.
-const char kInfobarReadingListModalEventHistogram[] =
-    "Mobile.Messages.Modal.Event.InfobarTypeReadingList";
-// Badge.
-const char kInfobarReadingListBadgeTappedHistogram[] =
-    "Mobile.Messages.Badge.Tapped.InfobarTypeReadingList";
-
 // Histogram names for InfobarTypePermissions.
 // Banner.
 const char kInfobarPermissionsBannerEventHistogram[] =
@@ -189,10 +176,6 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarAutofillAddressBannerEventHistogram,
                                 event);
       break;
-    case InfobarType::kInfobarTypeAddToReadingList:
-      base::UmaHistogramEnumeration(kInfobarReadingListBannerEventHistogram,
-                                    event);
-      break;
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(kInfobarPermissionsBannerEventHistogram,
                                     event);
@@ -232,10 +215,6 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarAutofillAddressBannerDismissTypeHistogram, dismissType);
-      break;
-    case InfobarType::kInfobarTypeAddToReadingList:
-      base::UmaHistogramEnumeration(
-          kInfobarReadingListBannerDismissTypeHistogram, dismissType);
       break;
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(
@@ -279,10 +258,6 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarAutofillAddressModalEventHistogram,
                                 event);
       break;
-    case InfobarType::kInfobarTypeAddToReadingList:
-      base::UmaHistogramEnumeration(kInfobarReadingListModalEventHistogram,
-                                    event);
-      break;
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(kInfobarPermissionsModalEventHistogram,
                                     event);
@@ -319,10 +294,6 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
       UMA_HISTOGRAM_ENUMERATION(kInfobarAutofillAddressBadgeTappedHistogram,
                                 state);
-      break;
-    case InfobarType::kInfobarTypeAddToReadingList:
-      base::UmaHistogramEnumeration(kInfobarReadingListBadgeTappedHistogram,
-                                    state);
       break;
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(kInfobarPermissionsBadgeTappedHistogram,

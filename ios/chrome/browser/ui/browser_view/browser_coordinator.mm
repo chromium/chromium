@@ -1257,10 +1257,6 @@ enum class ToolbarKind {
   [_bookmarkInteractionController presentBookmarks];
 }
 
-- (void)showReadingListIPH {
-  [_bubblePresenter presentReadingListBottomToolbarTipBubble];
-}
-
 - (void)showFollowWhileBrowsingIPH {
   [_bubblePresenter presentFollowWhileBrowsingTipBubble];
 }

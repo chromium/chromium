@@ -14,9 +14,6 @@
 @property(nonatomic, strong, readonly)
     NSArray<NSNumber*>* badgeTypesForOverflowMenu;
 
-// Action when a Reading List badge is tapped.
-- (void)addToReadingListBadgeButtonTapped:(id)sender;
-
 // Action when a Passwords badge is tapped.
 - (void)passwordsBadgeButtonTapped:(id)sender;
 

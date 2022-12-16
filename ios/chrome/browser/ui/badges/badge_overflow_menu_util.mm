@@ -91,14 +91,6 @@ UIAction* GetOverflowMenuElementForBadgeType(
                            : [UIImage imageNamed:@"infobar_translate_icon"];
       image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case kBadgeTypeAddToReadingList:
-      action_identifier = kBadgeButtonReadingListActionIdentifier;
-      title = l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
-      image = UseSymbols() ? DefaultSymbolWithPointSize(kReadLaterActionSymbol,
-                                                        kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:@"infobar_reading_list"];
-      histogram_type = MobileMessagesInfobarType::Translate;
-      break;
     case kBadgeTypePermissionsCamera:
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(

@@ -8,7 +8,6 @@
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/permissions_infobar_banner_overlay_request_config.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/permissions/permissions_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -110,20 +108,6 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
           return nullptr;
       }
 
-    case InfobarType::kInfobarTypeAddToReadingList:
-      switch (overlay_type) {
-        case InfobarOverlayType::kBanner:
-          return OverlayRequest::CreateWithConfig<
-              reading_list_infobar_overlay::ReadingListBannerRequestConfig>(
-              infobar_ios);
-
-        case InfobarOverlayType::kModal:
-          return OverlayRequest::CreateWithConfig<
-              ReadingListInfobarModalOverlayRequestConfig>(infobar_ios);
-
-        default:
-          return nullptr;
-      }
     case InfobarType::kInfobarTypePermissions:
       switch (overlay_type) {
         case InfobarOverlayType::kBanner:

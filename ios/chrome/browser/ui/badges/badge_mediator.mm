@@ -250,13 +250,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   return badgeTypes;
 }
 
-- (void)addToReadingListBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeAddToReadingList);
-
-  [self handleTappedBadgeButton:badgeButton];
-}
-
 - (void)passwordsBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
   DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||

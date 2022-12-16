@@ -31,10 +31,6 @@ class GURL;
 // Shows the Reading List UI.
 - (void)showReadingList;
 
-// Shows an IPH pointing to where the Reading List entry point is, if
-// applicable.
-- (void)showReadingListIPH;
-
 // Shows an IPH pointing to where the Follow entry point is, if
 // applicable.
 - (void)showFollowWhileBrowsingIPH;

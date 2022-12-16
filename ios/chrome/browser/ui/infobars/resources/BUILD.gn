@@ -71,14 +71,6 @@ imageset("infobar_autofill_address_icon") {
   ]
 }
 
-imageset("infobar_reading_list") {
-  sources = [
-    "infobar_reading_list.imageset/Contents.json",
-    "infobar_reading_list.imageset/infobar_reading_list@2x.png",
-    "infobar_reading_list.imageset/infobar_reading_list@3x.png",
-  ]
-}
-
 imageset("infobar_email_icon") {
   sources = [
     "infobar_email_icon.imageset/Contents.json",

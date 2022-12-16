@@ -27,8 +27,6 @@ typedef NS_ENUM(NSUInteger, BadgeType) {
   kBadgeTypeTranslate = 6,
   // Badge type for the Save Address Profile Infobar.
   kBadgeTypeSaveAddressProfile = 7,
-  // Badge type for the Add to Reading List Infobar.
-  kBadgeTypeAddToReadingList = 8,
   // Badge type for the Permissions Infobar with camera icon.
   kBadgeTypePermissionsCamera = 9,
   // Badge type for the Permissions Infobar with microphone icon.

@@ -15,8 +15,6 @@ extern NSString* const
     kBadgeButtonUpdatePasswordAccpetedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonIncognitoAccessibilityIdentifier;
 extern NSString* const kBadgeButtonOverflowAccessibilityIdentifier;
-extern NSString* const kBadgeButtonReadingListAccessibilityIdentifier;
-extern NSString* const kBadgeButtonReadingListAcceptedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
 extern NSString* const
     kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier;
@@ -40,7 +38,6 @@ extern NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier;
 // Action identifiers for the new overflow menu.
 extern NSString* const kBadgeButtonSavePasswordActionIdentifier;
 extern NSString* const kBadgeButtonUpdatePasswordActionIdentifier;
-extern NSString* const kBadgeButtonReadingListActionIdentifier;
 extern NSString* const kBadgeButtonSaveAddressProfileActionIdentifier;
 extern NSString* const kBadgeButtonSaveCardActionIdentifier;
 extern NSString* const kBadgeButtonTranslateActionIdentifier;

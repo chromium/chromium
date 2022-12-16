@@ -4,8 +4,6 @@
 
 source_set("infobar_banner") {
   sources = [
-    "add_to_reading_list_infobar_banner_overlay_request_config.h",
-    "add_to_reading_list_infobar_banner_overlay_request_config.mm",
     "confirm_infobar_banner_overlay_request_config.h",
     "confirm_infobar_banner_overlay_request_config.mm",
     "confirm_infobar_banner_overlay_request_config_storage.h",
@@ -47,7 +45,6 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/reading_list:infobar",
     "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/sync/utils",

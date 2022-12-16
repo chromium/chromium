@@ -23,8 +23,6 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       return kBadgeTypeSaveCard;
     case InfobarType::kInfobarTypeTranslate:
       return kBadgeTypeTranslate;
-    case InfobarType::kInfobarTypeAddToReadingList:
-      return kBadgeTypeAddToReadingList;
     case InfobarType::kInfobarTypePermissions:
       // Default value; actual value would depend on the value of
       // GetStatesForAllPermissions() of the currently active WebState, and be
@@ -47,8 +45,6 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       return InfobarType::kInfobarTypeSaveCard;
     case kBadgeTypeTranslate:
       return InfobarType::kInfobarTypeTranslate;
-    case kBadgeTypeAddToReadingList:
-      return InfobarType::kInfobarTypeAddToReadingList;
     case kBadgeTypePermissionsCamera:
       // Falls through.
     case kBadgeTypePermissionsMicrophone:

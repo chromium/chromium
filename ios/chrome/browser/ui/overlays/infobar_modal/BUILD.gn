@@ -12,7 +12,6 @@ source_set("infobar_modal") {
     "//ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_modal/passwords",
     "//ios/chrome/browser/ui/overlays/infobar_modal/permissions",
-    "//ios/chrome/browser/ui/overlays/infobar_modal/reading_list",
     "//ios/chrome/browser/ui/overlays/infobar_modal/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_modal/translate",
   ]

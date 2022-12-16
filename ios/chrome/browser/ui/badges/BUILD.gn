@@ -79,7 +79,6 @@ source_set("badges") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/icons:symbols",
-    "//ios/chrome/browser/ui/infobars/resources:infobar_reading_list",
     "//ios/chrome/browser/ui/infobars/resources:infobar_save_card_icon",
     "//ios/chrome/browser/ui/infobars/resources:infobar_settings_icon",
     "//ios/chrome/browser/ui/infobars/resources:infobar_translate_icon",
