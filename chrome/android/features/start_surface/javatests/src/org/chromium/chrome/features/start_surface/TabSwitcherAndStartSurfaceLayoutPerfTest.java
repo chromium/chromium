@@ -84,7 +84,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
-            + "/zooming-min-sdk-version/19/zooming-min-memory-mb/512";
+            + "/zooming-min-memory-mb/512";
 
     /** Flip this to {@code true} to run performance tests locally. */
     private static final boolean PERF_RUN = false;

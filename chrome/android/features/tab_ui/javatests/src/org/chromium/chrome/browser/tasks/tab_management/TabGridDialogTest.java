@@ -526,7 +526,6 @@ public class TabGridDialogTest {
     @MediumTest
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogToolbarSelectionEditorV2() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -770,7 +769,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogSelectionEditorV2_UndoClose() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -803,7 +801,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogSelectionEditorV2_UndoCloseAll() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -1057,7 +1054,6 @@ public class TabGridDialogTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void
     testTabGroupNaming_afterMergeWithSelectionEditorV2() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1471,9 +1467,8 @@ public class TabGridDialogTest {
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.M, message = "crbug.com/1119899, crbug.com/1131545")
     @DisableIf.Device(type = UiDisableIf.TABLET)
+    @DisabledTest(message = "crbug.com/1119899, crbug.com/1131545")
     // clang-format off
     public void testUndoClosureInDialog_WithStartSurface() throws Exception {
         // clang-format on

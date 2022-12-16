@@ -194,7 +194,6 @@ public class ChromeCachedFlags {
                         add(TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST);
                         add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING);
                         add(TabUiFeatureUtilities.ZOOMING_MIN_MEMORY);
-                        add(TabUiFeatureUtilities.ZOOMING_MIN_SDK);
                         add(TabUiFeatureUtilities.SKIP_SLOW_ZOOMING);
                         add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
                         add(TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH);

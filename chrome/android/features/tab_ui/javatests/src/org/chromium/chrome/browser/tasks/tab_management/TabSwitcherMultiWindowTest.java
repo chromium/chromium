@@ -22,10 +22,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -37,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -55,7 +52,6 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@MinAndroidSdkLevel(Build.VERSION_CODES.N)
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class TabSwitcherMultiWindowTest {
     // clang-format on
@@ -72,7 +68,6 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
-    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "https://crbug.com/1382930")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
@@ -156,7 +151,6 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
-    @RequiresApi(Build.VERSION_CODES.N)
     @Features.
     EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
@@ -242,7 +236,6 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "https://crbug.com/1363248")
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,

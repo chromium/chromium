@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -47,11 +46,6 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, LAUNCH_POLISH_PARAM, false);
 
-    // Field trial parameter for the minimum Android SDK version to enable zooming animation.
-    private static final String MIN_SDK_PARAM = "zooming-min-sdk-version";
-    public static final IntCachedFieldTrialParameter ZOOMING_MIN_SDK =
-            new IntCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_SDK_PARAM, Build.VERSION_CODES.M);
     // Field trial parameter for the minimum physical memory size to enable zooming animation.
     private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
     public static final IntCachedFieldTrialParameter ZOOMING_MIN_MEMORY =
@@ -281,10 +275,8 @@ public class TabUiFeatureUtilities {
      * @return Whether the Tab-to-Grid (and Grid-to-Tab) transition animation is enabled.
      */
     public static boolean isTabToGtsAnimationEnabled() {
-        Log.d(TAG, "GTS.MinSdkVersion = " + ZOOMING_MIN_SDK.getValue());
         Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
         return ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                && Build.VERSION.SDK_INT >= ZOOMING_MIN_SDK.getValue()
                 && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue();
     }
 

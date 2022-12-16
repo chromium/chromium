@@ -57,7 +57,7 @@ public class TabSwitcherThumbnailTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
-            + "/zooming-min-sdk-version/19/zooming-min-memory-mb/512/enable_launch_polish/true";
+            + "/zooming-min-memory-mb/512/enable_launch_polish/true";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
