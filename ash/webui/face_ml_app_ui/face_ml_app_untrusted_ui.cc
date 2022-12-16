@@ -45,6 +45,10 @@ content::WebUIDataSource* CreateFaceMLAppUntrustedDataSource() {
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
 
+  // Allow images to also handle data urls.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src blob: data: 'self';");
+
   return source;
 }
 
