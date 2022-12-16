@@ -43,6 +43,10 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {
  public:
   // Equivalent to ChromeMetricsServiceClient::Create
@@ -111,6 +115,9 @@ class ChromeMetricsServiceClientTest : public testing::Test {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper lacros_test_helper_;
+#endif
 };
 
 namespace {

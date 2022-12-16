@@ -60,6 +60,7 @@ import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_namespace.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
+import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
@@ -133,8 +134,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 102
-// Next method id: 106
+// Next version: 103
+// Next method id: 107
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -427,6 +428,12 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=33]
   BindNativeThemeService@38(pending_receiver<NativeThemeService> receiver);
+
+  // Binds the Metrics interface for fetching metadata needed by the
+  // metrics subsystem.
+  // Added in M110.
+  [MinVersion=102]
+  BindMetrics@106(pending_receiver<Metrics> receiver);
 
   // Binds the MetricsReporting interface for metrics reporting consent.
   // Added in M89.

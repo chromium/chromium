@@ -161,6 +161,8 @@ source_set("crosapi") {
     "login_state_ash.h",
     "message_center_ash.cc",
     "message_center_ash.h",
+    "metrics_ash.cc",
+    "metrics_ash.h",
     "metrics_reporting_ash.cc",
     "metrics_reporting_ash.h",
     "migration_progress_tracker.cc",

@@ -67,6 +67,7 @@
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/metrics.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
@@ -406,6 +407,9 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::MessageCenter,
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
+  ConstructRemote<crosapi::mojom::Metrics,
+                  &crosapi::mojom::Crosapi::BindMetrics,
+                  Crosapi::MethodMinVersions::kBindMetricsMinVersion>();
   ConstructRemote<
       crosapi::mojom::MultiCaptureService,
       &crosapi::mojom::Crosapi::BindMultiCaptureService,
