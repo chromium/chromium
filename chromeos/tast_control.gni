@@ -156,6 +156,9 @@ tast_disabled_tests_from_chrome_all = [
   "assistant.StartupInSignedOutMode",
   "login.ChangePassword",
 
+  # https://crbug.com/1401568
+  "assistant.Hotkey.search_plus_a",
+
   # https://crbug.com/1326279
   "policy.AccessibilityPolicies.focus_highlight",
 
