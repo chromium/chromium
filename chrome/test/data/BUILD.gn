@@ -50,12 +50,3 @@ copy("web_ui_test_mojom_js_module") {
   outputs = [ "$target_gen_dir/webui/{{source_file_part}}" ]
   deps = [ ":web_ui_test_bindings_js__generator" ]
 }
-
-group("closure_compile") {
-  testonly = true
-  deps = [ "cast:closure_compile" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "webui:closure_compile" ]
-  }
-}

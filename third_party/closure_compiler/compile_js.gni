@@ -8,7 +8,7 @@ declare_args() {
   # Enable closure type-checking for Chrome's web technology-based UI. This
   # enables the webui_closure_compile target which does a no-op without this
   # flag enabled. Requires Java.
-  enable_js_type_check = is_chromeos || is_linux || is_android
+  enable_js_type_check = is_chromeos || is_android
 }
 
 script_path = "//third_party/closure_compiler"
@@ -288,6 +288,8 @@ template("js_binary") {
 
 # Defines a target that compiles a group of js_library targets.
 template("js_type_check") {
+  # js_type_check is not supported on Desktop.
+  assert(is_chromeos || is_android || is_ios)
   if (enable_js_type_check) {
     js_binary(target_name) {
       sources = []

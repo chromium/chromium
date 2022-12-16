@@ -1762,17 +1762,12 @@ if (enable_js_type_check) {
       data_deps = [
         "ash/webui:closure_compile",
         "chrome/browser/resources:closure_compile",
-        "chrome/test/data:closure_compile",
+        "chrome/test/data/webui:closure_compile",
         "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
         "ui/file_manager:closure_compile",
       ]
     } else if (is_chromeos || is_android) {
-      data_deps = [
-        "chrome/browser/resources:closure_compile",
-        "chrome/test/data:closure_compile",
-      ]
-    } else if (!is_castos) {
-      data_deps = [ "chrome/test/data:closure_compile" ]
+      data_deps = [ "chrome/browser/resources:closure_compile" ]
     }
   }
 }
