@@ -3663,6 +3663,30 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app." translateable="false">
           Keyboard settings
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ADD_SHORTCUT" desc="Button label to add a new shortcut for a specific action" translateable="false">
+          Add shortcut
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULTS" desc="Button label to restore a specific action to its default shortcuts" translateable="false">
+          Restore defaults
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_DIALOG_DONE" desc="Used to close edit shortcuts modal dialog" translateable="false">
+          Done
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals" translateable="false">
+          Cancel
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut" translateable="false">
+          Press 1-4 modifiers and 1 other key on your keyboard
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS" desc="Button label to reset all shortcuts in the app to their default values" translateable="false">
+          Reset all shortcuts
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE" desc="Title of the modal shown when user clicks button to reset all shortcuts" translateable="false">
+          Reset all shortcuts to defaults?
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_SHORTCUTS_BUTTON" desc="Button label for action that confirms resetting all shortcuts to their default values" translateable="false">
+          Reset
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TABS_AND_WINDOWS" desc="Category named 'Tabs and Windows' shown on the navigation sidebar" translateable="false">Tabs &#38; Windows</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_PAGE_AND_WEB_BROWSER" desc="Category named 'Page and Web Browser' shown on the navigation sidebar" translateable="false">Page &#38; Web Browser</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_SYSTEM_AND_DISPLAY_SETTINGS" desc="Category named 'System and Display Settings' shown on the navigation sidebar" translateable="false">System &#38; Display Settings</message>

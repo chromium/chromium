@@ -38,14 +38,12 @@
     margin-inline-start: 12px;
   }
 </style>
-<!-- TODO(jimmyxgong): Localize this title -->
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
     <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_" 
       hidden="[[shouldHideRestoreAllButton_()]]">
-      <!-- TODO(jimmyxgong): i18n this string-->
-      Reset all shortcuts
+      [[i18n('resetAllShortcuts')]]
     </cr-button>
     <div id="keyboardSettingsLinkContainer">
       <a href="chrome://os-settings/keyboard-overlay">
@@ -69,18 +67,15 @@
   <cr-dialog id="restoreDialog" show-on-attach
       on-close="closeRestoreAllDialog_">
     <div slot="body">
-      <!-- TODO(jimmyxgong): i18n string -->
-      Reset all shortcuts to defaults?
+      [[i18n('confirmResetAllShortcutsTitle')]]
     </div>
     <div slot="button-container">
       <cr-button id="cancelButton" on-click="onCancelRestoreButtonClicked_">
-        <!-- TODO(jimmyxgong): i18n string -->
-        Cancel
+        [[i18n('cancel')]]
       </cr-button>
       <cr-button class="action-button"
           on-click="onConfirmRestoreButtonClicked_">
-        <!-- TODO(jimmyxgong): i18n string -->
-        Reset
+        [[i18n('confirmResetAllShortcutsButton')]]
       </cr-button>
     </div>
   </cr-dialog>

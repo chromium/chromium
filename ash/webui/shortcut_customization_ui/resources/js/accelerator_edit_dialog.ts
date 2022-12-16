@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,7 +36,10 @@ declare global {
  * a given shortcut. Allows users to edit the accelerators.
  * TODO(jimmyxgong): Implement editing accelerators.
  */
-export class AcceleratorEditDialogElement extends PolymerElement {
+const AcceleratorEditDialogElementBase = I18nMixin(PolymerElement);
+
+export class AcceleratorEditDialogElement extends
+    AcceleratorEditDialogElementBase {
   static get is() {
     return 'accelerator-edit-dialog';
   }

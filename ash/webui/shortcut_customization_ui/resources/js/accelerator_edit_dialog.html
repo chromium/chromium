@@ -70,8 +70,7 @@
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>
-        <!-- TODO(jimmyxgong): Localize this string -->
-        Add shortcut
+        [[i18n('addShortcut')]]
       </cr-button>
     </div>
 
@@ -80,15 +79,13 @@
     <div>
       <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_"
           hidden$="[[isAcceleratorCapturing_]]">
-        <!-- TODO(jimmyxgong): i18n string -->
-        Restore defaults
+        [[i18n('restoreDefaults')]]
       </cr-button>
     </div>
     <div>
       <cr-button id="doneButton" on-click="onDoneButtonClicked_"
           disabled="[[isAcceleratorCapturing_]]">
-        <!-- TODO(jimmyxgong): Localize this string -->
-        Done
+        [[i18n('editDialogDone')]]
       </cr-button>
     </div>
   </div>

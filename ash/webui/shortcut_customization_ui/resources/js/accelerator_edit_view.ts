@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_edit_view.html.js';
@@ -50,7 +51,9 @@ const defaultAcceleratorInfoState: DefaultAcceleratorInfo = {
  * responsible for displaying the edit/remove buttons to an accelerator and also
  * displaying context or errors strings for an accelerator.
  */
-export class AcceleratorEditViewElement extends PolymerElement {
+const AcceleratorEditViewElementBase = I18nMixin(PolymerElement);
+
+export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   static get is() {
     return 'accelerator-edit-view';
   }
@@ -122,9 +125,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   protected onStatusMessageChanged_() {
     if (this.statusMessage === '') {
-      // TODO(jimmyxgong): i18n this string.
-      this.statusMessage =
-          'Press 1-4 modifiers and 1 other key on your keyboard';
+      this.statusMessage = this.i18n('editViewStatusMessage');
     }
   }
 
