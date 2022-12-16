@@ -189,7 +189,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   //   ServiceWorkerStorage::PurgeResources() to delete their script resources.
   // If these aren't called, on the next profile session the cleanup occurs.
   void DeleteRegistration(scoped_refptr<ServiceWorkerRegistration> registration,
-                          const blink::StorageKey& key,
                           StatusCallback callback);
 
   // Intended for use only by ServiceWorkerRegisterJob and

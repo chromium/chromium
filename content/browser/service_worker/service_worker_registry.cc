@@ -452,7 +452,6 @@ void ServiceWorkerRegistry::StoreRegistration(
 
 void ServiceWorkerRegistry::DeleteRegistration(
     scoped_refptr<ServiceWorkerRegistration> registration,
-    const blink::StorageKey& key,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (is_storage_disabled_) {
@@ -468,9 +467,9 @@ void ServiceWorkerRegistry::DeleteRegistration(
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::DeleteRegistration,
       base::BindOnce(&ServiceWorkerRegistry::DidDeleteRegistration,
-                     weak_factory_.GetWeakPtr(), registration->id(), key,
-                     std::move(callback)),
-      registration->id(), key);
+                     weak_factory_.GetWeakPtr(), registration->id(),
+                     registration->key(), std::move(callback)),
+      registration->id(), registration->key());
 
   DCHECK(!base::Contains(uninstalling_registrations_, registration->id()));
   uninstalling_registrations_[registration->id()] = registration;

@@ -421,12 +421,11 @@ class ServiceWorkerRegistryTest : public testing::Test {
   }
 
   blink::ServiceWorkerStatusCode DeleteRegistration(
-      scoped_refptr<ServiceWorkerRegistration> registration,
-      const blink::StorageKey& key) {
+      scoped_refptr<ServiceWorkerRegistration> registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->DeleteRegistration(
-        registration, key,
+        registration,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
           loop.Quit();
@@ -1578,7 +1577,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
   {
     base::RunLoop loop;
     registry()->DeleteRegistration(
-        registration2, kKey2,
+        registration2,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
           loop.Quit();
@@ -2426,8 +2425,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_NoLiveVersion) {
   base::RunLoop loop;
   storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            DeleteRegistration(registration_,
-                               blink::StorageKey(url::Origin::Create(scope_))));
+            DeleteRegistration(registration_));
   // At this point registration_->waiting_version() has a remote reference, so
   // the resources should be in the purgeable list.
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
@@ -2447,8 +2445,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_WaitingVersion) {
   // purgeable list and then doomed in the disk cache and removed from that
   // list.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            DeleteRegistration(registration_,
-                               blink::StorageKey(url::Origin::Create(scope_))));
+            DeleteRegistration(registration_));
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
 
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, false));
@@ -2483,8 +2480,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
   // Deleting the registration should move the resources to the purgeable list
   // but keep them available.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            DeleteRegistration(registration_,
-                               blink::StorageKey(url::Origin::Create(scope_))));
+            DeleteRegistration(registration_));
   EXPECT_EQ(2u, GetPurgeableResourceIds().size());
 
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, true));
@@ -2614,8 +2610,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
   // Deleting the registration should move the resources to the purgeable list
   // but keep them available.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            DeleteRegistration(registration_,
-                               blink::StorageKey(url::Origin::Create(scope_))));
+            DeleteRegistration(registration_));
   std::vector<int64_t> verify_ids = GetPurgeableResourceIds();
   EXPECT_EQ(2u, verify_ids.size());
 
@@ -2673,8 +2668,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
 
   // Delete the registration. The resources should be on the purgeable list but
   // should not be purged yet.
-  ASSERT_EQ(DeleteRegistration(registration_,
-                               blink::StorageKey(url::Origin::Create(scope_))),
+  ASSERT_EQ(DeleteRegistration(registration_),
             blink::ServiceWorkerStatusCode::kOk);
 
   EXPECT_THAT(GetPurgeableResourceIds(), testing::UnorderedElementsAreArray(

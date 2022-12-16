@@ -337,8 +337,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
   }
 
   context_->registry()->DeleteRegistration(
-      this, key_,
-      base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
+      this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
 
   if (!active_version() || !active_version()->HasControllee())
     Clear();
@@ -348,7 +347,7 @@ void ServiceWorkerRegistration::DeleteAndClearImmediately() {
   DCHECK(context_);
   if (!is_deleted()) {
     context_->registry()->DeleteRegistration(
-        this, key_,
+        this,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
   }
 
@@ -589,7 +588,7 @@ void ServiceWorkerRegistration::ForceDelete() {
   // Delete the registration and its state from storage.
   if (status() == Status::kIntact) {
     context_->registry()->DeleteRegistration(
-        this, key_,
+        this,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
   }
   DCHECK(is_uninstalling());

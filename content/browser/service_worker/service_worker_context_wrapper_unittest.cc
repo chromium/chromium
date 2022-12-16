@@ -94,7 +94,7 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->DeleteRegistration(
-        registration, registration->key(),
+        registration,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
           loop.Quit();

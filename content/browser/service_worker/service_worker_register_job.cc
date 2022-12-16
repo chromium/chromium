@@ -828,8 +828,8 @@ void ServiceWorkerRegisterJob::CompleteInternal(
       if (!registration()->newest_installed_version()) {
         registration()->NotifyRegistrationFailed();
         if (!registration()->is_deleted()) {
-          context_->registry()->DeleteRegistration(
-              registration(), registration()->key(), base::DoNothing());
+          context_->registry()->DeleteRegistration(registration(),
+                                                   base::DoNothing());
           context_->registry()->NotifyDoneUninstallingRegistration(
               registration(), ServiceWorkerRegistration::Status::kUninstalled);
         }

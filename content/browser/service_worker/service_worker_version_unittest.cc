@@ -393,7 +393,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   helper_->context()->registry()->DeleteRegistration(
-      registration_, registration_->key(),
+      registration_,
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   run_loop.Run();
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
