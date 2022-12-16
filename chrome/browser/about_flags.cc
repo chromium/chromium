@@ -9511,6 +9511,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillOfferToSaveCardWithSameLastFour)},
 
+    {"use-mojo-video-decoder-for-pepper",
+     flag_descriptions::kUseMojoVideoDecoderForPepperName,
+     flag_descriptions::kUseMojoVideoDecoderForPepperDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kUseMojoVideoDecoderForPepper)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

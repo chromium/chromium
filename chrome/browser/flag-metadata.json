@@ -6871,6 +6871,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-mojo-video-decoder-for-pepper",
+    "owners": [ "pmolinalopez", "andrescj" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "use-multiple-overlays",
     "owners": [ "khaslett", "//components/viz/OWNERS" ],
     "expiry_milestone": 110
