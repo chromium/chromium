@@ -41,9 +41,9 @@
 
 - (void)fillPasteboard;
 - (NSImage*)dragImage;
+- (NSURL*)writePromisedFileTo:(NSURL*)destination;
 
 @end  // @interface WebDragSource(Private)
-
 
 @implementation WebDragSource
 
@@ -131,6 +131,24 @@
     [pboard setData:[NSData dataWithBytes:_dropData->file_contents.data()
                                    length:_dropData->file_contents.length()]
             forType:_fileUTType.get()];
+
+  // File instantiation promise.
+  } else if ([type isEqualToString:base::mac::CFToNSCast(
+                                       kPasteboardTypeFileURLPromise)]) {
+    // The official way of getting the drop destination is to call
+    // `PasteboardCopyPasteLocation` on the Carbon Pasteboard Manager, but what
+    // that function does is pull the location from "com.apple.pastelocation".
+    // Therefore, do that directly rather than indirecting to a different API
+    // set that does no useful bridging.
+    NSURL* drop_destination =
+        [NSURL URLWithString:[pboard stringForType:@"com.apple.pastelocation"]];
+    if (drop_destination) {
+      NSURL* new_file = [self writePromisedFileTo:drop_destination];
+
+      // Let the OS know what file was just created.
+      [pboard setString:new_file.absoluteString
+                forType:base::mac::CFToNSCast(kPasteboardTypeFileURLPromise)];
+    }
 
   // Plain text.
   } else if ([type isEqualToString:NSPasteboardTypeString]) {
@@ -241,20 +259,6 @@
   }
 }
 
-- (NSString*)dragPromisedFileTo:(NSString*)path {
-  if (!_host)
-    return nil;
-  // Be extra paranoid; avoid crashing.
-  if (!_dropData) {
-    NOTREACHED() << "No drag-and-drop data available for promised file.";
-    return nil;
-  }
-  base::FilePath filePath(base::SysNSStringToUTF8(path));
-  filePath = filePath.Append(_downloadFileName);
-  _host->DragPromisedFileTo(filePath, *_dropData, _downloadURL, &filePath);
-  return base::SysUTF8ToNSString(filePath.BaseName().value());
-}
-
 @end  // @implementation WebDragSource
 
 @implementation WebDragSource (Private)
@@ -331,34 +335,31 @@
                 kUTTagClassMIMEType, mimeTypeCF.get(), nullptr)));
       }
 
-      // File (HFS) promise.
-      // There are two ways to drag/drop files. NSFilesPromisePboardType is the
-      // deprecated way, and kPasteboardTypeFilePromiseContent is the way that
-      // does not work. kPasteboardTypeFilePromiseContent is thoroughly broken:
-      // * API: There is no good way to get the location for the drop.
-      //   <http://lists.apple.com/archives/cocoa-dev/2012/Feb/msg00706.html>
-      //   <rdar://14943849> <http://openradar.me/14943849>
-      // * Behavior: A file dropped in the Finder is not selected. This can be
-      //   worked around by selecting the file in the Finder using AppleEvents,
-      //   but the drop target window will come to the front of the Finder's
-      //   window list (unlike the previous behavior). <http://crbug.com/278515>
-      //   <rdar://14943865> <http://openradar.me/14943865>
-      // * Behavior: Files dragged over app icons in the dock do not highlight
-      //   the dock icons, and the dock icons do not accept the drop.
-      //   <http://crbug.com/282916> <rdar://14943872>
-      //   <http://openradar.me/14943872>
-      // * Behavior: A file dropped onto the desktop is positioned at the upper
-      //   right of the desktop rather than at the position at which it was
-      //   dropped. <http://crbug.com/284942> <rdar://14943881>
-      //   <http://openradar.me/14943881>
-      NSArray* fileUTTypeList = @[ _fileUTType.get() ];
-      [_pasteboard addTypes:@[ NSFilesPromisePboardType ] owner:self];
-      [_pasteboard setPropertyList:fileUTTypeList
-                           forType:NSFilesPromisePboardType];
-
+      // Promise both the file's contents...
       if (!_dropData->file_contents.empty()) {
-        [_pasteboard addTypes:fileUTTypeList owner:self];
+        [_pasteboard addTypes:@[ _fileUTType.get() ] owner:self];
       }
+
+      // ... and materialization of the file if requested.
+
+      // NB: Why not use `NSFilePromiseProvider`? Its design is fundamentally
+      // broken. It insists on being added to the pasteboard as its own object,
+      // but this code needs to add many, many flavors as one object. The only
+      // way to get it to share a pasteboard item with other flavors is to play
+      // the game of subclassing it, but that would involve a big rewrite of all
+      // of this code. FB11876926
+      //
+      // https://buckleyisms.com/blog/how-to-actually-implement-file-dragging-from-your-app-on-mac/
+
+      [_pasteboard addTypes:@[
+        base::mac::CFToNSCast(kPasteboardTypeFileURLPromise),
+        base::mac::CFToNSCast(kPasteboardTypeFilePromiseContent)
+      ]
+                      owner:self];
+
+      [_pasteboard
+          setString:_fileUTType.get()
+            forType:base::mac::CFToNSCast(kPasteboardTypeFilePromiseContent)];
     }
   }
 
@@ -397,6 +398,23 @@
   if (!_dropData->custom_data.empty()) {
     [_pasteboard addTypes:@[ ui::kUTTypeChromiumWebCustomData ] owner:self];
   }
+}
+
+- (NSURL*)writePromisedFileTo:(NSURL*)destination {
+  // Be extra paranoid; avoid crashing.
+  if (!_host || !_dropData) {
+    NOTREACHED() << "No drag-and-drop data available for promised file.";
+    return nil;
+  }
+
+  base::FilePath filePath = base::mac::NSURLToFilePath(destination);
+  filePath = filePath.Append(_downloadFileName);
+  _host->DragPromisedFileTo(filePath, *_dropData, _downloadURL, &filePath);
+
+  // The process of writing the file may have altered the value of `filePath`
+  // if, say, an existing file at the drop site already had that name. Return
+  // the actual URL to the file that was written.
+  return base::mac::FilePathToNSURL(filePath);
 }
 
 - (NSImage*)dragImage {

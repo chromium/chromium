@@ -96,12 +96,6 @@ CONTENT_EXPORT
 // Remove this WebDragSource as the owner of the drag pasteboard.
 - (void)clearPasteboard;
 
-// Call to drag a promised file to the given path (should be called before
-// -endDragAt:...); hook up to -namesOfPromisedFilesDroppedAtDestination:.
-// Returns the file name (not including path) of the file deposited (or which
-// will be deposited).
-- (NSString*)dragPromisedFileTo:(NSString*)path;
-
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_DRAG_SOURCE_MAC_H_

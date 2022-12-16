@@ -279,18 +279,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)draggedImage:(NSImage*)draggedImage movedTo:(NSPoint)screenPoint {
 }
 
-// Called when a file drag is dropped and the promised files need to be written.
-- (NSArray*)namesOfPromisedFilesDroppedAtDestination:(NSURL*)dropDest {
-  if (![dropDest isFileURL])
-    return nil;
-
-  NSString* fileName = [_dragSource dragPromisedFileTo:[dropDest path]];
-  if (!fileName)
-    return nil;
-
-  return @[ fileName ];
-}
-
 // NSDraggingDestination methods
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
