@@ -185,9 +185,13 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_CustomView() throws IOException {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
+        var sb = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            sb.append(i).append("\n");
+        }
+        sb.append(100);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCustomTextView1.setText(
-                    TextUtils.join("\n", Collections.nCopies(100, "Custom Message")));
+            mCustomTextView1.setText(sb.toString());
             mCustomScrollView.addView(mCustomTextView1);
         });
         createModel(
