@@ -40,36 +40,19 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
 
   void QueueWaylandOverlayConfig(wl::WaylandOverlayConfig config);
 
-  // gl::GLSurface:
+  // gl::Presenter:
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
-  bool IsOffscreen() override;
-  bool SupportsAsyncSwap() override;
-  bool SupportsPostSubBuffer() override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback,
-                                gfx::FrameData data) override;
-  void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
-  void PostSubBufferAsync(int x,
-                          int y,
-                          int width,
-                          int height,
-                          SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
+  void Present(SwapCompletionCallback completion_callback,
+               PresentationCallback presentation_callback,
+               gfx::FrameData data) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   bool SupportsPlaneGpuFences() const override;
   bool SupportsOverridePlatformSize() const override;
   bool SupportsViewporter() const override;
-  gfx::SurfaceOrigin GetOrigin() const override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,

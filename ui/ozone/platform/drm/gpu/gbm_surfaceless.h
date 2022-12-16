@@ -42,10 +42,8 @@ class GbmSurfaceless : public gl::Presenter {
 
   void QueueOverlayPlane(DrmOverlayPlane plane);
 
-  // gl::GLSurface:
+  // gl::Presenter:
   bool Initialize(gl::GLSurfaceFormat format) override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -54,30 +52,13 @@ class GbmSurfaceless : public gl::Presenter {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool IsOffscreen() override;
-  bool SupportsAsyncSwap() override;
-  bool SupportsPostSubBuffer() override;
   bool SupportsPlaneGpuFences() const override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback,
-                                gfx::FrameData data) override;
-  void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
-  void PostSubBufferAsync(int x,
-                          int y,
-                          int width,
-                          int height,
-                          SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   void SetForceGlFlushOnSwapBuffers() override;
-  gfx::SurfaceOrigin GetOrigin() const override;
+  void Present(SwapCompletionCallback completion_callback,
+               PresentationCallback presentation_callback,
+               gfx::FrameData data) override;
 
  protected:
   ~GbmSurfaceless() override;

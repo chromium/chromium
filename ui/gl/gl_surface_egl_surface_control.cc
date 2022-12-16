@@ -173,56 +173,7 @@ bool GLSurfaceEGLSurfaceControl::Resize(const gfx::Size& size,
   return true;
 }
 
-bool GLSurfaceEGLSurfaceControl::IsOffscreen() {
-  return false;
-}
-
-gfx::SwapResult GLSurfaceEGLSurfaceControl::SwapBuffers(
-    PresentationCallback callback,
-    gfx::FrameData data) {
-  NOTREACHED();
-  return gfx::SwapResult::SWAP_FAILED;
-}
-
-gfx::SwapResult GLSurfaceEGLSurfaceControl::CommitOverlayPlanes(
-    PresentationCallback callback,
-    gfx::FrameData data) {
-  NOTREACHED();
-  return gfx::SwapResult::SWAP_FAILED;
-}
-
-gfx::SwapResult GLSurfaceEGLSurfaceControl::PostSubBuffer(
-    int x,
-    int y,
-    int width,
-    int height,
-    PresentationCallback callback,
-    gfx::FrameData data) {
-  NOTREACHED();
-  return gfx::SwapResult::SWAP_FAILED;
-}
-
-void GLSurfaceEGLSurfaceControl::SwapBuffersAsync(
-    SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback,
-    gfx::FrameData data) {
-  CommitPendingTransaction(std::move(completion_callback),
-                           std::move(presentation_callback));
-}
-
-void GLSurfaceEGLSurfaceControl::CommitOverlayPlanesAsync(
-    SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback,
-    gfx::FrameData data) {
-  CommitPendingTransaction(std::move(completion_callback),
-                           std::move(presentation_callback));
-}
-
-void GLSurfaceEGLSurfaceControl::PostSubBufferAsync(
-    int x,
-    int y,
-    int width,
-    int height,
+void GLSurfaceEGLSurfaceControl::Present(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
     gfx::FrameData data) {
@@ -493,20 +444,8 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   return true;
 }
 
-bool GLSurfaceEGLSurfaceControl::IsSurfaceless() const {
-  return true;
-}
-
 void* GLSurfaceEGLSurfaceControl::GetHandle() {
   return offscreen_surface_;
-}
-
-bool GLSurfaceEGLSurfaceControl::SupportsPostSubBuffer() {
-  return true;
-}
-
-bool GLSurfaceEGLSurfaceControl::SupportsAsyncSwap() {
-  return true;
 }
 
 bool GLSurfaceEGLSurfaceControl::SupportsPlaneGpuFences() const {
@@ -654,12 +593,6 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
 void GLSurfaceEGLSurfaceControl::SetDisplayTransform(
     gfx::OverlayTransform transform) {
   display_transform_ = transform;
-}
-
-gfx::SurfaceOrigin GLSurfaceEGLSurfaceControl::GetOrigin() const {
-  // GLSurfaceEGLSurfaceControl's y-axis is flipped compare to GL - (0,0) is at
-  // top left corner.
-  return gfx::SurfaceOrigin::kTopLeft;
 }
 
 void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {

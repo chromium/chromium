@@ -44,7 +44,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
       gl::ScopedJavaSurfaceControl scoped_java_surface_control,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // GLSurface implementation.
+  // Presenter implementation.
   int GetBufferCount() const override;
   bool Initialize(GLSurfaceFormat format) override;
   void PrepareToDestroy(bool have_context) override;
@@ -53,7 +53,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool IsOffscreen() override;
 
   gfx::Size GetSize() override;
   bool OnMakeCurrent(GLContext* context) override;
@@ -61,42 +60,16 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
       OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
-  bool IsSurfaceless() const override;
   void* GetHandle() override;
   void PreserveChildSurfaceControls() override;
 
-  // Sync versions of frame update, should never be used.
-  gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback,
-                                gfx::FrameData data) override;
+  void Present(SwapCompletionCallback completion_callback,
+               PresentationCallback presentation_callback,
+               gfx::FrameData data) override;
 
-  void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
-  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
-                                PresentationCallback presentation_callback,
-                                gfx::FrameData data) override;
-  void PostSubBufferAsync(int x,
-                          int y,
-                          int width,
-                          int height,
-                          SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
-
-  bool SupportsAsyncSwap() override;
   bool SupportsPlaneGpuFences() const override;
-  bool SupportsPostSubBuffer() override;
   bool SupportsCommitOverlayPlanes() override;
   void SetDisplayTransform(gfx::OverlayTransform transform) override;
-  gfx::SurfaceOrigin GetOrigin() const override;
   void SetFrameRate(float frame_rate) override;
   void SetChoreographerVsyncIdForNextFrame(
       absl::optional<int64_t> choreographer_vsync_id) override;
@@ -249,7 +222,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   ResourceRefs current_frame_resources_;
 
   // The root surface tied to the ANativeWindow that places the content of this
-  // GLSurface in the java view tree.
+  // Presenter in the java view tree.
   scoped_refptr<gfx::SurfaceControl::Surface> root_surface_;
 
   // The last context made current with this surface.

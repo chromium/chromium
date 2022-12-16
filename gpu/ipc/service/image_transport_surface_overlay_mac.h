@@ -39,7 +39,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
       gl::GLDisplayEGL* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate);
 
-  // GLSurface implementation
+  // Presenter implementation
   bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
   void PrepareToDestroy(bool have_context) override;
@@ -47,38 +47,12 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(gl::GLSurface::PresentationCallback callback,
-                              gfx::FrameData data) override;
-  void SwapBuffersAsync(
-      gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback,
-      gfx::FrameData data) override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                gl::GLSurface::PresentationCallback callback,
-                                gfx::FrameData data) override;
-  void PostSubBufferAsync(
-      int x,
-      int y,
-      int width,
-      int height,
-      gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback,
-      gfx::FrameData data) override;
-  gfx::SwapResult CommitOverlayPlanes(
-      gl::GLSurface::PresentationCallback callback,
-      gfx::FrameData data) override;
-  void CommitOverlayPlanesAsync(
-      gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback,
-      gfx::FrameData data) override;
+  void Present(gl::GLSurface::SwapCompletionCallback completion_callback,
+               gl::GLSurface::PresentationCallback presentation_callback,
+               gfx::FrameData data) override;
 
-  bool SupportsPostSubBuffer() override;
+  // TODO(vasilyt): Remove this.
   bool SupportsCommitOverlayPlanes() override;
-  bool SupportsAsyncSwap() override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
   gl::GLSurfaceFormat GetFormat() override;
@@ -88,8 +62,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
-  bool IsSurfaceless() const override;
-  gfx::SurfaceOrigin GetOrigin() const override;
 
   // ui::GpuSwitchingObserver implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
