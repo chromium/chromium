@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
-#import "ios/chrome/browser/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -112,9 +110,6 @@ TEST_F(PopupMenuCoordinatorTest, TestStopDismissesMenu) {
 
   // Set up coordinator for presentation.
   UIViewController* viewController = [[UIViewController alloc] init];
-  NamedGuide* toolsGuide = [[NamedGuide alloc] initWithName:kToolsMenuGuide];
-  [viewController.view addLayoutGuide:toolsGuide];
-  toolsGuide.constrainedView = viewController.view;
   coordinator.baseViewController = viewController;
   coordinator.UIUpdater = uiUpdater;
   [coordinator start];
