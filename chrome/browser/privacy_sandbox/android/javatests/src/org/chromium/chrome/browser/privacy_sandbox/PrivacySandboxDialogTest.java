@@ -160,27 +160,18 @@ public final class PrivacySandboxDialogTest {
     }
 
     private void tryClickOn(Matcher<View> viewMatcher) {
-        try {
-            onView(viewMatcher).perform(click());
-        } catch (PerformException p) {
-            clickMoreButtonUntilFullyScrolledDown();
-            onViewWaiting(viewMatcher).perform(click());
-        }
+        clickMoreButtonUntilFullyScrolledDown();
+        onViewWaiting(viewMatcher).perform(click());
     }
 
     private void clickMoreButtonUntilFullyScrolledDown() {
-        boolean fullyScrolledDown = false;
-        while (!fullyScrolledDown) {
+        while (true) {
             try {
                 onView(withId(R.id.more_button)).perform(click());
             } catch (PerformException e) {
-                fullyScrolledDown = true;
+                return;
             }
         }
-    }
-
-    private void clickMoreButton() {
-        onView(withId(R.id.more_button)).perform(click());
     }
 
     @Test
