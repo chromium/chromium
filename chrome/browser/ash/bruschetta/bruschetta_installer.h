@@ -72,7 +72,7 @@ class BruschettaInstaller {
 
   void InstallToolsDlc();
   void OnToolsDlcInstalled(
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
   void DownloadFirmware();
   void OnFirmwareDownloaded(const download::CompletionInfo& completion_info);
   void MountFirmware(const base::FilePath& path);

@@ -47,8 +47,8 @@ base::ProcessId GetVmInitProcessId(
   return base::kNullProcessId;
 }
 
-chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+ash::ConciergeClient* GetConciergeClient() {
+  return ash::ConciergeClient::Get();
 }
 
 }  // namespace

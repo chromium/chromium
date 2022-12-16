@@ -155,9 +155,4 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::FakeCrasAudioClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_

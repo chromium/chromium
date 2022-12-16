@@ -449,7 +449,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
     DCHECK(GetConciergeClient());
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();

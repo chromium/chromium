@@ -69,9 +69,4 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomePkcs11Client {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CryptohomePkcs11Client;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_CRYPTOHOME_PKCS11_CLIENT_H_

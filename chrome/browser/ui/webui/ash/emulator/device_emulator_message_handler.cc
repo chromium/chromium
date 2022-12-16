@@ -133,17 +133,17 @@ class DeviceEmulatorMessageHandler::CrasAudioObserver
  public:
   explicit CrasAudioObserver(DeviceEmulatorMessageHandler* owner)
       : owner_(owner) {
-    chromeos::FakeCrasAudioClient::Get()->AddObserver(this);
+    FakeCrasAudioClient::Get()->AddObserver(this);
   }
 
   CrasAudioObserver(const CrasAudioObserver&) = delete;
   CrasAudioObserver& operator=(const CrasAudioObserver&) = delete;
 
   ~CrasAudioObserver() override {
-    chromeos::FakeCrasAudioClient::Get()->RemoveObserver(this);
+    FakeCrasAudioClient::Get()->RemoveObserver(this);
   }
 
-  // chromeos::CrasAudioClient::Observer.
+  // CrasAudioClient::Observer.
   void NodesChanged() override {
     if (!owner_->IsJavascriptAllowed()) {
       return;
@@ -319,7 +319,7 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
   CHECK(GetString(device_dict, "id", &tmp_id));
   CHECK(base::StringToUint64(tmp_id, &audio_node.id));
 
-  chromeos::FakeCrasAudioClient::Get()->InsertAudioNodeToList(audio_node);
+  FakeCrasAudioClient::Get()->InsertAudioNodeToList(audio_node);
 }
 
 void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
@@ -329,7 +329,7 @@ void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
   uint64_t id;
   CHECK(base::StringToUint64(tmp_id, &id));
 
-  chromeos::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(id);
+  FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(id);
 }
 
 void DeviceEmulatorMessageHandler::HandleSetHasTouchpad(
@@ -662,8 +662,7 @@ void DeviceEmulatorMessageHandler::UpdateAudioNodes() {
   // Get every active audio node and create a dictionary to
   // send it to JavaScript.
   base::Value::List audio_nodes;
-  for (const AudioNode& node :
-       chromeos::FakeCrasAudioClient::Get()->node_list()) {
+  for (const AudioNode& node : FakeCrasAudioClient::Get()->node_list()) {
     base::Value::Dict audio_node;
 
     audio_node.Set("isInput", node.is_input);

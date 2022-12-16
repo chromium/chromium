@@ -105,9 +105,4 @@ extern const char kDeviceSetupKey[];
 
 }  // namespace ash::attestation
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::attestation {
-using ::ash::attestation::KEY_DEVICE;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_

@@ -97,7 +97,7 @@ void BruschettaLauncher::StartVm(base::File bios) {
     return;
   }
 
-  auto* client = chromeos::ConciergeClient::Get();
+  auto* client = ash::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "Error connecting to concierge. Client is NULL.";
     callbacks_.Notify(BruschettaResult::kStartVmFailed);

@@ -62,7 +62,9 @@ namespace network_config {
 namespace {
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::HermesManagerClient;
 using ::ash::LoginState;
+using ::ash::ShillManagerClient;
 namespace sync_wifi {
 using ::ash::sync_wifi::IsEligibleForSync;
 }
@@ -542,7 +544,7 @@ mojom::InhibitReason GetInhibitReason(
     // For devices with EUICC, the UI should be inhibited when a cellular
     // network connection is in progress to prevent additional requests. This is
     // due to complexity in switching slots.
-    if (!chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty() &&
+    if (!HermesManagerClient::Get()->GetAvailableEuiccs().empty() &&
         IsCellularConnecting(network_state_handler)) {
       return mojom::InhibitReason::kConnectingToProfile;
     }

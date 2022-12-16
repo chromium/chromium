@@ -59,9 +59,4 @@ std::ostream& COMPONENT_EXPORT(HERMES_CLIENT) operator<<(
     HermesResponseStatus status);
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::HermesResponseStatus;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_

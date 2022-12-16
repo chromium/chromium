@@ -274,9 +274,4 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ShillManagerClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_MANAGER_CLIENT_H_

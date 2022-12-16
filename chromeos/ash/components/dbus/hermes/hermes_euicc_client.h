@@ -246,9 +246,4 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::HermesEuiccClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_

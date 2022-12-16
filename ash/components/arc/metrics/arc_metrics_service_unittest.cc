@@ -66,7 +66,7 @@ class ArcMetricsServiceTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::FakeSessionManagerClient::Get()->set_arc_available(true);
-    chromeos::ConciergeClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
 
     // Changing the command line needs to be done here and not in
     // ArcVmArcMetricsServiceTest below, because we need IsArcVmEnabled to
@@ -100,7 +100,7 @@ class ArcMetricsServiceTest : public testing::Test {
     context_.reset();
     arc_service_manager_.reset();
 
-    chromeos::ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     StabilityMetricsManager::Shutdown();

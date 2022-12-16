@@ -67,9 +67,4 @@ typedef std::vector<AudioNode> AudioNodeList;
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::AudioNode;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_AUDIO_NODE_H_

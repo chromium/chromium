@@ -30,7 +30,7 @@ enum class KioskLowDiskSeverity {
 };
 
 // LowDiskMetricsService tracks and reports severity of low disk notifications.
-class LowDiskMetricsService : public chromeos::UserDataAuthClient::Observer {
+class LowDiskMetricsService : public UserDataAuthClient::Observer {
  public:
   LowDiskMetricsService();
   LowDiskMetricsService(LowDiskMetricsService&) = delete;

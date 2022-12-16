@@ -65,6 +65,10 @@ using ApnTypes = ash::CellularNetworkMetricsLogger::ApnTypes;
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 using ::ash::LoginState;
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::FakeShillDeviceClient;
+using ::ash::HermesEuiccClient;
+
 constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";
 constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";

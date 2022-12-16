@@ -51,16 +51,18 @@ std::unique_ptr<LowDiskMetricsService> LowDiskMetricsService::CreateForTesting(
 
 LowDiskMetricsService::LowDiskMetricsService(PrefService* prefs)
     : prefs_(prefs) {
-  if (!chromeos::UserDataAuthClient::Get())
+  if (!UserDataAuthClient::Get()) {
     return;
-  chromeos::UserDataAuthClient::Get()->AddObserver(this);
+  }
+  UserDataAuthClient::Get()->AddObserver(this);
   ReportPreviousSessionLowDiskSeverity();
 }
 
 LowDiskMetricsService::~LowDiskMetricsService() {
-  if (!chromeos::UserDataAuthClient::Get())
+  if (!UserDataAuthClient::Get()) {
     return;
-  chromeos::UserDataAuthClient::Get()->RemoveObserver(this);
+  }
+  UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
 void LowDiskMetricsService::LowDiskSpace(

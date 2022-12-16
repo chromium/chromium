@@ -16,7 +16,7 @@ include_rules = [
   "+third_party/cros_system_api",
   "+url",
 
-  # TODO(crbug.com/1164001): Remove after chromeos/dbus migration is done.
+  # Required for a base class of D-Bus clients and common constants.
   "+chromeos/dbus",
 
   # Abseil features must be allowlisted explicitly for now. See

@@ -81,7 +81,6 @@ include_rules = [
   # limit D-Bus communication to a subset of OS daemons, but that project
   # stopped in 2019. See //ash/README.md.
   "+chromeos/ash/components/dbus",
-  # TODO(https://crbug.com/1164001): removed after all clients have migrated.
   "+chromeos/dbus",
   # //ash should use code in //ash/session to get login state. The state in
   # //ash/session and the state in //chromeos/ash/components/login/login_state

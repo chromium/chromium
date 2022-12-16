@@ -62,9 +62,4 @@ class COMPONENT_EXPORT(PCIGUARD) PciguardClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::PciguardClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_

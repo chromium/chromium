@@ -36,31 +36,29 @@ constexpr char kPersistentDataKeyPrefix[] = "persistent_data_";
 constexpr char kCredentialsKeyPrefix[] = "credentials_";
 
 void LoginScreenStorageStoreSuccess(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageStoreCallback
-        callback) {
+    ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
   std::move(callback).Run(/*error_message=*/absl::nullopt);
 }
 
 void LoginScreenStorageStoreError(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageStoreCallback
-        callback) {
+    ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
   std::move(callback).Run(kError);
 }
 
 void LoginScreenStorageRetrieveSuccess(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
+    ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
   std::move(callback).Run(kData, /*error_message=*/absl::nullopt);
 }
 
 void LoginScreenStorageRetrieveError(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
+    ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
   std::move(callback).Run(/*data=*/absl::nullopt, kError);
 }
 
 // A mock around FakeSessionManagerClient for tracking the D-Bus calls.
-class MockSessionManagerClient : public chromeos::FakeSessionManagerClient {
+class MockSessionManagerClient : public ash::FakeSessionManagerClient {
  public:
   MockSessionManagerClient() = default;
   ~MockSessionManagerClient() override = default;

@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionWrongPassword) {
   // Note: the password check will fail even if the correct password is used as
   // |FakeUserDataAuthClient::CheckKeyEx()| does not check the user session's
   // cipher blob.
-  FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
+  ash::FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
 

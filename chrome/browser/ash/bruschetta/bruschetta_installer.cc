@@ -123,7 +123,7 @@ void BruschettaInstaller::InstallToolsDlc() {
 
   dlcservice::InstallRequest request;
   request.set_id(crostini::kCrostiniDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       request,
       base::BindOnce(&BruschettaInstaller::OnToolsDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -131,7 +131,7 @@ void BruschettaInstaller::InstallToolsDlc() {
 }
 
 void BruschettaInstaller::OnToolsDlcInstalled(
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   if (MaybeClose())
     return;
 
@@ -412,7 +412,7 @@ void BruschettaInstaller::OnOpenFds(
 void BruschettaInstaller::CreateVmDisk() {
   NotifyObserver(State::kCreateVmDisk);
 
-  auto* client = chromeos::ConciergeClient::Get();
+  auto* client = ash::ConciergeClient::Get();
   DCHECK(client) << "This code requires a ConciergeClient";
 
   std::string user_hash =
@@ -464,7 +464,7 @@ void BruschettaInstaller::StartVm() {
     return;
   }
 
-  auto* client = chromeos::ConciergeClient::Get();
+  auto* client = ash::ConciergeClient::Get();
   DCHECK(client) << "This code requires a ConciergeClient";
 
   std::string user_hash =

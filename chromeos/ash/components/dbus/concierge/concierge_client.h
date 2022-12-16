@@ -345,9 +345,4 @@ struct ScopedObservationTraits<ash::ConciergeClient,
 
 }  // namespace base
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ConciergeClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_

@@ -46,7 +46,7 @@ class AboutHandlerTest : public testing::Test {
   void SetUp() override {
     fake_update_engine_client_ =
         ash::UpdateEngineClient::InitializeFakeForTest();
-    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     handler_ = std::make_unique<TestAboutHandler>(&profile_);
     handler_->set_web_ui(&web_ui_);
@@ -60,7 +60,7 @@ class AboutHandlerTest : public testing::Test {
   void TearDown() override {
     handler_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    ConciergeClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
   }
 

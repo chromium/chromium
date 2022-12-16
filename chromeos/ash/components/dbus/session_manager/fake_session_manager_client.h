@@ -482,9 +482,4 @@ class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeInMemorySessionManagerClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::FakeSessionManagerClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_FAKE_SESSION_MANAGER_CLIENT_H_

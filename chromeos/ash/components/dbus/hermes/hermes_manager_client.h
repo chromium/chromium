@@ -83,9 +83,4 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::HermesManagerClient;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
