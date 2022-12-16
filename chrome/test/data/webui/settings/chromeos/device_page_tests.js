@@ -726,6 +726,26 @@ suite('SettingsDevicePage', function() {
       ],
     };
 
+    /**
+     * Simuates clicking at a given point on cr-slider element.
+     * @param {string} crSliderSelector
+     * @param {number} percent
+     * @return {Promise}
+     */
+    async function simulateSliderClicked(crSliderSelector, percent) {
+      /** @type {!CrSliderElement} */
+      const crSlider = audioPage.shadowRoot.querySelector(crSliderSelector);
+      assertTrue(isVisible(crSlider));
+      const rect = crSlider.$.container.getBoundingClientRect();
+      crSlider.dispatchEvent(new PointerEvent('pointerdown', {
+        buttons: 1,
+        pointerId: 1,
+        clientX: rect.left + ((percent / 100) * rect.width),
+      }));
+      return await flushTasks();
+    }
+
+
     setup(async function() {
       loadTimeData.overrideValues({
         enableAudioSettingsPage: true,
@@ -770,21 +790,11 @@ suite('SettingsDevicePage', function() {
     });
 
     test('simulate setting output volume slider mojo test', async function() {
-      async function simulateSliderClicked(value) {
-        const outputVolumeSlider =
-            audioPage.shadowRoot.querySelector('#outputVolumeSlider');
-        const rect = outputVolumeSlider.$.container.getBoundingClientRect();
-        outputVolumeSlider.dispatchEvent(new PointerEvent('pointerdown', {
-          buttons: 1,
-          pointerId: 1,
-          clientX: rect.left + (value * rect.width),
-        }));
-        return await flushTasks();
-      }
+      const sliderSelector = '#outputVolumeSlider';
 
       // Test clicking to min volume case.
       const minOutputVolumePercent = 0;
-      await simulateSliderClicked(minOutputVolumePercent / 100);
+      await simulateSliderClicked(sliderSelector, minOutputVolumePercent);
       assertEquals(
           minOutputVolumePercent,
           audioPage.audioSystemProperties_.outputVolumePercent,
@@ -792,7 +802,7 @@ suite('SettingsDevicePage', function() {
 
       // Test clicking to max volume case.
       const maxOutputVolumePercent = 100;
-      await simulateSliderClicked(maxOutputVolumePercent / 100);
+      await simulateSliderClicked(sliderSelector, maxOutputVolumePercent);
       assertEquals(
           maxOutputVolumePercent,
           audioPage.audioSystemProperties_.outputVolumePercent,
@@ -800,7 +810,7 @@ suite('SettingsDevicePage', function() {
 
       // Test clicking to non-boundary volume case.
       const nonBoundaryOutputVolumePercent = 50;
-      await simulateSliderClicked(50 / 100);
+      await simulateSliderClicked(sliderSelector, 50);
       assertEquals(
           nonBoundaryOutputVolumePercent,
           audioPage.audioSystemProperties_.outputVolumePercent,
@@ -971,6 +981,41 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertTrue(audioPage.getIsInputMutedForTest());
+    });
+
+    test('simulate setting input gain slider', async function() {
+      const sliderSelector = '#audioInputGainVolumeSlider';
+      const inputSlider = audioPage.shadowRoot.querySelector(sliderSelector);
+      assertTrue(isVisible(inputSlider));
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          inputSlider.value);
+
+      const minimumValue = 0;
+      await simulateSliderClicked(sliderSelector, minimumValue);
+
+      assertEquals(minimumValue, inputSlider.value);
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          inputSlider.value);
+      const maximumValue = 100;
+      await simulateSliderClicked(sliderSelector, maximumValue);
+
+      assertEquals(maximumValue, inputSlider.value);
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          inputSlider.value);
+      const middleValue = 50;
+      await simulateSliderClicked(sliderSelector, middleValue);
+
+      assertEquals(middleValue, inputSlider.value);
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .inputVolumePercent,
+          inputSlider.value);
     });
   });
 

@@ -144,6 +144,22 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   /**
+   * Handles the event where the input volume slider is being changed.
+   */
+  protected onInputVolumeSliderChanged(): void {
+    // TODO(b/260277007): Remove condition when setInputVolumePercent added to
+    // mojo definition.
+    if (!this.crosAudioConfig_.setInputVolumePercent) {
+      return;
+    }
+
+    const sliderValue = this.shadowRoot!
+                            .querySelector<CrSliderElement>(
+                                '#audioInputGainVolumeSlider')!.value;
+    this.crosAudioConfig_.setInputVolumePercent(sliderValue);
+  }
+
+  /**
    * Handles the event where the output volume slider is being changed.
    */
   private onOutputVolumeSliderChanged_(): void {
