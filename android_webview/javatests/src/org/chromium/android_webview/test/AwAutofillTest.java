@@ -1118,6 +1118,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=AutofillAcrossIframes"})
+    @DisabledTest(message = "https://crbug.com/1401726")
     public void testCrossFrameAutofill() throws Throwable {
         final String data = "<html><body><form>"
                 + "<input autocomplete=cc-name>"
