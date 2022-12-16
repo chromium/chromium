@@ -118,6 +118,18 @@ class PaintPropertyNode
       n->ClearChanged(sequence_number);
   }
 
+  PaintPropertyChangeType SetParent(const NodeTypeOrAlias& parent) {
+    DCHECK(!IsRoot());
+    DCHECK_NE(&parent, this);
+    if (&parent == parent_) {
+      return PaintPropertyChangeType::kUnchanged;
+    }
+    parent_ = &parent;
+    static_cast<NodeTypeOrAlias*>(this)->AddChanged(
+        PaintPropertyChangeType::kChangedOnlyValues);
+    return PaintPropertyChangeType::kChangedOnlyValues;
+  }
+
   // Returns true if this node is an alias for its parent. A parent alias is a
   // node which on its own does not contribute to the rendering output, and only
   // exists to enforce a particular structure of the paint property tree. Its
@@ -208,23 +220,6 @@ class PaintPropertyNode
       : is_parent_alias_(true),
         changed_(PaintPropertyChangeType::kNodeAddedOrRemoved),
         parent_(&parent) {}
-
-  PaintPropertyChangeType SetParent(const NodeTypeOrAlias& parent) {
-    DCHECK(!IsRoot());
-    DCHECK_NE(&parent, this);
-    if (&parent == parent_)
-      return PaintPropertyChangeType::kUnchanged;
-
-    parent_ = &parent;
-    if (IsParentAlias()) {
-      static_cast<NodeTypeOrAlias*>(this)->AddChanged(
-          PaintPropertyChangeType::kChangedOnlyValues);
-    } else {
-      static_cast<NodeType*>(this)->AddChanged(
-          PaintPropertyChangeType::kChangedOnlyValues);
-    }
-    return PaintPropertyChangeType::kChangedOnlyValues;
-  }
 
   void AddChanged(PaintPropertyChangeType changed) {
     DCHECK(!IsRoot());

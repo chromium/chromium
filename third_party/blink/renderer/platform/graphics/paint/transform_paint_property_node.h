@@ -46,6 +46,13 @@ class PLATFORM_EXPORT TransformPaintPropertyNodeOrAlias
   bool Changed(PaintPropertyChangeType change,
                const TransformPaintPropertyNodeOrAlias& relative_to_node) const;
 
+  void AddChanged(PaintPropertyChangeType changed) {
+    DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
+    GeometryMapperTransformCache::ClearCache();
+    GeometryMapperClipCache::ClearCache();
+    PaintPropertyNode::AddChanged(changed);
+  }
+
  protected:
   using PaintPropertyNode::PaintPropertyNode;
 };
@@ -56,12 +63,6 @@ class TransformPaintPropertyNodeAlias
   static scoped_refptr<TransformPaintPropertyNodeAlias> Create(
       const TransformPaintPropertyNodeOrAlias& parent) {
     return base::AdoptRef(new TransformPaintPropertyNodeAlias(parent));
-  }
-
-  PaintPropertyChangeType SetParent(
-      const TransformPaintPropertyNodeOrAlias& parent) {
-    DCHECK(IsParentAlias());
-    return PaintPropertyNode::SetParent(parent);
   }
 
  private:
@@ -425,24 +426,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 #endif
   }
 
-  void AddChanged(PaintPropertyChangeType changed) {
-    // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is
-    // fixed, change the following condition to
-    //   DCHECK(!transform_cache_ || !transform_cache_->IsValid());
-    DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
-    if (transform_cache_ && transform_cache_->IsValid()) {
-      DLOG(WARNING) << "Transform tree changed without invalidating the cache.";
-      GeometryMapperTransformCache::ClearCache();
-      GeometryMapperClipCache::ClearCache();
-    }
-    TransformPaintPropertyNodeOrAlias::AddChanged(changed);
-  }
-
   // For access to GetTransformCache() and SetCachedTransform.
   friend class GeometryMapper;
   friend class GeometryMapperTest;
   friend class GeometryMapperTransformCache;
   friend class GeometryMapperTransformCacheTest;
+  friend class PaintPropertyTreeBuilderTest;
 
   const GeometryMapperTransformCache& GetTransformCache() const {
     if (!transform_cache_)

@@ -182,8 +182,6 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     Validate();
   }
 
-  using PaintPropertyNode::SetParent;
-
   void Validate() const {
 #if DCHECK_IS_ON()
     DCHECK(!state_.compositor_element_id ||

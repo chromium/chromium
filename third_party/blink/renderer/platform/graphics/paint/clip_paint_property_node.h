@@ -52,6 +52,12 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
 
   void ClearChangedToRoot(int sequence_number) const;
 
+  void AddChanged(PaintPropertyChangeType changed) {
+    DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
+    GeometryMapperClipCache::ClearCache();
+    PaintPropertyNode::AddChanged(changed);
+  }
+
  protected:
   using PaintPropertyNode::PaintPropertyNode;
 };
@@ -61,12 +67,6 @@ class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {
   static scoped_refptr<ClipPaintPropertyNodeAlias> Create(
       const ClipPaintPropertyNodeOrAlias& parent) {
     return base::AdoptRef(new ClipPaintPropertyNodeAlias(parent));
-  }
-
-  PaintPropertyChangeType SetParent(
-      const ClipPaintPropertyNodeOrAlias& parent) {
-    DCHECK(IsParentAlias());
-    return PaintPropertyNode::SetParent(parent);
   }
 
  private:
@@ -197,18 +197,6 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   ClipPaintPropertyNode(const ClipPaintPropertyNodeOrAlias* parent,
                         State&& state)
       : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
-
-  void AddChanged(PaintPropertyChangeType changed) {
-    // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is
-    // fixed, change the following condition to
-    //   DCHECK(!clip_cache_ || !clip_cache_->IsValid());
-    DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
-    if (clip_cache_ && clip_cache_->IsValid()) {
-      DLOG(WARNING) << "Clip tree changed without invalidating the cache.";
-      GeometryMapperClipCache::ClearCache();
-    }
-    PaintPropertyNode::AddChanged(changed);
-  }
 
   // For access to GetClipCache();
   friend class GeometryMapper;

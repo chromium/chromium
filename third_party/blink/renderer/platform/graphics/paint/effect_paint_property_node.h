@@ -60,12 +60,6 @@ class EffectPaintPropertyNodeAlias : public EffectPaintPropertyNodeOrAlias {
     return base::AdoptRef(new EffectPaintPropertyNodeAlias(parent));
   }
 
-  PaintPropertyChangeType SetParent(
-      const EffectPaintPropertyNodeOrAlias& parent) {
-    DCHECK(IsParentAlias());
-    return PaintPropertyNode::SetParent(parent);
-  }
-
  private:
   explicit EffectPaintPropertyNodeAlias(
       const EffectPaintPropertyNodeOrAlias& parent)
@@ -326,8 +320,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   EffectPaintPropertyNode(const EffectPaintPropertyNodeOrAlias* parent,
                           State&& state)
       : EffectPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
-
-  using EffectPaintPropertyNodeOrAlias::SetParent;
 
   State state_;
 };
