@@ -82,7 +82,7 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
 
     if (battery_state->battery_discharge_granularity.has_value()) {
       base::UmaHistogramCustomCounts(
-          "Power.BatteryDischargeGranularityMilliwattHours",
+          "Power.BatteryDischargeGranularityMilliwattHours2",
           battery_state->battery_discharge_granularity.value(),
           /*min=*/0, /*exclusive_max=*/20000,
           /*buckets=*/50);
@@ -91,7 +91,7 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
           battery_state->battery_discharge_granularity.value() * 10000 /
           battery_state->full_charged_capacity.value();
       base::UmaHistogramCustomCounts(
-          "Power.BatteryDischargeGranularityRelative", granularity_relative,
+          "Power.BatteryDischargeGranularityRelative2", granularity_relative,
           /*min=*/0, /*exclusive_max=*/20000,
           /*buckets=*/50);
     }

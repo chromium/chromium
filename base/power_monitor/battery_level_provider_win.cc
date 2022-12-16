@@ -145,7 +145,7 @@ absl::optional<uint32_t> GetBatteryBatteryDischargeGranularity(
   // the values are still compared to find the most coarse granularity.
   DWORD max_granularity =
       std::max_element(std::begin(battery_reporting_scales),
-                       std::end(battery_reporting_scales),
+                       std::begin(battery_reporting_scales) + nb_elements,
                        [](const auto& lhs, const auto& rhs) {
                          return lhs.Granularity < rhs.Granularity;
                        })

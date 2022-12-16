@@ -496,9 +496,9 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeGranularity) {
   battery_discharge_reporter.OnBatteryStateSampled(kBatteryState);
 
   histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeGranularityMilliwattHours",
+      "Power.BatteryDischargeGranularityMilliwattHours2",
       kGranularityMilliwattHours, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Power.BatteryDischargeGranularityRelative", kGranularityRelative, 1);
+      "Power.BatteryDischargeGranularityRelative2", kGranularityRelative, 1);
 }
 #endif  // BUILDFLAG(IS_WIN)

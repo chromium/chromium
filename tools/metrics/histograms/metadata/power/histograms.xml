@@ -861,7 +861,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeGranularityMilliwattHours"
+<histogram name="Power.BatteryDischargeGranularityMilliwattHours2"
     units="milliwatt-hours" expires_after="2023-06-04">
   <owner>pmonette@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeGranularityRelative"
+<histogram name="Power.BatteryDischargeGranularityRelative2"
     units="hundredth of a percent" expires_after="2023-06-04">
   <owner>pmonette@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
