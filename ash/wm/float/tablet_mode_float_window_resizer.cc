@@ -130,31 +130,37 @@ void TabletModeFloatWindowResizer::RevertDrag() {
 void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
   DCHECK(window_state_->IsFloated());
   const ui::GestureEventDetails& details = event->details();
-  // Emplace `left` if the gesture has a horizontal component.
-  absl::optional<bool> left;
-  bool up;
+  float velocity_x = 0.f, velocity_y = 0.f;
   if (event->type() == ui::ET_SCROLL_FLING_START) {
-    float velocity_x = details.velocity_x();
-    float velocity_y = details.velocity_y();
-    float fling_amount = velocity_x * velocity_x + velocity_y * velocity_y;
+    velocity_x = details.velocity_x();
+    velocity_y = details.velocity_y();
+
     // If the fling wasn't large enough, update the window position based on its
     // drag location.
+    float fling_amount = velocity_x * velocity_x + velocity_y * velocity_y;
     if (fling_amount <= kFlingToTuckVelocityThresholdSquared) {
       CompleteDrag();
       return;
     }
-    if (velocity_x != 0.f) {
-      left.emplace(velocity_x < 0.f);
-    }
-    up = velocity_y < 0.f;
   } else {
     DCHECK_EQ(ui::ET_GESTURE_SWIPE, event->type());
-    if (details.swipe_left() || details.swipe_right())
-      left.emplace(details.swipe_left());
-    up = details.swipe_up();
+
+    // Use any negative value if `swipe_left()` or `swipe_up()`, otherwise use
+    // any positive value.
+    if (details.swipe_left()) {
+      velocity_x = -1.f;
+    } else if (details.swipe_right()) {
+      velocity_x = 1.f;
+    }
+
+    if (details.swipe_up()) {
+      velocity_y = -1.f;
+    } else if (details.swipe_down()) {
+      velocity_y = 1.f;
+    }
   }
-  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(GetTarget(), left,
-                                                            up);
+  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(
+      GetTarget(), velocity_x, velocity_y);
 }
 
 }  // namespace ash

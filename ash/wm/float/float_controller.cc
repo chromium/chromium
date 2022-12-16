@@ -38,7 +38,11 @@
 #include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
+using MagnetismCorner = ash::FloatController::MagnetismCorner;
+
 namespace ash {
+
+namespace {
 
 constexpr char kFloatWindowCountsPerSessionHistogramName[] =
     "Ash.Float.FloatWindowCountsPerSession";
@@ -46,8 +50,6 @@ constexpr char kFloatWindowDurationHistogramName[] =
     "Ash.Float.FloatWindowDuration";
 constexpr char kFloatWindowMoveToAnotherDeskCountsHistogramName[] =
     "Ash.Float.FloatWindowMoveToAnotherDeskCounts";
-
-namespace {
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -414,62 +416,42 @@ void FloatController::OnDragCompletedForTablet(
 }
 
 void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
-                                              absl::optional<bool> left,
-                                              bool up) {
+                                              float velocity_x,
+                                              float velocity_y) {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
-  MagnetismCorner original_corner = floated_window_info->magnetism_corner();
+  // Move the window in the direction of the vertical velocity.
+  MagnetismCorner magnetism_corner = floated_window_info->magnetism_corner();
+  bool start_left = magnetism_corner == MagnetismCorner::kTopLeft ||
+                    magnetism_corner == MagnetismCorner::kBottomLeft;
+  if (velocity_y < 0.f) {
+    floated_window_info->set_magnetism_corner(
+        start_left ? MagnetismCorner::kTopLeft : MagnetismCorner::kTopRight);
+  } else if (velocity_y > 0.f) {
+    floated_window_info->set_magnetism_corner(
+        start_left ? MagnetismCorner::kBottomLeft
+                   : MagnetismCorner::kBottomRight);
+  }
 
-  // If this was a vertical fling, simply update magnetism.
-  if (!left) {
-    switch (original_corner) {
-      case MagnetismCorner::kTopLeft:
-      case MagnetismCorner::kBottomLeft:
-        floated_window_info->set_magnetism_corner(
-            up ? MagnetismCorner::kTopLeft : MagnetismCorner::kBottomLeft);
-        break;
-      case MagnetismCorner::kTopRight:
-      case MagnetismCorner::kBottomRight:
-        floated_window_info->set_magnetism_corner(
-            up ? MagnetismCorner::kTopRight : MagnetismCorner::kBottomRight);
-        break;
-    }
-    UpdateWindowBoundsForTablet(
-        floated_window, WindowState::BoundsChangeAnimationType::kAnimate);
+  // Move the window in the direction of the horizontal velocity. Note that the
+  // updated `magnetism_corner()` must be used to get the direction of both
+  // velocities.
+  magnetism_corner = floated_window_info->magnetism_corner();
+  bool start_top = magnetism_corner == MagnetismCorner::kTopLeft ||
+                   magnetism_corner == MagnetismCorner::kTopRight;
+  if (velocity_x < 0.f) {
+    floated_window_info->set_magnetism_corner(
+        start_top ? MagnetismCorner::kTopLeft : MagnetismCorner::kBottomLeft);
+  } else if (velocity_x > 0.f) {
+    floated_window_info->set_magnetism_corner(
+        start_top ? MagnetismCorner::kTopRight : MagnetismCorner::kBottomRight);
+  }
+
+  // If the horizontal velocity was in the direction of `start` tuck the
+  // window, otherwise magnetize it.
+  if ((start_left && velocity_x < 0.f) || (!start_left && velocity_x > 0.f)) {
+    floated_window_info->MaybeTuckWindow(start_left);
     return;
-  }
-
-  bool left_value = *left;
-  MagnetismCorner magnetism_corner;
-  if (left_value && up) {
-    magnetism_corner = MagnetismCorner::kTopLeft;
-  } else if (left_value && !up) {
-    magnetism_corner = MagnetismCorner::kBottomLeft;
-  } else if (!left_value && up) {
-    magnetism_corner = MagnetismCorner::kTopRight;
-  } else {
-    DCHECK(!left_value && !up);
-    magnetism_corner = MagnetismCorner::kBottomRight;
-  }
-  floated_window_info->set_magnetism_corner(magnetism_corner);
-
-  // If the window was flung to the closest edge from `original_corner` then
-  // tuck the window, otherwise magnetize it.
-  switch (original_corner) {
-    case MagnetismCorner::kTopLeft:
-    case MagnetismCorner::kBottomLeft:
-      if (left_value) {
-        floated_window_info->MaybeTuckWindow(true);
-        return;
-      }
-      break;
-    case MagnetismCorner::kTopRight:
-    case MagnetismCorner::kBottomRight:
-      if (!left_value) {
-        floated_window_info->MaybeTuckWindow(false);
-        return;
-      }
-      break;
   }
   UpdateWindowBoundsForTablet(floated_window,
                               WindowState::BoundsChangeAnimationType::kAnimate);
