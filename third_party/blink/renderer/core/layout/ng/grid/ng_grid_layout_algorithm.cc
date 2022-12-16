@@ -275,9 +275,6 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   LayoutUnit consumed_grid_block_size;
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
-  Vector<GridItemIndices> column_range_indices;
-  Vector<GridItemIndices> row_range_indices;
-  Vector<GridArea> resolved_positions;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
@@ -291,12 +288,6 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
       row_break_between = grid_data->row_break_between;
       oof_children = grid_data->oof_children;
     } else {
-      for (auto& grid_item : grid_items) {
-        column_range_indices.push_back(grid_item.column_range_indices);
-        row_range_indices.push_back(grid_item.row_range_indices);
-        resolved_positions.push_back(grid_item.resolved_position);
-      }
-
       row_offset_adjustments =
           Vector<LayoutUnit>(layout_data.Rows()->GetSetCount() + 1);
       PlaceGridItems(grid_items, layout_data, &row_break_between,
@@ -373,6 +364,14 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
     PlaceOutOfFlowItems(layout_data, block_size, oof_children);
 
   if (ConstraintSpace().HasBlockFragmentation()) {
+    Vector<GridItemIndices> column_range_indices;
+    Vector<GridItemIndices> row_range_indices;
+    Vector<GridArea> resolved_positions;
+    for (auto& grid_item : grid_items) {
+      column_range_indices.push_back(grid_item.column_range_indices);
+      row_range_indices.push_back(grid_item.row_range_indices);
+      resolved_positions.push_back(grid_item.resolved_position);
+    }
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGGridBreakTokenData>(
             container_builder_.GetBreakTokenData(), layout_data,
