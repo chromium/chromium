@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/leak_annotations.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
@@ -164,8 +165,14 @@ bool MockPooledTaskRunnerDelegate::PostTaskWithSequence(
   DCHECK(task.task);
   DCHECK(sequence);
 
-  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()))
+  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior())) {
+    // `task`'s destructor may run sequence-affine code, so it must be leaked
+    // when `WillPostTask` returns false.
+    auto leak = std::make_unique<Task>(std::move(task));
+    ANNOTATE_LEAKING_OBJECT_PTR(leak.get());
+    leak.release();
     return false;
+  }
 
   if (task.delayed_run_time.is_null()) {
     PostTaskWithSequenceNow(std::move(task), std::move(sequence));

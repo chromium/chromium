@@ -45,10 +45,7 @@ DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTask(
   DelayedTaskHandle delayed_task_handle(
       std::move(delayed_task_handle_delegate));
 
-  // If the task fails to be posted, the handle will automatically be
-  // invalidated upon destruction of the callback object.
-  if (!PostDelayedTask(from_here, std::move(task), delay))
-    DCHECK(!delayed_task_handle.IsValid());
+  PostDelayedTask(from_here, std::move(task), delay);
 
   return delayed_task_handle;
 }

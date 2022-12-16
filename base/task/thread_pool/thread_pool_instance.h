@@ -123,6 +123,19 @@ class BASE_EXPORT ThreadPoolInstance {
     ~ScopedBestEffortExecutionFence();
   };
 
+  // Used to allow posting `BLOCK_SHUTDOWN` tasks after shutdown in a scope. The
+  // tasks will fizzle (not run) but not trigger any checks that aim to catch
+  // this class of ordering bugs.
+  class BASE_EXPORT ScopedFizzleBlockShutdownTasks {
+   public:
+    ScopedFizzleBlockShutdownTasks();
+    ScopedFizzleBlockShutdownTasks(const ScopedFizzleBlockShutdownTasks&) =
+        delete;
+    ScopedFizzleBlockShutdownTasks& operator=(
+        const ScopedFizzleBlockShutdownTasks&) = delete;
+    ~ScopedFizzleBlockShutdownTasks();
+  };
+
   // Destroying a ThreadPoolInstance is not allowed in production; it is always
   // leaked. In tests, it should only be destroyed after JoinForTesting() has
   // returned.
@@ -179,6 +192,9 @@ class BASE_EXPORT ThreadPoolInstance {
   // instance to create task runners or post tasks is not permitted during or
   // after this call.
   virtual void JoinForTesting() = 0;
+
+  virtual void BeginFizzlingBlockShutdownTasks() = 0;
+  virtual void EndFizzlingBlockShutdownTasks() = 0;
 
   // CreateAndStartWithDefaultParams(), Create(), and SetInstance() register a
   // ThreadPoolInstance to handle tasks posted through the thread_pool.h API for

@@ -120,6 +120,12 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
+base::ThreadLocalBoolean& GetFizzleBlockShutdownTaskFlag() {
+  static base::NoDestructor<base::ThreadLocalBoolean>
+      fizzle_block_shutdown_tasks;
+  return *fizzle_block_shutdown_tasks;
+}
+
 }  // namespace
 
 // Atomic internal state used by TaskTracker to track items that are blocking
@@ -311,12 +317,14 @@ bool TaskTracker::WillPostTask(Task* task,
     // A non BLOCK_SHUTDOWN task is allowed to be posted iff shutdown hasn't
     // started and the task is not delayed.
     if (shutdown_behavior != TaskShutdownBehavior::BLOCK_SHUTDOWN ||
-        !task->delayed_run_time.is_null()) {
+        !task->delayed_run_time.is_null() ||
+        GetFizzleBlockShutdownTaskFlag().Get()) {
       return false;
     }
 
-    // A BLOCK_SHUTDOWN task posted after shutdown has completed is an
-    // ordering bug. This aims to catch those early.
+    // A BLOCK_SHUTDOWN task posted after shutdown has completed without setting
+    // `fizzle_block_shutdown_tasks` is an ordering bug. This aims to catch
+    // those early.
     CheckedAutoLock auto_lock(shutdown_lock_);
     DCHECK(shutdown_event_);
     DCHECK(!shutdown_event_->IsSignaled())
@@ -412,6 +420,14 @@ bool TaskTracker::HasShutdownStarted() const {
 bool TaskTracker::IsShutdownComplete() const {
   CheckedAutoLock auto_lock(shutdown_lock_);
   return shutdown_event_ && shutdown_event_->IsSignaled();
+}
+
+void TaskTracker::BeginFizzlingBlockShutdownTasks() {
+  GetFizzleBlockShutdownTaskFlag().Set(true);
+}
+
+void TaskTracker::EndFizzlingBlockShutdownTasks() {
+  GetFizzleBlockShutdownTaskFlag().Set(false);
 }
 
 void TaskTracker::RunTask(Task task,

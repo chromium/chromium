@@ -181,10 +181,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // directly. Consider using higher level timer primitives in
   // base/timer/timer.h.
   //
-  // The handle is only valid while the task is pending execution. This means
-  // that it will be invalid if the posting failed, and will be invalid while
-  // the task is executing. Calling CancelTask() on an invalid handle is a
-  // no-op.
+  // The handle is only guaranteed valid while the task is pending execution.
+  // This means that it may be invalid if the posting failed, and will be
+  // invalid while the task is executing. Calling CancelTask() on an invalid
+  // handle is a no-op.
   //
   // This method and the handle it returns are not thread-safe and can only be
   // used from the sequence this task runner runs its tasks on.

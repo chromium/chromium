@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/debug/leak_annotations.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -379,6 +380,12 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
           return nullptr;
         transaction.PushImmediateTask(std::move(pump_message_task));
         return registered_task_source;
+      } else {
+        // `pump_message_task`'s destructor may run sequence-affine code, so it
+        // must be leaked when `WillPostTask` returns false.
+        auto leak = std::make_unique<Task>(std::move(pump_message_task));
+        ANNOTATE_LEAKING_OBJECT_PTR(leak.get());
+        leak.release();
       }
     }
     return nullptr;
@@ -486,6 +493,11 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   bool PostTask(Task task) {
     if (!outer_->task_tracker_->WillPostTask(&task,
                                              sequence_->shutdown_behavior())) {
+      // `task`'s destructor may run sequence-affine code, so it must be leaked
+      // when `WillPostTask` returns false.
+      auto leak = std::make_unique<Task>(std::move(task));
+      ANNOTATE_LEAKING_OBJECT_PTR(leak.get());
+      leak.release();
       return false;
     }
 

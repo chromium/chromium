@@ -11,6 +11,8 @@
 #include "base/debug/leak_annotations.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 
@@ -73,6 +75,12 @@ class PostTaskAndReplyRelay {
     // Case 2:
     if (!reply_task_runner_->RunsTasksInCurrentSequence()) {
       DCHECK(reply_);
+      // Allow this task to be leaked on shutdown even if `reply_task_runner_`
+      // has the TaskShutdownBehaviour::BLOCK_SHUTDOWN trait. Without `fizzler`,
+      // such a task runner would DCHECK when posting to `reply_task_runner_`
+      // after shutdown. Ignore this DCHECK as the poster isn't in control when
+      // its Callback is destroyed late into shutdown. Ref. crbug.com/1375270.
+      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
 
       SequencedTaskRunner* reply_task_runner_raw = reply_task_runner_.get();
       auto relay_to_delete =

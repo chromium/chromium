@@ -472,6 +472,15 @@ TEST_P(ThreadPoolTaskTrackerTest, WillPostAfterShutdown) {
 
   // |task_tracker_| shouldn't allow a task to be posted after shutdown.
   if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
+    // When the task tracker is allowed to fizzle block shutdown tasks,
+    // WillPostTask will return false and leak the task.
+    tracker_.BeginFizzlingBlockShutdownTasks();
+    EXPECT_FALSE(tracker_.WillPostTask(&task, GetParam()));
+    tracker_.EndFizzlingBlockShutdownTasks();
+
+    // If a BLOCK_SHUTDOWN task is posted after shutdown without explicitly
+    // allowing BLOCK_SHUTDOWN task fizzling, WillPostTask DCHECKs to find
+    // ordering bugs.
     EXPECT_DCHECK_DEATH(tracker_.WillPostTask(&task, GetParam()));
   } else {
     EXPECT_FALSE(tracker_.WillPostTask(&task, GetParam()));

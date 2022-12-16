@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/task/task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 
 namespace base {
 namespace internal {
@@ -39,6 +40,13 @@ class BindPostTaskTrampoline {
 
   ~BindPostTaskTrampoline() {
     if (callback_) {
+      // Allow this task to be leaked on shutdown even if `task_runner_` has the
+      // TaskShutdownBehaviour::BLOCK_SHUTDOWN trait. Without `fizzler`, such a
+      // task runner would DCHECK when posting to `task_runner_` after shutdown.
+      // Ignore this DCHECK as the poster isn't in control when its Callback is
+      // destroyed late into shutdown. Ref. crbug.com/1375270.
+      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
+
       // Post a task to ensure that `callback_` is destroyed on `task_runner_`.
       // The callback's BindState may own an object that isn't threadsafe and is
       // unsafe to destroy on a different task runner.

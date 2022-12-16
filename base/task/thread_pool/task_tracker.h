@@ -26,6 +26,7 @@
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/tracked_ref.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_local.h"
 
 namespace base {
 
@@ -95,6 +96,9 @@ class BASE_EXPORT TaskTracker {
   // DelayedTaskManager (if delayed). Returns true if this operation is allowed
   // (the operation should be performed if-and-only-if it is). This method may
   // also modify metadata on |task| if desired.
+  // If this returns false, `task` must be leaked by the caller if deleting it
+  // on the current sequence may invoke sequence-affine code that belongs to
+  // another sequence.
   bool WillPostTask(Task* task, TaskShutdownBehavior shutdown_behavior);
 
   // Informs this TaskTracker that |task| that is about to be pushed to a task
@@ -132,6 +136,9 @@ class BASE_EXPORT TaskTracker {
   TrackedRef<TaskTracker> GetTrackedRef() {
     return tracked_ref_factory_.GetTrackedRef();
   }
+
+  void BeginFizzlingBlockShutdownTasks();
+  void EndFizzlingBlockShutdownTasks();
 
   // Returns true if there are task sources that haven't completed their
   // execution (still queued or in progress). If it returns false: the side-
