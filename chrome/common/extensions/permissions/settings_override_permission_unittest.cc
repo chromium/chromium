@@ -44,31 +44,28 @@ class SettingsOverridePermissionTest : public ChromeManifestTest {
   };
 
   scoped_refptr<Extension> GetPermissionSet(uint32_t flags) {
-    base::DictionaryValue ext_manifest;
-    ext_manifest.SetString(manifest_keys::kName, "test");
-    ext_manifest.SetString(manifest_keys::kVersion, "0.1");
-    ext_manifest.SetInteger(manifest_keys::kManifestVersion, 2);
+    base::Value::Dict ext_manifest;
+    ext_manifest.Set(manifest_keys::kName, "test");
+    ext_manifest.Set(manifest_keys::kVersion, "0.1");
+    ext_manifest.Set(manifest_keys::kManifestVersion, 2);
 
-    std::unique_ptr<base::DictionaryValue> settings_override(
-        new base::DictionaryValue);
+    base::Value::Dict settings_override;
     if (flags & kHomepage)
-      settings_override->SetString("homepage", "http://www.google.com/home");
+      settings_override.Set("homepage", "http://www.google.com/home");
     if (flags & kStartupPages) {
-      std::unique_ptr<base::ListValue> startup_pages(new base::ListValue);
-      startup_pages->Append("http://startup.com/startup.html");
-      settings_override->Set("startup_pages", std::move(startup_pages));
+      base::Value::List startup_pages;
+      startup_pages.Append("http://startup.com/startup.html");
+      settings_override.Set("startup_pages", std::move(startup_pages));
     }
     if (flags & kSearchProvider) {
-      std::unique_ptr<base::DictionaryValue> search_provider(
-          new base::DictionaryValue);
-      search_provider->SetString("search_url", "http://google.com/search.html");
-      search_provider->SetString("name", "test");
-      search_provider->SetString("keyword", "lock");
-      search_provider->SetString("encoding", "UTF-8");
-      search_provider->SetBoolean("is_default", true);
-      search_provider->SetString("favicon_url",
-                                 "http://wikipedia.org/wiki/Favicon");
-      settings_override->Set("search_provider", std::move(search_provider));
+      base::Value::Dict search_provider;
+      search_provider.Set("search_url", "http://google.com/search.html");
+      search_provider.Set("name", "test");
+      search_provider.Set("keyword", "lock");
+      search_provider.Set("encoding", "UTF-8");
+      search_provider.Set("is_default", true);
+      search_provider.Set("favicon_url", "http://wikipedia.org/wiki/Favicon");
+      settings_override.Set("search_provider", std::move(search_provider));
     }
     ext_manifest.Set(manifest_keys::kSettingsOverride,
                      std::move(settings_override));
