@@ -26,10 +26,13 @@
     }                                            \
   } while (false)
 
+namespace gpu {
 namespace {
 
 static const int kImageWidth = 64;
 static const int kImageHeight = 64;
+
+}  // namespace
 
 class GpuOESEGLImageTest : public testing::Test,
                            public gpu::GpuCommandBufferTestEGL {
@@ -185,4 +188,4 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
 #endif  // !defined(ADDRESS_SANITIZER)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-}  // namespace
+}  // namespace gpu

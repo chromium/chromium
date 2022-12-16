@@ -117,8 +117,10 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
   ASSERT_TRUE(large_image);
 
   // Verify that image size is correct.
-  EXPECT_EQ(small_image->GetSize().ToString(), small_image_size.ToString());
-  EXPECT_EQ(large_image->GetSize().ToString(), large_image_size.ToString());
+  EXPECT_EQ(small_image->GetSizeForTesting().ToString(),
+            small_image_size.ToString());
+  EXPECT_EQ(large_image->GetSizeForTesting().ToString(),
+            large_image_size.ToString());
 }
 
 // The GLImageTest test case verifies the behaviour that is expected from a
@@ -145,7 +147,8 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
   ASSERT_TRUE(odd_image);
 
   // Verify that image size is correct.
-  EXPECT_EQ(odd_image->GetSize().ToString(), odd_image_size.ToString());
+  EXPECT_EQ(odd_image->GetSizeForTesting().ToString(),
+            odd_image_size.ToString());
 }
 
 // The GLImageTest test case verifies the behaviour that is expected from a

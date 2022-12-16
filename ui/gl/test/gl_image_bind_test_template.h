@@ -39,7 +39,7 @@ TYPED_TEST_P(GLImageBindTest, BindTexImage) {
   glBindTexture(target, texture);
 
   // Bind |image| to |texture|.
-  bool rv = image->BindTexImage(target);
+  bool rv = image->BindTexImageForTesting(target);
   EXPECT_TRUE(rv);
 
   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);

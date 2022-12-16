@@ -38,7 +38,7 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   glBindTexture(target, texture);
 
   // Bind |image| to |texture|.
-  bool rv = image->BindTexImage(target);
+  bool rv = image->BindTexImageForTesting(target);
   EXPECT_TRUE(rv);
 
   // Draw |texture| to viewport.

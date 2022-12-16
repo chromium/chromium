@@ -23,10 +23,13 @@
 
 namespace gpu {
 
-// Helper to allow for easy friending of the below restricted function.
+// Helpers to allow for easy friending of the below restricted functions.
 void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
                             const gfx::ColorSpace& color_space) {
   gl_image->SetColorSpace(color_space);
+}
+unsigned GetDataFormatOfGLImage(gl::GLImage* gl_image) {
+  return gl_image->GetDataFormat();
 }
 
 namespace {
@@ -40,7 +43,8 @@ gles2::Texture* MakeGLTexture(
   auto* texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
 
   texture->SetLevelInfo(target, 0, egl_image->GetInternalFormat(), size.width(),
-                        size.height(), 1, 0, egl_image->GetDataFormat(),
+                        size.height(), 1, 0,
+                        GetDataFormatOfGLImage(egl_image.get()),
                         egl_image->GetDataType(), cleared_rect);
   texture->SetLevelImage(target, 0, egl_image.get(), gles2::Texture::BOUND);
   texture->SetImmutable(true, false);

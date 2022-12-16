@@ -38,6 +38,7 @@ namespace gpu {
 class DawnEGLImageRepresentation;
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
+class GLTexturePassthroughD3DImageRepresentation;
 class GpuMemoryBufferFactoryAndroidHardwareBuffer;
 class GpuMemoryBufferFactoryDXGI;
 class GpuMemoryBufferFactoryIOSurface;
@@ -45,6 +46,7 @@ class IOSurfaceImageBackingFactory;
 class IOSurfaceImageBackingFactoryNewTestBase;
 class OverlayD3DImageRepresentation;
 class TestOverlayImageRepresentation;
+unsigned GetDataFormatOfGLImage(gl::GLImage* gl_image);
 void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
                             const gfx::ColorSpace& color_space);
 FORWARD_DECLARE_TEST(CALayerTreeTest, HDRTrigger);
@@ -52,6 +54,7 @@ FORWARD_DECLARE_TEST(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
                      CreateAndPresentSwapChain);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTest, CreateFromSharedMemory);
+FORWARD_DECLARE_TEST(GpuOESEGLImageTest, EGLImageToTexture);
 }  // namespace gpu
 
 namespace gpu::gles2 {
@@ -69,10 +72,13 @@ class DXVAVideoDecodeAccelerator;
 class VaapiPictureNativePixmapAngle;
 class VaapiPictureNativePixmapEgl;
 class VaapiPictureNativePixmapOzone;
+class V4L2SliceVideoDecodeAccelerator;
 class VTVideoDecodeAccelerator;
+FORWARD_DECLARE_TEST(CodecImageTest, CopyTexImageIsInvalidForOverlayImages);
 }
 
 namespace ui {
+class NativePixmapGLBinding;
 class NativePixmapEGLBinding;
 class SurfacelessGlRenderer;
 class SurfacelessSkiaGlRenderer;
@@ -100,6 +106,16 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   GLImage(const GLImage&) = delete;
   GLImage& operator=(const GLImage&) = delete;
 
+ protected:
+  // NOTE: We are in the process of eliminating client usage of GLImage. As part
+  // of this effort, we have moved its public interface to be protected with
+  // friend'ing of existing users. DO NOT ADD MORE client usage - instead, reach
+  // out to shared-image-team@ with your use case.
+  // See crbug.com/1382031.
+  GLImage() = default;
+
+  virtual ~GLImage() = default;
+
   // Get the size of the image.
   virtual gfx::Size GetSize();
 
@@ -122,22 +138,14 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // It is valid for an implementation to always return false.
   virtual bool BindTexImage(unsigned target);
 
- protected:
-  // NOTE: We are in the process of eliminating client usage of GLImage. As part
-  // of this effort, we are incrementally moving its public interface to be
-  // protected with friend'ing of existing users. DO NOT ADD MORE client usage -
-  // instead, reach out to shared-image-team@ with your use case.
-  // See crbug.com/1382031.
-  GLImage() = default;
-
-  virtual ~GLImage() = default;
-
   // Release image from texture currently bound to |target|.
   virtual void ReleaseTexImage(unsigned target);
 
  public:
-  // Allow usage of this method from text sites that are inconvenient to
+  // Allow usage of these methods from text sites that are inconvenient to
   // friend.
+  gfx::Size GetSizeForTesting() { return GetSize(); }
+  bool BindTexImageForTesting(unsigned target) { return BindTexImage(target); }
   void ReleaseTexImageForTesting(unsigned target) { ReleaseTexImage(target); }
 
  protected:
@@ -201,6 +209,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
+  friend class gpu::GLTexturePassthroughD3DImageRepresentation;
   friend class gpu::GpuMemoryBufferFactoryAndroidHardwareBuffer;
   friend class gpu::GpuMemoryBufferFactoryDXGI;
   friend class gpu::GpuMemoryBufferFactoryIOSurface;
@@ -218,14 +227,18 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class media::VaapiPictureNativePixmapAngle;
   friend class media::VaapiPictureNativePixmapEgl;
   friend class media::VaapiPictureNativePixmapOzone;
+  friend class media::V4L2SliceVideoDecodeAccelerator;
   friend class media::VTVideoDecodeAccelerator;
+  friend class ui::NativePixmapGLBinding;
   friend class ui::NativePixmapEGLBinding;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
   friend class viz::ImageContextImpl;
   friend class viz::SkiaOutputDeviceDComp;
+  friend unsigned gpu::GetDataFormatOfGLImage(gl::GLImage* gl_image);
   friend void gpu::SetColorSpaceOnGLImage(GLImage* gl_image,
                                           const gfx::ColorSpace& color_space);
+  FRIEND_TEST_ALL_PREFIXES(gpu::GpuOESEGLImageTest, EGLImageToTexture);
   FRIEND_TEST_ALL_PREFIXES(gpu::CALayerTreeTest, HDRTrigger);
   FRIEND_TEST_ALL_PREFIXES(gpu::CompoundImageBackingTest,
                            NoUploadOnOverlayMemoryAccess);
@@ -233,6 +246,8 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
                            CreateAndPresentSwapChain);
   FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTest,
                            CreateFromSharedMemory);
+  FRIEND_TEST_ALL_PREFIXES(media::CodecImageTest,
+                           CopyTexImageIsInvalidForOverlayImages);
 
   friend class base::RefCounted<GLImage>;
 };
