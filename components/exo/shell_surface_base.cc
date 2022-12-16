@@ -359,10 +359,12 @@ ShellSurfaceBase::~ShellSurfaceBase() {
 void ShellSurfaceBase::Activate() {
   TRACE_EVENT0("exo", "ShellSurfaceBase::Activate");
 
-  if (pending_show_widget_)
+  if (!widget_ || pending_show_widget_) {
     initially_activated_ = true;
+    return;
+  }
 
-  if (!widget_ || widget_->IsActive())
+  if (widget_->IsActive())
     return;
 
   widget_->Activate();
@@ -371,10 +373,12 @@ void ShellSurfaceBase::Activate() {
 void ShellSurfaceBase::Deactivate() {
   TRACE_EVENT0("exo", "ShellSurfaceBase::Deactivate");
 
-  if (pending_show_widget_)
+  if (!widget_ || pending_show_widget_) {
     initially_activated_ = false;
+    return;
+  }
 
-  if (!widget_ || !widget_->IsActive())
+  if (!widget_->IsActive())
     return;
 
   widget_->Deactivate();
