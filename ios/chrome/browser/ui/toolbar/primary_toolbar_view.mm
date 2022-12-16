@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

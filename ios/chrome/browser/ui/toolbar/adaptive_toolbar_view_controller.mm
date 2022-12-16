@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/force_touch_long_press_gesture_recognizer.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ui/base/device_form_factor.h"

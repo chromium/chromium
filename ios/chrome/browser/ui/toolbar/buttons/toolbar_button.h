@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_component_options.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 
 @class LayoutGuideCenter;
 @class ToolbarConfiguration;
