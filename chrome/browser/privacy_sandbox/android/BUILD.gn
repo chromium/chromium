@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/AdMeasurementFragmentV4.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/FledgeAllSitesFragmentV4.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/FledgeFragmentV4.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxDialogConsentEEAV4.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxDialogNoticeEEAV4.java",

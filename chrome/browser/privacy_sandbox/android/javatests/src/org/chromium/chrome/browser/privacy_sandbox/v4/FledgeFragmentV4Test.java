@@ -121,6 +121,10 @@ public final class FledgeFragmentV4Test {
         return getRootViewSanitized(R.string.settings_fledge_page_title);
     }
 
+    private View getAllSitesPageRootView() {
+        return getRootViewSanitized(R.string.settings_fledge_all_sites_sub_page_title);
+    }
+
     private void setFledgePrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> FledgeFragmentV4.setFledgePrefEnabled(isEnabled));
@@ -166,6 +170,17 @@ public final class FledgeFragmentV4Test {
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
         mRenderTestRule.render(getFledgeRootView(), "fledge_page_populated");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderAllSitesPage() throws IOException {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).perform(click());
+        mRenderTestRule.render(getAllSitesPageRootView(), "fledge_all_sites_page");
     }
 
     @Test
@@ -258,11 +273,19 @@ public final class FledgeFragmentV4Test {
         // Scroll to pref below last displayed site.
         scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
 
+        String lastDisplayedSite = generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES - 1);
+        String firstNotDisplayedSite = generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES);
+
         // Verify that only MAX_DISPLAY_SITES are shown.
-        onView(withText(generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES - 1)))
-                .check(matches(isDisplayed()));
-        onView(withText(generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES)))
-                .check(doesNotExist());
+        onView(withText(lastDisplayedSite)).check(matches(isDisplayed()));
+        onView(withText(firstNotDisplayedSite)).check(doesNotExist());
+
+        // Navigate to All Sites page.
+        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).perform(click());
+
+        // Verify that all sites are displayed
+        scrollToSetting(withText(firstNotDisplayedSite));
+        onView(withText(firstNotDisplayedSite)).check(matches(isDisplayed()));
     }
 
     @Test
