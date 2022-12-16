@@ -3,20 +3,26 @@
 
 <script>
 
-function testGetURL(image) {
-	var can = document.createElement('canvas');
-	var ctx = can.getContext('bitmaprenderer');
-	ctx.transferFromImageBitmap(image);
-	var dataURL = can.toDataURL();
-
-	assert_equals(dataURL, image.src);
-}
-
-test(function(t) {
+async_test(function(t) {
 	var magentaPixelImg = document.createElement('img');
 	// This is a base64 encoded string representing a single magenta pixel
 	magentaPixelImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/D/PwAHAwL/qGeMxAAAAABJRU5ErkJggg==";
-	createImageBitmap(magentaPixelImg,0,0,magentaPixelImg.naturalWidth,magentaPixelImg.naturalHeight).then(testGetURL);
+	magentaPixelImg.onload = () => {
+	  createImageBitmap(magentaPixelImg,0,0,magentaPixelImg.naturalWidth,magentaPixelImg.naturalHeight).then((image) => {
+		const can = document.createElement('canvas');
+	    const ctx = can.getContext('bitmaprenderer');
+		const can2 = document.createElement('canvas');
+		can2.width = image.width;
+		can2.height = image.height;
+	    const ctx2 = can2.getContext('2d', {willReadFrequently: true});
+	    ctx.transferFromImageBitmap(image);
+		ctx2.drawImage(magentaPixelImg, 0, 0);
+        t.step(() => {
+	      assert_equals(can.toDataURL(), can2.toDataURL());
+		});
+		t.done();
+	  });
+	}
 }, "Test that canvas toDataURL returns the same URL that was expected when the canvas is of bitmaprenderer type.")
 
 </script>
