@@ -124,4 +124,8 @@ void CrosAudioConfigImpl::OnAudioNodesChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 
+void CrosAudioConfigImpl::OnActiveOutputNodeChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
 }  // namespace ash::audio_config
