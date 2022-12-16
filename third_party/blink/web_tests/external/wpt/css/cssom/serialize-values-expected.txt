@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 680 tests; 679 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 680 tests; 664 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS background-attachment: scroll
 PASS background-attachment: fixed
 PASS background-attachment: inherit
@@ -24,7 +24,7 @@ PASS background-position: 5% -0px
 PASS background-position: 5% -1px
 PASS background-position: 5% -.1em
 PASS background-position: 5% top
-PASS background-position: 5% center
+FAIL background-position: 5% center assert_equals: background-position raw inline style declaration expected "5%" but got "5% center"
 PASS background-position: 5% bottom
 PASS background-position: .5% 5%
 PASS background-position: .5% .5%
@@ -37,7 +37,7 @@ PASS background-position: .5% -0px
 PASS background-position: .5% -1px
 PASS background-position: .5% -.1em
 PASS background-position: .5% top
-PASS background-position: .5% center
+FAIL background-position: .5% center assert_equals: background-position raw inline style declaration expected "0.5%" but got "0.5% center"
 PASS background-position: .5% bottom
 PASS background-position: -5% 5%
 PASS background-position: -5% .5%
@@ -50,7 +50,7 @@ PASS background-position: -5% -0px
 PASS background-position: -5% -1px
 PASS background-position: -5% -.1em
 PASS background-position: -5% top
-PASS background-position: -5% center
+FAIL background-position: -5% center assert_equals: background-position raw inline style declaration expected "-5%" but got "-5% center"
 PASS background-position: -5% bottom
 PASS background-position: -.5% 5%
 PASS background-position: -.5% .5%
@@ -63,7 +63,7 @@ PASS background-position: -.5% -0px
 PASS background-position: -.5% -1px
 PASS background-position: -.5% -.1em
 PASS background-position: -.5% top
-PASS background-position: -.5% center
+FAIL background-position: -.5% center assert_equals: background-position raw inline style declaration expected "-0.5%" but got "-0.5% center"
 PASS background-position: -.5% bottom
 PASS background-position: 0px 5%
 PASS background-position: 0px .5%
@@ -76,7 +76,7 @@ PASS background-position: 0px -0px
 PASS background-position: 0px -1px
 PASS background-position: 0px -.1em
 PASS background-position: 0px top
-PASS background-position: 0px center
+FAIL background-position: 0px center assert_equals: background-position raw inline style declaration expected "0px" but got "0px center"
 PASS background-position: 0px bottom
 PASS background-position: 1px 5%
 PASS background-position: 1px .5%
@@ -89,7 +89,7 @@ PASS background-position: 1px -0px
 PASS background-position: 1px -1px
 PASS background-position: 1px -.1em
 PASS background-position: 1px top
-PASS background-position: 1px center
+FAIL background-position: 1px center assert_equals: background-position raw inline style declaration expected "1px" but got "1px center"
 PASS background-position: 1px bottom
 PASS background-position: .1em 5%
 PASS background-position: .1em .5%
@@ -102,7 +102,7 @@ PASS background-position: .1em -0px
 PASS background-position: .1em -1px
 PASS background-position: .1em -.1em
 PASS background-position: .1em top
-PASS background-position: .1em center
+FAIL background-position: .1em center assert_equals: background-position raw inline style declaration expected "0.1em" but got "0.1em center"
 PASS background-position: .1em bottom
 PASS background-position: -0px 5%
 PASS background-position: -0px .5%
@@ -115,7 +115,7 @@ PASS background-position: -0px -0px
 PASS background-position: -0px -1px
 PASS background-position: -0px -.1em
 PASS background-position: -0px top
-PASS background-position: -0px center
+FAIL background-position: -0px center assert_equals: background-position raw inline style declaration expected "0px" but got "0px center"
 PASS background-position: -0px bottom
 PASS background-position: -1px 5%
 PASS background-position: -1px .5%
@@ -128,7 +128,7 @@ PASS background-position: -1px -0px
 PASS background-position: -1px -1px
 PASS background-position: -1px -.1em
 PASS background-position: -1px top
-PASS background-position: -1px center
+FAIL background-position: -1px center assert_equals: background-position raw inline style declaration expected "-1px" but got "-1px center"
 PASS background-position: -1px bottom
 PASS background-position: -.1em 5%
 PASS background-position: -.1em .5%
@@ -141,7 +141,7 @@ PASS background-position: -.1em -0px
 PASS background-position: -.1em -1px
 PASS background-position: -.1em -.1em
 PASS background-position: -.1em top
-PASS background-position: -.1em center
+FAIL background-position: -.1em center assert_equals: background-position raw inline style declaration expected "-0.1em" but got "-0.1em center"
 PASS background-position: -.1em bottom
 PASS background-position: left 5%
 PASS background-position: left .5%
@@ -154,7 +154,7 @@ PASS background-position: left -0px
 PASS background-position: left -1px
 PASS background-position: left -.1em
 PASS background-position: left top
-PASS background-position: left center
+FAIL background-position: left center assert_equals: background-position raw inline style declaration expected "left" but got "left center"
 PASS background-position: left bottom
 PASS background-position: center 5%
 PASS background-position: center .5%
@@ -166,9 +166,9 @@ PASS background-position: center .1em
 PASS background-position: center -0px
 PASS background-position: center -1px
 PASS background-position: center -.1em
-PASS background-position: center top
-PASS background-position: center center
-PASS background-position: center bottom
+FAIL background-position: center top assert_equals: background-position raw inline style declaration expected "top" but got "center top"
+FAIL background-position: center center assert_equals: background-position raw inline style declaration expected "center" but got "center center"
+FAIL background-position: center bottom assert_equals: background-position raw inline style declaration expected "bottom" but got "center bottom"
 PASS background-position: right 5%
 PASS background-position: right .5%
 PASS background-position: right -5%
@@ -180,7 +180,7 @@ PASS background-position: right -0px
 PASS background-position: right -1px
 PASS background-position: right -.1em
 PASS background-position: right top
-PASS background-position: right center
+FAIL background-position: right center assert_equals: background-position raw inline style declaration expected "right" but got "right center"
 PASS background-position: right bottom
 PASS background-position: inherit
 PASS background-repeat: repeat
