@@ -10,10 +10,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-
-namespace gl {
-class GLImageEGLAngleVulkan;
-}
+#include "ui/gl/scoped_egl_image.h"
 
 namespace gpu {
 namespace gles2 {
@@ -71,7 +68,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
 
   const raw_ptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> vulkan_image_;
-  scoped_refptr<gl::GLImageEGLAngleVulkan> egl_image_;
+  ui::ScopedEGLImage egl_image_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
   sk_sp<SkPromiseImageTexture> promise_texture_;

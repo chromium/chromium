@@ -22,15 +22,43 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_egl_angle_vulkan.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/scoped_egl_image.h"
+
+#define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
+#define EGL_VULKAN_IMAGE_ANGLE 0x34D3
+#define EGL_VULKAN_IMAGE_CREATE_INFO_HI_ANGLE 0x34D4
+#define EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE 0x34D5
 
 namespace gpu {
 
 namespace {
 
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
+
+ui::ScopedEGLImage CreateEGLImage(VkImage image,
+                                  const VkImageCreateInfo* create_info,
+                                  unsigned int internal_format) {
+  DCHECK(image != VK_NULL_HANDLE);
+  DCHECK(create_info);
+
+  uint64_t info = reinterpret_cast<uint64_t>(create_info);
+  EGLint attribs[] = {
+      EGL_VULKAN_IMAGE_CREATE_INFO_HI_ANGLE,
+      static_cast<EGLint>((info >> 32) & 0xffffffff),
+      EGL_VULKAN_IMAGE_CREATE_INFO_LO_ANGLE,
+      static_cast<EGLint>(info & 0xffffffff),
+      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
+      static_cast<EGLint>(internal_format),
+      EGL_NONE,
+  };
+
+  return ui::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_VULKAN_IMAGE_ANGLE,
+                                reinterpret_cast<EGLClientBuffer>(&image),
+                                attribs);
+}
 
 }  // namespace
 
@@ -487,13 +515,14 @@ void AngleVulkanImageBacking::EndAccessSkia() {
 
 bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   DCHECK(vulkan_image_);
-  DCHECK(!egl_image_);
+  DCHECK(!egl_image_.is_valid());
   DCHECK(!passthrough_texture_);
 
-  auto egl_image = base::MakeRefCounted<gl::GLImageEGLAngleVulkan>(size());
-  if (!egl_image->Initialize(vulkan_image_->image(),
-                             &vulkan_image_->create_info(),
-                             GLInternalFormat(format()))) {
+  auto egl_image =
+      CreateEGLImage(vulkan_image_->image(), &vulkan_image_->create_info(),
+                     GLInternalFormat(format()));
+  if (!egl_image.is_valid()) {
+    LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
     return false;
   }
 
@@ -509,8 +538,7 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
   api->glBindTextureFn(GL_TEXTURE_2D, texture);
 
-  if (!egl_image->BindTexImage(GL_TEXTURE_2D))
-    return false;
+  glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image.get());
 
   if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
     const std::string label =
