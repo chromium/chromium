@@ -125,11 +125,6 @@ public class FlagsFragmentTest {
         mRule.launchActivity(intent);
 
         waitForInflatedFlagFragment();
-
-        // Always close the soft keyboard when the activity is launched which is sometimes shown
-        // because flags search TextView has input focus by default. The keyboard may cover up some
-        // Views causing test flakiness/failures.
-        Espresso.closeSoftKeyboard();
     }
 
     @After
@@ -147,6 +142,11 @@ public class FlagsFragmentTest {
         ViewUtils.waitForView(withId(R.id.flag_search_bar));
         ViewUtils.waitForView(withId(R.id.flags_list));
         ViewUtils.waitForView(withId(R.id.reset_flags_button));
+
+        // Always close the soft keyboard when the activity is launched which is sometimes shown
+        // because flags search TextView has input focus by default. The keyboard may cover up some
+        // Views causing test flakiness/failures.
+        Espresso.closeSoftKeyboard();
     }
 
     private CallbackHelper getFlagUiSearchBarListener() {
