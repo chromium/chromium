@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -54,6 +55,9 @@ class DlpClientImpl : public DlpClient {
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(dlp::kDlpServiceName,
                                  dbus::ObjectPath(dlp::kDlpServicePath));
+
+    proxy_->SetNameOwnerChangedCallback(base::BindRepeating(
+        &DlpClientImpl::NameOwnerChangedReceived, weak_factory_.GetWeakPtr()));
   }
 
   void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
@@ -163,6 +167,18 @@ class DlpClientImpl : public DlpClient {
 
   bool IsAlive() const override { return is_alive_; }
 
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  bool HasObserver(const Observer* observer) const override {
+    return observers_.HasObserver(observer);
+  }
+
  private:
   TestInterface* GetTestInterface() override { return nullptr; }
 
@@ -233,11 +249,21 @@ class DlpClientImpl : public DlpClient {
     std::move(callback).Run(response_proto, std::move(fd));
   }
 
+  void NameOwnerChangedReceived(const std::string& old_owner,
+                                const std::string& new_owner) {
+    is_alive_ = false;
+    for (auto& observer : observers_) {
+      observer.DlpDaemonRestarted();
+    }
+  }
+
   // D-Bus proxy for the Dlp daemon, not owned.
   raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Indicates whether the daemon was started and DLP Files rules are enforced.
   bool is_alive_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<DlpClientImpl> weak_factory_{this};
 };

@@ -97,6 +97,18 @@ bool FakeDlpClient::IsAlive() const {
   return is_alive_;
 }
 
+void FakeDlpClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeDlpClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool FakeDlpClient::HasObserver(const Observer* observer) const {
+  return observers_.HasObserver(observer);
+}
+
 DlpClient::TestInterface* FakeDlpClient::GetTestInterface() {
   return this;
 }

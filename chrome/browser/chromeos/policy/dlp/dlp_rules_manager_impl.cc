@@ -448,6 +448,12 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
 
   if (IsReportingEnabled())
     reporting_manager_ = std::make_unique<DlpReportingManager>();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::DlpClient::Get()) {
+    dlp_client_observation_.Observe(chromeos::DlpClient::Get());
+  }
+#endif
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
@@ -506,6 +512,11 @@ bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
          base::Contains(restrictions_map_,
                         DlpRulesManager::Restriction::kFiles) &&
          chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive();
+}
+
+void DlpRulesManagerImpl::DlpDaemonRestarted() {
+  // This should trigger re-notification of DLP daemon if needed.
+  OnPolicyUpdate();
 }
 
 void DlpRulesManagerImpl::OnPolicyUpdate() {
@@ -631,18 +642,28 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DataTransferDlpController::DeleteInstance();
   }
 
-  // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
-  if (request_to_daemon.rules_size() > 0 &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
-    chromeos::DlpClient::Get()->SetDlpFilesPolicy(
-        request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+    if (request_to_daemon.rules_size() > 0) {
+      // Start and/or activate the daemon.
+      DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
+      chromeos::DlpClient::Get()->SetDlpFilesPolicy(
+          request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    files_controller_ = std::make_unique<DlpFilesController>(*this);
+      if (!files_controller_) {
+        files_controller_ = std::make_unique<DlpFilesController>(*this);
+      }
 #endif
-  } else {
-    DlpScopedFileAccessDelegate::DeleteInstance();
+    } else if (chromeos::DlpClient::Get() &&
+               chromeos::DlpClient::Get()->IsAlive()) {
+      // The daemon is running, but should be deactivated by sending empty
+      // policy.
+      chromeos::DlpClient::Get()->SetDlpFilesPolicy(
+          request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+    } else {
+      // The daemon is not running and should not be communicated.
+      DlpScopedFileAccessDelegate::DeleteInstance();
+    }
   }
 }
 

@@ -753,6 +753,13 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
                    ->GetSetDlpFilesPolicyCount());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+
+  dlp_rules_manager_.DlpDaemonRestarted();
+  EXPECT_EQ(2, chromeos::DlpClient::Get()
+                   ->GetTestInterface()
+                   ->GetSetDlpFilesPolicyCount());
+  base::RunLoop().RunUntilIdle();
+
   chromeos::DlpClient::Shutdown();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

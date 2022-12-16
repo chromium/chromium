@@ -11,8 +11,8 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "dbus/object_proxy.h"
 
 namespace dbus {
 class Bus;
@@ -25,6 +25,13 @@ namespace chromeos {
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(DLP) DlpClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void DlpDaemonRestarted() {}
+  };
+
   using SetDlpFilesPolicyCallback =
       base::OnceCallback<void(const dlp::SetDlpFilesPolicyResponse response)>;
   using AddFileCallback =
@@ -116,6 +123,11 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
   // Returns an interface for testing (fake only), or returns nullptr.
   virtual TestInterface* GetTestInterface() = 0;
+
+  // Adds and removes the observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual bool HasObserver(const Observer* observer) const = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

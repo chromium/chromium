@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
@@ -35,6 +36,9 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   void RequestFileAccess(const dlp::RequestFileAccessRequest request,
                          RequestFileAccessCallback callback) override;
   bool IsAlive() const override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  bool HasObserver(const Observer* observer) const override;
   DlpClient::TestInterface* GetTestInterface() override;
 
   // DlpClient::TestInterface implementation:
@@ -62,6 +66,7 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   absl::optional<GetFilesSourceCall> get_files_source_mock_;
   dlp::CheckFilesTransferRequest last_check_files_transfer_request_;
   absl::optional<RequestFileAccessCall> request_file_access_mock_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace chromeos
