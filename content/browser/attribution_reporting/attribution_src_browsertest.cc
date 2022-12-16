@@ -28,7 +28,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -373,8 +372,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  TestNavigationObserver observer(web_contents());
-
   // This attributionsrc will only be handled properly if the value is
   // URL-decoded before being passed to the attributionsrc loader.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
@@ -383,9 +380,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   register_response->WaitForRequest();
   register_response->Done();
-
-  // TODO(crbug.com/1322525): Remove this once we use a pure mock.
-  observer.Wait();
 
   EXPECT_EQ(register_response->http_request()->relative_url,
             "/register_source?a=b&c=d");
@@ -411,8 +405,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  TestNavigationObserver observer(web_contents());
-
   // This attributionsrc will only be handled properly if the URL's original
   // case is retained before being passed to the attributionsrc loader.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
@@ -421,9 +413,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   register_response->WaitForRequest();
   register_response->Done();
-
-  // TODO(crbug.com/1322525): Remove this once we use a pure mock.
-  observer.Wait();
 
   EXPECT_EQ(register_response->http_request()->relative_url,
             "/register_source?a=B&C=d");
@@ -449,8 +438,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  TestNavigationObserver observer(web_contents());
-
   // Ensure that the special handling of the original case for attributionsrc
   // features works with non-ASCII characters.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
@@ -459,9 +446,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   register_response->WaitForRequest();
   register_response->Done();
-
-  // TODO(crbug.com/1322525): Remove this once we use a pure mock.
-  observer.Wait();
 
   EXPECT_EQ(register_response->http_request()->relative_url, "/%F0%9F%98%80");
 }
