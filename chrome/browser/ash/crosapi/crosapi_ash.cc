@@ -148,8 +148,6 @@
 
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
-#else
-#include "chrome/browser/ash/crosapi/fake_printing_metrics_ash.h"
 #endif  // BUILDFLAG(USE_CUPS)
 
 namespace crosapi {

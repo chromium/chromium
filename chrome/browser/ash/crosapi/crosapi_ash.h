@@ -92,7 +92,9 @@ class ParentAccessAsh;
 class PolicyServiceAsh;
 class PowerAsh;
 class PrefsAsh;
+#if BUILDFLAG(USE_CUPS)
 class PrintingMetricsAsh;
+#endif  // BUILDFLAG(USE_CUPS)
 class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenManagerAsh;
@@ -439,9 +441,11 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
 
+#if BUILDFLAG(USE_CUPS)
   PrintingMetricsAsh* printing_metrics_ash() {
     return printing_metrics_ash_.get();
   }
+#endif  // BUILDFLAG(USE_CUPS)
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
 
@@ -548,7 +552,9 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
+#if BUILDFLAG(USE_CUPS)
   std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
+#endif  // BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
