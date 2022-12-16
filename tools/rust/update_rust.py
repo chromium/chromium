@@ -39,8 +39,8 @@ CRUBIT_REVISION = 'f5cbdf4b54b0e6b9f63a4464a2c901c82e0f0209'
 CRUBIT_SUB_REVISION = 1
 
 # TODO(crbug.com/1401042): Set this back to None once Clang rolls block on Rust
-# building. Until Clang rolls block on Rust, they frequently roll without a
-# Rust compiler, which causes developer machines/bots to 404 in gclient sync.
+# building. Until Clang rolls block on Rust, they frequently roll without a Rust
+# compiler, which causes developer machines/bots to 404 in gclient sync.
 #
 # If not None, use a Rust package built with an older LLVM version than
 # specified in tools/clang/scripts/update.py. This is a fallback for when an
@@ -49,6 +49,10 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
+#
+# Rust builds (for Linux) that worked are found at:
+# https://commondatastorage.googleapis.com/chromium-browser-clang/index.html?path=Linux_x64/rust-toolchain-
+# The latest builds are prefixed with a date, such as `20230101-1`.
 FALLBACK_CLANG_VERSION = 'llvmorg-16-init-13328-g110fe4f4-1'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
