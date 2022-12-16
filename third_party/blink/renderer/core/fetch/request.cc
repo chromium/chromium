@@ -793,14 +793,6 @@ Request* Request::CreateRequestWithRequestOrString(
     input_request->BodyBuffer()->CloseAndLockAndDisturb();
   }
 
-  // Back/forward-cache is interested in use of the "Authorization" header.
-  if (r->getHeaders() &&
-      r->getHeaders()->has("Authorization", exception_state)) {
-    execution_context->GetScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kAuthorizationHeader,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
-
   // "Return |r|."
   return r;
 }
