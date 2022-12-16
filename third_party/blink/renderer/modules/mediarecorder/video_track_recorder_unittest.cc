@@ -7,6 +7,8 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -25,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
@@ -184,13 +187,35 @@ class VideoTrackRecorderTest
   void OnError() { video_track_recorder_->OnError(); }
 
   bool CanEncodeAlphaChannel() {
-    return video_track_recorder_->encoder_->CanEncodeAlphaChannel();
+    bool result;
+    base::WaitableEvent finished;
+    video_track_recorder_->encoder_.PostTaskWithThisObject(CrossThreadBindOnce(
+        [](base::WaitableEvent* finished, bool* out_result,
+           VideoTrackRecorder::Encoder* encoder) {
+          *out_result = encoder->CanEncodeAlphaChannel();
+          finished->Signal();
+        },
+        CrossThreadUnretained(&finished), CrossThreadUnretained(&result)));
+    finished.Wait();
+    return result;
   }
 
-  bool HasEncoderInstance() { return video_track_recorder_->encoder_.get(); }
+  bool HasEncoderInstance() const {
+    return !video_track_recorder_->encoder_.is_null();
+  }
 
   uint32_t NumFramesInEncode() {
-    return video_track_recorder_->encoder_->num_frames_in_encode_->count();
+    uint32_t count;
+    base::WaitableEvent finished;
+    video_track_recorder_->encoder_.PostTaskWithThisObject(CrossThreadBindOnce(
+        [](base::WaitableEvent* finished, uint32_t* out_count,
+           VideoTrackRecorder::Encoder* encoder) {
+          *out_count = encoder->num_frames_in_encode_->count();
+          finished->Signal();
+        },
+        CrossThreadUnretained(&finished), CrossThreadUnretained(&count)));
+    finished.Wait();
+    return count;
   }
 
   ScopedTestingPlatformSupport<MockTestingPlatform> platform_;
@@ -289,7 +314,6 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
       .WillOnce(DoAll(SaveArg<1>(&first_frame_encoded_data),
                       SaveArg<2>(&first_frame_encoded_alpha)));
 
-  // Send another Video Frame.
   const base::TimeTicks timeticks_later = base::TimeTicks::Now();
   base::StringPiece second_frame_encoded_data;
   base::StringPiece second_frame_encoded_alpha;
@@ -298,7 +322,6 @@ TEST_P(VideoTrackRecorderTest, VideoEncoding) {
       .WillOnce(DoAll(SaveArg<1>(&second_frame_encoded_data),
                       SaveArg<2>(&second_frame_encoded_alpha)));
 
-  // Send another Video Frame and expect only an OnEncodedVideo() callback.
   const gfx::Size frame_size2(frame_size.width() + kTrackRecorderTestSizeDiff,
                               frame_size.height());
   const scoped_refptr<media::VideoFrame> video_frame2 = CreateFrameForTest(
@@ -450,19 +473,21 @@ TEST_F(VideoTrackRecorderTest, HandlesOnError) {
       media::VideoFrame::CreateBlackFrame(frame_size);
 
   InSequence s;
-  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true)).Times(1);
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
+      .WillOnce(RunClosure(run_loop1.QuitClosure()));
   Encode(video_frame, base::TimeTicks::Now());
+  run_loop1.Run();
 
   EXPECT_TRUE(HasEncoderInstance());
   OnError();
   EXPECT_FALSE(HasEncoderInstance());
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop2;
   EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
-      .Times(1)
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
+      .WillOnce(RunClosure(run_loop2.QuitClosure()));
   Encode(video_frame, base::TimeTicks::Now());
-  run_loop.Run();
+  run_loop2.Run();
 
   Mock::VerifyAndClearExpectations(this);
 }

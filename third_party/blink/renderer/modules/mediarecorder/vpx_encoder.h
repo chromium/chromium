@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
@@ -25,28 +26,24 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   typedef std::unique_ptr<vpx_codec_ctx_t, VpxCodecDeleter>
       ScopedVpxCodecCtxPtr;
 
-  static void ShutdownEncoder(std::unique_ptr<NonMainThread> encoding_thread,
-                              ScopedVpxCodecCtxPtr encoder);
-
   VpxEncoder(bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-             uint32_t bits_per_second,
-             scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+             uint32_t bits_per_second);
 
   VpxEncoder(const VpxEncoder&) = delete;
   VpxEncoder& operator=(const VpxEncoder&) = delete;
 
+  base::WeakPtr<Encoder> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
  private:
   // VideoTrackRecorder::Encoder implementation.
-  ~VpxEncoder() override;
-  void EncodeOnEncodingTaskRunner(scoped_refptr<media::VideoFrame> frame,
-                                  base::TimeTicks capture_timestamp) override;
-  bool CanEncodeAlphaChannel() override;
+  void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
+                   base::TimeTicks capture_timestamp) override;
+  bool CanEncodeAlphaChannel() const override;
 
-  [[nodiscard]] bool ConfigureEncoderOnEncodingTaskRunner(
-      const gfx::Size& size,
-      vpx_codec_enc_cfg_t* codec_config,
-      ScopedVpxCodecCtxPtr* encoder);
+  [[nodiscard]] bool ConfigureEncoder(const gfx::Size& size,
+                                      vpx_codec_enc_cfg_t* codec_config,
+                                      ScopedVpxCodecCtxPtr* encoder);
 
   void DoEncode(vpx_codec_ctx_t* const encoder,
                 const gfx::Size& frame_size,
@@ -89,9 +86,9 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   bool last_frame_had_alpha_ = false;
 
   // The |media::VideoFrame::timestamp()| of the last encoded frame.  This is
-  // used to predict the duration of the next frame. Only used on
-  // VideoTrackRecorder::Encoder::encoding_thread_.
+  // used to predict the duration of the next frame.
   base::TimeDelta last_frame_timestamp_;
+  base::WeakPtrFactory<VpxEncoder> weak_factory_{this};
 };
 
 }  // namespace blink

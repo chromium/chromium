@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -581,6 +582,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
       "discardable-memory-ipc-error-cause");
 
   base::UnsafeSharedMemoryRegion region;
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   base::ScopedClosureRunner event_signal_runner(

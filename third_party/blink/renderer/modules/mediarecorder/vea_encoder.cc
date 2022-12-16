@@ -10,8 +10,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
@@ -20,20 +18,14 @@
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/size.h"
 
-using media::VideoFrame;
 using video_track_recorder::kVEAEncoderMinResolutionHeight;
 using video_track_recorder::kVEAEncoderMinResolutionWidth;
 
 namespace blink {
-
 namespace {
 
 // HW encoders expect a nonzero bitrate, so |kVEADefaultBitratePerPixel| is used
@@ -47,26 +39,6 @@ const uint32_t kMaxKeyframeInterval = 100;
 
 }  // anonymous namespace
 
-scoped_refptr<VEAEncoder> VEAEncoder::Create(
-    const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-    const VideoTrackRecorder::OnErrorCB& on_error_cb,
-    media::Bitrate::Mode bitrate_mode,
-    uint32_t bits_per_second,
-    media::VideoCodecProfile codec,
-    absl::optional<uint8_t> level,
-    const gfx::Size& size,
-    bool use_native_input,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  auto encoder = base::AdoptRef(new VEAEncoder(
-      on_encoded_video_cb, on_error_cb, bitrate_mode, bits_per_second, codec,
-      level, size, std::move(task_runner)));
-  PostCrossThreadTask(
-      *encoder->encoding_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(&VEAEncoder::ConfigureEncoderOnEncodingTaskRunner,
-                          encoder, size, use_native_input));
-  return encoder;
-}
-
 bool VEAEncoder::OutputBuffer::IsValid() {
   return region.IsValid() && mapping.IsValid();
 }
@@ -79,16 +51,17 @@ VEAEncoder::VEAEncoder(
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    bool use_native_input)
     : Encoder(on_encoded_video_cb,
-              bits_per_second > 0 ? bits_per_second
-                                  : size.GetArea() * kVEADefaultBitratePerPixel,
-              std::move(task_runner),
-              Platform::Current()->GetGpuFactories()->GetTaskRunner()),
+              bits_per_second > 0
+                  ? bits_per_second
+                  : size.GetArea() * kVEADefaultBitratePerPixel),
       gpu_factories_(Platform::Current()->GetGpuFactories()),
       codec_(codec),
       level_(level),
       bitrate_mode_(bitrate_mode),
+      size_(size),
+      use_native_input_(use_native_input),
       error_notified_(false),
       num_frames_after_keyframe_(0),
       force_next_frame_to_be_keyframe_(false),
@@ -99,34 +72,13 @@ VEAEncoder::VEAEncoder(
 }
 
 VEAEncoder::~VEAEncoder() {
-  if (encoding_task_runner_->RunsTasksInCurrentSequence()) {
-    DestroyOnEncodingTaskRunner();
-    return;
-  }
-
-  base::WaitableEvent release_waiter(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  // CrossThreadUnretained is safe because the class will be alive until
-  // |release_waiter| is signaled.
-  // TODO(emircan): Consider refactoring media::VideoEncodeAccelerator to avoid
-  // using naked pointers and using DeleteSoon() here, see
-  // http://crbug.com/701627.
-  // It is currently unsafe because |video_encoder_| might be in use on another
-  // function on |encoding_task_runner_|, see http://crbug.com/701030.
-  PostCrossThreadTask(
-      *encoding_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VEAEncoder::DestroyOnEncodingTaskRunner,
-                          CrossThreadUnretained(this),
-                          CrossThreadUnretained(&release_waiter)));
-  release_waiter.Wait();
+  video_encoder_.reset();
 }
 
 void VEAEncoder::RequireBitstreamBuffers(unsigned int /*input_count*/,
                                          const gfx::Size& input_coded_size,
                                          size_t output_buffer_size) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   vea_requested_input_coded_size_ = input_coded_size;
   output_buffers_.clear();
@@ -149,7 +101,6 @@ void VEAEncoder::BitstreamBufferReady(
     int32_t bitstream_buffer_id,
     const media::BitstreamBufferMetadata& metadata) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   num_frames_after_keyframe_ =
       metadata.key_frame ? 0 : num_frames_after_keyframe_ + 1;
@@ -174,7 +125,6 @@ void VEAEncoder::BitstreamBufferReady(
 
 void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.VEAError", error,
                             media::VideoEncodeAccelerator::kErrorMax + 1);
   on_error_cb_.Run();
@@ -183,7 +133,6 @@ void VEAEncoder::NotifyError(media::VideoEncodeAccelerator::Error error) {
 
 void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   video_encoder_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
       bitstream_buffer_id,
@@ -194,15 +143,13 @@ void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
 void VEAEncoder::FrameFinished(
     std::unique_ptr<base::MappedReadOnlyRegion> shm) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   input_buffers_.push_back(std::move(shm));
 }
 
-void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
-                                            base::TimeTicks capture_timestamp) {
-  TRACE_EVENT0("media", "VEAEncoder::EncodeOnEncodingTaskRunner");
+void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
+                             base::TimeTicks capture_timestamp) {
+  TRACE_EVENT0("media", "VEAEncoder::EncodeFrame");
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   if (input_visible_size_ != frame->visible_rect().size() && video_encoder_)
     video_encoder_.reset();
@@ -210,8 +157,7 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   if (!video_encoder_) {
     bool use_native_input =
         frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
-    ConfigureEncoderOnEncodingTaskRunner(frame->visible_rect().size(),
-                                         use_native_input);
+    ConfigureEncoder(frame->visible_rect().size(), use_native_input);
   }
 
   if (error_notified_) {
@@ -223,16 +169,16 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   if (output_buffers_.empty() || vea_requested_input_coded_size_.IsEmpty()) {
     // TODO(emircan): Investigate if resetting encoder would help.
     DVLOG(3) << "Might drop frame.";
-    last_frame_ =
-        std::make_unique<std::pair<scoped_refptr<VideoFrame>, base::TimeTicks>>(
-            frame, capture_timestamp);
+    last_frame_ = std::make_unique<
+        std::pair<scoped_refptr<media::VideoFrame>, base::TimeTicks>>(
+        frame, capture_timestamp);
     return;
   }
 
   // If first frame hasn't been encoded, do it first.
   if (last_frame_) {
     std::unique_ptr<VideoFrameAndTimestamp> last_frame(last_frame_.release());
-    EncodeOnEncodingTaskRunner(last_frame->first, last_frame->second);
+    EncodeFrame(last_frame->first, last_frame->second);
   }
 
   // Lower resolutions may fall back to SW encoder in some platforms, i.e. Mac.
@@ -250,7 +196,7 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
        vea_requested_input_coded_size_ != frame->coded_size() ||
        input_visible_size_.width() < kVEAEncoderMinResolutionWidth ||
        input_visible_size_.height() < kVEAEncoderMinResolutionHeight)) {
-    TRACE_EVENT0("media", "VEAEncoder::EncodeOnEncodingTaskRunner::Copy");
+    TRACE_EVENT0("media", "VEAEncoder::EncodeFrame::Copy");
     // Create SharedMemory backed input buffers as necessary. These SharedMemory
     // instances will be shared with GPU process.
     const size_t desired_mapped_size = media::VideoFrame::AllocationSize(
@@ -296,7 +242,7 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
         input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
     video_frame->AddDestructionObserver(media::BindToCurrentLoop(
-        WTF::BindOnce(&VEAEncoder::FrameFinished, WrapRefCounted(this),
+        WTF::BindOnce(&VEAEncoder::FrameFinished, weak_factory_.GetWeakPtr(),
                       std::move(input_buffer))));
   }
   frames_in_encode_.emplace(media::Muxer::VideoParameters(*frame),
@@ -306,11 +252,13 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   force_next_frame_to_be_keyframe_ = false;
 }
 
-void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
-                                                      bool use_native_input) {
+void VEAEncoder::Initialize() {
+  ConfigureEncoder(size_, use_native_input_);
+}
+
+void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
+                                  bool use_native_input) {
   DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
-  DCHECK(gpu_factories_->GetTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_NE(bits_per_second_, 0u);
 
   input_visible_size_ = size;
@@ -356,14 +304,6 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
                                   std::make_unique<media::NullMediaLog>())) {
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
   }
-}
-
-void VEAEncoder::DestroyOnEncodingTaskRunner(
-    base::WaitableEvent* async_waiter) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
-  video_encoder_.reset();
-  if (async_waiter)
-    async_waiter->Signal();
 }
 
 }  // namespace blink

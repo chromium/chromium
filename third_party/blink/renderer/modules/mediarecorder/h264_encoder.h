@@ -26,27 +26,24 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   };
   typedef std::unique_ptr<ISVCEncoder, ISVCEncoderDeleter> ScopedISVCEncoderPtr;
 
-  static void ShutdownEncoder(std::unique_ptr<NonMainThread> encoding_thread,
-                              ScopedISVCEncoderPtr encoder);
-
   H264Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
               VideoTrackRecorder::CodecProfile codec_profile,
-              uint32_t bits_per_second,
-              scoped_refptr<base::SequencedTaskRunner> task_runner);
+              uint32_t bits_per_second);
+  ~H264Encoder() override;
 
   H264Encoder(const H264Encoder&) = delete;
   H264Encoder& operator=(const H264Encoder&) = delete;
+
+  base::WeakPtr<Encoder> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
   friend class H264EncoderFixture;
 
   // VideoTrackRecorder::Encoder implementation.
-  ~H264Encoder() override;
-  void EncodeOnEncodingTaskRunner(scoped_refptr<media::VideoFrame> frame,
-                                  base::TimeTicks capture_timestamp) override;
+  void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
+                   base::TimeTicks capture_timestamp) override;
 
-  [[nodiscard]] bool ConfigureEncoderOnEncodingTaskRunner(
-      const gfx::Size& size);
+  [[nodiscard]] bool ConfigureEncoder(const gfx::Size& size);
 
   SEncParamExt GetEncoderOptionForTesting();
 
@@ -54,14 +51,13 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   const VideoTrackRecorder::CodecProfile codec_profile_;
 
   // |openh264_encoder_| is a special scoped pointer to guarantee proper
-  // destruction, also when reconfiguring due to parameters change. Only used on
-  // VideoTrackRecorder::Encoder::encoding_thread_.
+  // destruction, also when reconfiguring due to parameters change.
   gfx::Size configured_size_;
   ScopedISVCEncoderPtr openh264_encoder_;
 
-  // The |VideoFrame::timestamp()| of the first received frame. Only used on
-  // VideoTrackRecorder::Encoder::encoding_thread_.
+  // The |VideoFrame::timestamp()| of the first received frame.
   base::TimeTicks first_frame_timestamp_;
+  base::WeakPtrFactory<H264Encoder> weak_factory_{this};
 };
 
 }  // namespace blink

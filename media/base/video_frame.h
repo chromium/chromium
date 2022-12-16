@@ -782,7 +782,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
 #endif
 
-  std::vector<base::OnceClosure> done_callbacks_;
+  base::Lock done_callbacks_lock_;
+  std::vector<base::OnceClosure> done_callbacks_
+      GUARDED_BY(done_callbacks_lock_);
 
   base::TimeDelta timestamp_;
 

@@ -20,6 +20,7 @@
 #include "base/process/memory.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
@@ -1354,6 +1355,7 @@ bool VideoFrame::HasReleaseMailboxCB() const {
 
 void VideoFrame::AddDestructionObserver(base::OnceClosure callback) {
   DCHECK(!callback.is_null());
+  base::AutoLock lock(done_callbacks_lock_);
   done_callbacks_.push_back(std::move(callback));
 }
 
@@ -1442,7 +1444,12 @@ VideoFrame::~VideoFrame() {
         .Run(release_sync_token, std::move(gpu_memory_buffer_));
   }
 
-  for (auto& callback : done_callbacks_)
+  std::vector<base::OnceClosure> done_callbacks;
+  {
+    base::AutoLock lock(done_callbacks_lock_);
+    done_callbacks = std::move(done_callbacks_);
+  }
+  for (auto& callback : done_callbacks)
     std::move(callback).Run();
 }
 
