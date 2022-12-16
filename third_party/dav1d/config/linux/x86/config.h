@@ -27,6 +27,8 @@
 
 #define HAVE_ASM 1
 
+#define HAVE_C11_GENERIC 1
+
 #define HAVE_CLOCK_GETTIME 1
 
 #define HAVE_DLSYM 1
@@ -38,3 +40,5 @@
 #define HAVE_UNISTD_H 1
 
 // #define STACK_ALIGNMENT 16 -- Stack alignment is controlled by Chromium
+
+#define TRIM_DSP_FUNCTIONS 1

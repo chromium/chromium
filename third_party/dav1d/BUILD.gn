@@ -17,7 +17,8 @@ if (is_win) {
   assert(current_cpu == "x64" && (is_linux || is_chromeos),
          "Only Linux X64 MSAN is supported")
   platform_config_root = "config/linux-noasm/$current_cpu"
-} else if (current_cpu == "riscv64" || current_cpu == "loong64") {
+} else if (current_cpu == "riscv64" || current_cpu == "loong64" ||
+           current_cpu == "ppc64") {
   platform_config_root = "config/linux-noasm/generic"
 } else {
   # Linux configuration files seem to work on Mac, so just reuse them.
@@ -202,8 +203,6 @@ static_library("dav1d_8bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
-  } else if (current_cpu == "ppc64") {
-    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -234,8 +233,6 @@ static_library("dav1d_10bit") {
     sources += arm_template_sources
   } else if (current_cpu == "arm64") {
     sources += arm_template_sources
-  } else if (current_cpu == "ppc64") {
-    sources += ppc64_template_sources
   }
 
   cflags = dav1d_copts
@@ -249,15 +246,8 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/x86/cpu.c",
       "libdav1d/src/x86/cpu.h",
-      "libdav1d/src/x86/refmvs_init.c",
     ]
 
-    # x86/msac.h redefines macros in msac.h if x86/msac.h is included and
-    # HAVE_ASM is 0, so we must exclude msac_init.c if !enable_nasm. Also, it
-    # is only used for x64.
-    if (enable_nasm && current_cpu == "x64") {
-      sources += [ "libdav1d/src/x86/msac_init.c" ]
-    }
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
@@ -273,7 +263,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/arm/cpu.c",
       "libdav1d/src/arm/cpu.h",
-      "libdav1d/src/arm/refmvs_init.c",
     ]
 
     # These are not template based so should only be built once.
@@ -294,23 +283,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
       defines = [ "PREFIX" ]
     }
 
-    cflags = dav1d_copts
-
-    deps = [ ":dav1d_headers" ]
-    allow_circular_includes_from = [ ":dav1d_headers" ]
-  }
-} else if (current_cpu == "ppc64") {
-  static_library("dav1d_ppc64") {
-    sources = [
-      "libdav1d/src/ppc/cpu.c",
-      "libdav1d/src/ppc/cpu.h",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-      ":dav1d_config",
-    ]
     cflags = dav1d_copts
 
     deps = [ ":dav1d_headers" ]
@@ -344,7 +316,5 @@ static_library("dav1d") {
     }
   } else if (current_cpu == "arm" || current_cpu == "arm64") {
     deps += [ ":dav1d_arm" ]
-  } else if (current_cpu == "ppc64") {
-    deps += [ ":dav1d_ppc64" ]
   }
 }

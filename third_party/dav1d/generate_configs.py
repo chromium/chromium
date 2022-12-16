@@ -165,6 +165,19 @@ def GenerateWindowsArm64Config(src_dir):
                  (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
 
 
+def GenerateGenericConfig(src_dir):
+    generic_dir = 'config/linux-noasm/generic'
+    if not os.path.exists(generic_dir):
+        os.makedirs(generic_dir)
+
+    shutil.copy(os.path.join(src_dir, 'config.h'), generic_dir)
+
+    # Mark architecture as unknown.
+    RewriteFile(os.path.join(generic_dir, 'config.h'),
+                [(r'#define ARCH_X86 1', r'#define ARCH_X86 0'),
+                 (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0')])
+
+
 def CopyVersions(src_dir, dest_dir):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
@@ -193,8 +206,10 @@ def main():
     linux_env['CC'] = 'clang'
 
     GenerateConfig('config/linux/x64', linux_env)
-    GenerateConfig('config/linux-noasm/x64', linux_env, ['-Denable_asm=false'])
-    GenerateConfig('config/linux-noasm/generic', linux_env, ['-Denable_asm=false'])
+
+    noasm_dir = 'config/linux-noasm/x64'
+    GenerateConfig(noasm_dir, linux_env, ['-Denable_asm=false'])
+    GenerateGenericConfig(noasm_dir)
 
     GenerateConfig('config/linux/x86', linux_env,
                    ['--cross-file', '../crossfiles/linux32.crossfile'])
@@ -202,8 +217,6 @@ def main():
                    ['--cross-file', '../crossfiles/arm.crossfile'])
     GenerateConfig('config/linux/arm64', linux_env,
                    ['--cross-file', '../crossfiles/arm64.crossfile'])
-
-    GenerateConfig('config/linux/ppc64', linux_env)
 
     win_x86_env = SetupWindowsCrossCompileToolchain('x86')
     GenerateConfig('config/win/x86', win_x86_env,

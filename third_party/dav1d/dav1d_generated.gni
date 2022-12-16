@@ -6,6 +6,7 @@
 
 x86_asm_sources = [
   "libdav1d/src/x86/cdef16_avx2.asm",
+  "libdav1d/src/x86/cdef16_avx512.asm",
   "libdav1d/src/x86/cdef16_sse.asm",
   "libdav1d/src/x86/cdef_avx2.asm",
   "libdav1d/src/x86/cdef_avx512.asm",
@@ -24,11 +25,13 @@ x86_asm_sources = [
   "libdav1d/src/x86/ipred_avx512.asm",
   "libdav1d/src/x86/ipred_sse.asm",
   "libdav1d/src/x86/itx16_avx2.asm",
+  "libdav1d/src/x86/itx16_avx512.asm",
   "libdav1d/src/x86/itx16_sse.asm",
   "libdav1d/src/x86/itx_avx2.asm",
   "libdav1d/src/x86/itx_avx512.asm",
   "libdav1d/src/x86/itx_sse.asm",
   "libdav1d/src/x86/loopfilter16_avx2.asm",
+  "libdav1d/src/x86/loopfilter16_avx512.asm",
   "libdav1d/src/x86/loopfilter16_sse.asm",
   "libdav1d/src/x86/loopfilter_avx2.asm",
   "libdav1d/src/x86/loopfilter_avx512.asm",
@@ -49,16 +52,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/refmvs.asm",
 ]
 
-x86_template_sources = [
-  "libdav1d/src/x86/cdef_init_tmpl.c",
-  "libdav1d/src/x86/filmgrain_init_tmpl.c",
-  "libdav1d/src/x86/ipred_init_tmpl.c",
-  "libdav1d/src/x86/itx_init_tmpl.c",
-  "libdav1d/src/x86/loopfilter_init_tmpl.c",
-  "libdav1d/src/x86/looprestoration_init_tmpl.c",
-  "libdav1d/src/x86/mc_init_tmpl.c",
-]
-
+x86_template_sources = []
 arm32_asm_sources = [
   "libdav1d/src/arm/32/cdef.S",
   "libdav1d/src/arm/32/cdef16.S",
@@ -99,21 +93,7 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/refmvs.S",
 ]
 
-arm_template_sources = [
-  "libdav1d/src/arm/cdef_init_tmpl.c",
-  "libdav1d/src/arm/filmgrain_init_tmpl.c",
-  "libdav1d/src/arm/ipred_init_tmpl.c",
-  "libdav1d/src/arm/itx_init_tmpl.c",
-  "libdav1d/src/arm/loopfilter_init_tmpl.c",
-  "libdav1d/src/arm/looprestoration_init_tmpl.c",
-  "libdav1d/src/arm/mc_init_tmpl.c",
-]
-
-ppc64_template_sources = [
-  "libdav1d/src/ppc/cdef_init_tmpl.c",
-  "libdav1d/src/ppc/looprestoration_init_tmpl.c",
-]
-
+arm_template_sources = []
 template_sources = [
   "libdav1d/src/cdef_apply_tmpl.c",
   "libdav1d/src/cdef_tmpl.c",

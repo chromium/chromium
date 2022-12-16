@@ -30,4 +30,7 @@ all the updated configuration files. If not, you'll need to debug the bots :(
 
 
 -- [ OPEN ISSUES ] ------------------
-None at this time.
+1. If Windows build fails on Linux, you may need to run:
+`build/vs_toolchain.py update` to regenerate FUSE links.
+2. If ARM build fails with an error around clock_gettime you likely need to
+install gcc-arm-linux-gnueabihf and gcc-aarch64-linux-gnu packages.

@@ -2,7 +2,7 @@
 c = 'clang'
 ar = 'llvm-ar'
 
-[properties]
+[built-in options]
 c_args = ['-m32']
 
 [host_machine]
