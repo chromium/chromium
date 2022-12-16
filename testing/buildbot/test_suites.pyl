@@ -773,6 +773,13 @@
       'cc_unittests': {},
       'crypto_unittests': {},
       'display_unittests': {},
+      'fake_libva_driver_unittest': {
+        'args': [
+          '--env-var', 'LIBVA_DRIVERS_PATH', './',
+          '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
+        ],
+        'experiment_percentage': 100,
+      },
       'google_apis_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},

@@ -525,6 +525,50 @@
       },
       {
         "args": [
+          "--env-var",
+          "LIBVA_DRIVERS_PATH",
+          "./",
+          "--env-var",
+          "LIBVA_DRIVER_NAME",
+          "libfake",
+          "--magic-vm-cache=magic_cros_vm_cache"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86",
+              "gce": "1",
+              "kvm": "1",
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "cros_vm",
+              "path": "magic_cros_vm_cache"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "cros_vm"
+              }
+            ]
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "fake_libva_driver_unittest",
+        "test_id_prefix": "ninja://media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest/"
+      },
+      {
+        "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {

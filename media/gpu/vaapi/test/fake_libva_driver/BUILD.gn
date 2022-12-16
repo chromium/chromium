@@ -2,8 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/gpu/args.gni")
+import("//testing/test.gni")
+
 shared_library("fake_drv_video") {
   sources = [ "fake_drv_video.cc" ]
 
   deps = [ "//base" ]
+}
+
+test("fake_libva_driver_unittest") {
+  # Depending on //media/gpu/vaapi:libva_stubs only works on Linux or ChromeOS
+  # with VA-API.
+  assert(is_linux || is_chromeos)
+  assert(use_vaapi)
+
+  sources = [ "fake_drv_video_unittest.cc" ]
+  deps = [
+    ":fake_drv_video",
+    "//base",
+    "//base/test:test_support",
+    "//media/gpu/vaapi:libva_stubs",
+    "//testing/gtest",
+  ]
 }
