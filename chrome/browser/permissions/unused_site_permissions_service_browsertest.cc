@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/test/browser_test.h"
@@ -24,8 +25,11 @@
 class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
  public:
   UnusedSitePermissionsServiceBrowserTest() {
-    feature_list.InitAndEnableFeature(
-        permissions::features::kRecordPermissionExpirationTimestamps);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/
+        {permissions::features::kRecordPermissionExpirationTimestamps,
+         content_settings::features::kSafetyCheckUnusedSitePermissions},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

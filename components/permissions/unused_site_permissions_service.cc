@@ -29,6 +29,7 @@
 
 constexpr char kRevokedKey[] = "revoked";
 constexpr base::TimeDelta kRevocationThreshold = base::Days(60);
+constexpr base::TimeDelta kRevocationThresholdForTesting = base::Days(0);
 
 namespace permissions {
 namespace {
@@ -44,15 +45,17 @@ UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
   auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType type = info->website_settings_info()->type();
-    if (!content_settings::CanTrackLastVisit(type))
+    if (!content_settings::CanTrackLastVisit(type)) {
       continue;
+    }
     ContentSettingsForOneType settings;
     hcsm->GetSettingsForOneType(type, &settings);
     for (const auto& setting : settings) {
       // Skip wildcard patterns that don't belong to a single origin. These
       // shouldn't track visit timestamps.
-      if (!setting.primary_pattern.MatchesSingleOrigin())
+      if (!setting.primary_pattern.MatchesSingleOrigin()) {
         continue;
+      }
       if (setting.metadata.last_visited != base::Time() &&
           setting.metadata.last_visited < threshold) {
         GURL url = GURL(setting.primary_pattern.ToString());
@@ -106,6 +109,16 @@ void StorePermissionInRevokedPermissionSetting(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(std::move(dict)));
+}
+
+base::TimeDelta GetRevocationThreshold() {
+  // TODO(crbug.com/1401701): Clean up no delay revocation after the feature is
+  // ready. Today, no delay revocation is necessary to enable manual testing.
+  if (content_settings::features::kSafetyCheckUnusedSitePermissionsNoDelay
+          .Get()) {
+    return kRevocationThresholdForTesting;
+  }
+  return kRevocationThreshold;
 }
 
 }  // namespace
@@ -171,8 +184,9 @@ void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Check if this origin has unused permissions.
   auto origin_entry = recently_unused_permissions_.find(origin.Serialize());
-  if (origin_entry == recently_unused_permissions_.end())
+  if (origin_entry == recently_unused_permissions_.end()) {
     return;
+  }
 
   // See which permissions of the origin actually match the URL and update them.
   auto& site_permissions = origin_entry->second;
@@ -197,12 +211,18 @@ void UnusedSitePermissionsService::OnUnusedPermissionsMapRetrieved(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   recently_unused_permissions_ = map;
   RevokeUnusedPermissions();
-  if (callback)
+  if (callback) {
     std::move(callback).Run();
+  }
 }
 
 void UnusedSitePermissionsService::RevokeUnusedPermissions() {
-  base::Time threshold = clock_->Now() - kRevocationThreshold;
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kSafetyCheckUnusedSitePermissions)) {
+    return;
+  }
+
+  base::Time threshold = clock_->Now() - GetRevocationThreshold();
 
   for (auto itr = recently_unused_permissions_.begin();
        itr != recently_unused_permissions_.end();) {

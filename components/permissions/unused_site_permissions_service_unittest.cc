@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -16,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,8 +77,9 @@ class UnusedSitePermissionsServiceTest
 
     base::Value::List permissions;
     if (!setting_value.is_dict() ||
-        !setting_value.GetDict().FindList(kRevokedKey))
+        !setting_value.GetDict().FindList(kRevokedKey)) {
       return permissions;
+    }
 
     base::Value::List permissions_list =
         std::move(*setting_value.GetDict().FindList(kRevokedKey));
@@ -92,6 +95,10 @@ class UnusedSitePermissionsServiceTest
 };
 
 TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
   const GURL url1("https://example1.com");
   const GURL url2("https://example2.com");
   const ContentSettingsType type1 = ContentSettingsType::GEOLOCATION;
@@ -190,6 +197,10 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
   const GURL url("https://example1.com");
   const content_settings::ContentSettingConstraints constraint{
       .track_last_visit_for_autoexpiration = true};
