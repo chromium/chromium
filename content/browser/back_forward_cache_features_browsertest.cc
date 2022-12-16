@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -36,6 +37,7 @@
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/test/idle_test_utils.h"
@@ -2087,31 +2089,298 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoesNotCacheIfOpenIndexedDBConnection) {
+class BackForwardCacheBrowserTestWithFlagForIndexedDBConnection
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+      EnableFeatureAndSetParams(
+          blink::features::kAllowPageWithIDBConnectionInBFCache, "", "true");
+    } else {
+      DisableFeature(blink::features::kAllowPageWithIDBConnectionInBFCache);
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool ShouldAllowPageWithIndexedDBConnectionInBFCache() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserTestWithFlagForIndexedDBConnection,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheBrowserTestWithFlagForIndexedDBConnection,
+    DoesNotCacheIfOpenIndexedDBConnection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to A and use IndexedDB.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/back_forward_cache/page_with_indexedDB.html")));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
 
   // 2) Navigate away.
-  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  // The page has an open IndexedDB connection so it should be deleted.
-  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  }
 
   // 3) Go back to the page with IndexedDB.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection}, {},
-      {}, {}, FROM_HERE);
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    // If the flag indicates that the page with open IndexedDB connection is
+    // eligible for back/forward cache, after navigating back, the page should
+    // be restored.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectRestored(FROM_HERE);
+  } else {
+    // If the flag indicates that the page with open IndexedDB connection is not
+    // eligible for back/forward cache, the document should be deleted.
+    ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+    // It should not be restored from the back/forward cache, and the reason
+    // should indicate that it was blocked due to `kIndexedDBConnection`.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored(
+        {NotRestoredReason::kBlocklistedFeatures},
+        {blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection},
+        {}, {}, {}, FROM_HERE);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheBrowserTestWithFlagForIndexedDBConnection,
+    EvictCacheIfOnVersionChangeEventReceived) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Shell* tab_receiving_version_change = shell();
+  Shell* tab_sending_version_change = CreateBrowser();
+
+  // 1) Navigate the tab receiving version change to A and use IndexedDB.
+  ASSERT_TRUE(NavigateToURL(
+      tab_receiving_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Create two connection with the same version here so that it can cover the
+  // cases when IndexedDB connection coordinator is not implemented correctly to
+  // handle multiple connections' back/forward cache status.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
+  ASSERT_TRUE(
+      ExecJs(rfh_a.get(), "setupNewIndexedDBConnectionWithSameVersion()"));
+
+  // 2) Navigate the tab receiving version change away, and navigate the tab
+  // sending version change to the same page, and create a new IndexedDB
+  // connection with a higher version. The new IndexedDB connection should be
+  // created without being blocked by the page in back/forward cache.
+  ASSERT_TRUE(
+      NavigateToURL(tab_receiving_version_change,
+                    embedded_test_server()->GetURL("a.com", "/title1.html")));
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  }
+  ASSERT_TRUE(NavigateToURL(
+      tab_sending_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+
+  // Running `setupNewIndexedDBConnectionWithHigherVersion()` will trigger the
+  // `versionchange` event, which should cause the document receiving the
+  // version change to be evicted from back/forward cache.
+  content::DOMMessageQueue queue_sending_version_change(
+      tab_sending_version_change->web_contents());
+  std::string message_sending_version_change;
+  ExecuteScriptAsync(tab_sending_version_change,
+                     "setupNewIndexedDBConnectionWithHigherVersion()");
+  ASSERT_TRUE(queue_sending_version_change.WaitForMessage(
+      &message_sending_version_change));
+  ASSERT_EQ("\"onsuccess\"", message_sending_version_change);
+
+  // 3) Go back to the page a with IndexedDB.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    // If this feature is enabled, the page should be put into the back/forward
+    // cache after the navigation, but gets evicted due to `kIndexedDBEvent`.
+    ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                      {DisallowActivationReasonId::kIndexedDBEvent}, FROM_HERE);
+  } else {
+    // If this feature is disabled, the page should not be put into back/forward
+    // cache at all, and the recorded blocklisted feature should be
+    // `kIndexedDBConnection`.
+    ExpectNotRestored(
+        {NotRestoredReason::kBlocklistedFeatures},
+        {blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection},
+        {}, {}, {}, FROM_HERE);
+  }
+}
+
+// Check if the non-sticky feature is properly registered before the
+// `versionchange ` is sent. Since the `versionchange` event's handler won't
+// close the IndexedDB connection, so when the navigation happens, the
+// non-sticky feature will prevent the document from entering BFCache.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheBrowserTestWithFlagForIndexedDBConnection,
+    DoesNotCacheIfVersionChangeEventIsSentButIndexedDBConnectionIsNotClosed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Shell* tab_receiving_version_change = shell();
+  Shell* tab_sending_version_change = CreateBrowser();
+
+  // 1) Navigate the receiving tab to A and use IndexedDB.
+  ASSERT_TRUE(NavigateToURL(
+      tab_receiving_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_receiving(current_frame_host());
+  GURL destination_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  ASSERT_TRUE(
+      ExecJs(tab_receiving_version_change,
+             JsReplace("setupIndexedDBVersionChangeHandlerToNavigateTo($1)",
+                       destination_url.spec())));
+
+  // 2) Navigate the sending tab to A and use IndexedDB with higher version.
+  ASSERT_TRUE(NavigateToURL(
+      tab_sending_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  content::DOMMessageQueue queue_receiving_version_change(
+      tab_receiving_version_change->web_contents());
+  std::string message_receiving_version_change;
+  content::DOMMessageQueue queue_sending_version_change(
+      tab_sending_version_change->web_contents());
+  std::string message_sending_version_change;
+  ExecuteScriptAsync(tab_sending_version_change,
+                     "setupNewIndexedDBConnectionWithHigherVersion()");
+
+  // 3) Wait until receiving tab receives the event and sending tab successfully
+  // opens the connection. The receiving tab should navigate to another page in
+  // the event handler. Before the navigation, the page should register a
+  // corresponding feature handle and should not be eligible for BFCache.
+  // The document will be disallowed to enter BFCache because of the
+  // `versionchange` event without proper closure of connection if the feature
+  // is on, otherwise, the reason should be open IndexedDB connection instead.
+  blink::scheduler::WebSchedulerTrackedFeature tracked_feature;
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    tracked_feature =
+        blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBEvent;
+  } else {
+    tracked_feature =
+        blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection;
+  }
+
+  ASSERT_TRUE(queue_receiving_version_change.WaitForMessage(
+      &message_receiving_version_change));
+  ASSERT_EQ("\"onversionchange\"", message_receiving_version_change);
+
+  TestNavigationManager navigation_manager(
+      tab_receiving_version_change->web_contents(), destination_url);
+  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
+  ASSERT_TRUE(rfh_receiving.get()->GetBackForwardCacheDisablingFeatures().Has(
+      tracked_feature));
+  navigation_manager.ResumeNavigation();
+  navigation_manager.WaitForNavigationFinished();
+
+  ASSERT_TRUE(queue_sending_version_change.WaitForMessage(
+      &message_sending_version_change));
+  ASSERT_EQ("\"onsuccess\"", message_sending_version_change);
+
+  // 4) Go back to the page A in the receiving tab, the page should not be put
+  // into back/forward cache at all, and the recorded blocklisted feature should
+  // be the `tracked_feature`.
+  ASSERT_TRUE(rfh_receiving.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {tracked_feature}, {}, {}, {}, FROM_HERE);
+}
+
+// Check if the non-sticky feature is properly registered before the
+// `versionchange ` is sent and removed after the IndexedDB Connection is
+// closed. Since the `versionchange` event's handler will close the IndexedDB
+// connection before navigating away, so the document is eligible for BFCache as
+// the non-sticky feature is removed.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheBrowserTestWithFlagForIndexedDBConnection,
+    CacheIfVersionChangeEventIsSentAndIndexedDBConnectionIsClosed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Shell* tab_receiving_version_change = shell();
+  Shell* tab_sending_version_change = CreateBrowser();
+
+  // 1) Navigate the receiving tab to A and use IndexedDB.
+  ASSERT_TRUE(NavigateToURL(
+      tab_receiving_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_receiving(current_frame_host());
+  GURL destination_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  ASSERT_TRUE(ExecJs(tab_receiving_version_change,
+                     JsReplace("setupIndexedDBVersionChangeHandlerToCloseConnec"
+                               "tionAndNavigateTo($1)",
+                               destination_url.spec())));
+
+  // 2) Navigate the sending tab to A and use IndexedDB with higher version.
+  ASSERT_TRUE(NavigateToURL(
+      tab_sending_version_change,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  content::DOMMessageQueue queue_receiving_version_change(
+      tab_receiving_version_change->web_contents());
+  std::string message_receiving_version_change;
+  content::DOMMessageQueue queue_sending_version_change(
+      tab_sending_version_change->web_contents());
+  std::string message_sending_version_change;
+  ExecuteScriptAsync(tab_sending_version_change,
+                     "setupNewIndexedDBConnectionWithHigherVersion()");
+
+  // 3) Wait until receiving tab receives the event and sending tab successfully
+  // opens the connection. The receiving tab should navigate to another page in
+  // the event handler. Before the navigation, the page should register a
+  // corresponding feature handle and should not be eligible for BFCache, but it
+  // will be removed when the connection is closed, making the page eligible for
+  // BFCache.
+  ASSERT_TRUE(queue_receiving_version_change.WaitForMessage(
+      &message_receiving_version_change));
+  ASSERT_EQ("\"onversionchange\"", message_receiving_version_change);
+
+  TestNavigationManager navigation_manager(
+      tab_receiving_version_change->web_contents(), destination_url);
+  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
+  // Since the connection is closed, the tracked feature should be reset so
+  // the page is allowed to enter BFCache again.
+
+  blink::scheduler::WebSchedulerTrackedFeature tracked_feature;
+  if (ShouldAllowPageWithIndexedDBConnectionInBFCache()) {
+    tracked_feature =
+        blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBEvent;
+  } else {
+    tracked_feature =
+        blink::scheduler::WebSchedulerTrackedFeature::kIndexedDBConnection;
+  }
+
+  ASSERT_FALSE(rfh_receiving.get()->GetBackForwardCacheDisablingFeatures().Has(
+      tracked_feature));
+
+  navigation_manager.ResumeNavigation();
+  navigation_manager.WaitForNavigationFinished();
+
+  ASSERT_TRUE(queue_sending_version_change.WaitForMessage(
+      &message_sending_version_change));
+  ASSERT_EQ("\"onsuccess\"", message_sending_version_change);
+
+  // 4) Go back to the page A in the receiving tab, it should be restored from
+  // BFCache.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

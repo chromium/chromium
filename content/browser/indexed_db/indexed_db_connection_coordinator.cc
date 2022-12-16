@@ -431,8 +431,8 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     // close_pending set.
     const int64_t old_version = db_->metadata().version;
     const int64_t new_version = IndexedDBDatabaseMetadata::NO_VERSION;
-    db_->SendVersionChangeToAllConnections(old_version, new_version);
     state_ = RequestState::kPendingNoConnections;
+    db_->SendVersionChangeToAllConnections(old_version, new_version);
   }
 
   void OnVersionChangeIgnored() const override {

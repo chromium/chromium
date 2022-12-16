@@ -30,8 +30,10 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -102,13 +104,14 @@ IDBDatabase::IDBDatabase(
       connection_lifetime_(std::move(connection_lifetime)),
       event_queue_(
           MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
-      callbacks_receiver_(this, context),
-      feature_handle_for_scheduler_(
-          context
-              ? context->GetScheduler()->RegisterFeature(
-                    SchedulingPolicy::Feature::kIndexedDBConnection,
-                    {SchedulingPolicy::DisableBackForwardCache()})
-              : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()) {
+      callbacks_receiver_(this, context) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAllowPageWithIDBConnectionInBFCache) &&
+      context) {
+    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
+        SchedulingPolicy::Feature::kIndexedDBConnection,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
 }

@@ -969,6 +969,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 
+// Feature for allowing page with open IDB connection to be stored in
+// back/forward cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);
 }  // namespace features
 }  // namespace blink
 
