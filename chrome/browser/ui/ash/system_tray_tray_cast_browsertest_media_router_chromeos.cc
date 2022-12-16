@@ -5,38 +5,32 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
-#include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/cast/tray_cast.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
@@ -45,14 +39,11 @@
 #include "components/media_router/common/test/test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_host_resolver.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
-#include "url/gurl.h"
 
 using ::ash::ProfileHelper;
 using testing::_;
@@ -92,7 +83,10 @@ media_router::MediaRoute MakeRoute(const std::string& route_id,
       "description", is_local);
 }
 
-class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
+// Parameterized by feature QsRevamp.
+class SystemTrayTrayCastMediaRouterChromeOSTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SystemTrayTrayCastMediaRouterChromeOSTest(
       const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
@@ -100,8 +94,22 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
       const SystemTrayTrayCastMediaRouterChromeOSTest&) = delete;
 
  protected:
-  SystemTrayTrayCastMediaRouterChromeOSTest() : InProcessBrowserTest() {}
-  ~SystemTrayTrayCastMediaRouterChromeOSTest() override {}
+  SystemTrayTrayCastMediaRouterChromeOSTest() {
+    if (IsQsRevampEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kQsRevamp,
+                                ash::features::kQsRevampWip},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              ash::features::kQsRevamp, ash::features::kQsRevampWip});
+    }
+  }
+
+  ~SystemTrayTrayCastMediaRouterChromeOSTest() override = default;
+
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void ShowBubble() { tray_test_api_->ShowBubble(); }
 
@@ -167,18 +175,31 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     return true;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
   media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         SystemTrayTrayCastMediaRouterChromeOSTest,
+                         testing::Bool());
+
 }  // namespace
 
 // Verifies that we only show the tray view if there are available cast
 // targets/sinks.
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastMediaRouterChromeOSTest,
                        VerifyCorrectVisiblityWithSinks) {
   ShowBubble();
+
+  if (IsQsRevampEnabled()) {
+    // The tray defaults to visible.
+    EXPECT_TRUE(IsTrayVisible());
+  } else {
+    // The tray defaults to hidden.
+    EXPECT_FALSE(IsTrayVisible());
+  }
 
   std::vector<media_router::MediaSink> zero_sinks;
   std::vector<media_router::MediaSink> one_sink;
@@ -187,33 +208,38 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
   two_sinks.push_back(media_router::CreateCastSink("id1", "name"));
   two_sinks.push_back(media_router::CreateCastSink("id2", "name"));
 
-  // The tray should be hidden when there are no sinks.
-  EXPECT_FALSE(IsTrayVisible());
   media_sinks_observer()->OnSinksUpdated(zero_sinks,
                                          std::vector<url::Origin>());
-  // Flush mojo messages from the chrome object to the ash object.
-  content::RunAllPendingInMessageLoop();
-  EXPECT_FALSE(IsTrayVisible());
+  if (IsQsRevampEnabled()) {
+    // With QsRevamp the tray is always visible.
+    EXPECT_TRUE(IsTrayVisible());
+  } else {
+    // The tray should be hidden when there are no sinks.
+    EXPECT_FALSE(IsTrayVisible());
+  }
 
   // The tray should be visible with any more than zero sinks.
   media_sinks_observer()->OnSinksUpdated(one_sink, std::vector<url::Origin>());
-  content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsTrayVisible());
   media_sinks_observer()->OnSinksUpdated(two_sinks, std::vector<url::Origin>());
-  content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsTrayVisible());
 
   // And if all of the sinks go away, it should be hidden again.
   media_sinks_observer()->OnSinksUpdated(zero_sinks,
                                          std::vector<url::Origin>());
-  content::RunAllPendingInMessageLoop();
-  EXPECT_FALSE(IsTrayVisible());
+  if (IsQsRevampEnabled()) {
+    // With QsRevamp the tray is always visible.
+    EXPECT_TRUE(IsTrayVisible());
+  } else {
+    // The tray should be hidden when there are no sinks.
+    EXPECT_FALSE(IsTrayVisible());
+  }
 }
 
 // Verifies that we show the cast view when we start a casting session, and that
 // we display the correct cast session if there are multiple active casting
 // sessions.
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastMediaRouterChromeOSTest,
                        VerifyCastingShowsCastView) {
   ShowBubble();
 
@@ -222,7 +248,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
       media_router::CreateCastSink("remote_sink", "Remote Sink"),
       media_router::CreateCastSink("local_sink", "Local Sink")};
   media_sinks_observer()->OnSinksUpdated(sinks, std::vector<url::Origin>());
-  content::RunAllPendingInMessageLoop();
 
   // Create route combinations. More details below.
   const media_router::MediaRoute non_local_route =
@@ -237,27 +262,37 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
 
   // We do not show the cast view for non-local routes.
   media_routes_observer()->OnRoutesUpdated(non_local_routes);
-  content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(IsCastingNotificationVisible());
 
   // If there are multiple routes active at the same time, then we need to
   // display the local route over a non-local route. This also verifies that we
   // display the cast view when we're casting.
   media_routes_observer()->OnRoutesUpdated(multiple_routes);
-  content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsCastingNotificationVisible());
   EXPECT_NE(std::u16string::npos, GetNotificationString().find(u"Local Sink"));
 
   // When a casting session stops, we shouldn't display the cast view.
   media_routes_observer()->OnRoutesUpdated(no_routes);
-  content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(IsCastingNotificationVisible());
 }
 
+// Parameterized by feature QsRevamp.
 class SystemTrayTrayCastAccessCodeChromeOSTest
-    : public media_router::AccessCodeCastIntegrationBrowserTest {
+    : public media_router::AccessCodeCastIntegrationBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SystemTrayTrayCastAccessCodeChromeOSTest() {
+    if (IsQsRevampEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kQsRevamp,
+                                ash::features::kQsRevampWip},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              ash::features::kQsRevamp, ash::features::kQsRevampWip});
+    }
+
     // Use consumer emails to avoid having to fake a policy fetch.
     login_mixin_.AppendRegularUsers(2);
     login_mixin_.set_should_launch_browser(true);
@@ -271,6 +306,8 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
       const SystemTrayTrayCastAccessCodeChromeOSTest&) = delete;
 
   ~SystemTrayTrayCastAccessCodeChromeOSTest() override = default;
+
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void PreRunTestOnMainThread() override {
     CastConfigControllerMediaRouter::SetMediaRouterForTest(media_router_);
@@ -371,10 +408,14 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
 
  private:
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         SystemTrayTrayCastAccessCodeChromeOSTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastAccessCodeChromeOSTest,
                        PolicyOffNoSinksNoVisibleTray) {
   const ash::UserContext user_context =
       CreateUserContext(account_id1_, "password");
@@ -385,12 +426,17 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
 
   ShowBubble();
 
-  // Since there are no sinks and this user does not have access code casting
-  // enabled, the tray should not be visible.
-  EXPECT_FALSE(IsTrayVisible());
+  if (IsQsRevampEnabled()) {
+    // The tray is always visible.
+    EXPECT_TRUE(IsTrayVisible());
+  } else {
+    // Since there are no sinks and this user does not have access code casting
+    // enabled, the tray should not be visible.
+    EXPECT_FALSE(IsTrayVisible());
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastAccessCodeChromeOSTest,
                        PolicyOnNoSinksVisibleTray) {
   const ash::UserContext user_context =
       CreateUserContext(account_id2_, "password");
@@ -406,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   EXPECT_TRUE(IsTrayVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastAccessCodeChromeOSTest,
                        SimulateValidCastingWorkflow) {
   AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
                        kAccessCodeCastNewDeviceScreenplayTag);
@@ -463,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
 // First open the cast dialog from browser, then open another cast dialog from
 // the system tray. Before the change, such behavior will cause a crash. After
 // the change, the first dialog will close when the second dialog opens.
-IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayTrayCastAccessCodeChromeOSTest,
                        BrowserAndSystemTrayCasting) {
   const ash::UserContext user_context =
       CreateUserContext(account_id2_, "password");

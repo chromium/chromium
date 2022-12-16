@@ -185,15 +185,17 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
     CastConfigController::Get()->CastToSink(it->second);
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
+    // Close the system tray to emphasize the pinned Cast notification.
+    if (features::IsQsRevampEnabled()) {
+      CloseBubble();  // Deletes `this`.
+    }
   } else if (view == add_access_code_device_) {
     base::RecordAction(base::UserMetricsAction(
         "StatusArea_Cast_Detailed_Launch_AccesCastDialog"));
     Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog(
         AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu);
+    // NOTE: System tray is closed by focus change and `this` is deleted.
   }
-  // Close the system tray to emphasize the pinned Cast notification.
-  if (features::IsQsRevampEnabled())
-    CloseBubble();  // Deletes `this`.
 }
 
 void CastDetailedView::StopCasting(const std::string& route_id) {
