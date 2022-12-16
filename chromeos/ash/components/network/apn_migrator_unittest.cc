@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/mock_managed_cellular_pref_handler.h"
@@ -27,7 +28,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
@@ -69,6 +69,7 @@ class ApnMigratorTest : public testing::Test {
 
   // testing::Test
   void SetUp() override {
+    LoginState::Initialize();
     managed_cellular_pref_handler_ =
         base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);
     managed_network_configuration_handler_ = base::WrapUnique(
@@ -93,6 +94,7 @@ class ApnMigratorTest : public testing::Test {
     apn_migrator_.reset();
     managed_network_configuration_handler_.reset();
     managed_cellular_pref_handler_.reset();
+    LoginState::Shutdown();
   }
 
   void TriggerNetworkListChanged() {
@@ -351,6 +353,80 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
 
   // Function under test.
   TriggerNetworkListChanged();
+}
+
+TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworks) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  const std::string cellular_service_path_1 =
+      AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,
+                                      kTestCellularIccid1, kTestCellularGuid1);
+
+  // We will use this delegate to simulate a late async reply
+  network_handler::PropertiesCallback get_managed_properties_callback;
+
+  // The first call to the migrator should start the migration process for
+  // |cellular_service_path_1|. This will trigger a GetManagedProperties call.
+  {
+    EXPECT_CALL(*managed_cellular_pref_handler(),
+                ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+        .Times(1)
+        .WillOnce(Return(false));
+
+    base::Value::Dict custom_apn_1;
+    custom_apn_1.Set(::onc::cellular_apn::kAccessPointName, "apn_1");
+    base::Value::Dict custom_apn_2;
+    custom_apn_2.Set(::onc::cellular_apn::kAccessPointName, "apn_2");
+    base::Value::List populated_apn_list;
+    populated_apn_list.Append(std::move(custom_apn_1));
+    populated_apn_list.Append(std::move(custom_apn_2));
+    EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+        .Times(1)
+        .WillOnce(Return(&populated_apn_list));
+    EXPECT_CALL(*managed_network_configuration_handler(),
+                GetManagedProperties(LoginState::Get()->primary_user_hash(),
+                                     cellular_service_path_1, _))
+        .Times(1)
+        .WillOnce(WithArg<2>(
+            Invoke([&get_managed_properties_callback](
+                       network_handler::PropertiesCallback callback) {
+              ASSERT_TRUE(get_managed_properties_callback.is_null());
+              get_managed_properties_callback = std::move(callback);
+              ASSERT_FALSE(get_managed_properties_callback.is_null());
+            })));
+    // Function under test.
+    TriggerNetworkListChanged();
+  }
+
+  // A second call should not trigger a GetManagedProperties, as the network is
+  // already waiting for the async callback response.
+  {
+    EXPECT_CALL(*managed_cellular_pref_handler(),
+                ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+        .Times(1)
+        .WillOnce(Return(false));
+
+    EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+        .Times(0);
+    EXPECT_CALL(*managed_network_configuration_handler(),
+                GetManagedProperties(LoginState::Get()->primary_user_hash(),
+                                     cellular_service_path_1, _))
+        .Times(0);
+    // Function under test.
+    TriggerNetworkListChanged();
+  }
+
+  // TODO(b/162365553): Feed fake data to the test once the logic is
+  // implemented.
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              AddApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1);
+
+  // Execute the GetManagedProperties callback, expect that the migration
+  // service marks the network as migrated.
+  std::move(get_managed_properties_callback)
+      .Run(cellular_service_path_1, base::Value(), /*error=*/absl::nullopt);
 }
 
 }  // namespace ash

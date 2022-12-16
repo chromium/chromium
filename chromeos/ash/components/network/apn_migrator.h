@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_APN_MIGRATOR_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_APN_MIGRATOR_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
@@ -37,6 +38,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void SetShillUserApnListForNetwork(const NetworkState& network,
                                      const base::Value::List* apn_list);
 
+  // Migrate the |network|'s custom APNs to the APN Revamp feature. If the
+  // migration requires the network's managed properties, this function will
+  // invoke an async call, and mark the network as "in migration".
+  void MigrateNetwork(const NetworkState& network);
+
+  // Finishes the migration process for networks that require managed properties
+  // fields.
+  void OnGetManagedProperties(std::string iccid,
+                              const std::string& service_path,
+                              absl::optional<base::Value> properties,
+                              absl::optional<std::string> error);
+
+  base::flat_set<std::string> iccids_in_migration_;
+
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
@@ -44,6 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
+  base::WeakPtrFactory<ApnMigrator> weak_factory_{this};
 };
 
 }  // namespace ash

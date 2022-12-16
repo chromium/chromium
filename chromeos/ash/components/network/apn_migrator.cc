@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -55,6 +56,38 @@ void ApnMigrator::SetShillUserApnListForNetwork(
       base::BindOnce(&OnSetShillUserApnListFailure, network.guid()));
 }
 
+void ApnMigrator::MigrateNetwork(const NetworkState& network) {
+  if (iccids_in_migration_.find(network.iccid()) !=
+      iccids_in_migration_.end()) {
+    return;
+  }
+
+  const base::Value::List* custom_apn_list =
+      network_metadata_store_->GetCustomApnList(network.guid());
+  if (!custom_apn_list || custom_apn_list->empty()) {
+    base::Value::List empty_apn_list;
+    SetShillUserApnListForNetwork(network, &empty_apn_list);
+    managed_cellular_pref_handler_->AddApnMigratedIccid(network.iccid());
+    return;
+  }
+
+  network_configuration_handler_->GetManagedProperties(
+      LoginState::Get()->primary_user_hash(), network.path(),
+      base::BindOnce(&ApnMigrator::OnGetManagedProperties,
+                     weak_factory_.GetWeakPtr(), network.iccid()));
+  iccids_in_migration_.emplace(network.iccid());
+}
+
+void ApnMigrator::OnGetManagedProperties(std::string iccid,
+                                         const std::string& service_path,
+                                         absl::optional<base::Value> properties,
+                                         absl::optional<std::string> error) {
+  // TODO(b/162365553): Implement this case: Network with custom APNs needs to
+  // be migrated
+  managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
+  iccids_in_migration_.erase(iccid);
+}
+
 void ApnMigrator::NetworkListChanged() {
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkListByType(
@@ -70,18 +103,7 @@ void ApnMigrator::NetworkListChanged() {
         continue;
       }
       // Network needs to be migrated to the APN revamp
-      const base::Value::List* custom_apn_list =
-          network_metadata_store_->GetCustomApnList(network->guid());
-      if (!custom_apn_list) {
-        base::Value::List empty_apn_list;
-        SetShillUserApnListForNetwork(*network, &empty_apn_list);
-      } else if (custom_apn_list->empty()) {
-        SetShillUserApnListForNetwork(*network, custom_apn_list);
-      } else {
-        // TODO(b/162365553): Implement this case: Network with custom APNs
-        // needs to be migrated
-      }
-      managed_cellular_pref_handler_->AddApnMigratedIccid(network->iccid());
+      MigrateNetwork(*network);
       continue;
     }
 
