@@ -1113,8 +1113,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             // If the url is about:blank, we shouldn't show a title as it is prone to spoofing.
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)
-                    || (shouldShowAboutBlankUrl()
-                            && ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(getUrl()))) {
+                    || ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(getUrl())) {
                 mTitleBar.setText("");
                 return;
             }
@@ -1152,9 +1151,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             String publisherUrl = TrustedCdn.getPublisherUrl(tab);
             String url = getUrl();
             // Don't show anything for Chrome URLs.
-            if (NativePage.isNativePageUrl(url, getCurrentTab().isIncognito())
-                    || (!shouldShowAboutBlankUrl()
-                            && ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(url))) {
+            if (NativePage.isNativePageUrl(url, getCurrentTab().isIncognito())) {
                 mUrlCoordinator.setUrlBarData(
                         UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
                 return;
@@ -1193,10 +1190,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             String publisherUrl = TrustedCdn.getPublisherUrl(tab);
             return publisherUrl != null ? publisherUrl : tab.getUrl().getSpec().trim();
-        }
-
-        private boolean shouldShowAboutBlankUrl() {
-            return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_SHOW_ABOUT_BLANK_URL);
         }
 
         private void updateColors() {

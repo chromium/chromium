@@ -56,7 +56,6 @@ BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheet);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
-BASE_DECLARE_FEATURE(kCCTShowAboutBlankUrl);
 BASE_DECLARE_FEATURE(kCCTToolbarCustomizations);
 BASE_DECLARE_FEATURE(kDiscardOccludedBitmaps);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);

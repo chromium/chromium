@@ -206,7 +206,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableSideSheet,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
-    &kCCTShowAboutBlankUrl,
     &kCCTToolbarCustomizations,
     &kDiscardOccludedBitmaps,
     &kDontAutoHideBrowserControls,
@@ -605,10 +604,6 @@ BASE_FEATURE(kCCTResourcePrefetch,
 BASE_FEATURE(kCCTRetainingStateInMemory,
              "CCTRetainingStateInMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTShowAboutBlankUrl,
-             "CCTShowAboutBlankUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTToolbarCustomizations,
              "CCTToolbarCustomizations",
