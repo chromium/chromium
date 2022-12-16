@@ -261,8 +261,7 @@ void OpenGoogleServicesSettings() {
 #pragma mark - Tests
 
 // Tests the sign-in screen with accounts that are already available.
-// TODO(crbug.com/1328822): flaky.
-- (void)DISABLED_testSignInScreenWithAccount {
+- (void)testSignInScreenWithAccount {
   // Add an identity to sign-in to enable the "Continue as ..." button in the
   // sign-in screen.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -298,8 +297,7 @@ void OpenGoogleServicesSettings() {
 
 // Tests the sign-in screen without accounts where an account has to be added
 // before signing in.
-// TODO(crbug.com/1328822): flaky.
-- (void)DISABLED_testSignInScreenWithoutAccount {
+- (void)testSignInScreenWithoutAccount {
   // Tap on the "Sign in" button.
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
