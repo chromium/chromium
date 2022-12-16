@@ -26,7 +26,7 @@ TEST(MediaConditionParserTest, Basic) {
       {"screen and (color)", "not all"},
       {"all and (min-width:500px)", "not all"},
       {"(min-width:500px)", "(min-width: 500px)"},
-      {"(min-width : -100px)", "(min-width : -100px)"},  // <general-enclosed>
+      {"(min-width : -100px)", "(min-width: -100px)"},
       {"(min-width: 100px) and print", "not all"},
       {"(min-width: 100px) and (max-width: 900px)", nullptr},
       {"(min-width: [100px) and (max-width: 900px)", "not all"},

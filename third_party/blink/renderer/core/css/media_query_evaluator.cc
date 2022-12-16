@@ -242,38 +242,61 @@ bool MediaQueryEvaluator::DidResultsChange(
   return false;
 }
 
-template <typename T>
-bool CompareValue(T a, T b, MediaQueryOperator op) {
+// As per
+// https://w3c.github.io/csswg-drafts/mediaqueries/#false-in-the-negative-range
+static bool HandleNegativeMediaFeatureValue(MediaQueryOperator op) {
   switch (op) {
-    case MediaQueryOperator::kGe:
-      return a >= b;
     case MediaQueryOperator::kLe:
-      return a <= b;
+    case MediaQueryOperator::kLt:
     case MediaQueryOperator::kEq:
     case MediaQueryOperator::kNone:
-      return a == b;
-    case MediaQueryOperator::kLt:
-      return a < b;
+      return false;
     case MediaQueryOperator::kGt:
-      return a > b;
+    case MediaQueryOperator::kGe:
+      return true;
+  }
+}
+
+template <typename T>
+bool CompareValue(T actual_value, T query_value, MediaQueryOperator op) {
+  if (query_value < T(0)) {
+    return HandleNegativeMediaFeatureValue(op);
+  }
+  switch (op) {
+    case MediaQueryOperator::kGe:
+      return actual_value >= query_value;
+    case MediaQueryOperator::kLe:
+      return actual_value <= query_value;
+    case MediaQueryOperator::kEq:
+    case MediaQueryOperator::kNone:
+      return actual_value == query_value;
+    case MediaQueryOperator::kLt:
+      return actual_value < query_value;
+    case MediaQueryOperator::kGt:
+      return actual_value > query_value;
   }
   return false;
 }
 
-bool CompareDoubleValue(double a, double b, MediaQueryOperator op) {
+bool CompareDoubleValue(double actual_value,
+                        double query_value,
+                        MediaQueryOperator op) {
+  if (query_value < 0) {
+    return HandleNegativeMediaFeatureValue(op);
+  }
   const double precision = LayoutUnit::Epsilon();
   switch (op) {
     case MediaQueryOperator::kGe:
-      return a >= (b - precision);
+      return actual_value >= (query_value - precision);
     case MediaQueryOperator::kLe:
-      return a <= (b + precision);
+      return actual_value <= (query_value + precision);
     case MediaQueryOperator::kEq:
     case MediaQueryOperator::kNone:
-      return std::abs(a - b) <= precision;
+      return std::abs(actual_value - query_value) <= precision;
     case MediaQueryOperator::kLt:
-      return a < b;
+      return actual_value < query_value;
     case MediaQueryOperator::kGt:
-      return a > b;
+      return actual_value > query_value;
   }
   return false;
 }

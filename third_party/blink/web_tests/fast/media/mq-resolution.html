@@ -46,7 +46,7 @@
         }
 
         shouldBe("matchMedia('(resolution: 0dpi)').matches", "false");
-        shouldBe("matchMedia('(min-resolution: 0dpi)').matches", "false");
+        shouldBe("matchMedia('(min-resolution: 0dpi)').matches", "true");
         shouldBe("matchMedia('(max-resolution: 0dpi)').matches", "false");
 
         testRunner.setBackingScaleFactor(1.5, function() {});

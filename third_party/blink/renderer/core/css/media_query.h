@@ -53,6 +53,7 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
 
   MediaQuery(RestrictorType, String media_type, const MediaQueryExpNode*);
   MediaQuery(const MediaQuery&);
+  MediaQuery& operator=(const MediaQuery&) = delete;
   ~MediaQuery();
   void Trace(Visitor*) const;
 
@@ -64,8 +65,6 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
   String CssText() const;
 
  private:
-  MediaQuery& operator=(const MediaQuery&) = delete;
-
   String media_type_;
   String serialization_cache_;
   Member<const MediaQueryExpNode> exp_node_;

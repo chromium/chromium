@@ -3,7 +3,7 @@ CSS3 media query test: resolution query with dppx. Using style element, @media c
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS matchMedia('(resolution: 0dpi)').matches is false
-PASS matchMedia('(min-resolution: 0dpi)').matches is false
+PASS matchMedia('(min-resolution: 0dpi)').matches is true
 PASS matchMedia('(max-resolution: 0dpi)').matches is false
 PASS matchMedia('(resolution: 1.5dppx)').matches is true
 PASS resolutionFromStyle() is 1.5
