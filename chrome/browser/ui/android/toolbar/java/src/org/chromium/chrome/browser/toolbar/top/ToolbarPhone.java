@@ -21,12 +21,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1843,16 +1843,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private void updateTabSwitcherButtonRipple() {
         if (mToggleTabStackButton == null) return;
-        if (mTabSwitcherState == ENTERING_TAB_SWITCHER) {
-            mToggleTabStackButton.setBackgroundColor(
-                    getContext().getColor(android.R.color.transparent));
-        } else {
-            // TODO(https://crbug.com/912358): This appears to no longer work.
-            TypedValue outValue = new TypedValue();
-
-            // The linked style here will have to be changed if it is updated in the XML.
-            getContext().getTheme().resolveAttribute(R.style.ToolbarButton, outValue, true);
-            mToggleTabStackButton.setBackgroundResource(outValue.resourceId);
+        if (mTabSwitcherState == ENTERING_TAB_SWITCHER || mIsShowingStartSurfaceTabSwitcher) {
+            Drawable drawable = mToggleTabStackButton.getBackground();
+            // drawable may not be a RippleDrawable if IPH is showing. Ignore that scenario since
+            // it is rare.
+            if (drawable instanceof RippleDrawable) {
+                // Force the ripple to end so the transition looks correct.
+                ((RippleDrawable) drawable).jumpToCurrentState();
+            }
         }
     }
 
@@ -1864,10 +1862,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 shouldBeVisible, isShowingStartSurfaceHomepage, isShowingStartSurfaceTabSwitcher);
 
         mIsShowingStartSurfaceTabSwitcher = isShowingStartSurfaceTabSwitcher;
-        // Update visibilities of toolbar layout, progress bar and shadow.
+        // Update visibilities of toolbar layout, progress bar, shadow and ripple.
         setVisibility(shouldBeVisible ? VISIBLE : GONE);
         updateProgressBarVisibility();
         updateShadowVisibility();
+        updateTabSwitcherButtonRipple();
         // Url bar should be focusable. This will be set in UrlBar#onDraw but there's a delay which
         // may cause focus to fail, so set here too.
         mLocationBar.setUrlBarFocusable(true);
