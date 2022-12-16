@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 
 namespace blink {
 
@@ -313,7 +314,9 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
     position.top += row_size + layout_data.border_thickness;
   }
 
-  ClearNeedsLayoutOnHiddenFrames(child.GetLayoutBox());
+  if (!NGDisableSideEffectsScope::IsDisabled()) {
+    ClearNeedsLayoutOnHiddenFrames(child.GetLayoutBox());
+  }
 }
 
 }  // namespace blink
