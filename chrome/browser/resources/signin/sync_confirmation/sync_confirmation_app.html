@@ -275,16 +275,31 @@
     column-gap: 12px;
   }
 
-  #contentContainer.tangible-sync {
+  .tangible-sync {
     --action-container-padding: 24px;
-    --sync-info-desc-bottom-margin: 48px;
-    --container-bottom-padding: calc(var(--sync-info-desc-bottom-margin) +
-        var(--cr-button-height) + var(--action-container-padding));
+  }
+
+  .tangible-sync #contentContainer {
     align-items: stretch;
     display: flex;
     flex-direction: column;
     margin: auto;
     max-width: 500px;
+  }
+
+  .window-main-container {
+    --button-container-height: calc(2 * var(--action-container-padding) +
+        var(--cr-button-height));
+    display: flex;
+    height: calc(100vh - var(--button-container-height));
+    width: 100vw;
+  }
+
+  .dialog-main-container.tangible-sync #contentContainer {
+    --sync-info-desc-bottom-margin: 48px;
+    --container-bottom-padding: calc(var(--sync-info-desc-bottom-margin) +
+        var(--cr-button-height) + var(--action-container-padding));
+
     /* Bottom padding is needed to save space for the button row in
     the modal dialog view. */
     padding: 32px 0 var(--container-bottom-padding);
@@ -540,41 +555,42 @@
 </template>
 
 <template is="dom-if" if="[[isTangibleSync_]]">
-  <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
-  <img id="tangible-sync-window-left-illustration"
+  <div class$="tangible-sync [[getMainContainerClass_()]]">
+    <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
+    <img id="tangible-sync-window-left-illustration"
       class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
-  <img id="tangible-sync-window-right-illustration"
+    <img id="tangible-sync-window-right-illustration"
       class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
-  <div id="contentContainer" class="tangible-sync">
-    <div id="avatarContainer">
-      <img id="avatar" alt="" src="[[accountImageSrc_]]">
-      <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
-        <iron-icon icon="cr:domain"></iron-icon>
+    <div id="contentContainer">
+      <div id="avatarContainer">
+        <img id="avatar" alt="" src="[[accountImageSrc_]]">
+        <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
+          <iron-icon icon="cr:domain"></iron-icon>
+        </div>
+      </div>
+      <h1 id="syncConfirmationHeading" consent-description>
+        $i18n{syncConfirmationTitle}
+      </h1>
+      <div id="syncInfoTitle" consent-description>
+        $i18n{syncConfirmationSyncInfoTitle}
+      </div>
+      <div id="syncBenefitsList">
+        <template is="dom-repeat" items="[[syncBenefitsList_]]">
+          <div class="sync-benefit">
+            <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]">
+            </iron-icon>
+            <div class="sync-benefit-text" consent-description>
+              [[i18n(item.title)]]
+            </div>
+          </div>
+        </template>
+      </div>
+      <div id="syncInfoDesc" class="secondary" consent-description>
+        $i18n{syncConfirmationSyncInfoDesc}
       </div>
     </div>
-    <h1 id="syncConfirmationHeading" consent-description>
-      $i18n{syncConfirmationTitle}
-    </h1>
-    <div id="syncInfoTitle" consent-description>
-      $i18n{syncConfirmationSyncInfoTitle}
-    </div>
-    <div id="syncBenefitsList">
-      <template is="dom-repeat" items="[[syncBenefitsList_]]">
-        <div class="sync-benefit">
-          <iron-icon class="sync-benefit-icon" icon="[[item.iconName]]">
-          </iron-icon>
-          <div class="sync-benefit-text" consent-description>
-            [[i18n(item.title)]]
-          </div>
-        </div>
-      </template>
-    </div>
-    <div id="syncInfoDesc" class="secondary" consent-description>
-      $i18n{syncConfirmationSyncInfoDesc}
-    </div>
   </div>
-
-  <div class="action-row">
+  <div class="action-row tangible-sync">
     <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
     <div id="tangible-sync-button-container" class="action-container">
       <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
