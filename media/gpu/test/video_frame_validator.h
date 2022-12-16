@@ -285,6 +285,50 @@ class SSIMVideoFrameValidator : public VideoFrameValidator {
   const ValidationMode validation_mode_;
   std::map<size_t, double> ssim_;
 };
+
+// Validate by computing the log likelihood ratio of the frame to be validate
+// and the model frame acquired by |get_model_frame_cb_|. If the log likelihood
+// ratio is less than or equal to |tolerance_|, the validation on the frame
+// passes.
+class LogLikelihoodRatioVideoFrameValidator : public VideoFrameValidator {
+ public:
+  // TODO (b/262772938): Find an actual tolerance value for this validator. This
+  // is just a placeholder until we get some results on the range of this
+  // metric.
+  constexpr static double kDefaultTolerance = 50.0;
+
+  static std::unique_ptr<LogLikelihoodRatioVideoFrameValidator> Create(
+      const GetModelFrameCB& get_model_frame_cb,
+      std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor = nullptr,
+      ValidationMode validation_mode = ValidationMode::kThreshold,
+      double tolerance = kDefaultTolerance,
+      CropHelper crop_helper = CropHelper());
+
+  const std::map<size_t, double>& get_log_likelihood_ratio_values() const {
+    return log_likelihood_ratios_;
+  }
+
+  ~LogLikelihoodRatioVideoFrameValidator() override;
+
+ private:
+  struct LogLikelihoodRatioMismatchedFrameInfo;
+
+  LogLikelihoodRatioVideoFrameValidator(
+      const GetModelFrameCB& get_model_frame_cb,
+      std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor,
+      ValidationMode validation_mode,
+      double tolerance,
+      CropHelper crop_helper);
+
+  std::unique_ptr<MismatchedFrameInfo> Validate(
+      scoped_refptr<const VideoFrame> frame,
+      size_t frame_index) override;
+
+  const GetModelFrameCB get_model_frame_cb_;
+  const double tolerance_;
+  std::map<size_t, double> log_likelihood_ratios_;
+};
+
 }  // namespace test
 }  // namespace media
 

@@ -565,5 +565,74 @@ bool SSIMVideoFrameValidator::Passed() const {
   }
   return true;
 }
+
+struct LogLikelihoodRatioVideoFrameValidator::
+    LogLikelihoodRatioMismatchedFrameInfo
+    : public VideoFrameValidator::MismatchedFrameInfo {
+  LogLikelihoodRatioMismatchedFrameInfo(size_t frame_index, double ratio)
+      : MismatchedFrameInfo(frame_index), ratio(ratio) {}
+  ~LogLikelihoodRatioMismatchedFrameInfo() override = default;
+  void Print() const override {
+    LOG(ERROR) << "frame_index: " << frame_index
+               << ", log likelihood ratio: " << ratio;
+  }
+
+  double ratio;
+};
+
+// static
+std::unique_ptr<LogLikelihoodRatioVideoFrameValidator>
+LogLikelihoodRatioVideoFrameValidator::Create(
+    const GetModelFrameCB& get_model_frame_cb,
+    std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor,
+    ValidationMode validation_mode,
+    double tolerance,
+    CropHelper crop_helper) {
+  auto video_frame_validator =
+      base::WrapUnique(new LogLikelihoodRatioVideoFrameValidator(
+          get_model_frame_cb, std::move(corrupt_frame_processor),
+          validation_mode, tolerance, std::move(crop_helper)));
+  if (!video_frame_validator->Initialize()) {
+    LOG(ERROR) << "Failed to initialize LogLikelihoodRatioVideoFrameValidator.";
+    return nullptr;
+  }
+
+  return video_frame_validator;
+}
+
+LogLikelihoodRatioVideoFrameValidator::LogLikelihoodRatioVideoFrameValidator(
+    const GetModelFrameCB& get_model_frame_cb,
+    std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor,
+    ValidationMode validation_mode,
+    double tolerance,
+    CropHelper crop_helper)
+    : VideoFrameValidator(std::move(corrupt_frame_processor),
+                          std::move(crop_helper)),
+      get_model_frame_cb_(get_model_frame_cb),
+      tolerance_(tolerance) {}
+
+LogLikelihoodRatioVideoFrameValidator::
+    ~LogLikelihoodRatioVideoFrameValidator() = default;
+
+std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
+LogLikelihoodRatioVideoFrameValidator::Validate(
+    scoped_refptr<const VideoFrame> frame,
+    size_t frame_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
+  auto model_frame = get_model_frame_cb_.Run(frame_index);
+
+  CHECK(model_frame);
+  double ratio = ComputeLogLikelihoodRatio(model_frame, frame);
+  DVLOGF(4) << "frame_index: " << frame_index
+            << ", log likelihood ratio: " << ratio;
+  log_likelihood_ratios_[frame_index] = ratio;
+  if (ratio < tolerance_) {
+    return std::make_unique<LogLikelihoodRatioMismatchedFrameInfo>(frame_index,
+                                                                   ratio);
+  }
+
+  return nullptr;
+}
+
 }  // namespace test
 }  // namespace media

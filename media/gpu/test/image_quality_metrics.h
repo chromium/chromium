@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/scoped_refptr.h"
+
 namespace media {
 
 class VideoFrame;
@@ -29,6 +31,14 @@ size_t CompareFramesWithErrorDiff(const VideoFrame& frame1,
 // |frame2| if they are not I420.
 double ComputePSNR(const VideoFrame& frame1, const VideoFrame& frame2);
 double ComputeSSIM(const VideoFrame& frame1, const VideoFrame& frame2);
+
+// Compute the log likelihood ratio between a golden frame and a test frame.
+// This metric performs a statistical analysis on the distribution of colors in
+// each frame, and looks for anomalies consistent with encoding or decoding
+// bugs. More details on this algorithm can be found here:
+// go/log-likelihood-artifact-detection
+double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
+                                 scoped_refptr<const VideoFrame> test_frame);
 
 }  // namespace test
 }  // namespace media
