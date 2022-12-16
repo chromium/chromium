@@ -39,28 +39,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GoogleUpdate.MenuItem.ActionTakenAfterItemClicked"
-    enum="GoogleUpdateAfterItemClickedActions" expires_after="2021-08-25">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    (Android-only) Records whether Chrome was updated after the update menu item
-    was clicked.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.MenuItem.ActionTakenOnMenuOpen"
-    enum="GoogleUpdateMenuItemActions" expires_after="2021-08-25">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    (Android-only) Records whether the update menu item was clicked when the app
-    menu was opened.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.Result.Session" enum="BooleanSuccess"
     expires_after="2020-10-15">
 <!-- Name completed by histogram_suffixes name="GoogleUpdate.Result.UpdateType" -->

@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -45,20 +44,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * For manually testing this functionality, see {@link UpdateConfigs}.
  */
 public class UpdateMenuItemHelper {
-    static final String ACTION_TAKEN_ON_MENU_OPEN_HISTOGRAM =
-            "GoogleUpdate.MenuItem.ActionTakenOnMenuOpen";
     private static final String TAG = "UpdateMenuItemHelper";
-
-    // UMA constants for logging whether the menu item was clicked.
-    static final int ITEM_NOT_CLICKED = 0;
-    static final int ITEM_CLICKED_INTENT_LAUNCHED = 1;
-    static final int ITEM_CLICKED_INTENT_FAILED = 2;
-    private static final int ITEM_CLICKED_BOUNDARY = 3;
-
-    // UMA constants for logging whether Chrome was updated after the menu item was clicked.
-    private static final int UPDATED = 0;
-    private static final int NOT_UPDATED = 1;
-    private static final int UPDATED_BOUNDARY = 2;
 
     private static UpdateMenuItemHelper sInstance;
 
@@ -70,7 +56,6 @@ public class UpdateMenuItemHelper {
         mStatus = status;
         handleStateChanged();
         pingObservers();
-        recordUpdateHistogram();
     };
 
     /**
@@ -83,9 +68,6 @@ public class UpdateMenuItemHelper {
     private @Nullable UpdateStatus mStatus;
 
     private @NonNull MenuUiState mMenuUiState = new MenuUiState();
-
-    // Whether the menu item was clicked. This is used to log the click-through rate.
-    private boolean mMenuItemClicked;
 
     /**
      * Whether the runnable posted when the app menu is dismissed has been executed. Tracked for
@@ -136,19 +118,10 @@ public class UpdateMenuItemHelper {
     }
 
     /**
-     * Logs whether an update was performed if the update menu item was clicked.
-     * Should be called from ChromeActivity#onStart().
-     */
-    public void onStart() {
-        if (mStatus != null) recordUpdateHistogram();
-    }
-
-    /**
      * Handles a click on the update menu item.
      * @param activity The current {@code Activity}.
      */
     public void onMenuItemClicked(Activity activity) {
-        mMenuItemClicked = true;
         if (mStatus == null) return;
 
         switch (mStatus.updateState) {
@@ -158,11 +131,8 @@ public class UpdateMenuItemHelper {
                 try {
                     UpdateStatusProvider.getInstance().startIntentUpdate(
                             activity, false /* newTask */);
-                    recordItemClickedHistogram(ITEM_CLICKED_INTENT_LAUNCHED);
-                    getPrefService().setBoolean(Pref.CLICKED_UPDATE_MENU_ITEM, true);
                 } catch (ActivityNotFoundException e) {
                     Log.e(TAG, "Failed to launch Activity for: %s", mStatus.updateUrl);
-                    recordItemClickedHistogram(ITEM_CLICKED_INTENT_FAILED);
                 }
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
@@ -188,11 +158,8 @@ public class UpdateMenuItemHelper {
         mMenuDismissedRunnableExecuted = false;
         // Post a task to record the item clicked histogram. Post task is used so that the runnable
         // executes after #onMenuItemClicked is called (if it's going to be called).
-        PostTask.postTask(TaskTraits.CHOREOGRAPHER_FRAME, () -> {
-            if (!mMenuItemClicked) recordItemClickedHistogram(ITEM_NOT_CLICKED);
-            mMenuItemClicked = false;
-            mMenuDismissedRunnableExecuted = true;
-        });
+        PostTask.postTask(
+                TaskTraits.CHOREOGRAPHER_FRAME, () -> { mMenuDismissedRunnableExecuted = true; });
     }
 
     /**
@@ -279,23 +246,6 @@ public class UpdateMenuItemHelper {
 
     private void pingObservers() {
         for (Runnable observer : mObservers) observer.run();
-    }
-
-    private void recordItemClickedHistogram(int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ACTION_TAKEN_ON_MENU_OPEN_HISTOGRAM, action, ITEM_CLICKED_BOUNDARY);
-    }
-
-    private void recordUpdateHistogram() {
-        assert mStatus != null;
-
-        if (getPrefService().getBoolean(Pref.CLICKED_UPDATE_MENU_ITEM)) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "GoogleUpdate.MenuItem.ActionTakenAfterItemClicked",
-                    mStatus.updateState == UpdateState.UPDATE_AVAILABLE ? NOT_UPDATED : UPDATED,
-                    UPDATED_BOUNDARY);
-            getPrefService().setBoolean(Pref.CLICKED_UPDATE_MENU_ITEM, false);
-        }
     }
 
     private static PrefService getPrefService() {
