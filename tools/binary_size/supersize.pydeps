@@ -73,6 +73,7 @@ libsupersize/obj_analyzer.py
 libsupersize/pakfile.py
 libsupersize/parallel.py
 libsupersize/path_util.py
+libsupersize/r8_disassembly.py
 libsupersize/readelf.py
 libsupersize/stream_reader.py
 libsupersize/string_extract.py
