@@ -19,8 +19,6 @@ _SRC_PATH = os.path.abspath(
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
 import pyyaml
 
-LEADING_WHITESPACE = re.compile('^([ \t]*)')
-TRAILING_WHITESPACE = re.compile('.*?([ \t]+)$')
 # Matches all non-empty strings that contain no whitespaces.
 NO_WHITESPACE = re.compile('[^\s]+$')
 
@@ -167,13 +165,6 @@ LEGACY_USER_POLICY_NAME_OFFENDERS = [
 # See crbug.com/1068257 for the details.
 OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = ['ProxySettings']
 
-# 100 MiB upper limit on the total device policy external data max size limits
-# due to the security reasons.
-# You can increase this limit if you're introducing new external data type
-# device policy, but be aware that too heavy policies could result in user
-# profiles not having enough space on the device.
-TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
-
 # Each policy must have a description message shorter than 4096 characters in
 # all its translations (ADM format limitation). However, translations of the
 # description might exceed this limit, so a lower limit of is used instead.
@@ -306,13 +297,6 @@ def _GetPolicyItemType(policy_type):
                               policy_type)
 
 
-def MergeDict(*dicts):
-  result = {}
-  for dictionary in dicts:
-    result.update(dictionary)
-  return result
-
-
 def LenWithoutPlaceholderTags(text):
   PATTERN = re.compile('<ph [^>]*>')
   length = len(text)
@@ -327,20 +311,6 @@ def LenWithoutPlaceholderTags(text):
 
 def _IsAllowedDevicePolicyPrefix(name):
   return name.startswith('Device')
-
-
-class DuplicateKeyVisitor(ast.NodeVisitor):
-  def visit_Dict(self, node):
-    seen_keys = set()
-    for i, node_key in enumerate(node.keys):
-      key = ast.literal_eval(node_key)
-      if key in seen_keys:
-        raise ValueError("Duplicate key '%s' in line %d found." %
-                         (key, node.values[i].lineno))
-      seen_keys.add(key)
-
-    # Recursively check for all nested objects.
-    self.generic_visit(node)
 
 
 class PolicyTypeProvider():
@@ -647,21 +617,6 @@ class PolicyTemplateChecker(object):
           'zeros when using them. See also https://crbug.com/1115976', policy,
           'schema')
 
-  def _CheckTotalDevicePolicyExternalDataMaxSize(self, policy_definitions):
-    total_device_policy_external_data_max_size = 0
-    for policy in policy_definitions:
-      if (policy.get('device_only', False)
-          and self.policy_type_provider.GetPolicyType(policy) == 'external'):
-        total_device_policy_external_data_max_size += self._CheckContains(
-            policy, 'max_size', int)
-    if (total_device_policy_external_data_max_size >
-        TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE):
-      self._Error(
-          ('Total sum of device policy external data maximum size limits ' +
-           'should not exceed %d bytes, current sum is %d bytes.') %
-          (TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE,
-           total_device_policy_external_data_max_size))
-
   # Returns True if the example value for a policy seems to contain JSON
   # embedded inside a string. Simply checks if strings start with '{', so it
   # doesn't flag numbers (which are valid JSON) but it does flag both JSON
@@ -675,65 +630,6 @@ class PolicyTemplateChecker(object):
       return any(
           self._AppearsToContainEmbeddedJson(v) for v in example_value.values())
 
-  # Checks that there are no duplicate proto paths in device_policy_proto_map.
-  def _CheckDevicePolicyProtoMappingUniqueness(self, device_policy_proto_map,
-                                               legacy_device_policy_proto_map):
-    # Check that device_policy_proto_map does not have duplicate values.
-    proto_paths = set()
-    for proto_path in device_policy_proto_map.values():
-      if proto_path in proto_paths:
-        self._Error(
-            "Duplicate proto path '%s' in device_policy_proto_map. Did you set "
-            "the right path for your device policy?" % proto_path)
-      proto_paths.add(proto_path)
-
-    # Check that legacy_device_policy_proto_map only contains pairs
-    # [policy_name, proto_path] and does not have duplicate proto_paths.
-    for policy_and_path in legacy_device_policy_proto_map:
-      if len(policy_and_path) != 2 or not isinstance(
-          policy_and_path[0], str) or not isinstance(policy_and_path[1], str):
-        self._Error(
-            "Every entry in legacy_device_policy_proto_map must be an array of "
-            "two strings, but found '%s'" % policy_and_path)
-      if policy_and_path[1] != '' and policy_and_path[1] in proto_paths:
-        self._Error(
-            "Duplicate proto path '%s' in legacy_device_policy_proto_map. Did "
-            "you set the right path for your device policy?" %
-            policy_and_path[1])
-      proto_paths.add(policy_and_path[1])
-
-  # If 'device only' field is true, the policy must be mapped to its proto
-  # field in device_policy_proto_map.yaml.
-  def _CheckDevicePolicyProtoMappingDeviceOnly(
-      self, policy, device_policy_proto_map, legacy_device_policy_proto_map):
-    if not policy.get('device_only', False):
-      return
-
-    name = policy.get('name')
-    if not name in device_policy_proto_map and not any(
-        name == policy_and_path[0]
-        for policy_and_path in legacy_device_policy_proto_map):
-      self._Error(
-          "Please add '%s' to device_policy_proto_map and map it to "
-          "the corresponding field in chrome_device_policy.proto." % name)
-      return
-
-  # Performs a quick check whether all fields in |device_policy_proto_map| are
-  # actually present in the device policy proto at |device_policy_proto_path|.
-  # Note that this presubmit check can't compile the proto to pb2.py easily (or
-  # can it?).
-  def _CheckDevicePolicyProtoMappingExistence(self, device_policy_proto_map,
-                                              device_policy_proto_path):
-    with open(device_policy_proto_path, 'r', encoding='utf-8') as file:
-      device_policy_proto = file.read()
-
-    for policy, proto_path in device_policy_proto_map.items():
-      fields = proto_path.split(".")
-      for field in fields:
-        if field not in device_policy_proto:
-          self._Error("Bad device_policy_proto_map for policy '%s': "
-                      "Field '%s' not present in device policy proto." %
-                      (policy, field))
 
   def _NeedsDefault(self, policy):
     return self.policy_type_provider.GetPolicyType(policy) in ('int', 'main',
@@ -1352,8 +1248,6 @@ class PolicyTemplateChecker(object):
         self._PolicyError('"max_size" is used for non external policies.',
                           policy, 'max_size')
 
-  def _CheckPolicy(self, policy, current_version):
-    self._CheckPolicyDefinition(policy, current_version, {})
 
   def _CheckPlatform(self, platforms, field_name, policy):
     ''' Verifies the |platforms| list. Records any error with |field_name| and
@@ -1375,70 +1269,6 @@ class PolicyTemplateChecker(object):
             policy, field_name)
       duplicated.add(platform)
 
-  def _CheckMessage(self, key, value):
-    # |key| must be a string, |value| a dict.
-    if not isinstance(key, str):
-      self._Error('Each message key must be a string.', 'message', key, key)
-      return
-
-    if not isinstance(value, dict):
-      self._Error('Each message must be a dictionary.', 'message', key, value)
-      return
-
-    # Each message must have a desc.
-    self._CheckContains(
-        value, 'desc', str, parent_element='message', identifier=key)
-
-    # Each message must have a text.
-    self._CheckContains(
-        value, 'text', str, parent_element='message', identifier=key)
-
-    # There should not be any unknown keys in |value|.
-    for vkey in value:
-      if vkey not in ('desc', 'text'):
-        self._Warning('In message %s: Warning: Unknown key: %s' % (key, vkey))
-
-  def _GetReleasedPlatforms(self, policy, current_version):
-    '''
-    Returns a dictionary that contains released platforms and their released
-    version. Returns empty dictionary if policy is None or policy.future is
-    True.
-
-    Args:
-      policy: A dictionary contains all policy data from policy_templates.json.
-      current_version: A integer represents the current major milestone.
-
-    Returns:
-      released_platforms: A dictionary contains all platforms that have been
-                          released to stable and their released version.
-      rolling_out_platform: A dictionary contains all platforms that have been
-                            released but haven't reached stable.
-      Example:
-      {
-        'chrome.win' : 10,
-        'chrome_os': '10,
-      }, {
-        'chrome.mac': 15,
-      }
-    '''
-
-    released_platforms = {}
-    rolling_out_platform = {}
-    if policy == None:
-      return released_platforms, rolling_out_platform
-
-    for supported_on in policy.get('supported_on', []):
-      (supported_platform, supported_from,
-       _) = _GetSupportedVersionPlatformAndRange(supported_on)
-      if supported_from < current_version - 1:
-        released_platforms[supported_platform] = supported_from
-      else:
-        rolling_out_platform[supported_platform] = supported_from
-
-    released_platforms = ExpandChromeStar(released_platforms)
-    rolling_out_platform = ExpandChromeStar(rolling_out_platform)
-
-    return released_platforms, rolling_out_platform
 
   def _CheckSingleSchemaValueIsCompatible(self, old_schema_value,
                                           new_schema_value,
@@ -1452,6 +1282,7 @@ class PolicyTemplateChecker(object):
             and old_schema_value == new_schema_value) or (
                 custom_value_validation != None
                 and custom_value_validation(old_schema_value, new_schema_value))
+
 
   def _CheckSchemaValueIsCompatible(self, schema_key_path, old_schema_value,
                                     new_schema_value, only_removals_allowed,
@@ -1698,341 +1529,14 @@ class PolicyTemplateChecker(object):
           'Key \'%s\' was added to policy schema path \'%s\' in new schema.' %
           (new_key, current_schema_key))
 
-  def _CheckPolicyDefinitionChangeCompatibility(
-      self, policy_name, original_policy, original_released_platforms,
-      new_policy, new_released_platforms, current_version):
-    '''
-    Checks if the new policy definition is compatible with the original policy
-    definition.
-
-    Args:
-      original_policy: The policy definition as it was in the original policy
-                       templates file.
-      original_released_platforms: A dictionary contains a released platforms
-                                   and their release version in the  original
-                                   policy template files.
-      new_policy: The policy definition as it is (if any) in the modified policy
-                  templates file.
-      new_released_platforms: A dictionary contains a released platforms and
-                              their release version in the modified policy
-                              template files.
-      current_version: The current major version of the branch as stored in
-      chrome/VERSION.
-
-    '''
-    # 1. Check if the supported_on versions are valid.
-
-    # All starting versions in supported_on in the original policy must also
-    # appear in the changed policy. The only thing that can be added is an
-    # ending version.
-    for platform in original_released_platforms:
-      if platform not in new_released_platforms:
-        self._PolicyError(f'Released platform {platform} has been removed.',
-                          new_policy, 'supported_on')
-      elif original_released_platforms[platform] < new_released_platforms[
-          platform]:
-        self._PolicyError(
-            'Released policy supported version is changed.\n'
-            f'  Supported version of released platform {platform} changed to '
-            f'a later version {new_released_platforms[platform]} from '
-            f'{original_released_platforms[platform]}.', new_policy,
-            'supported_on')
-
-    # 2. Check if the policy has changed its device_only value
-    if original_policy.get('device_only', False) != new_policy.get(
-        'device_only', False):
-      self._PolicyError('Released policy device_only status changed.',
-                        new_policy, 'device_only')
-
-    # 3. Check schema changes for compatibility.
-    self.schema_compatible_errors = []
-    self._CheckSchemasAreCompatible([policy_name], original_policy['schema'],
-                                    new_policy['schema'])
-    if self.schema_compatible_errors:
-      schema_compatible_error_message = '\n  '.join(
-          self.schema_compatible_errors)
-      self._PolicyError(
-          'Schema compatible errors.\n'
-          f'  {schema_compatible_error_message}', new_policy)
-
-  def _CheckNewReleasedPlatforms(self, original_platforms, new_platforms,
-                                 current_version, policy):
-    '''If released version has changed, it should be the current version unless
-       there is a special reason.'''
-    for platform in new_platforms:
-      new_version = new_platforms[platform]
-      if new_version == original_platforms.get(platform):
-        continue
-      if new_version == current_version - 1:
-        self._Warning(
-            'Policy %s on %s will be released in %d which has passed the '
-            'branch point. Please merge it into Beta or change the version to '
-            '%d.' %
-            (policy.get('name'), platform, new_version, current_version))
-      elif new_version < current_version - 1:
-        self.non_compatibility_error_count += 1
-        self._PolicyError(
-            'Released policy supported version is changed.\n'
-            f'  Version {new_version} has been released to Stable already. '
-            f'Please use version {current_version} instead for platform '
-            f'{platform}.', policy, 'supported_on')
-
-  # Checks if the new policy definitions are compatible with the policy
-  # definitions coming from the original_file_contents.
-  def _CheckPolicyDefinitionsChangeCompatibility(self, policy_change_list,
-                                                 current_version):
-    '''
-    Checks if all the |policy_definitions| in the modified policy templates file
-    are compatible with the policy definitions defined in the original policy
-    templates file with |original_file_contents| .
-
-    |policy_definitions|: The policy definition as it is in the modified policy
-      templates file.
-    |original_file_contents|: The full contents of the original policy templates
-      file.
-    |current_version|: The current major version of the branch as stored in
-      chrome/VERSION.
-    '''
-    for policy_changes in policy_change_list:
-      original_policy = policy_changes['old_policy']
-      new_policy = policy_changes['new_policy']
-      if new_policy:
-        new_policy['name'] = policy_changes['policy']
-      if original_policy:
-        original_policy['name'] = policy_changes['policy']
-        (original_released_platforms,
-         original_rolling_out_platforms) = self._GetReleasedPlatforms(
-             original_policy, current_version)
-
-        # A policy that has at least one released platform cannot be removed.
-        if not new_policy:
-          name = original_policy['name']
-          if original_released_platforms:
-            self._PolicyError(f'Released policy has been removed.',
-                              original_policy)
-          else:
-            self._Warning(
-                f'Unreleased Policy {name} has been removed. If the '
-                'policy is available in Beta, please cleanup the Beta '
-                'branch as well.')
-          continue
-
-        (new_released_platforms,
-         new_rolling_out_platform) = self._GetReleasedPlatforms(
-             new_policy, current_version)
-
-        # Check policy compatibility if there is at least one released platform.
-        if original_released_platforms:
-          self._CheckPolicyDefinitionChangeCompatibility(
-              new_policy['name'], original_policy, original_released_platforms,
-              new_policy, new_released_platforms, current_version)
-
-        # New released platforms should always use the current version unless
-        # they are going to be merged into previous milestone.
-        if new_released_platforms or new_rolling_out_platform:
-          self._CheckNewReleasedPlatforms(
-              MergeDict(original_released_platforms,
-                        original_rolling_out_platforms),
-              MergeDict(new_released_platforms, new_rolling_out_platform),
-              current_version, new_policy)
-      elif new_policy:
-        (new_released_platforms,
-         new_rolling_out_platform) = self._GetReleasedPlatforms(
-             new_policy, current_version)
-        if new_released_platforms or new_rolling_out_platform:
-          self._CheckNewReleasedPlatforms({},
-                                          MergeDict(new_released_platforms,
-                                                    new_rolling_out_platform),
-                                          current_version, new_policy)
-        # TODO(crbug.com/1139046): This default check should apply to all
-        # policies instead of just new ones.
-        if self._NeedsDefault(new_policy) and not 'default' in new_policy:
-          self._Error("Definition of policy %s must include a 'default'"
-                      " field." % (new_policy['name']))
-
-        # TODO(crbug.com/1139306): This item check should apply to all policies
-        # instead of just new ones.
-        if self._NeedsItems(new_policy) and new_policy.get('items',
-                                                           None) == None:
-          self._PolicyError('Policy does not have "items" field', new_policy)
-
-  def _LeadingWhitespace(self, line):
-    match = LEADING_WHITESPACE.match(line)
-    if match:
-      return match.group(1)
-    return ''
-
-  def _TrailingWhitespace(self, line):
-    match = TRAILING_WHITESPACE.match(line)
-    if match:
-      return match.group(1)
-    return ''
-
-
-  def _ValidatePolicyAtomicGroups(self, atomic_groups, max_id, deleted_ids):
-    ids = sorted([x['id'] for x in atomic_groups])
-    actual_highest_id = max(ids)
-    if actual_highest_id != max_id:
-      self._Error(
-          ("'highest_atomic_group_id_currently_used' must be set to the "
-           "highest atomic group id in use, which is currently %s (vs %s).") %
-          (actual_highest_id, max_id))
-      return
-
-    ids_set = set()
-    for i in range(len(ids)):
-      if (ids[i] in ids_set):
-        self._Error('Duplicate atomic group id %s' % (ids[i]))
-        return
-      ids_set.add(ids[i])
-
-      if i > 0 and ids[i - 1] + 1 != ids[i]:
-        for delete_id in range(ids[i - 1] + 1, ids[i]):
-          if delete_id not in deleted_ids:
-            self._Error('Missing atomic group id %s' % (delete_id))
-            return
-
-  def Main(self, legacy_policy_template, options, policy_change_list,
-           current_version, skip_compability_check):
-    self.options = options
-
-    # First part: check structure.
-
-    # Check (non-policy-specific) message definitions.
-    messages = self._CheckContains(legacy_policy_template,
-                                   'messages',
-                                   dict,
-                                   parent_element=None,
-                                   container_name='The root element',
-                                   offending=None)
-    if messages is not None:
-      for message in messages:
-        self._CheckMessage(message, messages[message])
-        if message.startswith('doc_feature_'):
-          self.features.append(message[12:])
-
-    # Check policy definitions.
-    policy_definitions = self._CheckContains(legacy_policy_template,
-                                             'policy_definitions',
-                                             list,
-                                             parent_element=None,
-                                             container_name='The root element',
-                                             offending=None)
-    deleted_policy_ids = self._CheckContains(legacy_policy_template,
-                                             'deleted_policy_ids',
-                                             list,
-                                             parent_element=None,
-                                             container_name='The root element',
-                                             offending=None)
-    deleted_atomic_policy_group_ids = self._CheckContains(
-        legacy_policy_template,
-        'deleted_atomic_policy_group_ids',
-        list,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-    highest_atomic_group_id = self._CheckContains(
-        legacy_policy_template,
-        'highest_atomic_group_id_currently_used',
-        int,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-    device_policy_proto_map = self._CheckContains(
-        legacy_policy_template,
-        'device_policy_proto_map',
-        dict,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-    legacy_device_policy_proto_map = self._CheckContains(
-        legacy_policy_template,
-        'legacy_device_policy_proto_map',
-        list,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-    policy_atomic_group_definitions = self._CheckContains(
-        legacy_policy_template,
-        'policy_atomic_group_definitions',
-        list,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-
-    self._ValidatePolicyAtomicGroups(policy_atomic_group_definitions,
-                                     highest_atomic_group_id,
-                                     deleted_atomic_policy_group_ids)
-    self._CheckDevicePolicyProtoMappingUniqueness(
-        device_policy_proto_map, legacy_device_policy_proto_map)
-    self._CheckDevicePolicyProtoMappingExistence(
-        device_policy_proto_map, options.device_policy_proto_path)
-
-    if policy_definitions is not None:
-      for policy in policy_definitions:
-        self._CheckDevicePolicyProtoMappingDeviceOnly(
-            policy, device_policy_proto_map, legacy_device_policy_proto_map)
-      self._CheckTotalDevicePolicyExternalDataMaxSize(policy_definitions)
-
-    # Made it as a dict (policy_name -> True) to reuse _CheckContains.
-    policy_names = {
-        policy['name']: True
-        for policy in policy_definitions
-        if self.policy_type_provider.GetPolicyType(policy) != 'group'
-    }
-    policy_in_groups = set()
-    for group in [
-        policy for policy in policy_definitions
-        if self.policy_type_provider.GetPolicyType(policy) == 'group'
-    ]:
-      for policy_name in group['policies']:
-        self._CheckContains(
-            policy_names,
-            policy_name,
-            bool,
-            parent_element='policy_definitions')
-        if policy_name in policy_in_groups:
-          self._Error('Policy %s defined in several groups.' % (policy_name))
-        else:
-          policy_in_groups.add(policy_name)
-
-    policy_in_atomic_groups = set()
-    for group in policy_atomic_group_definitions:
-      for policy_name in group['policies']:
-        self._CheckContains(
-            policy_names,
-            policy_name,
-            bool,
-            parent_element='policy_definitions')
-        if policy_name in policy_in_atomic_groups:
-          self._Error('Policy %s defined in several atomic policy groups.' %
-                      (policy_name))
-        else:
-          policy_in_atomic_groups.add(policy_name)
-
-    # Second part: check formatting.
-    # TODO(crbug/1375858): Check valid yaml formatting
-
-    # Third part: summary and exit.
-    if self.options.stats:
-      if self.num_groups > 0:
-        print('%d policies, %d of those in %d groups (containing on '
-              'average %.1f policies).' %
-              (self.num_policies, self.num_policies_in_groups, self.num_groups,
-               (1.0 * self.num_policies_in_groups / self.num_groups)))
-      else:
-        print(self.num_policies, 'policies, 0 policy groups.')
-    return
 
   def CheckModifiedPolicies(self, policy_change_list, current_version,
-                            skip_compability_check, known_features,
-                            schemas_by_id):
+                            known_features, schemas_by_id):
     '''
       Checks that changes made to policies `policy_change_list` are compatible
       with the `current_version` and previous versions of the policy.
       This also check that the policy definition schema matches the expected
-      schema for a policy. `skip_compability_check` is used to skip the schema
-      and version compatibility checks and must be used with care.
+      schema for a policy.
       'known_features' is a list of faetures that we can find in the feature
       list for policies.
       Returns warnings and errors found in the policies.
@@ -2044,50 +1548,20 @@ class PolicyTemplateChecker(object):
     ]
     for policy in modified_policies:
       self._CheckPolicyDefinition(policy, current_version, schemas_by_id)
-    self.non_compatibility_error_count = 0
-    if (not self.errors and not skip_compability_check):
-      self._CheckPolicyDefinitionsChangeCompatibility(policy_change_list,
-                                                      current_version)
 
-    if self.non_compatibility_error_count > 0:
-      print(
-          '\nThere were compatibility validation errors in the change. You may '
-          'bypass this validation by adding "BYPASS_POLICY_COMPATIBILITY_CHECK='
-          '<justification>" to your changelist description. If you believe '
-          'that this validation is a bug, please file a crbug against '
-          '"Enterprise" and add a link to the bug as '
-          'justification. Otherwise, please provide an explanation for the '
-          'change. For more information please refer to: '
-          'https://bit.ly/33qr3ZV.')
-    return self.errors, self.warnings
+      self.schema_compatible_errors = []
+      old_schema = None
+      if 'old_policy' in policy:
+        old_schema = policy['old_policy']['schema']
+      new_schema = None
+      if 'new_policy' in policy:
+        new_schema = policy['new_policy']['schema']
 
-  def Run(self,
-          argv,
-          legacy_policy_template=None,
-          policy_change_list=[],
-          current_version=None,
-          skip_compability_check=False):
-    parser = argparse.ArgumentParser(
-        usage='usage: %prog [options] template_dir',
-        description='Syntax check a generated policy_templates.json file.')
-    parser.add_argument(
-        '--device_policy_proto_path',
-        help='[REQUIRED] File path of the device policy proto file.')
-    parser.add_argument(
-        '--fix', action='store_true', help='Automatically fix formatting.')
-    parser.add_argument(
-        '--backup',
-        action='store_true',
-        help='Create backup of original file (before fixing).')
-    parser.add_argument(
-        '--stats', action='store_true', help='Generate statistics.')
-    args = parser.parse_args(argv)
-    if legacy_policy_template is None:
-      self._Error('Template not specified.')
-      return self.errors, self.warnings
-    if args.device_policy_proto_path is None:
-      self._Error('Missing --device_policy_proto_path argument.')
-      return self.errors, self.warnings
-    self.Main(legacy_policy_template, args, policy_change_list, current_version,
-              skip_compability_check)
+      self._CheckSchemasAreCompatible([policy['name']], old_schema, new_schema)
+      if self.schema_compatible_errors:
+        schema_compatible_error_message = '\n  '.join(
+            self.schema_compatible_errors)
+        self._PolicyError(
+            'Schema compatible errors.\n'
+            f'  {schema_compatible_error_message}', policy)
     return self.errors, self.warnings

@@ -46,6 +46,14 @@ _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
       _TEMPLATES_PATH, 'legacy_device_policy_proto_map.yaml')
 
 
+# 100 MiB upper limit on the total device policy external data max size limits
+# due to the security reasons.
+# You can increase this limit if you're introducing new external data type
+# device policy, but be aware that too heavy policies could result in user
+# profiles not having enough space on the device.
+TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
+
+
 def _SkipPresubmitChecks(input_api, files_watchlist):
   '''Returns True if no file or file under the directories specified was
      affected in this change.
@@ -84,6 +92,18 @@ def _GetCommonSchema(input_api):
   commmon_schemas = _LoadYamlFile(root, _COMMON_SCHEMAS_PATH)
   return commmon_schemas
 
+
+def _GetCurrentVersion(input_api):
+  if 'version' in _CACHED_FILES:
+    return _CACHED_FILES['version']
+  try:
+    root = input_api.change.RepositoryRoot()
+    version_path = input_api.os_path.join(root, 'chrome', 'VERSION')
+    with open(version_path, "rb") as f:
+      _CACHED_FILES['version'] = int(f.readline().split(b"=")[1])
+  except:
+    pass
+  return _CACHED_FILES['version']
 
 def _GetPolicyChangeList(input_api):
   '''Returns a list of policies modified inthe changelist with their old schema
@@ -133,67 +153,6 @@ def _GetPolicyChangeList(input_api):
       'old_policy': old_policy,
       'new_policy': new_policy})
   return _CACHED_POLICY_CHANGE_LIST
-
-
-def _CheckPolicyTemplatesSyntax(input_api, output_api, legacy_policy_template):
-
-  local_path = input_api.PresubmitLocalPath()
-  template_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                        'components', 'policy', 'resources',
-                                        'templates')
-  old_sys_path = sys.path
-  try:
-    tools_path = input_api.os_path.normpath(
-        input_api.os_path.join(local_path, input_api.os_path.pardir, 'tools'))
-    sys.path.append(tools_path)
-    # Optimization: only load this when it's needed.
-    import syntax_check_policy_template_json
-    device_policy_proto_path = input_api.os_path.join(
-        local_path, '..', 'proto', 'chrome_device_policy.proto')
-    args = ["--device_policy_proto_path=" + device_policy_proto_path]
-
-    root = input_api.change.RepositoryRoot()
-
-    # Get the current version from the VERSION file so that we can check
-    # which policies are un-released and thus can be changed at will.
-    current_version = None
-    try:
-      version_path = input_api.os_path.join(root, 'chrome', 'VERSION')
-      with open(version_path, "rb") as f:
-        current_version = int(f.readline().split(b"=")[1])
-        print('Checking policies against current version: ' +
-              current_version)
-    except:
-      pass
-
-    # Check if there is a tag that allows us to bypass compatibility checks.
-    # This can be used in situations where there is a bug in the validation
-    # code or if a policy change needs to urgently be submitted.
-    skip_compatibility_check = ('BYPASS_POLICY_COMPATIBILITY_CHECK'
-                                 in input_api.change.tags)
-
-    checker = syntax_check_policy_template_json.PolicyTemplateChecker()
-    errors, warnings = checker.Run(args, legacy_policy_template,
-                                   _GetPolicyChangeList(input_api),
-                                   current_version,
-                                   skip_compatibility_check)
-
-    # PRESUBMIT won't print warning if there is any error. Append warnings to
-    # error for policy_templates.json so that they can always be printed
-    # together.
-    if errors:
-      error_msgs = "\n".join(errors+warnings)
-      return [output_api.PresubmitError('Syntax error(s) in file:',
-                                        [template_dir],
-                                        error_msgs)]
-    elif warnings:
-      warning_msgs = "\n".join(warnings)
-      return [output_api.PresubmitPromptWarning('Syntax warning(s) in file:',
-                                                [template_dir],
-                                                warning_msgs)]
-  finally:
-    sys.path = old_sys_path
-  return []
 
 
 def CheckPolicyTestCases(input_api, output_api):
@@ -340,8 +299,6 @@ def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
   return results
 
 
-# TODO(crbug/1171839): Remove this from syntax_check_policy_template_json.py
-# as this check is now duplicated.
 def CheckMessages(input_api, output_api):
   '''Verifies that the all the messages from messages.yaml have the following
   format: {[key: string]: {text: string, desc: string}}.
@@ -432,8 +389,7 @@ def CheckMissingPlaceholders(input_api, output_api):
           results.append(output_api.PresubmitPromptWarning(warning))
   return results
 
-# TODO(crbug/1171839): Remove this from syntax_check_policy_template_json.py
-# as this check is now duplicated.
+
 def CheckDevicePolicyProtos(input_api, output_api):
   results = []
   if _SkipPresubmitChecks(
@@ -496,16 +452,13 @@ def _GetPlatformSupportMap(policy):
     }
     if platform == 'chrome.*':
       for p in ['chrome.win', 'chrome.mac', 'chrome.linux']:
-        platforms_and_versions[p] = platforms_and_versions[platform]
+        platforms_and_versions[p] = version_range
     else:
       platforms_and_versions[platform] = version_range
   return platforms_and_versions
 
 
-# TODO(crbug/1171839): Remove the version check from
-# syntax_check_policy_template_json.py as this check is now duplicated.
-def _CheckPolicyChangeVersionCompatibility(policy_changelist, current_version,
-                                           output_api):
+def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
   '''Cheks if the modified policies are compatible with their previous version
     if any and if they are compatible with the current version.
 
@@ -517,6 +470,8 @@ def _CheckPolicyChangeVersionCompatibility(policy_changelist, current_version,
     current_version: The current major version of the branch as stored in
       chrome/VERSION.'''
   results = []
+  policy_changelist = _GetPolicyChangeList(input_api)
+  current_version = _GetCurrentVersion(input_api)
   for policy_changes in policy_changelist:
     original_policy = policy_changes['old_policy']
     new_policy = policy_changes['new_policy']
@@ -673,18 +628,9 @@ def CheckPolicyDefinitions(input_api, output_api):
        _COMMON_SCHEMAS_PATH, _PRESUBMIT_PATH]):
     return results
 
-  root = input_api.change.RepositoryRoot()
   # Get the current version from the VERSION file so that we can check
   # which policies are un-released and thus can be changed at will.
-  current_version = None
-  try:
-    version_path = input_api.os_path.join(root, 'chrome', 'VERSION')
-    with open(version_path, "rb") as f:
-      current_version = int(f.readline().split(b"=")[1])
-      print('Checking policies against current version: ' +
-            current_version)
-  except:
-    pass
+  current_version = _GetCurrentVersion(input_api)
 
   old_sys_path = sys.path
   tools_path = input_api.os_path.normpath(input_api.os_path.join(
@@ -701,7 +647,7 @@ def CheckPolicyDefinitions(input_api, output_api):
   skip_compatibility_check = ('BYPASS_POLICY_COMPATIBILITY_CHECK'
                                 in input_api.change.tags)
   errors, warnings = checker.CheckModifiedPolicies(
-    _GetPolicyChangeList(input_api), current_version, skip_compatibility_check,
+    _GetPolicyChangeList(input_api), current_version,
     _GetKnownFeatures(input_api), _GetCommonSchema(input_api))
 
   # PRESUBMIT won't print warning if there is any error. Append warnings to
@@ -721,47 +667,58 @@ def CheckPolicyDefinitions(input_api, output_api):
   return []
 
 
-def _CommonChecks(input_api, output_api):
+def CheckDevicePolicies(input_api, output_api):
   results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_POLICIES_DEFINITIONS_PATH, _PRESUBMIT_PATH]):
+    return results
+
   root = input_api.change.RepositoryRoot()
-  template_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                        'components', 'policy', 'resources',
-                                        'templates')
-  device_policy_proto_path = input_api.os_path.join(
-      root, 'components', 'policy', 'proto', 'chrome_device_policy.proto')
-  syntax_check_path = input_api.os_path.join(
-      root, 'components', 'policy', 'tools',
-      'syntax_check_policy_template_json.py')
-  affected_files = input_api.change.AffectedFiles()
+  policy_changelist = _GetPolicyChangeList(input_api)
+  if not any(policy_change['new_policy'].get('device_only', False)
+             and policy_change['new_policy']['type'] == 'external'
+             for policy_change in policy_changelist
+             if policy_change['new_policy'] != None):
+    return results
 
-  template_changed = any(
-    os.path.commonpath([template_dir, f.AbsoluteLocalPath()]) == template_dir
-    for f in affected_files)
-  device_policy_proto_changed = any(
-    f.AbsoluteLocalPath() == device_policy_proto_path for f in affected_files)
-  syntax_check_changed = any(f.AbsoluteLocalPath() == syntax_check_path
-    for f in affected_files)
+  policy_definitions = GetPolicyTemplates()['policy_definitions']
 
-  if (template_changed or device_policy_proto_changed or syntax_check_changed):
-    try:
-      template_data = GetPolicyTemplates()
-    except:
-      results.append(
-        output_api.PresubmitError('Unable to load the policy templates.'))
-      return results
+  proto_map = _LoadYamlFile(root, _DEVICE_POLICY_PROTO_MAP_PATH)
+  legacy_proto_map = _LoadYamlFile(root, _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH)
 
-    # chrome_device_policy.proto is hand crafted. When it is changed, we need
-    # to check if it still corresponds to policy_templates.json.
-    if template_changed or device_policy_proto_changed or syntax_check_changed:
-      results.extend(
-        _CheckPolicyTemplatesSyntax(input_api, output_api, template_data))
+  # Check policy did not change its device_only value
+  for policy_change in policy_changelist:
+    old_policy = policy_change['old_policy']
+    new_policy = policy_change['new_policy']
+    policy = policy_change['policy']
+    if (old_policy and new_policy and
+        old_policy.get('device_only', False) !=
+        new_policy.get('device_only', False)):
+      results.append(output_api.PresubmitError(
+        f'In policy {policy}: Released policy device_only status changed.'))
 
+  # Check device policies have a proto mapping
+  for policy in policy_definitions:
+    if not policy.get('device_only', False):
+      continue
+    policy_name = policy['name']
+    if (policy_name not in proto_map and
+        policy_name not in legacy_proto_map):
+      results.append(output_api.PresubmitError(
+          f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
+          "it to the corresponding field in chrome_device_policy.proto."))
+
+  # Check external data max size
+  total_device_policy_external_data_max_size = 0
+  for policy in policy_definitions:
+    policy_name = policy['name']
+    if (policy.get('device_only', False) and policy['type'] == 'external'):
+      total_device_policy_external_data_max_size += policy['max_size']
+  if (total_device_policy_external_data_max_size >
+      TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE):
+    results.append(output_api.PresubmitError(
+      'Total sum of device policy external data maximum size limits should not '
+      f'exceed {TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE} bytes, current sum '
+      f'is {total_device_policy_external_data_max_size} bytes.'))
   return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
