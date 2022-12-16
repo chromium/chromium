@@ -3041,8 +3041,28 @@ String AXNodeObject::GetValueForControl() const {
     }
   }
 
-  // An ARIA combobox can get value from inner contents.
   if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
+    // An HTML <selectmenu> gets its value from the selected option.
+    if (auto* select_menu = HTMLSelectMenuElement::OwnerSelectMenu(node)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+      if (HTMLOptionElement* selected = select_menu->selectedOption()) {
+        // TODO(accessibility) Because these <option> elements can contain
+        // anything, we need to create an AXObject for the selected option, and
+        // use ax_selected_option->ComputedName(). However, for now, the
+        // AXObject is not created because AXObject::IsRelevantSlotElement()
+        // returns false for the invisible slot parent. Also, strangely,
+        // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
+        // See the following content_browsertest:
+        // All/DumpAccessibilityTreeTest.AccessibilitySelectMenu/blink.
+        // TODO(crbug.com/1401767): DCHECK fails with synchronous serialization.
+        DCHECK(selected->firstChild())
+            << "There is a selected option but it has no DOM children.";
+        return selected->textContent();
+      }
+      return String();
+    }
+
+    // An ARIA combobox can get value from inner contents.
     AXObjectSet visited;
     return TextFromDescendants(visited, nullptr, false);
   }

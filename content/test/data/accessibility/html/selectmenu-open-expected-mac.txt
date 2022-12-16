@@ -1,7 +1,7 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
 ++++AXGroup AXRoleDescription='group'
-++++++AXComboBox AXRoleDescription='combo box' AXValue='Custom selectmenu button'
+++++++AXComboBox AXRoleDescription='combo box' AXValue='Option 1'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Custom selectmenu button'
 ++++++AXList AXRoleDescription='list box'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Option 1'

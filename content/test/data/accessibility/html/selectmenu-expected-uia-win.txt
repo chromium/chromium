@@ -5,5 +5,5 @@ Document
 ++++++++Group IsControlElement=false
 ++++++++++Text Name='Option 1'
 ++++Group IsControlElement=false
-++++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.Value='Custom selectmenu button'
+++++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.Value='Option 1'
 ++++++++Text Name='Custom selectmenu button'
