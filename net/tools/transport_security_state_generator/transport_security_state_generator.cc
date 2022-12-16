@@ -30,8 +30,9 @@ namespace {
 
 // Print the command line help.
 void PrintHelp() {
-  std::cout << "transport_security_state_generator <json-file> <pins-file>"
-            << " <template-file> <output-file> [--v=1]" << std::endl;
+  std::cout << "transport_security_state_generator <hsts-json-file>"
+            << " <pins-json-file> <pins-file> <template-file> <output-file>"
+            << " [--v=1]" << std::endl;
 }
 
 // Checks if there are pins with the same name or the same hash.
@@ -140,19 +141,6 @@ bool CheckNoopEntries(const TransportSecurityStateEntries& entries) {
   return true;
 }
 
-// Checks all entries for incorrect usage of the includeSubdomains flags.
-bool CheckSubdomainsFlags(const TransportSecurityStateEntries& entries) {
-  for (const auto& entry : entries) {
-    if (entry->include_subdomains && entry->hpkp_include_subdomains) {
-      LOG(ERROR) << "Entry for " << entry->hostname
-                 << " sets include_subdomains_for_pinning but also sets "
-                    "include_subdomains, which implies it";
-      return false;
-    }
-  }
-  return true;
-}
-
 bool IsLowercaseAlphanumeric(char c) {
   return ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'));
 }
@@ -212,34 +200,39 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
-#if BUILDFLAG(IS_WIN)
-  std::vector<std::string> args;
-  base::CommandLine::StringVector wide_args = command_line.GetArgs();
-  for (const auto& arg : wide_args) {
-    args.push_back(base::WideToUTF8(arg));
-  }
-#else
   base::CommandLine::StringVector args = command_line.GetArgs();
-#endif
-  if (args.size() < 4U) {
+  if (args.size() < 5U) {
     PrintHelp();
     return 1;
   }
 
-  base::FilePath json_filepath = base::FilePath::FromUTF8Unsafe(argv[1]);
-  if (!base::PathExists(json_filepath)) {
-    LOG(ERROR) << "Input JSON file doesn't exist.";
+  base::FilePath hsts_json_filepath = base::FilePath(args[0]);
+  if (!base::PathExists(hsts_json_filepath)) {
+    LOG(ERROR) << "Input HSTS JSON file doesn't exist.";
     return 1;
   }
-  json_filepath = base::MakeAbsoluteFilePath(json_filepath);
+  hsts_json_filepath = base::MakeAbsoluteFilePath(hsts_json_filepath);
 
-  std::string json_input;
-  if (!base::ReadFileToString(json_filepath, &json_input)) {
-    LOG(ERROR) << "Could not read input JSON file.";
+  std::string hsts_json_input;
+  if (!base::ReadFileToString(hsts_json_filepath, &hsts_json_input)) {
+    LOG(ERROR) << "Could not read input HSTS JSON file.";
     return 1;
   }
 
-  base::FilePath pins_filepath = base::FilePath::FromUTF8Unsafe(argv[2]);
+  base::FilePath pins_json_filepath = base::FilePath(args[1]);
+  if (!base::PathExists(pins_json_filepath)) {
+    LOG(ERROR) << "Input pins JSON file doesn't exist.";
+    return 1;
+  }
+  pins_json_filepath = base::MakeAbsoluteFilePath(pins_json_filepath);
+
+  std::string pins_json_input;
+  if (!base::ReadFileToString(pins_json_filepath, &pins_json_input)) {
+    LOG(ERROR) << "Could not read input pins JSON file.";
+    return 1;
+  }
+
+  base::FilePath pins_filepath = base::FilePath(args[2]);
   if (!base::PathExists(pins_filepath)) {
     LOG(ERROR) << "Input pins file doesn't exist.";
     return 1;
@@ -257,19 +250,19 @@ int main(int argc, char* argv[]) {
   base::Time timestamp;
 
   if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
-      !ParseJSON(json_input, &entries, &pinsets)) {
+      !ParseJSON(hsts_json_input, pins_json_input, &entries, &pinsets)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
   }
 
   if (!CheckDuplicateEntries(entries) || !CheckNoopEntries(entries) ||
-      !CheckSubdomainsFlags(entries) || !CheckForDuplicatePins(pinsets) ||
-      !CheckCertificatesInPinsets(pinsets) || !CheckHostnames(entries)) {
+      !CheckForDuplicatePins(pinsets) || !CheckCertificatesInPinsets(pinsets) ||
+      !CheckHostnames(entries)) {
     LOG(ERROR) << "Checks failed. Aborting.";
     return 1;
   }
 
-  base::FilePath template_path = base::FilePath::FromUTF8Unsafe(argv[3]);
+  base::FilePath template_path = base::FilePath(args[3]);
   if (!base::PathExists(template_path)) {
     LOG(ERROR) << "Template file doesn't exist.";
     return 1;
@@ -291,7 +284,7 @@ int main(int argc, char* argv[]) {
   }
 
   base::FilePath output_path;
-  output_path = base::FilePath::FromUTF8Unsafe(argv[4]);
+  output_path = base::FilePath(args[4]);
 
   if (base::WriteFile(output_path, output.c_str(),
                       static_cast<uint32_t>(output.size())) <= 0) {

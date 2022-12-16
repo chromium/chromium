@@ -7,23 +7,6 @@
 // transport_security_state_static.json.
 
 {
-  "pinsets": [
-    {
-      "name": "test1",
-      "static_spki_hashes": [
-        "TestSPKI1"
-      ],
-      "report_uri": "https://report.example.com/hpkp-upload"
-    }, {
-      "name": "test2",
-      "static_spki_hashes": [
-        "TestSPKI2"
-      ],
-      "bad_static_spki_hashes": [
-        "TestSPKI1"
-      ]
-    }
-  ],
   "entries": [
     {
       "name": "hsts.example.com",
@@ -31,16 +14,12 @@
       "mode": "force-https"
     }, {
       "name": "hpkp.example.com",
-      "policy": "test",
-      "include_subdomains_for_pinning": true,
-      "pins": "test1"
+      "policy": "test"
     }, {
       "name": "mix.example.com",
       "policy": "test",
       "mode": "force-https",
-      "include_subdomains": false,
-      "pins": "test2",
-      "include_subdomains_for_pinning": true
+      "include_subdomains": false
     }
   ]
 }

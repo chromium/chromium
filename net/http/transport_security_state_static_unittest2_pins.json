@@ -1,0 +1,38 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is a HSTS preloaded list used by the unittests. For more information
+// on the content and format see the comments in
+// transport_security_state_static.json.
+
+{
+  "pinsets": [
+    {
+      "name": "test1",
+      "static_spki_hashes": [
+        "TestSPKI1"
+      ],
+      "report_uri": "https://report.example.com/hpkp-upload"
+    }, {
+      "name": "test2",
+      "static_spki_hashes": [
+        "TestSPKI2"
+      ],
+      "bad_static_spki_hashes": [
+        "TestSPKI1"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "name": "hpkp.example.com",
+      "include_subdomains": true,
+      "pins": "test1"
+    }, {
+      "name": "mix.example.com",
+      "include_subdomains": true,
+      "pins": "test2"
+    }
+  ]
+}

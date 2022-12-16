@@ -16,14 +16,8 @@ namespace {
 
 // Test that all values are correctly parsed from a valid JSON input.
 TEST(InputFileParsersTest, ParseJSON) {
-  std::string valid =
+  std::string valid_hsts =
       "{"
-      "  \"pinsets\": [{"
-      "      \"name\": \"test\","
-      "      \"static_spki_hashes\": [\"TestSPKI\"],"
-      "      \"bad_static_spki_hashes\": [\"BadTestSPKI\"],"
-      "      \"report_uri\": \"https://hpkp-log.example.com\""
-      "  }],"
       "  \"entries\": ["
       "    {"
       "      \"name\": \"hsts.example.com\","
@@ -37,14 +31,35 @@ TEST(InputFileParsersTest, ParseJSON) {
       "      \"include_subdomains\": false"
       "    }, {"
       "      \"name\": \"hpkp.example.com\","
-      "      \"policy\": \"test\","
-      "      \"pins\": \"thepinset\","
-      "      \"include_subdomains_for_pinning\": true"
+      "      \"policy\": \"test\""
       "    }, {"
       "      \"name\": \"hpkp-no-subdomains.example.com\","
-      "      \"policy\": \"test\","
+      "      \"policy\": \"test\""
+      "    }"
+      "  ]"
+      "}";
+
+  std::string valid_pinning =
+      "{"
+      "  \"pinsets\": [{"
+      "      \"name\": \"test\","
+      "      \"static_spki_hashes\": [\"TestSPKI\"],"
+      "      \"bad_static_spki_hashes\": [\"BadTestSPKI\"],"
+      "      \"report_uri\": \"https://hpkp-log.example.com\""
+      "  }],"
+      "  \"entries\": ["
+      "    {"
+      "      \"name\": \"hpkp.example.com\","
+      "      \"pins\": \"thepinset\","
+      "      \"include_subdomains\": true"
+      "    }, {"
+      "      \"name\": \"hpkp-no-subdomains.example.com\","
       "      \"pins\": \"thepinset2\", "
-      "      \"include_subdomains_for_pinning\": false"
+      "      \"include_subdomains\": false"
+      "    }, {"
+      "      \"name\": \"hpkp-no-hsts.example.com\","
+      "      \"pins\": \"test\", "
+      "      \"include_subdomains\": true"
       "    }"
       "  ]"
       "}";
@@ -52,7 +67,7 @@ TEST(InputFileParsersTest, ParseJSON) {
   TransportSecurityStateEntries entries;
   Pinsets pinsets;
 
-  EXPECT_TRUE(ParseJSON(valid, &entries, &pinsets));
+  EXPECT_TRUE(ParseJSON(valid_hsts, valid_pinning, &entries, &pinsets));
 
   ASSERT_EQ(1U, pinsets.size());
   auto pinset = pinsets.pinsets().find("test");
@@ -66,7 +81,7 @@ TEST(InputFileParsersTest, ParseJSON) {
   ASSERT_EQ(1U, pinset->second->bad_static_spki_hashes().size());
   EXPECT_EQ("BadTestSPKI", pinset->second->bad_static_spki_hashes()[0]);
 
-  ASSERT_EQ(4U, entries.size());
+  ASSERT_EQ(5U, entries.size());
   TransportSecurityStateEntry* entry = entries[0].get();
   EXPECT_EQ("hsts.example.com", entry->hostname);
   EXPECT_TRUE(entry->force_https);
@@ -94,6 +109,13 @@ TEST(InputFileParsersTest, ParseJSON) {
   EXPECT_FALSE(entry->include_subdomains);
   EXPECT_FALSE(entry->hpkp_include_subdomains);
   EXPECT_EQ("thepinset2", entry->pinset);
+
+  entry = entries[4].get();
+  EXPECT_EQ("hpkp-no-hsts.example.com", entry->hostname);
+  EXPECT_FALSE(entry->force_https);
+  EXPECT_FALSE(entry->include_subdomains);
+  EXPECT_TRUE(entry->hpkp_include_subdomains);
+  EXPECT_EQ("test", entry->pinset);
 }
 
 // Test that parsing valid JSON with missing keys fails.
@@ -106,18 +128,17 @@ TEST(InputFileParsersTest, ParseJSONInvalid) {
       "  \"entries\": []"
       "}";
 
-  EXPECT_FALSE(ParseJSON(no_pinsets, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(no_pinsets, "", &entries, &pinsets));
 
   std::string no_entries =
       "{"
       "  \"pinsets\": []"
       "}";
 
-  EXPECT_FALSE(ParseJSON(no_entries, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON("", no_entries, &entries, &pinsets));
 
   std::string missing_hostname =
       "{"
-      "  \"pinsets\": [],"
       "  \"entries\": ["
       "    {"
       "      \"policy\": \"test\","
@@ -126,11 +147,10 @@ TEST(InputFileParsersTest, ParseJSONInvalid) {
       "  ]"
       "}";
 
-  EXPECT_FALSE(ParseJSON(missing_hostname, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(missing_hostname, "", &entries, &pinsets));
 
   std::string missing_policy =
       "{"
-      "  \"pinsets\": [],"
       "  \"entries\": ["
       "    {"
       "      \"name\": \"example.test\","
@@ -139,7 +159,7 @@ TEST(InputFileParsersTest, ParseJSONInvalid) {
       "  ]"
       "}";
 
-  EXPECT_FALSE(ParseJSON(missing_policy, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(missing_policy, "", &entries, &pinsets));
 }
 
 // Test that parsing valid JSON with an invalid (HPKP) pinset fails.
@@ -157,7 +177,7 @@ TEST(InputFileParsersTest, ParseJSONInvalidPinset) {
       "  \"entries\": []"
       "}";
 
-  EXPECT_FALSE(ParseJSON(missing_pinset_name, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON("", missing_pinset_name, &entries, &pinsets));
 }
 
 // Test that parsing valid JSON containing an entry with an invalid mode fails.
@@ -167,7 +187,6 @@ TEST(InputFileParsersTest, ParseJSONInvalidMode) {
 
   std::string invalid_mode =
       "{"
-      "  \"pinsets\": [],"
       "  \"entries\": ["
       "    {"
       "      \"name\": \"preloaded.test\","
@@ -177,7 +196,7 @@ TEST(InputFileParsersTest, ParseJSONInvalidMode) {
       "  ]"
       "}";
 
-  EXPECT_FALSE(ParseJSON(invalid_mode, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(invalid_mode, "", &entries, &pinsets));
 }
 
 // Test that parsing valid JSON containing an entry with an unknown field fails.
@@ -187,7 +206,6 @@ TEST(InputFileParsersTest, ParseJSONUnkownField) {
 
   std::string unknown_field =
       "{"
-      "  \"pinsets\": [],"
       "  \"entries\": ["
       "    {"
       "      \"name\": \"preloaded.test\","
@@ -197,7 +215,7 @@ TEST(InputFileParsersTest, ParseJSONUnkownField) {
       "  ]"
       "}";
 
-  EXPECT_FALSE(ParseJSON(unknown_field, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(unknown_field, "", &entries, &pinsets));
 }
 
 // Test that parsing valid JSON containing an entry with an unknown policy
@@ -208,7 +226,6 @@ TEST(InputFileParsersTest, ParseJSONUnkownPolicy) {
 
   std::string unknown_policy =
       "{"
-      "  \"pinsets\": [],"
       "  \"entries\": ["
       "    {"
       "      \"name\": \"preloaded.test\","
@@ -217,7 +234,7 @@ TEST(InputFileParsersTest, ParseJSONUnkownPolicy) {
       "  ]"
       "}";
 
-  EXPECT_FALSE(ParseJSON(unknown_policy, &entries, &pinsets));
+  EXPECT_FALSE(ParseJSON(unknown_policy, "", &entries, &pinsets));
 }
 
 // Test parsing of all 3 SPKI formats.

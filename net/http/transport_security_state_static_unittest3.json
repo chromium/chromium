@@ -7,23 +7,6 @@
 // transport_security_state_static.json.
 
 {
-  "pinsets": [
-    {
-      "name": "test1",
-      "static_spki_hashes": [
-        "TestSPKI1"
-      ],
-      "report_uri": "https://report.example.com/hpkp-upload"
-    }, {
-      "name": "test2",
-      "static_spki_hashes": [
-        "TestSPKI2"
-      ],
-      "bad_static_spki_hashes": [
-        "TestSPKI1"
-      ]
-    }
-  ],
   "entries": [
     {
       "name": "example.com",
@@ -32,9 +15,7 @@
       "include_subdomains": true
     }, {
       "name": "hpkp.example.com",
-      "policy": "test",
-      "include_subdomains_for_pinning": true,
-      "pins": "test1"
+      "policy": "test"
     }, {
       "name": "example.org",
       "policy": "test",
@@ -42,15 +23,12 @@
     }, {
       "name": "badssl.com",
       "policy": "test",
-      "include_subdomains": true,
-      "pins": "test1"
+      "include_subdomains": true
     }, {
       "name": "mix.badssl.com",
       "policy": "test",
       "mode": "force-https",
-      "include_subdomains": false,
-      "pins": "test2",
-      "include_subdomains_for_pinning": true
+      "include_subdomains": false
     }, {
       // Keep this a simple entry in the context of TrieWriter::IsSimpleEntry().
       "name": "simple-entry.example.com",

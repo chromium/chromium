@@ -25,12 +25,14 @@ bool ParseCertificatesFile(base::StringPiece certs_input,
                            Pinsets* pinsets,
                            base::Time* timestamp);
 
-// Parses the |json| string; copies the items under the "entries" key to
-// |entries| and the pinsets under the "pinsets" key to |pinsets|.
+// Parses the |hsts_json| and |pins_json| strings; copies the items under the
+// "entries" key to |entries| and the pinsets under the "pinsets" key to
+// |pinsets|.
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.json
-bool ParseJSON(base::StringPiece json,
+bool ParseJSON(base::StringPiece hsts_json,
+               base::StringPiece pins_json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets);
 
