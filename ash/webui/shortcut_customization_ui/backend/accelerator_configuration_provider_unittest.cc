@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -152,38 +153,14 @@ void ValidateAcceleratorLayouts(
         EXPECT_EQ(expected_layout.sub_category, actual->sub_category);
         EXPECT_EQ(expected_layout.layout_style, actual->style);
         EXPECT_EQ(expected_layout.source, actual->source);
+        EXPECT_EQ(
+            l10n_util::GetStringUTF16(expected_layout.description_string_id),
+            actual->description);
         found_match = true;
         break;
       }
     }
     EXPECT_TRUE(found_match);
-  }
-}
-
-void ValidateLayoutsHaveMatchingStrings(
-    const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>&
-        actual_layout_infos) {
-  for (const auto& layout : actual_layout_infos) {
-    // kAcceleratorActionToStringIdMap should contain all actions in
-    // AcceleratorAction. Adding a new accelerator must add a new entry to this
-    // map.
-    switch (layout->source) {
-      case ash::mojom::AcceleratorSource::kAsh:
-        EXPECT_TRUE(
-            ash::kAcceleratorActionToStringIdMap.contains(layout->action))
-            << "Unknown Ash accelerator action id: " << layout->action;
-        break;
-      case ash::mojom::AcceleratorSource::kAmbient:
-        EXPECT_TRUE(ash::kAmbientActionToStringIdMap.contains(
-            static_cast<NonConfigurableActions>(layout->action)))
-            << "Unknown non-configurable accelerator action id: "
-            << layout->action;
-        break;
-      case ash::mojom::AcceleratorSource::kBrowser:
-      case ash::mojom::AcceleratorSource::kEventRewriter:
-      case ash::mojom::AcceleratorSource::kAndroid:
-        EXPECT_TRUE(false);
-    }
   }
 }
 
@@ -364,23 +341,6 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
   base::RunLoop().RunUntilIdle();
   // Adding a new keyboard should trigger the UpdatedAccelerators observer.
   EXPECT_EQ(1, observer.num_times_notified());
-}
-
-TEST_F(AcceleratorConfigurationProviderTest,
-       ValidateAllLayoutsHaveMatchingStrings) {
-  // Initialize with all default accelerators.
-  Shell::Get()->ash_accelerator_configuration()->Initialize();
-  // Initialize with all non-configurable accelerators.
-  provider_->InitializeNonConfigurableAccelerators(GetTextDetailsMap());
-  base::RunLoop().RunUntilIdle();
-
-  // Get all default accelerator layout infos and verify that they correctly
-  // mapped the ash::kAcceleratorActionToStringIdMap. This makes sure the map
-  // won't be out of date.
-  provider_->GetAcceleratorLayoutInfos(base::BindLambdaForTesting(
-      [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
-        ValidateLayoutsHaveMatchingStrings(actual_layout_infos);
-      }));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {

@@ -16,7 +16,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -80,32 +79,14 @@ mojom::DefaultAcceleratorPropertiesPtr CreateDefaultAcceleratorProps(
       accelerator, shortcut_ui::GetKeyDisplay(accelerator.key_code()));
 }
 
-std::u16string LookupAcceleratorDescription(mojom::AcceleratorSource source,
-                                            AcceleratorActionId action_id) {
-  switch (source) {
-    case mojom::AcceleratorSource::kAsh:
-      return l10n_util::GetStringUTF16(
-          kAcceleratorActionToStringIdMap.at(action_id));
-    case mojom::AcceleratorSource::kAmbient:
-      return l10n_util::GetStringUTF16(
-          kAmbientActionToStringIdMap.at(action_id));
-    // TODO(longbowei): Add strings for Browser shortcuts.
-    case mojom::AcceleratorSource::kBrowser:
-    case mojom::AcceleratorSource::kEventRewriter:
-    case mojom::AcceleratorSource::kAndroid:
-      NOTREACHED();
-      return std::u16string();
-  }
-}
-
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
     AcceleratorLayoutDetails layout_details) {
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();
   layout_info->category = layout_details.category;
   layout_info->sub_category = layout_details.sub_category;
-  layout_info->description = LookupAcceleratorDescription(
-      layout_details.source, layout_details.action_id);
+  layout_info->description =
+      l10n_util::GetStringUTF16(layout_details.description_string_id);
   layout_info->style = layout_details.layout_style;
   layout_info->source = layout_details.source;
   layout_info->action = static_cast<uint32_t>(layout_details.action_id);
