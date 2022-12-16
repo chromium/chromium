@@ -14,7 +14,6 @@
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser_jni_headers/AwCookieManager_jni.h"
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/android/build_info.h"
 #include "base/android/callback_android.h"
@@ -24,7 +23,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -752,8 +750,6 @@ void CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded() {
   // If we had a client hint cache clear pending, we should do it as soon as we
   // next check and see that the browser has been started.
   if (should_clear_client_hints_cached_per_origin_map_ &&
-      base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewClientHintsControllerDelegate) &&
       AwBrowserContext::GetDefault() &&
       AwBrowserContext::GetDefault()->GetPrefService()) {
     AwBrowserContext::GetDefault()->GetPrefService()->SetDict(

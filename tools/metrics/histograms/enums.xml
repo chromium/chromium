@@ -58407,8 +58407,6 @@ from previous Chrome versions.
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
   <int value="-1357778876" label="ExplicitLanguageAsk:enabled"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
-  <int value="-1357060964"
-      label="WebViewClientHintsControllerDelegate:enabled"/>
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
@@ -62572,8 +62570,6 @@ from previous Chrome versions.
   <int value="1084484359" label="ContextualTriggersSelectionSize:disabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>
   <int value="1085130793" label="LongPressBackForHistory:disabled"/>
-  <int value="1086296830"
-      label="WebViewClientHintsControllerDelegate:disabled"/>
   <int value="1086592430" label="WebAppEnableLinkCapturing:enabled"/>
   <int value="1086775696"
       label="WebAssemblyExperimentalStackSwitching:enabled"/>

@@ -32,7 +32,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewXRequestedWithHeaderControl,
     &features::kWebViewXRequestedWithHeaderManifestAllowList,
-    &features::kWebViewClientHintsControllerDelegate,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

@@ -455,10 +455,6 @@ AwPermissionManager* AwBrowserContext::GetPermissionControllerDelegate() {
 
 content::ClientHintsControllerDelegate*
 AwBrowserContext::GetClientHintsControllerDelegate() {
-  if (!base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewClientHintsControllerDelegate)) {
-    return nullptr;
-  }
   if (!client_hints_controller_delegate_.get()) {
     client_hints_controller_delegate_ =
         std::make_unique<AwClientHintsControllerDelegate>(GetPrefService());

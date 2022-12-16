@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,28 +42,27 @@ public class ClientHintsTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testClientHintsDefault() throws Throwable {
-        setupAndVerifyClientHintBehavior(true);
-    }
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwContents contents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
+        contents.getSettings().setJavaScriptEnabled(true);
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.
-    Add({"disable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testClientHintsDisabled() throws Throwable {
-        setupAndVerifyClientHintBehavior(false);
-    }
+        // First round uses insecure server.
+        AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        verifyClientHintBehavior(server, contents, contentsClient, false);
+        clearCookies();
+        server.stopAndDestroyServer();
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testClientHintsEnabled() throws Throwable {
-        setupAndVerifyClientHintBehavior(true);
+        // Second round uses secure server.
+        server = AwEmbeddedTestServer.createAndStartHTTPSServer(
+                InstrumentationRegistry.getInstrumentation().getTargetContext(),
+                ServerCertificate.CERT_OK);
+        verifyClientHintBehavior(server, contents, contentsClient, true);
+        clearCookies();
+        server.stopAndDestroyServer();
     }
 
     @Test
@@ -199,33 +197,9 @@ public class ClientHintsTest {
         server.stopAndDestroyServer();
     }
 
-    private void setupAndVerifyClientHintBehavior(boolean isPersisted) throws Throwable {
-        final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwContents contents =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
-                        .getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
-        contents.getSettings().setJavaScriptEnabled(true);
-
-        // First round uses insecure server.
-        AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
-        verifyClientHintBehavior(server, contents, contentsClient, isPersisted, false);
-        clearCookies();
-        server.stopAndDestroyServer();
-
-        // Second round uses secure server.
-        server = AwEmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getTargetContext(),
-                ServerCertificate.CERT_OK);
-        verifyClientHintBehavior(server, contents, contentsClient, isPersisted, true);
-        clearCookies();
-        server.stopAndDestroyServer();
-    }
-
     private void verifyClientHintBehavior(final AwEmbeddedTestServer server,
-            final AwContents contents, final TestAwContentsClient contentsClient,
-            boolean isPersisted, boolean isSecure) throws Throwable {
+            final AwContents contents, final TestAwContentsClient contentsClient, boolean isSecure)
+            throws Throwable {
         final String localhostURL =
                 server.getURL("/client-hints-header?accept-ch=sec-ch-device-memory");
         final String fooURL = server.getURLWithHostName(
@@ -235,9 +209,9 @@ public class ClientHintsTest {
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), localhostURL);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", false);
 
-        // Second load of the localhost might have the hint if it was persisted.
+        // Second load of the localhost does have the hint as it was persisted.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), localhostURL);
-        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", isPersisted);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
 
         // Clearing cookies to clear out per-origin client hint preferences.
         clearCookies();
@@ -246,9 +220,9 @@ public class ClientHintsTest {
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), localhostURL);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", false);
 
-        // Fourth load of the localhost might have the hint if it was persisted.
+        // Fourth load of the localhost does have the hint as it was persisted.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), localhostURL);
-        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", isPersisted);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
 
         // Fifth load of the localhost won't have the hint as JavaScript will be off.
         contents.getSettings().setJavaScriptEnabled(false);
@@ -260,10 +234,9 @@ public class ClientHintsTest {
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), fooURL);
         validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", false);
 
-        // Second load of foo.test might have the hint if it was persisted and the site is secure.
+        // Second load of foo.test might have the hint if it the site is secure.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), fooURL);
-        validateHeadersFromJSON(
-                contents, contentsClient, "sec-ch-device-memory", isPersisted && isSecure);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", isSecure);
     }
 
     private void loadUrlSync(final AwContents contents, CallbackHelper onPageFinishedHelper,

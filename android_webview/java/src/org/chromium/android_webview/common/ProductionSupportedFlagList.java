@@ -323,8 +323,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(CcFeatures.NON_BLOCKING_COMMIT,
                     "Don't block the renderer main thread unconditionally while waiting "
                             + "for commit to finish on the compositor thread."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
-                    "This persists client hints between top-level navigations."),
             Flag.baseFeature(CcFeatures.USE_DMSAA_FOR_TILES,
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
             Flag.baseFeature(
