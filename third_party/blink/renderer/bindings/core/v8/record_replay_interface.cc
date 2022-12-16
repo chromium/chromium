@@ -290,7 +290,7 @@ function Target_getCurrentMessageContents() {
   // Get the protocol representation of the message arguments.
   const argumentValues = [];
   for (const arg of gLastConsoleAPICall.args || []) {
-    argumentValues.push(cdpToRrpObject(arg));
+    argumentValues.push(buildRrpObjectFromCdpObject(arg));
   }
 
   let level = "info";
@@ -392,7 +392,7 @@ function getStackFrames() {
 
 // Build a protocol Result object from a result/exceptionDetails CDP rval.
 function buildRrpObjectResult({ result, exceptionDetails }) {
-  const value = cdpToRrpObject(result);
+  const value = buildRrpObjectFromCdpObject(result);
   const protocolResult = { data: {} };
 
   if (exceptionDetails) {
@@ -452,7 +452,7 @@ function Pause_getAllFrames() {
 
 function Pause_getExceptionValue() {
   const rv = sendMessage("Debugger.getPendingException", {});
-  return { exception: cdpToRrpObject(rv.exception), data: {} };
+  return { exception: buildRrpObjectFromCdpObject(rv.exception), data: {} };
 }
 
 function Pause_getObjectPreview({ object, level = "full" }) {
@@ -501,10 +501,6 @@ const gRrpIdByCdpId = new Map();
 /**
  * @type {Map<Object, string>}
  */
-const gObjectsByRrpId = new Map();
-/**
- * @type {Map<Object, string>}
- */
 const gRrpIdByPlainObject = new Map();
 /**
  * @type {Map<string, Object>}
@@ -520,7 +516,6 @@ function clearPauseDataCallback() {
   try {
     gCdpObjectsByRrpId.clear();
     gRrpIdByCdpId.clear();
-    gObjectsByRrpId.clear();
     gRrpIdByPlainObject.clear();
     gPlainObjectByRrpId.clear();
     gCdpScopesByRrpId.clear();
@@ -538,7 +533,7 @@ function clearPauseDataCallback() {
  * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
  */
 function makeDebuggeeValue(plainObject) {
-  assert(!plainObject.objectId);
+  assert(!plainObject?.objectId);
   const remoteObjectStr = fromJsMakeDebuggeeValue(plainObject);
   const remoteObject = JSON.parse(remoteObjectStr);
   assert(remoteObject.objectId);
@@ -561,6 +556,10 @@ function registerPlainObject(plainObject) {
     }
   }
   return rrpId;
+}
+
+function isNonNullObject(obj) {
+  return obj && (typeof obj == "object" || typeof obj == "function");
 }
 
 function getPlainObjectByCdpId(cdpId) {
@@ -622,7 +621,6 @@ function registerCdpObject(cdpObject) {
     gPlainObjectByRrpId.set(rrpId, plainObject);
   }
 
-  const { className, description, type } = gCdpObjectsByRrpId.get(rrpId) || {};
   return rrpId;
 }
 
@@ -644,7 +642,12 @@ function isCdpRefType(cdpObject) {
   return cdpRefTypes.includes(cdpObject.type);
 }
 
-function cdpToRrpObject(cdpObject) {
+
+/**
+ * 
+ * @return {RRP.Pause.Object}
+ */
+function buildRrpObjectFromCdpObject(cdpObject) {
   switch (cdpObject.type) {
     case "undefined":
       return {};
@@ -681,6 +684,21 @@ function cdpToRrpObject(cdpObject) {
 }
 
 /**
+ * NOTE: This is called `createProtocolValueRaw` in gecko
+ */
+function buildRrpObjectFromPlainValue(value) {
+  let cdpObject;
+  if (isNonNullObject(value)) {
+    const rrpId = registerPlainObject(value);
+    cdpObject = gCdpObjectsByRrpId.get(rrpId);
+  }
+  else {
+    cdpObject = makeDebuggeeValue(value);
+  }
+  return buildRrpObjectFromCdpObject(cdpObject);
+}
+
+/**
  * 
  * @param {CDP.Runtime.Scope} scope 
  */
@@ -702,6 +720,10 @@ function getCdpScopeByRrpId(rrpScopeId) {
 
 // Logic for creating object previews for the record/replay protocol.
 
+function isCdpObjectProxy(cdpObj) {
+  return cdpObj.subtype ==="proxy";
+}
+
 /**
  * @return {RRP.Pause.Object}
  * @see https://static.replay.io/protocol/tot/Pause/#type-Object
@@ -709,7 +731,7 @@ function getCdpScopeByRrpId(rrpScopeId) {
 function createPauseObject(rrpId, level) {
   const cdpObj = getCdpObjectByRrpId(rrpId);
   // NOTE: `subtype` is not reliably available, due to a divergence check in V8 → `value-mirror.cc`
-  const className = cdpObj.subtype == "proxy" ? "Proxy" : (cdpObj.className || "Function");
+  const className = isCdpObjectProxy(cdpObj) ? "Proxy" : (cdpObj.className || "Function");
 
   // NOTE: `persistentId` is added in V8 → `injected-script.cc`
   const { persistentId } = cdpObj;
@@ -720,6 +742,76 @@ function createPauseObject(rrpId, level) {
   }
 
   return { objectId: rrpId, persistentId, className, preview };
+}
+
+// Return whether an object should be ignored when generating previews.
+function isObjectBlacklisted(cdpObj) {
+  // Accessing Storage object properties can cause hangs when trying to
+  // communicate with the non-existent parent process.
+  if (cdpObj.className == "Storage") {
+    return true;
+  }
+
+  // Don't inspect scripted proxies, as we could end up calling into script.
+  if (isCdpObjectProxy(cdpObj)) {
+    return true;
+  }
+
+  return false;
+}
+
+const ObjectPropNames = new Set([
+  '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__',
+  'constructor', 'hasOwnProperty', 'isPrototypeOf', 'parentProp',
+  'propertyIsEnumerable', 'toLocaleString', 'toString', 'valueOf'
+]);
+
+/**
+ * Runtime.getProperties, for some reason, adds basic `Object` props, that we don't want.
+ * Hackfix: There is no easy way to identify `Object` props, 
+ *   so we have to reject certain names categorically :/
+ */
+function isPropNameInObjectBase(name) {
+  return ObjectPropNames.has(name);
+}
+
+// Return whether an object's property should be ignored when generating previews.
+function isObjectPropertyBlacklisted(cdpObj, name) {
+  if (isObjectBlacklisted(cdpObj)) {
+    return true;
+  }
+  if (isPropNameInObjectBase(name)) {
+    return true;
+  }
+  switch (`${cdpObj.className}.${name}`) {
+    // NOTE: these are from gecko. Chromium will probably need some adjustments.
+    case "Window.localStorage":
+    case "Window.sysinfo":
+    case "Navigator.hardwareConcurrency":
+    case "XPCWrappedNative_NoHelper.isParentWindowMainWidgetVisible":
+    case "XPCWrappedNative_NoHelper.systemFont":
+      return true;
+  }
+  switch (name) {
+    case "__proto__":
+      // Accessing __proto__ doesn't cause problems, but is redundant with the
+      // prototype reference included in the preview directly.
+      return true;
+  }
+  return false;
+}
+
+// Get the "own" property names of an object to use.
+function propertyNames(cdpObj) {
+  if (isObjectBlacklisted(cdpObj)) {
+    return [];
+  }
+  try {
+    // [live-object-property-access]
+    return [...cdpObj.getOwnPropertyNames(), ...cdpObj.getOwnPropertySymbols()];
+  } catch (e) {
+    return [];
+  }
 }
 
 // Target limit for the number of items (properties etc.) to include in object
@@ -744,7 +836,18 @@ function ProtocolObjectPreview(obj, level) {
 }
 
 ProtocolObjectPreview.prototype = {
-  canAddItem(force) {
+  get raw() {
+    return this.plainObject;
+  },
+
+  get plainObject() {
+    if (!this._plainObject) {
+      this._plainObject = getPlainObjectByCdpId(this.cdpObj.objectId);
+    }
+    return this._plainObject;
+  },
+
+  startAddItem(force) {
     if (!force && this.numItems >= MaxItems[this.level]) {
       this.overflow = true;
       return false;
@@ -754,7 +857,7 @@ ProtocolObjectPreview.prototype = {
   },
 
   addProperty(property, force) {
-    if (!this.canAddItem(force)) {
+    if (!this.startAddItem(force)) {
       return;
     }
     if (!this.properties) {
@@ -763,8 +866,30 @@ ProtocolObjectPreview.prototype = {
     this.properties.push(property);
   },
 
+  addGetterValue(name, cdpValue, ownerCdpObj, force = false) {
+    if (isObjectPropertyBlacklisted(ownerCdpObj, name)) {
+      return;
+    }
+    if (!this.getterValues) {
+      this.getterValues = new Map();
+    }
+    if (this.getterValues.has(name)) {
+      return;
+    }
+    if (!this.startAddItem(force)) {
+      return;
+    }
+
+    // TODO: eval getter
+    
+    const value = buildRrpObjectFromCdpObject(cdpValue);
+    log(`DDBG addGetterValue: ${name}=${JSON.stringify(value)}`);
+    this.getterValues.set(name, { name, ...value });
+  },
+
+
   addContainerEntry(entry) {
-    if (!this.canAddItem()) {
+    if (!this.startAddItem()) {
       return;
     }
     if (!this.containerEntries) {
@@ -791,6 +916,7 @@ ProtocolObjectPreview.prototype = {
     if (previewer) {
       for (const entry of previewer) {
         if (typeof entry == "string") {
+          // NOTE: in chromium we add these to `properties`, but in gecko we add these to `getterValues`
           requiredProperties.push(entry);
         } else {
           entry.call(this, allProperties);
@@ -810,18 +936,39 @@ ProtocolObjectPreview.prototype = {
     }
 
     let prototypeRrpId;
-    if (prototype && prototype.value && prototype.value.objectId) {
+    let getterValues;
+    if (prototype?.value?.objectId) {
       prototypeRrpId = registerCdpObject(prototype.value);
-      // TODO: in gecko-dev, we also `addPrototypeGetterValues` - should we do this here, too?
+      const protoProps = sendMessage("Runtime.getProperties", {
+        objectId: prototype.value.objectId,
+        ownProperties: false
+      });
+      for (const prop of protoProps.result) {
+        if (prop.name === "__proto__") {
+          continue;
+        }
+        if (prop.value) {
+          // this.addGetterValue(prop.name, prop.value, this.cdpObj);
+        }
+        else if (prop.get) {
+          // TODO: call getter without side-effects?
+        }
+      }
+
+      if (this.getterValues) {
+        getterValues = [...this.getterValues.values()];
+      }
     }
+
     return {
       prototypeId: prototypeRrpId,
       overflow: (this.overflow && this.level != "full") ? true : undefined,
       properties: this.properties,
+      getterValues,
       containerEntries: this.containerEntries,
       ...this.extra,
     };
-  },
+  }
 };
 
 // Get a count from an object description like "Array(42)"
@@ -966,8 +1113,8 @@ function previewSetMap(allProperties) {
       const value = entryProperties.find(eprop => eprop.name == "value");
       if (value) {
         this.addContainerEntry({
-          key: key ? cdpToRrpObject(key.value) : undefined,
-          value: cdpToRrpObject(value.value),
+          key: key ? buildRrpObjectFromCdpObject(key.value) : undefined,
+          value: buildRrpObjectFromCdpObject(value.value),
         });
       }
     }
@@ -1046,7 +1193,7 @@ const CustomPreviewers = {
 function createProtocolPropertyDescriptor(desc) {
   const { name, value, writable, get, set, configurable, enumerable, symbol } = desc;
 
-  const rv = value ? cdpToRrpObject(value) : {};
+  const rv = value ? buildRrpObjectFromCdpObject(value) : {};
   rv.name = name;
 
   let flags = 0;
@@ -1101,7 +1248,7 @@ function createProtocolFrame(frameId, cdpFrame) {
     functionLocation: createProtocolLocation(cdpFrame.functionLocation),
     location: createProtocolLocation(cdpFrame.location),
     scopeChain: cdpFrame.scopeChain.map(registerCdpScope),
-    this: cdpToRrpObject(cdpFrame.this),
+    this: buildRrpObjectFromCdpObject(cdpFrame.this),
   };
 }
 
@@ -1133,7 +1280,7 @@ function createRrpScope(scopeId) {
       generatePreview: false,
     }).result;
     for (const { name, value: cdpProp } of properties) {
-      const rrpProp = cdpToRrpObject(cdpProp);
+      const rrpProp = buildRrpObjectFromCdpObject(cdpProp);
       bindings.push({ ...rrpProp, name });
     }
   }
@@ -1345,7 +1492,7 @@ function DOM_getEventListeners({ node }) {
   //     continue;
   //   }
   //   const dbgHandler = makeDebuggeeValue(handler);
-  //   if (dbgHandler.class != "Function") {
+  //   if (dbgHandler.className != "Function") {
   //     continue;
   //   }
   //   const id = getObjectId(dbgHandler);
@@ -2656,11 +2803,12 @@ static LocalFrame* gLocalFrame;
  * This basically emulates gecko's `makeDebuggeeValue` (but requires an extra parse).
  */
 static void fromJsMakeDebuggeeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 1 && args[0]->IsObject() &&
-        "must be called with a single object");
   v8::Isolate* isolate = args.GetIsolate();
+
+  CHECK(args.Length() == 1 && "must be called with a single value");
+
   auto context = isolate->GetCurrentContext();
-  auto obj = args[0]->ToObject(context).ToLocalChecked();
+  auto value = args[0];
 
   const String object_group("console"); // NOTE: object_group is used for cleaning up
   auto generatePreview = false;
@@ -2672,7 +2820,7 @@ static void fromJsMakeDebuggeeValue(const v8::FunctionCallbackInfo<v8::Value>& a
   //     context, obj, ToV8InspectorStringView(object_group), false);
   // auto converted = String(result.c_str(), result.length());
   auto result = gInspectorSession->wrapObject(
-      context, obj, ToV8InspectorStringView(object_group), generatePreview);
+      context, value, ToV8InspectorStringView(object_group), generatePreview);
 
   // deserialize + send to JS
   std::vector<uint8_t> cbor;
