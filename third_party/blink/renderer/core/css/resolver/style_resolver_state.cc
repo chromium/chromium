@@ -118,13 +118,13 @@ void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       Style(), ParentStyle(), RootElementStyle(), GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-      StyleBuilder().EffectiveZoom());
+      StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
-    const ComputedStyle* font_style) const {
+    const ComputedStyle* font_style) {
   float em = font_style->SpecifiedFontSize();
   float rem = RootElementStyle() ? RootElementStyle()->SpecifiedFontSize() : 1;
   CSSToLengthConversionData::FontSizes font_sizes(
@@ -136,17 +136,16 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   CSSToLengthConversionData::ContainerSizes container_sizes(
       container_unit_context_);
 
-  return CSSToLengthConversionData(Style(), StyleBuilder().GetWritingMode(),
-                                   font_sizes, line_height_size, viewport_size,
-                                   container_sizes, 1);
+  return CSSToLengthConversionData(
+      StyleBuilder().GetWritingMode(), font_sizes, line_height_size,
+      viewport_size, container_sizes, 1, length_conversion_flags_);
 }
 
-CSSToLengthConversionData StyleResolverState::FontSizeConversionData() const {
+CSSToLengthConversionData StyleResolverState::FontSizeConversionData() {
   return UnzoomedLengthConversionData(ParentStyle());
 }
 
-CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData()
-    const {
+CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
   return UnzoomedLengthConversionData(Style());
 }
 

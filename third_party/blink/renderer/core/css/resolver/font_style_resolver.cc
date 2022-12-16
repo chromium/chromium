@@ -23,9 +23,10 @@ FontDescription FontStyleResolver::ComputeFont(
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversionData(nullptr, WritingMode::kHorizontalTb,
-                                           font_sizes, line_height_size,
-                                           viewport_size, container_sizes, 1);
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData conversion_data(
+      WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
+      container_sizes, 1, ignored_flags);
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {
@@ -38,7 +39,7 @@ FontDescription FontStyleResolver::ComputeFont(
     } else {
       builder.SetSize(StyleBuilderConverterBase::ConvertFontSize(
           *property_set.GetPropertyCSSValue(CSSPropertyID::kFontSize),
-          conversionData, FontDescription::Size(0, 0.0f, false), nullptr));
+          conversion_data, FontDescription::Size(0, 0.0f, false), nullptr));
     }
   }
 

@@ -1419,7 +1419,7 @@ Length StyleBuilderConverter::ConvertLength(
 }
 
 UnzoomedLength StyleBuilderConverter::ConvertUnzoomedLength(
-    const StyleResolverState& state,
+    StyleResolverState& state,
     const CSSValue& value) {
   return UnzoomedLength(To<CSSPrimitiveValue>(value).ConvertToLength(
       state.UnzoomedLengthConversionData()));
@@ -2390,10 +2390,11 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
   CSSToLengthConversionData::ViewportSize viewport_size(
       document.GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversion_data(
-      /* element_style */ nullptr, WritingMode::kHorizontalTb, font_sizes,
-      line_height_size, viewport_size, container_sizes,
-      /* zoom */ 1.0f);
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData conversion_data(WritingMode::kHorizontalTb,
+                                            font_sizes, line_height_size,
+                                            viewport_size, container_sizes,
+                                            /* zoom */ 1.0f, ignored_flags);
 
   const CSSParserContext* parser_context =
       document.ElementSheet().Contents()->ParserContext();

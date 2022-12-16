@@ -60,11 +60,6 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
   return evaluator->Height();
 }
 
-void SetHasContainerRelativeUnits(const ComputedStyle* style) {
-  const_cast<ComputedStyle*>(style)->SetHasContainerRelativeUnits();
-  const_cast<ComputedStyle*>(style)->SetDependsOnSizeContainerQueries(true);
-}
-
 }  // namespace
 
 CSSToLengthConversionData::FontSizes::FontSizes(float em,
@@ -193,21 +188,21 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(
-    const ComputedStyle* element_style,
     WritingMode writing_mode,
     const FontSizes& font_sizes,
     const LineHeightSize& line_height_size,
     const ViewportSize& viewport_size,
     const ContainerSizes& container_sizes,
-    float zoom)
+    float zoom,
+    Flags& flags)
     : CSSLengthResolver(
           ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())),
-      style_(element_style),
       writing_mode_(writing_mode),
       font_sizes_(font_sizes),
       line_height_size_(line_height_size),
       viewport_size_(viewport_size),
-      container_sizes_(container_sizes) {}
+      container_sizes_(container_sizes),
+      flags_(&flags) {}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* element_style,
@@ -215,114 +210,95 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* root_style,
     const LayoutView* layout_view,
     const ContainerSizes& container_sizes,
-    float zoom)
+    float zoom,
+    Flags& flags)
     : CSSToLengthConversionData(
-          element_style,
           element_style->GetWritingMode(),
           FontSizes(element_style, root_style),
           LineHeightSize(parent_style ? *parent_style : *element_style),
           ViewportSize(layout_view),
           container_sizes,
-          zoom) {}
+          zoom,
+          flags) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
-  // FIXME: Remove style_ from this class. Plumb viewport and font unit
-  // information through as output parameters on functions involved in length
-  // resolution.
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasEmUnits();
+  SetFlag(Flag::kEm);
   return font_sizes_.Em(zoom);
 }
 
 float CSSToLengthConversionData::RemFontSize(float zoom) const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasRemUnits();
+  SetFlag(Flag::kRem);
   return font_sizes_.Rem(zoom);
 }
 
 float CSSToLengthConversionData::ExFontSize(float zoom) const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ex(zoom);
 }
 
 float CSSToLengthConversionData::ChFontSize(float zoom) const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ch(zoom);
 }
 
 float CSSToLengthConversionData::IcFontSize(float zoom) const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ic(zoom);
 }
 
 float CSSToLengthConversionData::LineHeight(float zoom) const {
-  if (style_) {
-    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
-    const_cast<ComputedStyle*>(style_)->SetHasLineHeightRelativeUnits();
-  }
+  SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kLineHeightRelative);
   return line_height_size_.Lh(zoom);
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.LargeWidth();
 }
 
 double CSSToLengthConversionData::ViewportHeight() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.LargeHeight();
 }
 
 double CSSToLengthConversionData::SmallViewportWidth() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.SmallWidth();
 }
 
 double CSSToLengthConversionData::SmallViewportHeight() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.SmallHeight();
 }
 
 double CSSToLengthConversionData::LargeViewportWidth() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.LargeWidth();
 }
 
 double CSSToLengthConversionData::LargeViewportHeight() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasStaticViewportUnits();
+  SetFlag(Flag::kStaticViewport);
   return viewport_size_.LargeHeight();
 }
 
 double CSSToLengthConversionData::DynamicViewportWidth() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
+  SetFlag(Flag::kDynamicViewport);
   return viewport_size_.DynamicWidth();
 }
 
 double CSSToLengthConversionData::DynamicViewportHeight() const {
-  if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasDynamicViewportUnits();
+  SetFlag(Flag::kDynamicViewport);
   return viewport_size_.DynamicHeight();
 }
 
 double CSSToLengthConversionData::ContainerWidth() const {
-  if (style_)
-    SetHasContainerRelativeUnits(style_);
+  SetFlag(Flag::kContainerRelative);
   return container_sizes_.Width().value_or(SmallViewportWidth());
 }
 
 double CSSToLengthConversionData::ContainerHeight() const {
-  if (style_)
-    SetHasContainerRelativeUnits(style_);
+  SetFlag(Flag::kContainerRelative);
   return container_sizes_.Height().value_or(SmallViewportHeight());
 }
 
@@ -332,7 +308,7 @@ WritingMode CSSToLengthConversionData::GetWritingMode() const {
 
 CSSToLengthConversionData::ContainerSizes
 CSSToLengthConversionData::PreCachedContainerSizesCopy() const {
-  SetHasContainerRelativeUnits(style_);
+  SetFlag(Flag::kContainerRelative);
   return container_sizes_.PreCachedCopy();
 }
 

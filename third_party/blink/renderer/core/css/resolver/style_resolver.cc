@@ -324,6 +324,41 @@ void UseCountLegacyOverlapping(Document& document,
   }
 }
 
+void ApplyLengthConversionFlags(StyleResolverState& state) {
+  using Flags = CSSToLengthConversionData::Flags;
+  using Flag = CSSToLengthConversionData::Flag;
+
+  Flags flags = state.TakeLengthConversionFlags();
+  if (!flags) {
+    return;
+  }
+
+  ComputedStyle* style = state.Style();
+
+  if (flags & static_cast<Flags>(Flag::kEm)) {
+    style->SetHasEmUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kRem)) {
+    style->SetHasRemUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kGlyphRelative)) {
+    style->SetHasGlyphRelativeUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kLineHeightRelative)) {
+    style->SetHasLineHeightRelativeUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kStaticViewport)) {
+    style->SetHasStaticViewportUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kDynamicViewport)) {
+    style->SetHasDynamicViewportUnits();
+  }
+  if (flags & static_cast<Flags>(Flag::kContainerRelative)) {
+    style->SetDependsOnSizeContainerQueries(true);
+    style->SetHasContainerRelativeUnits();
+  }
+}
+
 }  // namespace
 
 static CSSPropertyValueSet* LeftToRightDeclaration() {
@@ -1754,6 +1789,10 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     // Start loading resources used by animations.
     state.LoadPendingResources();
 
+    // Apply any length conversion flags produced by CSS/Web animations (e.g.
+    // animations involving viewport units would set such flags).
+    ApplyLengthConversionFlags(state);
+
     DCHECK(!state.GetFontBuilder().FontDirty());
   }
 
@@ -2140,9 +2179,11 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style, *state.Style());
   }
 
-  // NOTE: This flag needs to be set before the entry is added to the
-  // matched properties cache, or it will be wrong on cache hits.
+  // NOTE: This flag (and the length conversion flags) need to be set before the
+  // entry is added to the matched properties cache, or it will be wrong on
+  // cache hits.
   state.StyleBuilder().SetInlineStyleLostCascade(cascade.InlineStyleLost());
+  ApplyLengthConversionFlags(state);
 
   MaybeAddToMatchedPropertiesCache(state, cache_success, result);
 

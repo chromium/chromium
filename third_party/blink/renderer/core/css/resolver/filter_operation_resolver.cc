@@ -266,9 +266,10 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
+  CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
-      nullptr /* element_style */, WritingMode::kHorizontalTb, font_sizes,
-      line_height_size, viewport_size, container_sizes, 1 /* zoom */);
+      WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
+      container_sizes, 1 /* zoom */, ignored_flags);
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {
     if (curr_value->IsURIValue())

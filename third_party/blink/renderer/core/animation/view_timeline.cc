@@ -159,11 +159,14 @@ Length InsetValueToLength(const CSSValue* inset_value,
   if (inset_value->IsPrimitiveValue()) {
     ElementResolveContext element_resolve_context(*subject);
     Document& document = subject->GetDocument();
+    // Flags can be ignored, because we re-resolve any value that's not px or
+    // percentage, see IsStyleDependent.
+    CSSToLengthConversionData::Flags ignored_flags = 0;
     CSSToLengthConversionData length_conversion_data(
         subject->GetComputedStyle(), element_resolve_context.ParentStyle(),
         element_resolve_context.RootElementStyle(), document.GetLayoutView(),
         CSSToLengthConversionData::ContainerSizes(subject),
-        subject->GetComputedStyle()->EffectiveZoom());
+        subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 
     return DynamicTo<CSSPrimitiveValue>(inset_value)
         ->ConvertToLength(length_conversion_data);

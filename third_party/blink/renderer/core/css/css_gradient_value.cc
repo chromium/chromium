@@ -135,9 +135,12 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
   // We need to create an image.
   const ComputedStyle* root_style =
       document.documentElement()->GetComputedStyle();
+
+  // TODO(crbug.com/947377): Conversion is not supposed to happen here.
+  CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       &style, &style, root_style, document.GetLayoutView(), container_sizes,
-      style.EffectiveZoom());
+      style.EffectiveZoom(), ignored_flags);
 
   scoped_refptr<Gradient> gradient;
   switch (GetClassType()) {

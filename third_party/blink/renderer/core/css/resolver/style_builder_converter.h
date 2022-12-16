@@ -190,7 +190,7 @@ class StyleBuilderConverter {
                                                  const CSSValue&);
   static Length ConvertLength(const StyleResolverState&, const CSSValue&);
   static Length ConvertLength(const StyleResolverState&, const ScopedCSSValue&);
-  static UnzoomedLength ConvertUnzoomedLength(const StyleResolverState&,
+  static UnzoomedLength ConvertUnzoomedLength(StyleResolverState&,
                                               const CSSValue&);
   static float ConvertZoom(const StyleResolverState&, const CSSValue&);
   static Length ConvertLengthOrAuto(const StyleResolverState&, const CSSValue&);
