@@ -29,7 +29,8 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
 
   // DevToolsManagerDelegate implementation.
   BrowserContext* GetDefaultBrowserContext() override;
-  scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url) override;
+  scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url,
+                                                   bool for_tab) override;
   std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
   void ClientAttached(

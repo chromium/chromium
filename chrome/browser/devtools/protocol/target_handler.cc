@@ -78,6 +78,7 @@ protocol::Response TargetHandler::CreateTarget(
     protocol::Maybe<bool> enable_begin_frame_control,
     protocol::Maybe<bool> new_window,
     protocol::Maybe<bool> background,
+    protocol::Maybe<bool> for_tab,
     std::string* out_target_id) {
   Profile* profile = nullptr;
   if (browser_context_id.isJust()) {
@@ -135,8 +136,14 @@ protocol::Response TargetHandler::CreateTarget(
   if (!params.navigated_or_inserted_contents)
     return protocol::Response::ServerError("Failed to open a new tab");
 
-  *out_target_id = content::DevToolsAgentHost::GetOrCreateFor(
-                       params.navigated_or_inserted_contents)
-                       ->GetId();
+  if (for_tab.fromMaybe(false)) {
+    *out_target_id = content::DevToolsAgentHost::GetOrCreateForTab(
+                         params.navigated_or_inserted_contents)
+                         ->GetId();
+  } else {
+    *out_target_id = content::DevToolsAgentHost::GetOrCreateFor(
+                         params.navigated_or_inserted_contents)
+                         ->GetId();
+  }
   return protocol::Response::Success();
 }

@@ -27,7 +27,8 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
   std::string GetTargetType(content::WebContents* web_contents) override;
   content::DevToolsAgentHost::List RemoteDebuggingTargets() override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
-      const GURL& url) override;
+      const GURL& url,
+      bool for_tab) override;
   bool IsBrowserTargetDiscoverable() override;
 };
 

@@ -645,11 +645,17 @@ void DevToolsHttpHandler::OnJsonRequest(
                     "GET and POST verbs in future versions.";
     }
 
-    GURL url(base::UnescapeBinaryURLComponent(query));
+    std::vector<base::StringPiece> query_components = base::SplitStringPiece(
+        query, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    base::StringPiece escaped_url =
+        query_components.empty() ? "" : query_components[0];
+    GURL url(base::UnescapeBinaryURLComponent(escaped_url));
     if (!url.is_valid())
       url = GURL(url::kAboutBlankURL);
-    scoped_refptr<DevToolsAgentHost> agent_host =
-        delegate_->CreateNewTarget(url);
+    // TODO(dsv): Remove for "for_tab" support once DevTools Frontend
+    // no longer needs it for e2e tests
+    scoped_refptr<DevToolsAgentHost> agent_host = delegate_->CreateNewTarget(
+        url, query_components.size() > 1 && query_components[1] == "for_tab");
     if (!agent_host) {
       SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, absl::nullopt,
                "Could not create new page");

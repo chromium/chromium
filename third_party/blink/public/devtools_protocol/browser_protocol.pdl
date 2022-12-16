@@ -9723,6 +9723,8 @@ domain Target
       # Whether to create the target in background or foreground (chrome-only,
       # false by default).
       optional boolean background
+      # Whether to create the target of type "tab".
+      experimental optional boolean forTab
     returns
       # The id of the page opened.
       TargetID targetId

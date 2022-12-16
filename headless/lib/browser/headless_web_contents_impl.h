@@ -137,7 +137,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
  private:
   // Takes ownership of |web_contents|.
   HeadlessWebContentsImpl(std::unique_ptr<content::WebContents> web_contents,
-                          HeadlessBrowserContextImpl* browser_context);
+                          HeadlessBrowserContextImpl* browser_context,
+                          bool use_tab_target);
 
   void InitializeWindow(const gfx::Rect& initial_bounds);
 
@@ -159,6 +160,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   bool devtools_target_ready_notification_sent_ = false;
   bool render_process_exited_ = false;
+  bool use_tab_target_ = false;
 
   base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;
 

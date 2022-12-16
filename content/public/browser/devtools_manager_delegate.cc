@@ -33,7 +33,8 @@ DevToolsAgentHost::List DevToolsManagerDelegate::RemoteDebuggingTargets() {
 }
 
 scoped_refptr<DevToolsAgentHost> DevToolsManagerDelegate::CreateNewTarget(
-    const GURL& url) {
+    const GURL& url,
+    bool for_tab) {
   return nullptr;
 }
 

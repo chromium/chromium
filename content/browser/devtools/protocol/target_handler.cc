@@ -1158,6 +1158,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<bool> enable_begin_frame_control,
                                      Maybe<bool> new_window,
                                      Maybe<bool> background,
+                                     Maybe<bool> for_tab,
                                      std::string* out_target_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
@@ -1170,7 +1171,9 @@ Response TargetHandler::CreateTarget(const std::string& url,
     gurl = GURL(url::kAboutBlankURL);
   }
   scoped_refptr<content::DevToolsAgentHost> agent_host =
-      delegate->CreateNewTarget(gurl);
+      delegate->CreateNewTarget(
+          gurl, for_tab.fromMaybe(session_mode_ ==
+                                  DevToolsSession::Mode::kSupportsTabTarget));
   if (!agent_host)
     return Response::ServerError("Not supported");
   *out_target_id = agent_host->GetId();

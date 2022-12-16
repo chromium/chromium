@@ -259,7 +259,8 @@ std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
     HeadlessWebContents::Builder* builder) {
   content::WebContents::CreateParams create_params(builder->browser_context_);
   auto headless_web_contents = base::WrapUnique(new HeadlessWebContentsImpl(
-      content::WebContents::Create(create_params), builder->browser_context_));
+      content::WebContents::Create(create_params), builder->browser_context_,
+      builder->use_tab_target_));
 
   headless_web_contents->begin_frame_control_enabled_ =
       builder->enable_begin_frame_control_ ||
@@ -276,7 +277,8 @@ HeadlessWebContentsImpl::CreateForChildContents(
     HeadlessWebContentsImpl* parent,
     std::unique_ptr<content::WebContents> child_contents) {
   auto child = base::WrapUnique(new HeadlessWebContentsImpl(
-      std::move(child_contents), parent->browser_context()));
+      std::move(child_contents), parent->browser_context(),
+      parent->use_tab_target_));
 
   // Child contents have their own root window and inherit the BeginFrameControl
   // setting.
@@ -313,14 +315,19 @@ void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
 
 HeadlessWebContentsImpl::HeadlessWebContentsImpl(
     std::unique_ptr<content::WebContents> web_contents,
-    HeadlessBrowserContextImpl* browser_context)
+    HeadlessBrowserContextImpl* browser_context,
+    bool use_tab_target)
     : content::WebContentsObserver(web_contents.get()),
       browser_context_(browser_context),
       render_process_host_(web_contents->GetPrimaryMainFrame()->GetProcess()),
       web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
       web_contents_(std::move(web_contents)),
-      agent_host_(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())) {
+      agent_host_(use_tab_target
+                      ? content::DevToolsAgentHost::GetOrCreateForTab(
+                            web_contents_.get())
+                      : content::DevToolsAgentHost::GetOrCreateFor(
+                            web_contents_.get())),
+      use_tab_target_(use_tab_target) {
 #if BUILDFLAG(ENABLE_PRINTING)
   HeadlessPrintManager::CreateForWebContents(web_contents_.get());
 #endif
@@ -566,6 +573,12 @@ HeadlessWebContents::Builder&
 HeadlessWebContents::Builder::SetEnableBeginFrameControl(
     bool enable_begin_frame_control) {
   enable_begin_frame_control_ = enable_begin_frame_control;
+  return *this;
+}
+
+HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetUseTabTarget(
+    bool use_tab_target) {
+  use_tab_target_ = use_tab_target;
   return *this;
 }
 

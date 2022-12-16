@@ -199,11 +199,13 @@ void ShellDevToolsManagerDelegate::ClientDetached(
   clients_.erase(channel->GetClient());
 }
 
-scoped_refptr<DevToolsAgentHost>
-ShellDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
+scoped_refptr<DevToolsAgentHost> ShellDevToolsManagerDelegate::CreateNewTarget(
+    const GURL& url,
+    bool for_tab) {
   Shell* shell = Shell::CreateNewWindow(browser_context_, url, nullptr,
                                         Shell::GetShellDefaultSize());
-  return DevToolsAgentHost::GetOrCreateFor(shell->web_contents());
+  return for_tab ? DevToolsAgentHost::GetOrCreateForTab(shell->web_contents())
+                 : DevToolsAgentHost::GetOrCreateFor(shell->web_contents());
 }
 
 std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {

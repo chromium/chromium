@@ -22,9 +22,11 @@ content::BrowserContext* DevToolsManagerDelegate::GetDefaultBrowserContext() {
 }
 
 scoped_refptr<content::DevToolsAgentHost>
-DevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
-  return content::DevToolsAgentHost::GetOrCreateFor(
-      create_content_window_func_.Run(browser_context_, url));
+DevToolsManagerDelegate::CreateNewTarget(const GURL& url, bool for_tab) {
+  content::WebContents* web_content =
+      create_content_window_func_.Run(browser_context_, url);
+  return for_tab ? content::DevToolsAgentHost::GetOrCreateForTab(web_content)
+                 : content::DevToolsAgentHost::GetOrCreateFor(web_content);
 }
 
 std::string DevToolsManagerDelegate::GetDiscoveryPageHTML() {

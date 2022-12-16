@@ -42,7 +42,13 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   virtual DevToolsAgentHost::List RemoteDebuggingTargets();
 
   // Creates new inspectable target given the |url|.
-  virtual scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url);
+  // If |for_tab| is true, creates a tab target, otherwise creates a frame
+  // target for the topmost frame. The difference is important in presence of
+  // prerender and other MPArch features, where there could be multiple topmost
+  // frames per tab. For details see
+  // https://docs.google.com/document/d/14aeiC_zga2SS0OXJd6eIFj8N0o5LGwUpuqa4L8NKoR4/
+  virtual scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url,
+                                                           bool for_tab);
 
   // Get all live browser contexts created by CreateBrowserContext() method.
   virtual std::vector<BrowserContext*> GetBrowserContexts();

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
@@ -241,16 +242,19 @@ void ChromeDevToolsManagerDelegate::ClientDetached(
   sessions_.erase(channel);
 }
 
-scoped_refptr<DevToolsAgentHost>
-ChromeDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
+scoped_refptr<DevToolsAgentHost> ChromeDevToolsManagerDelegate::CreateNewTarget(
+    const GURL& url,
+    bool for_tab) {
   NavigateParams params(ProfileManager::GetLastUsedProfile(), url,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   if (!params.navigated_or_inserted_contents)
     return nullptr;
-  return DevToolsAgentHost::GetOrCreateFor(
-      params.navigated_or_inserted_contents);
+  return for_tab ? DevToolsAgentHost::GetOrCreateForTab(
+                       params.navigated_or_inserted_contents)
+                 : DevToolsAgentHost::GetOrCreateFor(
+                       params.navigated_or_inserted_contents);
 }
 
 std::vector<content::BrowserContext*>

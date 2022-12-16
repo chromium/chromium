@@ -33,6 +33,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<bool> enable_begin_frame_control,
                                      Maybe<bool> new_window,
                                      Maybe<bool> background,
+                                     Maybe<bool> for_tab,
                                      std::string* out_target_id) {
 #if BUILDFLAG(IS_MAC)
   if (enable_begin_frame_control.fromMaybe(false)) {
@@ -69,6 +70,7 @@ Response TargetHandler::CreateTarget(const std::string& url,
               height.fromMaybe(browser_->options()->window_size.height())))
           .SetEnableBeginFrameControl(
               enable_begin_frame_control.fromMaybe(false))
+          .SetUseTabTarget(for_tab.fromMaybe(false))
           .Build());
 
   *out_target_id = web_contents_impl->GetDevToolsAgentHostId();

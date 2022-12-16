@@ -1,0 +1,18 @@
+Tests that browser.Target.createTarget() creates a tab target when forTab is set.
+Attached to the tab target: {
+    method : Target.attachedToTarget
+    params : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 
+            type : tab
+            url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
+        }
+        waitingForDebugger : false
+    }
+}
+

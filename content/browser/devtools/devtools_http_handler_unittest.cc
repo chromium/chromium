@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -41,6 +42,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -120,19 +122,37 @@ class TCPServerSocketFactory : public DummyServerSocketFactory {
       : DummyServerSocketFactory(std::move(create_socket_callback),
                                  std::move(shutdown_callback)) {}
 
+  int port() { return port_; }
+
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
     std::unique_ptr<net::ServerSocket> socket(
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
-    if (socket->ListenWithAddressAndPort("127.0.0.1", kDummyPort, 10) !=
-        net::OK) {
-      return nullptr;
+    while (socket->ListenWithAddressAndPort("127.0.0.1", port_, 10) !=
+           net::OK) {
+      if (++port_ > kDummyPort + 100)
+        return nullptr;
     }
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                         std::move(create_socket_callback_));
     return socket;
   }
+
+  int port_ = kDummyPort;
 };
+
+class MockDevToolsManagerDelegate : public DevToolsManagerDelegate {
+ public:
+  static MockDevToolsManagerDelegate* last_instance;
+  MockDevToolsManagerDelegate() { last_instance = this; }
+  MOCK_METHOD(scoped_refptr<DevToolsAgentHost>,
+              CreateNewTarget,
+              (const GURL& url, bool for_tab),
+              (override));
+};
+
+MockDevToolsManagerDelegate* MockDevToolsManagerDelegate::last_instance =
+    nullptr;
 
 class BrowserClient : public ContentBrowserClient {
  public:
@@ -140,7 +160,7 @@ class BrowserClient : public ContentBrowserClient {
   ~BrowserClient() override {}
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override {
-    return std::make_unique<DevToolsManagerDelegate>();
+    return std::make_unique<MockDevToolsManagerDelegate>();
   }
 };
 
@@ -227,17 +247,18 @@ TEST_F(DevToolsHttpHandlerTest, TestDevToolsActivePort) {
 
 TEST_F(DevToolsHttpHandlerTest, TestMutatingActionsMetrics) {
   base::RunLoop run_loop, run_loop_2;
-  auto factory = std::make_unique<TCPServerSocketFactory>(
-      run_loop.QuitClosure(), run_loop_2.QuitClosure());
+  auto* factory = new TCPServerSocketFactory(run_loop.QuitClosure(),
+                                             run_loop_2.QuitClosure());
   DevToolsAgentHost::StartRemoteDebuggingServer(
-      std::move(factory), base::FilePath(), base::FilePath());
+      base::WrapUnique(factory), base::FilePath(), base::FilePath());
   // Our dummy socket factory will post a quit message once the server will
   // become ready.
   run_loop.Run();
+  int port = factory->port();
   base::HistogramTester histogram_tester;
 
   net::TestDelegate delegate;
-  GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", kDummyPort));
+  GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   auto request = request_context->CreateRequest(
       url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -261,6 +282,57 @@ TEST_F(DevToolsHttpHandlerTest, TestMutatingActionsMetrics) {
   delegate.RunUntilComplete();
   EXPECT_GE(delegate.request_status(), 0);
   histogram_tester.ExpectBucketCount("DevTools.MutatingHttpAction", 2, 1);
+
+  DevToolsAgentHost::StopRemoteDebuggingServer();
+  // Make sure the handler actually stops.
+  run_loop_2.Run();
+}
+
+TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
+  base::RunLoop run_loop, run_loop_2;
+  auto* factory = new TCPServerSocketFactory(run_loop.QuitClosure(),
+                                             run_loop_2.QuitClosure());
+  DevToolsAgentHost::StartRemoteDebuggingServer(
+      base::WrapUnique(factory), base::FilePath(), base::FilePath());
+  // Our dummy socket factory will post a quit message once the server will
+  // become ready.
+  run_loop.Run();
+  int port = factory->port();
+  net::TestDelegate delegate;
+
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              CreateNewTarget(GURL("about:blank"), false));
+  GURL url(base::StringPrintf("http://127.0.0.1:%d/json/new", port));
+  auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
+  auto request = request_context->CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_GE(delegate.request_status(), 0);
+
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              CreateNewTarget(GURL("http://example.com"), false));
+  url = GURL(base::StringPrintf(
+      "http://127.0.0.1:%d/json/new?%s", port,
+      base::EscapeQueryParamValue("http://example.com", true).c_str()));
+  request = request_context->CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  request->set_method("POST");
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_GE(delegate.request_status(), 0);
+
+  EXPECT_CALL(*MockDevToolsManagerDelegate::last_instance,
+              CreateNewTarget(GURL("http://example.com"), true));
+  url = GURL(base::StringPrintf(
+      "http://127.0.0.1:%d/json/new?%s&for_tab", port,
+      base::EscapeQueryParamValue("http://example.com", true).c_str()));
+  request = request_context->CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  request->set_method("POST");
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_GE(delegate.request_status(), 0);
 
   DevToolsAgentHost::StopRemoteDebuggingServer();
   // Make sure the handler actually stops.

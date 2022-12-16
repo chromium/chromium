@@ -120,6 +120,7 @@ class TargetHandler : public DevToolsDomainHandler,
                         Maybe<bool> enable_begin_frame_control,
                         Maybe<bool> new_window,
                         Maybe<bool> background,
+                        Maybe<bool> for_tab,
                         std::string* out_target_id) override;
   Response GetTargets(
       Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
