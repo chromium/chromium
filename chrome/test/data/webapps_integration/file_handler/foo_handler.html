@@ -3,6 +3,7 @@
 <head>
   <title>File Handler - Text Handler</title>
     <script src="/webapps_integration/test_utils.js"></script>
+    <script src="/webapps_integration/file_handler/app.js" async></script>
 </head>
 <body>
   <h1>File Handler - Text Handler</h1>
@@ -16,5 +17,20 @@
         href="https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md">https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md</a>
     </p>
   </div>
+  <br>
+  <div id="viewers-container"></div>
+  <div id="opened-files-container"></div>
+  <template id="file-viewer-template">
+    <div>
+      <p>File: <span name="file-name"></span></p>
+      <textarea
+        name="file-contents"
+        cols="80"
+        rows="10"
+        style="white-space: pre-wrap"
+      >
+      </textarea>
+    </div>
+  </template>
 </body>
 </html>
