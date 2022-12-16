@@ -274,6 +274,7 @@ after discussions on the right group.
       <annotation id="quick_start_session_auth_requester"/>
       <annotation id="network_diagnostics_routines"/>
       <annotation id="trial_group_lookup"/>
+      <annotation id="wallpaper_drivefs_delegate"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

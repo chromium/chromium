@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_DRIVEFS_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -23,6 +24,13 @@ class ASH_PUBLIC_EXPORT WallpaperDriveFsDelegate {
   virtual void GetWallpaperModificationTime(
       const AccountId& account_id,
       base::OnceCallback<void(base::Time modification_time)> callback) = 0;
+
+  // Downloads and decodes DriveFS wallpaper file. Replies with default
+  // constructed `gfx::ImageSkia` in case of failure, such as the file not
+  // existing or DriveFS error.
+  virtual void DownloadAndDecodeWallpaper(
+      const AccountId& account_id,
+      ImageDownloader::DownloadCallback callback) = 0;
 };
 
 }  // namespace ash

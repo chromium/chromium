@@ -6,9 +6,18 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_WALLPAPER_DRIVEFS_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
+
+#include <string>
+
+#include "ash/public/cpp/image_downloader.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/account_id/account_id.h"
+#include "components/drive/file_errors.h"
+#include "google_apis/common/api_error_codes.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -26,6 +35,29 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
   void GetWallpaperModificationTime(
       const AccountId& account_id,
       base::OnceCallback<void(base::Time modification_time)> callback) override;
+  void DownloadAndDecodeWallpaper(
+      const AccountId& account_id,
+      ImageDownloader::DownloadCallback callback) override;
+
+ private:
+  // Called when DriveFS has replied with file metadata that contains a URL to
+  // download the wallpaper file. Actually downloading the wallpaper file still
+  // requires an authentication token from Drive.
+  void OnGetDownloadUrlMetadata(const AccountId& account_id,
+                                ImageDownloader::DownloadCallback callback,
+                                drive::FileError error,
+                                drivefs::mojom::FileMetadataPtr metadata);
+
+  // Called after `OnGetDownloadUrlMetadata` and after attempting to obtain a
+  // Drive authentication token. Can now attempt to download the wallpaper image
+  // because `download_url` and `authentication_token` are both present.
+  void OnGetDownloadUrlAndAuthentication(
+      ImageDownloader::DownloadCallback callback,
+      const GURL& download_url,
+      google_apis::ApiErrorCode error_code,
+      const std::string& authentication_token);
+
+  base::WeakPtrFactory<WallpaperDriveFsDelegateImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

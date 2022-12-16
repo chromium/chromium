@@ -3263,8 +3263,11 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
     const WallpaperInfo& wallpaper_info) {
   base::FilePath drivefs_path =
       wallpaper_controller_client_->GetWallpaperPathFromDriveFs(account_id);
-  if (drivefs_path.empty())
+  if (drivefs_path.empty()) {
+    VLOG(1)
+        << "Skip syncing down custom wallpaper because DriveFS is unavailable.";
     return;
+  }
 
   drivefs_delegate_->GetWallpaperModificationTime(
       account_id,
@@ -3283,6 +3286,8 @@ void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
     // If the drivefs image modification time is null, watch DriveFS for the
     // file being created. If the file exists but is older than synced wallpaper
     // info, watch for the file being updated by the other device.
+    VLOG(1) << "Skip syncing custom wallpaper from DriveFS because it is not "
+               "found or out of date";
     drive_fs_wallpaper_watcher_.Watch(
         drivefs_path, base::FilePathWatcher::Type::kNonRecursive,
         base::BindRepeating(&WallpaperControllerImpl::DriveFsWallpaperChanged,
@@ -3292,13 +3297,14 @@ void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
   base::FilePath path_in_prefs = base::FilePath(wallpaper_info.location);
   std::string file_name = path_in_prefs.BaseName().value();
   std::string file_path = wallpaper_info.user_file_path;
-  ReadAndDecodeWallpaper(
+
+  drivefs_delegate_->DownloadAndDecodeWallpaper(
+      account_id,
       base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
                      weak_factory_.GetWeakPtr(), account_id,
                      IsEphemeralUser(account_id), file_name, file_path,
                      WallpaperType::kCustomized, wallpaper_info.layout,
-                     /*show_wallpaper=*/true),
-      drivefs_path);
+                     /*show_wallpaper=*/true));
 }
 
 void WallpaperControllerImpl::DriveFsWallpaperChanged(

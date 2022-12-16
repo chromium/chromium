@@ -874,22 +874,15 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
     return;
   }
   download_url_ = std::move(download_url);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context()));
-  // This class doesn't care about browser sync consent.
-  const CoreAccountId& account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  std::vector<std::string> scopes;
-  scopes.emplace_back(GaiaConstants::kDriveReadOnlyOAuth2Scope);
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      browser_context()
-          ->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess();
-  auth_service_ = std::make_unique<google_apis::AuthService>(
-      identity_manager, account_id, url_loader_factory, scopes);
-  auth_service_->StartAuthentication(base::BindOnce(
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          Profile::FromBrowserContext(browser_context()));
+
+  // Integration service was used to fetch this download url, so should still be
+  // present, even if DriveFS has unmounted or experienced an error.
+  DCHECK(integration_service);
+  integration_service->GetReadOnlyAuthenticationToken(base::BindOnce(
       &FileManagerPrivateInternalGetDownloadUrlFunction::OnTokenFetched, this));
 }
 

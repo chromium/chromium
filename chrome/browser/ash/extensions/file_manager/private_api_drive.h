@@ -20,10 +20,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 
-namespace google_apis {
-class AuthService;
-}
-
 namespace extensions {
 
 namespace api {
@@ -176,7 +172,6 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
 
  private:
   GURL download_url_;
-  std::unique_ptr<google_apis::AuthService> auth_service_;
 };
 
 // Implements the chrome.fileManagerPrivate.notifyDriveDialogResult method.

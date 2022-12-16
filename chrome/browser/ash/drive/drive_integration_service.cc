@@ -62,6 +62,8 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/user_agent.h"
 #include "google_apis/common/auth_service.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -1463,6 +1465,24 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
   // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
+}
+
+void DriveIntegrationService::GetReadOnlyAuthenticationToken(
+    GetReadOnlyAuthenticationTokenCallback callback) {
+  if (!auth_service_) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_);
+    // This class doesn't care about browser sync consent.
+    const CoreAccountId& account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+
+    std::vector<std::string> scopes = {
+        GaiaConstants::kDriveReadOnlyOAuth2Scope};
+    auth_service_ = std::make_unique<google_apis::AuthService>(
+        identity_manager, account_id, profile_->GetURLLoaderFactory(), scopes);
+  }
+
+  auth_service_->StartAuthentication(std::move(callback));
 }
 
 //===================== DriveIntegrationServiceFactory =======================
