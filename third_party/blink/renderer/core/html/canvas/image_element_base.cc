@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/canvas/image_element_base.h"
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -36,6 +38,14 @@ ImageResourceContent* ImageElementBase::CachedImage() const {
 
 const Element& ImageElementBase::GetElement() const {
   return *GetImageLoader().GetElement();
+}
+
+mojom::blink::PreferredColorScheme ImageElementBase::PreferredColorScheme()
+    const {
+  const Element& element = GetElement();
+  const ComputedStyle* style = element.GetComputedStyle();
+  return element.GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+      style);
 }
 
 bool ImageElementBase::IsSVGSource() const {
@@ -81,7 +91,7 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
         GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()),
-        GetElement().GetDocument().GetPreferredColorScheme());
+        PreferredColorScheme());
   }
 
   *status = kNormalSourceImageStatus;
@@ -185,8 +195,7 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
     return ImageBitmap::CreateAsync(
         this, crop_rect, script_state,
         GetElement().GetDocument().GetTaskRunner(TaskType::kInternalDefault),
-        GetElement().GetDocument().GetPreferredColorScheme(), exception_state,
-        options);
+        PreferredColorScheme(), exception_state, options);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

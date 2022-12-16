@@ -3445,6 +3445,24 @@ void StyleEngine::SetOwnerColorScheme(mojom::blink::ColorScheme color_scheme) {
   UpdateColorSchemeBackground(true);
 }
 
+mojom::blink::PreferredColorScheme StyleEngine::ResolveColorSchemeForEmbedding(
+    const ComputedStyle* embedder_style) const {
+  const bool embedder_color_scheme_is_normal =
+      !embedder_style || embedder_style->ColorScheme().empty();
+  // ...if 'color-scheme' is 'normal' and there's no 'color-scheme' meta tag,
+  // the propagated scheme is the preferred color-scheme of the embedder
+  // document.
+  if (embedder_color_scheme_is_normal &&
+      GetPageColorSchemes() ==
+          static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal)) {
+    return GetPreferredColorScheme();
+  }
+  return embedder_style && embedder_style->UsedColorScheme() ==
+                               mojom::blink::ColorScheme::kDark
+             ? mojom::blink::PreferredColorScheme::kDark
+             : mojom::blink::PreferredColorScheme::kLight;
+}
+
 void StyleEngine::UpdateForcedBackgroundColor() {
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);

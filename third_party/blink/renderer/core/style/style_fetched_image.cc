@@ -25,6 +25,7 @@
 
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -191,9 +192,9 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
   auto* svg_image = DynamicTo<SVGImage>(image);
   if (!svg_image)
     return image;
-  return SVGImageForContainer::Create(svg_image, target_size,
-                                      style.EffectiveZoom(), url_,
-                                      document.GetPreferredColorScheme());
+  return SVGImageForContainer::Create(
+      svg_image, target_size, style.EffectiveZoom(), url_,
+      document.GetStyleEngine().ResolveColorSchemeForEmbedding(&style));
 }
 
 bool StyleFetchedImage::KnownToBeOpaque(const Document&,

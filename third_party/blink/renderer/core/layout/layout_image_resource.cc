@@ -29,9 +29,9 @@
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -200,9 +200,14 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
     const AtomicString& url_string = element->ImageSourceURL();
     url = element->GetDocument().CompleteURL(url_string);
   }
-  return SVGImageForContainer::Create(
-      svg_image, container_size, layout_object_->StyleRef().EffectiveZoom(),
-      url, layout_object_->GetDocument().GetPreferredColorScheme());
+
+  const ComputedStyle& style = layout_object_->StyleRef();
+  auto preferred_color_scheme = layout_object_->GetDocument()
+                                    .GetStyleEngine()
+                                    .ResolveColorSchemeForEmbedding(&style);
+  return SVGImageForContainer::Create(svg_image, container_size,
+                                      style.EffectiveZoom(), url,
+                                      preferred_color_scheme);
 }
 
 bool LayoutImageResource::MaybeAnimated() const {
