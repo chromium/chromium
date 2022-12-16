@@ -3277,9 +3277,7 @@
         },
       },
       'Mac12 Tests': {
-        'precommit_args': [
-            '--gtest_filter=-*',
-        ],
+        'ci_only': True,
         'swarming': {
           'shards': 4,
         },
