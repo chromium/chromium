@@ -385,7 +385,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     yield
 
   def browser_command_line_args(self):
-    return (['--fake-variations-channel=%s' %
+    return (['--vmodule=variations_field_trial_creator.cc=1', '--v=1',
+             '--fake-variations-channel=%s' %
              self.options.fake_variations_channel] +
             self.test_specific_browser_args)
 
@@ -696,24 +697,48 @@ class WebViewFinchTestCase(FinchTestCase):
     # a default seed is consumed. The default seed may be too old to have it's
     # experiments loaded.
     if self.default_finch_seed_path != self.options.finch_seed_path:
-      # Check for a field trial that is guaranteed to be activated by
-      # the finch seed.
-      experiments_loaded = ('Active field trial '
-                            '"UMA-Uniformity-Trial-100-Percent" '
-                            'in group "group_01"') in logcat_content
+      check_for_uma_trial = False
+      field_trial_check_name = 'check_for_logged_field_trials'
 
-      # The check for field trials logged in the logcat is flaky therefore we
-      # should set the expected results field to 'PASS FAIL'. When the check
-      # is fixed, then we can revert back to setting the expected result
-      # to 'PASS'.
-      expected_results = 'PASS FAIL'
+      if self.options.use_webview_installer_tool:
+        # For M110 and above we should check for a new log message in the
+        # logcat that confirms that field trials were loaded from the seed.
+        # This message is guaranteed to be outputted when a valid seed is
+        # loaded.
+        # TODO(b/261524437): Remove 'self.options.channel != canary' from the
+        # expression below after M110 leaves the canary release channel.
+        check_for_uma_trial = self.options.channel != 'canary' and (
+            not self.options.chrome_version or
+            self.options.chrome_version.startswith('110.'))
+
+      if check_for_uma_trial:
+        # Check for a field trial that is guaranteed to be activated by
+        # the finch seed.
+        field_trials_loaded = ('Active field trial '
+                               '"UMA-Uniformity-Trial-100-Percent" '
+                               'in group "group_01"') in logcat_content
+        # It is not guaranteed that the field trials will be logged. That
+        # is why this check is flaky.
+        expected_results = 'PASS FAIL'
+        logger.info("Checking for the UMA uniformity trial in the logcat")
+      else:
+        # This log was added in crrev.com/c/4076271, which is part of the
+        # M110 milestone.
+        field_trials_loaded = (
+            'CreateTrialsFromSeed complete with seed.version='
+            in logcat_content)
+        field_trial_check_name = 'check_for_variations_field_trial_creator_logs'
+        expected_results = 'PASS'
+        logger.info("Checking for variations_field_trial_creator.cc logs "
+                    "in the logcat")
+
       field_trials_loaded_results_dict = (
           all_results_dict['tests'].setdefault(
-              'check_field_trials_loaded',
+              field_trial_check_name,
               {'expected': expected_results,
                'artifacts': {'logcat_path': [logcat_relpath]}}))
 
-      if experiments_loaded:
+      if field_trials_loaded:
         logger.info('Experiments were loaded from the finch seed by WebView')
         field_trials_loaded_results_dict['actual'] = 'PASS'
       else:
@@ -728,7 +753,7 @@ class WebViewFinchTestCase(FinchTestCase):
           # use the seed_loaded variable to set the return code.
           return 0 if seed_loaded else 1
 
-      return 0 if seed_loaded and experiments_loaded else 1
+      return 0 if seed_loaded and field_trials_loaded else 1
 
     logger.warning('The default seed is being tested, '
                    'skipping checks for active field trials')
@@ -761,7 +786,7 @@ class WebViewFinchTestCase(FinchTestCase):
       '--webview-installer-tool', type=os.path.realpath,
       help='Path to the WebView installer tool')
     installer_tool_group.add_argument(
-      '--chrome-version', '-V', type=str,
+      '--chrome-version', '-V', type=str, default=None,
       help='Chrome version to install with the WebView installer tool')
     installer_tool_group.add_argument(
       '--channel', '-c', help='Channel build of WebView to install',
