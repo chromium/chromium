@@ -36,14 +36,16 @@ const char kDisableGpu[] = "disable-gpu";
 const char kEnableVulkan[] = "enable-vulkan";
 #endif
 
+scoped_refptr<gl::Presenter> CreatePresenter(gl::GLDisplay* display,
+                                             gfx::AcceleratedWidget widget) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSurfaceless))
+    return gl::init::CreateSurfacelessViewGLSurface(display, widget);
+  return nullptr;
+}
+
 scoped_refptr<gl::GLSurface> CreateGLSurface(gl::GLDisplay* display,
                                              gfx::AcceleratedWidget widget) {
-  scoped_refptr<gl::GLSurface> surface;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSurfaceless))
-    surface = gl::init::CreateSurfacelessViewGLSurface(display, widget);
-  if (!surface)
-    surface = gl::init::CreateViewGLSurface(display, widget);
-  return surface;
+  return gl::init::CreateViewGLSurface(display, widget);
 }
 
 }  // namespace
@@ -95,13 +97,15 @@ std::unique_ptr<Renderer> SimpleRendererFactory::CreateRenderer(
       surface_factory_ozone->CreatePlatformWindowSurface(widget);
   switch (type_) {
     case GL: {
+      if (auto presenter = CreatePresenter(display_, widget)) {
+        return std::make_unique<SurfacelessGlRenderer>(
+            widget, std::move(window_surface),
+            gl::init::CreateOffscreenGLSurface(display_, gfx::Size(1, 1)),
+            presenter, size);
+      }
       scoped_refptr<gl::GLSurface> surface = CreateGLSurface(display_, widget);
       if (!surface)
         LOG(FATAL) << "Failed to create GL surface";
-      if (surface->IsSurfaceless()) {
-        return std::make_unique<SurfacelessGlRenderer>(
-            widget, std::move(window_surface), surface, size);
-      }
       return std::make_unique<GlRenderer>(widget, std::move(window_surface),
                                           surface, size);
     }

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gl/presenter.h"
 #include "ui/ozone/demo/skia/skia_gl_renderer.h"
 
 namespace ui {
@@ -19,7 +20,8 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
   SurfacelessSkiaGlRenderer(
       gfx::AcceleratedWidget widget,
       std::unique_ptr<PlatformWindowSurface> window_surface,
-      const scoped_refptr<gl::GLSurface>& gl_surface,
+      const scoped_refptr<gl::GLSurface>& offscreen_surface,
+      const scoped_refptr<gl::Presenter>& presenter,
       const gfx::Size& size);
 
   SurfacelessSkiaGlRenderer(const SurfacelessSkiaGlRenderer&) = delete;
@@ -45,6 +47,7 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
   gfx::Rect primary_plane_rect_;
 
   std::unique_ptr<OverlayCandidatesOzone> overlay_checker_;
+  scoped_refptr<gl::Presenter> presenter_;
 
   int back_buffer_ = 0;
 

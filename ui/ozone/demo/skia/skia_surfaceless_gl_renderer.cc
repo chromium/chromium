@@ -154,15 +154,17 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
 SurfacelessSkiaGlRenderer::SurfacelessSkiaGlRenderer(
     gfx::AcceleratedWidget widget,
     std::unique_ptr<PlatformWindowSurface> window_surface,
-    const scoped_refptr<gl::GLSurface>& gl_surface,
+    const scoped_refptr<gl::GLSurface>& offscreen_surface,
+    const scoped_refptr<gl::Presenter>& presenter,
     const gfx::Size& size)
     : SkiaGlRenderer(widget,
                      std::move(window_surface),
-                     std::move(gl_surface),
+                     std::move(offscreen_surface),
                      size),
       overlay_checker_(ui::OzonePlatform::GetInstance()
                            ->GetOverlayManager()
-                           ->CreateOverlayCandidates(widget)) {}
+                           ->CreateOverlayCandidates(widget)),
+      presenter_(presenter) {}
 
 SurfacelessSkiaGlRenderer::~SurfacelessSkiaGlRenderer() {
   // Need to make current when deleting the framebuffer resources allocated in
@@ -173,6 +175,8 @@ SurfacelessSkiaGlRenderer::~SurfacelessSkiaGlRenderer() {
 bool SurfacelessSkiaGlRenderer::Initialize() {
   if (!SkiaGlRenderer::Initialize())
     return false;
+
+  presenter_->Resize(size_, 1.f, gfx::ColorSpace(), true);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kPartialPrimaryPlane))
@@ -252,7 +256,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
 
   if (!disable_primary_plane_) {
     CHECK(overlay_list.front().overlay_handled);
-    gl_surface_->ScheduleOverlayPlane(
+    presenter_->ScheduleOverlayPlane(
         buffers_[back_buffer_]->image(), /* gpu_fence */ nullptr,
         gfx::OverlayPlaneData(
             0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
@@ -264,7 +268,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
-    gl_surface_->ScheduleOverlayPlane(
+    presenter_->ScheduleOverlayPlane(
         overlay_buffer_[back_buffer_]->image(), /* gpu_fence */ nullptr,
         gfx::OverlayPlaneData(
             1, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(overlay_rect),
@@ -276,7 +280,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
   }
 
   back_buffer_ ^= 1;
-  gl_surface_->SwapBuffersAsync(
+  presenter_->Present(
       base::BindOnce(&SurfacelessSkiaGlRenderer::PostRenderFrameTask,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing(), gfx::FrameData());

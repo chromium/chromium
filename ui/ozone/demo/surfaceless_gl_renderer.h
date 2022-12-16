@@ -13,6 +13,7 @@
 
 namespace gl {
 class GLImage;
+class Presenter;
 }
 
 namespace ui {
@@ -25,7 +26,8 @@ class SurfacelessGlRenderer : public RendererBase {
  public:
   SurfacelessGlRenderer(gfx::AcceleratedWidget widget,
                         std::unique_ptr<PlatformWindowSurface> window_surface,
-                        const scoped_refptr<gl::GLSurface>& surface,
+                        const scoped_refptr<gl::GLSurface>& offscreen_surface,
+                        const scoped_refptr<gl::Presenter>& presenter,
                         const gfx::Size& size);
 
   SurfacelessGlRenderer(const SurfacelessGlRenderer&) = delete;
@@ -78,6 +80,8 @@ class SurfacelessGlRenderer : public RendererBase {
 
   scoped_refptr<gl::GLSurface> gl_surface_;
   scoped_refptr<gl::GLContext> context_;
+
+  scoped_refptr<gl::Presenter> presenter_;
 
   base::WeakPtrFactory<SurfacelessGlRenderer> weak_ptr_factory_{this};
 };
