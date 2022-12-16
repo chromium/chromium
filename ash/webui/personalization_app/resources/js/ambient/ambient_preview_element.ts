@@ -215,7 +215,9 @@ export class AmbientPreview extends WithPersonalizationStore {
         loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled') ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
-        return (this.previewAlbums_ || []).map(album => album.url);
+        return (this.previewAlbums_ || [])
+            .map(album => album.url)
+            .slice(0, maxLength);
       case TopicSource.kGooglePhotos:
         if (isNonEmptyArray(this.googlePhotosAlbumsPreviews_)) {
           return this.googlePhotosAlbumsPreviews_.length < maxLength ?
