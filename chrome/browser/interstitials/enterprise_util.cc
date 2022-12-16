@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -58,3 +59,21 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
                                                 net_error_code);
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void MaybeTriggerUrlFilteringInterstitialEvent(
+    content::WebContents* web_contents,
+    const GURL& page_url,
+    const std::string& threat_type,
+    safe_browsing::RTLookupResponse rt_lookup_response) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::SafeBrowsingPrivateEventRouter* event_router =
+      GetEventRouter(web_contents);
+  if (!event_router) {
+    return;
+  }
+  event_router->OnUrlFilteringInterstitial(page_url, threat_type,
+                                           rt_lookup_response);
+#endif
+}
+#endif

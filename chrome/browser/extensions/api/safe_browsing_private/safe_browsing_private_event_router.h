@@ -246,8 +246,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,
-      const safe_browsing::RTLookupResponse& response,
-      safe_browsing::EventResult event_result);
+      const safe_browsing::RTLookupResponse& response);
 
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 

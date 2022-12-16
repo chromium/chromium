@@ -65,6 +65,21 @@ namespace {
 
 const char16_t kMaskedUsername[] = u"*****";
 
+safe_browsing::EventResult GetEventResultFromThreatType(
+    std::string threat_type) {
+  if (threat_type == "ENTERPRISE_WARNED_SEEN") {
+    return safe_browsing::EventResult::WARNED;
+  }
+  if (threat_type == "ENTERPRISE_WARNED_BYPASS") {
+    return safe_browsing::EventResult::BYPASSED;
+  }
+  if (threat_type == "ENTERPRISE_BLOCKED_SEEN") {
+    return safe_browsing::EventResult::BLOCKED;
+  }
+  NOTREACHED();
+  return safe_browsing::EventResult::UNKNOWN;
+}
+
 void AddAnalysisConnectorVerdictToEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     base::Value::Dict& event) {
@@ -966,8 +981,7 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
 void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,
-    const safe_browsing::RTLookupResponse& response,
-    safe_browsing::EventResult event_result) {
+    const safe_browsing::RTLookupResponse& response) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() || settings->enabled_event_names.count(
@@ -977,6 +991,8 @@ void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
   event.Set(kKeyProfileUserName, GetProfileUserName());
+  safe_browsing::EventResult event_result =
+      GetEventResultFromThreatType(threat_type);
   event.Set(kKeyClickedThrough,
             event_result == safe_browsing::EventResult::BYPASSED);
   event.Set(kKeyThreatType, threat_type);
