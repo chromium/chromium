@@ -100,6 +100,9 @@ class DownloadBubbleRowView : public views::View,
       DownloadCommands::Command command);
   std::u16string GetAccessibleNameForQuickAction(
       DownloadCommands::Command command);
+  views::MdTextButton* GetMainPageButton(DownloadCommands::Command command);
+  std::u16string GetAccessibleNameForMainPageButton(
+      DownloadCommands::Command command);
 
   // If there is any change in state, update UI info.
   // Returns whether the ui info was changed.

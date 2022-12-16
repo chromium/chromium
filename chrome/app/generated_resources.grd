@@ -2826,6 +2826,38 @@ are declared in tools/grit/grit_rule.gni.
             Back to Recent Downloads
           </message>
         </if>
+      <message name="IDS_DOWNLOAD_BUBBLE_CANCEL_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for cancel button.">
+        Cancel <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_DELETE_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for delete button.">
+        Delete <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_KEEP_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for keep button.">
+        Keep <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SCAN_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for scan button.">
+        Scan <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN_NOW_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for open now button.">
+        Open <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> now
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RESUME_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for resume button.">
+        Resume <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_REVIEW_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for review button.">
+        Review <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY"
+            desc="Accessibility label for retry button.">
+        Retry <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
+      </message>
 
       <!-- Tailored Warning in Download Bubble -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT"
