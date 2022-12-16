@@ -15,6 +15,8 @@
 #include "base/stl_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -88,7 +90,6 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
-  DCHECK(registrar_);
   DCHECK(base::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
@@ -97,14 +98,29 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
   DCHECK(!base::Contains(synchronize_requests_, install_source));
+  command_scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+      "ExternallyManagedAppManager::SynchronizeInstalledApps",
+      std::make_unique<FullSystemLockDescription>(),
+      base::BindOnce(
+          &ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::move(desired_apps_install_options), std::move(install_source),
+          std::move(callback)));
+}
 
+void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
+    std::vector<ExternalInstallOptions> desired_apps_install_options,
+    ExternalInstallSource install_source,
+    SynchronizeCallback callback,
+    FullSystemLock& lock) {
   std::vector<GURL> installed_urls;
   for (const auto& apps_it :
-       registrar_->GetExternallyInstalledApps(install_source)) {
+       lock.registrar().GetExternallyInstalledApps(install_source)) {
     // TODO(crbug.com/1339965): Remove this check once we cleanup
     // ExternallyInstalledWebAppPrefs on external app uninstall.
     bool has_same_external_source =
-        registrar_->GetAppById(apps_it.first)
+        lock.registrar()
+            .GetAppById(apps_it.first)
             ->GetSources()
             .test(ConvertExternalInstallSourceToSource(install_source));
     if (has_same_external_source) {

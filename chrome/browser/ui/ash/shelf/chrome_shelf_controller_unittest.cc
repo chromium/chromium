@@ -537,6 +537,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     provider->Start();
 
     system_web_app_manager->ScheduleStart();
+
+    base::RunLoop run_loop;
+    provider->on_external_managers_synchronized().Post(FROM_HERE,
+                                                       run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   // Note that this resets previously installed SWAs.
