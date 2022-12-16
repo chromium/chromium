@@ -24,7 +24,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_options.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request.h"
 
@@ -110,8 +109,7 @@ net::NetworkDelegate::PrivacySetting
 IOSChromeNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    net::SamePartyContext::Type same_party_context_type) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get())
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;

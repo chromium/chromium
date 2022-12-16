@@ -5,7 +5,6 @@
 #include "net/base/network_delegate_impl.h"
 
 #include "net/base/net_errors.h"
-#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 
@@ -65,8 +64,7 @@ bool NetworkDelegateImpl::OnCanSetCookie(const URLRequest& request,
 NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    SamePartyContext::Type same_party_context_type) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   return NetworkDelegate::PrivacySetting::kStateAllowed;
 }
 

@@ -28,8 +28,6 @@
 namespace network {
 namespace {
 
-using SamePartyCookieContextType = net::SamePartyContext::Type;
-
 bool IsExplicitSetting(const ContentSettingPatternSource& setting) {
   return !setting.primary_pattern.MatchesAllHosts() ||
          !setting.secondary_pattern.MatchesAllHosts();
@@ -128,7 +126,7 @@ bool CookieSettings::IsCookieAccessible(
                            base::OptionalToPtr(top_frame_origin)),
           IsThirdPartyRequest(url, site_for_cookies), overrides,
           QueryReason::kCookies),
-      cookie.IsSameParty(), cookie.IsPartitioned());
+      cookie.IsPartitioned());
 }
 
 bool CookieSettings::ShouldAlwaysAllowCookies(
@@ -146,7 +144,6 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    SamePartyCookieContextType same_party_cookie_context_type,
     net::CookieSettingOverrides overrides) const {
   // PrivacySetting should be kStateDisallowed iff no cookies should ever
   // be sent on this request. E.g.:
@@ -156,8 +153,7 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
   // * if cookie settings block 3P cookies, the context is cross-party, and
   // content settings blocks the 1P from using cookies; or
   //
-  // * if cookie settings block 3P cookies, and the context is same-party, but
-  // SameParty cookies aren't considered 1P.
+  // * if cookie settings block 3P cookies, and the context is same-party
   //
   // PrivacySetting should be kPartitionedStateAllowedOnly iff the request is
   // cross-party, cookie settings block 3P cookies, and content settings allows
@@ -168,8 +164,6 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
       url, site_for_cookies, base::OptionalToPtr(top_frame_origin), overrides,
       QueryReason::kCookies);
   if (IsHypotheticalCookieAllowed(metadata,
-                                  same_party_cookie_context_type ==
-                                      SamePartyCookieContextType::kSameParty,
                                   /*is_partitioned*/ false)) {
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
   }
@@ -356,24 +350,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
 bool CookieSettings::IsCookieAllowed(
     const CookieSettingWithMetadata& setting_with_metadata,
     const net::CookieWithAccessResult& cookie) const {
-  return IsHypotheticalCookieAllowed(
-      setting_with_metadata,
-      cookie.cookie.IsSameParty() &&
-          !cookie.access_result.status.HasExclusionReason(
-              net::CookieInclusionStatus::
-                  EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT),
-      cookie.cookie.IsPartitioned());
-}
-
-bool CookieSettings::IsAllowedSamePartyCookie(
-    bool is_same_party,
-    ThirdPartyBlockingOutcome third_party_blocking_outcome) const {
-  bool blocked_by_3p_but_same_party =
-      is_same_party &&
-      third_party_blocking_outcome != ThirdPartyBlockingOutcome::kIrrelevant;
-
-  return sameparty_cookies_considered_first_party_ &&
-         blocked_by_3p_but_same_party;
+  return IsHypotheticalCookieAllowed(setting_with_metadata,
+                                     cookie.cookie.IsPartitioned());
 }
 
 // static
@@ -399,13 +377,8 @@ bool CookieSettings::IsThirdPartyCookieBlockedInSamePartySites(
 
 bool CookieSettings::IsHypotheticalCookieAllowed(
     const CookieSettingWithMetadata& setting_with_metadata,
-    bool is_same_party,
     bool is_partitioned) const {
-  DCHECK(!is_partitioned || !is_same_party);
   return IsAllowed(setting_with_metadata.cookie_setting) ||
-         IsAllowedSamePartyCookie(
-             is_same_party,
-             setting_with_metadata.third_party_blocking_outcome) ||
          IsAllowedPartitionedCookie(
              is_partitioned,
              setting_with_metadata.third_party_blocking_outcome);

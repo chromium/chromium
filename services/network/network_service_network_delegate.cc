@@ -247,12 +247,10 @@ net::NetworkDelegate::PrivacySetting
 NetworkServiceNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    net::SamePartyContext::Type same_party_context_type) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
-                            same_party_context_type);
+      .IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin);
 }
 
 bool NetworkServiceNetworkDelegate::

@@ -414,8 +414,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
   if (request_->network_delegate()) {
     privacy_setting = request()->network_delegate()->ForcePrivacyMode(
         request_->url(), request_->site_for_cookies(),
-        request_->isolation_info().top_frame_origin(),
-        first_party_set_metadata_.context().context_type());
+        request_->isolation_info().top_frame_origin());
   }
   switch (privacy_setting) {
     case NetworkDelegate::PrivacySetting::kStateAllowed:

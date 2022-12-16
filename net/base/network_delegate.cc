@@ -126,12 +126,10 @@ bool NetworkDelegate::CanSetCookie(const URLRequest& request,
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    SamePartyContext::Type same_party_context_type) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::ForcePrivacyMode");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnForcePrivacyMode(url, site_for_cookies, top_frame_origin,
-                            same_party_context_type);
+  return OnForcePrivacyMode(url, site_for_cookies, top_frame_origin);
 }
 
 bool NetworkDelegate::CancelURLRequestWithPolicyViolatingReferrerHeader(

@@ -288,13 +288,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 // reading cookies).)
 NET_EXPORT BASE_DECLARE_FEATURE(kSamePartyAttributeEnabled);
 
-// When enabled, cookies with the SameParty attribute are treated as
-// "first-party" when in same-party contexts, for the purposes of third-party
-// cookie blocking. (Note that as a consequence, some cookies may be blocked
-// while others are allowed on a cross-site, same-party request. Additionally,
-// privacy mode is disabled in same-party contexts.)
-NET_EXPORT BASE_DECLARE_FEATURE(kSamePartyCookiesConsideredFirstParty);
-
 // When enabled, sites can opt-in to having their cookies partitioned by
 // top-level site with the Partitioned attribute. Partitioned cookies will only
 // be sent when the browser is on the same top-level site that it was on when

@@ -16,7 +16,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -82,8 +81,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      SamePartyContext::Type same_party_context_type) const override;
+      const absl::optional<url::Origin>& top_frame_origin) const override;
 
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,

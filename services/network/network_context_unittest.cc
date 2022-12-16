@@ -4183,8 +4183,7 @@ TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {
                 ->network_delegate()
                 ->ForcePrivacyMode(GURL("http://foo.com"),
                                    net::SiteForCookies::FromUrl(kOtherURL),
-                                   url::Origin::Create(kOtherURL),
-                                   net::SamePartyContext::Type::kCrossParty));
+                                   url::Origin::Create(kOtherURL)));
 }
 
 TEST_F(NetworkContextTest, PrivacyModeEnabledIfCookiesBlocked) {
@@ -4201,15 +4200,13 @@ TEST_F(NetworkContextTest, PrivacyModeEnabledIfCookiesBlocked) {
       network_context->url_request_context()
           ->network_delegate()
           ->ForcePrivacyMode(kURL, net::SiteForCookies::FromUrl(kOtherURL),
-                             url::Origin::Create(kOtherURL),
-                             net::SamePartyContext::Type::kCrossParty));
+                             url::Origin::Create(kOtherURL)));
   EXPECT_EQ(
       net::NetworkDelegate::PrivacySetting::kStateAllowed,
       network_context->url_request_context()
           ->network_delegate()
           ->ForcePrivacyMode(kOtherURL, net::SiteForCookies::FromUrl(kURL),
-                             url::Origin::Create(kURL),
-                             net::SamePartyContext::Type::kCrossParty));
+                             url::Origin::Create(kURL)));
 }
 
 TEST_F(NetworkContextTest, PrivacyModeDisabledIfCookiesAllowed) {
@@ -4226,8 +4223,7 @@ TEST_F(NetworkContextTest, PrivacyModeDisabledIfCookiesAllowed) {
       network_context->url_request_context()
           ->network_delegate()
           ->ForcePrivacyMode(kURL, net::SiteForCookies::FromUrl(kOtherURL),
-                             url::Origin::Create(kOtherURL),
-                             net::SamePartyContext::Type::kCrossParty));
+                             url::Origin::Create(kOtherURL)));
 }
 
 TEST_F(NetworkContextTest, PrivacyModeDisabledIfCookiesSettingForOtherURL) {
@@ -4245,8 +4241,7 @@ TEST_F(NetworkContextTest, PrivacyModeDisabledIfCookiesSettingForOtherURL) {
       network_context->url_request_context()
           ->network_delegate()
           ->ForcePrivacyMode(kURL, net::SiteForCookies::FromUrl(kOtherURL),
-                             url::Origin::Create(kOtherURL),
-                             net::SamePartyContext::Type::kCrossParty));
+                             url::Origin::Create(kOtherURL)));
 }
 
 TEST_F(NetworkContextTest, PrivacyModeEnabledIfThirdPartyCookiesBlocked) {
@@ -4263,22 +4258,18 @@ TEST_F(NetworkContextTest, PrivacyModeEnabledIfThirdPartyCookiesBlocked) {
   network_context->cookie_manager()->BlockThirdPartyCookies(true);
   EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly,
             delegate->ForcePrivacyMode(
-                kURL, net::SiteForCookies::FromUrl(kOtherURL), kOtherOrigin,
-                net::SamePartyContext::Type::kCrossParty));
+                kURL, net::SiteForCookies::FromUrl(kOtherURL), kOtherOrigin));
   EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateAllowed,
-            delegate->ForcePrivacyMode(
-                kURL, net::SiteForCookies::FromUrl(kURL), kOrigin,
-                net::SamePartyContext::Type::kSameParty));
+            delegate->ForcePrivacyMode(kURL, net::SiteForCookies::FromUrl(kURL),
+                                       kOrigin));
 
   network_context->cookie_manager()->BlockThirdPartyCookies(false);
   EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateAllowed,
             delegate->ForcePrivacyMode(
-                kURL, net::SiteForCookies::FromUrl(kOtherURL), kOtherOrigin,
-                net::SamePartyContext::Type::kCrossParty));
+                kURL, net::SiteForCookies::FromUrl(kOtherURL), kOtherOrigin));
   EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateAllowed,
-            delegate->ForcePrivacyMode(
-                kURL, net::SiteForCookies::FromUrl(kURL), kOrigin,
-                net::SamePartyContext::Type::kSameParty));
+            delegate->ForcePrivacyMode(kURL, net::SiteForCookies::FromUrl(kURL),
+                                       kOrigin));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {

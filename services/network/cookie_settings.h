@@ -18,7 +18,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -111,15 +110,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // partitioned state to be sent over the connection, but unpartitioned
   // state should be blocked.
   // DEPRECATED: Use IsPrivacyModeEnabled(GURL, SiteForCookies, Origin,
-  // SamePartyContext::Type, bool).
+  // bool).
   // TODO(crbug.com/1386190): Update callers and remove.
   net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      net::SamePartyContext::Type same_party_context_type) const {
+      const absl::optional<url::Origin>& top_frame_origin) const {
     return IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin,
-                                same_party_context_type,
                                 net::CookieSettingOverrides());
   }
 
@@ -133,7 +130,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
-      net::SamePartyContext::Type same_party_context_type,
       net::CookieSettingOverrides overrides) const;
 
   // Returns true if the given cookie is accessible according to user
@@ -280,13 +276,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::CookieWithAccessResult& cookie) const;
 
-  // Returns true iff a cookie with the given `is_same_party` property should be
-  // accessible in a context with the given
-  // `third_party_blocking_outcome`.
-  bool IsAllowedSamePartyCookie(
-      bool is_same_party,
-      ThirdPartyBlockingOutcome third_party_blocking_outcome) const;
-
   // Returns true iff a cookie with the given `is_partitioned` property should
   // be accessible in a context with the given
   // `third_party_blocking_outcome`.
@@ -308,7 +297,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // whether the (real or hypothetical) cookie is SameParty.
   bool IsHypotheticalCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
-      bool is_same_party,
       bool is_partitioned) const;
 
   // Returns true if at least one content settings is session only.
@@ -324,9 +312,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Will only be populated when the StorageAccessAPI feature is enabled
   // https://crbug.com/989663.
   ContentSettingsForOneType storage_access_grants_;
-  const bool sameparty_cookies_considered_first_party_ =
-      base::FeatureList::IsEnabled(
-          net::features::kSamePartyCookiesConsideredFirstParty);
 };
 
 }  // namespace network

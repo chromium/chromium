@@ -33,7 +33,6 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -321,8 +320,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      SamePartyContext::Type same_party_context_type) const override;
+      const absl::optional<url::Origin>& top_frame_origin) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       CookieOptions* options) override;
@@ -414,8 +412,7 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      SamePartyContext::Type same_party_context_type) const override;
+      const absl::optional<url::Origin>& top_frame_origin) const override;
 
   void set_block_annotate_cookies() { block_annotate_cookies_ = true; }
 

@@ -11,7 +11,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/same_party_context.h"
 
 class PrefService;
 
@@ -65,8 +64,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      net::SamePartyContext::Type same_party_context_type) const override;
+      const absl::optional<url::Origin>& top_frame_origin) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const net::URLRequest& request,
       const GURL& target_url,

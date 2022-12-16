@@ -238,10 +238,6 @@ BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              "CookieSameSiteConsidersRedirectChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSamePartyCookiesConsideredFirstParty,
-             "SamePartyCookiesConsideredFirstParty",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSamePartyAttributeEnabled,
              "SamePartyAttributeEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
