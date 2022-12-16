@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
@@ -140,39 +142,86 @@ void RecordUmaSnapshotInterval(base::TimeDelta interval,
                                 kMaxHistogramTime, 50);
 }
 
-// Records metrics about the quality of each stack that is sampled. `stack_size`
-// is the number of frames in the stack. `num_missing_modules` is the number of
-// frames that couldn't be mapped to a module using ModuleCache.
-void RecordUmaStackQualityMetrics(ProcessType process_type,
-                                  size_t stack_size,
-                                  size_t num_missing_modules) {
-  // From inspecting reports received on Android, most reports with only 1 to 3
-  // frames are clearly truncated, suggesting a problem with the unwinder, or
-  // contain a JNI base call that directly allocates. (These are not broken but
-  // don't have anything actionable in them.) Reports with 4 frames are more
-  // likely to be useful but still have a large proportion of truncated or
-  // non-actionable stacks. With 5 or more frames the stacks are more likely
-  // than not to be actionable.
-  constexpr size_t kMinFramesForGoodQuality = 5;
+#if BUILDFLAG(IS_ANDROID)
+// Records metrics about the quality of each stack that is sampled.
+class StackQualityMetricsRecorder {
+ public:
+  StackQualityMetricsRecorder(ProcessType process_type,
+                              base::ModuleCache& module_cache)
+      : process_type_(process_type),
+        chrome_module_(GetCurrentModule(module_cache)) {}
 
-  const bool has_few_frames = stack_size < kMinFramesForGoodQuality;
-  base::UmaHistogramBoolean("HeapProfiling.InProcess.ShortStacks",
-                            has_few_frames);
-  base::UmaHistogramBoolean(
-      ProcessHistogramName("HeapProfiling.InProcess.ShortStacks", process_type),
-      has_few_frames);
-
-  if (stack_size > 0) {
-    const double module_coverage =
-        100.0 * (stack_size - num_missing_modules) / stack_size;
-    base::UmaHistogramPercentage("HeapProfiling.InProcess.ModuleCoverage",
-                                 module_coverage);
-    base::UmaHistogramPercentage(
-        ProcessHistogramName("HeapProfiling.InProcess.ModuleCoverage",
-                             process_type),
-        module_coverage);
+  // Records that a new stack is being processed.
+  void NewStack(size_t stack_size) {
+    stack_size_ = stack_size;
+    num_non_chrome_frames_ = 0;
   }
-}
+
+  // Records that a frame was found in `module` in the ModuleCache.
+  void AddFrameInModule(const base::ModuleCache::Module* module) {
+    // If the chrome module couldn't be found, record all frames as non-chrome.
+    if (!chrome_module_ || !module ||
+        module->GetBaseAddress() != chrome_module_->GetBaseAddress()) {
+      num_non_chrome_frames_ += 1;
+    }
+  }
+
+  // Records summary metrics through UMA.
+  void RecordUmaMetrics() {
+    // From inspecting reports received on Android, most reports with only 1 to
+    // 3 frames are clearly truncated, suggesting a problem with the unwinder,
+    // or contain a JNI base call that directly allocates. (These are not broken
+    // but don't have anything actionable in them.) Reports with 4 frames are
+    // more likely to be useful but still have a large proportion of truncated
+    // or non-actionable stacks. With 5 or more frames the stacks are more
+    // likely than not to be actionable.
+    constexpr size_t kMinFramesForGoodQuality = 5;
+
+    const bool has_few_frames = stack_size_ < kMinFramesForGoodQuality;
+    base::UmaHistogramBoolean("HeapProfiling.InProcess.AndroidShortStacks",
+                              has_few_frames);
+    base::UmaHistogramBoolean(
+        ProcessHistogramName("HeapProfiling.InProcess.AndroidShortStacks",
+                             process_type_),
+        has_few_frames);
+
+    if (stack_size_ > 0) {
+      const double non_chrome_frame_percent =
+          100.0 * num_non_chrome_frames_ / stack_size_;
+      base::UmaHistogramPercentage(
+          "HeapProfiling.InProcess.AndroidNonChromeFrames",
+          non_chrome_frame_percent);
+      base::UmaHistogramPercentage(
+          ProcessHistogramName("HeapProfiling.InProcess.AndroidNonChromeFrames",
+                               process_type_),
+          non_chrome_frame_percent);
+    }
+  }
+
+ private:
+  static const base::ModuleCache::Module* GetCurrentModule(
+      base::ModuleCache& module_cache) {
+    // Get the address of the current function.
+    const uintptr_t address = reinterpret_cast<const uintptr_t>(
+        &StackQualityMetricsRecorder::GetCurrentModule);
+    return module_cache.GetModuleForAddress(address);
+  }
+
+  ProcessType process_type_;
+  raw_ptr<const base::ModuleCache::Module> chrome_module_;
+  size_t stack_size_ = 0;
+  size_t num_non_chrome_frames_ = 0;
+};
+#else
+// No-op implementation of StackQualityMetricsRecorder.
+class StackQualityMetricsRecorder {
+ public:
+  StackQualityMetricsRecorder(ProcessType, base::ModuleCache&) {}
+  void NewStack(size_t) {}
+  void AddFrameInModule(const base::ModuleCache::Module*) {}
+  void RecordUmaMetrics() {}
+};
+#endif
 
 }  // namespace
 
@@ -319,6 +368,7 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   SampleMap merged_samples = MergeSamples(samples);
 
+  StackQualityMetricsRecorder quality_recorder(process_type, module_cache);
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
     const SampleValue& value = pair.second;
@@ -326,18 +376,16 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     const size_t stack_size = sample.stack.size();
     std::vector<base::Frame> frames;
     frames.reserve(stack_size);
-    size_t num_missing_modules = 0;
+
+    quality_recorder.NewStack(stack_size);
     for (const void* frame : sample.stack) {
       const uintptr_t address = reinterpret_cast<const uintptr_t>(frame);
       const base::ModuleCache::Module* module =
           module_cache.GetModuleForAddress(address);
-      if (!module) {
-        num_missing_modules += 1;
-      }
+      quality_recorder.AddFrameInModule(module);
       frames.emplace_back(address, module);
     }
-
-    RecordUmaStackQualityMetrics(process_type, stack_size, num_missing_modules);
+    quality_recorder.RecordUmaMetrics();
 
     // Heap "samples" represent allocation stacks aggregated over time so
     // do not have a meaningful timestamp.
