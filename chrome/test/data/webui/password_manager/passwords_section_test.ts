@@ -4,12 +4,12 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {AddPasswordDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createCredentialGroup, createPasswordEntry} from './test_util.js';
@@ -247,5 +247,21 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     validatePasswordsSubsection(section, passwordManager.data.groups.slice(1));
+  });
+
+  test('clicking add button opens an add password dialog', async function() {
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    section.$.addPasswordButton.click();
+    await eventToPromise('cr-dialog-open', section);
+
+    const addDialog =
+        section.shadowRoot!.querySelector<AddPasswordDialogElement>(
+            'add-password-dialog');
+    assertTrue(!!addDialog);
+    assertTrue(addDialog.$.dialog.open);
   });
 });

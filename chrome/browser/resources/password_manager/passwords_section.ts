@@ -7,7 +7,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 import './password_list_item.js';
+import './dialogs/add_password_dialog.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -19,6 +21,7 @@ import {Route, RouteObserverMixin, UrlParam} from './router.js';
 
 export interface PasswordsSectionElement {
   $: {
+    addPasswordButton: CrButtonElement,
     passwordsList: IronListElement,
   };
 }
@@ -50,11 +53,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         type: String,
         value: '',
       },
+
+      showAddPasswordDialog_: Boolean,
     };
   }
 
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private searchTerm_: string;
+  private showAddPasswordDialog_: boolean;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -113,6 +119,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       return;
     }
     // TODO(crbug.com/1400289): Announce search result.
+  }
+
+  private onAddPasswordClick_() {
+    this.showAddPasswordDialog_ = true;
+  }
+
+  private onAddPasswordDialogClosed_() {
+    this.showAddPasswordDialog_ = false;
   }
 }
 
