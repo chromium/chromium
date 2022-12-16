@@ -115,6 +115,16 @@ void DeviceSyncClientImpl::ForceSyncNow(
   device_sync_->ForceSyncNow(std::move(callback));
 }
 
+void DeviceSyncClientImpl::GetBetterTogetherMetadataStatus(
+    mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback callback) {
+  device_sync_->GetBetterTogetherMetadataStatus(std::move(callback));
+}
+
+void DeviceSyncClientImpl::GetGroupPrivateKeyStatus(
+    mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) {
+  device_sync_->GetGroupPrivateKeyStatus(std::move(callback));
+}
+
 multidevice::RemoteDeviceRefList DeviceSyncClientImpl::GetSyncedDevices() {
   DCHECK(is_ready());
   return expiring_device_cache_->GetNonExpiredRemoteDevices();

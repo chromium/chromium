@@ -85,6 +85,17 @@ void FakeDeviceSyncClient::ForceSyncNow(
   force_sync_now_callback_queue_.push_back(std::move(callback));
 }
 
+void FakeDeviceSyncClient::GetBetterTogetherMetadataStatus(
+    mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback callback) {
+  get_better_together_metadata_status_callback_queue_.push_back(
+      std::move(callback));
+}
+
+void FakeDeviceSyncClient::GetGroupPrivateKeyStatus(
+    mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) {
+  get_group_private_key_status_callback_queue_.push_back(std::move(callback));
+}
+
 multidevice::RemoteDeviceRefList FakeDeviceSyncClient::GetSyncedDevices() {
   return synced_devices_;
 }

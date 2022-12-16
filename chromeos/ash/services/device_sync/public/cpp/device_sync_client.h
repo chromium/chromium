@@ -78,6 +78,10 @@ class DeviceSyncClient {
       mojom::DeviceSync::ForceEnrollmentNowCallback callback) = 0;
   virtual void ForceSyncNow(
       mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
+  virtual void GetBetterTogetherMetadataStatus(
+      mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback callback) = 0;
+  virtual void GetGroupPrivateKeyStatus(
+      mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
   virtual absl::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;

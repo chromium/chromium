@@ -24,6 +24,7 @@
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
 #include "chromeos/ash/services/device_sync/fake_device_sync.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
@@ -483,6 +484,35 @@ class DeviceSyncClientImplTest : public testing::Test {
               std::get<1>(get_devices_activity_status_code_and_response_));
   }
 
+  void CallGetGroupPrivateKeyStatus(GroupPrivateKeyStatus expected_status) {
+    base::RunLoop run_loop;
+    client_->GetGroupPrivateKeyStatus(
+        base::BindOnce(&DeviceSyncClientImplTest::OnGetGroupPrivateKeyStatus,
+                       base::Unretained(this), run_loop.QuitClosure()));
+
+    SendPendingMojoMessages();
+
+    fake_device_sync_->InvokePendingGetGroupPrivateKeyStatusCallback(
+        expected_status);
+    run_loop.Run();
+    EXPECT_EQ(expected_status, get_group_private_key_status_response_);
+  }
+
+  void CallGetBetterTogetherMetadataStatus(
+      BetterTogetherMetadataStatus expected_status) {
+    base::RunLoop run_loop;
+    client_->GetBetterTogetherMetadataStatus(base::BindOnce(
+        &DeviceSyncClientImplTest::OnGetBetterTogetherMetadataStatus,
+        base::Unretained(this), run_loop.QuitClosure()));
+
+    SendPendingMojoMessages();
+
+    fake_device_sync_->InvokePendingGetBetterTogetherMetadataStatusCallback(
+        expected_status);
+    run_loop.Run();
+    EXPECT_EQ(expected_status, get_better_together_metadata_status_response_);
+  }
+
   void CallGetDebugInfo() {
     EXPECT_FALSE(debug_info_received_);
 
@@ -559,6 +589,9 @@ class DeviceSyncClientImplTest : public testing::Test {
   std::tuple<mojom::NetworkRequestResult,
              absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>>
       get_devices_activity_status_code_and_response_;
+  absl::optional<GroupPrivateKeyStatus> get_group_private_key_status_response_;
+  absl::optional<BetterTogetherMetadataStatus>
+      get_better_together_metadata_status_response_;
   bool debug_info_received_ = false;
 
  private:
@@ -609,6 +642,18 @@ class DeviceSyncClientImplTest : public testing::Test {
           device_activity_status) {
     get_devices_activity_status_code_and_response_ =
         std::make_tuple(result_code, std::move(device_activity_status));
+    std::move(callback).Run();
+  }
+
+  void OnGetGroupPrivateKeyStatus(base::OnceClosure callback,
+                                  GroupPrivateKeyStatus status) {
+    get_group_private_key_status_response_ = status;
+    std::move(callback).Run();
+  }
+
+  void OnGetBetterTogetherMetadataStatus(base::OnceClosure callback,
+                                         BetterTogetherMetadataStatus status) {
+    get_better_together_metadata_status_response_ = status;
     std::move(callback).Run();
   }
 
@@ -879,6 +924,24 @@ TEST_F(DeviceSyncClientImplTest, TestGetDebugInfo) {
   SetupClient();
 
   CallGetDebugInfo();
+}
+
+TEST_F(DeviceSyncClientImplTest, TestGetGroupPrivateKeyStatus) {
+  SetupClient();
+
+  CallGetGroupPrivateKeyStatus(
+      GroupPrivateKeyStatus::kWaitingForGroupPrivateKey);
+  CallGetGroupPrivateKeyStatus(
+      GroupPrivateKeyStatus::kGroupPrivateKeySuccessfullyDecrypted);
+}
+
+TEST_F(DeviceSyncClientImplTest, TestGetBetterTogetherMetadataStatus) {
+  SetupClient();
+
+  CallGetBetterTogetherMetadataStatus(
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
+  CallGetBetterTogetherMetadataStatus(
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
 }
 
 }  // namespace device_sync

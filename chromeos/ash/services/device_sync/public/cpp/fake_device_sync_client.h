@@ -153,6 +153,10 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   void ForceEnrollmentNow(
       mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
+  void GetBetterTogetherMetadataStatus(
+      mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback) override;
+  void GetGroupPrivateKeyStatus(
+      mojom::DeviceSync::GetGroupPrivateKeyStatusCallback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
   absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
@@ -185,6 +189,11 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       force_enrollment_now_callback_queue_;
   base::circular_deque<mojom::DeviceSync::ForceSyncNowCallback>
       force_sync_now_callback_queue_;
+  base::circular_deque<
+      mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback>
+      get_better_together_metadata_status_callback_queue_;
+  base::circular_deque<mojom::DeviceSync::GetGroupPrivateKeyStatusCallback>
+      get_group_private_key_status_callback_queue_;
   base::circular_deque<SetSoftwareFeatureStateInputs>
       set_software_feature_state_inputs_queue_;
   base::circular_deque<SetFeatureStatusInputs> set_feature_status_inputs_queue_;

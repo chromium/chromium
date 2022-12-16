@@ -66,6 +66,11 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   void ForceEnrollmentNow(
       mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
+  void GetBetterTogetherMetadataStatus(
+      mojom::DeviceSync::GetBetterTogetherMetadataStatusCallback callback)
+      override;
+  void GetGroupPrivateKeyStatus(
+      mojom::DeviceSync::GetGroupPrivateKeyStatusCallback callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
   absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
