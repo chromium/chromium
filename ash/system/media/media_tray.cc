@@ -292,7 +292,7 @@ void MediaTray::ShowBubble() {
 
   content_view_ = bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth));
+          kMenuSeparatorWidth, /*should_clip_height=*/true));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));

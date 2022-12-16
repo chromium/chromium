@@ -36,16 +36,18 @@ MediaItemUIListView::SeparatorStyle::SeparatorStyle(SkColor separator_color,
       separator_thickness(separator_thickness) {}
 
 MediaItemUIListView::MediaItemUIListView()
-    : MediaItemUIListView(absl::nullopt) {}
+    : MediaItemUIListView(absl::nullopt, /*should_clip_height=*/true) {}
 
 MediaItemUIListView::MediaItemUIListView(
-    const absl::optional<SeparatorStyle>& separator_style)
+    const absl::optional<SeparatorStyle>& separator_style,
+    bool should_clip_height)
     : separator_style_(separator_style) {
   SetBackgroundColor(absl::nullopt);
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  ClipHeightTo(0, kMediaListMaxHeight);
+  ClipHeightTo(0, should_clip_height ? kMediaListMaxHeight
+                                     : std::numeric_limits<int>::max());
 
   SetVerticalScrollBar(
       std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));

@@ -31,9 +31,9 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
       : old_provider_(MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Set(this);
 
-    ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
-      return std::make_unique<views::View>();
-    });
+    ON_CALL(*this, GetMediaNotificationListView(_, _))
+        .WillByDefault(
+            [](auto, auto) { return std::make_unique<views::View>(); });
   }
 
   ~MockMediaNotificationProvider() override {
@@ -41,7 +41,8 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   }
 
   // Medianotificationprovider implementations.
-  MOCK_METHOD1(GetMediaNotificationListView, std::unique_ptr<views::View>(int));
+  MOCK_METHOD2(GetMediaNotificationListView,
+               std::unique_ptr<views::View>(int, bool));
   MOCK_METHOD0(GetActiveMediaNotificationView, std::unique_ptr<views::View>());
   MOCK_METHOD0(OnBubbleClosing, void());
   void AddObserver(MediaNotificationProviderObserver* observer) override {}
@@ -214,7 +215,8 @@ TEST_F(MediaTrayTest, ShowAndHideBubbleTest) {
   // Tap the media tray should show the bubble, and media tray should
   // be active. GetMediaNotificationlistview also should be called for
   // getting active notifications.
-  EXPECT_CALL(*provider(), GetMediaNotificationListView(_));
+  EXPECT_CALL(*provider(),
+              GetMediaNotificationListView(_, /*should_clip_height=*/true));
   SimulateTapOnMediaTray();
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());

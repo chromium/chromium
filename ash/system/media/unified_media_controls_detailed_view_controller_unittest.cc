@@ -28,9 +28,9 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
       : old_provider_(MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Set(this);
 
-    ON_CALL(*this, GetMediaNotificationListView(_)).WillByDefault([](auto) {
-      return std::make_unique<views::View>();
-    });
+    ON_CALL(*this, GetMediaNotificationListView(_, _))
+        .WillByDefault(
+            [](auto, auto) { return std::make_unique<views::View>(); });
   }
 
   ~MockMediaNotificationProvider() override {
@@ -38,7 +38,8 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   }
 
   // MediaNotificationProvider implementations.
-  MOCK_METHOD1(GetMediaNotificationListView, std::unique_ptr<views::View>(int));
+  MOCK_METHOD2(GetMediaNotificationListView,
+               std::unique_ptr<views::View>(int, bool));
   MOCK_METHOD0(OnBubbleClosing, void());
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override {
     return std::make_unique<views::View>();
@@ -109,7 +110,8 @@ TEST_F(UnifiedMediaControlsDetailedViewControllerTest,
 
   // We should get a MediaNotificationProvider::GetMediaNotificationListView
   // call when creating the detailed view.
-  EXPECT_CALL(*provider(), GetMediaNotificationListView);
+  EXPECT_CALL(*provider(),
+              GetMediaNotificationListView(_, /*should_clip_height=*/false));
   system_tray_controller()->OnMediaControlsViewClicked();
   EXPECT_NE(system_tray_controller()->detailed_view_controller(), nullptr);
 

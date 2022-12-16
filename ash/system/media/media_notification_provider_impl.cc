@@ -80,13 +80,15 @@ bool MediaNotificationProviderImpl::HasFrozenNotifications() {
 
 std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
-    int separator_thickness) {
+    int separator_thickness,
+    bool should_clip_height) {
   DCHECK(item_manager_);
   DCHECK(color_theme_);
   auto notification_list_view =
       std::make_unique<global_media_controls::MediaItemUIListView>(
           global_media_controls::MediaItemUIListView::SeparatorStyle(
-              color_theme_->separator_color, separator_thickness));
+              color_theme_->separator_color, separator_thickness),
+          should_clip_height);
   active_session_view_ = notification_list_view->GetWeakPtr();
   item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration(

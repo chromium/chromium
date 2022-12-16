@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   };
 
   explicit MediaItemUIListView(
-      const absl::optional<SeparatorStyle>& separator_style);
+      const absl::optional<SeparatorStyle>& separator_style,
+      bool should_clip_height);
   MediaItemUIListView();
   MediaItemUIListView(const MediaItemUIListView&) = delete;
   MediaItemUIListView& operator=(const MediaItemUIListView&) = delete;

@@ -61,7 +61,7 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
   return std::make_unique<UnifiedMediaControlsDetailedView>(
       detailed_view_delegate_.get(),
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
-          kMenuSeparatorWidth));
+          kMenuSeparatorWidth, /*should_clip_height=*/false));
 }
 
 std::u16string UnifiedMediaControlsDetailedViewController::GetAccessibleName()
