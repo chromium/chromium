@@ -14,6 +14,12 @@
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+      <cr-link-row class="hr" id="perDeviceTouchpadRow"
+          label="$i18n{touchpadTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
       <cr-link-row class="hr" id="perDeviceKeyboardRow"
           label="$i18n{perDeviceKeyboardTitle}"
           on-click="onPerDeviceKeyboardTap_"

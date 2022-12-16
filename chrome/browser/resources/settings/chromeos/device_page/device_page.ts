@@ -131,11 +131,12 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.POINTERS) {
             map.set(routes.POINTERS.path, '#pointersRow');
           }
-          if (routes.PER_DEVICE_KEYBOARD) {
-            map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
-          }
           if (routes.PER_DEVICE_MOUSE) {
             map.set(routes.PER_DEVICE_MOUSE.path, '#perDeviceMouseRow');
+          }
+          // TODO(@wangdanny): Add route for Per-device touchpad settings page.
+          if (routes.PER_DEVICE_KEYBOARD) {
+            map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
           }
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');

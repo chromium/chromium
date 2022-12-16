@@ -486,6 +486,8 @@ suite('SettingsDevicePage', function() {
     assertTrue(
         isVisible(devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
     assertTrue(isVisible(
+        devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+    assertTrue(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
@@ -514,6 +516,13 @@ suite('SettingsDevicePage', function() {
     await init();
     assertFalse(
         isVisible(devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+  });
+
+  test('per-device-touchpad row visibility', async function() {
+    setDeviceSplitEnabled(false);
+    await init();
+    assertFalse(isVisible(
+        devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
   });
 
   test('per-device-keyboard row visibility', async function() {
