@@ -577,9 +577,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
            Open in Reader
           </message>
-          <message name="IDS_CONTENT_CONTEXT_RUN_PDF_OCR" desc="Context menu menuitem that runs a local machine intelligence model to extract the content of the current PDF and pass it to assisstive technologies.">
-           Recognize P&amp;DF text
-          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -749,6 +746,15 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_SEND_ONCE" desc="The context-menu sub-item that asks whether to integrate the accessibility image labeling service of Google to Chrome, for a single use.">
             Just once
           </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
+            Convert image to text
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text always.">
+            Always
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text, for a single use.">
+            Just once
+          </message>
           <message name="IDS_CONTENT_CONTEXT_SPELLING_ASK_GOOGLE" desc="The context-menu item that asks whether to integrate the spelling service of Google to Chrome.">
             Use enhanced spell check
           </message>
@@ -828,9 +834,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
            Open in Reader
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_RUN_PDF_OCR" desc="Context menu menuitem that runs a local machine intelligence model to extract the content of the current PDF and pass it to assisstive technologies.">
-           Recognize P&amp;DF text
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload
@@ -1011,6 +1014,15 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_SEND_ONCE" desc="The context-menu sub-item that asks whether to integrate the accessibility image labeling service of Google to Chrome, for a single use.">
             Just Once
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
+            Convert image to text
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text always.">
+            Always
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE" desc="The context-menu sub-item that asks whether to use the PDF OCR service to convert image to text, for a single use.">
+            Just once
           </message>
           <message name="IDS_CONTENT_CONTEXT_SPELLING_ASK_GOOGLE" desc="In Title Case: The context-menu item that asks whether to integrate the spelling service of Google to Chrome.">
             Use Enhanced Spell Check

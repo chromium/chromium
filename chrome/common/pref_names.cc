@@ -1354,6 +1354,11 @@ const char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
 #endif
 
+// Whether the PDF OCR feature is set to be always active. The PDF OCR feature
+// is exposed to only screen reader users.
+const char kAccessibilityPdfOcrAlwaysActive[] =
+    "settings.a11y.pdf_ocr_always_active";
+
 // Pref indicating the page colors option the user wants. Page colors is an
 // accessibility feature that simulates forced colors mode at the browser level.
 const char kPageColors[] = "settings.a11y.page_colors";

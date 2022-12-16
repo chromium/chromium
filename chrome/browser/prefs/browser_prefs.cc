@@ -1686,6 +1686,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterTimePref(prefs::kDIPSTimerLastUpdate, base::Time());
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityPdfOcrAlwaysActive, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

@@ -117,6 +117,9 @@ class RenderViewContextMenuProxy {
   // Add accessibility labels service item to the context menu.
   virtual void AddAccessibilityLabelsServiceItem(bool is_checked) = 0;
 
+  // Add PDF OCR item to the context menu.
+  virtual void AddPdfOcrMenuItem(bool is_checked) = 0;
+
   // Retrieve the given associated objects with a context menu.
   virtual content::RenderViewHost* GetRenderViewHost() const = 0;
   virtual content::WebContents* GetWebContents() const = 0;

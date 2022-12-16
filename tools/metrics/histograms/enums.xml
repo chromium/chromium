@@ -87901,9 +87901,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="119" label="IDC_FOLLOW"/>
   <int value="120" label="IDC_UNFOLLOW"/>
   <int value="121" label="IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST"/>
-  <int value="122" label="IDC_CONTENT_CONTEXT_RUN_PDF_OCR"/>
   <int value="123" label="IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE"/>
   <int value="125" label="IDC_LIVE_CAPTION"/>
+  <int value="126" label="IDC_CONTENT_CONTEXT_PDF_OCR"/>
+  <int value="127" label="IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS"/>
+  <int value="128" label="IDC_CONTENT_CONTEXT_PDF_OCR_ONCE"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">

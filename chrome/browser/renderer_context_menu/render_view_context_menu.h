@@ -24,7 +24,6 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/search_engines/template_url.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -52,6 +51,7 @@ class Profile;
 class QuickAnswersMenuObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+class PdfOcrMenuObserver;
 
 namespace content {
 class RenderFrameHost;
@@ -116,6 +116,7 @@ class RenderViewContextMenu
   void ExecuteCommand(int command_id, int event_flags) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
+  void AddPdfOcrMenuItem(bool is_always_active) override;
 
   // Registers a one-time callback that will be called the next time a context
   // menu is shown.
@@ -238,9 +239,6 @@ class RenderViewContextMenu
   void AppendExitFullscreenItem();
   void AppendCopyItem();
   void AppendLinkToTextItems();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void AppendPdfOcrItem();
-#endif
   void AppendPrintItem();
   void AppendPartialTranslateItem();
   void AppendMediaRouterItem();
@@ -253,6 +251,7 @@ class RenderViewContextMenu
   // Returns true if the items were appended. This might not happen in all
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
+  void AppendPdfOcrItems();
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void AppendAllExtensionItems();
@@ -337,9 +336,6 @@ class RenderViewContextMenu
   void ExecPictureInPicture();
   // Implemented in RenderViewContextMenuViews.
   void ExecOpenInReadAnything() override {}
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void ExecRunPdfOcr();
-#endif
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);
@@ -394,6 +390,10 @@ class RenderViewContextMenu
   std::unique_ptr<AccessibilityLabelsMenuObserver>
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
+
+  // An observer that handles PDF OCR items.
+  std::unique_ptr<PdfOcrMenuObserver> pdf_ocr_submenu_model_observer_;
+  std::unique_ptr<ui::SimpleMenuModel> pdf_ocr_submenu_model_;
 
 #if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This

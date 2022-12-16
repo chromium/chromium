@@ -64,6 +64,7 @@
 #include "chrome/browser/renderer_context_menu/accessibility_labels_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_factory.h"
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/spelling_menu_observer.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -136,6 +137,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
@@ -449,17 +451,19 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_FOLLOW, 119},
        {IDC_UNFOLLOW, 120},
        {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
-       {IDC_CONTENT_CONTEXT_RUN_PDF_OCR, 122},
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
        {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
        {IDC_LIVE_CAPTION, 125},
+       {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
+       {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
+       {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 126}});
+       {0, 129}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -744,6 +748,9 @@ RenderViewContextMenu::RenderViewContextMenu(
                     ? GetBrowser()->app_controller()->system_app()
                     : nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  pdf_ocr_submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
@@ -1069,14 +1076,11 @@ void RenderViewContextMenu::InitMenu() {
     }
   }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsPdfOcrEnabled() &&
-      accessibility_state_utils::IsScreenReaderEnabled() &&
-      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentReady() &&
-      IsFrameInPdfViewer(GetRenderFrameHost())) {
-    AppendPdfOcrItem();
+  if (accessibility_state_utils::IsScreenReaderEnabled() &&
+      features::IsPdfOcrEnabled() && IsFrameInPdfViewer(GetRenderFrameHost())) {
+    AppendPdfOcrItems();
+    VLOG(2) << "Appended PDF OCR Items";
   }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_MEDIA_PLUGIN)) {
@@ -1900,13 +1904,15 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
                                   IDS_CONTENT_CONTEXT_READ_ANYTHING);
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RenderViewContextMenu::AppendPdfOcrItem() {
+void RenderViewContextMenu::AppendPdfOcrItems() {
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RUN_PDF_OCR,
-                                  IDS_CONTENT_CONTEXT_RUN_PDF_OCR);
+  if (!pdf_ocr_submenu_model_observer_) {
+    pdf_ocr_submenu_model_observer_ =
+        std::make_unique<PdfOcrMenuObserver>(this);
+  }
+  observers_.AddObserver(pdf_ocr_submenu_model_observer_.get());
+  pdf_ocr_submenu_model_observer_->InitMenu(params_);
 }
-#endif
 
 void RenderViewContextMenu::AppendRotationItems() {
   if (params_.media_flags & ContextMenuData::kMediaCanRotate) {
@@ -2486,11 +2492,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.media_flags &
                 ContextMenuData::kMediaCanPictureInPicture);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_CONTENT_CONTEXT_RUN_PDF_OCR:
-      return true;
-#endif
-
     case IDC_CONTENT_CONTEXT_EMOJI:
       return params_.is_editable;
 
@@ -2804,12 +2805,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       source_web_contents_->ReloadFocusedFrame();
       break;
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_CONTENT_CONTEXT_RUN_PDF_OCR:
-      ExecRunPdfOcr();
-      break;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
     case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
       if (GetRenderFrameHost())
         GetRenderFrameHost()->ViewSource();
@@ -2997,6 +2992,31 @@ void RenderViewContextMenu::AddAccessibilityLabelsServiceItem(bool is_checked) {
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_MENU_OPTION),
         &accessibility_labels_submenu_model_);
+  }
+}
+
+void RenderViewContextMenu::AddPdfOcrMenuItem(bool is_always_active) {
+  if (is_always_active) {
+    // Only a checked item needs to be added to the context menu when the user
+    // selects "Always" or toggles on PDF OCR to make it always active.
+    menu_model_.AddCheckItem(
+        IDC_CONTENT_CONTEXT_PDF_OCR,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
+  } else {
+    // Add the submenu when the user doesn't select "Always" nor toggle on the
+    // the PDF OCR.
+    pdf_ocr_submenu_model_->AddItem(
+        IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS,
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ALWAYS));
+    pdf_ocr_submenu_model_->AddItem(
+        IDC_CONTENT_CONTEXT_PDF_OCR_ONCE,
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION_ONCE));
+    menu_model_.AddSubMenu(
+        IDC_CONTENT_CONTEXT_PDF_OCR,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION),
+        pdf_ocr_submenu_model_.get());
   }
 }
 
@@ -3647,14 +3667,6 @@ void RenderViewContextMenu::ExecRegionSearch(
                                         is_google_default_search_provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RenderViewContextMenu::ExecRunPdfOcr() {
-  // TODO(nektar): Modify `ui::AXMode` to signal to the renderer that OCR should
-  // be performed.
-  GetBrowser()->RunScreenAIAnnotator();
-}
-#endif
 
 void RenderViewContextMenu::ExecSearchWebForImage() {
   CoreTabHelper* core_tab_helper =
