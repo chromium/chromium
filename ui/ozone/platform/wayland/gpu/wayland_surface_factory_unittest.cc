@@ -305,7 +305,7 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Wait until GbmSurfacelessWayland submits the buffer according to internal
@@ -396,7 +396,7 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Wait until GbmSurfacelessWayland submits the buffer according to internal
@@ -491,7 +491,7 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Wait until GbmSurfacelessWayland submits the buffer according to internal
@@ -670,7 +670,7 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Wait until GbmSurfacelessWayland submits the buffer according to internal
@@ -778,7 +778,7 @@ TEST_P(WaylandSurfaceFactoryTest,
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Give mojo messages chance to reach host.
@@ -918,7 +918,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
     });
 
     canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
-    canvas->OnSwapBuffers(base::DoNothing(), gl::FrameData());
+    canvas->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
 
     // Wait until the mojo calls are done.
     base::RunLoop().RunUntilIdle();
@@ -966,7 +966,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
   });
 
   canvas->PresentCanvas(gfx::Rect(0, 0, 100, 50));
-  canvas->OnSwapBuffers(base::DoNothing(), gl::FrameData());
+  canvas->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1102,7 +1102,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
                        base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
-        gl::FrameData());
+        gfx::FrameData());
   }
 
   // Wait until the mojo calls are done.

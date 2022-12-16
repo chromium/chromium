@@ -65,7 +65,7 @@ void SoftwareRenderer::RenderFrame() {
   software_surface_->PresentCanvas(gfx::Rect(size_));
 
   if (software_surface_->SupportsAsyncBufferSwap())
-    software_surface_->OnSwapBuffers(base::DoNothing(), gl::FrameData());
+    software_surface_->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
 
   if (vsync_provider_) {
     vsync_provider_->GetVSyncParameters(

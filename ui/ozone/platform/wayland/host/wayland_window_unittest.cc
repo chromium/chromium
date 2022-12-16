@@ -3221,7 +3221,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   background.z_order = INT32_MIN;
   background.buffer_id = buffer_id1;
   overlays.push_back(std::move(background));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u, gl::FrameData(),
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u, gfx::FrameData(),
                                       std::move(overlays));
 
   // Let mojo messages from gpu to host go through.
@@ -3263,7 +3263,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   primary.z_order = 0;
   primary.buffer_id = buffer_id2;
   overlays.push_back(std::move(primary));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u, gl::FrameData(),
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u, gfx::FrameData(),
                                       std::move(overlays));
 
   // Let mojo messages from gpu to host go through.

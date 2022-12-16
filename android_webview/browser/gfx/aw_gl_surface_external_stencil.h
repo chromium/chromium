@@ -19,7 +19,7 @@ class AwGLSurfaceExternalStencil : public AwGLSurface {
   unsigned int GetBackingFramebufferObject() override;
   gfx::SwapResult SwapBuffers(
       PresentationCallback callbackaw_gl_surface_external_stencil,
-      gl::FrameData data) override;
+      gfx::FrameData data) override;
   void RecalculateClipAndTransform(gfx::Size* viewport,
                                    gfx::Rect* clip_rect,
                                    gfx::Transform* transform) override;

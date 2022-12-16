@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+// This corresponds to gfx::FrameData. It contains frame specific information
+// and is passed through calls to SwapBuffers and similar.
+struct FrameData {
+  // Sequence number for this frame. The reserved value of -1 means that there
+  // is no sequence number specified (that is, corresponds to no sequence
+  // point). This may happen for some cases, like the ozone demo, tests, or
+  // users of GLSurface other than SkiaRenderer.
+  int64 seq;
+};

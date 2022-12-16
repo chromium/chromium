@@ -10,6 +10,7 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 
@@ -32,7 +33,7 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   bool IsOffscreen() override;
   void* GetHandle() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              FrameData data) override;
+                              gfx::FrameData data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;
   bool OnMakeCurrent(GLContext* context) override;

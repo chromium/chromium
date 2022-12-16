@@ -210,14 +210,14 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
 
 gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffers(
     gl::GLSurface::PresentationCallback callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SwapBuffersAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
     gl::GLSurface::PresentationCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
@@ -228,7 +228,7 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::PostSubBuffer(
     int width,
     int height,
     gl::GLSurface::PresentationCallback callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
@@ -239,21 +239,21 @@ void ImageTransportSurfaceOverlayMacEGL::PostSubBufferAsync(
     int height,
     gl::GLSurface::SwapCompletionCallback completion_callback,
     gl::GLSurface::PresentationCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::CommitOverlayPlanes(
     gl::GLSurface::PresentationCallback callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMacEGL::CommitOverlayPlanesAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
     gl::GLSurface::PresentationCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }

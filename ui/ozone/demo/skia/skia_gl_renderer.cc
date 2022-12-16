@@ -115,12 +115,12 @@ void SkiaGlRenderer::RenderFrame() {
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&SkiaGlRenderer::OnPresentation,
                        weak_ptr_factory_.GetWeakPtr()),
-        gl::FrameData());
+        gfx::FrameData());
   } else {
     PostRenderFrameTask(gfx::SwapCompletionResult(
         gl_surface_->SwapBuffers(base::BindOnce(&SkiaGlRenderer::OnPresentation,
                                                 weak_ptr_factory_.GetWeakPtr()),
-                                 gl::FrameData())));
+                                 gfx::FrameData())));
   }
 }
 

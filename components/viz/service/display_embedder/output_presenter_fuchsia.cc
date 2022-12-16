@@ -217,7 +217,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
 void OutputPresenterFuchsia::SwapBuffers(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   // SwapBuffer() should be called only after SchedulePrimaryPlane().
   DCHECK(next_frame_ && next_frame_->native_pixmap);
 
@@ -231,7 +231,7 @@ void OutputPresenterFuchsia::PostSubBuffer(
     const gfx::Rect& rect,
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   // Sub buffer presentation is not supported.
   NOTREACHED();
 }
@@ -239,7 +239,7 @@ void OutputPresenterFuchsia::PostSubBuffer(
 void OutputPresenterFuchsia::CommitOverlayPlanes(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   // Overlays are not supported yet.
   NOTREACHED();
 }

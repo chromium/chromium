@@ -13,10 +13,10 @@
 #include "components/viz/service/display/software_output_device_client.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gl/gl_surface.h"
 
 class SkCanvas;
 
@@ -77,7 +77,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
   // this can be overriden so that |swap_ack_callback| is run after swap
   // completes.
   virtual void OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
-                             gl::FrameData data);
+                             gfx::FrameData data);
 
   virtual int MaxFramesPending() const;
 

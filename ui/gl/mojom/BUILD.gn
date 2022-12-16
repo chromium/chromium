@@ -7,10 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
 
-  sources = [
-    "frame_data.mojom",
-    "gpu_preference.mojom",
-  ]
+  sources = [ "gpu_preference.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   cpp_typemaps = [
     {
@@ -19,15 +16,8 @@ mojom("mojom") {
           mojom = "gl.mojom.GpuPreference"
           cpp = "::gl::GpuPreference"
         },
-        {
-          mojom = "gl.mojom.FrameData"
-          cpp = "::gl::FrameData"
-        },
       ]
-      traits_headers = [
-        "gpu_preference_mojom_traits.h",
-        "frame_data_mojom_traits.h",
-      ]
+      traits_headers = [ "gpu_preference_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gl" ]
     },
   ]

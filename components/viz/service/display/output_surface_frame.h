@@ -12,9 +12,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_surface.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -44,7 +44,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   absl::optional<int64_t> choreographer_vsync_id;
   bool top_controls_visible_height_changed = false;
   // FrameData for GLSurface.
-  gl::FrameData data;
+  gfx::FrameData data;
   // Metadata containing information to draw a delegated ink trail using
   // platform APIs.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;

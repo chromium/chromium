@@ -266,7 +266,7 @@ uint32_t WaylandBufferManagerHost::GetBufferFormat(WaylandSurface* requestor,
 void WaylandBufferManagerHost::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    const gl::FrameData& data,
+    const gfx::FrameData& data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK(base::CurrentUIThread::IsSet());
 

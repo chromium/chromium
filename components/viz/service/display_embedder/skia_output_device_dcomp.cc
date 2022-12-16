@@ -379,7 +379,7 @@ gfx::Size SkiaOutputDeviceDCompGLSurface::GetRootSurfaceSize() const {
 gfx::SwapResult SkiaOutputDeviceDCompGLSurface::DoPostSubBuffer(
     const gfx::Rect& rect,
     BufferPresentedCallback feedback,
-    gl::FrameData data) {
+    gfx::FrameData data) {
   return gl_surface_->PostSubBuffer(rect.x(), rect.y(), rect.width(),
                                     rect.height(), std::move(feedback), data);
 }

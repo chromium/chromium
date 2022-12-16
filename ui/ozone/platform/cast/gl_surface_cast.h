@@ -31,7 +31,7 @@ class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
   bool SupportsSwapBuffersWithBounds() override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
                                         PresentationCallback callback,
-                                        gl::FrameData data) override;
+                                        gfx::FrameData data) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,

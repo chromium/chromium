@@ -39,7 +39,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   SkCanvas* BeginPaint(const gfx::Rect& damage_rect) override;
   void EndPaint() override;
   void OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
-                     gl::FrameData data) override;
+                     gfx::FrameData data) override;
   int MaxFramesPending() const override;
   bool SupportsOverridePlatformSize() const override;
 

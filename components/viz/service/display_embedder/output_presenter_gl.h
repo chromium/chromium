@@ -48,14 +48,14 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
                                              gfx::Size image_size) final;
   void SwapBuffers(SwapCompletionCallback completion_callback,
                    BufferPresentedCallback presentation_callback,
-                   gl::FrameData data) final;
+                   gfx::FrameData data) final;
   void PostSubBuffer(const gfx::Rect& rect,
                      SwapCompletionCallback completion_callback,
                      BufferPresentedCallback presentation_callback,
-                     gl::FrameData data) final;
+                     gfx::FrameData data) final;
   void CommitOverlayPlanes(SwapCompletionCallback completion_callback,
                            BufferPresentedCallback presentation_callback,
-                           gl::FrameData data) final;
+                           gfx::FrameData data) final;
   void SchedulePrimaryPlane(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
