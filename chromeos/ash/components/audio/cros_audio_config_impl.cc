@@ -56,42 +56,34 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   return mojo_device;
 }
 
-CrosAudioConfigImpl::CrosAudioConfigImpl()
-    : audio_handler_{CrasAudioHandler::Get()} {
-  DCHECK(audio_handler_);
-  audio_handler_->AddAudioObserver(this);
+CrosAudioConfigImpl::CrosAudioConfigImpl() {
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 CrosAudioConfigImpl::~CrosAudioConfigImpl() {
-  if (audio_handler_) {
-    audio_handler_->RemoveAudioObserver(this);
-  }
+  if (CrasAudioHandler::Get())
+    CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 uint8_t CrosAudioConfigImpl::GetOutputVolumePercent() const {
-  DCHECK(audio_handler_);
-  return audio_handler_->GetOutputVolumePercent();
+  return CrasAudioHandler::Get()->GetOutputVolumePercent();
 }
 
 mojom::MuteState CrosAudioConfigImpl::GetOutputMuteState() const {
-  DCHECK(audio_handler_);
   // TODO(crbug.com/1092970): Add kMutedExternally.
-  if (audio_handler_->IsOutputMutedByPolicy()) {
+  if (CrasAudioHandler::Get()->IsOutputMutedByPolicy())
     return mojom::MuteState::kMutedByPolicy;
-  }
 
-  if (audio_handler_->IsOutputMuted()) {
+  if (CrasAudioHandler::Get()->IsOutputMuted())
     return mojom::MuteState::kMutedByUser;
-  }
 
   return mojom::MuteState::kNotMuted;
 }
 
 void CrosAudioConfigImpl::GetAudioDevices(
     std::vector<mojom::AudioDevicePtr>* output_devices_out) const {
-  DCHECK(audio_handler_);
   AudioDeviceList audio_devices_list;
-  audio_handler_->GetAudioDevices(&audio_devices_list);
+  CrasAudioHandler::Get()->GetAudioDevices(&audio_devices_list);
   for (const auto& device : audio_devices_list) {
     if (!device.is_for_simple_usage()) {
       continue;
@@ -105,13 +97,13 @@ void CrosAudioConfigImpl::GetAudioDevices(
 }
 
 void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
-  DCHECK(audio_handler_);
-  audio_handler_->SetOutputVolumePercent(volume);
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  audio_handler->SetOutputVolumePercent(volume);
 
   // If the volume is above certain level and it's muted, it should be unmuted.
-  if (audio_handler_->IsOutputMuted() &&
-      volume > audio_handler_->GetOutputDefaultVolumeMuteThreshold()) {
-    audio_handler_->SetOutputMute(false);
+  if (audio_handler->IsOutputMuted() &&
+      volume > audio_handler->GetOutputDefaultVolumeMuteThreshold()) {
+    audio_handler->SetOutputMute(false);
   }
 }
 
