@@ -617,8 +617,8 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
     // without clipping, and translate accordingly.
     canvas->save();
     canvas->clipRect(gfx::RectToSkRect(gfx::ToEnclosingRect(dst_rect)));
-    canvas->concat(SkMatrix::RectToRect(gfx::RectFToSkRect(unzoomed_src_rect),
-                                        gfx::RectFToSkRect(dst_rect)));
+    canvas->concat(SkM44::RectToRect(gfx::RectFToSkRect(unzoomed_src_rect),
+                                     gfx::RectFToSkRect(dst_rect)));
     canvas->drawPicture(std::move(record));
     canvas->restore();
   }

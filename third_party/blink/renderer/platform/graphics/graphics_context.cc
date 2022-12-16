@@ -272,7 +272,7 @@ void GraphicsContext::SetColorFilter(ColorFilter color_filter) {
       WebCoreColorFilterToSkiaColorFilter(color_filter));
 }
 
-void GraphicsContext::Concat(const SkMatrix& matrix) {
+void GraphicsContext::Concat(const SkM44& matrix) {
   DCHECK(canvas_);
   canvas_->concat(matrix);
 }
@@ -347,7 +347,7 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
       static_cast<cc::PaintFlags::FilterQuality>(ImageInterpolationQuality())));
   canvas_->save();
   canvas_->concat(
-      SkMatrix::RectToRect(gfx::RectFToSkRect(src), gfx::RectFToSkRect(dest)));
+      SkM44::RectToRect(gfx::RectFToSkRect(src), gfx::RectFToSkRect(dest)));
   canvas_->drawImage(PaintImageBuilder::WithDefault()
                          .set_paint_record(record, gfx::ToRoundedRect(src),
                                            PaintImage::GetNextContentId())
@@ -1188,7 +1188,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
 }
 
 void GraphicsContext::ConcatCTM(const AffineTransform& affine) {
-  Concat(AffineTransformToSkMatrix(affine));
+  Concat(AffineTransformToSkM44(affine));
 }
 
 void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,

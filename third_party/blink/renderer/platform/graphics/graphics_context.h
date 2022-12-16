@@ -590,7 +590,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void ClipRRect(const SkRRect&,
                  AntiAliasingMode = kNotAntiAliased,
                  SkClipOp = SkClipOp::kIntersect);
-  void Concat(const SkMatrix&);
+  void Concat(const SkM44&);
 
   // Apply deferred paint state saves
   void RealizePaintSave() {

@@ -165,7 +165,7 @@ void DrawBlobs(cc::PaintCanvas* canvas,
 
         SkMatrix m;
         m.setSinCos(-1, 0, point.x(), point.y());
-        canvas->concat(m);
+        canvas->concat(SkM44(m));
         break;
       }
       case CanvasRotationInVertical::kRotateCanvasUprightOblique: {
@@ -181,7 +181,7 @@ void DrawBlobs(cc::PaintCanvas* canvas,
         constexpr SkScalar kSkewY = -0.2679491924311227;  // tan(-15deg)
         skewY.setSkew(0, kSkewY, point.x(), point.y());
         m.preConcat(skewY);
-        canvas->concat(m);
+        canvas->concat(SkM44(m));
         break;
       }
       case CanvasRotationInVertical::kOblique: {
@@ -193,7 +193,7 @@ void DrawBlobs(cc::PaintCanvas* canvas,
         SkMatrix skewX;
         constexpr SkScalar kSkewX = 0.2679491924311227;  // tan(15deg)
         skewX.setSkew(kSkewX, 0, point.x(), point.y());
-        canvas->concat(skewX);
+        canvas->concat(SkM44(skewX));
         break;
       }
     }

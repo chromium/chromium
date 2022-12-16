@@ -53,10 +53,6 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void translate(SkScalar dx, SkScalar dy) override;
   void scale(SkScalar sx, SkScalar sy) override;
   void rotate(SkScalar degrees) override;
-  // TODO(crbug.com/1167153): The concat and setMatrix methods that take an
-  // SkMatrix should be removed in favor of the SkM44 versions.
-  void concat(const SkMatrix& matrix) final;
-  void setMatrix(const SkMatrix& matrix) final;
   void concat(const SkM44& matrix) override;
   void setMatrix(const SkM44& matrix) override;
 
@@ -76,7 +72,6 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
   bool isClipEmpty() const override;
-  SkMatrix getTotalMatrix() const override;
   SkM44 getLocalToDevice() const override;
 
   void drawColor(SkColor4f color, SkBlendMode mode) override;
@@ -227,7 +222,6 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
   bool isClipEmpty() const override;
-  SkMatrix getTotalMatrix() const override;
   SkM44 getLocalToDevice() const override;
 
   // Don't shadow non-virtual helper functions.

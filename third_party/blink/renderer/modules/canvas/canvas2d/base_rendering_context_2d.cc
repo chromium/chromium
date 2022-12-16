@@ -331,8 +331,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
     c->setMatrix(SkM44());
     if (curr_state->Get()) {
       curr_state->Get()->PlaybackClips(c);
-      c->setMatrix(
-          AffineTransformToSkMatrix(curr_state->Get()->GetTransform()));
+      c->setMatrix(AffineTransformToSkM44(curr_state->Get()->GetTransform()));
     }
     c->save();
   }
@@ -365,7 +364,7 @@ void BaseRenderingContext2D::ResetInternal() {
     DCHECK_EQ(c->getSaveCount(), 2);
     c->restore();
     c->save();
-    DCHECK(c->getTotalMatrix().isIdentity());
+    DCHECK(c->getLocalToDevice() == SkM44());
 #if DCHECK_IS_ON()
     SkIRect clip_bounds;
     DCHECK(c->getDeviceClipBounds(&clip_bounds));
@@ -889,7 +888,7 @@ void BaseRenderingContext2D::transform(double m11,
   if (!IsTransformInvertible())
     return;
 
-  c->concat(AffineTransformToSkMatrix(transform));
+  c->concat(AffineTransformToSkM44(transform));
   path_.Transform(transform.Inverse());
 }
 
@@ -1418,7 +1417,7 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
   cc::PaintCanvas* c = GetPaintCanvas();
   DCHECK(c);
 
-  const SkMatrix& ctm = c->getTotalMatrix();
+  const SkMatrix& ctm = c->getLocalToDevice().asM33();
   // Don't disable anti-aliasing if we're rotated or skewed.
   if (!ctm.rectStaysRect())
     return true;
@@ -1490,8 +1489,8 @@ void BaseRenderingContext2D::DrawImageInternal(
   cc::PaintFlags image_flags = *flags;
 
   if (flags->getImageFilter()) {
-    SkMatrix ctm = c->getTotalMatrix();
-    SkMatrix inv_ctm;
+    SkM44 ctm = c->getLocalToDevice();
+    SkM44 inv_ctm;
     if (!ctm.invert(&inv_ctm)) {
       // There is an earlier check for invertibility, but the arithmetic
       // in AffineTransform is not exactly identical, so it is possible
@@ -1500,7 +1499,7 @@ void BaseRenderingContext2D::DrawImageInternal(
       return;
     }
     SkRect bounds = gfx::RectFToSkRect(dst_rect);
-    ctm.mapRect(&bounds);
+    ctm.asM33().mapRect(&bounds);
     if (!bounds.isFinite()) {
       // There is an earlier check for the correctness of the bounds, but it is
       // possible that after applying the matrix transformation we get a faulty

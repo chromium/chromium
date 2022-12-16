@@ -124,16 +124,8 @@ void RecordPaintCanvas::rotate(SkScalar degrees) {
   push<RotateOp>(degrees);
 }
 
-void RecordPaintCanvas::concat(const SkMatrix& matrix) {
-  concat(SkM44(matrix));
-}
-
 void RecordPaintCanvas::concat(const SkM44& matrix) {
   push<ConcatOp>(matrix);
-}
-
-void RecordPaintCanvas::setMatrix(const SkMatrix& matrix) {
-  setMatrix(SkM44(matrix));
 }
 
 void RecordPaintCanvas::setMatrix(const SkM44& matrix) {
@@ -221,11 +213,6 @@ bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
 bool RecordPaintCanvas::isClipEmpty() const {
   NOTREACHED();
   return true;
-}
-
-SkMatrix RecordPaintCanvas::getTotalMatrix() const {
-  NOTREACHED();
-  return SkMatrix();
 }
 
 SkM44 RecordPaintCanvas::getLocalToDevice() const {
@@ -476,10 +463,6 @@ bool InspectableRecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
 
 bool InspectableRecordPaintCanvas::isClipEmpty() const {
   return canvas_.isClipEmpty();
-}
-
-SkMatrix InspectableRecordPaintCanvas::getTotalMatrix() const {
-  return canvas_.getTotalMatrix();
 }
 
 SkM44 InspectableRecordPaintCanvas::getLocalToDevice() const {

@@ -298,7 +298,7 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
     canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
     adjusted_dst_rect.set_origin(gfx::PointF());
 
-    canvas->concat(AffineTransformToSkMatrix(
+    canvas->concat(AffineTransformToSkM44(
         orientation.TransformFromDefault(adjusted_dst_rect.size())));
 
     if (orientation.UsesWidthAsHeight()) {

@@ -35,7 +35,7 @@ void GraphicsContextCanvas::ReleaseIfNeeded() {
     return;
   offscreen_.setImmutable();  // Prevents a defensive copy inside Skia.
   canvas_->save();
-  canvas_->setMatrix(SkMatrix::I());  // Reset back to device space.
+  canvas_->setMatrix(SkM44());  // Reset back to device space.
   canvas_->translate(paint_rect_.x(), paint_rect_.y());
   canvas_->scale(1.f / bitmap_scale_factor_, 1.f / bitmap_scale_factor_);
   canvas_->drawImage(cc::PaintImage::CreateFromBitmap(std::move(offscreen_)), 0,
@@ -68,7 +68,7 @@ CGContextRef GraphicsContextCanvas::CgContext() {
       uint32_t{kCGBitmapByteOrder32Host} | kCGImageAlphaPremultipliedFirst);
   DCHECK(cg_context_);
 
-  SkMatrix matrix = canvas_->getTotalMatrix();
+  SkMatrix matrix = canvas_->getLocalToDevice().asM33();
   matrix.postTranslate(-SkIntToScalar(paint_rect_.x()),
                        -SkIntToScalar(paint_rect_.y()));
   matrix.postScale(bitmap_scale_factor_, -bitmap_scale_factor_);

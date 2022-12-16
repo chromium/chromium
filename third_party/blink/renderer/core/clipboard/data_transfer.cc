@@ -419,7 +419,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     return nullptr;
 
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  skia_paint_canvas.concat(AffineTransformToSkMatrix(transform));
+  skia_paint_canvas.concat(AffineTransformToSkM44(transform));
   builder.EndRecording(skia_paint_canvas, property_tree_state);
 
   scoped_refptr<Image> image =

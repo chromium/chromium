@@ -20,7 +20,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
   SkRect sk_dest_rect = gfx::RectFToSkRect(dest_rect);
   SkRect sk_src_rect = gfx::RectFToSkRect(src_rect);
   canvas->clipRect(sk_dest_rect);
-  canvas->concat(SkMatrix::RectToRect(sk_src_rect, sk_dest_rect));
+  canvas->concat(SkM44::RectToRect(sk_src_rect, sk_dest_rect));
   canvas->saveLayer(&sk_src_rect, &flags);
   canvas->drawPicture(record_);
 }

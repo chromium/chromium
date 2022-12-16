@@ -23,7 +23,6 @@
 
 class SkCanvas;
 class SkM44;
-class SkMatrix;
 class SkPath;
 class SkRRect;
 class SkSurfaceProps;
@@ -86,8 +85,6 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void translate(SkScalar dx, SkScalar dy) override;
   void scale(SkScalar sx, SkScalar sy) override;
   void rotate(SkScalar degrees) override;
-  void concat(const SkMatrix& matrix) override;
-  void setMatrix(const SkMatrix& matrix) override;
   void concat(const SkM44& matrix) override;
   void setMatrix(const SkM44& matrix) override;
 
@@ -155,7 +152,6 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void drawPicture(sk_sp<const PaintRecord> record) override;
 
   bool isClipEmpty() const override;
-  SkMatrix getTotalMatrix() const override;
   SkM44 getLocalToDevice() const override;
 
   bool NeedsFlush() const override;

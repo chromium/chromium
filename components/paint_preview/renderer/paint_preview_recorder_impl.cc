@@ -338,7 +338,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   cc::PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->save();
-  canvas->concat(SkMatrix::Translate(-bounds.x(), -bounds.y()));
+  canvas->translate(-bounds.x(), -bounds.y());
   canvas->SetPaintPreviewTracker(tracker.get());
 
   // Use time ticks manually rather than a histogram macro so as to;

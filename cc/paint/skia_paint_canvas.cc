@@ -117,14 +117,6 @@ void SkiaPaintCanvas::concat(const SkM44& matrix) {
   canvas_->concat(matrix);
 }
 
-void SkiaPaintCanvas::concat(const SkMatrix& matrix) {
-  canvas_->concat(matrix);
-}
-
-void SkiaPaintCanvas::setMatrix(const SkMatrix& matrix) {
-  canvas_->setMatrix(matrix);
-}
-
 void SkiaPaintCanvas::clipRect(const SkRect& rect,
                                SkClipOp op,
                                bool do_anti_alias) {
@@ -375,10 +367,6 @@ void SkiaPaintCanvas::drawPicture(sk_sp<const PaintRecord> record) {
 
 bool SkiaPaintCanvas::isClipEmpty() const {
   return canvas_->isClipEmpty();
-}
-
-SkMatrix SkiaPaintCanvas::getTotalMatrix() const {
-  return canvas_->getTotalMatrix();
 }
 
 SkM44 SkiaPaintCanvas::getLocalToDevice() const {

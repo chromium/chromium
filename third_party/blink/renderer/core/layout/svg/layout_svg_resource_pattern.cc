@@ -237,7 +237,7 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
        child = child->NextSibling())
     SVGObjectPainter(*child).PaintResourceSubtree(builder->Context());
   canvas->save();
-  canvas->concat(AffineTransformToSkMatrix(tile_transform));
+  canvas->concat(AffineTransformToSkM44(tile_transform));
   builder->EndRecording(*canvas);
   canvas->restore();
   return paint_recorder.finishRecordingAsPicture();
