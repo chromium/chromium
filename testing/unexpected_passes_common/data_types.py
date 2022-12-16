@@ -144,9 +144,23 @@ class BaseExpectation():
     typ_expectation = expectations_parser.Expectation(
         reason=self.bug,
         test=self.test,
-        raw_tags=list(self.tags),
+        raw_tags=self._ProcessTagsForFileUse(),
         raw_results=list(self.expected_results))
     return typ_expectation.to_string()
+
+  def _ProcessTagsForFileUse(self) -> List[str]:
+    """Process tags to be suitable for use in expectation files.
+
+    The tags we store should always be valid, but may not adhere to the style
+    actually used by the expectation files. For example, tags are stored
+    internally in lower case, but the expectation files may use capitalized
+    tags.
+
+    Returns:
+      A list of strings containing the contents of |self.tags|, but potentially
+      formatted a certain way.
+    """
+    return list(self.tags)
 
 
 class BaseResult():

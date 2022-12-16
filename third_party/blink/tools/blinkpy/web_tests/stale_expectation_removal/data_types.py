@@ -4,7 +4,7 @@
 """Custom data types for the web test stale expectation remover."""
 
 import fnmatch
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 from unexpected_passes_common import data_types
 
@@ -38,6 +38,9 @@ class WebTestExpectation(data_types.BaseExpectation):
             result_test_name = _StripOffVirtualPrefix(result_test_name)
             success = result_test_name == self.test
         return success
+
+    def _ProcessTagsForFileUse(self) -> List[str]:
+        return [t.capitalize() for t in self.tags]
 
 
 class WebTestResult(data_types.BaseResult):

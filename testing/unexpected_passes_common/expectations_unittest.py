@@ -999,6 +999,24 @@ class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
     with self.assertRaisesRegex(RuntimeError, r'.*tag1_most_specific.*'):
       self._expectations._FilterToMostSpecificTypTags(tags, self.filename)
 
+  def testTagsLowerCased(self) -> None:
+    """Tests that found tags are lower cased to match internal tags."""
+    expectation_file_contents = """\
+# tags: [ Win Win10
+#         Linux
+#         Mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+    tags = frozenset(['win', 'win10', 'nvidia', 'release'])
+    filtered_tags = self._expectations._FilterToMostSpecificTypTags(
+        tags, self.filename)
+    self.assertEqual(filtered_tags, set(['win10', 'nvidia', 'release']))
+
 
 class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:

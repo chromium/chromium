@@ -466,7 +466,7 @@ class Expectations(object):
         contents = infile.read()
       tag_groups = []
       for match in TAG_GROUP_REGEX.findall(contents):
-        tag_groups.append(match.strip().replace('#', '').split())
+        tag_groups.append(match.lower().strip().replace('#', '').split())
       self._cached_tag_groups[expectation_file] = tag_groups
     tag_groups = self._cached_tag_groups[expectation_file]
 
@@ -482,8 +482,8 @@ class Expectations(object):
       all_tags = set()
       for group in tag_groups:
         all_tags |= set(group)
-      raise RuntimeError('Found tags not in expectation file: %s' %
-                         ' '.join(set(typ_tags) - all_tags))
+      raise RuntimeError('Found tags not in expectation file %s: %s' %
+                         (expectation_file, ' '.join(set(typ_tags) - all_tags)))
 
     filtered_tags = set()
     for index, tags in tags_in_same_group.items():

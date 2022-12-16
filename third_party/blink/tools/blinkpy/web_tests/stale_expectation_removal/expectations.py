@@ -90,4 +90,5 @@ class WebTestExpectations(expectations.Expectations):
                     self._GetExpectationFileTagHeader(f))
                 for ts in list_parser.tag_sets:
                     self._known_tags |= ts
+            self._known_tags = {t.lower() for t in self._known_tags}
         return self._known_tags

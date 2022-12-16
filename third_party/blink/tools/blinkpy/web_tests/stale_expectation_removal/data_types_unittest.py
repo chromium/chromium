@@ -38,6 +38,12 @@ class WebTestExpectationUnittest(unittest.TestCase):
             e._CompareNonWildcard('/virtual/some-identifier/test'))
         self.assertFalse(e._CompareNonWildcard('virtual/some/malformed/test'))
 
+    def testProcessTagsForFileUse(self) -> None:
+        """Tests that tags are properly capitalized for use in files."""
+        e = data_types.WebTestExpectation('test', ['tag1'], 'Failure')
+        self.assertEqual(e.AsExpectationFileString(),
+                         '[ Tag1 ] test [ Failure ]')
+
 
 class WebTestResultUnittest(unittest.TestCase):
     def testSetDurationString(self) -> None:

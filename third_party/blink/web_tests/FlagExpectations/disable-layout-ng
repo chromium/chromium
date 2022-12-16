@@ -1,3 +1,5 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac11 Mac12 Win Win10.20h2 Win11 ]
+# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # These expectations are used when LayoutNG is disabled. We test this
