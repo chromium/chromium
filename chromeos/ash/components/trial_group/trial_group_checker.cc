@@ -97,6 +97,10 @@ TrialGroupChecker::Status TrialGroupChecker::LookUpMembership(
           }
           policy {
             cookies_allowed: NO
+            policy_exception_justification:
+              "Only relevant for internal testing by Google employees. "
+              "Opt-out is not possible on ChromeOS currently per "
+              "go/finch-dogfood#chrome-os."
           }
       )");
 
