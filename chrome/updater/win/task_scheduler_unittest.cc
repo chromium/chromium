@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -65,8 +66,6 @@ const char kUnitTestSwitch[] = "a_switch";
 class TaskSchedulerTests : public ::testing::Test {
  public:
   void SetUp() override {
-    DeleteUpdaterLog();
-
     task_scheduler_ = TaskScheduler::CreateInstance();
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
@@ -82,8 +81,6 @@ class TaskSchedulerTests : public ::testing::Test {
     test::WaitForProcessesToExit(kTestProcessExecutableName,
                                  TestTimeouts::action_max_timeout());
     EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
-
-    DeleteUpdaterLog();
   }
 
   // Converts a base::Time that is in UTC and returns the corresponding local
@@ -104,14 +101,6 @@ class TaskSchedulerTests : public ::testing::Test {
       return base::Time();
     }
     return base::Time::FromFileTime(file_time_local);
-  }
-
-  void DeleteUpdaterLog() {
-    const absl::optional<base::FilePath> log_file =
-        GetLogFilePath(GetTestScope());
-    if (log_file) {
-      base::DeleteFile(*log_file);
-    }
   }
 
  protected:
@@ -336,6 +325,11 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
+  // TODO(crbug.com/1361613): Remove procmon logging once bug is fixed.
+  const base::ScopedClosureRunner stop_procmon_logging(
+      base::BindOnce(&updater::test::StopProcmonLogging,
+                     updater::test::StartProcmonLogging()));
+
   base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(

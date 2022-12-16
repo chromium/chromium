@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
@@ -315,6 +316,9 @@ base::FilePath StartProcmonLogging() {
     LOG(ERROR) << __func__ << ": failed to run: " << cmdline;
     return {};
   }
+
+  // Gives time for the procmon process to start logging.
+  base::PlatformThread::Sleep(base::Seconds(3));
 
   return pml_file;
 }
