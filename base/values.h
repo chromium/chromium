@@ -971,15 +971,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::Merge()`.
   void MergeDictionary(const Value* dictionary);
 
-  // These methods allow the convenient retrieval of the contents of the Value.
-  // If the current object can be converted into the given type, the value is
-  // returned through the `out_value` parameter and true is returned;
-  // otherwise, false is returned and `out_value` is unchanged.
-  // DictionaryValue::From is the equivalent for std::unique_ptr conversions.
-  //
-  // DEPRECATED: prefer direct use `base::Value::Dict` where possible, or
-  // `GetIfDict()` otherwise.
-  bool GetAsDictionary(const DictionaryValue** out_value) const;
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard
