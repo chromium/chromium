@@ -302,8 +302,10 @@ base::FilePath StartProcmonLogging() {
       start_time.second)));
 
   const std::wstring& cmdline = base::StrCat(
-      {kProcmonPath, L" /AcceptEula /LoadConfig \"", pmc_path.value(),
-       L"\" /BackingFile \"", pml_file.value(), L"\" /Quiet /externalcapture"});
+      {kProcmonPath, L" /AcceptEula /LoadConfig ",
+       QuoteForCommandLineToArgvW(pmc_path.value()), L" /BackingFile ",
+       QuoteForCommandLineToArgvW(pml_file.value()),
+       L" /Quiet /externalcapture"});
   base::LaunchOptions options;
   options.start_hidden = true;
   VLOG(1) << __func__ << ": running: " << cmdline;
@@ -325,9 +327,11 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
 
   for (const std::wstring& cmdline :
        {base::StrCat({kProcmonPath, L" /Terminate"}),
-        base::StrCat({kProcmonPath, L" /AcceptEula /OpenLog \"",
-                      pml_file.value(), L"\" /SaveAs \"",
-                      pml_file.ReplaceExtension(L".CSV").value(), L"\""})}) {
+        base::StrCat({kProcmonPath, L" /AcceptEula /OpenLog ",
+                      QuoteForCommandLineToArgvW(pml_file.value()),
+                      L" /SaveAs ",
+                      QuoteForCommandLineToArgvW(
+                          pml_file.ReplaceExtension(L".CSV").value())})}) {
     base::LaunchOptions options;
     options.start_hidden = true;
     options.wait = true;
