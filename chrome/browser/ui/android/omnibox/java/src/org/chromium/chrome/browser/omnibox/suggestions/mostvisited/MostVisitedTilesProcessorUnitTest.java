@@ -69,8 +69,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND,
-        ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES,
-        ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET})
+        ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);

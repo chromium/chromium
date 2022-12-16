@@ -399,8 +399,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
     public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
             "OmniboxMostVisitedTilesAddRecycledViewPool";
-    public static final String OMNIBOX_MOST_VISITED_TILES_FADING_ON_TABLET =
-            "OmniboxMostVisitedTilesFadingOnTablet";
     public static final String OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND =
             "OmniboxMostVisitedTilesTitleWrapAround";
     public static final String OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS =

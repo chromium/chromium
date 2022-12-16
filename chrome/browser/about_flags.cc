@@ -5229,11 +5229,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxModernizeVisualUpdateVariations,
          "OmniboxModernizeVisualUpdate")},
 
-    {"omnibox-most-visited-tiles",
-     flag_descriptions::kOmniboxMostVisitedTilesName,
-     flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
-
     {"omnibox-most-visited-tiles-add-recycled-view-poll",
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolName,
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
