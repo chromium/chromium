@@ -48,7 +48,8 @@ void* GLImageEGL::GetEGLImage() const {
 }
 
 GLImageEGL::BindOrCopy GLImageEGL::ShouldBindOrCopy() {
-  return egl_image_ == EGL_NO_IMAGE_KHR ? COPY : BIND;
+  DCHECK_NE(egl_image_, EGL_NO_IMAGE_KHR);
+  return BIND;
 }
 
 bool GLImageEGL::BindTexImage(unsigned target) {

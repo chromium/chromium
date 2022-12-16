@@ -35,6 +35,18 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
   ~GLImageNativePixmapTestDelegate() override = default;
 
+  bool SkipTest(GLDisplay* display) const override {
+    ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
+                                ->GetSurfaceFactoryOzone()
+                                ->GetCurrentGLOzone();
+    if (!gl_ozone || !gl_ozone->CanImportNativePixmap()) {
+      LOG(WARNING) << "Skip test, ozone implementation can't import native "
+                   << "pixmaps";
+      return true;
+    }
+    return false;
+  }
+
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
                                                const uint8_t color[4]) const {
     ui::SurfaceFactoryOzone* surface_factory =
