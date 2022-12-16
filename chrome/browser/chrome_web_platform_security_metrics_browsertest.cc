@@ -1909,6 +1909,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest, BlobUrl) {
   )"));
   CheckHistogramCount("Navigation.BlobUrl", true, 1);
   CheckHistogramCount("Navigation.BlobUrl", false, 3);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", false, 1);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1922,6 +1926,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   )"));
   CheckHistogramCount("Navigation.BlobUrl", true, 1);
   CheckHistogramCount("Navigation.BlobUrl", false, 3);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", false, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", false, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1931,6 +1939,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   CheckHistogramCount("Navigation.BlobUrl", true, 0);
   CheckHistogramCount("Navigation.BlobUrl", false, 3);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", false, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", false, 0);
 
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
     const blob = new Blob(["test"], {type: "text/html"});
@@ -1939,6 +1951,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   )"));
   CheckHistogramCount("Navigation.BlobUrl", true, 1);
   CheckHistogramCount("Navigation.BlobUrl", false, 3);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", true, 1);
+  CheckHistogramCount("Navigation.BlobUrl.MainFrame", false, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", true, 0);
+  CheckHistogramCount("Navigation.BlobUrl.Sandboxed", false, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
