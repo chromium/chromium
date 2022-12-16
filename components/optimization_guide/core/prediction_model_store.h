@@ -58,6 +58,12 @@ class PredictionModelStore {
   bool HasModel(proto::OptimizationTarget optimization_target,
                 const proto::ModelCacheKey& model_cache_key) const;
 
+  // Returns whether the model represented by |optimization_target| and
+  // |model_cache_key| with |version| is available in the store.
+  bool HasModelWithVersion(proto::OptimizationTarget optimization_target,
+                           const proto::ModelCacheKey& model_cache_key,
+                           int64_t version) const;
+
   // Loads the model represented by |optimization_target| and
   // |model_cache_key|. Once the model is loaded and validated |callback|
   // is invoked. On any failures, callback is run with nullptr.
@@ -87,6 +93,13 @@ class PredictionModelStore {
   base::FilePath GetBaseModelDirForModelCacheKey(
       proto::OptimizationTarget optimization_target,
       const proto::ModelCacheKey& model_cache_key);
+
+  // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
+  // for |optimization_target|.
+  void UpdateModelCacheKeyMapping(
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& client_model_cache_key,
+      const proto::ModelCacheKey& server_model_cache_key);
 
  private:
   friend base::NoDestructor<PredictionModelStore>;

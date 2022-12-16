@@ -31,6 +31,7 @@ const proto::OptimizationTarget kTestOptimizationTargetBar =
     proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION;
 
 const char kTestLocaleFoo[] = "foo";
+const char kTestLocaleBar[] = "bar";
 
 proto::ModelCacheKey CreateModelCacheKey(const std::string& locale) {
   proto::ModelCacheKey model_cache_key;
@@ -65,8 +66,10 @@ class PredictionModelStoreTest : public testing::Test {
   }
 
   void OnPredictionModelLoaded(
+      base::RunLoop* run_loop,
       std::unique_ptr<proto::PredictionModel> loaded_prediction_model) {
     last_loaded_prediction_model_ = std::move(loaded_prediction_model);
+    run_loop->Quit();
   }
 
   proto::PredictionModel* last_loaded_prediction_model() {
@@ -102,6 +105,16 @@ class PredictionModelStoreTest : public testing::Test {
     return {model_info, base_model_dir};
   }
 
+  void WaitForModeLoad(proto::OptimizationTarget optimization_target,
+                       const proto::ModelCacheKey& model_cache_key) {
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    prediction_model_store_->LoadModel(
+        optimization_target, model_cache_key,
+        base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
+                       base::Unretained(this), run_loop.get()));
+    run_loop->Run();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -135,12 +148,12 @@ TEST_F(PredictionModelStoreTest, ModelUpdateAndLoad) {
                                                 model_cache_key));
   EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetBar,
                                                  model_cache_key));
+  EXPECT_TRUE(prediction_model_store_->HasModelWithVersion(
+      kTestOptimizationTargetFoo, model_cache_key, 1));
+  EXPECT_FALSE(prediction_model_store_->HasModelWithVersion(
+      kTestOptimizationTargetFoo, model_cache_key, 2));
 
-  prediction_model_store_->LoadModel(
-      kTestOptimizationTargetFoo, model_cache_key,
-      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
-                     base::Unretained(this)));
-  RunUntilIdle();
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
 
   proto::PredictionModel* loaded_model = last_loaded_prediction_model();
   EXPECT_TRUE(loaded_model);
@@ -150,11 +163,7 @@ TEST_F(PredictionModelStoreTest, ModelUpdateAndLoad) {
             model_detail.base_model_dir.Append(GetBaseFileNameForModels()));
   EXPECT_EQ(0, loaded_model->model_info().additional_files_size());
 
-  prediction_model_store_->LoadModel(
-      kTestOptimizationTargetBar, model_cache_key,
-      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
-                     base::Unretained(this)));
-  RunUntilIdle();
+  WaitForModeLoad(kTestOptimizationTargetBar, model_cache_key);
   EXPECT_FALSE(last_loaded_prediction_model());
 }
 
@@ -172,12 +181,7 @@ TEST_F(PredictionModelStoreTest, ModelWithAdditionalFile) {
   EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
                                                 model_cache_key));
 
-  prediction_model_store_->LoadModel(
-      kTestOptimizationTargetFoo, model_cache_key,
-      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
-                     base::Unretained(this)));
-  RunUntilIdle();
-
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_TRUE(last_loaded_prediction_model());
 }
 
@@ -198,13 +202,45 @@ TEST_F(PredictionModelStoreTest, InvalidModelAdditionalFile) {
   EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
                                                 model_cache_key));
 
-  prediction_model_store_->LoadModel(
-      kTestOptimizationTargetFoo, model_cache_key,
-      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
-                     base::Unretained(this)));
-  RunUntilIdle();
-
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_FALSE(last_loaded_prediction_model());
+}
+
+TEST_F(PredictionModelStoreTest, ModelsSharedBasedOnServerModelCacheKey) {
+  auto model_cache_key_foo = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_cache_key_bar = CreateModelCacheKey(kTestLocaleBar);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key_foo, {});
+  prediction_model_store_->UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, model_cache_key_foo, model_cache_key_foo);
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key_foo, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+  EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                model_cache_key_foo));
+
+  // Allow the model to be shared for different cache key.
+  prediction_model_store_->UpdateModelCacheKeyMapping(
+      kTestOptimizationTargetFoo, model_cache_key_bar, model_cache_key_foo);
+  EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                model_cache_key_bar));
+
+  // The model should not be shared for different optimization target.
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetBar,
+                                                 model_cache_key_foo));
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetBar,
+                                                 model_cache_key_bar));
+
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key_foo);
+
+  auto model_file_foo = last_loaded_prediction_model()->model().download_url();
+
+  last_loaded_prediction_model_.reset();
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key_bar);
+  proto::PredictionModel* loaded_model_bar = last_loaded_prediction_model();
+  EXPECT_TRUE(loaded_model_bar);
+  EXPECT_EQ(loaded_model_bar->model().download_url(), model_file_foo);
 }
 
 TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
@@ -218,11 +254,7 @@ TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
 
   EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
                                                 model_cache_key));
-  prediction_model_store_->LoadModel(
-      kTestOptimizationTargetFoo, model_cache_key,
-      base::BindOnce(&PredictionModelStoreTest::OnPredictionModelLoaded,
-                     base::Unretained(this)));
-  RunUntilIdle();
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
   proto::PredictionModel* loaded_model = last_loaded_prediction_model();
   EXPECT_TRUE(loaded_model);
   EXPECT_EQ(kTestOptimizationTargetFoo,

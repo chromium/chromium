@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
+#include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/origin.h"
@@ -255,6 +256,13 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // updated.
   void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
                                  const ModelInfo& model_info);
+
+  // Updates the metadata for |model|.
+  void UpdateModelMetadata(const proto::PredictionModel& model);
+
+  // Returns whether the model should be downloaded, or the correct model
+  // version already exists in the model store.
+  bool ShouldDownloadNewModel(const proto::PredictionModel& model) const;
 
   void SetModelCacheKeyForTesting(const proto::ModelCacheKey& model_cache_key) {
     model_cache_key_ = model_cache_key;

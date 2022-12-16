@@ -60,6 +60,12 @@ namespace localstate {
 // the store, keyed by the optimization target and ModelCacheKey.
 const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
 
+// A dictionary pref that stores the mapping between client generated
+// ModelCacheKey based on the user profile characteristics and the server
+// returned ModelCacheKey that was used in the actual model selection logic.
+const char kModelCacheKeyMapping[] =
+    "optimization_guide.model_cache_key_mapping";
+
 }  // namespace localstate
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -86,6 +92,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
+  registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
 }
 
 }  // namespace prefs

@@ -23,6 +23,7 @@ namespace localstate {
 
 // Local state prefs.
 extern const char kModelStoreMetadata[];
+extern const char kModelCacheKeyMapping[];
 
 }  // namespace localstate
 

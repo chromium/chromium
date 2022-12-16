@@ -38,6 +38,9 @@ class ModelStoreMetadataEntry {
   // and the model info files are stored.
   absl::optional<base::FilePath> GetModelBaseDir() const;
 
+  // Gets the model version.
+  absl::optional<int64_t> GetVersion() const;
+
   // Gets the expiry time.
   base::Time GetExpiryTime() const;
 
@@ -57,6 +60,14 @@ class ModelStoreMetadataEntry {
 // The pref updater for ModelStoreMetadataEntry.
 class ModelStoreMetadataEntryUpdater : public ModelStoreMetadataEntry {
  public:
+  // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
+  // for |optimization_target| in |local_state|.
+  static void UpdateModelCacheKeyMapping(
+      PrefService* local_state,
+      proto::OptimizationTarget optimization_target,
+      const proto::ModelCacheKey& client_model_cache_key,
+      const proto::ModelCacheKey& server_model_cache_key);
+
   // Returns the metadata entry in the store, creating it if it does not exist.
   ModelStoreMetadataEntryUpdater(PrefService* local_state,
                                  proto::OptimizationTarget optimization_target,
@@ -69,6 +80,7 @@ class ModelStoreMetadataEntryUpdater : public ModelStoreMetadataEntry {
 
   // The setters for the various model metadata.
   void SetModelBaseDir(base::FilePath model_base_dir);
+  void SetVersion(int64_t version);
   void SetKeepBeyondValidDuration(bool keep_beyond_valid_duration);
   void SetExpiryTime(base::Time expiry_time);
 

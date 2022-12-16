@@ -155,6 +155,23 @@ bool PredictionModelStore::HasModel(
       .has_value();
 }
 
+bool PredictionModelStore::HasModelWithVersion(
+    proto::OptimizationTarget optimization_target,
+    const proto::ModelCacheKey& model_cache_key,
+    int64_t version) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state_, optimization_target, model_cache_key);
+  if (!metadata) {
+    return false;
+  }
+  if (!metadata->GetVersion()) {
+    // TODO(b/244649670): Remove the invalid model.
+    return false;
+  }
+  return *metadata->GetVersion() == version;
+}
+
 void PredictionModelStore::LoadModel(
     proto::OptimizationTarget optimization_target,
     const proto::ModelCacheKey& model_cache_key,
@@ -246,19 +263,13 @@ void PredictionModelStore::UpdateMetadataForExistingModel(
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();
   DCHECK(base_store_dir_.IsParent(*base_model_dir));
+  metadata.SetVersion(model_info.version());
   if (model_info.has_valid_duration()) {
     metadata.SetExpiryTime(
         base::Time::Now() +
         base::Seconds(model_info.valid_duration().seconds()));
   }
   metadata.SetKeepBeyondValidDuration(model_info.keep_beyond_valid_duration());
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CheckAllPathsExist,
-                     GetModelFilePaths(model_info, *base_model_dir)),
-      base::BindOnce(&PredictionModelStore::OnModelUpdateVerified,
-                     weak_ptr_factory_.GetWeakPtr(), optimization_target,
-                     model_cache_key, base::DoNothing()));
 }
 
 void PredictionModelStore::UpdateModel(
@@ -274,6 +285,7 @@ void PredictionModelStore::UpdateModel(
 
   ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
                                           model_cache_key);
+  metadata.SetVersion(model_info.version());
   metadata.SetExpiryTime(
       base::Time::Now() +
       (model_info.has_valid_duration()
@@ -315,6 +327,16 @@ base::FilePath PredictionModelStore::GetBaseModelDirForModelCacheKey(
                             .AppendASCII(GetModelCacheKeyHash(model_cache_key));
   return base_model_dir.AppendASCII(base::HexEncode(
       base::as_bytes(base::make_span(base::RandBytesAsString(8)))));
+}
+
+void PredictionModelStore::UpdateModelCacheKeyMapping(
+    proto::OptimizationTarget optimization_target,
+    const proto::ModelCacheKey& client_model_cache_key,
+    const proto::ModelCacheKey& server_model_cache_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ModelStoreMetadataEntryUpdater::UpdateModelCacheKeyMapping(
+      local_state_, optimization_target, client_model_cache_key,
+      server_model_cache_key);
 }
 
 }  // namespace optimization_guide
