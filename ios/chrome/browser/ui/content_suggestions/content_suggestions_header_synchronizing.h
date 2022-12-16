@@ -11,10 +11,6 @@
 // synchronize with the header, containing the fake omnibox and the logo.
 @protocol ContentSuggestionsHeaderSynchronizing
 
-// `YES` if its view is visible.  When set to `NO` various UI updates are
-// ignored.
-@property(nonatomic, assign, getter=isShowing) BOOL showing;
-
 // The added y-offset of the NTP collection view to make up for the header.
 // Without this, the offset is negative at the top of the NTP.
 @property(nonatomic, assign) CGFloat additionalOffset;
@@ -32,18 +28,9 @@
 // Unfocuses the omnibox.
 - (void)unfocusOmnibox;
 
-// Update any dynamic constraints.
-- (void)updateConstraints;
-
-// Whether the omnibox is currently focused.
-- (BOOL)isOmniboxFocused;
-
 // Returns the Y value to use for the scroll view's contentOffset when scrolling
 // the omnibox to the top of the screen.
 - (CGFloat)pinnedOffsetY;
-
-// Returns the height of the header.
-- (CGFloat)headerHeight;
 
 @end
 

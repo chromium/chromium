@@ -49,9 +49,6 @@
 // Whether the omnibox is currently focused.
 - (BOOL)isOmniboxFocused;
 
-// Returns the height of the header.
-- (CGFloat)headerHeight;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_CONTROLLING_H_

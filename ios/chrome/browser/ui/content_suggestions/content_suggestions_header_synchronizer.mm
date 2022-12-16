@@ -58,13 +58,13 @@ initWithCollectionController:
     _shiftTileStartTime = -1;
     _shouldAnimateHeader = YES;
 
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(unfocusOmnibox)];
-    [_tapGestureRecognizer setDelegate:self];
-
     _headerController = headerController;
     _collectionController = collectionController;
+
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:_headerController
+                action:@selector(unfocusOmnibox)];
+    [_tapGestureRecognizer setDelegate:self];
 
     _collectionShiftingOffset = 0;
     _additionalOffset = 0;
@@ -198,26 +198,7 @@ initWithCollectionController:
   [self.animator startAnimation];
 }
 
-- (void)invalidateLayout {
-  [self updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // On iOS 13, invalidating the layout doesn't reset the positioning of the
-    // header. To make sure that it is correctly positioned, scroll 1pt. This
-    // is done in the next runloop to have the collectionView resized and the
-    // content offset set to the new value. See crbug.com/1025694.
-    CGPoint currentOffset = [self.collectionView contentOffset];
-    currentOffset.y += 1;
-    [self.collectionView setContentOffset:currentOffset animated:YES];
-  });
-}
-
 #pragma mark - ContentSuggestionsHeaderSynchronizing
-
-- (BOOL)isOmniboxFocused {
-  return [self.headerController isOmniboxFocused];
-}
 
 - (void)updateFakeOmniboxForScrollPosition {
   // Unfocus the omnibox when the scroll view is scrolled by the user (but not
@@ -253,10 +234,6 @@ initWithCollectionController:
   }
 }
 
-- (void)updateConstraints {
-  [self.headerController updateConstraints];
-}
-
 - (void)resetPreFocusOffset {
   self.collectionShiftingOffset = 0;
 }
@@ -267,18 +244,6 @@ initWithCollectionController:
 
 - (CGFloat)pinnedOffsetY {
   return [self.headerController pinnedOffsetY] - self.additionalOffset;
-}
-
-- (CGFloat)headerHeight {
-  return [self.headerController headerHeight];
-}
-
-- (void)setShowing:(BOOL)showing {
-  self.headerController.showing = showing;
-}
-
-- (BOOL)isShowing {
-  return self.headerController.isShowing;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
