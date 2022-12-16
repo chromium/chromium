@@ -539,6 +539,13 @@ BASE_FEATURE(kGlobalMediaControlsForCast,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// If enabled, users can request Media Remoting without fullscreen-in-tab.
+BASE_FEATURE(kMediaRemotingWithoutFullscreen,
+             "MediaRemotingWithoutFullscreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Allow Global Media Controls in system tray of CrOS.
 BASE_FEATURE(kGlobalMediaControlsForChromeOS,
              "GlobalMediaControlsForChromeOS",

@@ -24,6 +24,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/remoting/device_capability_checker.h"
 #include "net/base/url_util.h"
@@ -357,7 +358,7 @@ void CastMediaRouteProvider::OnSinkQueryUpdated(
                                    sinks, GetOrigins(source_id));
     return;
   }
-  if (!base::FeatureList::IsEnabled(kMediaRemotingWithoutFullscreen)) {
+  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
     return;
   }
 

@@ -1272,8 +1272,7 @@ class MediaDialogViewWithRemotePlaybackBrowserTest
     : public MediaDialogViewBrowserTest {
  public:
   MediaDialogViewWithRemotePlaybackBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        media_router::kMediaRemotingWithoutFullscreen);
+    feature_list_.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
   }
 
  private:

@@ -33,6 +33,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -450,8 +451,7 @@ TEST_F(MediaNotificationServiceCastTest,
 TEST_F(MediaNotificationServiceCastTest,
        CreateCastDialogControllerWithRemotePlayback) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      media_router::kMediaRemotingWithoutFullscreen);
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
 
   auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
   auto* session_item = GetNotificationSessionItem(id);

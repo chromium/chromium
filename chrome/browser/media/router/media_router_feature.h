@@ -50,9 +50,6 @@ BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
 // Presentation API. If disabled, only the allowlisted sites can do so.
 BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 
-// If enabled, users can request Media Remoting without fullscreen-in-tab.
-BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
-
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

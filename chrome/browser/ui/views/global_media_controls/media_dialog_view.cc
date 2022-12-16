@@ -79,8 +79,7 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
 
 const std::string GetRemotePlaybackRouteId(const std::string& item_id,
                                            content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(
-          media_router::kMediaRemotingWithoutFullscreen)) {
+  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
     return "";
   }
 
@@ -95,6 +94,9 @@ const std::string GetRemotePlaybackRouteId(const std::string& item_id,
   for (auto route :
        media_router::MediaRouterFactory::GetApiForBrowserContext(context)
            ->GetCurrentRoutes()) {
+    if (!route.media_source().IsRemotePlaybackSource()) {
+      continue;
+    }
     std::string media_source_tab_id;
     net::GetValueForKeyInQuery(route.media_source().url(), "tab_id",
                                &media_source_tab_id);
