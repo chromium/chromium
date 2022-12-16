@@ -75,10 +75,12 @@ VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->UnregisterClient(client_id_);
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->video_conference_manager_ash()
+        ->UnregisterClient(client_id_);
+  }
 #endif
 }
 

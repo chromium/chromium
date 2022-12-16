@@ -9,8 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/barrier_callback.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -133,7 +136,12 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name,
     NotifyDeviceUsedWhileDisabledCallback callback) {
-  // TODO(b/244109688): notify VcUiController
+  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // possible to enable ash features in lacros browsertests.
+  if (ash::features::IsVcControlsUiEnabled()) {
+    GetTrayController()->HandleDeviceUsedWhileDisabled(std::move(device),
+                                                       app_name);
+  }
   std::move(callback).Run(true);
 }
 
@@ -161,7 +169,18 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
 }
 
 void VideoConferenceManagerAsh::SendUpdatedState() {
-  // TODO(b/244109688): pass new state to VcUiController
+  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // possible to enable ash features in lacros browsertests.
+  if (ash::features::IsVcControlsUiEnabled()) {
+    GetTrayController()->UpdateWithMediaState(GetAggregatedState());
+  }
+}
+
+VideoConferenceTrayController* VideoConferenceManagerAsh::GetTrayController() {
+  VideoConferenceTrayController* tray_controller =
+      VideoConferenceTrayController::Get();
+  DCHECK(tray_controller);
+  return tray_controller;
 }
 
 }  // namespace ash

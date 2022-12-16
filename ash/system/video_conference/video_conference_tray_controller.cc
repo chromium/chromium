@@ -11,6 +11,7 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
@@ -94,6 +95,12 @@ void VideoConferenceTrayController::UpdateWithMediaState(
     for (auto& observer : observer_list_)
       observer.OnMicrophoneCapturingStateChange(state_.is_capturing_microphone);
   }
+}
+
+void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
+    crosapi::mojom::VideoConferenceMediaDevice device,
+    const std::u16string& app_name) {
+  // TODO(b/249828245): Implement logic to handle this.
 }
 
 }  // namespace ash

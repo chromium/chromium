@@ -28,12 +28,12 @@ class VideoConferenceManagerAsh;
 // remote connected to a client or directly on a client instance.
 class VideoConferenceClientWrapper {
  public:
-  explicit VideoConferenceClientWrapper(
+  VideoConferenceClientWrapper(
       mojo::PendingRemote<crosapi::mojom::VideoConferenceManagerClient> client,
       const base::UnguessableToken& client_id,
       VideoConferenceManagerAsh* vc_manager);
 
-  explicit VideoConferenceClientWrapper(
+  VideoConferenceClientWrapper(
       crosapi::mojom::VideoConferenceManagerClient* client,
       VideoConferenceManagerAsh* vc_manager);
 
@@ -56,11 +56,11 @@ class VideoConferenceClientWrapper {
   VideoConferenceMediaState& state();
 
  private:
-  // Exactly one of the following is non-null.
   raw_ptr<VideoConferenceManagerAsh> vc_manager_;
+  VideoConferenceMediaState state_;
+  // Exactly one of the following is non-null.
   mojo::Remote<crosapi::mojom::VideoConferenceManagerClient> mojo_client_;
   raw_ptr<crosapi::mojom::VideoConferenceManagerClient> cpp_client_{nullptr};
-  VideoConferenceMediaState state_;
 };
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
@@ -57,6 +58,11 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Updates the tray UI with the given `VideoConferenceMediaState`.
   void UpdateWithMediaState(VideoConferenceMediaState state);
+
+  // Handles device usage from a VC app while the device is system disabled.
+  void HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      const std::u16string& app_name);
 
   // media::CameraPrivacySwitchObserver:
   void OnCameraSWPrivacySwitchStateChanged(

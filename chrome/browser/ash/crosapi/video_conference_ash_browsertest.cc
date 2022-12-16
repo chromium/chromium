@@ -7,8 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -117,17 +119,28 @@ void CallVcManagerAshMethods(FakeVcManagerCppClient& client,
   run_loop2.Run();
 }
 
-using VideoConferenceAshBrowserTest = InProcessBrowserTest;
+class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
+ public:
+  VideoConferenceAshBrowserTest() = default;
+
+  VideoConferenceAshBrowserTest(const VideoConferenceAshBrowserTest&) = delete;
+  VideoConferenceAshBrowserTest& operator=(
+      const VideoConferenceAshBrowserTest&) = delete;
+
+  ~VideoConferenceAshBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kVcControlsUi};
+};
 
 // Tests |VideoConferenceManagerAsh| api calls don't crash. Tests calls over
 // both mojo and cpp clients.
 IN_PROC_BROWSER_TEST_F(VideoConferenceAshBrowserTest, Basics) {
   ASSERT_TRUE(CrosapiManager::IsInitialized());
 
-  auto* vc_manager = crosapi::CrosapiManager::Get()
-                         ->crosapi_ash()
-                         ->video_conference_manager_ash();
-
+  auto* vc_manager =
+      CrosapiManager::Get()->crosapi_ash()->video_conference_manager_ash();
   {
     FakeVcManagerMojoClient mojo_client1;
     vc_manager->BindReceiver(mojo_client1.remote_.BindNewPipeAndPassReceiver());

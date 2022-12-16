@@ -183,8 +183,10 @@ views::Widget* VideoConferenceTray::GetBubbleWidget() const {
 }
 
 std::u16string VideoConferenceTray::GetAccessibleNameForTray() {
-  // TODO(b/253646076): Finish this function.
-  return std::u16string();
+  // TODO(b/253646076): The following is a temporary fix to pass
+  // https://crrev.com/c/4109611 browsertests and still needs to be replaced
+  // with the proper name.
+  return u"Placeholder";
 }
 
 void VideoConferenceTray::HideBubbleWithView(
