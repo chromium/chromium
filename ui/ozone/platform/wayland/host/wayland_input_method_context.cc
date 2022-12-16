@@ -197,11 +197,13 @@ void WaylandInputMethodContext::UpdatePreeditText(
   preedit.ime_text_spans.push_back(ImeTextSpan(
       ImeTextSpan::Type::kComposition, 0, length, ImeTextSpan::Thickness::kThin,
       ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
+  surrounding_text_tracker_.OnSetCompositionText(preedit);
   ime_delegate_->OnPreeditChanged(preedit);
 }
 
 void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
+  surrounding_text_tracker_.Reset();
   if (text_input_)
     text_input_->Reset();
 }
@@ -243,6 +245,8 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 void WaylandInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& selection_range) {
+  surrounding_text_tracker_.Update(text, selection_range);
+
   if (!text_input_)
     return;
 
@@ -267,11 +271,10 @@ void WaylandInputMethodContext::SetSurroundingText(
 
   // If the selection range in UTF8 form is longer than the maximum length of
   // wayland messages, skip sending set_surrounding_text requests.
-  if (selection_range_utf8.length() > kWaylandMessageDataMaxLength)
+  if (selection_range_utf8.length() > kWaylandMessageDataMaxLength) {
+    surrounding_text_tracker_.Reset();
     return;
-
-  surrounding_text_ = text_utf8;
-  selection_range_utf8_ = selection_range_utf8;
+  }
 
   if (text_utf8.size() <= kWaylandMessageDataMaxLength) {
     // We separate this case to run the function simpler and faster since this
@@ -429,21 +432,30 @@ void WaylandInputMethodContext::OnPreeditString(
     composition_text.selection = gfx::Range(*cursor);
   }
 
+  surrounding_text_tracker_.OnSetCompositionText(composition_text);
   ime_delegate_->OnPreeditChanged(composition_text);
 }
 
 void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
   if (pending_keep_selection_) {
+    surrounding_text_tracker_.OnConfirmCompositionText(true);
     ime_delegate_->OnConfirmCompositionText(true);
     pending_keep_selection_ = false;
     return;
   }
-  ime_delegate_->OnCommit(base::UTF8ToUTF16(text));
+  std::u16string text_utf16 = base::UTF8ToUTF16(text);
+  surrounding_text_tracker_.OnInsertText(
+      text_utf16,
+      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ime_delegate_->OnCommit(text_utf16);
 }
 
 void WaylandInputMethodContext::OnCursorPosition(int32_t index,
                                                  int32_t anchor) {
-  if (surrounding_text_.empty()) {
+  const auto& [surrounding_text, selection, unused_composition_text] =
+      surrounding_text_tracker_.predicted_state();
+
+  if (surrounding_text.empty()) {
     LOG(ERROR) << "SetSurroundingText should run before OnCursorPosition.";
     return;
   }
@@ -454,14 +466,17 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   // bytes.
   // Note that `index` and `anchor` is guaranteed to be under 4000 bytes,
   // adjusted index and anchor below won't overflow.
-  size_t adjusted_index = index + surrounding_text_offset_;
-  size_t adjusted_anchor = anchor + surrounding_text_offset_;
-
-  if (adjusted_index > surrounding_text_.size()) {
+  std::vector<size_t> offsets = {index + surrounding_text_offset_,
+                                 anchor + surrounding_text_offset_};
+  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
+                                    &offsets);
+  if (offsets[0] == std::u16string::npos ||
+      offsets[0] > surrounding_text.size()) {
     LOG(ERROR) << "Invalid index is specified.";
     return;
   }
-  if (adjusted_anchor > surrounding_text_.size()) {
+  if (offsets[1] == std::u16string::npos ||
+      offsets[1] > surrounding_text.size()) {
     LOG(ERROR) << "Invalid anchor is specified.";
     return;
   }
@@ -481,44 +496,40 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   //
   // This timing issue will be fixed by sending whole surrounding text instead
   // of trimmed text.
-  if (selection_range_utf8_ == gfx::Range(adjusted_index, adjusted_anchor)) {
+  if (selection == gfx::Range(offsets[0], offsets[1])) {
     pending_keep_selection_ = true;
   } else {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 #endif
+
+  surrounding_text_tracker_.OnSetEditableSelectionRange(
+      gfx::Range(offsets[0], offsets[1]));
 }
 
 void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
                                                         uint32_t length) {
-  // |index| and |length| are expected to be in UTF8 form, so we convert these
-  // into UTF16 form.
-  // Here, we use the surrounding text stored in SetSurroundingText which should
-  // be called before OnDeleteSurroundingText.
-  if (surrounding_text_.empty()) {
-    LOG(DFATAL)
-        << "SetSurroundingText should run before OnDeleteSurroundingText.";
-    return;
-  }
+  const auto& [surrounding_text, selection, unsused_composition] =
+      surrounding_text_tracker_.predicted_state();
+  DCHECK(selection.IsValid());
 
   // TODO(crbug.com/1227590): Currently data sent from delete surrounding text
   // from exo is broken. Currently this broken behavior is supported to prevent
   // visible regressions, but should be fixed in the future, specifically the
   // compatibility with non-exo wayland compositors.
   std::vector<size_t> offsets_for_adjustment = {
-      selection_range_utf8_.GetMin(),
-      selection_range_utf8_.GetMax(),
       surrounding_text_offset_ + index,
       surrounding_text_offset_ + index + length,
   };
-  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets_for_adjustment);
+  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
+                                    &offsets_for_adjustment);
   if (base::Contains(offsets_for_adjustment, std::u16string::npos)) {
     LOG(DFATAL) << "The selection range for surrounding text is invalid.";
     return;
   }
 
-  if (offsets_for_adjustment[0] < offsets_for_adjustment[2] ||
-      offsets_for_adjustment[1] > offsets_for_adjustment[3]) {
+  if (selection.GetMin() < offsets_for_adjustment[0] ||
+      selection.GetMax() > offsets_for_adjustment[1]) {
     // The range is started after the selection, or ended before the selection,
     // which is not supported.
     LOG(DFATAL) << "The deletion range needs to cover whole selection range.";
@@ -527,9 +538,11 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
 
   // Move by offset calculated in SetSurroundingText to adjust to the original
   // text place.
-  ime_delegate_->OnDeleteSurroundingText(
-      /* before= */ offsets_for_adjustment[0] - offsets_for_adjustment[2],
-      /* after= */ offsets_for_adjustment[3] - offsets_for_adjustment[1]);
+  size_t before = selection.GetMin() - offsets_for_adjustment[0];
+  size_t after = offsets_for_adjustment[1] - selection.GetMax();
+
+  surrounding_text_tracker_.OnExtendSelectionAndDelete(before, after);
+  ime_delegate_->OnDeleteSurroundingText(before, after);
 }
 
 void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
@@ -584,23 +597,31 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
     int32_t index,
     uint32_t length,
     const std::vector<SpanStyle>& spans) {
-  // |index| and |length| are expected to be in UTF8. |index| is relative to the
-  // current cursor position.
-  if (surrounding_text_.empty() || !selection_range_utf8_.IsValid()) {
+  const auto& [surrounding_text, selection, unused_composition_text] =
+      surrounding_text_tracker_.predicted_state();
+
+  std::vector<size_t> selection_utf8_offsets = {selection.start(),
+                                                selection.end()};
+  std::string surrounding_text_utf8 = base::UTF16ToUTF8AndAdjustOffsets(
+      surrounding_text, &selection_utf8_offsets);
+
+  if (surrounding_text.empty() || !selection.IsValid()) {
     LOG(ERROR) << "SetSurroundingText should run before OnSetPreeditRegion.";
     return;
   }
 
+  // |index| and |length| are expected to be in UTF8. |index| is relative to the
+  // current cursor position.
+
   // Validation of index and length.
-  if (index < 0 &&
-      selection_range_utf8_.end() < static_cast<uint32_t>(-index)) {
+  if (index < 0 && selection_utf8_offsets[1] < static_cast<uint32_t>(-index)) {
     LOG(ERROR) << "Invalid starting point is specified";
     return;
   }
   size_t begin_utf8 = static_cast<size_t>(
-      static_cast<ssize_t>(selection_range_utf8_.end()) + index);
+      static_cast<ssize_t>(selection_utf8_offsets[1]) + index);
   size_t end_utf8 = begin_utf8 + length;
-  if (end_utf8 > surrounding_text_.size()) {
+  if (end_utf8 > surrounding_text_utf8.size()) {
     LOG(ERROR) << "Too long preedit range is specified";
     return;
   }
@@ -610,7 +631,7 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
     offsets.push_back(begin_utf8 + span.index);
     offsets.push_back(begin_utf8 + span.index + span.length);
   }
-  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_utf8, &offsets);
   if (offsets[0] == std::u16string::npos ||
       offsets[1] == std::u16string::npos) {
     LOG(ERROR) << "Invalid range is specified";
@@ -637,25 +658,35 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
                                 /* thickness = */ style->second);
   }
 
+  surrounding_text_tracker_.OnSetCompositionFromExistingText(
+      gfx::Range(offsets[0], offsets[1]));
   ime_delegate_->OnSetPreeditRegion(gfx::Range(offsets[0], offsets[1]),
                                     ime_text_spans);
 }
 
 void WaylandInputMethodContext::OnClearGrammarFragments(
     const gfx::Range& range) {
+  std::u16string surrounding_text =
+      surrounding_text_tracker_.predicted_state().surrounding_text;
+
   std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
                                  range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
+                                    &offsets);
   ime_delegate_->OnClearGrammarFragments(gfx::Range(
       static_cast<uint32_t>(offsets[0]), static_cast<uint32_t>(offsets[1])));
 }
 
 void WaylandInputMethodContext::OnAddGrammarFragment(
     const GrammarFragment& fragment) {
+  std::u16string surrounding_text =
+      surrounding_text_tracker_.predicted_state().surrounding_text;
+
   std::vector<size_t> offsets = {
       fragment.range.start() + surrounding_text_offset_,
       fragment.range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
+                                    &offsets);
   ime_delegate_->OnAddGrammarFragment(
       {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
                                   static_cast<uint32_t>(offsets[1])),

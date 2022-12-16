@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/range/range.h"
@@ -95,6 +96,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 
+  const ui::SurroundingTextTracker::State& predicted_state_for_testing() const {
+    return surrounding_text_tracker_.predicted_state();
+  }
+
  private:
   void Focus(bool skip_virtual_keyboard_update);
   void Blur(bool skip_virtual_keyboard_update);
@@ -133,11 +138,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // text-input-unstable-v3.
   // This is byte-offset in UTF8 form.
   size_t surrounding_text_offset_ = 0;
-  // The string in SetSurroundingText. This is NOT trimmed by the wayland
-  // message size limitation.
-  std::string surrounding_text_;
-  // The selection range in UTF-8 offsets in the |surrounding_text_|.
-  gfx::Range selection_range_utf8_ = gfx::Range::InvalidRange();
+
+  // Tracks the surrounding text. Surrounding text and its selection is NOT
+  // trimmed by the wayland message size limitation in SurroundingTextTracker.
+  ui::SurroundingTextTracker surrounding_text_tracker_;
 
   // Whether the next CommitString should be treated as part of a
   // ConfirmCompositionText operation which keeps the current selection. This
