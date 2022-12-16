@@ -11395,6 +11395,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.ExperienceKit.Maps.MenuDisplayed">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user triggered the maps context menu after a long
+    press on an address, this includes all the menu contexts,
+    &quot;get-directions&quot;,&quot;view-location&quot;, and copy.
+  </description>
+</action>
+
 <action name="IOS.ExperienceKit.Maps.View">
   <owner>erahmaoui@google.com</owner>
   <owner>djean@chromium.org</owner>
