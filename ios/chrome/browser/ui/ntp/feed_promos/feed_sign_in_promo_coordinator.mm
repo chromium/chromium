@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator.h"
 
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -74,8 +75,13 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [self.baseViewController
       presentViewController:signInPromoViewController
                    animated:YES
-                 completion:^(){
-                     // TODO(crbug.com/1382615): add metrics.
+                 completion:^() {
+                   const signin_metrics::AccessPoint access_point =
+                       signin_metrics::AccessPoint::
+                           ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO;
+                   signin_metrics::
+                       RecordSigninImpressionUserActionForAccessPoint(
+                           access_point);
                  }];
 }
 
@@ -106,12 +112,14 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - Helpers
 
 - (void)showSignInFlow {
-  using AccessPoint = signin_metrics::AccessPoint;
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationSigninAndSync
-            accessPoint:AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO];
+            accessPoint:access_point];
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   [handler showSignin:command baseViewController:self.baseViewController];
 }
 
