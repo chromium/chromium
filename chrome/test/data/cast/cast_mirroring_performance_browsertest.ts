@@ -2,8 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * Verify |value| is truthy.
+ * @param value A value to check for truthiness. Note that this
+ *     may be used to test whether |value| is defined or not, and we don't want
+ *     to force a cast to boolean.
+ */
+function assert<T>(value: T, message?: string): asserts value {
+  if (value) {
+    return;
+  }
+
+  throw new Error('Assertion failed' + (message ? `: ${message}` : ''));
+}
+
+
 function startBarcodeAnimation() {
-  const RUN_LENGTH_SECONDS = 30;
+  const RUN_LENGTH_SECONDS: number = 30;
   const audioContext = new AudioContext();
   const audioSource = audioContext.createBufferSource();
   const audioBuffer = audioContext.createBuffer(
@@ -26,12 +41,15 @@ function startBarcodeAnimation() {
   // with the same pattern as the start of the pattern.
   //
   // Only the lower 16 bits of frameNumber are drawn.
-  const NUM_BARCODE_BITS = 16;
-  const CANVAS_WIDTH = 4 + NUM_BARCODE_BITS * 3 + 4;  // 56.
-  const CANVAS_HEIGHT = 1;
-  let lastFrameNumberRendered = null;
-  function renderBarcodeToCanvas(frameNumber) {
-    const ctx = document.getElementById('canvas').getContext('2d');
+  const NUM_BARCODE_BITS: number = 16;
+  const CANVAS_WIDTH: number = 4 + NUM_BARCODE_BITS * 3 + 4;  // 56.
+  const CANVAS_HEIGHT: number = 1;
+  let lastFrameNumberRendered: number|null = null;
+  function renderBarcodeToCanvas(frameNumber: number) {
+    const canvas = document.body.querySelector('canvas');
+    assert(canvas);
+    const ctx = canvas.getContext('2d');
+    assert(ctx);
 
     if (lastFrameNumberRendered === null) {
       lastFrameNumberRendered = ~frameNumber;
@@ -49,11 +67,11 @@ function startBarcodeAnimation() {
     lastFrameNumberRendered = frameNumber;
   }
 
-  const FRAMES_PER_SECOND = 60;
-  const MILLISECONDS_PER_SECOND = 1000;
-  let firstFrameTime = null;
-  let currentFrameNumber = -1;
-  function drawNextVideoFrame(timestamp) {
+  const FRAMES_PER_SECOND: number = 60;
+  const MILLISECONDS_PER_SECOND: number = 1000;
+  let firstFrameTime: number = 0;
+  let currentFrameNumber: number = -1;
+  function drawNextVideoFrame(timestamp: number) {
     if (timestamp >= firstFrameTime) {
       const elapsedSeconds =
           (timestamp - firstFrameTime) / MILLISECONDS_PER_SECOND;
@@ -66,10 +84,7 @@ function startBarcodeAnimation() {
     requestAnimationFrame(drawNextVideoFrame);
   }
 
-  /**
-   *  @suppress {missingProperties}
-   */
-  function startSynchronized(timestamp) {
+  function startSynchronized(_timestamp: number) {
     const outputTime = audioContext.getOutputTimestamp();
     if (!outputTime.performanceTime) {
       // Audio output has not yet begun pumping data. Try again later.
@@ -83,13 +98,17 @@ function startBarcodeAnimation() {
   if (audioSource.buffer !== null) {  // Already started?
     return;
   }
-  document.getElementById('help').style.display = 'none';
+  const help = document.getElementById('help');
+  assert(help);
+  help.style.display = 'none';
 
   // Set up canvas graphics parameters and render barcode for frame 0.
-  const canvas = document.getElementById('canvas');
+  const canvas = document.body.querySelector('canvas');
+  assert(canvas);
   canvas.width = CANVAS_WIDTH;
   canvas.height = CANVAS_HEIGHT;
   const ctx = canvas.getContext('2d');
+  assert(ctx);
   ctx.filter = 'none';
   ctx.imageSmoothingEnabled = false;
 
@@ -135,7 +154,7 @@ function startBarcodeAnimation() {
     for (; i < end; ++i) {
       let sample = 0.0;
       for (let j = 0; j < freqs.length; ++j) {
-        sample += Math.sin(TWO_PI_OVER_BASE_FREQUENCY * i * freqs[j]);
+        sample += Math.sin(TWO_PI_OVER_BASE_FREQUENCY * i * freqs[j]!);
       }
       sample /= NUM_BARCODE_BITS + 1;  // Normalize to [-1.0,1.0].
       channelData[i] = sample;
@@ -149,6 +168,8 @@ function startBarcodeAnimation() {
   requestAnimationFrame(startSynchronized);
 }
 
-document.getElementById('mainBody').addEventListener('click', function() {
+const mainBody = document.getElementById('mainBody');
+assert(mainBody);
+mainBody.addEventListener('click', function() {
   startBarcodeAnimation();
 });

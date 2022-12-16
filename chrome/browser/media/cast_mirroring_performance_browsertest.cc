@@ -14,10 +14,12 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -156,6 +158,13 @@ std::string VectorToString(const std::vector<double>& values) {
   // Strip off trailing comma.
   csv.pop_back();
   return csv;
+}
+
+// Utility to get the generated test data directory.
+base::FilePath GetGeneratedTestDataDir() {
+  base::FilePath exe_dir;
+  base::PathService::Get(base::DIR_EXE, &exe_dir);
+  return exe_dir.AppendASCII("gen/chrome/test/data/").NormalizePathSeparators();
 }
 
 void MaybeAddResultList(const perf_test::PerfResultReporter& reporter,
@@ -630,7 +639,7 @@ class CastV2PerformanceTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_->ServeFilesFromDirectory(GetGeneratedTestDataDir());
     ASSERT_TRUE(https_server_->Start());
   }
 

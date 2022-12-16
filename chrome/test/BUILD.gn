@@ -1597,6 +1597,7 @@ if (!is_android) {
       "//chrome:browser_tests_pak",
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/test/data:web_ui_test_mojom_js_module",
+      "//chrome/test/data/cast:generate_test_files",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:browser_tests_filters",

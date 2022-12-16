@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+
+# Compiles the TypeScript test file to JavaScript, and moves HTML/CSS files to
+# the target_gen_dir so that they can be served alongside the compiled JS file.
+group("generate_test_files") {
+  public_deps = [
+    ":build_ts",
+    ":move_html_css",
+  ]
+}
+
+preprocess_if_expr("move_html_css") {
+  in_folder = "./"
+  in_files = [
+    "cast_mirroring_performance_browsertest.css",
+    "cast_mirroring_performance_browsertest.html",
+  ]
+  out_folder = target_gen_dir
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = target_gen_dir
+  in_files = [ "cast_mirroring_performance_browsertest.ts" ]
+}
