@@ -79,9 +79,7 @@ StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
       navigator_base_(navigator) {}
 
 StorageBucketManager* StorageBucketManager::storageBuckets(
-    ScriptState* script_state,
-    NavigatorBase& navigator,
-    ExceptionState& exception_state) {
+    NavigatorBase& navigator) {
   auto* supplement =
       Supplement<NavigatorBase>::From<StorageBucketManager>(navigator);
   if (!supplement) {

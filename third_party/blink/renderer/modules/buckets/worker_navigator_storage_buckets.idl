@@ -9,6 +9,5 @@
     ImplementedAs=StorageBucketManager,
     RuntimeEnabled=StorageBuckets
 ] partial interface WorkerNavigator {
-    [CallWith=ScriptState, RaisesException]
-      readonly attribute StorageBucketManager storageBuckets;
+    readonly attribute StorageBucketManager storageBuckets;
 };

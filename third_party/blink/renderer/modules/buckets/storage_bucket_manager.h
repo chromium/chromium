@@ -29,9 +29,7 @@ class MODULES_EXPORT StorageBucketManager final
   static const char kSupplementName[];
 
   // Web-exposed as navigator.storageBuckets
-  static StorageBucketManager* storageBuckets(ScriptState* script_state,
-                                              NavigatorBase& navigator,
-                                              ExceptionState& exception_state);
+  static StorageBucketManager* storageBuckets(NavigatorBase& navigator);
 
   explicit StorageBucketManager(NavigatorBase& navigator);
   ~StorageBucketManager() override = default;
