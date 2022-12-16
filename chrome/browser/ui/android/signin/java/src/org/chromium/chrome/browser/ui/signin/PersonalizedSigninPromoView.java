@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -19,7 +20,7 @@ import org.chromium.ui.widget.ButtonCompat;
 /**
  * Container view for personalized signin promos.
  */
-public class PersonalizedSigninPromoView extends LinearLayout {
+public class PersonalizedSigninPromoView extends FrameLayout {
     private ImageView mIllustration;
     private ImageView mImage;
     private ImageButton mDismissButton;
@@ -30,6 +31,7 @@ public class PersonalizedSigninPromoView extends LinearLayout {
 
     public PersonalizedSigninPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        LayoutInflater.from(context).inflate(R.layout.sync_promo_view, this);
     }
 
     @Override

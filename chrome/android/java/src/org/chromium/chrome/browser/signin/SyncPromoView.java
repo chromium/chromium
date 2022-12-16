@@ -44,7 +44,7 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
     public static SyncPromoView create(ViewGroup parent, @AccessPoint int accessPoint) {
         // TODO(injae): crbug.com/829548
         SyncPromoView result = (SyncPromoView) LayoutInflater.from(parent.getContext())
-                                       .inflate(R.layout.sync_promo_view, parent, false);
+                                       .inflate(R.layout.legacy_sync_promo_view, parent, false);
         result.init(accessPoint);
         return result;
     }

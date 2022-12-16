@@ -117,6 +117,7 @@ android_resources("java_resources") {
     "java/res/layout/signin_view.xml",
     "java/res/layout/signout_wipe_storage_dialog.xml",
     "java/res/layout/sync_consent_view.xml",
+    "java/res/layout/sync_promo_view.xml",
     "java/res/layout/sync_promo_view_body.xml",
     "java/res/layout/sync_promo_view_bookmarks.xml",
     "java/res/layout/sync_promo_view_content_suggestions.xml",

@@ -5,33 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+<org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/signin_promo_view_wrapper"
+    android:id="@+id/signin_promo_view_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    style="@style/MaterialCardStyle">
-
-    <org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView
-        android:id="@+id/signin_promo_view_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/signin_promo_padding_bottom">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp">
-
-            <include layout="@layout/sync_promo_view_header"/>
-        </FrameLayout>
-
-        <include layout="@layout/sync_promo_view_body"/>
-
-    </org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView>
-</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+    android:layout_margin="16dp" />

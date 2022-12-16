@@ -9,7 +9,6 @@ found in the LICENSE file.
     <!-- Signin promo dimensions -->
     <dimen name="sync_promo_account_image_size">44dp</dimen>
     <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
-    <dimen name="signin_promo_padding_bottom">12dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>
