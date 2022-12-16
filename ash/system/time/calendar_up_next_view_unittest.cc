@@ -439,8 +439,9 @@ class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {
   }
 };
 
+// Flaky: https://crbug.com/1401505
 TEST_F(CalendarUpNextViewAnimationTest,
-       ShouldAnimateScrollView_WhenScrollButtonsArePressed) {
+       DISABLED_ShouldAnimateScrollView_WhenScrollButtonsArePressed) {
   // Add multiple events starting in 10 mins.
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
   auto event_in_ten_mins_start_time = base::Time::Now() + base::Minutes(10);
