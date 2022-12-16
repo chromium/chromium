@@ -19,9 +19,6 @@ interface LockRequest {
 
   // Request failed; e.g. request was only "if available" and it was not.
   Failed();
-
-  // TODO(jsbell): Abort() is not yet used.
-  Abort(string reason);
 };
 
 // Corresponds to the |mode| enum option in the Web Locks API.

@@ -41,7 +41,6 @@ namespace blink {
 
 namespace {
 
-constexpr char kRequestAbortedMessage[] = "The request was aborted.";
 constexpr char kSecurityErrorMessage[] = "The request was denied.";
 constexpr char kInvalidStateErrorMessage[] = "The document is not active.";
 
@@ -115,10 +114,11 @@ class LockManager::LockRequestImpl final
     abort_handle_ = &handle;
   }
 
-  void Abort(const String& reason) override {
+  void Abort(AbortSignal* signal) {
     // Abort signal after acquisition should be ignored.
-    if (!manager_->IsPendingRequest(this))
+    if (!manager_->IsPendingRequest(this)) {
       return;
+    }
 
     manager_->RemovePendingRequest(this);
     receiver_.reset();
@@ -135,8 +135,7 @@ class LockManager::LockRequestImpl final
 
     ScriptState::Scope script_state_scope(script_state);
 
-    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
-        script_state->GetIsolate(), DOMExceptionCode::kAbortError, reason));
+    resolver_->Reject(signal->reason(script_state));
   }
 
   void Failed() override {
@@ -342,12 +341,11 @@ ScriptPromise LockManager::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 10. Otherwise, if options’ signal dictionary member is present and its
-  // aborted flag is set, then reject promise with an "AbortError" DOMException.
+  // If options["signal"] exists and is aborted, then return a promise rejected
+  // with options["signal"]'s abort reason.
   if (options->hasSignal() && options->signal()->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kRequestAbortedMessage);
-    return ScriptPromise();
+    return ScriptPromise::Reject(script_state,
+                                 options->signal()->reason(script_state));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -412,12 +410,11 @@ void LockManager::RequestImpl(const LockOptions* options,
   // 11.2. If options’ signal dictionary member is present, then add the
   // following abort steps to options’ signal dictionary member:
   if (options->hasSignal()) {
-    // 11.2.1. Enqueue the steps to abort the request request to the lock task
-    // queue.
-    // 11.2.2. Reject promise with an "AbortError" DOMException.
+    // In "Request a lock": If signal is present, then add the algorithm signal
+    // to abort the request request with signal to signal.
     AbortSignal::AlgorithmHandle* handle = options->signal()->AddAlgorithm(
         WTF::BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
-                      String(kRequestAbortedMessage)));
+                      WrapPersistent(options->signal())));
     request->InitializeAbortAlgorithm(*handle);
   }
   service_->RequestLock(name, mode, wait, std::move(request_remote));

@@ -58,17 +58,10 @@ class TestLockRequest : public blink::mojom::LockRequest {
     run_loop_.Quit();
   }
 
-  void Abort(const std::string& reason) override {
-    aborted_ = true;
-    run_loop_.Quit();
-    return;
-  }
-
   void WaitForCallback() { run_loop_.Run(); }
 
   bool FailureCalled() const { return failed_; }
   bool GrantedCalled() const { return granted_; }
-  bool AbortCalled() const { return aborted_; }
 
  private:
   raw_ptr<mojo::PendingAssociatedRemote<blink::mojom::LockHandle>> remote_;
@@ -76,7 +69,6 @@ class TestLockRequest : public blink::mojom::LockRequest {
   base::RunLoop run_loop_;
   bool failed_ = false;
   bool granted_ = false;
-  bool aborted_ = false;
 };
 
 TEST_F(LockManagerInvalidBucketTest, RequestLock) {
@@ -92,7 +84,6 @@ TEST_F(LockManagerInvalidBucketTest, RequestLock) {
   request.WaitForCallback();
   EXPECT_TRUE(request.FailureCalled());
   EXPECT_FALSE(request.GrantedCalled());
-  EXPECT_FALSE(request.AbortCalled());
 }
 
 TEST_F(LockManagerInvalidBucketTest, QueryState) {
