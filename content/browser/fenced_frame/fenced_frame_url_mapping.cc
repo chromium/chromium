@@ -145,7 +145,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   auto& config = urn_uuid_to_url_map_[urn_uuid];
 
   // Assign mapped URL and interest group info.
-  config.urn_.emplace(urn_uuid);
+  config.urn_uuid_.emplace(urn_uuid);
   config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
   config.ad_auction_data_.emplace(std::move(ad_auction_data),

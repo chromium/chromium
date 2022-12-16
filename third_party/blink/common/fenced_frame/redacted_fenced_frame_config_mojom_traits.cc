@@ -436,7 +436,7 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
     return false;
   }
 
-  out_config->urn_ = std::move(urn_uuid);
+  out_config->urn_uuid_ = std::move(urn_uuid);
   return true;
 }
 

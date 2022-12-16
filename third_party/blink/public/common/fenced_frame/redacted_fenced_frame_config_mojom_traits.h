@@ -227,7 +227,7 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     // Whenever a redacted config is sent over an IPC, its `urn_` member is
     // expected to be non-nullopt.
-    return config.urn_.value();
+    return config.urn_uuid_.value();
   }
   static const absl::optional<Prop<GURL>>& mapped_url(
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {

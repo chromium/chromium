@@ -31,7 +31,7 @@ GenerateURNConfigVectorForConfigs(
     // urn:uuid across processes.
     GURL urn_uuid = GenerateUrnUuid();
     auto config_with_urn = config;
-    config_with_urn.urn_ = urn_uuid;
+    config_with_urn.urn_uuid_ = urn_uuid;
     nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
   }
 
@@ -68,19 +68,20 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url)
                   VisibilityToEmbedder::kOpaque,
                   VisibilityToContent::kTransparent) {}
 
-FencedFrameConfig::FencedFrameConfig(GURL urn, const GURL& mapped_url)
-    : urn_(urn),
+FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
+                                     const GURL& mapped_url)
+    : urn_uuid_(urn_uuid),
       mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
                   VisibilityToContent::kTransparent) {}
 
 FencedFrameConfig::FencedFrameConfig(
-    GURL urn,
+    const GURL& urn_uuid,
     const GURL& mapped_url,
     const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
     const ReportingMetadata& reporting_metadata)
-    : urn_(urn),
+    : urn_uuid_(urn_uuid),
       mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
@@ -108,8 +109,8 @@ FencedFrameConfig& FencedFrameConfig::operator=(FencedFrameConfig&&) = default;
 blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
     FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameConfig redacted_config;
-  if (urn_.has_value()) {
-    redacted_config.urn_ = urn_;
+  if (urn_uuid_.has_value()) {
+    redacted_config.urn_uuid_ = urn_uuid_;
   }
 
   RedactProperty(mapped_url_, entity, redacted_config.mapped_url_);
@@ -154,8 +155,7 @@ FencedFrameProperties::FencedFrameProperties()
                        VisibilityToContent::kOpaque) {}
 
 FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
-    : urn_(config.urn_),
-      mapped_url_(config.mapped_url_),
+    : mapped_url_(config.mapped_url_),
       container_size_(config.container_size_),
       content_size_(config.content_size_),
       deprecated_should_freeze_initial_size_(
@@ -197,10 +197,6 @@ FencedFrameProperties& FencedFrameProperties::operator=(
 blink::FencedFrame::RedactedFencedFrameProperties
 FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   blink::FencedFrame::RedactedFencedFrameProperties redacted_properties;
-  if (urn_.has_value()) {
-    redacted_properties.urn_ = urn_;
-  }
-
   RedactProperty(mapped_url_, entity, redacted_properties.mapped_url_);
   RedactProperty(container_size_, entity, redacted_properties.container_size_);
   RedactProperty(content_size_, entity, redacted_properties.content_size_);

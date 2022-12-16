@@ -561,8 +561,8 @@ void HTMLFencedFrameElement::NavigateToConfig() {
   // is stored in the `FencedFrameURLMapping`. Otherwise, `config_` was
   // constructed from script and has a user-supplied URL that `this` will
   // navigate to instead.
-  if (config_->urn(PassKey())) {
-    KURL url = config_->urn(PassKey()).value();
+  if (config_->urn_uuid(PassKey())) {
+    KURL url = config_->urn_uuid(PassKey()).value();
     CHECK(IsValidUrnUuidURL(GURL(url)));
     Navigate(url);
   } else {

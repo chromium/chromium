@@ -815,8 +815,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     if (!maybe_config) {
       return absl::nullopt;
     }
-    CHECK(maybe_config->urn().has_value());
-    return maybe_config->urn();
+    CHECK(maybe_config->urn_uuid().has_value());
+    return maybe_config->urn_uuid();
   }
 
   // Like RunAdAuctionAndFlushForFrame(), but uses the RenderFrameHost of the

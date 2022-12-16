@@ -79,8 +79,8 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     NOTREACHED();
   }
 
-  absl::optional<KURL> urn(base::PassKey<HTMLFencedFrameElement>) {
-    return urn_;
+  absl::optional<KURL> urn_uuid(base::PassKey<HTMLFencedFrameElement>) {
+    return urn_uuid_;
   }
 
  private:
@@ -146,7 +146,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // we navigate a fenced frame using a `FencedFrameConfig` object that has a
   // non-null `urn_`, we navigate to that URN instead of the platform-provided
   // URL. This value is never exposed to the web platform.
-  absl::optional<KURL> urn_;
+  absl::optional<KURL> urn_uuid_;
 };
 
 template <>

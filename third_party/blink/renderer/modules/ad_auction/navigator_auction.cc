@@ -1982,7 +1982,7 @@ void NavigatorAuction::AuctionComplete(
     if (resolve_to_config) {
       resolver->Resolve(FencedFrameConfig::From(result_config.value()));
     } else {
-      resolver->Resolve(KURL(result_config->urn().value()));
+      resolver->Resolve(KURL(result_config->urn_uuid().value()));
     }
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));

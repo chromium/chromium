@@ -34,10 +34,10 @@ FencedFrameConfig::FencedFrameConfig(
     url_ = KURL(mapped_url.value().potentially_opaque_value.value());
   }
 
-  const absl::optional<GURL>& urn = config.urn();
+  const absl::optional<GURL>& urn = config.urn_uuid();
   CHECK(blink::IsValidUrnUuidURL(*urn));
   KURL urn_uuid = KURL(*urn);
-  urn_.emplace(std::move(urn_uuid));
+  urn_uuid_.emplace(std::move(urn_uuid));
 }
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {

@@ -115,7 +115,10 @@ using Entity = content::FencedFrameEntity;
     /* Test an empty config */                                                \
     type config;                                                              \
     if constexpr (std::is_same<FencedFrameConfig, type>::value) {             \
-      config.urn_.emplace(GenerateUrnUuid());                                 \
+      /* The type is guaranteed to be a `FencedFrameConfig` */                \
+      FencedFrameConfig* ff_config =                                          \
+          reinterpret_cast<FencedFrameConfig*>(&config);                      \
+      ff_config->urn_uuid_.emplace(GenerateUrnUuid());                        \
     }                                                                         \
     TEST_PROPERTY_FOR_ENTITY_IS_DEFINED_IS_OPAQUE(                            \
         type, property, Entity::kEmbedder, false, false,                      \

@@ -193,9 +193,9 @@ class CONTENT_EXPORT FencedFrameProperty {
 struct CONTENT_EXPORT FencedFrameConfig {
   FencedFrameConfig();
   explicit FencedFrameConfig(const GURL& mapped_url);
-  FencedFrameConfig(GURL urn, const GURL& url);
+  FencedFrameConfig(const GURL& urn_uuid, const GURL& url);
   FencedFrameConfig(
-      GURL urn,
+      const GURL& urn_uuid,
       const GURL& url,
       const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
@@ -209,7 +209,7 @@ struct CONTENT_EXPORT FencedFrameConfig {
   blink::FencedFrame::RedactedFencedFrameConfig RedactFor(
       FencedFrameEntity entity) const;
 
-  absl::optional<GURL> urn_;
+  absl::optional<GURL> urn_uuid_;
 
   absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 
@@ -290,8 +290,6 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   blink::FencedFrame::RedactedFencedFrameProperties RedactFor(
       FencedFrameEntity entity) const;
-
-  absl::optional<GURL> urn_;
 
   absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 
