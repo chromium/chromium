@@ -296,7 +296,7 @@ crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.h
 
 crbug.com/1098369 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
-crbug.com/1106590 [ Mac ] virtual/gpu/fast/canvas/canvas-path-non-invertible-transform.html [ Crash Pass ]
+crbug.com/1401765 [ Mac ] virtual/gpu/fast/canvas/canvas-path-non-invertible-transform.html [ Crash Pass ]
 
 crbug.com/1237275 fast/canvas/layers-lonebeginlayer.html [ Failure Pass ]
 crbug.com/1237275 fast/canvas/layers-unmatched-beginlayer.html [ Failure Pass ]
