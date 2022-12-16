@@ -16,7 +16,7 @@
     pref="{{prefs.settings.voice_interaction.enabled}}"
     label="[[getAssistantOnOffLabel_(
         prefs.settings.voice_interaction.enabled.value)]]"
-    disabled="{{prefs.settings.assistant.disabled_by_policy.value}}"
+    disabled="[[prefs.settings.assistant.disabled_by_policy.value]]"
     aria-label="$i18n{searchGoogleAssistantOn}"
     deep-link-focus-id$="[[Setting.kAssistantOnOff]]">
 </settings-toggle-button>
