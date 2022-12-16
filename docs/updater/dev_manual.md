@@ -17,41 +17,56 @@ the source code contains `updater\net` instead of `updater\mac\net`.
 ## Bots & Lab
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
-### Adding Builders
-* Update files as needed:
-  - `testing/buildbot/waterfalls.pyl`
-  - `infra/config/subprojects/chromium/ci/chromium.updater.star`
-* Re-generate `chromium.updater.json`:
-```
-vpython3 .\testing\buildbot\generate_buildbot_json.py
-```
+### Builders / Testers
+There are two sets of configuration files for our builders/testers. One is
+for chromium-branded and locates in `src`. The other one is for chrome-branded
+and locates in `src-internal`.
 
-* (Optional) Re-format the builder definition file if necessary.
-```
-lucicfg fmt .\infra\config\subprojects\chromium\ci\chromium.updater.star
-```
+#### Chromium-branded (`src`)
+  - Console: https://ci.chromium.org/p/chromium/g/chromium.updater/console
+  - `tools/mb/mb_config.pyl`: specifies GN args.
+  - `testing/buildbot/gn_isolate_map.pyl`: maps a GN label to GN targets, and
+    provides test arguments, for example test timeout values.
+  - `testing/buildbot/test_suites.pyl`: maps test suite name to GN label, and
+    provides optional swarming dimensions.
+  - `testing/buildbot/waterfalls.pyl`: maps tester to test suites names, and
+    specifies OS, architecture etc.
+  - `infra/config/subprojects/chromium/ci/chromium.updater.star`: defines our
+    testers and builders and how they appear on the console.
 
-* Generate builder property and configuration files:
+Command to update json files after configure update:
+  - `tools\mb\mb train` (if `mb_config.pyl` is changed).
+  - `lucicfg generate .\infra\config\main.star` (if `chromium.updater.star`
+    is changed).
+  - `vpython3 .\testing\buildbot\generate_buildbot_json.py`
+  
+Reference CLs:
+  - Add a tester: https://crrev.com/c/4068601
+  - Update GN args: https://crrev.com/c/3656357
 
-```
-lucicfg infra\config\main.star
-git add .
-```
+#### Chrome-branded (`src-internal`)
+  - Console: https://ci.chromium.org/p/chrome/g/chrome.updater/console
+  - `tools/mb/mb_config.pyl`: specifies GN args.
+  - `testing/buildbot/gn_isolate_map.pyl`: maps a GN label to GN targets, and
+    provides test arguments, for example test timeout values.
+  - `testing/buildbot/test_suites.pyl`: maps test suite name to GN label, and
+    provides optional swarming dimensions.
+  - `testing/buildbot/waterfalls.pyl`: maps tester to test suites names, and
+    specifies OS, architecture etc.
+  - `infra/config/subprojects/chrome/ci/chrome.updater.star`: defines our
+    testers and builders and how they appear on the console.
 
-* Reference CL: https://crrev.com/c/3864352
+Command to update json files after configure update:
+  - `..\src\tools\mb\mb train -f tools\mb\mb_config.pyl` (if `mb_config.pyl`
+    is changed).
+  - `lucicfg generate .\infra\config\main.star` (if `chrome.updater.star`
+    is changed).
+  - `vpython3 .\testing\buildbot\generate_testing_json.py`
 
-### Update builder configuration
-Each builder has a configuration that governs the GN args. The mapping is
-defined in file `tools/mb/mb_config.pyl`. Steps to update the config:
-  * Modify `tools/mb/mb_config.pyl`.
-  * Run command `./mb train` to update the expectations.
-  * Example CL: https://crrev.com/c/3656357.
-
-### Update tester configuration.
-The parameters for invoking the updater unit tests when running in Buildbot are
-defined in `testing/buildbot/gn_isolate_map.pyl`. After making changes to the
-file, run `vpython3 .\testing\buildbot\generate_buildbot_json.py` to generate
-the bot configurations, make a CL, and send it out.
+Please note changes in `src-internal` needs to roll into chromium/src to take
+effect. This could take hours until a CL authored by 
+`chromium-internal-autoroll@` lands. During transition, the configure files
+could be in inconsistent state and leads to infra error.
 
 ### Run tests on swarming
 `mb` tool can upload your private build target (and all the dependencies,
