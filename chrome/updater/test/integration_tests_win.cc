@@ -630,6 +630,9 @@ void Clean(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetProductPath(scope);
   ASSERT_TRUE(path);
   ASSERT_TRUE(base::DeletePathRecursively(*path)) << *path;
+
+  // TODO(crbug.com/1401759) - this can be removed after the crbug is closed.
+  VLOG(0) << __func__ << " end.";
 }
 
 void EnterTestMode(const GURL& url) {
