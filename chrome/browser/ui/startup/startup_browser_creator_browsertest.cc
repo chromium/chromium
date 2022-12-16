@@ -2520,7 +2520,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
         }));
     run_loop.Run();
 
-    EXPECT_EQ(provider->registrar().GetAppUserDisplayMode(kAppId),
+    EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(kAppId),
               web_app::UserDisplayMode::kStandalone);
   }
 }
@@ -2902,7 +2902,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
-  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
   EXPECT_TRUE(allowed_protocols_notified);
 
@@ -2987,7 +2987,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
-  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
 
   // Check the first app window is created.
@@ -3053,7 +3053,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
 
   // Check that we did not add this protocol to web app's
   // allowed_launch_protocols on accept.
-  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar_unsafe();
   EXPECT_FALSE(registrar.IsAllowedLaunchProtocol(app_id, "web+test"));
 
   // Check the first app window is created.
@@ -3126,7 +3126,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
-  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
 
   // Check the no app window is created.
@@ -3160,7 +3160,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that we did not add this protocol to web app's
   // allowed_launch_protocols on accept.
-  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  web_app::WebAppRegistrar& registrar = provider()->registrar_unsafe();
   EXPECT_FALSE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
 
   // Check the no app window is created.

@@ -221,7 +221,7 @@ class StartupWebAppCreator
     // by the application.
     WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile_);
     DCHECK(provider->on_registry_ready().is_signaled());
-    WebAppRegistrar& registrar = provider->registrar();
+    WebAppRegistrar& registrar = provider->registrar_unsafe();
     if (registrar.IsDisallowedLaunchProtocol(app_id_, protocol_url.scheme())) {
       // If disallowed, return `kHandled` to signal that the launch is spoken
       // for, but do not launch a browser or app window. `this` will be deleted.
@@ -265,7 +265,7 @@ class StartupWebAppCreator
     if (file_launch_infos_.empty())
       return LaunchResult::kNotHandled;
 
-    const WebApp* web_app = provider->registrar().GetAppById(app_id_);
+    const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id_);
     DCHECK(web_app);
 
     // `this` will stay alive until `launch_callback` is executed or destroyed.

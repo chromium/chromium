@@ -142,7 +142,7 @@ base::Value GetWebApps::GetInstalledWebApps() {
     base::Value& installed_apps_per_profile =
         *item_info.SetKey("web_apps", base::Value(base::Value::Type::LIST));
     for (const web_app::WebApp& web_app :
-         web_app_provider->registrar().GetApps()) {
+         web_app_provider->registrar_unsafe().GetApps()) {
       base::Value web_app_info(base::Value::Type::DICTIONARY);
       web_app_info.SetStringKey("name", web_app.untranslated_name());
       web_app_info.SetStringKey("id", web_app.app_id());
