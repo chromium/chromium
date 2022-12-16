@@ -7,7 +7,9 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
+namespace base {
+class FilePath;
+}
 
 namespace web_app {
 

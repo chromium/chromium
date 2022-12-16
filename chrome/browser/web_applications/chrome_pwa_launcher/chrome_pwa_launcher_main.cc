@@ -11,7 +11,6 @@
 #include "base/win/windows_types.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_log.h"
-#include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/product_install_details.h"
