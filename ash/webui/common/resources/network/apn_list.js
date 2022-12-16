@@ -19,7 +19,7 @@ import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties, ApnState, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 
@@ -132,6 +132,68 @@ export class ApnList extends ApnListBase {
    */
   isApnAutoDetected_(index) {
     return this.isApnConnected_(index) && this.isConnectedApnAutoDetected_;
+  }
+
+  /**
+   * Returns true if currentApn is the only enabled default APN and there is
+   * at least one enabled attach APN.
+   * @param {!ApnProperties} currentApn
+   * @return {boolean}
+   * @private
+   */
+  shouldDisallowDisablingRemoving_(currentApn) {
+    assert(this.managedCellularProperties);
+    if (!currentApn.id) {
+      return true;
+    }
+
+    const customApnList = this.managedCellularProperties.customApnList;
+    if (!customApnList) {
+      return false;
+    }
+
+    if (!customApnList.some(
+            apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kAttach) &&
+                !apn.apnTypes.includes(ApnType.kDefault) &&
+                apn.state === ApnState.kEnabled)) {
+      return false;
+    }
+
+    const defaultEnabledApnList = customApnList.filter(
+        apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault) &&
+            apn.state === ApnState.kEnabled);
+
+    return defaultEnabledApnList.length === 1 &&
+        currentApn.id === defaultEnabledApnList[0].id;
+  }
+
+  /**
+   * Returns true if there are no enabled default APNs and the current APN has
+   * only an attach APN type.
+   * @param {!ApnProperties} currentApn
+   * @return {boolean}
+   * @private
+   */
+  shouldDisallowEnabling_(currentApn) {
+    assert(this.managedCellularProperties);
+    if (!currentApn.id) {
+      return true;
+    }
+
+    const customApnList = this.managedCellularProperties.customApnList;
+    if (!customApnList) {
+      return false;
+    }
+
+    if (customApnList.some(
+            apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault) &&
+                apn.state === ApnState.kEnabled)) {
+      return false;
+    }
+
+    return !!currentApn.apnTypes &&
+        currentApn.apnTypes.includes(ApnType.kAttach) &&
+        !currentApn.apnTypes.includes(ApnType.kDefault);
   }
 
   /**

@@ -3765,6 +3765,9 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
           Automatically detected
         </message>
+        <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
+          Can't disable or remove this APN. Make sure enabled attached APNs are disabled or removed.
+        </message>
         <!-- End of APN -->
       </if>
     </messages>

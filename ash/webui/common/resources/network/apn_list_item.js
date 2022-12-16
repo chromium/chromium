@@ -52,6 +52,17 @@ class ApnListItem extends ApnListItemBase {
         type: Boolean,
         value: true,
       },
+
+      shouldDisallowDisablingRemoving: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldDisallowEnabling: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private */
       isDisabled_: {
         reflectToAttribute: true,
@@ -113,6 +124,15 @@ class ApnListItem extends ApnListItemBase {
       return;
     }
 
+    if (this.shouldDisallowDisablingRemoving) {
+      this.dispatchEvent(new CustomEvent('show-error-toast', {
+        bubbles: true,
+        composed: true,
+        detail: this.i18n('apnWarningPromptForDisableRemove'),
+      }));
+      return;
+    }
+
     const apn =
         /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
     apn.state = ApnState.kDisabled;
@@ -136,6 +156,17 @@ class ApnListItem extends ApnListItemBase {
       return;
     }
 
+    // TODO(b/162365553): Add string to chromeos_string when it is approved by
+    // writers.
+    if (this.shouldDisallowEnabling) {
+      this.dispatchEvent(new CustomEvent('show-error-toast', {
+        bubbles: true,
+        composed: true,
+        detail: `Can't enable this APN. Add a default APN to attach to.`,
+      }));
+      return;
+    }
+
     const apn =
         /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
     apn.state = ApnState.kEnabled;
@@ -151,6 +182,15 @@ class ApnListItem extends ApnListItemBase {
     assert(this.apn);
     if (!this.apn.id) {
       console.error('Only custom APNs can be removed.');
+      return;
+    }
+
+    if (this.shouldDisallowDisablingRemoving) {
+      this.dispatchEvent(new CustomEvent('show-error-toast', {
+        bubbles: true,
+        composed: true,
+        detail: this.i18n('apnWarningPromptForDisableRemove'),
+      }));
       return;
     }
 

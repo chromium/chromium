@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/network/apn_list.js';
 import {ApnDetailDialogMode} from '//resources/ash/common/network/cellular_utils.js';
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties, ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -37,18 +37,66 @@ suite('ApnListTest', function() {
   const customApn1 = {
     accessPointName: 'Custom Access Point 1',
     name: 'AP-name-custom-1',
+    id: '1',
   };
 
   /** @type {ApnProperties} */
   const customApn2 = {
     accessPointName: 'Custom Access Point 2',
     name: 'AP-name-custom-2',
+    id: '2',
   };
 
   /** @type {ApnProperties} */
   const customApn3 = {
     accessPointName: 'Custom Access Point 3',
     name: 'AP-name-custom-3',
+    id: '3',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnAttachEnabled = {
+    accessPointName: 'Custom Access Point Attach Enabled',
+    name: 'AP-name-custom-4',
+    apnTypes: [ApnType.kAttach],
+    state: ApnState.kEnabled,
+    id: '4',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnAttachDisabled = {
+    accessPointName: 'Custom Access Point Attach Disabled',
+    name: 'AP-name-custom-5',
+    apnTypes: [ApnType.kAttach],
+    state: ApnState.kDisabled,
+    id: '5',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnDefaultEnabled = {
+    accessPointName: 'Custom Access Point Default Enabled',
+    name: 'AP-name-custom-6',
+    apnTypes: [ApnType.kDefault],
+    state: ApnState.kEnabled,
+    id: '6',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnDefaultDisabled = {
+    accessPointName: 'Custom Access Point Default Disabled',
+    name: 'AP-name-custom-7',
+    apnTypes: [ApnType.kDefault],
+    state: ApnState.kDisabled,
+    id: '7',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnDefaultEnabled2 = {
+    accessPointName: 'Custom Access Point Default Enabled2',
+    name: 'AP-name-custom-8',
+    apnTypes: [ApnType.kDefault],
+    state: ApnState.kEnabled,
+    id: '8',
   };
 
   setup(async function() {
@@ -234,5 +282,87 @@ suite('ApnListTest', function() {
     getApnDetailDialog()
         .shadowRoot.querySelector('#apnDetailCancelBtn')
         .click();
+  });
+
+  test('Show disable/remove/enable warning', async function() {
+    apnList.managedCellularProperties = {
+      connectedApn: Object.assign({}, connectedApn),
+      customApnList: [
+        Object.assign({}, connectedApn),
+        Object.assign({}, customApnDefaultEnabled),
+        Object.assign({}, customApnAttachDisabled),
+      ],
+    };
+    await flushTasks();
+    let apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowDisablingRemoving);
+    assertFalse(apns[1].shouldDisallowDisablingRemoving);
+    assertFalse(apns[2].shouldDisallowDisablingRemoving);
+
+    apnList.managedCellularProperties = {
+      connectedApn: Object.assign({}, connectedApn),
+      customApnList: [
+        Object.assign({}, connectedApn),
+        Object.assign({}, customApnAttachEnabled),
+        Object.assign({}, customApnDefaultEnabled),
+        Object.assign({}, customApnAttachDisabled),
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowDisablingRemoving);
+    assertFalse(apns[1].shouldDisallowDisablingRemoving);
+    assertTrue(apns[2].shouldDisallowDisablingRemoving);
+    assertFalse(apns[3].shouldDisallowDisablingRemoving);
+
+    apnList.managedCellularProperties = {
+      connectedApn: Object.assign({}, connectedApn),
+      customApnList: [
+        Object.assign({}, connectedApn),
+        Object.assign({}, customApnAttachEnabled),
+        Object.assign({}, customApnDefaultEnabled),
+        Object.assign({}, customApnDefaultEnabled2),
+        Object.assign({}, customApnAttachDisabled),
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowDisablingRemoving);
+    assertFalse(apns[1].shouldDisallowDisablingRemoving);
+    assertFalse(apns[2].shouldDisallowDisablingRemoving);
+    assertFalse(apns[3].shouldDisallowDisablingRemoving);
+    assertFalse(apns[4].shouldDisallowDisablingRemoving);
+  });
+
+  test('Show enable warning', async function() {
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: [
+        connectedApn,
+        customApnAttachDisabled,
+        customApnDefaultEnabled,
+        customApnAttachDisabled,
+      ],
+    };
+    await flushTasks();
+    let apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowEnabling);
+    assertFalse(apns[1].shouldDisallowEnabling);
+    assertFalse(apns[2].shouldDisallowEnabling);
+    assertFalse(apns[3].shouldDisallowEnabling);
+
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: [
+        connectedApn,
+        customApnDefaultDisabled,
+        customApnAttachDisabled,
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowEnabling);
+    assertFalse(apns[1].shouldDisallowEnabling);
+    assertTrue(apns[2].shouldDisallowEnabling);
   });
 });
