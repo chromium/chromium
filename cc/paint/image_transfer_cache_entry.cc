@@ -202,11 +202,16 @@ size_t TargetColorParamsSize(
   // uint32 for whether or not there are going to be parameters.
   size_t target_color_params_size = sizeof(uint32_t);
   if (target_color_params) {
+    // x64 has 8-byte alignment for uint64_t even though x86 has 4-byte
+    // alignment.  Always use 8 byte alignment.
+    const size_t align = sizeof(uint64_t);
+
     // The target color space.
     target_color_params_size +=
         sizeof(uint64_t) +
         target_color_params->color_space.ToSkColorSpace()->writeToMemory(
-            nullptr);
+            nullptr) +
+        align;
     // Floats for the SDR and HDR maximum luminance.
     target_color_params_size += sizeof(float);
     target_color_params_size += sizeof(float);
