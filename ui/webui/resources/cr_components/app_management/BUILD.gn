@@ -16,6 +16,7 @@ assert(!is_android && !is_ios)
 mojom("mojo_bindings") {
   sources = [ "app_management.mojom" ]
   webui_module_path = "chrome://resources/cr_components/app_management/"
+  use_typescript_sources = true
 
   public_deps = [
     "//mojo/public/mojom/base",
@@ -75,7 +76,6 @@ mojom("mojo_bindings") {
   ]
 }
 
-preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management_tmp"
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
 
@@ -86,40 +86,35 @@ preprocess_if_expr("preprocess") {
     ":html_wrapper_files",
   ]
   in_folder = "."
-  out_folder = preprocess_folder_tmp
+  out_folder = target_gen_dir
   in_files = ts_files + html_files + html_icons_files + css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
   deps = [ ":preprocess" ]
-  in_folder = preprocess_folder_tmp
-  out_folder = preprocess_folder_tmp
+  in_folder = target_gen_dir
+  out_folder = target_gen_dir
   in_files = html_files + html_icons_files
   minify = optimize_webui
 }
 
 css_to_wrapper("css_wrapper_files") {
   deps = [ ":preprocess" ]
-  in_folder = preprocess_folder_tmp
-  out_folder = preprocess_folder_tmp
+  in_folder = target_gen_dir
+  out_folder = target_gen_dir
   in_files = css_files
   minify = optimize_webui
 }
 
 copy("copy_mojo") {
-  deps = [
-    ":mojo_bindings_js__generator",
-    "//components/services/app_service/public/mojom:types_js__generator",
-  ]
-  sources = [
-    "$root_gen_dir/mojom-webui/components/services/app_service/public/mojom/types.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/app_management/app_management.mojom-webui.js",
-  ]
-  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
+  deps =
+      [ "//components/services/app_service/public/mojom:types_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/components/services/app_service/public/mojom/types.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
-  root_dir = preprocess_folder_tmp
+  root_dir = target_gen_dir
   out_dir = preprocess_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
@@ -130,11 +125,13 @@ ts_library("build_ts") {
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
     ":copy_mojo",
     ":css_wrapper_files",
     ":html_wrapper_files",
+    ":mojo_bindings_ts__generator",
     ":preprocess",
   ]
 }

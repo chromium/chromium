@@ -8,15 +8,16 @@ import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {PermissionOption} from './browser_proxy';
+import {PermissionOption} from './browser_proxy.js';
 import {AppManagementStore} from './store.js';
 
 type AppConfig = Partial<App>;
+type PermissionMap = Partial<Record<PermissionType, Permission>>;
 
 export class FakePageHandler implements PageHandlerInterface {
-  static createWebPermissions(options?:
-                                  Record<PermissionType, PermissionOption>):
-      Record<PermissionType, Permission> {
+  static createWebPermissions(
+      options?: Partial<Record<PermissionType, PermissionOption>>):
+      PermissionMap {
     const permissionTypes = [
       PermissionType.kLocation,
       PermissionType.kNotifications,
@@ -24,14 +25,14 @@ export class FakePageHandler implements PageHandlerInterface {
       PermissionType.kCamera,
     ];
 
-    const permissions: Record<PermissionType, Permission> = {};
+    const permissions: PermissionMap = {};
 
     for (const permissionType of permissionTypes) {
       let permissionValue = TriState.kAllow;
       let isManaged = false;
 
       if (options && options[permissionType]) {
-        const opts = options[permissionType];
+        const opts = options[permissionType]!;
         permissionValue = opts.value ? getTriStatePermissionValue(opts.value) :
                                        permissionValue;
         isManaged = opts.isManaged || isManaged;
@@ -43,8 +44,7 @@ export class FakePageHandler implements PageHandlerInterface {
     return permissions;
   }
 
-  static createArcPermissions(optIds?: number[]):
-      Record<PermissionType, Permission> {
+  static createArcPermissions(optIds?: PermissionType[]): PermissionMap {
     const permissionTypes = optIds || [
       PermissionType.kCamera,
       PermissionType.kLocation,
@@ -54,7 +54,7 @@ export class FakePageHandler implements PageHandlerInterface {
       PermissionType.kStorage,
     ];
 
-    const permissions: Record<PermissionType, Permission> = {};
+    const permissions: PermissionMap = {};
 
     for (const permissionType of permissionTypes) {
       permissions[permissionType] =
@@ -64,8 +64,7 @@ export class FakePageHandler implements PageHandlerInterface {
     return permissions;
   }
 
-  static createPermissions(appType: AppType):
-      Record<PermissionType, Permission> {
+  static createPermissions(appType: AppType): PermissionMap {
     switch (appType) {
       case (AppType.kWeb):
         return FakePageHandler.createWebPermissions();

@@ -187,10 +187,8 @@ copy("generate_ash_search_mojo_webui") {
 }
 
 copy("generate_app_notification_mojo_webui") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_webui_js",
-  ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_ts__generator" ]
+  sources = [ "$root_gen_dir/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-webui.ts" ]
   outputs = [ "$tsc_input_dir/mojom-webui/os_apps_page/{{source_file_part}}" ]
 }
 

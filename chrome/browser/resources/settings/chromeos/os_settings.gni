@@ -420,7 +420,7 @@ generated_web_component_files = [
 
 mojom_webui_files = [
   "mojom-webui/audio/cros_audio_config.mojom-webui.js",
-  "mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js",
+  "mojom-webui/os_apps_page/app_notification_handler.mojom-webui.ts",
   "mojom-webui/personalization/search.mojom-webui.js",
   "mojom-webui/routes.mojom-webui.js",
   "mojom-webui/search/search.mojom-webui.js",

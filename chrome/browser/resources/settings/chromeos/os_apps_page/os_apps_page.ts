@@ -29,7 +29,7 @@ import {App} from 'chrome://resources/cr_components/app_management/app_managemen
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -61,7 +61,6 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
     case Readiness.kUnknown:
       return false;
   }
-  assertNotReached();
 }
 
 const OsSettingsAppsPageElementBase =

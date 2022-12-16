@@ -99,6 +99,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     }
 
     const permission = getPermission(app, permissionType);
+    assert(permission);
     return permission.isManaged;
   }
 
@@ -136,8 +137,10 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   syncPermission() {
     let newPermission: Permission|undefined = undefined;
 
-    let newBoolState = false;  // to keep the closure compiler happy.
-    const permissionValue = getPermission(this.app, this.permissionType).value;
+    let newBoolState = false;
+    const permission = getPermission(this.app, this.permissionType);
+    assert(permission);
+    const permissionValue = permission.value;
     if (isBoolValue(permissionValue)) {
       newPermission =
           this.getUiPermissionBoolean_(this.app, this.permissionType);
@@ -167,6 +170,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   private getUiPermissionBoolean_(
       app: App, permissionType: PermissionTypeIndex): Permission {
     const currentPermission = getPermission(app, permissionType);
+    assert(currentPermission);
 
     assert(isBoolValue(currentPermission.value));
 
@@ -184,6 +188,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
       app: App, permissionType: PermissionTypeIndex): Permission {
     let newPermissionValue;
     const currentPermission = getPermission(app, permissionType);
+    assert(currentPermission);
 
     assert(isTriStateValue(currentPermission.value));
 

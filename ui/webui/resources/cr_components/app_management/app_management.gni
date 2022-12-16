@@ -35,7 +35,9 @@ _non_web_component_files = [
 ]
 
 mojo_files = [
-  "app_management.mojom-webui.js",
+  "app_management.mojom-webui.ts",
+
+  # This file is stuck in JS due to dependencies on ChromeOS Ash.
   "types.mojom-webui.js",
 ]
 

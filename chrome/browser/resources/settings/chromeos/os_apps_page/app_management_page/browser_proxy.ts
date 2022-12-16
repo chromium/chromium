@@ -40,15 +40,17 @@ export class AppManagementBrowserProxy {
           new FakePageHandler(this.callbackRouter.$.bindNewPipeAndPassRemote());
       this.handler = this.fakeHandler.getRemote();
 
-      const permissionOptions: Record<PermissionType, PermissionOption> = {};
-      permissionOptions[PermissionType.kLocation] = {
-        permissionValue: TriState.kAllow,
-        isManaged: true,
-      };
-      permissionOptions[PermissionType.kCamera] = {
-        permissionValue: TriState.kBlock,
-        isManaged: true,
-      };
+      const permissionOptions:
+          Partial<Record<PermissionType, PermissionOption>> = {
+            [PermissionType.kLocation]: {
+              permissionValue: TriState.kAllow,
+              isManaged: true,
+            },
+            [PermissionType.kCamera]: {
+              permissionValue: TriState.kBlock,
+              isManaged: true,
+            },
+          };
 
       const appList: App[] = [
         FakePageHandler.createApp(

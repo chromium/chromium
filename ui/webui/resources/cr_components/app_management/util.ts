@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {App, PermissionType} from './app_management.mojom-webui.js';
+import {App, Permission, PermissionType} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
 import {PermissionTypeIndex} from './permission_constants.js';
@@ -51,7 +51,8 @@ export function getPermissionValueBool(
 /**
  * Undefined is returned when the app does not request a permission.
  */
-export function getPermission(app: App, permissionType: PermissionTypeIndex) {
+export function getPermission(
+    app: App, permissionType: PermissionTypeIndex): Permission|undefined {
   return app.permissions[PermissionType[permissionType]];
 }
 
