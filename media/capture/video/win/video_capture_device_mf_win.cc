@@ -1774,11 +1774,6 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
   bool delivered_texture = false;
 
   if (client_.get()) {
-    if (!has_sent_on_started_to_client_) {
-      has_sent_on_started_to_client_ = true;
-      client_->OnStarted();
-    }
-
     // We always calculate camera rotation for the first frame. We also cache
     // the latest value to use when AutoRotation is turned off.
     if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
