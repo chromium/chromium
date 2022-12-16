@@ -351,15 +351,11 @@ bool ExtractFillingResults(
     std::map<uint32_t, std::u16string>* filling_results) {
   DCHECK(filling_results);
   std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
-  if (!ids_value)
+  if (!ids_value || !ids_value->is_dict()) {
     return false;
+  }
 
-  // Returned data should be a list of forms.
-  const base::DictionaryValue* results = nullptr;
-  if (!ids_value->GetAsDictionary(&results))
-    return false;
-
-  for (const auto result : results->DictItems()) {
+  for (const auto result : ids_value->GetDict()) {
     std::string id_string = result.first;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);
