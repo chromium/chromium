@@ -141,7 +141,6 @@ BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kSafeModeForCachedFlags);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
-BASE_DECLARE_FEATURE(kSpannableInlineAutocomplete);
 BASE_DECLARE_FEATURE(kSpecialLocaleWrapper);
 BASE_DECLARE_FEATURE(kSpecialUserDecision);
 BASE_DECLARE_FEATURE(kSplitCompositorTask);

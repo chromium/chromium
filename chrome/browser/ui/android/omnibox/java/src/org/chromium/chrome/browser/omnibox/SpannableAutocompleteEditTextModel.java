@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
  */
 public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextModelBase {
     private static final String TAG = "SpanAutocomplete";
-
     private static final boolean DEBUG = false;
 
     // A pattern that matches strings consisting of English and European character sets, numbers,
@@ -190,13 +189,11 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                     mPreviouslyNotifiedState, mCurrentState, mIgnoreTextChangeFromAutocomplete);
         }
         if (mBatchEditNestCount > 0) {
-            // crbug.com/764749
-            Log.w(TAG, "Did not notify - in batch edit.");
+            if (DEBUG) Log.i(TAG, "Did not notify - in batch edit.");
             return;
         }
         if (mCurrentState.equals(mPreviouslyNotifiedState)) {
-            // crbug.com/764749
-            Log.w(TAG, "Did not notify - no change.");
+            if (DEBUG) Log.i(TAG, "Did not notify - no change.");
             return;
         }
         notifyAccessibilityService();
@@ -211,8 +208,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         }
         mPreviouslyNotifiedState.copyFrom(mCurrentState);
         if (mIgnoreTextChangeFromAutocomplete) {
-            // crbug.com/764749
-            Log.w(TAG, "Did not notify - ignored.");
+            if (DEBUG) Log.i(TAG, "Did not notify - ignored.");
             return;
         }
         // The current model's mechanism always moves the cursor at the end of user text, so we

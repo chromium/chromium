@@ -31,7 +31,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -365,28 +364,6 @@ public class UrlBarTest {
         autocompleteHelper.waitForCallback(0);
         Assert.assertTrue("Inline autocomplete incorrectly allowed after delete.",
                 didPreventInlineAutocomplete.get());
-    }
-
-    @Test
-    @SmallTest
-    public void testSelectionChangesIgnoredInBatchMode() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)) {
-            // Note: with the new model, we remove autocomplete text at the beginning of a batch
-            // edit and add it at the end of a batch edit.
-            return;
-        }
-
-        mOmnibox.typeText("test", false);
-        mOmnibox.setAutocompleteText("ing is fun");
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().beginBatchEdit(); });
-        // Ensure the autocomplete is not modified if in batch mode.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(1, 1));
-        mOmnibox.checkText(equalTo("test"), equalTo("testing is fun"));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUrlBar.getInputConnection().endBatchEdit(); });
-        mOmnibox.checkText(equalTo("test"), null);
     }
 
     @Test

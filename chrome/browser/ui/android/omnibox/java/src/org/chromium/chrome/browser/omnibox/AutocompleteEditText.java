@@ -25,8 +25,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 
 /**
@@ -37,9 +35,6 @@ public class AutocompleteEditText
     private static final String TAG = "AutocompleteEdit";
 
     private static final boolean DEBUG = false;
-    private static final MutableFlagWithSafeDefault sSpannableInlineAutocompleteFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE, true);
-
     private final AccessibilityManager mAccessibilityManager;
 
     private AutocompleteEditTextModelBase mModel;
@@ -116,14 +111,7 @@ public class AutocompleteEditText
     private void ensureModel() {
         if (mModel != null) return;
 
-        if (sSpannableInlineAutocompleteFlag.isEnabled()) {
-            Log.w(TAG, "Using spannable model...");
-            mModel = new SpannableAutocompleteEditTextModel(this);
-        } else {
-            Log.w(TAG, "Using non-spannable model...");
-            mModel = new AutocompleteEditTextModel(this);
-        }
-        // Feed initial values.
+        mModel = new SpannableAutocompleteEditTextModel(this);
         mModel.setIgnoreTextChangeFromAutocomplete(true);
         mModel.onFocusChanged(hasFocus());
         mModel.onSetText(getText());
