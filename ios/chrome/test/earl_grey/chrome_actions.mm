@@ -30,10 +30,6 @@ id<GREYAction> TurnTableViewSwitchOn(BOOL on) {
   return [ChromeActionsAppInterface turnTableViewSwitchOn:on];
 }
 
-id<GREYAction> TurnSyncSwitchOn(BOOL on) {
-  return [ChromeActionsAppInterface turnSyncSwitchOn:on];
-}
-
 id<GREYAction> TapWebElement(ElementSelector* selector) {
   return [ChromeActionsAppInterface tapWebElement:selector];
 }

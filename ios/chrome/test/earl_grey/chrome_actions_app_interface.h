@@ -32,9 +32,6 @@
 // Action to turn the switch of a TableViewSwitchCell to the given `on` state.
 + (id<GREYAction>)turnTableViewSwitchOn:(BOOL)on;
 
-// Action to turn the switch of a SyncSwitchCell to the given `on` state.
-+ (id<GREYAction>)turnSyncSwitchOn:(BOOL)on;
-
 // Action to tap a web element described by the given `selector` on the current
 // web state.
 + (id<GREYAction>)tapWebElement:(ElementSelector*)selector;

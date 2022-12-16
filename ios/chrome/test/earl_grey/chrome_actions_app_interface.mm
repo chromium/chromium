@@ -87,36 +87,8 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
             }
             UISwitch* switchView = switchCell.switchView;
             if (switchView.on != on) {
-              id<GREYAction> longPressAction = [GREYActions
-                  actionForLongPressWithDuration:kGREYLongPressDefaultDuration];
-              success = [longPressAction perform:switchView error:errorOrNil];
-              return;
-            }
-            success = YES;
-          });
-          return success;
-        }];
-}
-
-+ (id<GREYAction>)turnSyncSwitchOn:(BOOL)on {
-  id<GREYMatcher> constraints = grey_not(grey_systemAlertViewShown());
-  NSString* actionName = [NSString
-      stringWithFormat:@"Turn sync switch to %@ state", on ? @"ON" : @"OFF"];
-  return [GREYActionBlock
-      actionWithName:actionName
-         constraints:constraints
-        performBlock:^BOOL(id syncSwitchCell, __strong NSError** errorOrNil) {
-          // EG2 executes actions on a background thread by default. Since this
-          // action interacts with UI, kick it over to the main thread.
-          __block BOOL success = NO;
-          grey_dispatch_sync_on_main_thread(^{
-            TableViewSwitchCell* switchCell =
-                base::mac::ObjCCastStrict<TableViewSwitchCell>(syncSwitchCell);
-            UISwitch* switchView = switchCell.switchView;
-            if (switchView.on != on) {
-              id<GREYAction> longPressAction = [GREYActions
-                  actionForLongPressWithDuration:kGREYLongPressDefaultDuration];
-              success = [longPressAction perform:switchView error:errorOrNil];
+              id<GREYAction> action = [GREYActions actionForTurnSwitchOn:on];
+              success = [action perform:switchView error:errorOrNil];
               return;
             }
             success = YES;
