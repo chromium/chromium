@@ -1345,14 +1345,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-12-wpt-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_remoteexec": true
-    }
-  },
   "mac-arm64-on-arm64-rel-reclient": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1414,6 +1406,14 @@
     "gn_args": {
       "dcheck_always_on": false,
       "enable_perfetto_zlib": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_remoteexec": true
+    }
+  },
+  "mac12-wpt-content-shell-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_remoteexec": true

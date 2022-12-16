@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac-12-wpt-fyi-rel",
+              "builder": "mac12-wpt-content-shell-fyi-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -31,7 +31,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac-12-wpt-fyi-rel",
+          "builder": "mac12-wpt-content-shell-fyi-rel",
           "project": "chromium"
         }
       ]

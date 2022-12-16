@@ -3575,15 +3575,6 @@
           'isolated_scripts': 'wpt_web_tests_input',
         },
       },
-      'mac-12-wpt-fyi-rel': {
-        'mixins': [
-          'mac_12_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
       # TODO(crbug.com/1252626): remove this after the migration.
       'mac-arm64-on-arm64-rel-reclient': {
         'additional_compile_targets': [
@@ -3653,6 +3644,15 @@
           'isolated_scripts': 'upload_perfetto',
         },
         'use_swarming': False,
+      },
+      'mac12-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'mac_12_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
       },
       'win-annotator-rel': {
         'test_suites': {

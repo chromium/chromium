@@ -1905,7 +1905,7 @@ fyi_mac_builder(
 )
 
 fyi_mac_builder(
-    name = "mac-12-wpt-fyi-rel",
+    name = "mac12-wpt-content-shell-fyi-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1925,7 +1925,7 @@ fyi_mac_builder(
         category = "mac",
     ),
     # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
-    schedule = "triggered",
+    schedule = "with 5h interval",
 )
 
 ci.builder(
