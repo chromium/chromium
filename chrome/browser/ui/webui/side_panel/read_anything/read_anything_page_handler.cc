@@ -65,10 +65,9 @@ void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
   delegate_ = nullptr;
 }
 
-void ReadAnythingPageHandler::OnAXTreeDistilled(
-    const ui::AXTreeUpdate& snapshot,
-    const std::vector<ui::AXNodeID>& content_node_ids) {
-  page_->OnAXTreeDistilled(snapshot, content_node_ids);
+void ReadAnythingPageHandler::OnAXTreeSnapshotted(
+    const ui::AXTreeUpdate& snapshot) {
+  page_->OnAXTreeSnapshotted(snapshot);
 }
 
 void ReadAnythingPageHandler::OnReadAnythingThemeChanged(

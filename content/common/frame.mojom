@@ -489,11 +489,6 @@ interface Frame {
   SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)
       => (ax.mojom.AXTreeUpdate snapshot);
 
-  // Requests a one-time distillation of the accessibility tree without enabling
-  // accessibility if it wasn't already enabled.
-  SnapshotAndDistillAXTree() => (ax.mojom.AXTreeUpdate snapshot,
-                                 array<int32> content_node_ids);
-
   // Get HTML data by serializing the target frame and replacing all resource
   // links with a path to the local copy passed in the message payload. In order
   // to report progress to the the browser process, a pending remote is passed

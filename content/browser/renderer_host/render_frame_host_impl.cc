@@ -9571,17 +9571,6 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void RenderFrameHostImpl::RequestDistilledAXTree(
-    AXTreeDistillerCallback callback) {
-  // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameLive())
-    return;
-
-  GetMojomFrameInRenderer()->SnapshotAndDistillAXTree(
-      base::BindOnce(&RenderFrameHostImpl::RequestDistilledAXTreeCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void RenderFrameHostImpl::GetSavableResourceLinksFromRenderer() {
   if (!IsRenderFrameLive())
     return;
@@ -10138,17 +10127,6 @@ void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
   ui::AXTreeUpdate dst_snapshot;
   CopyAXTreeUpdate(snapshot, &dst_snapshot);
   std::move(callback).Run(dst_snapshot);
-}
-
-void RenderFrameHostImpl::RequestDistilledAXTreeCallback(
-    AXTreeDistillerCallback callback,
-    const ui::AXTreeUpdate& snapshot,
-    const std::vector<ui::AXNodeID>& content_node_ids) {
-  // Since |snapshot| is const, we need to make a copy in order to modify the
-  // tree data.
-  ui::AXTreeUpdate dst_snapshot;
-  CopyAXTreeUpdate(snapshot, &dst_snapshot);
-  std::move(callback).Run(dst_snapshot, content_node_ids);
 }
 
 void RenderFrameHostImpl::CopyAXTreeUpdate(const ui::AXTreeUpdate& snapshot,

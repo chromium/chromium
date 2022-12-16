@@ -206,13 +206,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                      size_t max_nodes,
                                      const base::TimeDelta& timeout) = 0;
 
-  using AXTreeDistillerCallback = base::OnceCallback<void(
-      const ui::AXTreeUpdate&,
-      const std::vector<ui::AXNodeID>& content_node_ids)>;
-  // Requests a one-time snapshot of the accessibility tree with distilled
-  // node IDs identified.
-  virtual void RequestDistilledAXTree(AXTreeDistillerCallback callback) = 0;
-
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same
   // process.

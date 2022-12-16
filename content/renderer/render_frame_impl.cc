@@ -80,7 +80,6 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/accessibility/aom_content_ax_tree.h"
-#include "content/renderer/accessibility/ax_tree_distiller.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
@@ -2226,13 +2225,6 @@ void RenderFrameImpl::SnapshotAccessibilityTree(
   snapshotter.Snapshot(params->exclude_offscreen, params->max_nodes,
                        params->timeout, &response);
   std::move(callback).Run(response);
-}
-
-void RenderFrameImpl::SnapshotAndDistillAXTree(
-    SnapshotAndDistillAXTreeCallback callback) {
-  if (!ax_tree_distiller_)
-    ax_tree_distiller_ = std::make_unique<AXTreeDistiller>(this);
-  ax_tree_distiller_->Distill(std::move(callback));
 }
 
 void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(

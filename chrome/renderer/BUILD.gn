@@ -389,6 +389,8 @@ static_library("renderer") {
 
   if (!is_android) {
     sources += [
+      "accessibility/ax_tree_distiller.cc",
+      "accessibility/ax_tree_distiller.h",
       "accessibility/read_anything_app_controller.cc",
       "accessibility/read_anything_app_controller.h",
       "media/chrome_speech_recognition_client.cc",
@@ -402,6 +404,8 @@ static_library("renderer") {
     deps += [
       "//chrome/common/accessibility:mojo_bindings",
       "//components/crx_file",
+      "//components/services/screen_ai/buildflags",
+      "//components/services/screen_ai/public/mojom",
     ]
   }
 

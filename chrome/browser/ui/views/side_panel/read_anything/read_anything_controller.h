@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -80,14 +79,13 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // content::WebContentsObserver:
   void DidStopLoading() override;
 
-  // Requests a distilled AXTree for the main frame of the currently active
-  // web contents.
-  void DistillAXTree();
+  // Requests an AXTree snapshot for the main frame of the currently active web
+  // contents.
+  void SnapshotAXTree();
 
-  // Callback method which receives an AXTree snapshot and a list of AXNodes
-  // which correspond to nodes in the tree that contain main content.
-  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
-                         const std::vector<ui::AXNodeID>& content_node_ids);
+  // Callback method which receives an AXTree snapshot. Sends the snapshot to
+  // the WebUI.
+  void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot);
 
   const raw_ptr<ReadAnythingModel> model_;
   std::vector<ReadAnythingModel::Observer*> observers_;

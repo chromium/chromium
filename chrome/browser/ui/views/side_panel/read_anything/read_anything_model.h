@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -162,9 +161,7 @@ class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnAXTreeDistilled(
-        const ui::AXTreeUpdate& snapshot,
-        const std::vector<ui::AXNodeID>& content_node_ids) {}
+    virtual void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot) {}
     virtual void OnReadAnythingThemeChanged(
         const std::string& font_name,
         double font_scale,
@@ -188,8 +185,7 @@ class ReadAnythingModel {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
-                          std::vector<ui::AXNodeID> content_node_ids);
+  void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot);
 
   void SetSelectedFontByIndex(size_t new_index);
   double GetValidFontScale(double font_scale);
@@ -210,7 +206,6 @@ class ReadAnythingModel {
   }
 
  private:
-  void NotifyAXTreeDistilled();
   void NotifyThemeChanged();
 
   // State:
@@ -228,11 +223,6 @@ class ReadAnythingModel {
 
   // Currently selected index for colors combobox
   int colors_combobox_index_ = 0;
-
-  // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
-  // scrolls in sync.
-  ui::AXTreeUpdate snapshot_;
-  std::vector<ui::AXNodeID> content_node_ids_;
 
   base::ObserverList<Observer> observers_;
   const std::unique_ptr<ReadAnythingFontModel> font_model_;

@@ -56,6 +56,7 @@ include_rules = [
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
+  "+components/services/screen_ai",
   "+components/spellcheck/renderer",
   "+components/spellcheck/spellcheck_buildflags.h",
   "+components/startup_metric_utils/common",

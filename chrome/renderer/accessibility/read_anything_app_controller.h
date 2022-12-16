@@ -27,6 +27,7 @@ class AXNode;
 class AXTree;
 }  // namespace ui
 
+class AXTreeDistiller;
 class ReadAnythingAppControllerTest;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,9 +75,7 @@ class ReadAnythingAppController
       v8::Isolate* isolate) override;
 
   // read_anything::mojom::Page:
-  void OnAXTreeDistilled(
-      const ui::AXTreeUpdate& snapshot,
-      const std::vector<ui::AXNodeID>& content_node_ids) override;
+  void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
@@ -97,6 +96,9 @@ class ReadAnythingAppController
   void OnConnected();
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
 
+  // Called when distillation has completed.
+  void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids);
+
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read
   // Anything app.ts. These functions:
@@ -104,7 +106,7 @@ class ReadAnythingAppController
   //    end_offset_).
   // 2. Save the display_node_ids_, which is a set of all nodes to be displayed
   //    in Read Anything app.ts.
-  void PostProcessAXTreeWithSelection(const ui::AXTreeData& tree_data);
+  void PostProcessAXTreeWithSelection();
   void PostProcessDistillableAXTree();
 
   // The following methods are used for testing ReadAnythingAppTest.
@@ -141,12 +143,14 @@ class ReadAnythingAppController
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 
   content::RenderFrame* render_frame_;
+  std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
   mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::Page> receiver_{this};
 
   // State
   std::unique_ptr<ui::AXTree> tree_;
+  ui::AXTreeUpdate snapshot_;
   std::vector<ui::AXNodeID> content_node_ids_;
   std::set<ui::AXNodeID> display_node_ids_;
   bool has_selection_ = false;
@@ -161,6 +165,8 @@ class ReadAnythingAppController
   SkColor foreground_color_;
   float letter_spacing_;
   float line_spacing_;
+
+  base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_

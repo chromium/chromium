@@ -5,13 +5,16 @@
 #include "chrome/renderer/accessibility/read_anything_app_controller.h"
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
@@ -262,12 +265,23 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : render_frame_(render_frame) {}
+    : render_frame_(render_frame), tree_(std::make_unique<ui::AXTree>()) {
+  distiller_ = std::make_unique<AXTreeDistiller>(
+      render_frame_,
+      base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 ReadAnythingAppController::~ReadAnythingAppController() = default;
 
+void ReadAnythingAppController::OnAXTreeSnapshotted(
+    const ui::AXTreeUpdate& snapshot) {
+  snapshot_ = std::move(snapshot);
+  tree_ = std::make_unique<ui::AXTree>(snapshot_);
+  distiller_->Distill(tree_.get(), snapshot_);
+}
+
 void ReadAnythingAppController::OnAXTreeDistilled(
-    const ui::AXTreeUpdate& snapshot,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
   display_node_ids_.clear();
@@ -276,21 +290,14 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   start_offset_ = -1;
   end_offset_ = -1;
   content_node_ids_ = content_node_ids;
-  tree_ = std::make_unique<ui::AXTree>();
-
-  // Unserialize the snapshot. Failure to unserialize doesn't result in a crash:
-  // we control both ends of the serialization-unserialization so any failures
-  // are programming error.
-  if (!tree_->Unserialize(snapshot))
-    NOTREACHED() << tree_->error();
 
   // Store state about the selection for easy access later. Selection state
   // comes from the tree data rather than AXPosition, as AXPosition requires
   // a valid and registered AXTreeID, which exists only when accessibility is
   // enabled. As Read Anything does not enable accessibility, it is not able to
   // use AXPosition.
-  const ui::AXTreeData tree_data = snapshot.tree_data;
-  has_selection_ = snapshot.has_tree_data &&
+  const ui::AXTreeData tree_data = snapshot_.tree_data;
+  has_selection_ = snapshot_.has_tree_data &&
                    tree_data.sel_anchor_object_id != ui::kInvalidAXNodeID &&
                    tree_data.sel_focus_object_id != ui::kInvalidAXNodeID;
   if (!content_node_ids.empty()) {
@@ -300,7 +307,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   } else if (has_selection_) {
     // Otherwise, if there is a selection, post-process the AXTree to display
     // the selected content.
-    PostProcessAXTreeWithSelection(tree_data);
+    PostProcessAXTreeWithSelection();
   } else {
     // TODO(crbug.com/1266555): Display a UI giving user instructions if the
     // tree was not distillable.
@@ -312,9 +319,9 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
-void ReadAnythingAppController::PostProcessAXTreeWithSelection(
-    const ui::AXTreeData& tree_data) {
+void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   DCHECK(has_selection_);
+  const ui::AXTreeData tree_data = snapshot_.tree_data;
   // Identify the start and end nodes and offsets. The start node comes earlier
   // the end node in the tree order.
   ui::AXNode* anchor_node = GetAXNode(tree_data.sel_anchor_object_id);
@@ -591,7 +598,8 @@ void ReadAnythingAppController::SetContentForTesting(
   v8::Isolate* isolate = blink::MainThreadIsolate();
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
-  OnAXTreeDistilled(snapshot, content_node_ids);
+  OnAXTreeSnapshotted(snapshot);
+  OnAXTreeDistilled(content_node_ids);
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(

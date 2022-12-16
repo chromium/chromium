@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -27,7 +28,7 @@ ReadAnythingController::~ReadAnythingController() {
 
 void ReadAnythingController::Activate(bool active) {
   active_ = active;
-  DistillAXTree();
+  SnapshotAXTree();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +113,7 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
 
 void ReadAnythingController::OnUIReady() {
   ui_ready_ = true;
-  DistillAXTree();
+  SnapshotAXTree();
 }
 
 void ReadAnythingController::OnUIDestroyed() {
@@ -144,7 +145,7 @@ void ReadAnythingController::OnTabStripModelChanged(
   if (!selection.active_tab_changed())
     return;
   WebContentsObserver::Observe(selection.new_contents);
-  DistillAXTree();
+  SnapshotAXTree();
 }
 
 void ReadAnythingController::OnTabStripModelDestroyed(
@@ -161,13 +162,12 @@ void ReadAnythingController::OnTabStripModelDestroyed(
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingController::DidStopLoading() {
-  DistillAXTree();
+  SnapshotAXTree();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingController::DistillAXTree() {
-  DCHECK(browser_);
+void ReadAnythingController::SnapshotAXTree() {
   if (!active_ || !ui_ready_ || !web_contents())
     return;
 
@@ -178,14 +178,17 @@ void ReadAnythingController::DistillAXTree() {
   if (!render_frame_host)
     return;
 
-  // Request a distilled AXTree for the main frame.
-  render_frame_host->RequestDistilledAXTree(
-      base::BindOnce(&ReadAnythingController::OnAXTreeDistilled,
-                     weak_pointer_factory_.GetWeakPtr()));
+  // Request an AXTreeSnapshot on the main render frame, not the entire web
+  // contents. The web contents snapshotter combines all render frames which
+  // Read Anything doesn't require.
+  render_frame_host->RequestAXTreeSnapshot(
+      base::BindOnce(&ReadAnythingController::OnAXTreeSnapshotted,
+                     weak_pointer_factory_.GetWeakPtr()),
+      kReadAnythingAXMode, /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0, /* timeout= */ {});
 }
 
-void ReadAnythingController::OnAXTreeDistilled(
-    const ui::AXTreeUpdate& snapshot,
-    const std::vector<ui::AXNodeID>& content_node_ids) {
-  model_->SetDistilledAXTree(snapshot, content_node_ids);
+void ReadAnythingController::OnAXTreeSnapshotted(
+    const ui::AXTreeUpdate& snapshot) {
+  model_->OnAXTreeSnapshotted(snapshot);
 }

@@ -51,9 +51,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                     background_color, line_spacing,
                                     letter_spacing);
   }
+
   void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
                          const std::vector<ui::AXNodeID>& content_node_ids) {
-    controller_->OnAXTreeDistilled(snapshot, content_node_ids);
+    controller_->OnAXTreeSnapshotted(snapshot);
+    controller_->OnAXTreeDistilled(content_node_ids);
   }
 
   ui::AXNodeID RootId() { return controller_->RootId(); }

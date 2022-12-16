@@ -67,11 +67,8 @@ interface PageHandler {
 // WebUI-side handler for requests from the browser.
 interface Page {
   // Trigger the frontend to update the current read anything display. Snapshot
-  // is an accessibility tree snapshot of a web page. Content node ids are node
-  // ids from that ax tree update, where each node is part of the main article
-  // for that web page.
-  OnAXTreeDistilled(ax.mojom.AXTreeUpdate snapshot,
-                    array<int32> content_node_ids);
+  // is an accessibility tree snapshot of a web page.
+  OnAXTreeSnapshotted(ax.mojom.AXTreeUpdate snapshot);
 
   // Send an updated theme to front end.
   OnThemeChanged(ReadAnythingTheme new_theme);
