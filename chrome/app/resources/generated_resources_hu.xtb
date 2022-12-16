@@ -2123,7 +2123,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2889064240420137087">Link megnyitása...</translation>
 <translation id="2891566119238851894">Oldalsó paneli keresés megnyitása Nincs megnyitva a keresés az oldalsó panelen.</translation>
 <translation id="2891922230654533301">Szeretne az eszközével bejelentkezni a(z) <ph name="APP_NAME" /> alkalmazásba?</translation>
-<translation id="2893013536106749396">Kiválaszthat olyan kártyákat, amelyekkel mindig naprakész lehet az Ön számára dolgokkal kapcsolatban</translation>
+<translation id="2893013536106749396">Kártyák kiválasztásával folyamatosan követheti az Ön számára fontos dolgokat</translation>
 <translation id="2893168226686371498">Alapértelmezett böngésző</translation>
 <translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Kereső és más Google-szolgáltatások személyre szabására</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
@@ -4598,7 +4598,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5265797726250773323">Hiba a telepítés során</translation>
 <translation id="5266113311903163739">Tanúsítványkibocsátó-importálási hiba</translation>
 <translation id="526622169288322445">További műveletek a következőhöz: <ph name="ADDRESS_SUMMARY" /></translation>
-<translation id="5268373933383932086">Az Ön oldala – az Ön kedve szerint</translation>
+<translation id="5268373933383932086">Egy oldal, ahogy Ön szeretné</translation>
 <translation id="5269977353971873915">A nyomtatás nem sikerült</translation>
 <translation id="5273806377963980154">Webhely URL-jének módosítása</translation>
 <translation id="5275084684151588738">Felhasználói szótárak</translation>
@@ -8264,7 +8264,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="870805141700401153">Microsoft - egyéni kódaláírás</translation>
 <translation id="8708671767545720562">&amp;További információ</translation>
 <translation id="8711402221661888347">Hamburger</translation>
-<translation id="8712637175834984815">Sikerült</translation>
+<translation id="8712637175834984815">Értem</translation>
 <translation id="8713110120305151436">Kisegítő beállítások megjelenítése a Gyorsbeállításokban</translation>
 <translation id="8713570323158206935"><ph name="BEGIN_LINK1" />Rendszeradatok<ph name="END_LINK1" /> küldése</translation>
 <translation id="8714838604780058252">Háttérgrafika</translation>

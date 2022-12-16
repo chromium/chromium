@@ -32,7 +32,7 @@
 <translation id="1717218214683051432">Датчики движения</translation>
 <translation id="1743802530341753419">Запрашивать разрешение на подключение к устройству (рекомендуется)</translation>
 <translation id="1779089405699405702">Дешифратор изображений</translation>
-<translation id="1785415724048343560">Рекомендуется для оптимальной работы функции</translation>
+<translation id="1785415724048343560">Рекомендуется для максимального удобства</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Источник: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Связанные сайты могут отслеживать действия в группе</translation>
@@ -69,7 +69,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2442870161001914531">Всегда запрашивать полную версию сайта</translation>
+<translation id="2442870161001914531">Всегда запрашивать версию для ПК</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2490684707762498678">Под управлением приложения "<ph name="APP_NAME" />"</translation>
@@ -194,11 +194,11 @@
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>
 <translation id="5063480226653192405">Использование</translation>
 <translation id="5082281938627763039">Удаляются файлы cookie и другие данные сайтов в домене <ph name="FPS_MEMBER" />, а также сайтов в группе <ph name="FPS_OWNER" />.</translation>
-<translation id="5091013926750941408">Мобильный сайт</translation>
-<translation id="509133520954049755">Запрос версии для ПК</translation>
+<translation id="5091013926750941408">Мобильная версия</translation>
+<translation id="509133520954049755">Запрашивать версию для ПК</translation>
 <translation id="5100237604440890931">Свернуто. Нажмите, чтобы развернуть.</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
-<translation id="5134599672855298214">Запрос мобильной версии (рекомендуется)</translation>
+<translation id="5134599672855298214">Запрашивать мобильную версию (рекомендуется)</translation>
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
@@ -370,7 +370,7 @@
 <translation id="8447861592752582886">Отключить доступ к устройству</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используются # файла cookie}many{Используются # файлов cookie}other{Используется # файла cookie}}</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
-<translation id="848952951823693243">Всегда запрашивать мобильный сайт</translation>
+<translation id="848952951823693243">Всегда запрашивать мобильную версию</translation>
 <translation id="8499083585497694743">Включить микрофон</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>

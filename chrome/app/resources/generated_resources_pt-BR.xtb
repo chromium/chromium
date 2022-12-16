@@ -4953,7 +4953,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
     <ph name="BEGIN_PARAGRAPH2" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esse recurso em "Configurações" &gt; "Avançado" &gt; "Enviar automaticamente dados de uso e diagnóstico ao Google".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" adicional estiver ativada, esses dados poderão ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e alterar as configurações da sua conta em account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">Cartões</translation>
+<translation id="5585019845078534178">Cards</translation>
 <translation id="5585118885427931890">Não foi possível criar uma pasta de favoritos.</translation>
 <translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas.</translation>
 <translation id="5585898376467608182">O espaço de armazenamento do dispositivo está se esgotando. É necessário ter pelo menos <ph name="MINIMUM_SPACE" /> de espaço livre para usar o <ph name="APP_NAME" />. Para liberar espaço, exclua arquivos do dispositivo.</translation>
