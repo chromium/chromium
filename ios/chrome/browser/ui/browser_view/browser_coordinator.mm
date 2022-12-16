@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
@@ -88,6 +89,7 @@
 #import "ios/chrome/browser/ui/commands/web_content_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
@@ -433,6 +435,7 @@ enum class ToolbarKind {
   id<PopupMenuCommands> _popupMenuCommandsHandler;
   id<SnackbarCommands> _snackbarCommandsHandler;
   absl::optional<ToolbarKind> _nextToolbarToPresent;
+  CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1000,6 +1003,14 @@ enum class ToolbarKind {
                                browser:self.browser];
     [self.priceNotificationsIPHCoordinator start];
   }
+
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    _credentialProviderPromoCoordinator =
+        [[CredentialProviderPromoCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    [_credentialProviderPromoCoordinator start];
+  }
 }
 
 // Stops child coordinators.
@@ -1112,6 +1123,9 @@ enum class ToolbarKind {
 
   [self.priceNotificationsIPHCoordinator stop];
   self.priceNotificationsIPHCoordinator = nil;
+
+  [_credentialProviderPromoCoordinator stop];
+  _credentialProviderPromoCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
