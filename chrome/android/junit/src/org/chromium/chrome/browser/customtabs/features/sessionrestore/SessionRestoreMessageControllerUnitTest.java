@@ -21,8 +21,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -38,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -49,7 +53,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {SessionRestoreMessageControllerUnitTest.ShadowMessageDispatcherProvider.class,
-                SessionRestoreMessageControllerUnitTest.ShadowSessionRestoreUtils.class})
+                SessionRestoreMessageControllerUnitTest.ShadowSessionRestoreUtils.class,
+                SessionRestoreMessageControllerUnitTest.ShadowReparentingTask.class})
 public class SessionRestoreMessageControllerUnitTest {
     private static class FakeMessageDispatcher implements MessageDispatcher {
         private static PropertyModel sMessageModel;
@@ -115,6 +120,19 @@ public class SessionRestoreMessageControllerUnitTest {
         }
     }
 
+    @Implements(ReparentingTask.class)
+    static class ShadowReparentingTask {
+        @Nullable
+        @Implementation
+        protected static ReparentingTask from(Tab tab) {
+            return sMockReparentingTask;
+        }
+
+        static void reset() {
+            sMockReparentingTask = null;
+        }
+    }
+
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
@@ -130,9 +148,13 @@ public class SessionRestoreMessageControllerUnitTest {
     BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock
     SessionRestoreManager mMockManager;
+    @Mock
+    Tab mMockTab;
 
     @Captor
     private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
+
+    static ReparentingTask sMockReparentingTask;
 
     private SessionRestoreMessageController mController;
     private Activity mActivity;
@@ -141,6 +163,7 @@ public class SessionRestoreMessageControllerUnitTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
+        sMockReparentingTask = Mockito.mock(ReparentingTask.class);
         FakeMessageDispatcher messageDispatcher = new FakeMessageDispatcher();
         ShadowMessageDispatcherProvider.sMessageDispatcher = messageDispatcher;
         ChromeFeatureList.sCctRetainableStateInMemory.setForTesting(true);
@@ -148,6 +171,7 @@ public class SessionRestoreMessageControllerUnitTest {
         doReturn(true).when(mMockLifecycleDispatcher).isNativeInitializationFinished();
         doReturn(mMockManager).when(env.connection).getSessionRestoreManager();
         doReturn(true).when(mMockManager).canRestoreTab();
+        doReturn(mMockTab).when(mMockManager).restoreTab();
     }
 
     @After
@@ -156,6 +180,7 @@ public class SessionRestoreMessageControllerUnitTest {
         ShadowMessageDispatcherProvider.sMessageDispatcher.reset();
         ShadowMessageDispatcherProvider.sMessageDispatcher = null;
         ShadowSessionRestoreUtils.reset();
+        ShadowReparentingTask.reset();
     }
 
     @Test
@@ -166,6 +191,25 @@ public class SessionRestoreMessageControllerUnitTest {
         Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
         Assert.assertTrue("Message not shown: MessageDispatcher never calls enqueue",
                 ShadowMessageDispatcherProvider.sMessageDispatcher.called());
+    }
+
+    @Test
+    public void testMessageAccepted() {
+        mController = createSessionRestoreMessageController();
+        Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
+        mController.onMessageAccepted();
+        verify(mMockManager, times(1)).restoreTab();
+        verify(sMockReparentingTask, times(1))
+                .finish(ArgumentMatchers.any(), ArgumentMatchers.any());
+    }
+
+    @Test
+    public void testMessageDismissed() {
+        mController = createSessionRestoreMessageController();
+        Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
+        mController.onMessageDismissed(0);
+        verifyNoMoreInteractions(sMockReparentingTask);
+        verify(mMockManager, times(1)).clearCache();
     }
 
     @Test
@@ -230,6 +274,7 @@ public class SessionRestoreMessageControllerUnitTest {
 
     private SessionRestoreMessageController createSessionRestoreMessageController() {
         return new SessionRestoreMessageController(mActivity, mMockWindowAndroid,
-                mMockLifecycleDispatcher, mIntentDataProvider, env.connection);
+                mMockLifecycleDispatcher, mIntentDataProvider, env.connection,
+                () -> env.customTabDelegateFactory, env.tabFactory, () -> env.compositorViewHolder);
     }
 }
