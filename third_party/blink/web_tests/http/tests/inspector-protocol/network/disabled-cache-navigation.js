@@ -25,7 +25,6 @@
   testRunner.log(`  responseReceived status: ${response.status}`);
   testRunner.log(`  responseReceivedExtraInfo status: ${response.extraInfoStatus}\n`);
 
-  await dp.Page.navigate({url: 'about:blank'});
   let response2 = await navigateAndGetResponse();
   testRunner.log(`Second navigation, should be cached:`);
   testRunner.log(`  responseReceived status: ${response2.status}`);
@@ -33,7 +32,6 @@
   testRunner.log(`  cached: ${response.content === response2.content}\n`);
 
   await dp.Network.setCacheDisabled({cacheDisabled: true});
-  await dp.Page.navigate({url: 'about:blank'});
   let response3 = await navigateAndGetResponse();
 
   testRunner.log(`Navigation with cache disabled:`);

@@ -1106,22 +1106,29 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // navigation be performed in the current RenderFrameHost.
     CHECK(!request->from_begin_navigation());
 
-    // Cleanup existing pending RenderFrameHost. This corresponds to what is
-    // done inside GetFrameHostForNavigation(request), but we avoid calling that
-    // method for navigations which will be forced into the current document.
-    // TODO(https://crbug.com/1220337): Don't delete the speculative
-    // RenderFrameHost when it is pending commit.
-    DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+
+    // Cleanup existing speculative RenderFrameHost. This corresponds to
+    // what is done inside GetFrameHostForNavigation(request), but we avoid
+    // calling that method for navigations which will be forced into the current
+    // document.
+    if (base::FeatureList::IsEnabled(
+            kAvoidUnnecessaryNavigationCancellations)) {
+      // When kAvoidUnnecessaryNavigationCancellations is enabled, only delete
+      // the speculative RFH if it is unused. In particular, this means that a
+      // speculative RFH with a pending-commit navigation won't be deleted
+      // anymore.
+      DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);
+    } else {
+      // When the flag is disabled, always delete the speculative RFH, even if
+      // it means cancelling a pending commit navigation in that RFH.
+      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
+    }
   } else {
     auto result = GetFrameHostForNavigation(request);
     if (result.has_value()) {
       DCHECK(result.value());
-      request->SetAssociatedRFHType(
-          result.value() == render_frame_host_.get()
-              ? NavigationRequest::AssociatedRenderFrameHostType::CURRENT
-              : NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
     }
   }
 }
@@ -1129,6 +1136,9 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
 base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>
 RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
                                                   std::string* reason) {
+  // GetFrameHostForNavigation will be called more than once during a navigation
+  // (currently twice, on request and when it's about to commit in the
+  // renderer).
   TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
@@ -1225,19 +1235,6 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
       ShouldSkipEarlyCommitPendingForCrashedFrame() &&
       render_frame_host_->must_be_replaced();
   if (use_current_rfh) {
-    // GetFrameHostForNavigation will be called more than once during a
-    // navigation (currently twice, on request and when it's about to commit in
-    // the renderer). In the follow up calls an existing pending WebUI should
-    // not be recreated if the URL didn't change. So instead of calling
-    // DiscardSpeculativeRFH just discard the speculative RenderFrameHost if one
-    // exists.
-    // TODO(https://crbug.com/1220337): Don't delete the speculative
-    // RenderFrameHost when it is pending commit.
-    if (speculative_render_frame_host_) {
-      DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
-          NavigationDiscardReason::kNewNavigation));
-    }
-
     // If the navigation is to a WebUI and the current RenderFrameHost is going
     // to be used, there are only two possible ways to get here:
     // * The navigation is between two different documents belonging to the same
@@ -1281,7 +1278,24 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
 
     navigation_rfh = render_frame_host_.get();
 
-    DCHECK(!speculative_render_frame_host_);
+    // Set the associated RenderFrameHost type for the navigation, and discard
+    // existing speculative RenderFrameHost. This can exist when the navigation
+    // initially used a speculative RenderFrameHost but got redirected and now
+    // uses the current RenderFrameHost. Note that we need to update the
+    // associated RenderFrameHost type first so that
+    // `DiscardSpeculativeRFHIfUnused()` can work correctly.
+    request->SetAssociatedRFHType(
+        NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+    if (base::FeatureList::IsEnabled(
+            kAvoidUnnecessaryNavigationCancellations)) {
+      // When kAvoidUnnecessaryNavigationCancellations is enabled, only delete
+      // the speculative RFH if it is unused.
+      DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);
+    } else {
+      // When the flag is disabled, always delete the speculative RFH, even if
+      // it means cancelling a pending commit navigation in that RFH.
+      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
+    }
   } else {
     // If the current RenderFrameHost cannot be used a speculative one is
     // created with the SiteInstance for the current URL. If a speculative
@@ -1318,6 +1332,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
     }
 
     navigation_rfh = speculative_render_frame_host_.get();
+    request->SetAssociatedRFHType(
+        NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+
     // Check that this is for a prerendered FrameTree or not. Note that we
     // cannot check the RFH's LifecycleState here instead, because it will be
     // kSpeculative even for prerendering RFHs at this point.
@@ -1370,6 +1387,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
 
       CommitPending(std::move(speculative_render_frame_host_), nullptr,
                     request->coop_status().require_browsing_instance_swap());
+      request->SetAssociatedRFHType(
+          NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
     }
   }
   DCHECK(navigation_rfh &&

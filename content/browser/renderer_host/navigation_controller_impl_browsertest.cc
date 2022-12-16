@@ -22145,43 +22145,22 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.GetNavigationHandle());
 
   // 4) Start a same-RFH navigation to A3 after B1 gets to "pending commit"
-  // stage, which will cancel the previous cross-RFH navigation to B1, because
-  // when a same-RFH navigation starts it will delete the speculative RFH.
-  // TODO(https://crbug.com/1220337): Ensure that pending-commit navigations
-  // won't get deleted.
+  // stage, which won't cancel the previous cross-RFH navigation to B1, as B1's
+  // NavigationRequest had moved.
   TestNavigationManager a3_navigation(shell()->web_contents(), url_a3);
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
-  EXPECT_TRUE(a3_navigation.WaitForResponse());
-  EXPECT_EQ(url_a3, a3_navigation.GetNavigationHandle()->GetURL());
-  EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
 
-  // Assert that the navigation to B1 gets cancelled.
+  // Assert that the navigation to B1 didn't get cancelled, and finish
+  // committing B1. This shouldn't cancel the navigation to A3.
   b1_navigation.WaitForNavigationFinished();
-  EXPECT_FALSE(b1_navigation.was_committed());
+  EXPECT_TRUE(b1_navigation.was_successful());
 
-  // 5) Start a cross-RFH navigation to B2 after A3 gets to "pending commit"
-  // stage, which will cancel the previous same-RFH navigation to A3 when B2
-  // commits first, because when the previous RFH gets unloaded it will
-  // cancel all ongoing navigations in the pending deletion RFH.
-  TestNavigationManager b2_navigation(shell()->web_contents(), url_b2);
-  // Ignore A3's commit so that B2's navigation can start and finish committing
-  // before A3 finishes committing.
-  DidCommitNavigationCanceller ignore_a3_commit(
-      shell()->web_contents(), url_a3,
-      base::BindLambdaForTesting([&]() { shell()->LoadURL(url_b2); }));
-  // Continue the A3 navigation, but its commit will be dropped.
-  a3_navigation.ResumeNavigation();
-  // The navigation to B2 will start, but won't cancel A3's navigation just yet.
-  EXPECT_TRUE(b2_navigation.WaitForResponse());
+  // B1's navigation commit didn't cancel A3's navigation.
+  EXPECT_TRUE(a3_navigation.WaitForResponse());
   EXPECT_TRUE(a3_navigation.GetNavigationHandle());
-
-  // The navigation to B2 finished committing, and cancels A3's navigation.
-  b2_navigation.WaitForNavigationFinished();
-  EXPECT_TRUE(b2_navigation.was_successful());
-  // Assert A3's navigation finished but didn't get committed.
   a3_navigation.WaitForNavigationFinished();
-  EXPECT_FALSE(a3_navigation.was_committed());
+  EXPECT_TRUE(a3_navigation.was_successful());
 }
 
 // Tests that calling FrameTreeNode::ResetNavigationRequest() cancels the

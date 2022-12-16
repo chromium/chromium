@@ -3931,14 +3931,6 @@ void NavigationRequest::OnResponseStarted(
       }
     }
 
-    // Update the associated RenderFrameHost type, which could have changed
-    // due to redirects during navigation.
-    SetAssociatedRFHType(
-        render_frame_host_ ==
-                frame_tree_node_->render_manager()->current_frame_host()
-            ? AssociatedRenderFrameHostType::CURRENT
-            : AssociatedRenderFrameHostType::SPECULATIVE);
-
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
@@ -7322,9 +7314,16 @@ RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() const {
 
 NavigationRequest::AssociatedRenderFrameHostType
 NavigationRequest::GetAssociatedRFHType() const {
-  CHECK_LT(state_, READY_TO_COMMIT)
-      << "Use GetRenderFrameHost() instead when the final RenderFrameHost for "
-         "the navigation had been picked";
+  // `associated_rfh_type_` might not be accurate after the navigation had
+  // moved to the RFH. This is because if another navigation had committed and
+  // committed a new RFH that replaces the current RFH, the
+  // `associated_rfh_type_` might be stale and needs to be updated. However,
+  // we only update the value for non-pending commit navigations (i.e. the
+  // NavigationRequest owned by the FrameTreeNode). See the comments in
+  // `RenderFrameHostManager::CommitPendingIfNecessary()` for more details.
+  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
+      << "Use GetRenderFrameHost() instead when the final RenderFrameHost "
+         "for the navigation has been picked";
   return associated_rfh_type_;
 }
 
