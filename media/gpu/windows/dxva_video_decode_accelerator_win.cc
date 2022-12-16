@@ -3261,7 +3261,7 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
           picture_buffer->texture_size(texture_idx),
           picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, gl_image_dxgi->texture(),
-          std::move(gl_texture));
+          std::move(gl_texture), gl_image_dxgi->level());
     } else {
       auto gl_image_pbuffer_ref = scoped_refptr<GLImagePbuffer>(
           gl::GLImage::ToGLImagePbuffer(picture_buffer->gl_image().get()));

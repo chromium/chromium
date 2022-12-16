@@ -285,11 +285,13 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromGLTexture(
     SkAlphaType alpha_type,
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<gles2::TexturePassthrough> gl_texture) {
-  return base::WrapUnique(
-      new D3DImageBacking(mailbox, viz::SharedImageFormat::SinglePlane(format),
-                          size, color_space, surface_origin, alpha_type, usage,
-                          std::move(d3d11_texture), std::move(gl_texture)));
+    scoped_refptr<gles2::TexturePassthrough> gl_texture,
+    size_t array_slice) {
+  return base::WrapUnique(new D3DImageBacking(
+      mailbox, viz::SharedImageFormat::SinglePlane(format), size, color_space,
+      surface_origin, alpha_type, usage, std::move(d3d11_texture),
+      std::move(gl_texture), /*dxgi_shared_handle_state=*/nullptr,
+      gl_texture->target(), array_slice));
 }
 
 // static
