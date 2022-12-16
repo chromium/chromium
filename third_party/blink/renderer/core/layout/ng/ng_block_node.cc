@@ -797,10 +797,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     const MinMaxSizesType type,
     const NGConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGBlockNode::ComputeMinMaxSizes %d",
-                       GetLayoutBox()->RecordReplayId());
-
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())

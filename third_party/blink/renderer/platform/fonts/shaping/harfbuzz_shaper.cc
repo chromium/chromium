@@ -829,10 +829,6 @@ void HarfBuzzShaper::ShapeSegment(
         adjusted_font = font_data->SmallCapsFontData(font_description).get();
     }
 
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("HarfBuzzShaper::ShapeSegment #10 %d %d %d %d",
-                         text_.Is8Bit(), text_.length(), shape_start, shape_end);
-
     CaseMappingHarfBuzzBufferFiller(
         case_map_intend, font_description.LocaleOrDefault(), range_data->buffer,
         text_, shape_start, shape_end - shape_start);

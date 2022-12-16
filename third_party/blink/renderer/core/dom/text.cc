@@ -63,16 +63,10 @@ Text* Text::Create(Document& document, const String& data) {
     dataPtr = &data;
   }
 
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("Text::Create %zu", dataPtr->length());
-
   return MakeGarbageCollected<Text>(document, *dataPtr, kCreateText);
 }
 
 Text* Text::CreateEditingText(Document& document, const String& data) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("Text::CreateEditingText %zu", data.length());
-
   return MakeGarbageCollected<Text>(document, data, kCreateEditingText);
 }
 
@@ -353,10 +347,6 @@ static bool IsSVGText(Text* text) {
 
 LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("Text::CreateTextLayoutObject %d %zu",
-                       RecordReplayId(), data().length());
-
   if (IsSVGText(this))
     return new LayoutSVGInlineText(this, DataImpl());
 
@@ -367,10 +357,6 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
 }
 
 void Text::AttachLayoutTree(AttachContext& context) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("Text::AttachLayoutTree %d",
-                       RecordReplayId());
-
   if (context.parent) {
     ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);
     if (style_parent) {
