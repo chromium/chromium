@@ -321,9 +321,7 @@ void InProcessBrowserTest::Initialize() {
 
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
-  for (const base::Feature* feature : feature_engagement::GetAllFeatures()) {
-    disabled_features.push_back(*feature);
-  }
+  block_all_iph_feature_list_.InitWithNoFeaturesAllowed();
 
   scoped_feature_list_.InitWithFeatures({}, disabled_features);
 

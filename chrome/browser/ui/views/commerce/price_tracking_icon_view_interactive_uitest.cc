@@ -31,6 +31,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -55,7 +56,7 @@ const char kNonBookmarkedUrl[] = "about:blank?bookmarked=false";
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
-    test_features_.InitWithFeatures(
+    test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
         {features::kUnifiedSidePanel});
@@ -149,7 +150,7 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
   raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 
  private:
-  base::test::ScopedFeatureList test_features_;
+  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
@@ -377,10 +378,9 @@ class PriceTrackingIconViewEngagementTest
     : public PriceTrackingIconViewInteractiveTest {
  public:
   PriceTrackingIconViewEngagementTest() {
-    test_features_.InitWithFeatures(
+    test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
-         feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature},
-        {});
+         feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature});
   }
 
   void SetUpOnMainThread() override {
@@ -408,7 +408,7 @@ class PriceTrackingIconViewEngagementTest
   }
 
  private:
-  base::test::ScopedFeatureList test_features_;
+  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest, ShowExpandedIcon) {
@@ -783,15 +783,14 @@ class PriceTrackingIconViewUnifiedSidePanelInteractiveTest
     : public PriceTrackingBubbleInteractiveTest {
  public:
   PriceTrackingIconViewUnifiedSidePanelInteractiveTest() {
-    test_features_.InitWithFeatures(
+    test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature,
-         features::kUnifiedSidePanel},
-        {});
+         features::kUnifiedSidePanel});
   }
 
  private:
-  base::test::ScopedFeatureList test_features_;
+  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,

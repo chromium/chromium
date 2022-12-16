@@ -4,9 +4,19 @@
 
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+
+// static
+void MockShoppingListUiTabHelper::CreateForWebContents(
+    content::WebContents* content) {
+  content->SetUserData(
+      UserDataKey(),
+      std::make_unique<testing::NiceMock<MockShoppingListUiTabHelper>>(
+          content));
+}
 
 MockShoppingListUiTabHelper::MockShoppingListUiTabHelper(
     content::WebContents* content)

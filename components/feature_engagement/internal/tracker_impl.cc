@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
@@ -183,6 +184,10 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
 
 TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
     const base::Feature& feature) {
+  if (IsFeatureBlockedByTest(feature)) {
+    return TriggerDetails(false, false);
+  }
+
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
@@ -227,6 +232,10 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
 }
 
 bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
+  if (IsFeatureBlockedByTest(feature)) {
+    return false;
+  }
+
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
@@ -280,6 +289,8 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
 
 void TrackerImpl::Dismissed(const base::Feature& feature) {
   DVLOG(2) << "Dismissing " << feature.name;
+  DCHECK(!IsFeatureBlockedByTest(feature));
+
   condition_validator_->NotifyDismissed(feature);
   stats::RecordUserDismiss();
   RecordShownTime(feature);
@@ -288,6 +299,8 @@ void TrackerImpl::Dismissed(const base::Feature& feature) {
 void TrackerImpl::DismissedWithSnooze(
     const base::Feature& feature,
     absl::optional<SnoozeAction> snooze_action) {
+  DCHECK(!IsFeatureBlockedByTest(feature));
+
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   if (snooze_action == SnoozeAction::SNOOZED) {
     event_model_->IncrementSnooze(feature_config.trigger.name,
@@ -405,6 +418,32 @@ void TrackerImpl::RecordShownTime(const base::Feature& feature) {
   UmaHistogramTimes("InProductHelp.ShownTime." + feature_name,
                     time_provider_->Now() - iter->second);
   start_times_.erase(feature_name);
+}
+
+// static
+bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
+  auto& data = GetAllowedTestFeatureMap();
+  // Refcount for nullptr is the number of active ScopedIphFeatureList.
+  if (!data[nullptr]) {
+    return false;
+  }
+
+  // If the refcount for the feature is nonzero, then it is explicitly allowed.
+  if (data[&feature]) {
+    return false;
+  }
+
+  // At least one ScopedIphFeatureList is active and this feature is not
+  // explicitly allowed.
+  return true;
+}
+
+// static
+std::map<const base::Feature*, size_t>&
+TrackerImpl::GetAllowedTestFeatureMap() {
+  static base::NoDestructor<std::map<const base::Feature*, size_t>> instance(
+      {std::make_pair(nullptr, 0)});
+  return *instance;
 }
 
 }  // namespace feature_engagement

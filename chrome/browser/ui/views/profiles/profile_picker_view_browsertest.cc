@@ -75,6 +75,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -359,7 +360,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     if (local_profile_creation_dialog_enabled) {
       enabled_features.push_back(kSyncPromoAfterSigninIntercept);
     }
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeatures(enabled_features);
 #if BUILDFLAG(IS_MAC)
     // Ensure the platform is unmanaged
     platform_management_ =
@@ -601,7 +602,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       platform_management_;

@@ -331,8 +331,8 @@ class SharedHighlightingFencedFrameBrowserTest
     : public SharedHighlightingBrowserTest {
  public:
   SharedHighlightingFencedFrameBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHDesktopSharedHighlightingFeature);
+    feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHDesktopSharedHighlightingFeature});
   }
   ~SharedHighlightingFencedFrameBrowserTest() override = default;
 
@@ -351,7 +351,7 @@ class SharedHighlightingFencedFrameBrowserTest
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

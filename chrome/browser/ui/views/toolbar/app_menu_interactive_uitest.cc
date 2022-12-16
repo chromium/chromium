@@ -31,11 +31,9 @@ class AppMenuInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
+    feature_list_.InitAndEnableFeatures(
         {performance_manager::features::kHighEfficiencyModeAvailable,
-         feature_engagement::kIPHPerformanceNewBadgeFeature},
-        {});
+         feature_engagement::kIPHPerformanceNewBadgeFeature});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -54,6 +52,9 @@ class AppMenuInteractiveTest : public InteractiveBrowserTest {
         browser()->window()->GetFeaturePromoController());
     return promo_controller;
   }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {

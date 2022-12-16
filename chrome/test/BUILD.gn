@@ -9289,6 +9289,7 @@ if (!is_android) {
       "//components/content_settings/core/browser",
       "//components/embedder_support",
       "//components/feature_engagement",
+      "//components/feature_engagement/test:test_support",
       "//components/find_in_page",
       "//components/google/core/common",
       "//components/history/core/browser",

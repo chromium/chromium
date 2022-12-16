@@ -115,10 +115,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
       base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
 
   SigninInterceptFirstRunExperienceDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
+    feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHProfileSwitchFeature,
-         kSyncPromoAfterSigninIntercept},
-        {});
+         kSyncPromoAfterSigninIntercept});
   }
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
@@ -250,7 +249,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;

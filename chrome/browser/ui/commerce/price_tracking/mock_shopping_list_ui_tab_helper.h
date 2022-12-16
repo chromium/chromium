@@ -14,10 +14,7 @@ class WebContents;
 
 class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
  public:
-  static void CreateForWebContents(content::WebContents* content) {
-    content->SetUserData(
-        UserDataKey(), std::make_unique<MockShoppingListUiTabHelper>(content));
-  }
+  static void CreateForWebContents(content::WebContents* content);
   explicit MockShoppingListUiTabHelper(content::WebContents* content);
   ~MockShoppingListUiTabHelper() override;
 

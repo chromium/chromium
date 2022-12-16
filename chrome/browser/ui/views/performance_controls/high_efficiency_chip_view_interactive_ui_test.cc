@@ -20,6 +20,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/performance_manager/public/features.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
@@ -329,11 +330,10 @@ class HighEfficiencyInfoIPHInteractiveTest
   ~HighEfficiencyInfoIPHInteractiveTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+    iph_features_.InitAndEnableFeaturesWithParameters(
         {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
          {performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "30s"}}}},
-        {});
+          {{"default_state", "true"}, {"time_before_discard", "30s"}}}});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -348,6 +348,9 @@ class HighEfficiencyInfoIPHInteractiveTest
         browser()->window()->GetFeaturePromoController());
     return promo_controller;
   }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
 // High Efficiency info IPH should close after clicking the "Got It"

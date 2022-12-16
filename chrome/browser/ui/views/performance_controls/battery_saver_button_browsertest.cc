@@ -51,10 +51,9 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
   ~BatterySaverHelpPromoTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{feature_engagement::kIPHBatterySaverModeFeature, {}},
-         {performance_manager::features::kBatterySaverModeAvailable, {}}},
-        {});
+    iph_features_.InitAndEnableFeatures(
+        {feature_engagement::kIPHBatterySaverModeFeature,
+         performance_manager::features::kBatterySaverModeAvailable});
 
     SetUpFakeBatterySampler();
 
@@ -103,7 +102,7 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
   // Only used on platforms without a battery level provider implementation.
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
 
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
 // Check if the battery saver in-product help promo is shown when the mode is

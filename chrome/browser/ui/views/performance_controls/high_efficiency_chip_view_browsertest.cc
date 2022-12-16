@@ -45,11 +45,10 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   ~HighEfficiencyChipViewBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
+    iph_features_.InitAndEnableFeaturesWithParameters(
         {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
          {performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "5s"}}}},
-        {});
+          {{"default_state", "true"}, {"time_before_discard", "5s"}}}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -128,7 +127,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,

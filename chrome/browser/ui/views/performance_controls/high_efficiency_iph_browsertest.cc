@@ -32,10 +32,9 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
   ~HighEfficiencyHelpPromoTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
+    iph_features_.InitAndEnableFeatures(
         {feature_engagement::kIPHHighEfficiencyModeFeature,
-         performance_manager::features::kHighEfficiencyModeAvailable},
-        {});
+         performance_manager::features::kHighEfficiencyModeAvailable});
 
     InProcessBrowserTest::SetUp();
   }
@@ -76,7 +75,7 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
 // Check that the high efficiency mode in-product help promo is shown when

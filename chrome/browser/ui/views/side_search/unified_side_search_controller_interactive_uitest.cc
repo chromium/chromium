@@ -27,6 +27,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/result_codes.h"
@@ -884,16 +885,14 @@ class SideSearchAutoTriggeringBrowserTest
     constexpr char kTriggerCount[] = "2";
     base::FieldTrialParams params = {{kParam, kTriggerCount}};
 
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kSideSearch, {}},
-            {features::kSideSearchDSESupport, {}},
-            {features::kUnifiedSidePanel, {}},
-            {features::kSideSearchAutoTriggering, params},
-            {feature_engagement::kIPHSideSearchAutoTriggeringFeature,
-             GetFeatureEngagementParams()},
-        },
-        {});
+    feature_list_.InitAndEnableFeaturesWithParameters({
+        {features::kSideSearch, {}},
+        {features::kSideSearchDSESupport, {}},
+        {features::kUnifiedSidePanel, {}},
+        {features::kSideSearchAutoTriggering, params},
+        {feature_engagement::kIPHSideSearchAutoTriggeringFeature,
+         GetFeatureEngagementParams()},
+    });
   }
 
   void SetUpOnMainThread() override {
@@ -928,7 +927,7 @@ class SideSearchAutoTriggeringBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 // TODO(crbug.com/1368921): Flaky on lacros.
@@ -1022,19 +1021,17 @@ class SideSearchPageActionLabelTriggerBrowserTest
     : public SideSearchFeatureEngagementTest {
  public:
   SideSearchPageActionLabelTriggerBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kSideSearch, {}},
-            {features::kSideSearchDSESupport, {}},
-            {features::kUnifiedSidePanel, {}},
-            {feature_engagement::kIPHSideSearchPageActionLabelFeature,
-             GetFeatureEngagementParams()},
-        },
-        {});
+    feature_list_.InitAndEnableFeaturesWithParameters({
+        {features::kSideSearch, {}},
+        {features::kSideSearchDSESupport, {}},
+        {features::kUnifiedSidePanel, {}},
+        {feature_engagement::kIPHSideSearchPageActionLabelFeature,
+         GetFeatureEngagementParams()},
+    });
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SideSearchPageActionLabelTriggerBrowserTest,

@@ -52,7 +52,7 @@ class ProfileCustomizationBrowserTest : public DialogBrowserTest {
     } else {
       disabled_features.push_back(kSyncPromoAfterSigninIntercept);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitAndEnableFeatures(enabled_features, disabled_features);
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -81,7 +81,7 @@ class ProfileCustomizationBrowserTest : public DialogBrowserTest {
         context, base::BindRepeating(&CreateTestTracker));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
 };
 
