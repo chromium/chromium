@@ -705,9 +705,9 @@ TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
         // defined(GTEST_HAS_DEATH_TEST)
 
 TEST(FeatureListAccessorTest, DefaultStates) {
+  test::ScopedFeatureList scoped_feature_list;
   auto feature_list = std::make_unique<FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
-  test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   EXPECT_EQ(feature_list_accessor->GetOverrideStateByFeatureName(
@@ -747,12 +747,11 @@ TEST(FeatureListAccessorTest, InitializeFromCommandLine) {
                                     test_case.enable_features,
                                     test_case.disable_features));
 
+    test::ScopedFeatureList scoped_feature_list;
     auto feature_list = std::make_unique<FeatureList>();
     auto feature_list_accessor = feature_list->ConstructAccessor();
-
     feature_list->InitializeFromCommandLine(test_case.enable_features,
                                             test_case.disable_features);
-    test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
     EXPECT_EQ(test_case.expected_feature_on_state,
@@ -784,11 +783,10 @@ TEST(FeatureListAccessorTest, InitializeFromCommandLineWithFeatureParams) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(test_case.enable_features);
 
+    test::ScopedFeatureList scoped_feature_list;
     auto feature_list = std::make_unique<FeatureList>();
     auto feature_list_accessor = feature_list->ConstructAccessor();
-
     feature_list->InitializeFromCommandLine(test_case.enable_features, "");
-    test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
     EXPECT_EQ(FeatureList::OVERRIDE_ENABLE_FEATURE,
