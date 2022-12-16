@@ -1263,6 +1263,12 @@ void TaskQueueImpl::PushImmediateIncomingTaskForTest(Task task) {
 void TaskQueueImpl::RequeueDeferredNonNestableTask(
     DeferredNonNestableTask task) {
   DCHECK(task.task.nestable == Nestable::kNonNestable);
+
+  // It's possible that the queue was unregistered since the task was posted.
+  // Skip the task in that case.
+  if (!main_thread_only().delayed_work_queue)
+    return;
+
   // The re-queued tasks have to be pushed onto the front because we'd otherwise
   // violate the strict monotonically increasing enqueue order within the
   // WorkQueue.  We can't assign them a new enqueue order here because that will
