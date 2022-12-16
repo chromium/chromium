@@ -2429,8 +2429,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If we haven't used our SiteInstance yet, then we can use it for this
   // navigation.  We won't commit the SiteInstance to this site until the
-  // response is received (in OnResponseStarted), unless the navigation entry
-  // was restored or it's a Web UI as described below.
+  // response is received (in OnResponseStarted).
   // TODO(ahemery): In theory we should be able to go for an unused
   // SiteInstance with the same web exposed isolation status.
   if (!current_instance->HasSite() && !dest_url_info.IsIsolated() &&
@@ -2478,25 +2477,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                    "!current_instance->IsSuitable");
       return SiteInstanceDescriptor(dest_url_info,
                                     SiteInstanceRelation::RELATED);
-    }
-
-    // Normally the "site" on the SiteInstance is set lazily when the response
-    // is received and SiteInstance selection is finalized. This is to
-    // support better process sharing in case the site redirects to some other
-    // site: we want to use the destination site in the site instance.
-    //
-    // In the case of session restore, as it loads all the pages immediately
-    // we need to set the site first, otherwise after a restore none of the
-    // pages would share renderers in process-per-site.
-    //
-    // The embedder can request some urls never to be assigned to SiteInstance
-    // through the ShouldAssignSiteForURL() content client method, so that
-    // renderers created for particular chrome urls (e.g. the chrome-native://
-    // scheme) can be reused for subsequent navigations in the same WebContents.
-    // See http://crbug.com/386542.
-    if (dest_is_restore &&
-        SiteInstanceImpl::ShouldAssignSiteForURL(dest_url_info.url)) {
-      current_instance->ConvertToDefaultOrSetSite(dest_url_info);
     }
 
     AppendReason(reason, "DetermineSiteInstanceForURL => current_instance");
