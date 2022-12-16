@@ -9,6 +9,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
@@ -16,9 +17,9 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/md_select.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {assert} from '//resources/ash/common/assert.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnType, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
@@ -94,6 +95,12 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       },
 
       guid: {type: String},
+
+      /** @type {Array<ApnProperties>} */
+      apnList: {
+        type: Array,
+        value: [],
+      },
 
       /** @private */
       advancedSettingsExpanded_: {
@@ -181,6 +188,13 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
         type: Boolean,
         value: false,
       },
+      /** @private */
+      shouldShowApnTypeErrorMessage_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShouldShowApnTypeErrorMessage_(apnList, ' +
+            'isDefaultApnType_, isAttachApnType_)',
+      },
     };
   }
 
@@ -234,6 +248,52 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
     // Truncate the name to MAX_INPUT_LENGTH.
     this.apn_ = this.apn_.substring(0, MAX_APN_INPUT_LENGTH);
+  }
+
+  /**
+   * Computes whether the APN type error message should be shown or not. It
+   * should be shown when the user tries to get into a state where no enabled
+   * default APNs but still one or more enabled attach APNs.
+   *
+   * @returns {boolean}
+   * @private
+   */
+  computeShouldShowApnTypeErrorMessage_() {
+    // APN type is always valid if the default APN type is checked.
+    if (this.isDefaultApnType_) {
+      return false;
+    }
+    const enabledDefaultApns = this.apnList.filter(
+        properties => properties.state === ApnState.kEnabled &&
+            properties.apnTypes.includes(ApnType.kDefault));
+    const enabledAttachApns = this.apnList.filter(
+        properties => properties.state === ApnState.kEnabled &&
+            properties.apnTypes.includes(ApnType.kAttach));
+    switch (this.mode) {
+      case ApnDetailDialogMode.CREATE:
+        // If there are no default enabled APNs and the user checks the
+        // attach APN checkbox then the APN type error message should be shown.
+        return enabledDefaultApns.length === 0 && this.isAttachApnType_;
+      case ApnDetailDialogMode.EDIT:
+        // If there is an enabled default APN other than the current one being
+        // edited, then the APN type error message should not be shown.
+        if (enabledDefaultApns.some(apn => apn.id !== this.apnProperties.id)) {
+          return false;
+        }
+        // The APN being edited is the only enabled default APN and the user
+        // unchecks the default checkbox and checks the attach checkbox then
+        // the APN type error message should be shown.
+        if (this.isAttachApnType_) {
+          return true;
+        }
+        // The APN being edited is the only enabled default APN but there are
+        // other enabled attach APNs and the user unchecks the default
+        // checkbox.
+        if (enabledAttachApns.some(apn => apn.id !== this.apnProperties.id)) {
+          return true;
+        }
+    }
+    return false;
   }
 
   /** @private */
@@ -398,7 +458,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       case UiElement.INPUT:
         return this.mode === ApnDetailDialogMode.VIEW;
       case UiElement.ACTION_BUTTON:
-        return this.apn_.length === 0 || this.isApnInputInvalid_;
+        return this.apn_.length === 0 || this.isApnInputInvalid_ ||
+            this.shouldShowApnTypeErrorMessage_ ||
+            (!this.isDefaultApnType_ && !this.isAttachApnType_);
     }
     return false;
   }

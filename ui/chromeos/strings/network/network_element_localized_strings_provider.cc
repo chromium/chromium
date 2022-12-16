@@ -327,6 +327,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APN_DIALOG_APN_TYPE_DEFAULT_CHECKBOX},
       {"apnDetailApnTypeAttach",
        IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX},
+      {"apnDetailDefaultApnRequired",
+       IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED},
       {"apnDetailIpType", IDS_SETTINGS_APN_DIALOG_IP_TYPE_LABEL},
       {"apnDetailAuthType", IDS_SETTINGS_APN_DIALOG_AUTH_TYPE_LABEL},
       {"apnDetailTypeAuto", IDS_SETTINGS_APN_DIALOG_AUTO},

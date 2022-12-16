@@ -182,6 +182,14 @@ export class ApnList extends ApnListBase {
   onApnDetailDialogClose_(event) {
     this.shouldShowApnDetailDialog_ = false;
   }
+
+  /**
+   * @returns {Array<ApnProperties>}
+   * @private
+   */
+  getCustomApns_() {
+    return this.managedCellularProperties.customApnList ?? [];
+  }
 }
 
 customElements.define(ApnList.is, ApnList);

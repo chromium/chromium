@@ -9,7 +9,7 @@ import {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_
 import {ApnDetailDialogMode} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnType, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -24,6 +24,7 @@ const TEST_APN = {
   authenticationType: ApnAuthenticationType.kAutomatic,
   ipType: ApnIpType.kAutomatic,
   apnTypes: [ApnType.kDefault],
+  state: ApnState.kEnabled,
 };
 
 suite('ApnDetailDialog', function() {
@@ -65,7 +66,7 @@ suite('ApnDetailDialog', function() {
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     apnDetailDialog = document.createElement('apn-detail-dialog');
     apnDetailDialog.guid = 'fake-guid';
-
+    apnDetailDialog.apnList = [TEST_APN];
     document.body.appendChild(apnDetailDialog);
     await flushTasks();
   });
@@ -91,8 +92,10 @@ suite('ApnDetailDialog', function() {
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#passwordInput'));
 
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#authTypeDropDown'));
-    assertTrue(
-        !!apnDetailDialog.shadowRoot.querySelector('#apnDefaultTypeCheckbox'));
+    const defaultTypeCheckbox =
+        apnDetailDialog.shadowRoot.querySelector('#apnDefaultTypeCheckbox');
+    assertTrue(!!defaultTypeCheckbox);
+    assertTrue(defaultTypeCheckbox.checked);
     assertTrue(
         !!apnDetailDialog.shadowRoot.querySelector('#apnAttachTypeCheckbox'));
     assertTrue(!!apnDetailDialog.shadowRoot.querySelector('#ipTypeDropDown'));
@@ -278,9 +281,115 @@ suite('ApnDetailDialog', function() {
     assertTrue(!!actionButton.disabled);
   });
 
+  test('Apn types are correctly validated in all modes', async () => {
+    const updateApnTypeCheckboxes = (defaultType, attachType) => {
+      apnDetailDialog.$.apnDefaultTypeCheckbox.checked = defaultType;
+      apnDetailDialog.$.apnAttachTypeCheckbox.checked = attachType;
+    };
+    await toggleAdvancedSettings();
+    const getDefaultApnInfo = () => {
+      return apnDetailDialog.shadowRoot.querySelector(
+          '#defaultApnRequiredInfo');
+    };
+
+    TEST_APN.id = '1';
+    const currentApn = /** @type {ApnProperties} */ ({});
+    Object.assign(currentApn, TEST_APN);
+    currentApn.id = '2';
+    apnDetailDialog.apnList = [TEST_APN, currentApn];
+    apnDetailDialog.apnProperties = currentApn;
+
+    const actionButton =
+        apnDetailDialog.shadowRoot.querySelector('#apnDetailActionBtn');
+    apnDetailDialog.$.apnInput.value = 'valid_name';
+
+    // CREATE mode tests
+    apnDetailDialog.mode = ApnDetailDialogMode.CREATE;
+    TEST_APN.state = ApnState.kDisabled;
+    apnDetailDialog.apnList = [TEST_APN];
+
+    // Case: Default APN type is checked
+    updateApnTypeCheckboxes(/* default= */ true, /* attach= */ false);
+    await flushTasks();
+    assertFalse(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Case: No enabled default APNs, default unchecked and attach is checked.
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ true);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertTrue(!!getDefaultApnInfo());
+
+    // Case: No enabled default APNs and both unchecked.
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ false);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Case: Enabled default APNs, default unchecked and attach is checked.
+    TEST_APN.state = ApnState.kEnabled;
+    apnDetailDialog.apnList = [TEST_APN];
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ true);
+    await flushTasks();
+    assertFalse(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Case: Enabled default APNs and both unchecked.
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ false);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Edit mode tests
+    apnDetailDialog.mode = ApnDetailDialogMode.EDIT;
+    TEST_APN.apnTypes = [ApnType.kAttach];
+    currentApn.apnTypes = [ApnType.kDefault, ApnType.kAttach];
+    apnDetailDialog.apnList = [TEST_APN, currentApn];
+
+    // Case: Default APN type is checked
+    updateApnTypeCheckboxes(/* default= */ true, /* attach= */ false);
+    await flushTasks();
+    assertFalse(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Case: User unchecks the default checkbox, APN being modified is the
+    // only default APN
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ true);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertTrue(!!getDefaultApnInfo());
+
+    // Case: User unchecks both checkboxes, APN being modified is the
+    // only enabled default APN but there are other enabled attach APNs.
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ false);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertTrue(!!getDefaultApnInfo());
+
+    // Case: User unchecks both checkboxes, APN being modified is the
+    // only enabled default APN and is the only enabled attachApn.
+    currentApn.apnTypes = [ApnType.kDefault, ApnType.kAttach];
+    apnDetailDialog.apnList = [currentApn];
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ false);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertFalse(!!getDefaultApnInfo());
+
+    // Case: User unchecks default APN type checkbox and checks the attach
+    // APN type checkbox, APN being modified is the only enabled default APN
+    // and there are no other enabled attach type APNs.
+    currentApn.apnTypes = [ApnType.kDefault];
+    apnDetailDialog.apnList = [currentApn];
+    updateApnTypeCheckboxes(/* default= */ false, /* attach= */ true);
+    await flushTasks();
+    assertTrue(actionButton.disabled);
+    assertTrue(!!getDefaultApnInfo());
+  });
+
   test('Setting mode to edit changes buttons and fields', async () => {
     const apnWithId = TEST_APN;
     apnWithId.id = '1';
+    apnWithId.apnTypes = [ApnType.kDefault];
     apnDetailDialog.mode = ApnDetailDialogMode.EDIT;
     apnDetailDialog.apnProperties = apnWithId;
     await flushTasks();

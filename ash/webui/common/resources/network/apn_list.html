@@ -50,6 +50,7 @@
 
 <template is="dom-if" if="[[shouldShowApnDetailDialog_]]" restamp>
   <apn-detail-dialog id="apnDetailDialog"
+      apn-list="[[getCustomApns_(managedCellularProperties)]]"
       on-close="onApnDetailDialogClose_">
   </apn-detail-dialog>
 </template>

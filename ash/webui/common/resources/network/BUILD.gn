@@ -130,6 +130,7 @@ js_library("apn_detail_dialog") {
     "//ash/webui/common/resources/network:cellular_utils",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [

@@ -182,5 +182,57 @@ suite('ApnListTest', function() {
         assertEquals(ApnDetailDialogMode.CREATE, getApnDetailDialog().mode);
         assertEquals(apnList.guid, getApnDetailDialog().guid);
         assertFalse(!!getApnDetailDialog().apnProperties);
+        assertTrue(!!getApnDetailDialog().shadowRoot.querySelector(
+            '#apnDetailCancelBtn'));
+        getApnDetailDialog()
+            .shadowRoot.querySelector('#apnDetailCancelBtn')
+            .click();
       });
+
+  test('APN detail dialog has the correct list', async () => {
+    const getApnDetailDialog = () =>
+        apnList.shadowRoot.querySelector('apn-detail-dialog');
+    apnList.guid = 'fake-guid';
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: [customApn1],
+    };
+    await flushTasks();
+    apnList.openApnDetailDialogInCreateMode();
+    await flushTasks();
+
+    assertTrue(!!getApnDetailDialog());
+    assertTrue(!!getApnDetailDialog().apnList);
+    assertTrue(getApnDetailDialog().apnList.length === 1);
+    assertTrue(OncMojo.apnMatch(getApnDetailDialog().apnList[0], customApn1));
+
+    // Case: Custom APN list is undefined
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: undefined,
+    };
+    assertTrue(!!getApnDetailDialog().apnList);
+    assertTrue(getApnDetailDialog().apnList.length === 0);
+    assertTrue(
+        !!getApnDetailDialog().shadowRoot.querySelector('#apnDetailCancelBtn'));
+    getApnDetailDialog()
+        .shadowRoot.querySelector('#apnDetailCancelBtn')
+        .click();
+
+    // Case: Custom APN list has 2 items
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: [customApn1, customApn2],
+    };
+    assertTrue(!!getApnDetailDialog().apnList);
+    assertTrue(getApnDetailDialog().apnList.length === 2);
+    assertTrue(OncMojo.apnMatch(getApnDetailDialog().apnList[0], customApn1));
+    assertTrue(OncMojo.apnMatch(getApnDetailDialog().apnList[1], customApn2));
+
+    assertTrue(
+        !!getApnDetailDialog().shadowRoot.querySelector('#apnDetailCancelBtn'));
+    getApnDetailDialog()
+        .shadowRoot.querySelector('#apnDetailCancelBtn')
+        .click();
+  });
 });
