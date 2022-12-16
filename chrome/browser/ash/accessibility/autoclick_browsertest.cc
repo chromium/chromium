@@ -335,24 +335,6 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
   EXPECT_GT(timer.Elapsed().InMilliseconds(), 500);
 }
 
-// TODO(crbug.com/1401529): Flaky.
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DISABLED_ShortDelay) {
-  SetAutoclickDelayMs(5);
-  LoadURLAndAutoclick(R"(
-        data:text/html;charset=utf-8,
-        <input type="button" id="test_button"
-               onclick="window.open();" value="click me">
-      )");
-
-  ui_test_utils::TabAddedWaiter tab_waiter(browser());
-  base::ElapsedTimer timer;
-  HoverOverHtmlElement("test_button");
-  tab_waiter.Wait();
-  // Seems to take around 100 ms, so let's check 500 ms to be safe.
-  EXPECT_LT(timer.Elapsed().InMilliseconds(), 500);
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
-}
-
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, PauseAutoclick) {
   SetAutoclickDelayMs(5);
   LoadURLAndAutoclick(R"(
