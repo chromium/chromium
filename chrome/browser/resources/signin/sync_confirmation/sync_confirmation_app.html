@@ -2,7 +2,12 @@
   :host {
     --banner-size: auto;
     --footer-margin: 24px;
-    --tangible-sync-illustration-url: url(./images/tangible_sync_illustration.svg);
+    --tangible-sync-dialog-illustration-url:
+        url(./images/tangible_sync_dialog_illustration.svg);
+    --tangible-sync-window-left-illustration-url:
+        url(./images/tangible_sync_window_left_illustration.svg);
+    --tangible-sync-window-right-illustration-url:
+        url(./images/tangible_sync_window_right_illustration.svg);
     --sync-benefits-list-color: var(--google-grey-50);
     --sync-benefit-icon-color: var(--google-blue-600);
     --sync-info-title-color: var(--google-grey-800);
@@ -346,8 +351,8 @@
     margin: 0 38px;
   }
 
-  #tangible-sync-illustration {
-    content: var(--tangible-sync-illustration-url);
+  #tangible-sync-dialog-illustration {
+    content: var(--tangible-sync-dialog-illustration-url);
     height: 68px;
     left: 50%;
     position: absolute;
@@ -356,10 +361,27 @@
     width: 328px;
   }
 
+  #tangible-sync-window-left-illustration {
+    content: var(--tangible-sync-window-left-illustration-url);
+    left: 0;
+  }
+
+  #tangible-sync-window-right-illustration {
+    content: var(--tangible-sync-window-right-illustration-url);
+    right: 0;
+  }
+
+  .tangible-sync-window-illustration {
+    max-width: 320px;
+    position: absolute;
+    top: 0;
+    width: 17vw;
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
-      --tangible-sync-illustration-url:
-          url(./images/tangible_sync_illustration_dark.svg);
+      --tangible-sync-dialog-illustration-url:
+          url(./images/tangible_sync_dialog_illustration_dark.svg);
       --sync-benefits-list-color: var(--google-grey-800);
       --sync-benefit-icon-color: var(--google-blue-300);
       --sync-info-title-color: var(--google-grey-500);
@@ -518,7 +540,11 @@
 </template>
 
 <template is="dom-if" if="[[isTangibleSync_]]">
-  <img id="tangible-sync-illustration">
+  <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
+  <img id="tangible-sync-window-left-illustration"
+      class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
+  <img id="tangible-sync-window-right-illustration"
+      class="tangible-sync-window-illustration" hidden="[[isModalDialog_]]">
   <div id="contentContainer" class="tangible-sync">
     <div id="avatarContainer">
       <img id="avatar" alt="" src="[[accountImageSrc_]]">

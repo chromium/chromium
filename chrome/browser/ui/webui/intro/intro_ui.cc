@@ -12,6 +12,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -60,6 +61,18 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
   source->AddResourcePath("product-logo-animation.svg",
                           IDR_PRODUCT_LOGO_ANIMATION_SVG);
+  source->AddResourcePath(
+      "left_illustration.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
+  source->AddResourcePath(
+      "left_illustration_dark.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_DARK_SVG);
+  source->AddResourcePath(
+      "right_illustration.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
+  source->AddResourcePath(
+      "right_illustration_dark.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
 
   // Unretained ok: `this` owns the handler.
   web_ui->AddMessageHandler(std::make_unique<IntroHandler>(base::BindRepeating(
