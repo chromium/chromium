@@ -21535,6 +21535,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileWebContextMenuOpenTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Recorded when user opens a Tab from a context menu. This include: Page link,
+    History, Bookmark, Reading list, Suggestion from NTP (Regular + incognito).
+  </description>
+</action>
+
 <action name="MobileWebContextMenuReadLater">
   <owner>gambard@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>

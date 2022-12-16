@@ -111,6 +111,11 @@ class GURL;
 // Invokes the given `completion` block after execution.
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block;
 
+// Updates the given `ProceduralBlock` to record the
+// `MobileWebContextMenuOpenTab` user action.
+- (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
+    (ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_
