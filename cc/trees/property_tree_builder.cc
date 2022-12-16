@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -58,10 +59,10 @@ class PropertyTreeBuilderContext {
         root_layer_(layer_tree_host->root_layer()),
         mutator_host_(*layer_tree_host->mutator_host()),
         property_trees_(*layer_tree_host->property_trees()),
-        transform_tree_(property_trees_.transform_tree_mutable()),
-        clip_tree_(property_trees_.clip_tree_mutable()),
-        effect_tree_(property_trees_.effect_tree_mutable()),
-        scroll_tree_(property_trees_.scroll_tree_mutable()) {}
+        transform_tree_(property_trees_->transform_tree_mutable()),
+        clip_tree_(property_trees_->clip_tree_mutable()),
+        effect_tree_(property_trees_->effect_tree_mutable()),
+        scroll_tree_(property_trees_->scroll_tree_mutable()) {}
 
   void BuildPropertyTrees();
 
@@ -96,18 +97,18 @@ class PropertyTreeBuilderContext {
 
   raw_ptr<LayerTreeHost> layer_tree_host_;
   raw_ptr<Layer> root_layer_;
-  MutatorHost& mutator_host_;
-  PropertyTrees& property_trees_;
+  const raw_ref<MutatorHost> mutator_host_;
+  const raw_ref<PropertyTrees> property_trees_;
 
   // Ordinarily, it would not be OK to store references to these instances,
   // because doing so evades the protections of ProtectedSequenceSynchronizer.
   // It's permitted in this case because PropertyTreeBuilderContext is only ever
   // allocated on the stack, and it cannot initiate a protected sequence (by
   // calling into LayerTreeHost::WillCommit).
-  TransformTree& transform_tree_;
-  ClipTree& clip_tree_;
-  EffectTree& effect_tree_;
-  ScrollTree& scroll_tree_;
+  const raw_ref<TransformTree> transform_tree_;
+  const raw_ref<ClipTree> clip_tree_;
+  const raw_ref<EffectTree> effect_tree_;
+  const raw_ref<ScrollTree> scroll_tree_;
 };
 
 // Methods to query state from the AnimationHost ----------------------
@@ -226,7 +227,7 @@ void PropertyTreeBuilderContext::AddClipNodeIfNeeded(
     node.transform_id = created_transform_node
                             ? data_for_children->transform_tree_parent
                             : data_from_ancestor.transform_tree_parent;
-    data_for_children->clip_tree_parent = clip_tree_.Insert(node, parent_id);
+    data_for_children->clip_tree_parent = clip_tree_->Insert(node, parent_id);
   }
 
   layer->SetHasClipNode(requires_node);
@@ -250,19 +251,19 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
       !layer->transform().IsIdentityOr2DTranslation();
 
   const bool has_potentially_animated_transform =
-      HasPotentiallyRunningTransformAnimation(mutator_host_, layer);
+      HasPotentiallyRunningTransformAnimation(*mutator_host_, layer);
 
   // A transform node is needed even for a finished animation, since differences
   // in the timing of animation state updates can mean that an animation that's
   // in the Finished state at tree-building time on the main thread is still in
   // the Running state right after commit on the compositor thread.
   const bool has_any_transform_animation = HasAnyAnimationTargetingProperty(
-      mutator_host_, layer, TargetProperty::TRANSFORM);
-  DCHECK(!HasAnyAnimationTargetingProperty(mutator_host_, layer,
+      *mutator_host_, layer, TargetProperty::TRANSFORM);
+  DCHECK(!HasAnyAnimationTargetingProperty(*mutator_host_, layer,
                                            TargetProperty::SCALE) &&
-         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+         !HasAnyAnimationTargetingProperty(*mutator_host_, layer,
                                            TargetProperty::ROTATE) &&
-         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+         !HasAnyAnimationTargetingProperty(*mutator_host_, layer,
                                            TargetProperty::TRANSLATE))
       << "individual transform properties only supported in layer lists mode";
 
@@ -291,15 +292,15 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
     return false;
   }
 
-  transform_tree_.Insert(TransformNode(), parent_index);
-  TransformNode* node = transform_tree_.back();
+  transform_tree_->Insert(TransformNode(), parent_index);
+  TransformNode* node = transform_tree_->back();
   layer->SetTransformTreeIndex(node->id);
   data_for_children->transform_tree_parent = node->id;
 
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this transform node.
   if (layer->element_id()) {
-    transform_tree_.SetElementIdForNodeId(node->id, layer->element_id());
+    transform_tree_->SetElementIdForNodeId(node->id, layer->element_id());
     node->element_id = layer->element_id();
   }
 
@@ -312,8 +313,8 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
     DCHECK(parent_offset.IsZero());
     DCHECK(layer->transform().IsIdentity());
 
-    transform_tree_.SetRootScaleAndTransform(
-        transform_tree_.device_scale_factor(), gfx::Transform());
+    transform_tree_->SetRootScaleAndTransform(
+        transform_tree_->device_scale_factor(), gfx::Transform());
   } else {
     node->local = layer->transform();
     node->origin = layer->transform_origin();
@@ -322,13 +323,13 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   }
 
   node->has_potential_animation = has_potentially_animated_transform;
-  node->is_currently_animating = TransformIsAnimating(mutator_host_, layer);
-  node->maximum_animation_scale = MaximumAnimationScale(mutator_host_, layer);
+  node->is_currently_animating = TransformIsAnimating(*mutator_host_, layer);
+  node->maximum_animation_scale = MaximumAnimationScale(*mutator_host_, layer);
 
   node->scroll_offset = layer->scroll_offset();
 
   node->needs_local_transform_update = true;
-  transform_tree_.UpdateTransforms(node->id);
+  transform_tree_->UpdateTransforms(node->id);
 
   layer->SetOffsetToTransformParent(gfx::Vector2dF());
 
@@ -453,16 +454,16 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   const bool is_root = !layer->parent();
   const bool has_transparency = layer->EffectiveOpacity() != 1.f;
   const bool has_potential_opacity_animation =
-      HasPotentialOpacityAnimation(mutator_host_, layer);
+      HasPotentialOpacityAnimation(*mutator_host_, layer);
   const bool has_potential_filter_animation =
-      HasPotentiallyRunningFilterAnimation(mutator_host_, layer);
+      HasPotentiallyRunningFilterAnimation(*mutator_host_, layer);
 
   data_for_children->animation_axis_aligned_since_render_target &=
-      AnimationsPreserveAxisAlignment(mutator_host_, layer);
+      AnimationsPreserveAxisAlignment(*mutator_host_, layer);
   data_for_children->compound_transform_since_render_target *=
       layer->transform();
   auto render_surface_reason = ComputeRenderSurfaceReason(
-      mutator_host_, layer,
+      *mutator_host_, layer,
       data_for_children->compound_transform_since_render_target,
       data_for_children->animation_axis_aligned_since_render_target);
   bool should_create_render_surface =
@@ -471,7 +472,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   bool not_axis_aligned_since_last_clip =
       data_from_ancestor.not_axis_aligned_since_last_clip
           ? true
-          : !AnimationsPreserveAxisAlignment(mutator_host_, layer) ||
+          : !AnimationsPreserveAxisAlignment(*mutator_host_, layer) ||
                 !layer->transform().Preserves2dAxisAlignment();
   // A non-axis aligned clip may need a render surface. So, we create an effect
   // node.
@@ -491,8 +492,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
     return false;
   }
 
-  int node_id = effect_tree_.Insert(EffectNode(), parent_id);
-  EffectNode* node = effect_tree_.back();
+  int node_id = effect_tree_->Insert(EffectNode(), parent_id);
+  EffectNode* node = effect_tree_->back();
 
   node->stable_id = layer->id();
   node->opacity = layer->opacity();
@@ -531,8 +532,9 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->has_potential_filter_animation = has_potential_filter_animation;
   node->subtree_hidden = layer->hide_layer_and_subtree();
   node->is_currently_animating_opacity =
-      OpacityIsAnimating(mutator_host_, layer);
-  node->is_currently_animating_filter = FilterIsAnimating(mutator_host_, layer);
+      OpacityIsAnimating(*mutator_host_, layer);
+  node->is_currently_animating_filter =
+      FilterIsAnimating(*mutator_host_, layer);
   node->effect_changed = layer->subtree_property_changed();
   node->subtree_has_copy_request = layer->subtree_has_copy_request();
   node->render_surface_reason = render_surface_reason;
@@ -566,7 +568,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       // In this case, we will create a transform node, so it's safe to use the
       // next available id from the transform tree as this effect node's
       // transform id.
-      node->transform_id = transform_tree_.next_available_id();
+      node->transform_id = transform_tree_->next_available_id();
     }
     node->clip_id = data_from_ancestor.clip_tree_parent;
   } else {
@@ -591,13 +593,13 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   // For animation subsystem purposes, if this layer has a compositor element
   // id, we build a map from that id to this effect node.
   if (layer->element_id()) {
-    effect_tree_.SetElementIdForNodeId(node_id, layer->element_id());
+    effect_tree_->SetElementIdForNodeId(node_id, layer->element_id());
   }
 
   std::vector<std::unique_ptr<viz::CopyOutputRequest>> layer_copy_requests;
   layer->TakeCopyRequests(&layer_copy_requests);
   for (auto& it : layer_copy_requests) {
-    effect_tree_.AddCopyRequest(node_id, std::move(it));
+    effect_tree_->AddCopyRequest(node_id, std::move(it));
   }
   layer_copy_requests.clear();
 
@@ -623,7 +625,7 @@ bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
   }
 
   EffectNode* effect_node =
-      effect_tree_.Node(data_for_children->effect_tree_parent);
+      effect_tree_->Node(data_for_children->effect_tree_parent);
   const bool has_rounded_corner =
       effect_node->mask_filter_info.HasRoundedCorners();
   const bool has_gradient_mask =
@@ -691,18 +693,18 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
     node.transform_id = data_for_children->transform_tree_parent;
     node.is_composited = true;
 
-    node_id = scroll_tree_.Insert(node, parent_id);
+    node_id = scroll_tree_->Insert(node, parent_id);
     data_for_children->scroll_tree_parent = node_id;
 
     // For animation subsystem purposes, if this layer has a compositor element
     // id, we build a map from that id to this scroll node.
     if (layer->element_id()) {
-      scroll_tree_.SetElementIdForNodeId(node_id, layer->element_id());
+      scroll_tree_->SetElementIdForNodeId(node_id, layer->element_id());
     }
 
     if (node.scrollable) {
-      scroll_tree_.SetBaseScrollOffset(layer->element_id(),
-                                       layer->scroll_offset());
+      scroll_tree_->SetBaseScrollOffset(layer->element_id(),
+                                        layer->scroll_offset());
     }
   }
 
@@ -724,7 +726,7 @@ void SetSafeOpaqueBackgroundColor(const DataForRecursion& data_from_ancestor,
 void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
     Layer* layer,
     const DataForRecursion& data_from_parent) const {
-  layer->set_property_tree_sequence_number(property_trees_.sequence_number());
+  layer->set_property_tree_sequence_number(property_trees_->sequence_number());
 
   DataForRecursion data_for_children(data_from_parent);
   *data_for_children.subtree_has_rounded_corner = false;
@@ -746,7 +748,7 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
   bool not_axis_aligned_since_last_clip =
       data_from_parent.not_axis_aligned_since_last_clip
           ? true
-          : !AnimationsPreserveAxisAlignment(mutator_host_, layer) ||
+          : !AnimationsPreserveAxisAlignment(*mutator_host_, layer) ||
                 !layer->transform().Preserves2dAxisAlignment();
   bool has_non_axis_aligned_clip =
       not_axis_aligned_since_last_clip && LayerClipsSubtree(layer);
@@ -770,18 +772,18 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
 }
 
 void PropertyTreeBuilderContext::BuildPropertyTrees() {
-  property_trees_.set_is_main_thread(true);
-  property_trees_.set_is_active(false);
+  property_trees_->set_is_main_thread(true);
+  property_trees_->set_is_active(false);
 
   UpdateSubtreeHasCopyRequestRecursive(root_layer_);
 
-  if (!property_trees_.needs_rebuild()) {
-    clip_tree_.SetViewportClip(
+  if (!property_trees_->needs_rebuild()) {
+    clip_tree_->SetViewportClip(
         gfx::RectF(layer_tree_host_->device_viewport_rect()));
     // SetRootScaleAndTransform will be incorrect if the root layer has
     // non-zero position, so ensure it is zero.
     DCHECK(root_layer_->position().IsOrigin());
-    transform_tree_.SetRootScaleAndTransform(
+    transform_tree_->SetRootScaleAndTransform(
         layer_tree_host_->device_scale_factor(), gfx::Transform());
     return;
   }
@@ -805,14 +807,14 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
           ? layer_tree_host_->background_color()
           : layer_tree_host_->background_color().makeOpaque();
 
-  property_trees_.clear();
-  transform_tree_.set_device_scale_factor(
+  property_trees_->clear();
+  transform_tree_->set_device_scale_factor(
       layer_tree_host_->device_scale_factor());
   ClipNode root_clip;
   root_clip.clip = gfx::RectF(layer_tree_host_->device_viewport_rect());
   root_clip.transform_id = kRootPropertyNodeId;
   data_for_recursion.clip_tree_parent =
-      clip_tree_.Insert(root_clip, kRootPropertyNodeId);
+      clip_tree_->Insert(root_clip, kRootPropertyNodeId);
 
   bool subtree_has_rounded_corner;
   data_for_recursion.subtree_has_rounded_corner = &subtree_has_rounded_corner;
@@ -820,14 +822,14 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.subtree_has_gradient_mask = &subtree_has_gradient_mask;
 
   BuildPropertyTreesInternal(root_layer_, data_for_recursion);
-  property_trees_.set_needs_rebuild(false);
+  property_trees_->set_needs_rebuild(false);
 
   // The transform tree is kept up to date as it is built, but the
   // combined_clips stored in the clip tree and the screen_space_opacity and
   // is_drawn in the effect tree aren't computed during tree building.
-  transform_tree_.set_needs_update(false);
-  clip_tree_.set_needs_update(true);
-  effect_tree_.set_needs_update(true);
+  transform_tree_->set_needs_update(false);
+  clip_tree_->set_needs_update(true);
+  effect_tree_->set_needs_update(true);
 }
 
 }  // namespace
