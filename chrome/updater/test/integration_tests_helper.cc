@@ -357,9 +357,8 @@ class TersePrinter : public EmptyTestEventListener {
 
   // Called after all test activities have ended.
   void OnTestProgramEnd(const UnitTest& unit_test) override {
-    std::cout << "Command " << (unit_test.Passed() ? "SUCCEEDED" : "FAILED")
-              << "." << std::endl
-              << std::flush;
+    VLOG(0) << "Command " << (unit_test.Passed() ? "SUCCEEDED" : "FAILED")
+            << ".";
   }
 
   // Called before a test starts.
@@ -367,12 +366,15 @@ class TersePrinter : public EmptyTestEventListener {
 
   // Called after a failed assertion or a SUCCEED() invocation. Prints a
   // backtrace showing the failure.
-  void OnTestPartResult(const TestPartResult& test_part_result) override {
-    std::cout << (test_part_result.failed() ? "*** Failure" : "Success")
-              << " in : " << test_part_result.file_name() << ":"
-              << test_part_result.line_number() << std::endl
-              << test_part_result.message() << std::endl
-              << std::flush;
+  void OnTestPartResult(const TestPartResult& result) override {
+    if (!result.failed()) {
+      return;
+    }
+    logging::LogMessage(result.file_name(), result.line_number(),
+                        logging::LOGGING_ERROR)
+            .stream()
+        << "*** Failure" << std::endl
+        << result.message();
   }
 
   // Called after a test ends.
