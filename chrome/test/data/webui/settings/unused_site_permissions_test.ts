@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
@@ -45,6 +46,24 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     }
   }
 
+  function assertEqualsMockData(siteList: UnusedSitePermissions[]) {
+    // |siteList| coming from WebUI may have the additional property |visible|,
+    // so assertDeepEquals doesn't work to compare it with |mockData|. We care
+    // about origins and associated permissions being equal.
+    assertEquals(siteList.length, mockData.length);
+    for (const [i, site] of siteList.entries()) {
+      assertEquals(site!.origin, mockData[i]!.origin);
+      assertDeepEquals(site!.permissions, mockData[i]!.permissions);
+    }
+  }
+
+  function assertInitialUi() {
+    const expectedSiteCount = mockData.length;
+    assertEquals(getSiteList().length, expectedSiteCount);
+    assertAnimation(new Array(expectedSiteCount).fill(false));
+    assertToast(false);
+  }
+
   /** Assert visibility and content of the undo toast. */
   function assertToast(shouldBeOpen: boolean, expectedText?: string) {
     const undoToast = testElement.shadowRoot!.querySelector('cr-toast')!;
@@ -61,6 +80,11 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     const button = testElement.shadowRoot!.querySelector(
                        '.bulk-action-button') as HTMLElement;
     button.click();
+  }
+
+  function clickUndo() {
+    testElement.shadowRoot!.querySelector(
+                               'cr-toast')!.querySelector('cr-button')!.click();
   }
 
   function getSiteList() {
@@ -81,6 +105,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     browserProxy.setUnusedSitePermissions(mockData);
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
     await createPage();
+    assertInitialUi();
   });
 
   test('Unused Site Permission strings', function() {
@@ -153,11 +178,6 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
 
   test('Allow Again Click', async function() {
     const siteList = getSiteList();
-
-    assertEquals(siteList.length, 4);
-    assertAnimation([false, false, false, false]);
-    assertToast(false);
-
     siteList[0]!.querySelector('cr-icon-button')!.click();
 
     assertAnimation([true, false, false, false]);
@@ -169,10 +189,35 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     assertEquals(unusedSitePermissions.origin, expectedOrigin);
     assertDeepEquals(
         unusedSitePermissions.permissions, mockData[0]!.permissions);
-    // Ensure the toast text is correct.
-    const expectedToastText = testElement.i18n(
-        'safetyCheckUnusedSitePermissionsToastLabel', expectedOrigin);
-    assertToast(true, expectedToastText);
+  });
+
+  test('Undo Allow Again', async function() {
+    for (const [i, site] of getSiteList().entries()) {
+      browserProxy.resetResolver('undoAllowPermissionsAgainForUnusedSite');
+      site!.querySelector('cr-icon-button')!.click();
+      const expectedAnimation = [false, false, false, false];
+      expectedAnimation[i] = true;
+      const expectedOrigin =
+          site!.querySelector('.site-representation')!.textContent!.trim();
+
+      assertAnimation(expectedAnimation);
+      // Ensure the toast behaves correctly.
+      const expectedToastText = testElement.i18n(
+          'safetyCheckUnusedSitePermissionsToastLabel', expectedOrigin);
+      assertToast(true, expectedToastText);
+      // Ensure proxy call for undo is sent correctly.
+      clickUndo();
+      const [unusedSitePermissions] = await browserProxy.whenCalled(
+          'undoAllowPermissionsAgainForUnusedSite');
+      assertEquals(unusedSitePermissions.origin, expectedOrigin);
+      assertDeepEquals(
+          unusedSitePermissions.permissions, mockData[i]!.permissions);
+      // UI should be back to its initial state.
+      webUIListenerCallback(
+          'unused-permission-review-list-maybe-changed', mockData);
+      flush();
+      assertInitialUi();
+    }
   });
 
   test('Got It Click', async function() {
@@ -182,19 +227,29 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const [unusedSitePermissionsList] = await browserProxy.whenCalled(
         'acknowledgeRevokedUnusedSitePermissionsList');
-    // |unusedSitePermissionsList| has the additional property |visible|, so
-    // assertDeepEquals doesn't work to compare it with |mockData|.
-    assertEquals(unusedSitePermissionsList.length, mockData.length);
-    for (let i = 0; i < unusedSitePermissionsList.length; ++i) {
-      assertEquals(unusedSitePermissionsList[i].origin, mockData[i]!.origin);
-      assertDeepEquals(
-          unusedSitePermissionsList[i].permissions, mockData[i]!.permissions);
-    }
+    assertEqualsMockData(unusedSitePermissionsList);
+  });
+
+  test('Undo Got It', async function() {
+    clickGotIt();
+    // Ensure the toast behaves correctly.
+    const expectedToastText =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsToastBulkLabel', mockData.length);
+    assertToast(true, expectedToastText);
+    // Ensure proxy call is sent correctly for undo.
+    clickUndo();
+    const [unusedSitePermissionsList] = await browserProxy.whenCalled(
+        'undoAcknowledgeRevokedUnusedSitePermissionsList');
+    assertEqualsMockData(unusedSitePermissionsList);
+    // UI should be back to its initial state.
+    webUIListenerCallback(
+        'unused-permission-review-list-maybe-changed', mockData);
+    assertInitialUi();
   });
 
   test('Got It Toast Strings', async function() {
     // Check plural version of the string.
-    assertToast(false);
     clickGotIt();
     await flushTasks();
     const expectedPluralToastText =

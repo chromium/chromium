@@ -42,6 +42,21 @@ export interface SiteSettingsPermissionsBrowserProxy {
    * Gets the unused origins along with the permissions they have been granted.
    */
   getRevokedUnusedSitePermissionsList(): Promise<UnusedSitePermissions[]>;
+
+  /**
+   * Reverse the changes made by |acknowledgeRevokedUnusedSitePermissionsList|.
+   * The list of sites will be presented again to the user for review.
+   */
+  undoAcknowledgeRevokedUnusedSitePermissionsList(
+      unusedSitePermissionsList: UnusedSitePermissions[]): void;
+
+  /**
+   * Reverse the changes made by |allowPermissionsAgainForUnusedSite|. This will
+   * revoke the origin's permissions, re-enable auto-revocation for this origin,
+   * and the entry will be visible again in the UI.
+   */
+  undoAllowPermissionsAgainForUnusedSite(unusedSitePermissions:
+                                             UnusedSitePermissions): void;
 }
 
 export class SiteSettingsPermissionsBrowserProxyImpl implements
@@ -60,6 +75,19 @@ export class SiteSettingsPermissionsBrowserProxyImpl implements
 
   getRevokedUnusedSitePermissionsList() {
     return sendWithPromise('getRevokedUnusedSitePermissionsList');
+  }
+
+  undoAcknowledgeRevokedUnusedSitePermissionsList(unusedSitePermissionsList:
+                                                      UnusedSitePermissions[]) {
+    chrome.send(
+        'undoAcknowledgeRevokedUnusedSitePermissionsList',
+        [unusedSitePermissionsList]);
+  }
+
+  undoAllowPermissionsAgainForUnusedSite(unusedSitePermissions:
+                                             UnusedSitePermissions) {
+    chrome.send(
+        'undoAllowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
   }
 
   static getInstance(): SiteSettingsPermissionsBrowserProxy {

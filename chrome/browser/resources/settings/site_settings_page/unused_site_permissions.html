@@ -50,5 +50,7 @@
 </template>
 <cr-toast id="undoToast" duration="5000">
   <div>[[toastText_]]</div>
-  <cr-button>$i18n{safetyCheckUnusedSitePermissionsUndoLabel}</cr-button>
+  <cr-button on-click="onUndoClick_">
+    $i18n{safetyCheckUnusedSitePermissionsUndoLabel}
+  </cr-button>
 </cr-toast>

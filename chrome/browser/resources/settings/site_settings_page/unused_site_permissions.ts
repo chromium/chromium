@@ -18,7 +18,7 @@ import './site_review_shared.css.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -34,6 +34,12 @@ export interface SettingsUnusedSitePermissionsElement {
   $: {
     undoToast: CrToastElement,
   };
+}
+
+/** Actions the user can perform to review their unused site permissions. */
+enum Action {
+  ALLOW_AGAIN = 'allow_again',
+  GOT_IT = 'got_it',
 }
 
 /**
@@ -61,6 +67,27 @@ export class SettingsUnusedSitePermissionsElement extends
     return {
       /* The string for the primary header label. */
       headerString_: String,
+
+      /** Most recent site permissions the user has allowed again. */
+      lastUnusedSitePermissionsAllowedAgain_: {
+        type: Object,
+        value: null,
+      },
+
+      /** Most recent site permissions list the user has acknowledged. */
+      lastUnusedSitePermissionsListAcknowledged_: {
+        type: Array,
+        value: null,
+      },
+
+      /**
+       * Last action the user has taken, determines the function of the undo
+       * button in the toast.
+       */
+      lastUserAction_: {
+        type: Action,
+        value: null,
+      },
 
       /**
        * List of unused sites where permissions have been removed. This list
@@ -98,6 +125,10 @@ export class SettingsUnusedSitePermissionsElement extends
   private browserProxy_: SiteSettingsPermissionsBrowserProxy =
       SiteSettingsPermissionsBrowserProxyImpl.getInstance();
   private headerString_: string;
+  private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|null;
+  private lastUnusedSitePermissionsListAcknowledged_: UnusedSitePermissions[]|
+      null;
+  private lastUserAction_: Action|null;
   private modelUpdateDelayMsForTesting_: number|null = null;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
@@ -198,6 +229,9 @@ export class SettingsUnusedSitePermissionsElement extends
   private onAllowAgainClick_(event: DomRepeatEvent<UnusedSitePermissions>) {
     event.stopPropagation();
     const item = event.model.item;
+    this.lastUserAction_ = Action.ALLOW_AGAIN;
+    this.lastUnusedSitePermissionsAllowedAgain_ = item;
+
     this.showUndoToast_(
         this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin));
     this.hideItem_(item.origin);
@@ -210,6 +244,8 @@ export class SettingsUnusedSitePermissionsElement extends
   private async onGotItClick_(e: Event) {
     e.stopPropagation();
     assert(this.sites_ !== null);
+    this.lastUserAction_ = Action.GOT_IT;
+    this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
 
     this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList(this.sites_);
     const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
@@ -244,6 +280,29 @@ export class SettingsUnusedSitePermissionsElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
+  }
+
+  private onUndoClick_(e: Event) {
+    e.stopPropagation();
+
+    switch (this.lastUserAction_) {
+      case Action.ALLOW_AGAIN:
+        assert(this.lastUnusedSitePermissionsAllowedAgain_ !== null);
+        this.browserProxy_.undoAllowPermissionsAgainForUnusedSite(
+            this.lastUnusedSitePermissionsAllowedAgain_);
+        this.lastUnusedSitePermissionsAllowedAgain_ = null;
+        break;
+      case Action.GOT_IT:
+        assert(this.lastUnusedSitePermissionsListAcknowledged_ !== null);
+        this.browserProxy_.undoAcknowledgeRevokedUnusedSitePermissionsList(
+            this.lastUnusedSitePermissionsListAcknowledged_);
+        this.lastUnusedSitePermissionsListAcknowledged_ = null;
+        break;
+      default:
+        assertNotReached();
+    }
+    this.lastUserAction_ = null;
+    this.$.undoToast.hide();
   }
 
   private showUndoToast_(text: string) {
