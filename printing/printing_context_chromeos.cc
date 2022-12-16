@@ -23,6 +23,7 @@
 #include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/client_info_helpers.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -43,6 +44,27 @@ const char kDocumentNamePlaceholder[] = "-";
 bool IsUriSecure(base::StringPiece uri) {
   return base::StartsWith(uri, "ipps:") || base::StartsWith(uri, "https:") ||
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
+}
+
+// Returns the string representation of `client_infos` in a format suitable to
+// be used as a `cups_option_t` value.
+// `client_infos` represents the 'client-info' IPP attribute. Each item in
+// `client_infos` represents one collection in 'client-info'.
+// Invalid 'client-info' items will be dropped.
+std::string ClientInfoToCupsOptionValue(
+    const std::vector<mojom::IppClientInfo>& client_infos) {
+  // String representation for each client-info item.
+  std::vector<std::string> option_values;
+  option_values.reserve(client_infos.size());
+  for (const mojom::IppClientInfo& client_info : client_infos) {
+    if (auto option_value =
+            ClientInfoCollectionToCupsOptionValue(client_info)) {
+      option_values.emplace_back(option_value.value());
+    } else {
+      LOG(WARNING) << "Invalid client-info item skipped";
+    }
+  }
+  return base::JoinString(option_values, ",");
 }
 
 ScopedCupsOption ConstructOption(std::string name, std::string value) {
@@ -187,6 +209,15 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
   if (!settings.oauth_token().empty()) {
     options.push_back(ConstructOption(kSettingChromeOSAccessOAuthToken,
                                       settings.oauth_token()));
+  }
+
+  // IPP client-info attribute.
+  if (!settings.client_infos().empty()) {
+    std::string option_value =
+        ClientInfoToCupsOptionValue(settings.client_infos());
+    if (!option_value.empty()) {
+      options.push_back(ConstructOption(kIppClientInfo, option_value));
+    }
   }
 
   return options;

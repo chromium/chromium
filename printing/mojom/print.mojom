@@ -170,3 +170,22 @@ struct PageRange {
   uint32 from;
   uint32 to;
 };
+
+// Corresponds to the 'client-info' IPP attribute.
+// For optional fields, missing values correspond to the 'no-value' IPP
+// out-of-band value.
+[Stable, EnableIf=is_chromeos]
+struct IppClientInfo {
+  [Stable, Extensible]
+  enum ClientType {
+    kApplication = 3,
+    kOperatingSystem = 4,
+    kDriver = 5,
+    [Default] kOther = 6,
+  };
+  ClientType client_type;
+  string client_name;
+  string? client_patches;
+  string client_string_version;
+  string? client_version;
+};

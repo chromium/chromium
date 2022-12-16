@@ -28,6 +28,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "print_settings_conversion_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace printing {
 
 namespace {
@@ -124,18 +128,21 @@ PageRanges GetPageRangesFromJobSettings(const base::Value::Dict& job_settings) {
   PageRanges page_ranges;
   const base::Value::List* page_range_array =
       job_settings.FindList(kSettingPageRange);
-  if (!page_range_array)
+  if (!page_range_array) {
     return page_ranges;
+  }
 
   for (const base::Value& page_range : *page_range_array) {
-    if (!page_range.is_dict())
+    if (!page_range.is_dict()) {
       continue;
+    }
 
     const auto& dict = page_range.GetDict();
     absl::optional<int> from = dict.FindInt(kSettingPageRangeFrom);
     absl::optional<int> to = dict.FindInt(kSettingPageRangeTo);
-    if (!from.has_value() || !to.has_value())
+    if (!from.has_value() || !to.has_value()) {
       continue;
+    }
 
     // Page numbers are 1-based in the dictionary.
     // Page numbers are 0-based for the printing context.
@@ -150,16 +157,18 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   auto settings = std::make_unique<PrintSettings>();
   absl::optional<bool> display_header_footer =
       job_settings.FindBool(kSettingHeaderFooterEnabled);
-  if (!display_header_footer.has_value())
+  if (!display_header_footer.has_value()) {
     return nullptr;
+  }
 
   settings->set_display_header_footer(display_header_footer.value());
   if (settings->display_header_footer()) {
     const std::string* title =
         job_settings.FindString(kSettingHeaderFooterTitle);
     const std::string* url = job_settings.FindString(kSettingHeaderFooterURL);
-    if (!title || !url)
+    if (!title || !url) {
       return nullptr;
+    }
 
     settings->set_title(base::UTF8ToUTF16(*title));
     settings->set_url(base::UTF8ToUTF16(*url));
@@ -169,8 +178,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       job_settings.FindBool(kSettingShouldPrintBackgrounds);
   absl::optional<bool> selection_only =
       job_settings.FindBool(kSettingShouldPrintSelectionOnly);
-  if (!backgrounds.has_value() || !selection_only.has_value())
+  if (!backgrounds.has_value() || !selection_only.has_value()) {
     return nullptr;
+  }
 
   settings->set_should_print_backgrounds(backgrounds.value());
   settings->set_selection_only(selection_only.value());
@@ -206,15 +216,17 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   absl::optional<int> dpi_horizontal =
       job_settings.FindInt(kSettingDpiHorizontal);
   absl::optional<int> dpi_vertical = job_settings.FindInt(kSettingDpiVertical);
-  if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
+  if (!dpi_horizontal.has_value() || !dpi_vertical.has_value()) {
     return nullptr;
+  }
 
   settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
 
   absl::optional<int> rasterize_pdf_dpi =
       job_settings.FindInt(kSettingRasterizePdfDpi);
-  if (rasterize_pdf_dpi.has_value())
+  if (rasterize_pdf_dpi.has_value()) {
     settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
+  }
 
   PrintSettings::RequestedMedia requested_media;
   const base::Value::Dict* media_size_value =
@@ -233,8 +245,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
 
     const std::string* vendor_id =
         media_size_value->FindString(kSettingMediaSizeVendorId);
-    if (vendor_id && !vendor_id->empty())
+    if (vendor_id && !vendor_id->empty()) {
       requested_media.vendor_id = *vendor_id;
+    }
   }
   settings->set_requested_media(requested_media);
 
@@ -249,8 +262,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   }
   settings->set_margin_type(margin_type);
 
-  if (margin_type == mojom::MarginType::kCustomMargins)
+  if (margin_type == mojom::MarginType::kCustomMargins) {
     settings->SetCustomMargins(GetCustomMarginsFromJobSettings(job_settings));
+  }
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 
@@ -268,8 +282,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       static constexpr auto kNonJobAttributes =
           base::MakeFixedFlatSet<base::StringPiece>(
               {"printer-info", "printer-make-and-model", "system_driverinfo"});
-      if (!base::Contains(kNonJobAttributes, item.first))
+      if (!base::Contains(kNonJobAttributes, item.first)) {
         settings->advanced_settings().emplace(item.first, item.second.Clone());
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) &&
@@ -281,8 +296,9 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_send_user_info(send_user_info);
   if (send_user_info) {
     const std::string* username = job_settings.FindString(kSettingUsername);
-    if (username)
+    if (username) {
       settings->set_username(*username);
+    }
   }
 
   const std::string* oauth_token =
@@ -292,8 +308,16 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   }
 
   const std::string* pin_value = job_settings.FindString(kSettingPinValue);
-  if (pin_value)
+  if (pin_value) {
     settings->set_pin_value(*pin_value);
+  }
+
+  const base::Value::List* client_info_list =
+      job_settings.FindList(kSettingIppClientInfo);
+  if (client_info_list) {
+    settings->set_client_infos(
+        ConvertJobSettingToClientInfo(*client_info_list));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return settings;
@@ -356,6 +380,11 @@ base::Value::Dict PrintSettingsToJobSettingsDebug(
   SetRectToJobSettings("content_area", page_setup.content_area(), debug);
   SetRectToJobSettings("printable_area", page_setup.printable_area(), debug);
   job_settings.Set("debug", std::move(debug));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  job_settings.Set(kSettingIppClientInfo,
+                   ConvertClientInfoToJobSetting(settings.client_infos()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return job_settings;
 }

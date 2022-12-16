@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +48,21 @@ const char kPrinterSettings[] = R"({
   "sendUserInfo": true,
   "username": "username@domain.net",
   "chromeos-access-oauth-token": "this is an OAuth access token",
-  "pinValue": "0000"
+  "pinValue": "0000",
+  "ipp-client-info": [
+    {
+      "ipp-client-name": "ChromeOS",
+      "ipp-client-patches": "patch",
+      "ipp-client-string-version": "str_version",
+      "ipp-client-type": 4,
+      "ipp-client-version": "version",
+    },
+    {
+      "ipp-client-name": "chromebook-{DEVICE_ASSET_ID}",
+      "ipp-client-string-version": "",
+      "ipp-client-type": 6,
+    }
+  ],
 })";
 
 const char kPrinterSettingsWithImageableArea[] = R"({
@@ -96,6 +111,18 @@ TEST(PrintSettingsConversionTest, Conversion) {
   EXPECT_EQ("username@domain.net", settings->username());
   EXPECT_EQ("this is an OAuth access token", settings->oauth_token());
   EXPECT_EQ("0000", settings->pin_value());
+
+  ASSERT_EQ(settings->client_infos().size(), 2u);
+  EXPECT_EQ(settings->client_infos()[0].client_name, "ChromeOS");
+  EXPECT_EQ(settings->client_infos()[0].client_type,
+            mojom::IppClientInfo::ClientType::kOperatingSystem);
+  EXPECT_EQ(settings->client_infos()[0].client_patches, "patch");
+  EXPECT_EQ(settings->client_infos()[0].client_string_version, "str_version");
+  EXPECT_EQ(settings->client_infos()[0].client_version, "version");
+  EXPECT_EQ(settings->client_infos()[1].client_name,
+            "chromebook-{DEVICE_ASSET_ID}");
+  EXPECT_EQ(settings->client_infos()[1].client_type,
+            mojom::IppClientInfo::ClientType::kOther);
 #endif
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 300);

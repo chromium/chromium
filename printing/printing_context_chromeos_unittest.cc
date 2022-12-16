@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "printing/backend/cups_ipp_constants.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -127,6 +129,19 @@ class PrintingContextTest : public testing::Test,
       }
     }
     EXPECT_STREQ(expected_option_value, ret);
+  }
+
+  absl::optional<std::string> GetCupsOptionValue(
+      const char* option_name) const {
+    DCHECK(option_name);
+    auto cups_options = SettingsToCupsOptions(settings_);
+    absl::optional<std::string> ret;
+    for (const auto& option : cups_options) {
+      if (option->name && !strcmp(option_name, option->name)) {
+        ret = std::string(option->value);
+      }
+    }
+    return ret;
   }
 
   TestPrintSettings settings_;
@@ -265,6 +280,37 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
   EXPECT_EQ(start_document_username, "");
 }
 
+TEST_F(PrintingContextTest, SettingsToCupsOptionsClientInfo) {
+  mojom::IppClientInfo valid_client_info(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "aB.1-_", "aB.1-_",
+      "aB.1-_", "aB.1-_");
+  mojom::IppClientInfo invalid_client_info(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "{}", "aB.1-_",
+      "aB.1-_", "aB.1-_");
+  settings_.set_client_infos(
+      {valid_client_info, invalid_client_info, valid_client_info});
+  absl::optional<std::string> option_val = GetCupsOptionValue(kIppClientInfo);
+  ASSERT_TRUE(option_val.has_value());
+
+  // Check that the invalid item is skipped in the CUPS option string.
+  size_t client_info_item_count =
+      base::SplitString(option_val.value(), ",", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_ALL)
+          .size();
+  EXPECT_EQ(client_info_item_count, 2u);
+}
+
+TEST_F(PrintingContextTest, SettingsToCupsOptionsClientInfoEmpty) {
+  settings_.set_client_infos({});
+  absl::optional<std::string> option_val = GetCupsOptionValue(kIppClientInfo);
+  EXPECT_FALSE(option_val.has_value());
+
+  mojom::IppClientInfo invalid_client_info(
+      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", absl::nullopt);
+
+  settings_.set_client_infos({invalid_client_info});
+  EXPECT_FALSE(GetCupsOptionValue(kIppClientInfo).has_value());
+}
 }  // namespace
 
 }  // namespace printing

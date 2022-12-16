@@ -248,6 +248,17 @@ component("printing") {
     deps += [ "//ui/aura" ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "client_info_helpers.cc",
+      "client_info_helpers.h",
+      "print_settings_conversion_chromeos.cc",
+      "print_settings_conversion_chromeos.h",
+    ]
+
+    deps += [ "//third_party/re2" ]
+  }
+
   if (use_cups) {
     if (is_chromeos) {
       sources += [
@@ -367,6 +378,13 @@ test("printing_unittests") {
     ]
 
     data = [ "test/data/emf/" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "client_info_helpers_unittest.cc",
+      "print_settings_conversion_chromeos_unittest.cc",
+    ]
   }
 
   if (use_cups) {

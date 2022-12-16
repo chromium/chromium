@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
+#include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/print_job_constants.h"
@@ -85,6 +86,13 @@ class CupsPrinterImpl : public CupsPrinter {
     // OAuth token passed to CUPS as IPP attribute, see b/200086039.
     if (name && strcmp(name, kSettingChromeOSAccessOAuthToken) == 0)
       return true;
+
+    // Special case for the IPP 'client-info' collection because
+    // cupsCheckDestSupported will not report it as supported even when it is.
+    // See http://b/238761330.
+    if (name && strcmp(name, kIppClientInfo) == 0) {
+      return true;
+    }
 #endif
 
     int supported = cupsCheckDestSupported(cups_http_, destination_.get(),

@@ -7,6 +7,8 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "build/build_config.h"
@@ -255,6 +257,13 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   void set_pin_value(const std::string& pin_value) { pin_value_ = pin_value; }
   const std::string& pin_value() const { return pin_value_; }
+
+  void set_client_infos(std::vector<mojom::IppClientInfo> client_infos) {
+    client_infos_ = std::move(client_infos);
+  }
+  const std::vector<mojom::IppClientInfo>& client_infos() const {
+    return client_infos_;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Cookie generator. It is used to initialize `PrintedDocument` with its
@@ -359,7 +368,11 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // PIN code entered by the user.
   std::string pin_value_;
-#endif
+
+  // Value of the 'client-info' that will be sent to the printer.
+  // Should only be set for printers that support 'client-info'.
+  std::vector<mojom::IppClientInfo> client_infos_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace printing

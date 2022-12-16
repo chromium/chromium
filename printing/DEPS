@@ -6,6 +6,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/icu/source/common/unicode",
   "+third_party/icu/source/i18n/unicode",
+  "+third_party/re2/src/re2",
   "+third_party/skia",
   "+ui/accessibility",
   "+ui/android",
