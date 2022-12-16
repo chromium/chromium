@@ -50,10 +50,21 @@ class GuestOsSessionTrackerTest : public testing::Test,
     return ash::ProfileHelper::GetUserIdHashFromProfile(&profile_);
   }
 
+  void CheckContainerNotExists() {
+    auto info = tracker_.GetInfo(guest_id_);
+    EXPECT_EQ(info, absl::nullopt);
+  }
+
+  void CheckContainerExists() {
+    auto info = tracker_.GetInfo(guest_id_);
+    EXPECT_NE(info, absl::nullopt);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::RunLoop run_loop_;
   GuestOsSessionTracker tracker_{OwnerId()};
+  const GuestId guest_id_{VmType::UNKNOWN, "vm_name", "penguin"};
 
   vm_tools::concierge::VmStartedSignal vm_started_signal_;
   vm_tools::concierge::VmStoppedSignal vm_shutdown_signal_;
@@ -77,40 +88,33 @@ TEST_F(GuestOsSessionTrackerTest, ContainerAddedOnStartup) {
   cicerone_signal.set_ipv4_address("1.2.3.4");
   FakeCiceroneClient()->NotifyContainerStarted(cicerone_signal);
 
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
+  auto info = tracker_.GetInfo(guest_id_);
 
-  EXPECT_EQ(info->guest_id.vm_name, "vm_name");
-  EXPECT_EQ(info->guest_id.container_name, "penguin");
-  EXPECT_EQ(info->username, cicerone_signal.container_username());
-  EXPECT_EQ(info->homedir, base::FilePath(cicerone_signal.container_homedir()));
-  EXPECT_EQ(info->cid, signal.vm_info().cid());
-  EXPECT_EQ(info->ipv4_address, cicerone_signal.ipv4_address());
+  EXPECT_EQ("vm_name", info->guest_id.vm_name);
+  EXPECT_EQ("penguin", info->guest_id.container_name);
+  EXPECT_EQ(cicerone_signal.container_username(), info->username);
+  EXPECT_EQ(base::FilePath(cicerone_signal.container_homedir()), info->homedir);
+  EXPECT_EQ(signal.vm_info().cid(), info->cid);
+  EXPECT_EQ(cicerone_signal.ipv4_address(), info->ipv4_address);
 }
 
 TEST_F(GuestOsSessionTrackerTest, ContainerRemovedOnContainerShutdown) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_NE(info, absl::nullopt);
+  CheckContainerExists();
 
   FakeCiceroneClient()->NotifyContainerShutdownSignal(
       container_shutdown_signal_);
-
-  info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  EXPECT_EQ(info, absl::nullopt);
+  CheckContainerNotExists();
 }
 
 TEST_F(GuestOsSessionTrackerTest, ContainerRemovedOnContainerStoppedSignal) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_NE(info, absl::nullopt);
+  CheckContainerExists();
 
   FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
-  info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  EXPECT_EQ(info, absl::nullopt);
+  CheckContainerNotExists();
 }
 
 TEST_F(GuestOsSessionTrackerTest,
@@ -121,35 +125,28 @@ TEST_F(GuestOsSessionTrackerTest,
 
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_NE(info, absl::nullopt);
+  CheckContainerExists();
 
   FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
-  info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  EXPECT_NE(info, absl::nullopt);
+  CheckContainerExists();
 }
 
-TEST_F(GuestOsSessionTrackerTest, ContainerHandleShutdownNonexistetNoop) {
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_EQ(info, absl::nullopt);
+TEST_F(GuestOsSessionTrackerTest, ContainerHandleShutdownNonexistentNoop) {
+  CheckContainerNotExists();
 
   FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
-  info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  EXPECT_EQ(info, absl::nullopt);
+  CheckContainerNotExists();
 }
 
 TEST_F(GuestOsSessionTrackerTest, ContainerRemovedOnVmShutdown) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
 
-  auto info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_NE(info, absl::nullopt);
+  CheckContainerExists();
 
   FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
 
-  info = tracker_.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  EXPECT_EQ(info, absl::nullopt);
+  CheckContainerNotExists();
 }
 
 TEST_F(GuestOsSessionTrackerTest, AlreadyRunningVMsTracked) {
@@ -196,20 +193,19 @@ TEST_F(GuestOsSessionTrackerTest, AlreadyRunningContainersTracked) {
   GuestOsSessionTracker tracker{OwnerId()};
   run_loop_.RunUntilIdle();
 
-  auto info = tracker.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
-  ASSERT_NE(info, absl::nullopt);
-  ASSERT_EQ(info->homedir, base::FilePath(garcon_response.container_homedir()));
-  ASSERT_EQ(info->username, garcon_response.container_username());
-  ASSERT_EQ(info->sftp_vsock_port, garcon_response.sftp_vsock_port());
+  auto info = tracker.GetInfo(guest_id_);
+  ASSERT_NE(absl::nullopt, info);
+  ASSERT_EQ(base::FilePath(garcon_response.container_homedir()), info->homedir);
+  ASSERT_EQ(garcon_response.container_username(), info->username);
+  ASSERT_EQ(garcon_response.sftp_vsock_port(), info->sftp_vsock_port);
 }
 
 TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedAlreadyRunning) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
   auto _ = tracker_.RunOnceContainerStarted(
-      id,
+      guest_id_,
       base::BindLambdaForTesting([&called](GuestInfo info) { called = true; }));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(called);
@@ -217,10 +213,9 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedAlreadyRunning) {
 
 TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedDelayedStart) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
-  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
   auto _ = tracker_.RunOnceContainerStarted(
-      id,
+      guest_id_,
       base::BindLambdaForTesting([&called](GuestInfo info) { called = true; }));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(called);
@@ -231,11 +226,10 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedDelayedStart) {
 
 TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedCancel) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
-  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
   static_cast<void>(tracker_.RunOnceContainerStarted(
-      id, base::BindLambdaForTesting(
-              [&called](GuestInfo info) { called = true; })));
+      guest_id_, base::BindLambdaForTesting(
+                     [&called](GuestInfo info) { called = true; })));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(called);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
@@ -248,10 +242,9 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedCancel) {
 TEST_F(GuestOsSessionTrackerTest, RunOnContainerShutdown) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
   auto _ = tracker_.RunOnShutdown(
-      id, base::BindLambdaForTesting([&called]() { called = true; }));
+      guest_id_, base::BindLambdaForTesting([&called]() { called = true; }));
   FakeCiceroneClient()->NotifyContainerShutdownSignal(
       container_shutdown_signal_);
   EXPECT_TRUE(called);
@@ -260,13 +253,12 @@ TEST_F(GuestOsSessionTrackerTest, RunOnContainerShutdown) {
 TEST_F(GuestOsSessionTrackerTest, RunOnLxdStopping) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  GuestId id{VmType::TERMINA, "vm_name", "penguin"};
   bool called = false;
   auto _ = tracker_.RunOnShutdown(
-      id, base::BindLambdaForTesting([&called]() { called = true; }));
+      guest_id_, base::BindLambdaForTesting([&called]() { called = true; }));
   vm_tools::cicerone::LxdContainerStoppingSignal signal;
-  signal.set_vm_name(id.vm_name);
-  signal.set_container_name(id.container_name);
+  signal.set_vm_name(guest_id_.vm_name);
+  signal.set_container_name(guest_id_.container_name);
   signal.set_owner_id(OwnerId());
   signal.set_status(vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED);
   FakeCiceroneClient()->NotifyLxdContainerStopping(signal);
@@ -276,10 +268,9 @@ TEST_F(GuestOsSessionTrackerTest, RunOnLxdStopping) {
 TEST_F(GuestOsSessionTrackerTest, RunOnVmShutdown) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
   auto _ = tracker_.RunOnShutdown(
-      id, base::BindLambdaForTesting([&called]() { called = true; }));
+      guest_id_, base::BindLambdaForTesting([&called]() { called = true; }));
   FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
   EXPECT_TRUE(called);
 }
