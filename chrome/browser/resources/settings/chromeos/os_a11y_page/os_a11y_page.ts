@@ -28,6 +28,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
@@ -45,9 +46,10 @@ interface OsSettingsA11yPageElement {
 const OsSettingsA11yPageElementBase =
     mixinBehaviors(
         [DeepLinkingBehavior],
-        RouteOriginMixin(WebUiListenerMixin(PolymerElement))) as {
+        RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))) as {
       new (): PolymerElement & WebUiListenerMixinInterface &
-          RouteOriginMixinInterface & DeepLinkingBehaviorInterface,
+          PrefsMixinInterface & RouteOriginMixinInterface &
+          DeepLinkingBehaviorInterface,
     };
 
 class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
@@ -65,14 +67,6 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
        * The current active route.
        */
       currentRoute: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
-       * Preferences state.
-       */
-      prefs: {
         type: Object,
         notify: true,
       },
@@ -131,7 +125,6 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   }
 
   currentRoute: Route;
-  prefs: {[key: string]: any};
   private browserProxy_: OsA11yPageBrowserProxy;
   private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
   private isGuest_: boolean;

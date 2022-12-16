@@ -2,17 +2,16 @@
 <os-settings-animated-pages id="pages" current-route="{{currentRoute}}"
     section="osAccessibility" focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <template is="dom-if" if="[[showAccessibilityLabelsSetting_]]">
-      <settings-toggle-button
-          id="a11yImageLabels"
-          pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
-          on-change="onToggleAccessibilityImageLabels_"
-          label="$i18n{accessibleImageLabelsTitle}"
-          sub-label="$i18n{accessibleImageLabelsSubtitle}"
-          deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
-      </settings-toggle-button>
-      <div class="hr"></div>
-    </template>
+    <settings-toggle-button
+        id="a11yImageLabels"
+        hidden="[[!showAccessibilityLabelsSetting_]]"
+        pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+        on-change="onToggleAccessibilityImageLabels_"
+        label="$i18n{accessibleImageLabelsTitle}"
+        sub-label="$i18n{accessibleImageLabelsSubtitle}"
+        deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
+    </settings-toggle-button>
+    <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
     <settings-toggle-button id="optionsInMenuToggle"
         hidden="[[isKioskModeActive_]]"
         label="$i18n{optionsInMenuLabel}"

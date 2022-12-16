@@ -170,6 +170,7 @@ test_files = [
   "test_kerberos_accounts_browser_proxy.js",
   "test_metrics_consent_browser_proxy.js",
   "test_multidevice_browser_proxy.js",
+  "test_os_a11y_page_browser_proxy.js",
   "test_os_bluetooth_subpage_browser_proxy.js",
   "test_os_languages_browser_proxy.js",
   "test_os_languages_metrics_proxy.js",
