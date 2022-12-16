@@ -218,6 +218,12 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
                       ", origin: ", origin.Serialize()})};
   }
 
+  if (info.title.empty()) {
+    return base::unexpected(base::StrCat(
+        {"App manifest must have either 'name' or 'short_name'. manifest_url: ",
+         manifest_url.possibly_invalid_spec()}));
+  }
+
   return info;
 }
 

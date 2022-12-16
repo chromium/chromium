@@ -761,16 +761,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
                                Eq("other test short name"))));
 }
 
-// TODO(kuragin): Add verification for presence of application name. It should
-// be title or short name in the manifest.
-//
-// The test crashes because |SetWebAppManifestFields| from
-// web_app_install_utils.cc has DCHECK which verifies the title is not empty.
-//
-// After discussion with Alan Cutter, the decision is to add an additional
-// valiation for app name presence inside of the command and
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
-       DISABLED_UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
+       UntranslatedNameIsEmptyWhenNameAndShortNameAreNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
@@ -778,11 +770,8 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
   manifest->short_name = absl::nullopt;
 
   EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
-              IsInstallationOk());
-
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
-              Pointee(Property("untranslated_name", &WebApp::untranslated_name,
-                               IsEmpty())));
+              IsInstallationError(HasSubstr(
+                  "App manifest must have either 'name' or 'short_name'")));
 }
 
 class InstallIsolatedWebAppCommandManifestIconsTest
