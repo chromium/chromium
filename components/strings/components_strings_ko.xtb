@@ -142,6 +142,7 @@
 <translation id="1301324364792935241">보안 DNS 설정 확인</translation>
 <translation id="1307966114820526988">지원 중단 기능</translation>
 <translation id="1308113895091915999">이용 가능한 혜택</translation>
+<translation id="1309375166585231290">아직 부모님이 허락하지 않았습니다.</translation>
 <translation id="1314311879718644478">증강 현실 콘텐츠 보기</translation>
 <translation id="1314509827145471431">오른쪽 바인드</translation>
 <translation id="1318023360584041678">탭 그룹에 저장됨</translation>
@@ -186,6 +187,7 @@
 <translation id="1386623374109090026">주석</translation>
 <translation id="1391289752476847787">주식 및 채권</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
+<translation id="1396259464226642517">예상하지 못한 결과인가요? <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1406500794671479665">확인 중...</translation>
 <translation id="1407135791313364759">모두 열기</translation>
@@ -330,6 +332,7 @@
 <translation id="1727741090716970331">유효한 카드 번호 추가</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
 <translation id="173080396488393970">이 유형의 카드는 지원되지 않습니다.</translation>
+<translation id="1732445923934584865">직접 요청하기</translation>
 <translation id="1733064249834771892">글꼴</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
@@ -436,6 +439,7 @@
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
 <translation id="2035400064145347639">여행 가이드 및 여행기</translation>
+<translation id="2036514476578229158">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="2036983605131262583">대체 롤</translation>
 <translation id="2040463897538655645">이동식 저장소</translation>
 <translation id="2040894699575719559">위치가 차단됨</translation>
@@ -480,6 +484,7 @@
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">남성 의류</translation>
+<translation id="2137891579555018930">권한을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
 <translation id="214556005048008348">결제 취소</translation>
 <translation id="2148613324460538318">카드 추가</translation>
@@ -521,6 +526,7 @@
 <translation id="2239100178324503013">지금 보내기</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
 <translation id="2246264294482514010">10x12인치</translation>
+<translation id="2246480341630108201">아직 부모님이 허락하지 않았습니다.</translation>
 <translation id="2248949050832152960">WebAuthn 사용</translation>
 <translation id="2250931979407627383">왼쪽 에지 스티치</translation>
 <translation id="225207911366869382">이 값은 이 정책에 사용되지 않습니다.</translation>
@@ -695,6 +701,7 @@
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2705137772291741111">사이트의 저장된(캐시된) 사본을 읽을 수 없습니다.</translation>
 <translation id="2709516037105925701">자동 완성</translation>
+<translation id="2712173769900027643">권한 요청</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2715808615350965923">Super A</translation>
@@ -722,6 +729,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">연결이 재설정되었습니다.</translation>
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
+<translation id="2794233252405721443">차단된 사이트</translation>
 <translation id="2799020568854403057">방문하려는 사이트에 유해한 앱이 있습니다.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803306138276472711">최근 Google 세이프 브라우징이 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 때가 있습니다.</translation>
@@ -734,6 +742,7 @@
 <translation id="2839032553903800133">알림 차단됨</translation>
 <translation id="2839501879576190149">가짜 사이트 주의</translation>
 <translation id="2851291081585704741">오프라인 상태입니다</translation>
+<translation id="2851634818064021665">이 사이트에 방문하려면 권한이 필요합니다.</translation>
 <translation id="2854764410992194509">인터넷 서비스 제공업체(ISP)</translation>
 <translation id="2856444702002559011">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 정보(예: 비밀번호, 메시지, 신용카드 등)를 도용하려고 시도 중일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200x300mm</translation>
@@ -986,6 +995,7 @@
 <translation id="3487845404393360112">트레이 4</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
 페이지에서 찾기</translation>
+<translation id="3498215018399854026">현재 부모님께 연락할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="350069200438440499">파일 이름:</translation>
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
 <translation id="3512163584740124171">동일한 정책 그룹에 있는 다른 정책이 우선순위가 높기 때문에 이 정책은 무시됩니다.</translation>
@@ -1453,6 +1463,7 @@
 <translation id="4704732901923281920">생물학</translation>
 <translation id="4708268264240856090">연결이 끊김</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
+<translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
 <translation id="4718897478554657123">600x900mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />의 비밀번호</translation>
@@ -1519,7 +1530,9 @@
 <translation id="4853901935952445031">2022년 2월부터 이 사이트에서 U2F API를 사용할 수 없게 됩니다. 사이트 소유자인 경우 Web Authentication API를 사용하도록 변경해야 합니다.</translation>
 <translation id="4854362297993841467">사용할 수 없는 배달 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
+<translation id="4858792381671956233">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
 <translation id="485902285759009870">코드 인증 중...</translation>
+<translation id="486459320933704969">부모님 또는 보호자가 이 웹사이트를 방문해도 괜찮다고 말해야 합니다.</translation>
 <translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="4876188919622883022">간단히 보기</translation>
 <translation id="4876305945144899064">사용자 이름 없음</translation>
@@ -1772,6 +1785,7 @@
     <ph name="LINE_BREAK" />
     시스템 관리자에게 문의하세요.</translation>
 <translation id="549333378215107354">크기 3</translation>
+<translation id="5503356662318814623">메시지 보내기</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">관리 북마크</translation>
 <translation id="5510481203689988000">이 설정은 쿠키 설정에서 제어됩니다.</translation>
@@ -1798,6 +1812,7 @@
 <translation id="5551890439174915351">100x200mm</translation>
 <translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5556459405103347317">새로고침</translation>
+<translation id="5558125320634132440">이 사이트는 미성년자 부적합 콘텐츠가 포함되어 있을 수 있어 차단되었습니다</translation>
 <translation id="5560088892362098740">만료일</translation>
 <translation id="55635442646131152">문서 개요</translation>
 <translation id="5565613213060953222">시크릿 탭 열기</translation>
@@ -1806,6 +1821,7 @@
 <translation id="5570825185877910964">계정 보호</translation>
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="5572434905385510939">22x28인치</translation>
+<translation id="5572851009514199876">이 사이트에 액세스할 수 있는지 확인할 수 있도록 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="557886905979275351">면도기 및 기타 면도 제품</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="558420943003240152">비밀번호 및 패스키 관리…</translation>
@@ -1860,6 +1876,7 @@
 <translation id="5723287205918986743">방위산업</translation>
 <translation id="5725567311035061582">쿠키 및 사이트 데이터 관리</translation>
 <translation id="5730040223043577876">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
+<translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="5736165827969430182">금속 및 채광</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google 계정에 카드 저장}other{Google 계정에 카드 저장}}</translation>
 <translation id="5738385766833540397">추적 중인 제품의 가격 인하 알림을 받을 방법 관리</translation>
@@ -2117,6 +2134,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" /> 앱으로 이동</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />의 만료일과 CVC를 입력하세요.</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6414888972213066896">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
 <translation id="6415778972515849510">Chromium을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6425092077175753609">머티리얼</translation>
@@ -2518,6 +2536,7 @@
 <translation id="7440140511386898319">오프라인 상태일 때 탐색</translation>
 <translation id="7441627299479586546">잘못된 정책 주체</translation>
 <translation id="7442725080345379071">연한 주황색</translation>
+<translation id="7444046173054089907">차단된 사이트</translation>
 <translation id="7445762425076701745">연결하려는 서버 ID를 확인할 수 없습니다. 외부 인증 기관에서 소유권을 확인할 수 없으므로 네트워크에서 유효한 이름을 사용하여 서버에 연결됩니다. 일부 인증 기관에서는 이러한 이름에 대해 관계없이 인증서를 발급하기 때문에 공격자가 아니라 의도한 웹사이트에 연결되어 있는지 확인할 수 없습니다.</translation>
 <translation id="7447625772313191651"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />mm)</translation>
 <translation id="7451311239929941790">이 문제를 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -2562,6 +2581,7 @@
 <translation id="7537536606612762813">필수</translation>
 <translation id="7542403920425041731">확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="7542995811387359312">양식에 보안 연결이 사용되지 않아 신용카드 자동 채우기가 사용 중지되었습니다.</translation>
+<translation id="7543525346216957623">부모님께 물어보세요.</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>
 <translation id="7548892272833184391">연결 문제해결</translation>
 <translation id="7549584377607005141">이 웹페이지를 제대로 표시하려면 이전에 입력한 데이터가 필요합니다. 이 데이터를 다시 보낼 수 있지만 이 경우 해당 페이지에서 이전에 수행한 작업이 반복됩니다.</translation>
@@ -2660,6 +2680,7 @@
 <translation id="774634243536837715">위험한 콘텐츠 차단됨</translation>
 <translation id="7751971323486164747">Chrome의 글꼴 크기 및 서체 맞춤설정</translation>
 <translation id="7752995774971033316">관리되지 않음</translation>
+<translation id="7755287808199759310">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="7755624218968747854">기본 롤</translation>
 <translation id="7758069387465995638">방화벽이나 바이러스 백신 소프트웨어가 연결을 차단했을 수 있습니다.</translation>
 <translation id="7760497246331667482">레게 및 카리브 음악</translation>
@@ -2723,6 +2744,7 @@
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952804540472583406">네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />합니다.</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
+<translation id="7955105108888461311">직접 요청</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7962467575542381659">플랫폼 머신</translation>
@@ -2747,6 +2769,7 @@
 <translation id="8009225694047762179">비밀번호 관리</translation>
 <translation id="8009843239480947060">10x11인치</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}other{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}}</translation>
+<translation id="8012647001091218357">현재 부모님께 연락할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" />(<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="8025119109950072390">이 사이트의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다.</translation>
@@ -3145,6 +3168,7 @@
 <translation id="9065745800631924235">검색기록에서 <ph name="TEXT" /> 검색</translation>
 <translation id="9069693763241529744">확장 프로그램에서 차단함</translation>
 <translation id="9073799351042754113">이 사이트의 보안 경고를 끄기로 설정했습니다.</translation>
+<translation id="9076283476770535406">성인용 콘텐츠가 포함되어 있을 수 있습니다.</translation>
 <translation id="9078964945751709336">자세한 정보 필요</translation>
 <translation id="9080712759204168376">주문 요약</translation>
 <translation id="908796725011587895">대학 스포츠</translation>
@@ -3170,6 +3194,7 @@
 <translation id="9131119348384879525">기밀 콘텐츠를 캡처하시겠습니까?</translation>
 <translation id="9136861683332321024">고급형 자동차</translation>
 <translation id="9137013805542155359">원본 보기</translation>
+<translation id="9137248913990643158">이 앱을 사용하기 전에 Chrome을 시작하고 로그인하세요.</translation>
 <translation id="9138037198177304356">알림 허용됨</translation>
 <translation id="9139318394846604261">쇼핑</translation>
 <translation id="9141013498910525015">주소 관리</translation>
@@ -3215,6 +3240,7 @@
 <translation id="940053046584497293">여행 및 교통수단</translation>
 <translation id="945855313015696284">아래 정보를 확인하고 잘못된 카드를 삭제하세요.</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Sites에서 빠르게 새 사이트 만들기</translation>
+<translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>

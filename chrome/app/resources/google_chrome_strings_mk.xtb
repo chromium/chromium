@@ -129,6 +129,7 @@
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
 <translation id="3169523567916669830">За време на пробните периоди може да ги гледате и отстранувате темите на интерес што сајтовите ги користеле за да ви прикажуваат реклами. Chrome ги проценува вашите интереси според вашата неодамнешна историја на прелистувањето.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome е поврзан со HID-уред}one{Google Chrome е поврзан со HID-уреди}other{Google Chrome е поврзан со HID-уреди}}</translation>
 <translation id="3245429137663807393">Ако ги споделувате и извештаите за користењето на Chrome, тие ги содржат URL-адресите што ги посетувате</translation>
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>

@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
 <translation id="2597774443162333062">Fișierele vor fi trimise la Google pentru remedierea erorilor</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>

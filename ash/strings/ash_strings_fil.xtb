@@ -127,6 +127,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1611993646327628135">Naka-on</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
+<translation id="163517899691012366">Naka-mute ang mga notification kapag naka-on ang Huwag istorbohin</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
@@ -179,7 +180,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1862380676329487333">I-update at mag-sign out</translation>
 <translation id="1864454756846565995">USB-C device (port sa rear)</translation>
 <translation id="1869497990620230175">Mga mabilisang file</translation>
-<translation id="1871703283152909317">I-on ang parehong access</translation>
 <translation id="1879018240766558464">Kasalukuyang hindi sinusuportahan ang mga Incognito window. Mase-save ang iba pang app.</translation>
 <translation id="1882814835921407042">Walang mobile network</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3047761520276763270">Subukang sabihin ang:</translation>
 <translation id="3051189971848907985">Nire-rename ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
+<translation id="3062298103034426069">Hindi sinusuportahan</translation>
 <translation id="3068711042108640621">Nasa kaliwa ang shelf</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">I-expand ang menu</translation>
@@ -410,6 +411,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3249513730522716925">Inilipat ang Window na <ph name="WINDOW_TITLE" /> sa Desk na <ph name="TARGET_DESK" /> mula sa <ph name="ACTIVE_DESK" /></translation>
 <translation id="3252573918265662711">Pag-setup</translation>
 <translation id="3255483164551725916">Ano'ng maaari mong gawin?</translation>
+<translation id="3260969790895726815">Lokal na pinoproseso ang speech at gumagana offline ang dictation, pero hindi gagana ang ilang command gamit ang boses.</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
 <translation id="3289544412142055976">Kasalukuyang hindi sinusuportahan ang mga Linux app.</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
@@ -790,9 +792,11 @@ Isaksak ang iyong device.</translation>
 <translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
 <translation id="533282197239610265">Ipakita ang mga cast device</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
+<translation id="5351427059191534258">I-off ang access sa camera?</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
 <translation id="5356963482258194581">Magpalipat-lipat sa madilim at maliwanag na tema. Mag-right click sa desktop at piliin ang Wallpaper at style.</translation>
 <translation id="536019650977002321">Hindi pinapayagan ng iyong administrator ang pag-capture ng audio. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
+<translation id="5361524080961918551">Bahagyang na-download ang mga file ng <ph name="LANGUAGE" /> na speech</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pumunta sa tab na ito</translation>
 <translation id="5377367976106153749">I-on ang access sa camera?</translation>
 <translation id="5379115545237091094">Masyadong maraming pagtatangka</translation>
@@ -902,6 +906,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5980301590375426705">Lumabas</translation>
 <translation id="598407983968395253">Gamitin ang template</translation>
 <translation id="598882571027504733">Para makuha ang update, i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
+<translation id="6002179289567220515">Ginamit mo ang pisikal na switch para i-off ang 1 camera. Puwede mo ring i-off ang access para sa lahat ng camera.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Lumalabas sa mirror mode</translation>
 <translation id="602001110135236999">Mag-scroll pakaliwa</translation>
@@ -926,7 +931,6 @@ Isaksak ang iyong device.</translation>
 <translation id="6095008505822982596">Bilis ng pagsasalita</translation>
 <translation id="6099678161144790572">Na-edit sa nakalipas na buwan</translation>
 <translation id="6103838137565245112">system</translation>
-<translation id="6107292179555508368">Naka-off ang mga access sa mikropono at camera sa device na ito</translation>
 <translation id="6114505516289286752">Na-download na ang mga <ph name="LANGUAGE" /> na speech file</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
@@ -943,9 +947,11 @@ Isaksak ang iyong device.</translation>
 <translation id="619279033188484792">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="619335566042889110">Ganap na i-charge ngayon</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Hindi sinusuportahan ng app</translation>
 <translation id="6210042900243040400">Ikonekta ang <ph name="NAME" /> na dating na-save sa <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Puwede mo na ngayong sabay na i-record ang iyong sarili at ang screen mo</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="623116199192908855">I-cast ang iyong screen mula sa Chromebook mo</translation>
 <translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>
 <translation id="6232891689835436217">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong camera at mikropono</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +959,6 @@ Isaksak ang iyong device.</translation>
 <translation id="6259254695169772643">Gamitin ang iyong stylus para pumili</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ina-activate...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">I-on ang mga access para mapayagan ang mga app at webpage na may pahintulot na gamitin ang (mga) mikropono at (mga) camera sa device na ito.</translation>
 <translation id="6283712521836204486">Naka-off ang Huwag istorbohin.</translation>
 <translation id="6284232397434400372">Binago ang resolution</translation>
 <translation id="6288235558961782912">Puwedeng idagdag ulit ang <ph name="USER_EMAIL_ADDRESS" /> kung may pahintulot ng magulang.</translation>
@@ -988,8 +993,10 @@ Isaksak ang iyong device.</translation>
 <translation id="6491071886865974820">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update mo ang iyong <ph name="DEVICE_TYPE" /> bago ang deadline</translation>
 <translation id="649452524636452238">PIN ng smart card</translation>
 <translation id="6495400115277918834">Nasimulan ang picture-in-picture, pindutin ang Alt+Shift+V para mag-focus</translation>
+<translation id="6497418457565568043">Naka-on ang huwag istorbohin</translation>
 <translation id="6500896621837555595">I-update</translation>
 <translation id="6501401484702599040">Kina-cast ang screen sa <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Tiyaking ang iyong Chromebook ay nasa parehong Wi-Fi network tulad ng Chromecast device mo.</translation>
 <translation id="6515727200518652613">Nawala ang camera, sinusubukang kumonekta ulit.</translation>
 <translation id="6520517963145875092">Pumili ng window na ika-capture</translation>
 <translation id="652139407789908527">Magiging blangko ang iyong screen nang mas matagal kaysa karaniwan (hanggang isang minuto) sa panahon ng pag-update na ito Huwag pindutin ang power button habang isinasagawa ang pag-update.</translation>

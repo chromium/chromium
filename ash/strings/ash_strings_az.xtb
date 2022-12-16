@@ -120,6 +120,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="15373452373711364">Böyük maus kursoru</translation>
 <translation id="1546492247443594934">Masa 2</translation>
 <translation id="1546930421365146760">Admindən bu cihazı Google Admin konsolunda ayarlamasını istəyin</translation>
+<translation id="1550406609415860283">Əlçatan cihazlar</translation>
 <translation id="1550523713251050646">Əlavə seçimlər üçün klikləyin</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1589090746204042747">Sessiyadakı bütün fəaliyyətlərə daxil olun</translation>
@@ -180,7 +181,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1862380676329487333">Güncəlləyin və çıxın</translation>
 <translation id="1864454756846565995">USB-C cihazı (arxa port)</translation>
 <translation id="1869497990620230175">Sürətli fayllar</translation>
-<translation id="1871703283152909317">Hər iki girişi aktiv edin</translation>
 <translation id="1879018240766558464">Anonim pəncərələr hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="1882814835921407042">Mobil şəbəkə yoxdur</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> əks etdirilir</translation>
@@ -460,9 +460,11 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> tərəfindən idarə edilən hesab</translation>
 <translation id="352245152354538528">{0,plural, =1{Cihazı 1 dəqiqə ərzində güncəlləyin}other{Cihazı # dəqiqə ərzində güncəlləyin}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza qoşulub</translation>
+<translation id="3533126039236445965">Rəfdəki tətbiqlər</translation>
 <translation id="3542066395059568317">Qalan yerdən davam edə bilmək üçün tövsiyələri görəcəksiniz. Tövsiyələri silmək üçün sağ düymə ilə klikləyə bilərsiniz.</translation>
 <translation id="3552189655002856821">Wi-Fi deaktiv edilib</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> bərkidildi</translation>
+<translation id="3560174576767922131">Video yazın</translation>
 <translation id="3563775809269155755">Hotspotu aktiv edin</translation>
 <translation id="3566240529365775567">İndicə açılıb</translation>
 <translation id="3571734092741541777">Quraşdırın</translation>
@@ -655,6 +657,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4577274620589681794">Vaxt bitdi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önbaxışları göstərin</translation>
 <translation id="4578906031062871102">Ayarlar menyusu açılıb</translation>
+<translation id="458210817642223147">GIF yazın</translation>
 <translation id="4585337515783392668">Naməlum alıcının yayımını dayandırın</translation>
 <translation id="4596144739579517758">Tünd tema deaktivdir</translation>
 <translation id="4611292653554630842">Daxil olun</translation>
@@ -734,6 +737,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Masa 16</translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
+<translation id="5004607513195820459">Şəbəkə idarə olunur</translation>
 <translation id="5016558321564993266">Markeri dəyişin. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Cihazın mikrofon girişi aktivdir</translation>
 <translation id="5030687792513154421">Vaxt bitdi</translation>
@@ -932,7 +936,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6095008505822982596">Nitq sürəti</translation>
 <translation id="6099678161144790572">Keçən ay redaktə edilib</translation>
 <translation id="6103838137565245112">sistem</translation>
-<translation id="6107292179555508368">Bu cihazda mikrofon və kamera girişləri deaktivdir</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dilində danışıq faylları endirilib</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> endirilməsini təsdiq edin</translation>
@@ -961,7 +964,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6259254695169772643">Seçmək üçün fırçadan istifadə edin</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivləşdirilir...</translation>
 <translation id="6274202259872570803">Ekran yayımı</translation>
-<translation id="6282694724099204652">Bu cihazda mikrofon(lar) və kamera(lar)dan istifadə etmək icazəsi olan tətbiqlərə və veb səhifələrə icazə vermək üçün girişləri aktiv edin.</translation>
 <translation id="6283712521836204486">Narahat etməyin rejimi deaktivdir</translation>
 <translation id="6284232397434400372">Keyfiyyət dəyişdi</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> daha sonra valideynin icazəsi ilə yenidən əlavə edilə bilər.</translation>
@@ -1081,6 +1083,7 @@ Yeni quraşdırma</translation>
 <translation id="6901883536534621389">Naviqasiya etmək üçün jestləri sınayın</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
 <translation id="6931576957638141829">Burada saxlayın:</translation>
+<translation id="6942518653766415536">Yazı formatı menyusu</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6960565108681981554">Aktiv edilməyib. Operatorunuz ilə əlaqə saxlayın.</translation>
 <translation id="6961121602502368900">İş profilində telefonun səssiz edilməsi əlçatan deyil</translation>

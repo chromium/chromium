@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2080769225927880590">Увайдзіце ў сапраўдны ўліковы запіс</translation>
 <translation id="2103075008456228677">Адкрыць history.google.com</translation>
+<translation id="21133533946938348">Замацаваць укладку</translation>
 <translation id="2116625576999540962">Перамешчана элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Ваш браўзер знаходзіцца пад кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Запытваць дазвол пры дадаванні старонкі ў спіс на прагляд</translation>
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="214201757571129614">Увайсці…</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
 <translation id="5083464117946352670">Не ўдалося вызначыць памер файла.</translation>
 <translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
-<translation id="5092117651143801290">Захоўвайце старонкі, каб вяртацца да іх пазней або чытаць іх без падключэння да інтэрнэту. Перш чым захоўваць доўгія старонкі, Chrome будзе адпраўляць вам запыт.</translation>
 <translation id="5094827893301452931">Твіт апублікаваны.</translation>
 <translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5118764316110575523">Выключана</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">Прапаноўваць перакласці з мовы</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="556042886152191864">Кнопка</translation>
-<translation id="5580834567471114021">Дадаць старонку ў спіс на прагляд?</translation>
 <translation id="5597915316964418992">Адкрыйце сетку ўкладак</translation>
 <translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">Пошукавая сістэма</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
 <translation id="5857090052475505287">Новая папка</translation>
-<translation id="5857675236236529683">Калі захочаце пабачыць свой спіс на прагляд, вы знойдзеце яго тут</translation>
 <translation id="5857770089550859117">Фраза-пароль для запуску сінхранізацыі.</translation>
 <translation id="5859715514067755465">Далей</translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">Наведаць сайт</translation>
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
-<translation id="7153999225810839758">Час чытання: <ph name="TIME" /> хв</translation>
 <translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку праблем з бяспекай</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">Знайсці на старонцы...</translation>
 <translation id="8558480467877843976">Цяпер вы можаце выкарыстоўваць Chrome кожны раз, калі вам трэба выйсці ў інтэрнэт або адкрыць спасылку ў паведамленнях, дакументах або іншых праграмах.</translation>
 <translation id="8588404856427128947">Выключаны</translation>
-<translation id="8590913940444621808">Ніколі не пытацца</translation>
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="8605219856220328675">Закрыць укладку.</translation>
 <translation id="8620640915598389714">Змяніць</translation>

@@ -82,6 +82,7 @@
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="2977506796191543575">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chromium може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
 <translation id="2983934633046890458">Chromium се обидува да измени лозинки.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium е поврзан со HID-уред}one{Chromium е поврзан со HID-уреди}other{Chromium е поврзан со HID-уреди}}</translation>
 <translation id="3032706164202344641">Chromium не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="3032787606318309379">Се додава на Chromium...</translation>
 <translation id="3038232873781883849">Се чека инсталирање…</translation>

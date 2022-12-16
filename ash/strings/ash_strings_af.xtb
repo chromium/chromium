@@ -127,6 +127,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
+<translation id="163517899691012366">Kennisgewings is gedemp wanneer Moenie Steur Nie aan is</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
@@ -179,7 +180,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1862380676329487333">Dateer op en meld af</translation>
 <translation id="1864454756846565995">USB C-toestel (poort aan agterkant)</translation>
 <translation id="1869497990620230175">Kitslêers</translation>
-<translation id="1871703283152909317">Skakel albei toegange aan</translation>
 <translation id="1879018240766558464">Incognito-vensters word nie tans gesteun nie. Ander programme sal gestoor word.</translation>
 <translation id="1882814835921407042">Geen selnetwerk nie</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3047761520276763270">Probeer die volgende sê:</translation>
 <translation id="3051189971848907985">Hernoem tans profiel. Wag 'n paar minute.</translation>
 <translation id="3055162170959710888">Jy het hierdie toestel vandag <ph name="USED_TIME" /> lank gebruik</translation>
+<translation id="3062298103034426069">Nie gesteun nie</translation>
 <translation id="3068711042108640621">Rak aan linkerkant</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vou kieslys uit</translation>
@@ -410,6 +411,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3249513730522716925">Venster <ph name="WINDOW_TITLE" /> is geskuif van lessenaar <ph name="ACTIVE_DESK" /> af na lessenaar <ph name="TARGET_DESK" /> toe</translation>
 <translation id="3252573918265662711">Stel op</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
+<translation id="3260969790895726815">Spraak word plaaslik verwerk en diktering werk vanlyn, maar sommige stemopdragte sal nie werk nie.</translation>
 <translation id="3269597722229482060">Regsklik</translation>
 <translation id="3289544412142055976">Linux-programme word nie tans gesteun nie</translation>
 <translation id="3289674678944039601">Laai tans deur aansluitprop</translation>
@@ -791,9 +793,11 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
 <translation id="533282197239610265">Wys uitsaaitoestelle</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (regs)</translation>
+<translation id="5351427059191534258">Skakel kameratoegang af?</translation>
 <translation id="5352250171825660495">Donkertema is aan</translation>
 <translation id="5356963482258194581">Wissel tussen donker- en ligtema. Regsklik op die werkskerm en kies Muurpapier en Styl.</translation>
 <translation id="536019650977002321">Jou admin laat nie die vasvang van oudio toe nie. Kontak jou admin vir meer inligting.</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> spraaklêers is gedeeltelik afgelaai</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gaan na hierdie oortjie</translation>
 <translation id="5377367976106153749">Skakel kameratoegang aan?</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
@@ -903,6 +907,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5980301590375426705">Verlaat gas-sessie</translation>
 <translation id="598407983968395253">Gebruik templaat</translation>
 <translation id="598882571027504733">Herbegin jou Chromebook met die sleutelbord aangeheg om die opdatering te kry.</translation>
+<translation id="6002179289567220515">Jy het die fisieke skakelaar gebruik om 1 kamera af te skakel. Jy kan ook toegang vir alle kameras afskakel.</translation>
 <translation id="6012623610530968780">Bladsy <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Verlaat tans spieëlmodus</translation>
 <translation id="602001110135236999">Rollees links</translation>
@@ -927,7 +932,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6095008505822982596">Spraaktempo</translation>
 <translation id="6099678161144790572">In die afgelope maand gewysig</translation>
 <translation id="6103838137565245112">stelsel</translation>
-<translation id="6107292179555508368">Mikrofoon- en kameratoegang is af op hierdie toestel</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bevestig aflaai <ph name="FILENAME" /></translation>
@@ -944,9 +948,11 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="619279033188484792">Bekyk jou foon se onlangse foto's, media en kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Laai nou ten volle</translation>
 <translation id="6193431488227440296">Ontwikkeling</translation>
+<translation id="6200515304866777730">Nie deur app gesteun nie</translation>
 <translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
+<translation id="623116199192908855">Saai jou skerm uit van jou Chromebook af</translation>
 <translation id="6231419273573514727">Randtoestelwerkverrigting kan beperk wees</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruik tans jou kamera en mikrofoon</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -954,7 +960,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6259254695169772643">Gebruik jou stilus om te kies</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiveer tans …</translation>
 <translation id="6274202259872570803">Skermopname</translation>
-<translation id="6282694724099204652">Skakel die toegange aan om apps en webbladsye met die toestemming toe te laat om die mikroon/mikrofone en kamera(s) op hierdie toestel te gebruik.</translation>
 <translation id="6283712521836204486">Moenie Steur Nie is af.</translation>
 <translation id="6284232397434400372">Resolusie het verander</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later weer met 'n ouer se toestemming bygevoeg word.</translation>
@@ -989,8 +994,10 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereis dat jy hierdie <ph name="DEVICE_TYPE" /> voor die spertyd opdateer</translation>
 <translation id="649452524636452238">Slimkaart-PIN</translation>
 <translation id="6495400115277918834">Prent-in-prent is begin, Alt+Shift+V om te fokus</translation>
+<translation id="6497418457565568043">Moenie Steur Nie is aan</translation>
 <translation id="6500896621837555595">Dateer op</translation>
 <translation id="6501401484702599040">Saai tans skerm uit na <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Maak seker jou Chromebook is op dieselfde wi-fi-netwerk as jou Chromecast-toestel.</translation>
 <translation id="6515727200518652613">Kamera is verloor; probeer tans herkoppel.</translation>
 <translation id="6520517963145875092">Kies 'n venster om vas te vang</translation>
 <translation id="652139407789908527">Jou skerm sal langer as gewoonlik (tot 'n minuut lank) donker raak gedurende hierdie opdatering. Moet asseblief nie die aan/af-skakelaar druk terwyl die opdatering aan die gang is nie.</translation>

@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2080769225927880590">Συνδεθείτε με έναν έγκυρο λογαριασμό</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
+<translation id="21133533946938348">Καρφίτσωμα καρτέλας</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
 <translation id="2122754583996902531">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Ερώτηση για προσθήκη στη Λίστα ανάγνωσης</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
 <translation id="214201757571129614">Σύνδεση…</translation>
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Εγκατάσταση Google Drive</translation>
 <translation id="5083464117946352670">Αδύν.προσδ.μεγέθους αρχείου.</translation>
 <translation id="5090832849094901128">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Μπορείτε να αποθηκεύετε σελίδες για ανάγνωση αργότερα ή εκτός σύνδεσης. Το Chrome θα σας ρωτήσει αν θέλετε να αποθηκεύσετε μεγάλες σελίδες.</translation>
 <translation id="5094827893301452931">Το Tweet ολοκληρώθηκε.</translation>
 <translation id="5118713593561876160">Ενδιαφέροντα</translation>
 <translation id="5118764316110575523">Ανενεργό</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">Προσφορά για μετάφραση</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="556042886152191864">Κουμπί</translation>
-<translation id="5580834567471114021">Προσθήκη στη Λίστα ανάγνωσης για αργότερα;</translation>
 <translation id="5597915316964418992">Ανοίξτε το Πλέγμα καρτελών</translation>
 <translation id="560322036295180549">Απενεργοποιήθηκε από τον οργανισμό σας.</translation>
 <translation id="5614553682702429503">Αποθήκευση κωδικού πρόσβασης;</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">Μηχανή αναζήτησης</translation>
 <translation id="5854790677617711513">Παλαιότερο από 30 ημέρες</translation>
 <translation id="5857090052475505287">Νέος φάκελος</translation>
-<translation id="5857675236236529683">Όταν είστε έτοιμοι, βρείτε εδώ τη λίστα ανάγνωσής σας.</translation>
 <translation id="5857770089550859117">Απαιτείται φράση πρόσβασης για έναρξη του συγχρονισμού.</translation>
 <translation id="5859715514067755465">Μετάβαση προς τα εμπρός</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
@@ -840,7 +837,6 @@
 <translation id="7108762695052995889">Επίσκεψη στον ιστότοπο</translation>
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> λεπτό για ανάγνωση</translation>
 <translation id="7162168282402939716">Ξεκλείδωμα Καρτελών ανώνυμης περιήγησης με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Προστατέψτε τους κωδικούς πρόσβασής σας από ζητήματα ασφαλείας.</translation>
 <translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
@@ -1018,7 +1014,6 @@
 <translation id="8548878600947630424">Εύρεση στη σελίδα...</translation>
 <translation id="8558480467877843976">Μπορείτε πλέον να χρησιμοποιείτε το Chrome κάθε φορά που περιηγείστε ή πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές.</translation>
 <translation id="8588404856427128947">Ανενεργό</translation>
-<translation id="8590913940444621808">Να μην ερωτώμαι</translation>
 <translation id="8591976964826315682">Αποκλεισμός cookie τρίτου μέρους στην ανώνυμη περιήγηση</translation>
 <translation id="8605219856220328675">Κλείσιμο καρτέλας.</translation>
 <translation id="8620640915598389714">Επεξεργασία</translation>

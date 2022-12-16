@@ -127,6 +127,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1611993646327628135">Įjungta</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
+<translation id="163517899691012366">Pranešimai nutildomi, kai įjungtas netrukdymo režimas</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
@@ -179,7 +180,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1862380676329487333">Atnaujinti ir atsijungti</translation>
 <translation id="1864454756846565995">USB-C įrenginys (prievadas gale)</translation>
 <translation id="1869497990620230175">Spartieji failai</translation>
-<translation id="1871703283152909317">Įjungti abiejų tipų prieigą</translation>
 <translation id="1879018240766558464">Inkognito langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3047761520276763270">Pabandykite pasakyti:</translation>
 <translation id="3051189971848907985">Pervardijamas profilis. Palaukite kelias minutes.</translation>
 <translation id="3055162170959710888">Šį įrenginį šiandien naudojote <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Nepalaikoma</translation>
 <translation id="3068711042108640621">Lentyna kairėje</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Išskleisti meniu</translation>
@@ -410,6 +411,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3249513730522716925">Langas „<ph name="WINDOW_TITLE" />“ perkeltas iš darbalaukio „<ph name="ACTIVE_DESK" />“ į darbalaukį „<ph name="TARGET_DESK" />“</translation>
 <translation id="3252573918265662711">Sąranka</translation>
 <translation id="3255483164551725916">„What can you do?“ (Ką gali atlikti?)</translation>
+<translation id="3260969790895726815">Kalba apdorojama vietiniu mastu, o diktavimas veikia neprisijungus, bet kai kurios komandos balsu neveiks.</translation>
 <translation id="3269597722229482060">Spustelėti dešiniuoju klavišu</translation>
 <translation id="3289544412142055976">„Linux“ programos šiuo metu nepalaikomos</translation>
 <translation id="3289674678944039601">Įkraunama naudojant adapterį</translation>
@@ -457,6 +459,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3513798432020909783">Paskyrą tvarko: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Atnaujinkite įrenginį per vieną minutę}one{Atnaujinkite įrenginį per # minutę}few{Atnaujinkite įrenginį per # minutes}many{Atnaujinkite įrenginį per # minutės}other{Atnaujinkite įrenginį per # minučių}}</translation>
 <translation id="353086728817903341">Prisijungta prie įrenginių: <ph name="NUM_DEVICES" /></translation>
+<translation id="3533126039236445965">Lentynoje esančios programos</translation>
 <translation id="3542066395059568317">Matysite rekomendacijas, kad galėtumėte tęsti nuo ten, kur baigėte. Spustelėkite dešiniuoju klavišu, jei norite pašalinti rekomendacijas.</translation>
 <translation id="3552189655002856821">„Wi-Fi“ išjungtas</translation>
 <translation id="3554637740840164787">Prisegta: <ph name="ITEM_TITLE" /></translation>
@@ -790,9 +793,11 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5331975486040154427">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
 <translation id="533282197239610265">Rodyti perdavimo įrenginius</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dešinioji)</translation>
+<translation id="5351427059191534258">Išjungti prieigą prie vaizdo kameros?</translation>
 <translation id="5352250171825660495">Tamsioji tema įjungta</translation>
 <translation id="5356963482258194581">Perjunkite iš tamsiosios į šviesiąją temą ir atvirkščiai. Dešiniuoju klavišu spustelėkite darbalaukyje ir pasirinkite „Ekrano fonas ir stilius“.</translation>
 <translation id="536019650977002321">Jūsų administratorius neleidžia fiksuoti garso įrašų. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
+<translation id="5361524080961918551">Iš dalies atsisiųsti <ph name="LANGUAGE" /> kalbos failai</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Eiti į šį skirtuką</translation>
 <translation id="5377367976106153749">Įjungti prieigą prie vaizdo kameros?</translation>
 <translation id="5379115545237091094">Per daug bandymų</translation>
@@ -902,6 +907,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5980301590375426705">Išeiti iš sveč. rež.</translation>
 <translation id="598407983968395253">Naudoti šabloną</translation>
 <translation id="598882571027504733">Kad gautumėte naujinį, iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
+<translation id="6002179289567220515">Fiziniu jungikliu išjungėte vieną vaizdo kamerą. Taip pat galite išjungti visų vaizdo kamerų prieigą.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> psl. iš <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Išjungiamas atvaizdavimo režimas</translation>
 <translation id="602001110135236999">Slinkti kairėn</translation>
@@ -926,7 +932,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6095008505822982596">Kalbėjimo sparta</translation>
 <translation id="6099678161144790572">Redaguota per pastarąjį mėnesį</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="6107292179555508368">Prieiga prie mikrofono ir fotoaparato išjungta šiame įrenginyje</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">„<ph name="FILENAME" />“ atsisiuntimo patvirtinimas</translation>
@@ -943,9 +948,11 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="619279033188484792">Peržiūrėkite telefono naujausias nuotraukas, mediją ir pranešimus „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="619335566042889110">Visiškai įkrauti dabar</translation>
 <translation id="6193431488227440296">Kuriamo leidimo grupė</translation>
+<translation id="6200515304866777730">Nepalaikoma programoje</translation>
 <translation id="6210042900243040400">Susiekite su įrenginiu „<ph name="NAME" />“, kuris anksčiau buvo išsaugotas adresu <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Dabar galite įrašyti save ir savo ekraną tuo pačiu metu</translation>
 <translation id="622484624075952240">Žemiau</translation>
+<translation id="623116199192908855">Ekrano perdavimas iš „Chromebook“</translation>
 <translation id="6231419273573514727">Išorinių įrenginių našumas gali būti apribotas</translation>
 <translation id="6232891689835436217">Programa „<ph name="APP_NAME" />“ šiuo metu naudoja fotoaparatą ir mikrofoną</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +960,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6259254695169772643">Pasirinkite naudodami rašiklį</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
 <translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
-<translation id="6282694724099204652">Įjunkite prieigą, kad leistumėte leidimą turinčioms programoms ir tinklalapiams naudoti mikrofoną (-us) ir fotoaparatą (-us) šiame įrenginyje.</translation>
 <translation id="6283712521836204486">Netrukdymo režimas išjungtas.</translation>
 <translation id="6284232397434400372">Skyra pakeista</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>
@@ -988,8 +994,10 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> reikalauja atnaujinti „<ph name="DEVICE_TYPE" />“ iki termino</translation>
 <translation id="649452524636452238">Išmaniosios kortelės PIN kodas</translation>
 <translation id="6495400115277918834">Funkcija vaizdas vaizde paleista, jei norite sufokusuoti, spauskite „Alt“ + „Shift“ + V</translation>
+<translation id="6497418457565568043">Netrukdymo režimas įjungtas</translation>
 <translation id="6500896621837555595">Atnaujinti</translation>
 <translation id="6501401484702599040">Perduodamas ekranas į „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6508923215158854599">Įsitikinkite, kad „Chromebook“ prijungtas prie to paties „Wi-Fi“ tinklo kaip „Chromecast“ įrenginys.</translation>
 <translation id="6515727200518652613">Fotoaparatas atsijungė, bandoma prijungti iš naujo.</translation>
 <translation id="6520517963145875092">Pasirinkite norimą užfiksuoti langą</translation>
 <translation id="652139407789908527">Vykstant šiam atnaujinimui ekranas gali būti tuščias ilgiau nei įprastai (iki minutės). Nespauskite maitinimo mygtuko, kol vyksta atnaujinimas.</translation>

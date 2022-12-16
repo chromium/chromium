@@ -149,9 +149,9 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080769225927880590">Accede con una cuenta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
+<translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Preguntar si agregar a la Lista de lectura</translation>
 <translation id="2139867232736819575">Buscar el texto copiado</translation>
 <translation id="214201757571129614">Acceder…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -542,7 +542,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido</translation>
 <translation id="5090832849094901128">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Puedes guardar páginas para leerlas más tarde o sin conexión. Chrome te preguntará si deseas guardar páginas extensas.</translation>
 <translation id="5094827893301452931">Tweet publicado</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">No</translation>
@@ -598,7 +597,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="556042886152191864">Botón</translation>
-<translation id="5580834567471114021">¿Deseas agregar la página a la Lista de lectura para retomarla más tarde?</translation>
 <translation id="5597915316964418992">Abre la cuadrícula de pestañas</translation>
 <translation id="560322036295180549">Tu organización desactivó la opción.</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -638,7 +636,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5846482154967366008">Motor de búsqueda</translation>
 <translation id="5854790677617711513">Hace más de 30 días</translation>
 <translation id="5857090052475505287">Nueva carpeta</translation>
-<translation id="5857675236236529683">Cuando todo esté listo, consulta tu lista de lectura aquí.</translation>
 <translation id="5857770089550859117">Se requiere la frase de contraseña para comenzar la sincronización.</translation>
 <translation id="5859715514067755465">Adelantar</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -839,7 +836,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
-<translation id="7153999225810839758">Tiempo de lectura: <ph name="TIME" /> minuto(s)</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
@@ -1017,7 +1013,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8548878600947630424">Buscar en la página...</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegas o presionas vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="8588404856427128947">Apagada</translation>
-<translation id="8590913940444621808">Nunca preguntar</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
 <translation id="8620640915598389714">Editar</translation>

@@ -127,6 +127,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
+<translation id="163517899691012366">Notificările sunt dezactivate când se activează funcția Nu deranja</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
@@ -179,7 +180,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1862380676329487333">Actualizează și deconectează-te</translation>
 <translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1869497990620230175">Fișiere rapide</translation>
-<translation id="1871703283152909317">Activează ambele accesuri</translation>
 <translation id="1879018240766558464">Ferestrele incognito nu sunt acceptate. Alte aplicații se vor salva.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3047761520276763270">Încearcă să rostești:</translation>
 <translation id="3051189971848907985">Se redenumește profilul. Așteaptă câteva minute.</translation>
 <translation id="3055162170959710888">Ai folosit acest dispozitiv <ph name="USED_TIME" /> astăzi</translation>
+<translation id="3062298103034426069">Nu se acceptă</translation>
 <translation id="3068711042108640621">Raft în partea stângă</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Extinde meniul</translation>
@@ -410,6 +411,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configurează</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
+<translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289544412142055976">Aplicațiile Linux nu sunt acceptate</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
@@ -790,9 +792,11 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
 <translation id="533282197239610265">Afișează dispozitivele de proiecție</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dreapta)</translation>
+<translation id="5351427059191534258">Dezactivezi accesul la camera foto?</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
 <translation id="5356963482258194581">Comută între tema luminoasă și cea întunecată Dă clic dreapta pe desktop și selectează Stil și imagine de fundal.</translation>
 <translation id="536019650977002321">Administratorul nu permite înregistrarea audio. Contactează administratorul pentru mai multe informații.</translation>
+<translation id="5361524080961918551">S-au descărcat parțial <ph name="LANGUAGE" /> fișiere vocale</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accesează fila</translation>
 <translation id="5377367976106153749">Activezi accesul la camera foto?</translation>
 <translation id="5379115545237091094">Prea multe încercări</translation>
@@ -902,6 +906,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5980301590375426705">Ieși ca invitat</translation>
 <translation id="598407983968395253">Folosește șablonul</translation>
 <translation id="598882571027504733">Pentru a obține actualizarea, repornește Chromebookul cu tastatura atașată.</translation>
+<translation id="6002179289567220515">Ai folosit comutatorul fizic pentru a dezactiva o cameră. Poți dezactiva accesul tuturor camerelor.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> din <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Se iese din modul oglindă</translation>
 <translation id="602001110135236999">Derulează la stânga</translation>
@@ -926,7 +931,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6095008505822982596">Ritmul vorbirii</translation>
 <translation id="6099678161144790572">Editat în ultima lună</translation>
 <translation id="6103838137565245112">sistem</translation>
-<translation id="6107292179555508368">Accesul la microfon și la camera foto este dezactivat pe acest dispozitiv</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
@@ -943,9 +947,11 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="619279033188484792">Afișează fotografiile, elementele media și notificările recente ale telefonului pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Încarcă complet acum</translation>
 <translation id="6193431488227440296">Dezvoltatori</translation>
+<translation id="6200515304866777730">Nu este acceptată de aplicație</translation>
 <translation id="6210042900243040400">Conectează <ph name="NAME" /> salvat anterior în <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
+<translation id="623116199192908855">Proiectează ecranul de pe Chromebook</translation>
 <translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> folosește momentan camera și microfonul</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +959,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: se activează...</translation>
 <translation id="6274202259872570803">Înregistrare de pe ecran</translation>
-<translation id="6282694724099204652">Activează accesul pentru a permite aplicațiilor și paginilor web cu permisiunea respectivă să folosească microfoanele și camerele video de pe acest dispozitiv.</translation>
 <translation id="6283712521836204486">Funcția Nu deranja este dezactivată.</translation>
 <translation id="6284232397434400372">Rezoluția a fost schimbată</translation>
 <translation id="6288235558961782912">Utilizatorul <ph name="USER_EMAIL_ADDRESS" /> poate fi adăugat din nou mai târziu, cu permisiunea părintelui.</translation>
@@ -988,8 +993,10 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> solicită să actualizezi dispozitivul <ph name="DEVICE_TYPE" /> înainte de termenul limită</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
 <translation id="6495400115277918834">Picture-in-picture a început, apasă pe Alt+Shift+V pentru a focaliza</translation>
+<translation id="6497418457565568043">Funcția Nu deranja este activată</translation>
 <translation id="6500896621837555595">Actualizează</translation>
 <translation id="6501401484702599040">Se proiectează ecranul pe <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Verifică dacă Chromebookul este conectat la aceeași rețea Wi-Fi ca dispozitivul Chromecast.</translation>
 <translation id="6515727200518652613">Conexiunea cu camera foto s-a întrerupt, se încearcă reconectarea.</translation>
 <translation id="6520517963145875092">Selectează o fereastră ca să o capturezi</translation>
 <translation id="652139407789908527">Pe durata actualizării, ecranul se va goli pentru o perioadă mai lungă decât de obicei (maximum un minut). Nu apăsa butonul de alimentare în timpul actualizării.</translation>

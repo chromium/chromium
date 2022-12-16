@@ -149,9 +149,9 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2080769225927880590">Meld met 'n geldige rekening aan</translation>
 <translation id="2103075008456228677">Maak history.google.com oop</translation>
+<translation id="21133533946938348">Speld oortjie vas</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items is geskuif</translation>
 <translation id="2122754583996902531">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Vra om By Leeslys te Voeg</translation>
 <translation id="2139867232736819575">Soek vir teks wat jy gekopieer het</translation>
 <translation id="214201757571129614">Meld aan …</translation>
 <translation id="2149973817440762519">Wysig boekmerk</translation>
@@ -542,7 +542,6 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5062321486222145940">Installeer Google Drive</translation>
 <translation id="5083464117946352670">Kan nie lêergrootte bepaal nie.</translation>
 <translation id="5090832849094901128">As hierdie wagwoord uitgevee word, sal jou rekening op <ph name="WEBSITE" /> nie uitgevee word nie.</translation>
-<translation id="5092117651143801290">Jy kan bladsye stoor om later of vanlyn te lees. Chrome sal vra of jy lang bladsye wil stoor.</translation>
 <translation id="5094827893301452931">Twiet is voltooi.</translation>
 <translation id="5118713593561876160">Belangstellings</translation>
 <translation id="5118764316110575523">Af</translation>
@@ -598,7 +597,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="556042886152191864">Knoppie</translation>
-<translation id="5580834567471114021">Voeg by Leeslys vir later?</translation>
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -638,7 +636,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5846482154967366008">Soekenjin</translation>
 <translation id="5854790677617711513">Ouer as 30 dae</translation>
 <translation id="5857090052475505287">Nuwe vouer</translation>
-<translation id="5857675236236529683">Kry jou leeslys hier wanneer jy gereed is</translation>
 <translation id="5857770089550859117">Wagfrase word vereis om sinkronisering te begin.</translation>
 <translation id="5859715514067755465">Vorentoe</translation>
 <translation id="5860033963881614850">Af</translation>
@@ -839,7 +836,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7108762695052995889">Besoek webwerf</translation>
 <translation id="7133798577887235672">Volle naam en van</translation>
 <translation id="7136892417564438900">Kamera is onbeskikbaar</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> minute om te lees</translation>
 <translation id="7162168282402939716">Ontsluit Incognito-oortjies met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Hou jou wagwoorde veilig teen sekuriteitsprobleme</translation>
 <translation id="7173114856073700355">Maak Instellings oop</translation>
@@ -1017,7 +1013,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8548878600947630424">Vind in bladsy …</translation>
 <translation id="8558480467877843976">Jy kan Chrome nou enige tyd gebruik wanneer jy blaai of op skakels in boodskappe, dokumente en ander programme tik.</translation>
 <translation id="8588404856427128947">Af</translation>
-<translation id="8590913940444621808">Moet nooit vra nie</translation>
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
 <translation id="8605219856220328675">Maak oortjie toe.</translation>
 <translation id="8620640915598389714">Redigeer</translation>
@@ -1102,6 +1097,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9219154867334666734">Soek oortjies …</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
 <translation id="941747855997058526">Kies wagwoord …</translation>
+<translation id="948048872540558976">Skep nuwe oortjie</translation>
 <translation id="952704832371081537">Kanselleer</translation>
 <translation id="953008885340860025">Chrome is afgemeld</translation>
 <translation id="959066944189734975">Jy volg tans <ph name="CHANNEL_NAME" /></translation>

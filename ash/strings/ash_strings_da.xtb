@@ -120,6 +120,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="15373452373711364">Stor musemarkør</translation>
 <translation id="1546492247443594934">Skrivebord 2</translation>
 <translation id="1546930421365146760">Bed din administrator om at konfigurere denne enhed i Google Administrationskonsol</translation>
+<translation id="1550406609415860283">Tilgængelige enheder</translation>
 <translation id="1550523713251050646">Klik for at se flere muligheder</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
@@ -143,7 +144,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1715293566947629045">Deaktiverer profilen. Vent et par minutter.</translation>
 <translation id="1719094688023114093">Livetekstning er aktiveret.</translation>
 <translation id="1720011244392820496">Aktivér Wi-Fi-synkronisering</translation>
-<translation id="1733996486177697563">Skift mellem Mørkt og Lyst tema. Hold fingeren nede på skrivebordet, og vælg derefter Baggrund og stil.</translation>
+<translation id="1733996486177697563">Skift mellem Mørkt og Lyst tema. Hold fingeren på skrivebordet, og vælg derefter Baggrund og stil.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" kan ses af Bluetooth-enheder.</translation>
 <translation id="174102739345480129">Tuschen er deaktiveret.</translation>
 <translation id="1743570585616704562">Ikke genkendt</translation>
@@ -179,7 +180,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1862380676329487333">Opdater, og log ud</translation>
 <translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
 <translation id="1869497990620230175">Genvej til foretrukne filer</translation>
-<translation id="1871703283152909317">Aktivér adgang til begge</translation>
 <translation id="1879018240766558464">Inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="1882814835921407042">Intet mobilnetværk</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
@@ -460,6 +460,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3542066395059568317">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at højreklikke.</translation>
 <translation id="3552189655002856821">Wi-Fi er deaktiveret</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
+<translation id="3560174576767922131">Optag video</translation>
 <translation id="3563775809269155755">Aktivér hotspot</translation>
 <translation id="3566240529365775567">Åbnet lige nu</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
@@ -652,6 +653,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4577274620589681794">Tiden er gået · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Indstillingsmenuen er åben</translation>
+<translation id="458210817642223147">Optag gif</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4611292653554630842">Log ind</translation>
@@ -731,6 +733,7 @@ Slut din enhed til en strømkilde.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Skrivebord 16</translation>
 <translation id="5003993274120026347">Næste sætning</translation>
+<translation id="5004607513195820459">Netværket administreres</translation>
 <translation id="5016558321564993266">Slå tusch til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Adgang til enhedens mikrofon er aktiveret</translation>
 <translation id="5030687792513154421">Tiden er gået</translation>
@@ -926,7 +929,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6095008505822982596">Talehastighed</translation>
 <translation id="6099678161144790572">Redigeret inden for den seneste måned</translation>
 <translation id="6103838137565245112">systemet</translation>
-<translation id="6107292179555508368">Adgang til mikrofon og kamera er deaktiveret på denne enhed</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekræft download af <ph name="FILENAME" /></translation>
@@ -953,7 +955,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6259254695169772643">Vælg ved hjælp af din styluspen</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverer...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Aktivér adgang for at tillade, at apps og websider med tilladelsen kan bruge mikrofonerne og kameraerne på denne enhed.</translation>
 <translation id="6283712521836204486">Forstyr ikke er deaktiveret</translation>
 <translation id="6284232397434400372">Opløsningen blev ændret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan tilføjes igen senere, hvis en forælder giver tilladelse til det.</translation>
@@ -1071,6 +1072,7 @@ Installeret for nylig</translation>
 <translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="6931576957638141829">Gem i</translation>
+<translation id="6942518653766415536">Menu for optagelsesformat</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6960565108681981554">Ikke aktiveret. Kontakt dit mobilselskab.</translation>
 <translation id="6961121602502368900">Du kan ikke sætte din telefon på lydløs med en arbejdsprofil</translation>

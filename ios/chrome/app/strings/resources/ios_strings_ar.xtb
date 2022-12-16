@@ -151,9 +151,9 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
+<translation id="21133533946938348">تثبيت علامة التبويب</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">طلب الإضافة إلى "قائمة القراءة"</translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="214201757571129614">تسجيل الدخول…</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
@@ -545,7 +545,6 @@
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
 <translation id="5083464117946352670">تعذر تحديد حجم الملف.</translation>
 <translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">‏يمكنك حفظ الصفحات لقراءتها لاحقًا أو بلا إنترنت. وسيسألك Chrome ما إذا كنت تريد حفظ الصفحات الطويلة.</translation>
 <translation id="5094827893301452931">‏اكتملت مشاركة Tweet.</translation>
 <translation id="5118713593561876160">الاهتمامات</translation>
 <translation id="5118764316110575523">غير مفعَّل</translation>
@@ -601,7 +600,6 @@
 <translation id="5551897871312988470">اقتراح الترجمة</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="556042886152191864">زر</translation>
-<translation id="5580834567471114021">هل تريد إضافة الصفحة إلى "قائمة القراءة" للاطّلاع عليها في وقت لاحق؟</translation>
 <translation id="5597915316964418992">افتح شبكة علامات التبويب.</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
@@ -641,7 +639,6 @@
 <translation id="5846482154967366008">محرك بحث</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
 <translation id="5857090052475505287">مجلد جديد</translation>
-<translation id="5857675236236529683">عندما تكون مستعدًا، يمكنك الاطّلاع على قائمة القراءة هنا.</translation>
 <translation id="5857770089550859117">عبارة المرور مطلوبة لبدء المزامنة.</translation>
 <translation id="5859715514067755465">التالي</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
@@ -842,7 +839,6 @@
 <translation id="7108762695052995889">زيارة الموقع الإلكتروني</translation>
 <translation id="7133798577887235672">الاسم بالكامل</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
-<translation id="7153999225810839758">تستغرق القراءة <ph name="TIME" /> دقيقة.</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8548878600947630424">بحث في الصفحة...</translation>
 <translation id="8558480467877843976">‏يمكنك الآن استخدام Chrome في أي وقت تتصفَّح فيه أو تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
-<translation id="8590913940444621808">عدم السؤال مرة أخرى</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
 <translation id="8620640915598389714">تعديل</translation>

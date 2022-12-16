@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2584559707064218956">Чтобы задать конфигурацию сети, перейдите в настройки.</translation>
 <translation id="2597774443162333062">Файлы будут отправлены в Google для отладки</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="2619761439309613843">Обновлять ежедневно</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>

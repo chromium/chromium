@@ -335,7 +335,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307165550267142340">Se creó tu PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
-<translation id="1309375166585231290">Tu madre o padre aún no dieron su aprobación</translation>
 <translation id="1312811472299082263">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="1313405956111467313">Configuración automática de proxy</translation>
 <translation id="131364520783682672">Bloq Mayús</translation>
@@ -416,7 +415,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1395730723686586365">Actualizador iniciado</translation>
 <translation id="1395832189806039783">Destacar el elemento con el enfoque del teclado</translation>
 <translation id="1396139853388185343">Se produjo un error al configurar la impresora</translation>
-<translation id="1396259464226642517">¿Fue inesperado este resultado? <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">El nombre de usuario y la contraseña que ingresaste no coinciden</translation>
 <translation id="1397500194120344683">No hay dispositivos compatibles. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1397594434718759194">Accediste a Chrome desde estos dispositivos. Puedes usarlos como llaves de seguridad.</translation>
@@ -800,7 +798,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Desplazarse hacia la última pestaña</translation>
 <translation id="1731911755844941020">Enviando solicitud...</translation>
-<translation id="1732445923934584865">Preguntar de manera presencial</translation>
 <translation id="1733383495376208985">Encriptar los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> (no se incluyen formas de pago ni direcciones de Google Pay).</translation>
 <translation id="1734212868489994726">Celeste</translation>
 <translation id="1734230530703461088">No se pudieron cargar las extensiones antes del límite de tiempo establecido. Comunícate con tu administrador.</translation>
@@ -1130,7 +1127,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="2034346955588403444">Agregar otra red Wi-Fi</translation>
 <translation id="2035211704574173780">Escala de grises</translation>
 <translation id="203574396658008164">Habilitar la toma de notas desde la pantalla bloqueada</translation>
-<translation id="2036514476578229158">Solicitaste visitar este sitio. Tus padres pueden responder en Family Link.</translation>
 <translation id="2037445849770872822">Se configuró la supervisión de esta Cuenta de Google. Para configurar más controles parentales, selecciona Continuar.
 
 De lo contrario, sal de la cuenta ahora para que se reflejen los cambios en este dispositivo.
@@ -1255,7 +1251,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2136372518715274136">Ingresa la nueva contraseña</translation>
 <translation id="2136476978468204130">La frase de contraseña que ingresaste es incorrecta</translation>
 <translation id="2137128126782078222">No permitir notificaciones de <ph name="WEBSITE" /></translation>
-<translation id="2137891579555018930">Esperando el permiso…</translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
 <translation id="2140788884185208305">Estado de la batería</translation>
 <translation id="2142328300403846845">Abrir vínculo como</translation>
@@ -1371,7 +1366,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2242687258748107519">Información del archivo</translation>
 <translation id="2245603955208828424">Usa las flechas para desplazarte por los elementos letra por letra.</translation>
 <translation id="2246129643805925002">Tu <ph name="DEVICE_TYPE" /> se actualiza automáticamente en segundo plano para brindarte las funciones y las mejoras de seguridad más recientes. Puedes revisar las preferencias de actualización en la Configuración.</translation>
-<translation id="2246480341630108201">Tu madre o padre aún no dió su aprobación</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
 <translation id="2247738527273549923">Tu organización administra este dispositivo.</translation>
 <translation id="2247870315273396641">Prueba de voz</translation>
@@ -1751,6 +1745,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2564520396658920462">La ejecución de JavaScript mediante AppleScript está desactivada. Para activarla, en la barra de menú, visita Ver &gt; Desarrollador &gt; Permitir JavaScript para eventos de Apple. Obtener más información en https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Corrector ortográfico mejorado</translation>
 <translation id="2568774940984945469">Contenedor de la barra de información</translation>
+<translation id="257088987046510401">Temas</translation>
 <translation id="2571655996835834626">Permite cambiar la configuración que controla el acceso de los sitios web a ciertas funciones, como las cookies, JavaScript, los complementos, la ubicación geográfica, el micrófono, la cámara, etc.</translation>
 <translation id="2572032849266859634">Se concedió acceso de solo lectura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573276323521243649">Salir de la página de selección de avatar</translation>
@@ -1891,7 +1886,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
-<translation id="2712173769900027643">Solicitar permiso</translation>
 <translation id="2712207122921938368">Crea una llave de acceso en otro dispositivo</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
@@ -1999,7 +1993,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2792290659606763004">¿Quitar las apps de Android?</translation>
 <translation id="2792465461386711506">Activa la Sincronización de Chrome para ver las pestañas recientes de Chrome desde tu teléfono</translation>
 <translation id="2792697226874849938">Imágen de restricción</translation>
-<translation id="2794233252405721443">Sitio bloqueado</translation>
 <translation id="2794522004398861033">Conectar a Wi-Fi o Ethernet para configurar una eSIM</translation>
 <translation id="2795074478966352573">Aún no se admiten las cuentas administradas con Family Link</translation>
 <translation id="2795716239552913152">Por lo general, los sitios utilizan tu ubicación para mostrar información o habilitar funciones relevantes, como noticias locales o tiendas cercanas.</translation>
@@ -2070,7 +2063,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2849936225196189499">Crítico</translation>
 <translation id="2850541429955027218">Agregar tema</translation>
 <translation id="2850672011315104382">Estilo de puntuación</translation>
-<translation id="2851634818064021665">Necesitas permiso para visitar este sitio</translation>
 <translation id="2851728849045278002">Se produjo un error. Haz clic para obtener más información.</translation>
 <translation id="2852385257476173980">Es posible que aparezca una lista de sitios que visitas aquí mientras navegas en la Web.</translation>
 <translation id="285241945869362924">Crea subtítulos de forma automática para audio y video. El audio y los subtítulos permanecen en el dispositivo.</translation>
@@ -2742,7 +2734,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3496689104192986836">Nivel de batería: <ph name="PERCENTAGE" />%</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (producto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartir doodle</translation>
-<translation id="3498215018399854026">No pudimos comunicarnos con ninguno de tus padres. Vuelve a intentarlo.</translation>
 <translation id="3500417806337761827">Se produjo un error al activar el recurso compartido porque ya se activaron demasiados archivos compartidos SMB.</translation>
 <translation id="3503995387997205657">Puedes restablecer tus apps anteriores.</translation>
 <translation id="3505030558724226696">Revocar el acceso al dispositivo</translation>
@@ -2826,7 +2817,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
 <translation id="3586787825263265024">La aplicación <ph name="APPLICATION_NAME" /> requiere que OneDrive esté disponible.</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
-<translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3588790464166520201">Puede instalar controladores de pago</translation>
 <translation id="3589766037099229847">Se bloqueó el contenido no seguro</translation>
@@ -4040,7 +4030,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4713409221649555176">Borrar cuando cierras todas las ventanas</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para expandirlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
-<translation id="471880041731876836">No tienes permiso para visitar este sitio</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No se pueden mostrar mensajes de acceso de terceros</translation>
@@ -4186,11 +4175,9 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
 <translation id="4854603338816296098">Se quitó la dirección</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
-<translation id="4858792381671956233">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
 <translation id="4863769717153320198">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (predeterminada)</translation>
-<translation id="486459320933704969">Para poder visitar este sitio web, tu padre, madre o tutor debe aprobar tu solicitud.</translation>
 <translation id="4864805589453749318">Selecciona el padre o madre que otorga permiso para agregar una cuenta de una institución educativa.</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo después de descargarlos</translation>
 <translation id="4868281708609571334">Enséñale a Asistente de Google a reconocer la voz de <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -4868,7 +4855,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado desde Firefox</translation>
 <translation id="5502915260472117187">Un niño</translation>
-<translation id="5503356662318814623">Enviar un mensaje</translation>
 <translation id="5503982651688210506">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara y use el micrófono</translation>
 <translation id="5505264765875738116">Los sitios no podrán preguntarte si quieres recibir notificaciones</translation>
 <translation id="5505307013568720083">Se agotó la tinta</translation>
@@ -4924,7 +4910,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5555363196923735206">Girar cámara</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
-<translation id="5558125320634132440">Se bloqueó este sitio porque puede incluir contenido para mayores de edad</translation>
 <translation id="5558129378926964177">Acercar</translation>
 <translation id="55601339223879446">Ajustar los límites de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
@@ -4938,7 +4923,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5571832155627049070">Personaliza tu perfil</translation>
 <translation id="5572252023412311448">Mostrar detalles del sitio para <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Recibirás mejores sugerencias en la barra de direcciones</translation>
-<translation id="5572851009514199876">Abre Chrome y accede a tu cuenta para que el programa pueda comprobar si puedes acceder a este sitio.</translation>
 <translation id="557506220935336383">Ver los permisos de extensiones para otros sitios</translation>
 <translation id="5575473780076478375">Extensión de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Hubo un problema con la solicitud de registro de demostración.</translation>
@@ -5099,7 +5083,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5728450728039149624">Opciones del bloqueo de pantalla con Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar y acceder</translation>
-<translation id="5732392974455271431">Tus padres pueden desbloquearlo por ti</translation>
 <translation id="5733109311583381874">Agrega tus propias palabras a los diccionarios del usuario para personalizar los candidatos de conversión.</translation>
 <translation id="5733866499231170760">La ID no es válida. El formato que ingresaste es incorrecto. Revisa las instrucciones que recibiste para asegurarte de ingresar la ID en el formato correcto. Si no puedes resolver el problema, deja el campo vacío y continúa con la instalación.</translation>
 <translation id="5734362860645681824">Comunicaciones</translation>
@@ -5824,7 +5807,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6410668567036790476">Agregar motor de búsqueda</translation>
 <translation id="641469293210305670">Instalar actualizaciones y apps</translation>
 <translation id="6414878884710400018">Abrir Preferencias del sistema</translation>
-<translation id="6414888972213066896">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="6415900369006735853">Conéctate a Internet a través de tu teléfono.</translation>
 <translation id="6416743254476733475">Habilítalos o bloquéalos en tu computadora.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
@@ -6916,7 +6898,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="744341768939279100">Crear un perfil nuevo</translation>
 <translation id="744366959743242014">Se están cargando los datos; esta acción puede tardar unos segundos.</translation>
 <translation id="7443806024147773267">Cuando accedas a tu Cuenta de Google, podrás consultar tus contraseñas en cualquier momento</translation>
-<translation id="7444046173054089907">Este sitio está bloqueado</translation>
 <translation id="7444970023873202833">Explora más recuerdos en Google Fotos</translation>
 <translation id="7444983668544353857">Inhabilitar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instala apps automáticamente</translation>
@@ -7020,7 +7001,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con la app de <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Habilitar funciones de depuración en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
-<translation id="7543525346216957623">Pregúntales a tus padres</translation>
 <translation id="7545466883021407599">No fue posible establecer una conexión con el servidor. Verifica tu conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertencia: La configuración de <ph name="PRODUCT_NAME" /> se almacena en una unidad de red, lo que puede provocar ralentizaciones, fallas o, incluso, la pérdida de datos.</translation>
 <translation id="7548856833046333824">Limonada</translation>
@@ -7259,7 +7239,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7753735457098489144">No se pudo instalar porque el espacio de almacenamiento es insuficiente. Para liberar espacio, borra archivos del almacenamiento del dispositivo.</translation>
 <translation id="7754347746598978109">No puede usar JavaScript</translation>
 <translation id="7754704193130578113">Preguntar ubicación antes de descargar</translation>
-<translation id="7755287808199759310">Uno de tus padres puede desbloquearlo por ti</translation>
 <translation id="7757592200364144203">Cambiar el nombre del dispositivo</translation>
 <translation id="7757739382819740102">Los contactos cercanos pueden compartir contenido contigo. Se requerirá aprobación.</translation>
 <translation id="7757787379047923882">Texto compartido de <ph name="DEVICE_NAME" /></translation>
@@ -7484,7 +7463,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7952904276017482715">Se esperaba un ID "<ph name="EXPECTED_ID" />", pero el ID fue "<ph name="NEW_ID" />"</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Administrar accesos directos</translation>
-<translation id="7955105108888461311">Preguntar en persona</translation>
 <translation id="7955177647836564772">Si la función Smart Lock está activada y tu teléfono está desbloqueado, no tendrás que ingresar un PIN ni una contraseña.</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o la ID del activo</translation>
@@ -7546,7 +7524,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8009225694047762179">Administrar contraseñas</translation>
 <translation id="8011372169388649948">Se movió "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8011875486979733097">No se puede instalar Steam</translation>
-<translation id="8012647001091218357">No pudimos comunicarnos con tus padres. Vuelve a intentarlo.</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8014154204619229810">El actualizador se está ejecutando en este momento. Actualiza dentro de un minuto para verificarlo de nuevo.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> no puede volver a la versión instalada previamente. Vuelve a intentarlo para utilizar la función Powerwash en el dispositivo.</translation>
@@ -8700,7 +8677,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectado</translation>
 <translation id="9075413375877487220">La Navegación segura mejorada no confía en esta extensión.</translation>
-<translation id="9076283476770535406">Es posible que incluya contenido para adultos</translation>
 <translation id="9076523132036239772">Lo sentimos, no pudimos verificar tu correo electrónico o contraseña. Intenta conectándote a una red.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Elementos compartidos con SMB</translation>
@@ -8771,7 +8747,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="913411432238655354">Restablecer apps en el inicio</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de búsqueda preferido</translation>
-<translation id="9137248913990643158">Abre Chrome y accede a tu cuenta antes de usar esta app.</translation>
 <translation id="9137916601698928395">Abrir vínculo como <ph name="USER" /></translation>
 <translation id="9138978632494473300">Agregar accesos directos a los siguientes lugares:</translation>
 <translation id="9139258866388561662">Accede a <ph name="WEB_DRIVE" /> para completar la descarga</translation>
@@ -8883,7 +8858,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="947329552760389097">Analizar elementos</translation>
 <translation id="947526284350604411">Tu respuesta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no puede abrir los archivos de esta carpeta porque contiene archivos del sistema.</translation>
-<translation id="949314938206378263">Solicitaste visitar este sitio. Tu madre o padre puede responder en Family Link.</translation>
 <translation id="950307215746360464">Guía de configuración</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="952471655966876828">El dispositivo se conectará de forma automática cuando lo actives y lo uses</translation>

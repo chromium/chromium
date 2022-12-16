@@ -127,6 +127,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
+<translation id="163517899691012366">As notificações são silenciadas quando o modo "Não perturbe" está ativado</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1654477262762802994">Iniciar uma consulta por voz</translation>
@@ -179,7 +180,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1862380676329487333">Atualizar e sair</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1869497990620230175">Arquivos de acesso rápido</translation>
-<translation id="1871703283152909317">Ativar os dois acessos</translation>
 <translation id="1879018240766558464">No momento, não há suporte para janelas anônimas. Outros apps serão salvos.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3047761520276763270">Tente dizer:</translation>
 <translation id="3051189971848907985">Renomeando o perfil. Aguarde alguns minutos.</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
+<translation id="3062298103034426069">Sem suporte</translation>
 <translation id="3068711042108640621">Estante à esquerda</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menu</translation>
@@ -410,6 +411,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuração</translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
+<translation id="3260969790895726815">A fala é processada localmente e o ditado funciona off-line, mas alguns comandos de voz não vão funcionar.</translation>
 <translation id="3269597722229482060">Clique com o botão direito do mouse</translation>
 <translation id="3289544412142055976">No momento, não há suporte para os apps do Linux</translation>
 <translation id="3289674678944039601">Carregando pelo adaptador</translation>
@@ -790,9 +792,11 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira da esquerda)</translation>
 <translation id="533282197239610265">Mostrar dispositivos de transmissão</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
+<translation id="5351427059191534258">Desativar o acesso à câmera?</translation>
 <translation id="5352250171825660495">O tema escuro está ativado</translation>
 <translation id="5356963482258194581">Escolha entre o tema claro ou escuro. Clique com o botão direito do mouse na área de trabalho e selecione a opção "Plano de fundo e estilo".</translation>
 <translation id="536019650977002321">O administrador não permite a captura de áudio. Entre em contato com ele para saber mais.</translation>
+<translation id="5361524080961918551">Arquivos de fala em <ph name="LANGUAGE" /> parcialmente transferidos por download</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir para essa guia</translation>
 <translation id="5377367976106153749">Permitir o acesso à câmera?</translation>
 <translation id="5379115545237091094">Muitas tentativas</translation>
@@ -902,6 +906,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para receber a atualização, reinicie seu Chromebook com o teclado conectado.</translation>
+<translation id="6002179289567220515">Você usou o interruptor físico para desligar 1 câmera. Também é possível desativar o acesso a todas as câmeras.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
@@ -926,7 +931,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6095008505822982596">Velocidade da fala</translation>
 <translation id="6099678161144790572">Editado no último mês</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="6107292179555508368">Os acessos ao microfone e à câmera estão desativados neste dispositivo</translation>
 <translation id="6114505516289286752">Download de arquivos de fala em <ph name="LANGUAGE" /> concluído</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar o download de <ph name="FILENAME" /></translation>
@@ -943,9 +947,11 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="619279033188484792">Veja as fotos, mídias e notificações recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">O app não oferece suporte</translation>
 <translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Agora é possível gravar você e a tela ao mesmo tempo</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
+<translation id="623116199192908855">Transmitir a tela do Chromebook</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +959,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6259254695169772643">Use a stylus para selecionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ativando...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Ative os acessos para autorizar apps e páginas da Web com a permissão de uso do microfone e da câmera neste dispositivo.</translation>
 <translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do familiar responsável.</translation>
@@ -988,8 +993,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> precisa que você atualize seu <ph name="DEVICE_TYPE" /> antes do fim do prazo</translation>
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
 <translation id="6495400115277918834">O picture-in-picture foi iniciado. Pressione "Alt + Shift + V" para focar</translation>
+<translation id="6497418457565568043">"Não perturbe" ativado</translation>
 <translation id="6500896621837555595">Atualizar</translation>
 <translation id="6501401484702599040">Transmitindo tela para <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Confira se o Chromebook está na mesma rede Wi-Fi do dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Câmera perdida, tentando reconectar.</translation>
 <translation id="6520517963145875092">Selecione uma janela para a captura</translation>
 <translation id="652139407789908527">Sua tela ficará desligada por mais tempo que o normal (até um minuto) durante a atualização. Não pressione o botão liga/desliga enquanto a atualização está em andamento.</translation>

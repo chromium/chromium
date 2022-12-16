@@ -149,9 +149,9 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080769225927880590">Conectează-te cu un cont valid</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
+<translation id="21133533946938348">Fixează fila</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Solicită adăugarea la Lista de lecturi</translation>
 <translation id="2139867232736819575">Caută textul pe care l-ai copiat</translation>
 <translation id="214201757571129614">Conectează-te…</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
@@ -542,7 +542,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5062321486222145940">Instalează Google Drive</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Poți să salvezi pagini ca să le citești offline sau mai târziu. Chrome te va întreba dacă dorești să salvezi pagini lungi.</translation>
 <translation id="5094827893301452931">Tweet finalizat.</translation>
 <translation id="5118713593561876160">Interese</translation>
 <translation id="5118764316110575523">Dezactivat</translation>
@@ -598,7 +597,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5551897871312988470">Oferă traducerea</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="556042886152191864">Buton</translation>
-<translation id="5580834567471114021">Adaugi la Lista de lecturi pentru mai târziu?</translation>
 <translation id="5597915316964418992">Deschide grila cu file</translation>
 <translation id="560322036295180549">Dezactivată de organizație</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
@@ -638,7 +636,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5846482154967366008">Motor de căutare</translation>
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5857090052475505287">Dosar nou</translation>
-<translation id="5857675236236529683">Când ești gata, vei găsi lista de lecturi aici</translation>
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>
 <translation id="5859715514067755465">Înainte</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
@@ -839,7 +836,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7108762695052995889">Accesează site-ul</translation>
 <translation id="7133798577887235672">Numele complet</translation>
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>
-<translation id="7153999225810839758">Lectură de <ph name="TIME" /> minute</translation>
 <translation id="7162168282402939716">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protejează-ți parolele împotriva problemelor de securitate</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>
@@ -1017,7 +1013,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8548878600947630424">Găsește în pagină...</translation>
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="8588404856427128947">Stinsă</translation>
-<translation id="8590913940444621808">Nu mai întreba niciodată</translation>
 <translation id="8591976964826315682">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="8605219856220328675">Închide fila.</translation>
 <translation id="8620640915598389714">Editează</translation>
@@ -1102,6 +1097,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9219154867334666734">Caută în file…</translation>
 <translation id="9223358826628549784">Raportul de blocare a fost trimis.</translation>
 <translation id="941747855997058526">Selectează o parolă...</translation>
+<translation id="948048872540558976">Creează o nouă filă</translation>
 <translation id="952704832371081537">Anulează</translation>
 <translation id="953008885340860025">Te-ai deconectat de la Chrome</translation>
 <translation id="959066944189734975">Urmărești <ph name="CHANNEL_NAME" /></translation>

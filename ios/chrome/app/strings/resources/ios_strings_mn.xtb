@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2080769225927880590">Хүчинтэй бүртгэлээр нэвтрэх</translation>
 <translation id="2103075008456228677">History.google.com-г нээх</translation>
+<translation id="21133533946938348">Цонхыг урд талд гаргах</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> зүйлүүдийг зөөсөн байна</translation>
 <translation id="2122754583996902531">Таны хөтчийг удирдаж байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Унших жагсаалтад нэмэх хүсэлт тавих</translation>
 <translation id="2139867232736819575">Хуулсан текстээ хайх</translation>
 <translation id="214201757571129614">Нэвтрэх…</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
@@ -541,7 +541,6 @@
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5083464117946352670">Файлын хэмжээг тодорхойлж чадахгүй байна.</translation>
 <translation id="5090832849094901128">Энэ нууц үгийг устгаснаар таны <ph name="WEBSITE" /> дээрх бүртгэлийг устгахгүй.</translation>
-<translation id="5092117651143801290">Та хуудаснуудыг дараа, эсвэл офлайнаар уншихаар хадгалж болно. Chrome танаас урт хуудаснуудыг хадгалахыг хүсэж байгаа эсэхийг асууна.</translation>
 <translation id="5094827893301452931">Жиргэж дууссан.</translation>
 <translation id="5118713593561876160">Сонирхол</translation>
 <translation id="5118764316110575523">Унтраалттай</translation>
@@ -597,7 +596,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5551897871312988470">Орчуулахыг санал болгох</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="556042886152191864">Товч</translation>
-<translation id="5580834567471114021">Дараа уншихаар Унших жагсаалтад нэмэх үү?</translation>
 <translation id="5597915316964418992">Табын хүснэгтийг нээх</translation>
 <translation id="560322036295180549">Танай байгууллага унтраасан</translation>
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
@@ -637,7 +635,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5846482154967366008">Хайлтын хэрэгсэл</translation>
 <translation id="5854790677617711513">30 өдрөөс илүү</translation>
 <translation id="5857090052475505287">Шинэ хавтас</translation>
-<translation id="5857675236236529683">Та бэлэн үедээ унших жагсаалтаа эндээс олно уу</translation>
 <translation id="5857770089550859117">Синкийг эхлүүлэхийн тулд нэвтрэх үг оруулах шаардлагатай.</translation>
 <translation id="5859715514067755465">Урагшлуулах</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
@@ -838,7 +835,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7108762695052995889">Сайтад зочлох</translation>
 <translation id="7133798577887235672">Овог нэр</translation>
 <translation id="7136892417564438900">Камер боломжгүй</translation>
-<translation id="7153999225810839758">Уншихад <ph name="TIME" /> минут болно</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р Нууцлалтай табуудын түгжээг тайлах</translation>
 <translation id="7172852049901402487">Нууц үгнүүдээ аюулгүй байдлын асуудлаас хамгаална уу</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
@@ -1016,7 +1012,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8548878600947630424">Хуудаснаас олох...</translation>
 <translation id="8558480467877843976">Та одоо мессеж, документ болон бусад апп дахь холбоосыг үзэх эсвэл товшихын тулд Chrome-г хүссэн үедээ ашиглах боломжтой.</translation>
 <translation id="8588404856427128947">Унтраах</translation>
-<translation id="8590913940444621808">Хэзээ ч бүү асуу</translation>
 <translation id="8591976964826315682">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="8605219856220328675">Цонхыг хаах.</translation>
 <translation id="8620640915598389714">Засах</translation>

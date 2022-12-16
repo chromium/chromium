@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080769225927880590">योग्य खाते वापरून साइन इन करा</translation>
 <translation id="2103075008456228677">history.google.com उघडा</translation>
+<translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> आयटम हलविले</translation>
 <translation id="2122754583996902531">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">वाचन सूची मध्ये जोडण्याची विनंती करा</translation>
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
 <translation id="214201757571129614">साइन इन करा…</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
@@ -543,7 +543,6 @@
 <translation id="5062321486222145940">Google ड्राइव्ह इंस्टॉल करा</translation>
 <translation id="5083464117946352670">फाईल आकार निर्धारित करू शकत नाही.</translation>
 <translation id="5090832849094901128">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="WEBSITE" /> वरील खाते हटवले जाणार नाही.</translation>
-<translation id="5092117651143801290">तुम्‍ही नंतर किंवा ऑफलाइन वाचण्यासाठी पेज सेव्‍ह करू शकता. तुम्हाला मोठी पेज सेव्ह करायची आहेत का असे Chrome विचारेल.</translation>
 <translation id="5094827893301452931">Tweet पूर्ण केले.</translation>
 <translation id="5118713593561876160">स्वारस्ये</translation>
 <translation id="5118764316110575523">बंद</translation>
@@ -599,7 +598,6 @@
 <translation id="5551897871312988470">भाषांतर उपलब्ध करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="556042886152191864">बटण</translation>
-<translation id="5580834567471114021">नंतर वाचण्यासाठी वाचन सूची मध्ये जोडायचे आहे का?</translation>
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
@@ -639,7 +637,6 @@
 <translation id="5846482154967366008">शोध इंजीन</translation>
 <translation id="5854790677617711513">30 दिवसांपेक्षा जुना</translation>
 <translation id="5857090052475505287">नवीन फोल्डर</translation>
-<translation id="5857675236236529683">तुम्ही तयार असता तेव्हा, तुमची वाचन सूची येथे मिळवा</translation>
 <translation id="5857770089550859117">सिंक सुरू करण्यासाठी सांकेतिक पासफ्रेझ आवश्यक आहे.</translation>
 <translation id="5859715514067755465">फॉरवर्ड करा</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -841,7 +838,6 @@
 <translation id="7108762695052995889">साइटला भेट द्या</translation>
 <translation id="7133798577887235672">पूर्ण नाव</translation>
 <translation id="7136892417564438900">कॅमेरा अनुपलब्ध आहे</translation>
-<translation id="7153999225810839758">वाचण्यासाठी <ph name="TIME" /> मिनिटे</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरून गुप्त टॅब अनलॉक करा</translation>
 <translation id="7172852049901402487">सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
@@ -1019,7 +1015,6 @@
 <translation id="8548878600947630424">पृष्ठामध्ये शोधा...</translation>
 <translation id="8558480467877843976">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chrome कधीही वापरू शकता.</translation>
 <translation id="8588404856427128947">बंद करा</translation>
-<translation id="8590913940444621808">कधीही विचारू नका</translation>
 <translation id="8591976964826315682">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="8605219856220328675">टॅब बंद करा.</translation>
 <translation id="8620640915598389714">संपादित करा</translation>

@@ -179,7 +179,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1862380676329487333">Actualitza i tanca la sessió</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1869497990620230175">Fitxers ràpids</translation>
-<translation id="1871703283152909317">Activa els dos accessos</translation>
 <translation id="1879018240766558464">Les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
 <translation id="1882814835921407042">No hi ha cap xarxa mòbil</translation>
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
@@ -926,7 +925,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6095008505822982596">Velocitat de parla</translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="6107292179555508368">Els accessos al micròfon i a la càmera estan desactivats en aquest dispositiu</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
@@ -953,7 +951,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: s'està activant...</translation>
 <translation id="6274202259872570803">Captura de pantalla de vídeo</translation>
-<translation id="6282694724099204652">Activa els accessos per permetre que les aplicacions i les pàgines web que tinguin permís utilitzin els micròfons i les càmeres d'aquest dispositiu.</translation>
 <translation id="6283712521836204486">El mode No molestis està desactivat.</translation>
 <translation id="6284232397434400372">S'ha canviat la resolució</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> es pot tornar a afegir més endavant amb un permís dels pares.</translation>

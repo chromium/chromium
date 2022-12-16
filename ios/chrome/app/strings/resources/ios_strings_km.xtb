@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2080769225927880590">ចូលដោយប្រើគណនីដែលត្រឹមត្រូវ</translation>
 <translation id="2103075008456228677">បើក history.google.com</translation>
+<translation id="21133533946938348">ដៅផ្ទាំង</translation>
 <translation id="2116625576999540962">ធាតុ <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ត្រូវបានផ្លាស់ទី។</translation>
 <translation id="2122754583996902531">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">សួរដើម្បី​បញ្ចូល​ទៅក្នុង​បញ្ជីអាន</translation>
 <translation id="2139867232736819575">ស្វែងរក​អត្ថបទ​ដែលអ្នក​បានចម្លង</translation>
 <translation id="214201757571129614">ចូលគណនី…</translation>
 <translation id="2149973817440762519">កែប្រែចំណាំ</translation>
@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">បន្ត​កែ</translation>
 <translation id="2434405374328098816">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ "<ph name="USERNAME" />" នៅ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
+<translation id="2451654228769116489">ខ្ទាស់ផ្ទាំង</translation>
 <translation id="2461070143328828326">ការ​កំណត់​ពាក្យ​សម្ងាត់</translation>
 <translation id="2469960372084740698">បិទ​ការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
 <translation id="2473876017985765807">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ <ph name="WEBSITE" /> រួចហើយ</translation>
@@ -542,7 +543,6 @@
 <translation id="5062321486222145940">ដំឡើង Google Drive</translation>
 <translation id="5083464117946352670">មិនអាចដឹងពីទំហំឯកសារទេ។</translation>
 <translation id="5090832849094901128">ការលុបពាក្យសម្ងាត់នេះ​នឹងមិន​លុបគណនីរបស់អ្នក​នៅលើ <ph name="WEBSITE" />​ ទេ។</translation>
-<translation id="5092117651143801290">អ្នកអាច​រក្សាទុក​ទំព័រ ដើម្បីអាន​នៅពេលក្រោយ ឬពេលគ្មាន​អ៊ីនធឺណិត​។ Chrome នឹងសួរ​ថាតើអ្នក​ចង់រក្សាទុក​ទំព័រវែងៗ​ឬអត់​។</translation>
 <translation id="5094827893301452931">ការបង្ហោះតាម Twitter រួចរាល់។</translation>
 <translation id="5118713593561876160">ចំណាប់អារម្មណ៍</translation>
 <translation id="5118764316110575523">បិទ</translation>
@@ -598,7 +598,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5551897871312988470">ផ្តល់ជូន​ការ​បកប្រែ</translation>
 <translation id="5556459405103347317">ដំណើរការឡើងវិញ</translation>
 <translation id="556042886152191864">ប៊ូតុង</translation>
-<translation id="5580834567471114021">បញ្ចូល​ទៅក្នុង​បញ្ជីអាន​សម្រាប់​អាននៅពេលក្រោយ​ដែរទេ?</translation>
 <translation id="5597915316964418992">បើកក្រឡាផ្ទាំង</translation>
 <translation id="560322036295180549">បានបិទ​ដោយស្ថាប័ន​របស់អ្នក</translation>
 <translation id="5614553682702429503">រក្សាទុក​ពាក្យសម្ងាត់?</translation>
@@ -638,7 +637,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5846482154967366008">ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="5854790677617711513">ចាស់ជាង 30 ថ្ងៃ</translation>
 <translation id="5857090052475505287">ថតឯកសារថ្មី</translation>
-<translation id="5857675236236529683">នៅពេលអ្នក​រួចរាល់ហើយ សូមរកមើល​បញ្ជីអាន​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="5857770089550859117">តម្រូវឲ្យមានឃ្លាសម្ងាត់ដើម្បីចាប់ផ្តើមសមកាលកម្ម។</translation>
 <translation id="5859715514067755465">ទៅមុខ</translation>
 <translation id="5860033963881614850">បិទ</translation>
@@ -675,6 +673,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6064824697233747382">ស្ថាប័ន​របស់អ្នក​តម្រូវឱ្យអ្នក​បិទការធ្វើ​សមកាលកម្ម។</translation>
 <translation id="6066301408025741299">ប៉ះដើម្បីបោះបង់</translation>
+<translation id="6071409777669089905">ដកខ្ទាស់ផ្ទាំង</translation>
 <translation id="60829778314739003">ទទួលយក និងបន្ត</translation>
 <translation id="6084848228346514841">ជ្រើសរើស​ផ្ទាំង</translation>
 <translation id="6103540626693881831">ការអ៊ីនគ្រីប​នៅលើ​ឧបករណ៍</translation>
@@ -839,7 +838,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7108762695052995889">ចូលមើល​គេហទំព័រ</translation>
 <translation id="7133798577887235672">ឈ្មោះពេញ</translation>
 <translation id="7136892417564438900">កាមេរ៉ាមិនអាចប្រើបានទេ</translation>
-<translation id="7153999225810839758">អាន <ph name="TIME" /> នាទី</translation>
 <translation id="7162168282402939716">ដោះ​សោផ្ទាំងឯកជនដោយប្រើ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">រក្សា​សុវត្ថិភាព​ពាក្យសម្ងាត់​របស់អ្នក​កុំឱ្យមាន​បញ្ហា​សុវត្ថិភាព</translation>
 <translation id="7173114856073700355">បើកការកំណត់</translation>
@@ -1017,7 +1015,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8548878600947630424">ស្វែងរកក្នុងទំព័រ...</translation>
 <translation id="8558480467877843976">ឥឡូវនេះ អ្នកអាចប្រើ Chrome រាល់ពេលដែល​អ្នករុករក ឬចុចលើតំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="8588404856427128947">បិទ</translation>
-<translation id="8590913940444621808">កុំសួរ​ឱ្យសោះ</translation>
 <translation id="8591976964826315682">ទប់ស្កាត់​ខូគី​ភាគីទីបី​ក្នុងមុខងារ​ឯកជន</translation>
 <translation id="8605219856220328675">បិទផ្ទាំង</translation>
 <translation id="8620640915598389714">កែសម្រួល</translation>
@@ -1102,6 +1099,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9219154867334666734">ផ្ទាំងស្វែងរក…</translation>
 <translation id="9223358826628549784">បានផ្ញើរបាយការណ៍ការគាំង។</translation>
 <translation id="941747855997058526">ជ្រើសរើស​ពាក្យសម្ងាត់...</translation>
+<translation id="948048872540558976">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="952704832371081537">បោះបង់</translation>
 <translation id="953008885340860025">បានចេញពី Chrome</translation>
 <translation id="959066944189734975">អ្នកកំពុងតាមដាន <ph name="CHANNEL_NAME" /></translation>

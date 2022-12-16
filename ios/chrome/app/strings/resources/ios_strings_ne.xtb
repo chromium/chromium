@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2080769225927880590">कुनै वैध खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="2103075008456228677">history.google.com लाई खोल्नुहोस्</translation>
+<translation id="21133533946938348">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> वस्तुहरू सारियो</translation>
 <translation id="2122754583996902531">कसैले तपाईंको ब्राउजर व्यवस्थापन गर्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्ने हो भनी सोधियोस्</translation>
 <translation id="2139867232736819575">तपाईंले प्रतिलिपि गरेको पाठको खोजी गर्नुहोस्</translation>
 <translation id="214201757571129614">साइन इन गर्नुहोस्…</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Google ड्राइभ स्थापना गर्नुहोस्</translation>
 <translation id="5083464117946352670">फाइल आकार निर्धारण गर्न सकिदैन।</translation>
 <translation id="5090832849094901128">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="WEBSITE" /> मा रहेको तपाईंको खाता मेटिने छैन।</translation>
-<translation id="5092117651143801290">तपाईं पेजहरू सेभ गरी ती पेज पछि वा इन्टरनेट नभएका बेला पढ्न सक्नुहुन्छ। Chrome ले तपाईंलाई लामो पेज सेभ गर्ने हो भनी सोध्ने छ।</translation>
 <translation id="5094827893301452931">ट्विट पूरा भयो।</translation>
 <translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5118764316110575523">निष्क्रिय छ</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
-<translation id="5580834567471114021">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्ने हो?</translation>
 <translation id="5597915316964418992">ट्याब ग्रिड खोल्नुहोस्</translation>
 <translation id="560322036295180549">तपाईंको सङ्गठनले यो विकल्प अफ गरेको छ</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">सर्च इन्जिन</translation>
 <translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5857090052475505287">नयाँ फोल्डर</translation>
-<translation id="5857675236236529683">तपाईं तयार भएपछि तपाईंले पछि पढ्न सुरक्षित गर्नुभएका वेबपेजको सूची यहाँ देखिने छ</translation>
 <translation id="5857770089550859117">सिंक सुरु गर्न पासफ्रेज आवश्यक छ।</translation>
 <translation id="5859715514067755465">फर्वार्ड गर्नुहोस्</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">साइटमा जानुहोस्</translation>
 <translation id="7133798577887235672">पूरा नाम</translation>
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
-<translation id="7153999225810839758">यो पेज पढ्न <ph name="TIME" /> मिनेट लाग्छ</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी इन्कोग्निटो ट्याबहरू अनलक गर्नुहोस्</translation>
 <translation id="7172852049901402487">आफ्ना पासवर्डलाई सुरक्षासम्बन्धी समस्याबाट जोगाउनुहोस्</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">पृष्ठमा फेला पार्नुहोस्...</translation>
 <translation id="8558480467877843976">तपाईंले अब म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंक ब्राउज गर्दा वा तिनमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्।</translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
-<translation id="8590913940444621808">कहिल्यै नसोधियोस्</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
 <translation id="8605219856220328675">ट्याब बन्द गर्नुहोस्।</translation>
 <translation id="8620640915598389714">सम्पादन गर्नुहोस्</translation>

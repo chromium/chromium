@@ -127,6 +127,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1611993646327628135">Bật</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
+<translation id="163517899691012366">Thông báo bị tắt tiếng khi tính năng Không làm phiền đang bật</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
@@ -179,7 +180,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1862380676329487333">Cập nhật và đăng xuất</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1869497990620230175">Tệp nhanh</translation>
-<translation id="1871703283152909317">Bật cả hai quyền truy cập</translation>
 <translation id="1879018240766558464">Hiện không hỗ trợ cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3047761520276763270">Thử nói:</translation>
 <translation id="3051189971848907985">Đang đổi tên hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
+<translation id="3062298103034426069">Không được hỗ trợ</translation>
 <translation id="3068711042108640621">Giá ở bên trái</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Mở rộng menu</translation>
@@ -410,6 +411,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3249513730522716925">Đã di chuyển cửa sổ <ph name="WINDOW_TITLE" /> từ Không gian làm việc <ph name="ACTIVE_DESK" /> sang Không gian làm việc <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Thiết lập</translation>
 <translation id="3255483164551725916">Bạn có thể làm gì?</translation>
+<translation id="3260969790895726815">Lời nói được xử lý trên thiết bị còn tính năng nhập bằng giọng nói hoạt động khi không có mạng, nhưng một số lệnh thoại sẽ không hoạt động.</translation>
 <translation id="3269597722229482060">Nhấp chuột phải</translation>
 <translation id="3289544412142055976">Hiện không hỗ trợ ứng dụng Linux</translation>
 <translation id="3289674678944039601">Đang sạc qua bộ sạc</translation>
@@ -790,9 +792,11 @@ Hãy sạc thiết bị.</translation>
 <translation id="5331975486040154427">Thiết bị USB-C (cổng phía sau, bên trái)</translation>
 <translation id="533282197239610265">Hiện các thiết bị truyền</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Phải)</translation>
+<translation id="5351427059191534258">Tắt quyền truy cập vào máy ảnh?</translation>
 <translation id="5352250171825660495">Giao diện tối đang bật</translation>
 <translation id="5356963482258194581">Thay đổi giữa giao diện sáng và giao diện tối. Nhấp chuột phải vào màn hình rồi chọn Hình nền và phong cách.</translation>
 <translation id="536019650977002321">Quản trị viên của bạn không cho phép ghi âm. Hãy liên hệ với quản trị viên để biết thêm thông tin.</translation>
+<translation id="5361524080961918551">Đã tải một phần các tệp lời nói <ph name="LANGUAGE" /> xuống</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Chuyển sang thẻ này</translation>
 <translation id="5377367976106153749">Bật quyền sử dụng máy ảnh?</translation>
 <translation id="5379115545237091094">Quá nhiều lần thử</translation>
@@ -902,6 +906,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5980301590375426705">Thoát phiên khách</translation>
 <translation id="598407983968395253">Sử dụng mẫu</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
+<translation id="6002179289567220515">Bạn đã dùng công tắc vật lý để tắt 1 máy ảnh. Bạn cũng có thể tắt quyền truy cập vào mọi máy ảnh.</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
@@ -926,7 +931,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="6095008505822982596">Tốc độ đọc</translation>
 <translation id="6099678161144790572">Chỉnh sửa tháng trước</translation>
 <translation id="6103838137565245112">hệ thống</translation>
-<translation id="6107292179555508368">Quyền truy cập vào micrô và máy ảnh trên thiết bị này đều đang tắt</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Xác nhận tải <ph name="FILENAME" /> xuống</translation>
@@ -943,9 +947,11 @@ Hãy sạc thiết bị.</translation>
 <translation id="619279033188484792">Xem thông báo, nội dung phương tiện và ảnh mới đây của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Sạc đầy ngay</translation>
 <translation id="6193431488227440296">Kênh nhà phát triển</translation>
+<translation id="6200515304866777730">Không được ứng dụng hỗ trợ</translation>
 <translation id="6210042900243040400">Kết nối <ph name="NAME" /> (trước đó đã được lưu vào <ph name="EMAIL" />)</translation>
 <translation id="6220928844947387476">Giờ đây bạn có thể ghi hình đồng thời cả chính mình và màn hình</translation>
 <translation id="622484624075952240">Xuống</translation>
+<translation id="623116199192908855">Truyền màn hình từ Chromebook</translation>
 <translation id="6231419273573514727">Hiệu suất của thiết bị ngoại vi có thể bị hạn chế</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +959,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Đang kích hoạt...</translation>
 <translation id="6274202259872570803">Video ghi lại chuyển động trên màn hình</translation>
-<translation id="6282694724099204652">Bật cả hai quyền truy cập để cho phép ứng dụng và trang web có quyền này sử dụng (các) micrô và máy ảnh trên thiết bị này.</translation>
 <translation id="6283712521836204486">Chế độ Không làm phiền đang tắt.</translation>
 <translation id="6284232397434400372">Đã thay đổi độ phân giải</translation>
 <translation id="6288235558961782912">Bạn có thể thêm <ph name="USER_EMAIL_ADDRESS" /> lại sau nếu cha mẹ cho phép.</translation>
@@ -988,8 +993,10 @@ Hãy sạc thiết bị.</translation>
 <translation id="6491071886865974820">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình trước thời hạn</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
 <translation id="6495400115277918834">Tính năng hình trong hình đã bắt đầu, hãy nhấn tổ hợp phím Alt+Shift+V để lấy tâm điểm</translation>
+<translation id="6497418457565568043">Tính năng Không làm phiền đang bật</translation>
 <translation id="6500896621837555595">Cập nhật</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Đảm bảo Chromebook kết nối với cùng một mạng Wi-Fi như thiết bị Chromecast.</translation>
 <translation id="6515727200518652613">Máy ảnh bị mất kết nối, đang cố gắng kết nối lại.</translation>
 <translation id="6520517963145875092">Chọn một cửa sổ để chụp</translation>
 <translation id="652139407789908527">Màn hình của bạn sẽ trống lâu hơn bình thường (tối đa là 1 phút) trong quá trình cập nhật này. Vui lòng không nhấn nút nguồn trong khi đang cập nhật.</translation>

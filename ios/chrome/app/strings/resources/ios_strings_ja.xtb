@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2080769225927880590">有効なアカウントでログインしてください</translation>
 <translation id="2103075008456228677">history.google.com を開く</translation>
+<translation id="21133533946938348">タブを固定</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を移動しました</translation>
 <translation id="2122754583996902531">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">リーディング リストに追加するかどうかを確認する</translation>
 <translation id="2139867232736819575">コピーしたテキストを検索</translation>
 <translation id="214201757571129614">ログイン…</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">ドライブをインストール</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
-<translation id="5092117651143801290">ページを保存して、後で読んだり、オフラインで読んだりできます。長いページを保存する場合は確認のメッセージが表示されます。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5118764316110575523">オフ</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">翻訳するか尋ねる</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="556042886152191864">ボタン</translation>
-<translation id="5580834567471114021">後で読めるようにリーディング リストに追加しますか？</translation>
 <translation id="5597915316964418992">タブグリッドを開きます</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">検索エンジン</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5857090052475505287">新しいフォルダ</translation>
-<translation id="5857675236236529683">準備ができたら、ここでリーディング リストを確認できます</translation>
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
 <translation id="5860033963881614850">オフ</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">サイトを見る</translation>
 <translation id="7133798577887235672">氏名</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>
-<translation id="7153999225810839758">所要時間: <ph name="TIME" /> 分</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="7172852049901402487">セキュリティの問題からパスワードを保護します</translation>
 <translation id="7173114856073700355">設定を開く</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">ページ内を検索...</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="8588404856427128947">オフ</translation>
-<translation id="8590913940444621808">今後表示しない</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>
 <translation id="8620640915598389714">編集</translation>

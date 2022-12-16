@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">Абнавіць і выйсці</translation>
 <translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
 <translation id="1869497990620230175">Хуткія файлы</translation>
-<translation id="1871703283152909317">Даць абодва дазволы на доступ</translation>
 <translation id="1879018240766558464">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
@@ -926,7 +925,6 @@
 <translation id="6095008505822982596">Хуткасць маўлення</translation>
 <translation id="6099678161144790572">Зменена ў мінулым месяцы</translation>
 <translation id="6103838137565245112">сістэма</translation>
-<translation id="6107292179555508368">На гэтай прыладзе забаронены доступ да мікрафона і камеры</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Пацвердзіце спампоўванне файла <ph name="FILENAME" /></translation>
@@ -953,7 +951,6 @@
 <translation id="6259254695169772643">Для выбару выкарыстайце стыло</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ідзе актывацыя...</translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
-<translation id="6282694724099204652">Дайце доступ, каб праграмы і вэб-старонкі з адпаведным дазволам маглі выкарыстоўваць на гэтай прыладзе мікрафон і камеру.</translation>
 <translation id="6283712521836204486">Рэжым "Не турбаваць" выключаны.</translation>
 <translation id="6284232397434400372">Раздзяляльнасць зменена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>

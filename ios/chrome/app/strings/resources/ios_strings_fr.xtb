@@ -149,9 +149,9 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080769225927880590">Connectez-vous avec un compte valide</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
+<translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Demander à ajouter à la liste de lecture</translation>
 <translation id="2139867232736819575">Rechercher le texte copié</translation>
 <translation id="214201757571129614">Connectez-vous…</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
@@ -542,7 +542,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5062321486222145940">Installer Google Drive</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
 <translation id="5090832849094901128">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Vous pouvez enregistrer des pages pour les lire plus tard ou hors connexion. Chrome vous demandera si vous voulez enregistrer les longues pages.</translation>
 <translation id="5094827893301452931">Tweet publié.</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5118764316110575523">Désactivé</translation>
@@ -598,7 +597,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="556042886152191864">Bouton</translation>
-<translation id="5580834567471114021">Ajouter à la liste de lecture pour plus tard ?</translation>
 <translation id="5597915316964418992">Ouvrez la grille d'onglets</translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
@@ -638,7 +636,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
-<translation id="5857675236236529683">Votre liste de lecture s'affichera ici dès que vous serez prêt</translation>
 <translation id="5857770089550859117">Veuillez saisir la phrase secrète pour lancer la synchronisation.</translation>
 <translation id="5859715514067755465">Suivant</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -839,7 +836,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7108762695052995889">Visiter le site</translation>
 <translation id="7133798577887235672">Nom complet</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>
-<translation id="7153999225810839758">Temps de lecture : <ph name="TIME" /> min</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="7172852049901402487">Protéger vos mots de passe</translation>
 <translation id="7173114856073700355">Paramètres</translation>
@@ -1018,7 +1014,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous parcourez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="8588404856427128947">Éteinte</translation>
-<translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="8605219856220328675">Fermer l'onglet</translation>
 <translation id="8620640915598389714">Modifier</translation>

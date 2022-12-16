@@ -179,7 +179,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB de type C (port situé sur l'arrière de l'appareil)</translation>
 <translation id="1869497990620230175">Fichiers rapides</translation>
-<translation id="1871703283152909317">Activer les deux accès</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
@@ -925,7 +924,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6095008505822982596">Débit</translation>
 <translation id="6099678161144790572">Modifié le mois dernier</translation>
 <translation id="6103838137565245112">système</translation>
-<translation id="6107292179555508368">Les accès au micro et à la caméra sont désactivés sur cet appareil</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
@@ -952,7 +950,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Activez les accès pour permettre aux applis et pages Web d'utiliser les micros et les caméras de cet appareil.</translation>
 <translation id="6283712521836204486">Le mode Ne pas déranger est désactivé.</translation>
 <translation id="6284232397434400372">Résolution modifiée</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pourra être ajouté à nouveau ultérieurement avec l'autorisation d'un des parents.</translation>
@@ -1003,7 +1000,7 @@ Nouvelle installation</translation>
 <translation id="6565007273808762236">Connexion eSIM indisponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Mettre à jour l'appareil d'ici 1 heure}one{Mettre à jour l'appareil d'ici # heure}other{Mettre à jour l'appareil d'ici # heures}}</translation>
 <translation id="6570902864550063460">En charge via USB</translation>
-<translation id="6574587113394758819">La notification de <ph name="APP_TITLE" /> est masquée, car la protection contre l'espionnage est activée</translation>
+<translation id="6574587113394758819">La notification <ph name="APP_TITLE" /> est masquée, car la protection anti-regard est activée</translation>
 <translation id="6574622320167699133">Déverrouillé par votre téléphone. Appuyez ou cliquez pour entrer.</translation>
 <translation id="6578407462441924264">Sans nom</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -1012,7 +1009,7 @@ Nouvelle installation</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
-<translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection contre l'espionnage est activée</translation>
+<translation id="6625718907317144388">Les notifications <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection anti-regard est activée</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Activer/Désactiver les Sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
@@ -1330,7 +1327,7 @@ Nouvelle installation</translation>
 <translation id="8374601332003098278">Appuyez sur Entrée pour enregistrer une partie de l'écran</translation>
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>
 <translation id="8380784334203145311">Bonsoir,</translation>
-<translation id="8382715499079447151">Protection contre l'espionnage</translation>
+<translation id="8382715499079447151">Protection anti-regard</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8401850874595457088">Ouvrir le menu des langues</translation>
@@ -1369,7 +1366,7 @@ Nouvelle installation</translation>
 <translation id="857201607579416096">Le menu a été déplacé dans l'angle inférieur droit de l'écran.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Trier les applis par nom ou par couleur</translation>
-<translation id="8614517853887502247">Les notifications de <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection contre l'espionnage est activée</translation>
+<translation id="8614517853887502247">Les notifications <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection anti-regard est activée</translation>
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Désactiver l'accès à l'appareil photo</translation>
 <translation id="8631727435199967028">Paramètres d'accessibilité</translation>

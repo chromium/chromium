@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">Жаңыртуу жана чыгуу</translation>
 <translation id="1864454756846565995">USB-C түзмөгү (арткы оюкча)</translation>
 <translation id="1869497990620230175">Ыкчам ачылуучу файлдар</translation>
-<translation id="1871703283152909317">Экөөнү тең колдонууга уруксат берүү</translation>
 <translation id="1879018240766558464">Жашыруун терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
@@ -926,7 +925,6 @@
 <translation id="6095008505822982596">Кеп ылдамдыгы</translation>
 <translation id="6099678161144790572">Мурунку айда түзөтүлгөн</translation>
 <translation id="6103838137565245112">тутум</translation>
-<translation id="6107292179555508368">Бул түзмөктө микрофон менен камераны колдонуу мүмкүндүгү өчүк</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
@@ -953,7 +951,6 @@
 <translation id="6259254695169772643">Стилус менен тандаңыз</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Жандырылууда…</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
-<translation id="6282694724099204652">Бул түзмөктөгү микрофонду(-дорду) жана камераны(-ларды) колдонууга уруксат берилген колдонмолор жана веб-баракчалар үчүн колдонуу параметрин иштетиңиз.</translation>
 <translation id="6283712521836204486">"Тынчымды алба" режими өчүк.</translation>
 <translation id="6284232397434400372">Дааналыгы өзгөртүлдү</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> ата-эненин уруксаты менен кайра кошууга болот.</translation>

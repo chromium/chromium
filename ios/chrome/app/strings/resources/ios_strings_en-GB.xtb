@@ -149,9 +149,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2080769225927880590">Sign in with a valid account</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
+<translation id="21133533946938348">Pin tab</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
 <translation id="2122754583996902531">Your browser is managed. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Ask to add to reading list</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="214201757571129614">Sign in…</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -190,6 +190,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2451654228769116489">Pin tab</translation>
 <translation id="2461070143328828326">Password Settings</translation>
 <translation id="2469960372084740698">Turn off Safe Browsing?</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
@@ -542,7 +543,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5083464117946352670">Cannot determine file size.</translation>
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">You can save pages to read later or offline. Chrome will ask if you want to save long pages.</translation>
 <translation id="5094827893301452931">Tweet completed.</translation>
 <translation id="5118713593561876160">Interests</translation>
 <translation id="5118764316110575523">Off</translation>
@@ -598,7 +598,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="556042886152191864">Button</translation>
-<translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5597915316964418992">Open the Tab grid</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -638,7 +637,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857090052475505287">New Folder</translation>
-<translation id="5857675236236529683">When you're ready, find your reading list here</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Forward</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -675,6 +673,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6064824697233747382">Your organisation requires you to turn off sync.</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
+<translation id="6071409777669089905">Unpin tab</translation>
 <translation id="60829778314739003">Accept and continue</translation>
 <translation id="6084848228346514841">Select tabs</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
@@ -839,7 +838,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7108762695052995889">Visit site</translation>
 <translation id="7133798577887235672">Full Name</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> minute read</translation>
 <translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
 <translation id="7173114856073700355">Open settings</translation>
@@ -1017,7 +1015,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8548878600947630424">Find in page...</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="8588404856427128947">Off</translation>
-<translation id="8590913940444621808">Never Ask</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>

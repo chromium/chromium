@@ -179,7 +179,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1862380676329487333">Värskenda ja logi välja</translation>
 <translation id="1864454756846565995">C-tüüpi USB-seade (tagumine port)</translation>
 <translation id="1869497990620230175">Kiirfailid</translation>
-<translation id="1871703283152909317">Lülita sisse mõlemad juurdepääsud</translation>
 <translation id="1879018240766558464">Inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
@@ -927,7 +926,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6095008505822982596">Kõne kiirus</translation>
 <translation id="6099678161144790572">Muudetud viimase kuu jooksul</translation>
 <translation id="6103838137565245112">süsteem</translation>
-<translation id="6107292179555508368">Juurdepääs mikrofonile ja kaamerale on selles seadmes välja lülitatud</translation>
 <translation id="6114505516289286752">Kõnefailid <ph name="LANGUAGE" /> keeles laaditi alla</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Allalaadimise kinnitamine (<ph name="FILENAME" />)</translation>
@@ -954,7 +952,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6259254695169772643">Kasutage valimiseks elektronpliiatsit</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveerimine ...</translation>
 <translation id="6274202259872570803">Ekraaniülekanne</translation>
-<translation id="6282694724099204652">Lülitage juurdepääsud sisse, et lubadega rakendustel ja veebilehtedel lubada selles seadmes mikrofone ja kaameraid kasutada.</translation>
 <translation id="6283712521836204486">Režiim Mitte segada on väljas.</translation>
 <translation id="6284232397434400372">Eraldusvõimet muudeti</translation>
 <translation id="6288235558961782912">Aadressi <ph name="USER_EMAIL_ADDRESS" /> saab hiljem vanema loaga uuesti lisada.</translation>

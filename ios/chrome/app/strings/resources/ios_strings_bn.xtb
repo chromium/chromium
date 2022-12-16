@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2080769225927880590">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="2103075008456228677">history.google.com খুলুন</translation>
+<translation id="21133533946938348">ট্যাব পিন করুন</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম সরানো হয়েছে</translation>
 <translation id="2122754583996902531">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">পড়ার তালিকায় যোগ করার জন্য জিজ্ঞাসা করুন</translation>
 <translation id="2139867232736819575">আপনার কপি করা টেক্সট সার্চ করুন</translation>
 <translation id="214201757571129614">সাইন-ইন করুন…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
+<translation id="2451654228769116489">ট্যাব পিন করুন</translation>
 <translation id="2461070143328828326">পাসওয়ার্ড সেটিংস</translation>
 <translation id="2469960372084740698">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
@@ -542,7 +543,6 @@
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
 <translation id="5083464117946352670">ফাইলের আকার নির্ধারণ করা যাচ্ছে না।</translation>
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
-<translation id="5092117651143801290">পরে বা অফলাইনে পড়ার জন্য আপনি পৃষ্ঠাগুলি সেভ করে রাখতে পারেন। আপনি দীর্ঘ পৃষ্ঠা সেভ করতে চান কিনা Chrome-এ আপনাকে সেই সম্পর্কে জানতে জিজ্ঞাসা করা হবে।</translation>
 <translation id="5094827893301452931">Tweet সম্পূর্ণ হয়েছে৷</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
@@ -599,7 +599,6 @@
 <translation id="5551897871312988470">অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
-<translation id="5580834567471114021">পরে পড়ার জন্য পড়ার তালিকায় যোগ করতে চান?</translation>
 <translation id="5597915316964418992">ট্যাব গ্রিড খুলুন</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
@@ -639,7 +638,6 @@
 <translation id="5846482154967366008">সার্চ ইঞ্জিন</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857090052475505287">নতুন ফোল্ডার</translation>
-<translation id="5857675236236529683">প্রস্তুত থাকলে, এখানে আপনার পড়ার তালিকা দেখুন</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
 <translation id="5859715514067755465">ফরওয়ার্ড করা</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -676,6 +674,7 @@
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6064824697233747382">আপনার সংস্থার প্রয়োজনে আপনার সিঙ্ক প্রসেস বন্ধ করা হয়েছে।</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
+<translation id="6071409777669089905">ট্যাব আনপিন করুন</translation>
 <translation id="60829778314739003">সম্মতি দিন এবং কাজ চালিয়ে যান</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
@@ -840,7 +839,6 @@
 <translation id="7108762695052995889">সাইট দেখুন</translation>
 <translation id="7133798577887235672">সম্পূর্ণ নাম</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
-<translation id="7153999225810839758">পড়তে <ph name="TIME" /> মিনিট সময় লাগবে</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7172852049901402487">নিরাপত্তা সংক্রান্ত সমস্যাগুলি থেকে আপনার পাসওয়ার্ডকে সুরক্ষিত রাখুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
@@ -1018,7 +1016,6 @@
 <translation id="8548878600947630424">পৃষ্ঠাটি খুঁজুন...</translation>
 <translation id="8558480467877843976">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্ক ব্রাউজ বা ট্যাপ করে তা যেকোনও সময় Chrome খুলতে পারেন।</translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>
-<translation id="8590913940444621808">আর কখনো দেখতে চাই না</translation>
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="8605219856220328675">ট্যাব বন্ধ করুন।</translation>
 <translation id="8620640915598389714">সম্পাদনা করুন</translation>

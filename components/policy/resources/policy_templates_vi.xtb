@@ -2233,6 +2233,7 @@ Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_E
 <translation id="3092059499596000593">Dùng máy in mặc định của hệ thống làm lựa chọn mặc định trong chế độ Xem trước bản in</translation>
 <translation id="309416443108680956">Chỉ rõ điều gì sẽ xảy ra khi người dùng đang xác thực qua một mã bảo mật (chẳng hạn như qua thẻ thông minh) xóa mã đó khi phiên xác thực đang diễn ra. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Không có điều gì xảy ra. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Màn hình sẽ bị khóa cho đến khi người dùng xác thực lại. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Phiên xác thực kết thúc và người dùng bị đăng xuất. Nếu bạn không đặt chính sách này, chính sách mặc định sẽ là <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Danh sách plugin được kích hoạt</translation>
+<translation id="309885424548342662">Bật chính sách xác thực trên đám mây của Microsoft®</translation>
 <translation id="3101035417394748390">Kích thước tối đa, tính bằng byte, có thể được chuyển giữa máy khách và máy chủ lưu trữ qua tính năng đồng bộ hoá bảng nhớ tạm</translation>
 <translation id="3101501961102569744">Chọn cách chỉ định cài đặt máy chủ proxy</translation>
 <translation id="3101709781009526431">Ngày và giờ</translation>
@@ -2991,6 +2992,7 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
 
       Để biết thêm thông tin chi tiết về các phiên <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, vui lòng xem thông số kỹ thuật của <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Cài đặt quản lý nguồn khi người dùng không sử dụng</translation>
+<translation id="3788876528643861853">Tắt chính sách xác thực trên đám mây của Microsoft®</translation>
 <translation id="3790085888761753785">Nếu bạn bật tùy chọn cài đặt này, thì người dùng sẽ được phép đăng nhập vào tài khoản của họ bằng tính năng Smart Lock. Tùy chọn này cấp nhiều quyền hơn so với hành vi Smart Lock thông thường (chỉ cho phép người dùng mở khóa màn hình).
 
       Nếu bạn tắt tùy chọn cài đặt này, thì người dùng sẽ không được phép sử dụng tính năng Đăng nhập bằng Smart Lock.
@@ -5721,6 +5723,7 @@ Nếu bạn không đặt chính sách, thì tất cả miền sẽ không thể
 <translation id="6575944031719151455">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định danh sách các tài khoản trên thiết bị sẽ hiển thị trên màn hình đăng nhập. Các tài khoản trên thiết bị được phân biệt thông qua mã nhận dạng.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành danh sách trống, thì sẽ không có tài khoản nào trên thiết bị hiển thị.</translation>
+<translation id="6577760914164385949">Cho phép tự động đăng nhập vào các nhà cung cấp danh tính trên đám mây của Microsoft®</translation>
 <translation id="6580851705156412587">Khoá thiết bị khi thiết bị tạm ngưng hoặc đóng nắp</translation>
 <translation id="6581048059229620221">Nếu bạn tắt chính sách này, người dùng sẽ không thể khởi động hay định cấu hình máy chủ hỗ trợ từ xa để chấp nhận các kết nối đến.
 

@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
 <translation id="1869497990620230175">क्विक फाइलहरू</translation>
-<translation id="1871703283152909317">माइक्रोफोन र क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1879018240766558464">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्कमा कनेक्ट भएको छैन</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
@@ -926,7 +925,6 @@
 <translation id="6095008505822982596">स्पिचको गति</translation>
 <translation id="6099678161144790572">गत महिना सम्पादन गरिएको</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
-<translation id="6107292179555508368">यो डिभाइसमा माइक्रोफोन र क्यामेरा प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> को डाउनलोड पुष्टि गर्नुहोस्</translation>
@@ -953,7 +951,6 @@
 <translation id="6259254695169772643">चयन गर्न आफ्नो स्टाइलस प्रयोग गर्नुहोस्</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय गर्दै...</translation>
 <translation id="6274202259872570803">स्क्रिनकास्ट</translation>
-<translation id="6282694724099204652">यो डिभाइसका माइक्रोफोन र क्यामेरा(हरू) प्रयोग गर्ने अनुमति भएका एप तथा वेबपेजहरूलाई ती सुविधा प्रयोग गर्न दिन माइक्रोफोन र क्यामेरा दुवै अन गर्नुहोस्।</translation>
 <translation id="6283712521836204486">बाधा नपुर्‍याउनुहोस् नामक मोड निष्क्रिय छ।</translation>
 <translation id="6284232397434400372">रिजोल्युसन परिवर्तन गरियो</translation>
 <translation id="6288235558961782912">अभिभावकको अनुमति लिएर <ph name="USER_EMAIL_ADDRESS" /> पछि पुनः थप्न सकिन्छ।</translation>

@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2080769225927880590">Влезте с валиден профил</translation>
 <translation id="2103075008456228677">Към history.google.com</translation>
+<translation id="21133533946938348">Фиксиране на раздела</translation>
 <translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
 <translation id="2122754583996902531">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Запитване за добавяне към списъка за четене</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
 <translation id="5083464117946352670">Неизвестен файлов размер.</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Можете да запазвате страници за четене по-късно или офлайн. Chrome ще ви попита дали искате да запазвате дълги страници.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Изкл.</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">Предложения за превод</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="556042886152191864">Бутон</translation>
-<translation id="5580834567471114021">Да се добави ли към списъка за четене по-късно?</translation>
 <translation id="5597915316964418992">Отворете мрежата с раздели.</translation>
 <translation id="560322036295180549">Изключено от организацията ви</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">Търсеща машина</translation>
 <translation id="5854790677617711513">По-стари от 30 дни</translation>
 <translation id="5857090052475505287">Нова папка</translation>
-<translation id="5857675236236529683">Когато имате готовност, списъкът ви за четене ще бъде тук</translation>
 <translation id="5857770089550859117">За старт на синхронизирането е необходим пропуск.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Изключено</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">Към сайта</translation>
 <translation id="7133798577887235672">Име и фамилия</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>
-<translation id="7153999225810839758">Време за четене: <ph name="TIME" /> мин</translation>
 <translation id="7162168282402939716">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Защитете паролите си от проблеми със сигурността</translation>
 <translation id="7173114856073700355">Към настройките</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">Търсене в страницата...</translation>
 <translation id="8558480467877843976">Вече можете да използвате Chrome всеки път, когато преглеждате съобщения, документи и други приложения или докоснете връзки в тях.</translation>
 <translation id="8588404856427128947">Изключено</translation>
-<translation id="8590913940444621808">Без запитване</translation>
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>
 <translation id="8620640915598389714">Редактиране</translation>

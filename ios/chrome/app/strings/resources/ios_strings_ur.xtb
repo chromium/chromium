@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2080769225927880590">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
+<translation id="21133533946938348">ٹیب کو پن کریں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
 <translation id="2122754583996902531">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">پڑھنے کی فہرست میں شامل کرنے کیلئے پوچھیں</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="214201757571129614">سائن ان کریں…</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
 <translation id="5083464117946352670">فائل سائز کا تعین نہیں کیا جا سکتا ہے۔</translation>
 <translation id="5090832849094901128">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="WEBSITE" /> سے حذف نہیں ہوگا۔</translation>
-<translation id="5092117651143801290">‏آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں۔ Chrome پوچھے گا کہ آیا آپ طویل صفحات محفوظ کرنا چاہتے ہیں۔</translation>
 <translation id="5094827893301452931">ٹویٹ مکمل ہوگیا۔</translation>
 <translation id="5118713593561876160">دلچسپیاں</translation>
 <translation id="5118764316110575523">آف</translation>
@@ -598,7 +597,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5551897871312988470">ترجمہ کی پیشکش کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="556042886152191864">بٹن</translation>
-<translation id="5580834567471114021">بعد کیلئے پڑھنے کی فہرست میں شامل کریں؟</translation>
 <translation id="5597915316964418992">ٹیب گرڈ کھولیں</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
@@ -638,7 +636,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5846482154967366008">تلاش انجن</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
 <translation id="5857090052475505287">نیا فولڈر</translation>
-<translation id="5857675236236529683">جب آپ تیار ہوں تو یہاں پڑھنے کی اپنی فہرست تلاش کریں</translation>
 <translation id="5857770089550859117">مطابقت پذیری شروع کرنے کیلئے پاس فریز درکار ہے۔</translation>
 <translation id="5859715514067755465">فارورڈ کریں</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -839,7 +836,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7108762695052995889">سائٹ ملاحظہ کریں</translation>
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> منٹ پڑھیں</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7172852049901402487">سیکیورٹی کے معاملات سے اپنے پاس ورڈز محفوظ رکھیں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
@@ -1017,7 +1013,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8548878600947630424">صفحہ میں تلاش کریں…</translation>
 <translation id="8558480467877843976">‏اب آپ کسی بھی وقت پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس کو براؤز یا تھپتھپاتے وقت Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="8588404856427128947">آف ہے</translation>
-<translation id="8590913940444621808">کبھی نہ پوچھیں</translation>
 <translation id="8591976964826315682">پوشیدگی میں فریق ثالث کی کوکیز کو مسدود کریں</translation>
 <translation id="8605219856220328675">ٹیب بند کریں۔</translation>
 <translation id="8620640915598389714">ترمیم کریں</translation>

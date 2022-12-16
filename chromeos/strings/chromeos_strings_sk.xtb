@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Ak chcete nastaviť sieť, prejdite do Nastavení</translation>
 <translation id="2597774443162333062">Súbory budú odoslané Googlu na účely ladenia</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Scanning completed. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
 <translation id="2619761439309613843">Obnovovať denne</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2638662041295312666">Obrázok na prihlasovacej obrazovke</translation>

@@ -120,6 +120,7 @@
 <translation id="15373452373711364">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
 <translation id="1546492247443594934">เดสก์ที่ 2</translation>
 <translation id="1546930421365146760">ขอให้ผู้ดูแลระบบตั้งค่าอุปกรณ์นี้ในคอนโซลผู้ดูแลระบบของ Google</translation>
+<translation id="1550406609415860283">อุปกรณ์ที่ใช้ได้</translation>
 <translation id="1550523713251050646">คลิกเพื่อดูตัวเลือกเพิ่มเติม</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
@@ -127,6 +128,7 @@
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
+<translation id="163517899691012366">ปิดเสียงการแจ้งเตือนเมื่อฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
@@ -179,7 +181,6 @@
 <translation id="1862380676329487333">อัปเดตและออกจากระบบ</translation>
 <translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
 <translation id="1869497990620230175">ไฟล์ด่วน</translation>
-<translation id="1871703283152909317">เปิดการเข้าถึงทั้ง 2 อย่าง</translation>
 <translation id="1879018240766558464">ขณะนี้ยังไม่รองรับหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="1882814835921407042">ไม่มีเครือข่ายมือถือ</translation>
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +377,7 @@
 <translation id="3047761520276763270">ลองพูดว่า</translation>
 <translation id="3051189971848907985">กำลังเปลี่ยนชื่อโปรไฟล์ รอสักครู่</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">ไม่รองรับ</translation>
 <translation id="3068711042108640621">ชั้นวางอยู่ทางซ้าย</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ขยายเมนู</translation>
@@ -410,6 +412,7 @@
 <translation id="3249513730522716925">ย้ายหน้าต่าง <ph name="WINDOW_TITLE" /> จากเดสก์ <ph name="ACTIVE_DESK" /> ไปยังเดสก์ <ph name="TARGET_DESK" /> แล้ว</translation>
 <translation id="3252573918265662711">ตั้งค่า</translation>
 <translation id="3255483164551725916">เธอทำอะไรได้บ้าง</translation>
+<translation id="3260969790895726815">คําพูดจะได้รับการประมวลผลในเครื่องและการพิมพ์ตามคําบอกจะทํางานแบบออฟไลน์ แต่คําสั่งเสียงบางอย่างจะไม่ทํางาน</translation>
 <translation id="3269597722229482060">คลิกขวา</translation>
 <translation id="3289544412142055976">ขณะนี้ยังไม่รองรับแอป Linux</translation>
 <translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
@@ -460,6 +463,7 @@
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
 <translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
+<translation id="3560174576767922131">บันทึกวิดีโอ</translation>
 <translation id="3563775809269155755">เปิดใช้ฮอตสปอต</translation>
 <translation id="3566240529365775567">เปิดเมื่อสักครู่</translation>
 <translation id="3571734092741541777">ตั้งค่า</translation>
@@ -652,6 +656,7 @@
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
+<translation id="458210817642223147">บันทึก GIF</translation>
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
@@ -731,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">เดสก์ที่ 16</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
+<translation id="5004607513195820459">เครือข่ายได้รับการจัดการ</translation>
 <translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">การเข้าถึงไมโครโฟนของอุปกรณ์เปิดอยู่</translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
@@ -790,9 +796,11 @@
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="533282197239610265">แสดงอุปกรณ์แคสต์</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
+<translation id="5351427059191534258">ปิดการเข้าถึงกล้องใช่ไหม</translation>
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
 <translation id="5356963482258194581">สลับระหว่างธีมมืดและธีมสว่าง คลิกขวาที่เดสก์ท็อป แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
 <translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
+<translation id="5361524080961918551">ดาวน์โหลดไฟล์คําพูดภาษา<ph name="LANGUAGE" />แล้วบางส่วน</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ไปที่แท็บนี้</translation>
 <translation id="5377367976106153749">เปิดการเข้าถึงกล้องไหม</translation>
 <translation id="5379115545237091094">ลองหลายครั้งเกินไป</translation>
@@ -902,6 +910,7 @@
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
+<translation id="6002179289567220515">คุณใช้สวิตช์จริงเพื่อปิดกล้อง 1 ตัว คุณยังปิดการเข้าถึงกล้องทุกตัวได้ด้วย</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
@@ -926,7 +935,6 @@
 <translation id="6095008505822982596">ความเร็วในการพูด</translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
 <translation id="6103838137565245112">ระบบ</translation>
-<translation id="6107292179555508368">การเข้าถึงไมโครโฟนและกล้องปิดอยู่ในอุปกรณ์นี้</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
@@ -943,9 +951,11 @@
 <translation id="619279033188484792">ดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">ชาร์จจนเต็มเลย</translation>
 <translation id="6193431488227440296">กำลังพัฒนา</translation>
+<translation id="6200515304866777730">แอปไม่รองรับ</translation>
 <translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
+<translation id="623116199192908855">แคสต์หน้าจอจาก Chromebook</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
 <translation id="6232891689835436217">"<ph name="APP_NAME" />" กำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +963,6 @@
 <translation id="6259254695169772643">ใช้สไตลัสเพื่อเลือก</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> กำลังเปิดใช้งาน...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">เปิดการเข้าถึงเพื่ออนุญาตให้แอปและหน้าเว็บที่มีสิทธิ์ดังกล่าวใช้ไมโครโฟนและกล้องในอุปกรณ์นี้</translation>
 <translation id="6283712521836204486">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="6284232397434400372">เปลี่ยนความละเอียดแล้ว</translation>
 <translation id="6288235558961782912">คุณจะเพิ่ม <ph name="USER_EMAIL_ADDRESS" /> ได้อีกครั้งในภายหลังโดยต้องได้รับอนุญาตจากผู้ปกครอง</translation>
@@ -988,8 +997,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> ก่อนเวลาที่กำหนด</translation>
 <translation id="649452524636452238">PIN สมาร์ทการ์ด</translation>
 <translation id="6495400115277918834">เริ่มการแสดงภาพซ้อนภาพแล้ว กด Alt+Shift+V เพื่อโฟกัส</translation>
+<translation id="6497418457565568043">ฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="6500896621837555595">อัปเดต</translation>
 <translation id="6501401484702599040">กำลังแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">ตรวจสอบว่า Chromebook อยู่ในเครือข่าย Wi-Fi เดียวกับอุปกรณ์ Chromecast</translation>
 <translation id="6515727200518652613">กล้องขาดการเชื่อมต่อ กำลังพยายามเชื่อมต่ออีกครั้ง</translation>
 <translation id="6520517963145875092">เลือกหน้าต่างที่จะจับภาพ</translation>
 <translation id="652139407789908527">หน้าจอจะไม่แสดงผลเป็นเวลานานกว่าปกติ (สูงสุด 1 นาที) ในระหว่างการอัปเดตนี้ โปรดอย่ากดปุ่มเปิด/ปิดขณะอัปเดต</translation>
@@ -1071,6 +1082,7 @@
 <translation id="6901883536534621389">ลองใช้ท่าทางสัมผัสเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
+<translation id="6942518653766415536">เมนูรูปแบบการบันทึก</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6960565108681981554">ไม่ได้เปิดการใช้งาน โปรดติดต่อผู้ให้บริการเครือข่าย</translation>
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>

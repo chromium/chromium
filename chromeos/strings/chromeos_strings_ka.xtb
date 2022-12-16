@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
 <translation id="2597774443162333062">ფაილები, გამართვის მიზნით, Google-ს გაეგზავნება</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
 <translation id="2619761439309613843">ყოველდღიური განახლება</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2638662041295312666">შესვლის სურათი</translation>

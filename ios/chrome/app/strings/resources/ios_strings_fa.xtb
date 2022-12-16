@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2080769225927880590">با حساب معتبر به سیستم وارد شوید</translation>
 <translation id="2103075008456228677">‏باز کردن history.google.com</translation>
+<translation id="21133533946938348">کوچک کردن برگه</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> مورد منتقل شدند</translation>
 <translation id="2122754583996902531">مرورگرتان تحت‌مدیریت است. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">برای افزودن به «فهرست خواندن» پرسیده شود</translation>
 <translation id="2139867232736819575">جستجوی نوشتاری که کپی کرده‌اید</translation>
 <translation id="214201757571129614">ورود به سیستم…</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
-<translation id="5092117651143801290">‏می‌توانید صفحه‌ها را برای خواندن در فرصتی دیگر یا در حالت آفلاین ذخیره کنید. Chrome از شما می‌پرسد آیا می‌خواهید صفحات طولانی را ذخیره کنید.</translation>
 <translation id="5094827893301452931">‏Tweet انجام شد.</translation>
 <translation id="5118713593561876160">علایق</translation>
 <translation id="5118764316110575523">خاموش</translation>
@@ -598,7 +597,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5551897871312988470">پیشنهاد برای ترجمه</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="556042886152191864">دکمه</translation>
-<translation id="5580834567471114021">برای فرصتی دیگر به «فهرست خواندن» اضافه شود؟</translation>
 <translation id="5597915316964418992">باز کردن شبکه برگه</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -638,7 +636,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5846482154967366008">موتور جستجو</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
 <translation id="5857090052475505287">پوشهٔ جدید</translation>
-<translation id="5857675236236529683">هروقت آماده بودید، فهرست خواندنتان را اینجا پیدا کنید</translation>
 <translation id="5857770089550859117">برای شروع همگام‌سازی به گذرعبارت نیاز است.</translation>
 <translation id="5859715514067755465">بازارسال</translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -839,7 +836,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7108762695052995889">مشاهده سایت</translation>
 <translation id="7133798577887235672">نام کامل</translation>
 <translation id="7136892417564438900">دوربین غیرقابل‌ دسترسی است</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> دقیقه زمان خواندن</translation>
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">ایمن نگه‌داشتن گذرواژه‌ها دربرابر مشکلات امنیتی</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
@@ -1017,7 +1013,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8548878600947630424">یافتن در صفحه…</translation>
 <translation id="8558480467877843976">‏اکنون هرزمان بخواهید می‌توانید با مرور کردن یا ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها، از Chrome استفاده کنید.</translation>
 <translation id="8588404856427128947">خاموش</translation>
-<translation id="8590913940444621808">هرگز سؤال نشود</translation>
 <translation id="8591976964826315682">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="8605219856220328675">بستن برگه</translation>
 <translation id="8620640915598389714">ویرایش</translation>

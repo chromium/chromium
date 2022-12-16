@@ -149,9 +149,9 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2080769225927880590">Log masuk dengan Akaun yang Sah</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
+<translation id="21133533946938348">Pin Tab</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dialihkan</translation>
 <translation id="2122754583996902531">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Tanya untuk Tambahkan pada Senarai Bacaan</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="214201757571129614">Log Masuk…</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
@@ -542,7 +542,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5062321486222145940">Pasang Google Drive</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan saiz fail.</translation>
 <translation id="5090832849094901128">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian. Chrome akan bertanya sama ada anda mahu menyimpan halaman panjang atau tidak.</translation>
 <translation id="5094827893301452931">Tweet selesai.</translation>
 <translation id="5118713593561876160">Minat</translation>
 <translation id="5118764316110575523">Mati</translation>
@@ -598,7 +597,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5551897871312988470">Tawaran untuk Menterjemah</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="556042886152191864">Butang</translation>
-<translation id="5580834567471114021">Tambahkan pada Senarai Bacaan untuk Kemudian?</translation>
 <translation id="5597915316964418992">Buka Grid Tab</translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
@@ -638,7 +636,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5846482154967366008">Enjin Carian</translation>
 <translation id="5854790677617711513">Lebih lama daripada 30 hari</translation>
 <translation id="5857090052475505287">Folder Baharu</translation>
-<translation id="5857675236236529683">Apabila anda sudah bersedia, cari senarai bacaan anda di sini</translation>
 <translation id="5857770089550859117">Ungkapan laluan diperlukan untuk memulakan penyegerakan.</translation>
 <translation id="5859715514067755465">Mundar</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
@@ -839,7 +836,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7108762695052995889">Lawati Laman</translation>
 <translation id="7133798577887235672">Nama Penuh</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
-<translation id="7153999225810839758">Bacaan <ph name="TIME" /> minit</translation>
 <translation id="7162168282402939716">Buka Kunci Tab Inkognito dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Pastikan kata laluan anda selamat daripada isu keselamatan</translation>
 <translation id="7173114856073700355">Buka Tetapan</translation>
@@ -1017,7 +1013,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8548878600947630424">Cari dalam halaman...</translation>
 <translation id="8558480467877843976">Kini anda boleh menggunakan Chrome pada bila-bila masa anda menyemak imbas atau mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="8588404856427128947">Mati</translation>
-<translation id="8590913940444621808">Jangan Tanya</translation>
 <translation id="8591976964826315682">Sekat Kuki Pihak Ketiga dalam Inkognito</translation>
 <translation id="8605219856220328675">Tutup tab.</translation>
 <translation id="8620640915598389714">Edit</translation>

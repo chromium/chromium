@@ -149,9 +149,9 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080769225927880590">Yaroqli hisobdan kiring</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
+<translation id="21133533946938348">Ichki oynani qadab qo‘yish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
 <translation id="2122754583996902531">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Mutolaa roʻyxatiga kiritish soʻralsin</translation>
 <translation id="2139867232736819575">Nusxalangan matnni qidirish</translation>
 <translation id="214201757571129614">Kirish...</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
@@ -542,7 +542,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5062321486222145940">Google Drive’ni o‘rnatish</translation>
 <translation id="5083464117946352670">Fayl hajmi aniqlanmadi</translation>
 <translation id="5090832849094901128">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi.</translation>
-<translation id="5092117651143801290">Sahifalarni keyinroq yoki oflayn mutolaa qilish uchun saqlashingiz mumkin. Chrome uzun sahifalar saqlanishi kerakligini soʻraydi.</translation>
 <translation id="5094827893301452931">Tvit joylandi.</translation>
 <translation id="5118713593561876160">Qiziqishlar</translation>
 <translation id="5118764316110575523">Yoqilmagan</translation>
@@ -598,7 +597,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5551897871312988470">Tarjima qilishni taklif qilish</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="556042886152191864">Tugma</translation>
-<translation id="5580834567471114021">Keyinroq oʻqish uchun mutolaa roʻyxatiga kiritilsinmi?</translation>
 <translation id="5597915316964418992">Varaqlar jadvalida ochish</translation>
 <translation id="560322036295180549">Tashkilotingiz tomonidan faolsizlantirilgan</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
@@ -638,7 +636,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5846482154967366008">Qidiruv tizimi</translation>
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5857090052475505287">Yangi jild</translation>
-<translation id="5857675236236529683">Tayyor boʻlganingizda mutolaa roʻyxatingiz shu yerda chiqadi</translation>
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
 <translation id="5859715514067755465">Oldinga oʻtkazish</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
@@ -839,7 +836,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7108762695052995889">Saytga oʻtish</translation>
 <translation id="7133798577887235672">To‘liq ism</translation>
 <translation id="7136892417564438900">Kamera ish faoliyatida emas</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> daqiqalik mutolaa</translation>
 <translation id="7162168282402939716">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
 <translation id="7172852049901402487">Parollaringizni mustahkam saqlang</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
@@ -1017,7 +1013,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8548878600947630424">Sahifadan qidirish...</translation>
 <translation id="8558480467877843976">Siz endi Chrome brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="8588404856427128947">Yoqilmagan</translation>
-<translation id="8590913940444621808">Soʻralmasin</translation>
 <translation id="8591976964826315682">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="8605219856220328675">Sahifani yopish</translation>
 <translation id="8620640915598389714">O‘zgartirish</translation>

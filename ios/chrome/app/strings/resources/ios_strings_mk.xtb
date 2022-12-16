@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080769225927880590">Најавете се со важечка сметка</translation>
 <translation id="2103075008456228677">Отвори ја history.google.com</translation>
+<translation id="21133533946938348">Прикачи картичка</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ставки се преместени</translation>
 <translation id="2122754583996902531">Прелистувачот е управуван. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Прашувај за додавање во „Списокот за читање“</translation>
 <translation id="2139867232736819575">Пребарувајте го текстот што го копиравте</translation>
 <translation id="214201757571129614">Најавете се…</translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
 <translation id="5083464117946352670">Не може да утврди големина на датотека.</translation>
 <translation id="5090832849094901128">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Може да зачувувате страници за да ги читате подоцна или офлајн. Chrome ќе ве праша дали сакате да зачувувате долги страници.</translation>
 <translation id="5094827893301452931">Твитот е завршен.</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Исклучено</translation>
@@ -598,7 +597,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5551897871312988470">Понудувај превод</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="556042886152191864">Копче</translation>
-<translation id="5580834567471114021">Да се додаде во „Списокот за читање“ за подоцна?</translation>
 <translation id="5597915316964418992">Отворете ја мрежата со апликации</translation>
 <translation id="560322036295180549">Исклучено од вашата организација</translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
@@ -638,7 +636,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5846482154967366008">Пребарувач</translation>
 <translation id="5854790677617711513">Постари од 30 дена</translation>
 <translation id="5857090052475505287">Нова папка</translation>
-<translation id="5857675236236529683">Кога ќе бидете спремни, најдете го списокот за читање тука</translation>
 <translation id="5857770089550859117">Потребна е лозинка за да започне синхронизацијата.</translation>
 <translation id="5859715514067755465">Премотај напред</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -839,7 +836,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7108762695052995889">Посетете го сајтот</translation>
 <translation id="7133798577887235672">Целосно име</translation>
 <translation id="7136892417564438900">Камерата е недостапна</translation>
-<translation id="7153999225810839758">Време на читање: <ph name="TIME" /> мин.</translation>
 <translation id="7162168282402939716">Отклучете ги картичките „Инкогнито“ со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Заштитете ги лозинките од безбедносни проблеми</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
@@ -1017,7 +1013,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8548878600947630424">Најди во страница...</translation>
 <translation id="8558480467877843976">Отсега може да го користите Chrome секогаш кога ќе прелистувате или допрете линкови во пораки, документи и други апликации.</translation>
 <translation id="8588404856427128947">Исклучена</translation>
-<translation id="8590913940444621808">Никогаш не прашувај</translation>
 <translation id="8591976964826315682">Блокирајте колачиња од трети страни во „Инкогнито“</translation>
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
 <translation id="8620640915598389714">Измени</translation>
@@ -1102,6 +1097,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9219154867334666734">Пребарајте ги картичките…</translation>
 <translation id="9223358826628549784">Извештајот за пад се испрати.</translation>
 <translation id="941747855997058526">Изберете лозинка…</translation>
+<translation id="948048872540558976">Создајте нова картичка</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Chrome е одјавен</translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>

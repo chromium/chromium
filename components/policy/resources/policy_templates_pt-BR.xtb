@@ -2243,6 +2243,7 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3092059499596000593">Usar a impressora padrão do sistema como a escolha padrão na visualização de impressão</translation>
 <translation id="309416443108680956">Especifica o que acontece quando um usuário que está fazendo a autenticação com um token de segurança (por exemplo, com um cartão inteligente) remove o token durante a sessão. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: nada acontece. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: a tela é bloqueada até que o usuário faça a autenticação novamente. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: a sessão é encerrada e o usuário é desconectado. Se esta política não for definida, o comportamento padrão será <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de plug-ins ativados</translation>
+<translation id="309885424548342662">Ativar a autenticação na nuvem da Microsoft®</translation>
 <translation id="3101035417394748390">O tamanho máximo, em bytes, que pode ser transferido entre cliente e host pela sincronização da área de transferência</translation>
 <translation id="3101501961102569744">Escolher o modo de especificar as configurações do servidor proxy</translation>
 <translation id="3101709781009526431">Data e hora</translation>
@@ -2994,6 +2995,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Para ver mais detalhes sobre sessões <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulte a especificação <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Configurações de gerenciamento de energia quando o usuário se torna inativo</translation>
+<translation id="3788876528643861853">Desativar a autenticação na nuvem da Microsoft®</translation>
 <translation id="3790085888761753785">Se esta configuração estiver ativada, os usuários poderão fazer login nas próprias contas com o Smart Lock. Esse é um comportamento mais permissivo do que o esperado para o Smart Lock, que permite apenas que usuários desbloqueiem as respectivas telas.
 
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o login do Smart Lock.
@@ -5757,6 +5759,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6575944031719151455">A definição da política especifica a lista de contas locais do dispositivo que serão exibidas na tela de login. Os identificadores diferenciam essas contas.
 
       Se a política não for definida ou houver uma lista vazia, não haverá contas locais de dispositivo.</translation>
+<translation id="6577760914164385949">Permitir o login automático nos provedores de identidade na nuvem da Microsoft®</translation>
 <translation id="6580851705156412587">Bloquear o dispositivo quando ele for suspenso ou a tampa for fechada</translation>
 <translation id="6581048059229620221">Se esta política for desativada, o host de suporte remoto não vai poder ser iniciado ou configurado para aceitar novas conexões.
 

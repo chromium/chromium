@@ -149,9 +149,9 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2080769225927880590">Inicia sesión cunha conta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
+<translation id="21133533946938348">Ancorar pestana</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Preguntar se queres engadir as páxinas á lista de lectura</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -542,7 +542,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Podes gardar páxinas para lelas máis tarde ou sen conexión. Chrome preguntarache se queres gardar páxinas longas.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">Non</translation>
@@ -598,7 +597,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5551897871312988470">Ofrecer a tradución</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="556042886152191864">Botón</translation>
-<translation id="5580834567471114021">Queres engadir esta páxina á lista de lectura para consultala máis tarde?</translation>
 <translation id="5597915316964418992">Abre a grade de pestanas</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
@@ -638,7 +636,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5846482154967366008">Motor de busca</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857090052475505287">Novo cartafol</translation>
-<translation id="5857675236236529683">Aquí te agarda a túa lista de lectura, para cando teñas un oco</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
@@ -839,7 +836,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
-<translation id="7153999225810839758">Tempo de lectura: <ph name="TIME" /> min</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protexe os teus contrasinais fronte a problemas de seguranza</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
@@ -1017,7 +1013,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8548878600947630424">Buscar na páxina...</translation>
 <translation id="8558480467877843976">Agora podes usar Chrome sempre que explores contido ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>
 <translation id="8588404856427128947">Desactivada</translation>
-<translation id="8590913940444621808">Non preguntar nunca</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="8605219856220328675">Pechar pestana.</translation>
 <translation id="8620640915598389714">Editar</translation>

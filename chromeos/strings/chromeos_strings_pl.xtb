@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
 <translation id="2597774443162333062">Pliki zostaną wysłane do Google w celu debugowania</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Obraz użytkownika</translation>

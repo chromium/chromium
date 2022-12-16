@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">Жаңарту және шығу</translation>
 <translation id="1864454756846565995">USB-C құрылғысы (артқы ұяшық)</translation>
 <translation id="1869497990620230175">Файлдарға жылдам өту</translation>
-<translation id="1871703283152909317">Екі рұқсатты қосу</translation>
 <translation id="1879018240766558464">Инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
@@ -926,7 +925,6 @@
 <translation id="6095008505822982596">Дыбыстау жылдамдығы</translation>
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
 <translation id="6103838137565245112">жүйе</translation>
-<translation id="6107292179555508368">Бұл құрылғыда микрофон мен камераны пайдалану рұқсаттары өшірулі</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
@@ -953,7 +951,6 @@
 <translation id="6259254695169772643">Стилустың көмегімен таңдаңыз</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: белсендірілуде…</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Пайдалану рұқсаттарын қосып, қолданбалар мен веб-беттерге осы құрылғыдағы микрофон мен камераны пайдалануға рұқсат етіңіз.</translation>
 <translation id="6283712521836204486">Мазаламау режимі өшірулі.</translation>
 <translation id="6284232397434400372">Ажыратымдылық өзгертілді</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> аккаунты ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>

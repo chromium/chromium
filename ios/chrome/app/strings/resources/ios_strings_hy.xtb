@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2080769225927880590">Մուտք գործեք վավեր հաշվի միջոցով</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
+<translation id="21133533946938348">Ամրացնել ներդիրը</translation>
 <translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
 <translation id="2122754583996902531">Այս դիտարկիչը կառավարվում է ադմինիստրատորի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Առաջարկել էջեր՝ ընթերցանության ցանկում ավելացնելու համար</translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
 <translation id="214201757571129614">Մտնել…</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
 <translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
-<translation id="5092117651143801290">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար։ Chrome-ում երկար նյութերը պահելուց առաջ ձեզ կառաջարկվի հաստատել այդ գործողությունը։</translation>
 <translation id="5094827893301452931">Twitter-ում տարածումն ավարտվեց:</translation>
 <translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5118764316110575523">Անջատված է</translation>
@@ -598,7 +597,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5551897871312988470">Առաջարկել թարգմանություն</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="556042886152191864">Կոճակ</translation>
-<translation id="5580834567471114021">Ավելացնե՞լ ընթերցանության ցանկում</translation>
 <translation id="5597915316964418992">Բացեք ներդիրների ցանցը</translation>
 <translation id="560322036295180549">Անջատվել է կազմակերպության կողմից</translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
@@ -638,7 +636,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5846482154967366008">Որոնման համակարգ</translation>
 <translation id="5854790677617711513">30 օր և ավելի</translation>
 <translation id="5857090052475505287">Նոր պանակ</translation>
-<translation id="5857675236236529683">Ձեր ընթերցանության ցանկը կցուցադրվի այստեղ</translation>
 <translation id="5857770089550859117">Համաժամացումը սկսելու համար անհրաժեշտ է անցաբառ:</translation>
 <translation id="5859715514067755465">Առաջ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
@@ -839,7 +836,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7108762695052995889">Անցեք կայք</translation>
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
-<translation id="7153999225810839758">Կարդալու համար կպահանջվի <ph name="TIME" /> րոպե</translation>
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Պաշտպանեք ձեր գաղտնաբառերը անվտանգության հետ կապված խնդիրներից</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
@@ -1017,7 +1013,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8548878600947630424">Գտնել էջում…</translation>
 <translation id="8558480467877843976">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում։</translation>
 <translation id="8588404856427128947">Անջատված է</translation>
-<translation id="8590913940444621808">Երբեք չհարցնել</translation>
 <translation id="8591976964826315682">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="8605219856220328675">Փակել ներդիրը:</translation>
 <translation id="8620640915598389714">Փոփոխել</translation>

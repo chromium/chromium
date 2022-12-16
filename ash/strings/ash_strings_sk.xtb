@@ -127,6 +127,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
+<translation id="163517899691012366">Keď je zapnutý režim bez vyrušení, zvuk upozornení je vypnutý</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Načítava sa</translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
@@ -179,7 +180,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1862380676329487333">Aktualizovať a odhlásiť sa</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
 <translation id="1869497990620230175">Rýchle súbory</translation>
-<translation id="1871703283152909317">Zapnúť oba prístupy</translation>
 <translation id="1879018240766558464">Okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="1882814835921407042">Žiadna mobilná sieť</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3047761520276763270">Skúste povedať:</translation>
 <translation id="3051189971848907985">Premenúva sa profil. Počkajte niekoľko minút.</translation>
 <translation id="3055162170959710888">Toto zariadenie si dnes používal(a) <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Nepodporované</translation>
 <translation id="3068711042108640621">Polička naľavo</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Rozbaliť ponuku</translation>
@@ -410,6 +411,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bolo presunuté z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Nastaviť</translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
+<translation id="3260969790895726815">Reč sa spracúva miestne a diktovanie funguje offline. Niektoré hlasové príkazy však nefungujú.</translation>
 <translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
 <translation id="3289544412142055976">Aplikácie pre Linux nie sú momentálne podporované</translation>
 <translation id="3289674678944039601">Nabíja sa cez adaptér</translation>
@@ -790,9 +792,11 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5331975486040154427">Zariadenie USB-C (port vľavo vzadu)</translation>
 <translation id="533282197239610265">Zobraziť zariadenia na prenos</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (pravé)</translation>
+<translation id="5351427059191534258">Chcete vypnúť prístup ku kamere?</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5356963482258194581">Prepínajte medzi tmavým a svetlým motívom. Pravým tlačidlom kliknite na pracovnú plochu a vyberte Tapety a štýl.</translation>
 <translation id="536019650977002321">Správca nepovoľuje záznam zvuku. Ďalšie informácie vám poskytne správca.</translation>
+<translation id="5361524080961918551">Rečové súbory v jazyku <ph name="LANGUAGE" /> sú čiastočne stiahnuté</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Prejsť na túto kartu</translation>
 <translation id="5377367976106153749">Chcete zapnúť prístup ku kamere?</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
@@ -902,6 +906,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5980301590375426705">Ukončiť rel. hosťa</translation>
 <translation id="598407983968395253">Použiť šablónu</translation>
 <translation id="598882571027504733">Ak chcete získať aktualizáciu, Chromebook s pripojenou klávesnicou reštartujte.</translation>
+<translation id="6002179289567220515">Fyzickým vypínačom ste vypli 1 kameru. Môžete vypnúť prístup aj pre všetky kamery.</translation>
 <translation id="6012623610530968780">Stránka <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Ukončuje sa režim zrkadlenia</translation>
 <translation id="602001110135236999">Posunúť doľava</translation>
@@ -926,7 +931,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6095008505822982596">Rýchlosť reči</translation>
 <translation id="6099678161144790572">Upravené za posledný mesiac</translation>
 <translation id="6103838137565245112">systém</translation>
-<translation id="6107292179555508368">Prístupy k mikrofónu a kamere sú v tomto zariadení vypnuté</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
@@ -943,9 +947,11 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="619279033188484792">V zariadení <ph name="DEVICE_TYPE" /> si môžete pozrieť najnovšie fotky, médiá a upozornenia zo svojho telefónu</translation>
 <translation id="619335566042889110">Úplne nabiť</translation>
 <translation id="6193431488227440296">Vývoj.</translation>
+<translation id="6200515304866777730">Aplikácia to nepodporuje</translation>
 <translation id="6210042900243040400">Pripojte zariadenie <ph name="NAME" />, ktoré bolo v minulosti uložené v účte <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
+<translation id="623116199192908855">Prenášajte obrazovku z Chromebooku</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> momentálne používa kameru a mikrofón</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +959,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivuje sa...</translation>
 <translation id="6274202259872570803">Záznam z obrazovky</translation>
-<translation id="6282694724099204652">Zapnite prístupy a umožnite tak aplikáciám a webovým stránkam s daným povolením používať mikrofóny a kamery v tomto zariadení.</translation>
 <translation id="6283712521836204486">Režim bez vyrušení je vypnutý.</translation>
 <translation id="6284232397434400372">Rozlíšenie sa zmenilo</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> môžete znova pridať neskôr s povolením rodiča.</translation>
@@ -988,8 +993,10 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vyžaduje, aby ste zariadenie <ph name="DEVICE_TYPE" /> aktualizovali do stanoveného termínu</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
 <translation id="6495400115277918834">Bol spustený obraz v obraze, označíte ho klávesmi Alt + Shift + V</translation>
+<translation id="6497418457565568043">Režim bez vyrušení je zapnutý</translation>
 <translation id="6500896621837555595">Aktualizovať</translation>
 <translation id="6501401484702599040">Prenášanie obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Skontrolujte, či sú Chromebook a zariadenie Chromecast pripojené k rovnakej sieti Wi‑Fi.</translation>
 <translation id="6515727200518652613">Spojenie s kamerou bolo prerušené, prebieha pokus o jeho obnovenie.</translation>
 <translation id="6520517963145875092">Vyberte okno, ktoré chcete nasnímať</translation>
 <translation id="652139407789908527">Počas tejto aktualizácie bude vaša obrazovka prázdna dlhšie ako zvyčajne (maximálne minútu). V priebehu aktualizácie nestláčajte vypínač.</translation>

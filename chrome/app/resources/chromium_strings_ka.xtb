@@ -82,6 +82,7 @@
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
 <translation id="2977506796191543575">საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chromium-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი</translation>
 <translation id="2983934633046890458">Chromium ცდილობს პაროლების რედაქტირებას.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium დაკავშირებულია HID მოწყობილობასთან}other{Chromium დაკავშირებულია HID მოწყობილობებთან}}</translation>
 <translation id="3032706164202344641">Chromium ვერ ახერხებს პაროლების შემოწმებას. ცადეთ მოგვიანებით.</translation>
 <translation id="3032787606318309379">Chromium-ში დამატება…</translation>
 <translation id="3038232873781883849">ინსტალაციის მოლოდინში...</translation>

@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">Թարմացնել և դուրս գալ</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
 <translation id="1869497990620230175">Ֆայլերի արագ մուտք</translation>
-<translation id="1871703283152909317">Միացնել երկու թույլտվությունները</translation>
 <translation id="1879018240766558464">Ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
@@ -925,7 +924,6 @@
 <translation id="6095008505822982596">Խոսքի արագությունը</translation>
 <translation id="6099678161144790572">Անցած ամիս փոփոխել եք</translation>
 <translation id="6103838137565245112">համակարգ</translation>
-<translation id="6107292179555508368">Խոսափողի և տեսախցիկի օգտագործման թույլտվություններն անջատված են այս սարքում</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Հաստատեք <ph name="FILENAME" /> ֆայլի ներբեռնումը</translation>
@@ -952,7 +950,6 @@
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
-<translation id="6282694724099204652">Տրամադրեք օգտագործման թույլտվություններ, որպեսզի հավելվածներն ու վեբ էջերը կարողանան օգտագործել այս սարքին միացված խոսափող(ներ)ը և տեսախցիկ(ներ)ը։</translation>
 <translation id="6283712521836204486">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>

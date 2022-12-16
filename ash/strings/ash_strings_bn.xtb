@@ -120,6 +120,7 @@
 <translation id="15373452373711364">বড় মাউস কার্সার</translation>
 <translation id="1546492247443594934">ডেস্ক ২</translation>
 <translation id="1546930421365146760">আপনার প্রশাসককে Google অ্যাডমিন কনসোলে এই ডিভাইসটি সেট-আপ করতে বলুন</translation>
+<translation id="1550406609415860283">ডিভাইস উপলভ্য</translation>
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
@@ -179,7 +180,6 @@
 <translation id="1862380676329487333">আপডেট করে সাইন-আউট করুন</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1869497990620230175">ঝটপট অ্যাক্সেসযোগ্য ফাইল</translation>
-<translation id="1871703283152909317">উভয় অ্যাক্সেস চালু করুন</translation>
 <translation id="1879018240766558464">বর্তমানে ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
@@ -460,6 +460,7 @@
 <translation id="3542066395059568317">আপনি সাজেশন দেখতে পাবেন যাতে যেখানে শেষ কাজ করেছিলেন সেখান থেকেই আবার শুরু করতে পারেন। সাজেশন সরিয়ে দেওয়ার জন্য আপনি ডানদিকের বোতামে ক্লিক করতে পারেন।</translation>
 <translation id="3552189655002856821">ওয়াই-ফাই বন্ধ করা আছে</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> পিন করা হয়েছে</translation>
+<translation id="3560174576767922131">ভিডিও রেকর্ড করুন</translation>
 <translation id="3563775809269155755">হটস্পট চালু করুন</translation>
 <translation id="3566240529365775567">এইমাত্র খোলা হয়েছে</translation>
 <translation id="3571734092741541777">সেট-আপ করুন</translation>
@@ -652,6 +653,7 @@
 <translation id="4577274620589681794">সময় শেষ হয়ে গেছে · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">প্রিভিউ দেখুন</translation>
 <translation id="4578906031062871102">'সেটিংস' মেনু খোলা হয়েছে</translation>
+<translation id="458210817642223147">GIF রেকর্ড করুন</translation>
 <translation id="4585337515783392668">অজানা ডিভাইসে কাস্ট করা বন্ধ করুন</translation>
 <translation id="4596144739579517758">ডার্ক থিম বন্ধ আছে</translation>
 <translation id="4611292653554630842">লগ-ইন করুন</translation>
@@ -731,6 +733,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="5003993274120026347">পরের বাক্য</translation>
+<translation id="5004607513195820459">নেটওয়ার্ক ম্যানেজ করা হয়</translation>
 <translation id="5016558321564993266">মার্কার টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">ডিভাইস মাইক্রোফোন অ্যাক্সেস চালু আছে</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
@@ -926,7 +929,6 @@
 <translation id="6095008505822982596">স্পিচ রেট</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
-<translation id="6107292179555508368">এই ডিভাইসে মাইক্রোফোন এবং ক্যামেরা অ্যাক্সেস বন্ধ আছে</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
@@ -953,7 +955,6 @@
 <translation id="6259254695169772643">বেছে নিতে স্টাইলাস ব্যবহার করুন</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: সক্রিয় করা হচ্ছে...</translation>
 <translation id="6274202259872570803">স্ক্রিনকাস্ট</translation>
-<translation id="6282694724099204652">এই ডিভাইসে মাইক্রোফোন এবং ক্যামেরা ব্যবহার করার অনুমতি সহ অ্যাপ এবং ওয়েবপেজে অনুমতি দিতে অ্যাক্সেস চালু করুন।</translation>
 <translation id="6283712521836204486">'বিরক্ত করবে না' মোড বন্ধ আছে</translation>
 <translation id="6284232397434400372">রেজোলিউশন পরিবর্তন করা হয়েছে</translation>
 <translation id="6288235558961782912">পরে অভিভাবকের অনুমতি সহ <ph name="USER_EMAIL_ADDRESS" /> আবার যোগ করা যেতে পারে।</translation>
@@ -1071,6 +1072,7 @@
 <translation id="6901883536534621389">নেভিগেট করতে জেসচার ব্যবহার করে দেখুন</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
+<translation id="6942518653766415536">রেকর্ডিং ফর্ম্যাট মেনু</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6960565108681981554">চালু করা নেই। আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>

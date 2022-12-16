@@ -179,7 +179,6 @@
 <translation id="1862380676329487333">Актуализиране и излизане от профила</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
 <translation id="1869497990620230175">Бърз достъп до файловете</translation>
-<translation id="1871703283152909317">Включване на достъпа и до двете устройства</translation>
 <translation id="1879018240766558464">Понастоящем не се поддържат прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
@@ -926,7 +925,6 @@
 <translation id="6095008505822982596">Скорост на говора</translation>
 <translation id="6099678161144790572">Редактирано през миналия месец</translation>
 <translation id="6103838137565245112">система</translation>
-<translation id="6107292179555508368">Достъпът до микрофона и камерата е изключен на това устройство</translation>
 <translation id="6114505516289286752">Файловете за говор на <ph name="LANGUAGE" /> бяха изтеглени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потвърждаване на изтеглянето на <ph name="FILENAME" /></translation>
@@ -953,7 +951,6 @@
 <translation id="6259254695169772643">Използвайте писалката за избиране</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: Активира се...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Включете достъпа, за да позволите на приложенията и уеб страниците със съответното разрешение да използват микрофоните и камерите на това устройство.</translation>
 <translation id="6283712521836204486">Режимът „Не безпокойте“ е изключен.</translation>
 <translation id="6284232397434400372">Разделителната способност е променена</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>

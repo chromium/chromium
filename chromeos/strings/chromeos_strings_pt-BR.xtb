@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
 <translation id="2597774443162333062">Os arquivos vão ser enviados ao Google para depuração</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
 <translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imagem de login</translation>

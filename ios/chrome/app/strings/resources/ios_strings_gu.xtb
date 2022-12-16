@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2080769225927880590">કોઈ માન્ય એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="2103075008456228677">history.google.com ખોલો</translation>
+<translation id="21133533946938348">ટૅબ પિન કરો</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> આઇટમ ખસેડી</translation>
 <translation id="2122754583996902531">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">વાંચન સૂચિમાં ઉમેરવા માટે કહો</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="214201757571129614">સાઇન ઇન કરો…</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
-<translation id="5092117651143801290">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો. તમારે લાંબા પેજ સાચવવા છે કે નહીં તેના માટે Chrome તમને પૂછશે.</translation>
 <translation id="5094827893301452931">ટ્વિટ પૂર્ણ કરેલ છે.</translation>
 <translation id="5118713593561876160">રુચિઓ</translation>
 <translation id="5118764316110575523">બંધ</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
-<translation id="5580834567471114021">પછીથી વાંચવા માટેની વાંચન સૂચિમાં ઉમેરીએ?</translation>
 <translation id="5597915316964418992">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="560322036295180549">તમારી સંસ્થા દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">શોધ એન્જિન</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>
 <translation id="5857090052475505287">નવું ફોલ્ડર</translation>
-<translation id="5857675236236529683">તમે તૈયાર હો, ત્યારે તમારી વાંચન સૂચિ અહીં જુઓ</translation>
 <translation id="5857770089550859117">સમન્વયનને પ્રારંભ કરવા માટે પાસફ્રેઝ આવશ્યક.</translation>
 <translation id="5859715514067755465">આગળ જાઓ</translation>
 <translation id="5860033963881614850">બંધ</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">સાઇટની મુલાકાત લો</translation>
 <translation id="7133798577887235672">આખું નામ</translation>
 <translation id="7136892417564438900">કૅમેરા અનુપલબ્ધ છે</translation>
-<translation id="7153999225810839758">વાંચવા માટે <ph name="TIME" /> મિનિટ લાગશે</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
 <translation id="7172852049901402487">સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">પેજમાં શોધો...</translation>
 <translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8588404856427128947">બંધ</translation>
-<translation id="8590913940444621808">ક્યારેય પૂછશો નહીં</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="8605219856220328675">ટૅબ બંધ કરો.</translation>
 <translation id="8620640915598389714">ફેરફાર કરો</translation>

@@ -179,7 +179,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1862380676329487333">Aktualisieren und abmelden</translation>
 <translation id="1864454756846565995">USB-C-Gerät (Port hinten)</translation>
 <translation id="1869497990620230175">Schnellzugriff auf Dateien</translation>
-<translation id="1871703283152909317">Beide Zugriffe aktivieren</translation>
 <translation id="1879018240766558464">Inkognitofenster werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="1882814835921407042">Kein Mobilfunknetz</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
@@ -925,7 +924,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6095008505822982596">Sprechgeschwindigkeit</translation>
 <translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6103838137565245112">System</translation>
-<translation id="6107292179555508368">Mikrofon- und Kamerazugriff sind auf diesem Gerät deaktiviert</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
@@ -952,7 +950,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6259254695169772643">Verwende den Eingabestift, um deine Auswahl zu treffen</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wird aktiviert...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Aktiviere die Zugriffe, um Apps und Webseiten mit der Berechtigung zu erlauben, die Mikrofone und Kameras auf diesem Gerät zu verwenden.</translation>
 <translation id="6283712521836204486">„Bitte nicht stören“ ist deaktiviert.</translation>
 <translation id="6284232397434400372">Auflösung geändert</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kann später mit der Zustimmung eines Elternteils wieder hinzugefügt werden.</translation>

@@ -149,9 +149,9 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080769225927880590">Log ind med en gyldig konto</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
+<translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
 <translation id="2122754583996902531">Din browser administreres. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Spørg, om sider skal føjes til læselisten</translation>
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
 <translation id="214201757571129614">Log ind…</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
@@ -190,6 +190,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2421044535038393232">Rediger videre</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="2451654228769116489">Fastgør fane</translation>
 <translation id="2461070143328828326">Adgangskodeindstillinger</translation>
 <translation id="2469960372084740698">Vil du deaktivere Beskyttet browsing?</translation>
 <translation id="2473876017985765807">Du har allerede gemt en adgangskode til <ph name="WEBSITE" /></translation>
@@ -542,7 +543,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5062321486222145940">Installer Google Drev</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Du kan gemme sider, som du vil læse senere, eller når du er offline. Chrome spørger dig, om du vil gemme lange sider.</translation>
 <translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Fra</translation>
@@ -598,7 +598,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5551897871312988470">Tilbyd at oversætte</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="556042886152191864">Knap</translation>
-<translation id="5580834567471114021">Vil du føje siden til læselisten?</translation>
 <translation id="5597915316964418992">Åbn fanegitteret</translation>
 <translation id="560322036295180549">Deaktiveret af din organisation</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
@@ -638,7 +637,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5846482154967366008">Søgemaskine</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857090052475505287">Ny mappe</translation>
-<translation id="5857675236236529683">Når du er klar, kan du se din læseliste her</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
 <translation id="5859715514067755465">Frem</translation>
 <translation id="5860033963881614850">Fra</translation>
@@ -675,6 +673,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
 <translation id="6064824697233747382">Din organisation kræver, at du deaktiverer synkronisering.</translation>
 <translation id="6066301408025741299">Tryk for at annullere.</translation>
+<translation id="6071409777669089905">Frigør fane</translation>
 <translation id="60829778314739003">Acceptér og fortsæt</translation>
 <translation id="6084848228346514841">Vælg faner</translation>
 <translation id="6103540626693881831">Kryptering på enheden</translation>
@@ -839,7 +838,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7108762695052995889">Besøg website</translation>
 <translation id="7133798577887235672">Fulde navn</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> min. læsning</translation>
 <translation id="7162168282402939716">Lås inkognitofaner op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Beskyt dine adgangskoder mod sikkerhedsproblemer</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
@@ -1017,7 +1015,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8548878600947630424">Find på siden...</translation>
 <translation id="8558480467877843976">Du kan nu bruge Chrome, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="8588404856427128947">Fra</translation>
-<translation id="8590913940444621808">Spørg aldrig</translation>
 <translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>
 <translation id="8605219856220328675">Luk fane.</translation>
 <translation id="8620640915598389714">Rediger</translation>

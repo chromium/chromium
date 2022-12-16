@@ -337,7 +337,6 @@
 <translation id="1307165550267142340">已建立 PIN</translation>
 <translation id="1307431692088049276">不要再問我</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
-<translation id="1309375166585231290">家長尚未核准</translation>
 <translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
 <translation id="131364520783682672">Caps Lock 鍵</translation>
@@ -418,7 +417,6 @@
 <translation id="1395730723686586365">更新程式已啟動</translation>
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
 <translation id="1396139853388185343">設定打印機時發生錯誤</translation>
-<translation id="1396259464226642517">結果未如預期嗎？<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">您輸入的使用者名稱與密碼不符</translation>
 <translation id="1397500194120344683">沒有適用裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1397594434718759194">由於您已在這些裝置上登入 Chrome，因此這些裝置可以用作安全密鑰。</translation>
@@ -813,7 +811,6 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">碌去最後一個分頁</translation>
 <translation id="1731911755844941020">正在傳送要求…</translation>
-<translation id="1732445923934584865">改為當面要求</translation>
 <translation id="1733383495376208985">使用您的<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />，加密已同步處理的資料。Google Pay 的付款方法和地址不會包括在內。</translation>
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充程式，請聯絡您的管理員。</translation>
@@ -1145,7 +1142,6 @@
 <translation id="2034346955588403444">新增其他 Wi-Fi 網絡</translation>
 <translation id="2035211704574173780">灰階</translation>
 <translation id="203574396658008164">從上鎖畫面啟用筆記功能</translation>
-<translation id="2036514476578229158">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="2037445849770872822">您已設定此 Google 帳戶的監控功能。如要設定更多家長監控設定，請選取 [繼續]。
 
 如果不想繼續設定，請立即登出。您對此帳戶作出的變更會在此裝置上反映。
@@ -1270,7 +1266,6 @@
 <translation id="2136372518715274136">輸入新密碼</translation>
 <translation id="2136476978468204130">您輸入的密碼短語不正確</translation>
 <translation id="2137128126782078222">唔批准接收嚟自 <ph name="WEBSITE" /> 嘅通知</translation>
-<translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="2139919072249842737">設定按鈕</translation>
 <translation id="2140788884185208305">電池壽命</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
@@ -1386,7 +1381,6 @@
 <translation id="2242687258748107519">檔案資料</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景中自動更新，為您提供最新功能並改善安全性。您可在「設定」中查看更新偏好設定。</translation>
-<translation id="2246480341630108201">家長尚未核准</translation>
 <translation id="2246549592927364792">要從 Google 取得圖片說明嗎？</translation>
 <translation id="2247738527273549923">您的裝置由您的機構管理</translation>
 <translation id="2247870315273396641">語音預覽</translation>
@@ -1769,6 +1763,7 @@
 <translation id="2564520396658920462">透過 AppleScript 執行 JavaScript 的功能已關閉。如要開啟此功能，請從選單列前往「檢視模式」&gt;「開發人員」&gt;「允許透過 Apple 活動執行 JavaScript」。如需瞭解詳情，請瀏覽：https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">強化的拼字檢查</translation>
 <translation id="2568774940984945469">資料列容器</translation>
+<translation id="257088987046510401">主題背景</translation>
 <translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
 <translation id="2573276323521243649">從選取顯示圖片頁面返回</translation>
@@ -1909,7 +1904,6 @@
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用功能</translation>
-<translation id="2712173769900027643">要求權限</translation>
 <translation id="2712207122921938368">在其他裝置上建立密鑰</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -2017,7 +2011,6 @@
 <translation id="2792290659606763004">要移除 Android 應用程式嗎？</translation>
 <translation id="2792465461386711506">打開 Chrome 同步功能嚟睇返最近透過手機開啟嘅 Chrome 分頁</translation>
 <translation id="2792697226874849938">限制圖片</translation>
-<translation id="2794233252405721443">網站已被封鎖</translation>
 <translation id="2794522004398861033">連線至 Wi-Fi 或以太網絡以設定 eSIM 卡</translation>
 <translation id="2795074478966352573">目前並不支援透過 Family Link 管理的帳戶</translation>
 <translation id="2795716239552913152">網站通常會使用您的位置以提供相關功能或資料，例如本地新聞或附近商店</translation>
@@ -2088,7 +2081,6 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="2850541429955027218">新增主題</translation>
 <translation id="2850672011315104382">標點符號樣式</translation>
-<translation id="2851634818064021665">您必須獲取授權，才能瀏覽此網站</translation>
 <translation id="2851728849045278002">發生錯誤，按一下即可瞭解詳情。</translation>
 <translation id="2852385257476173980">在您瀏覽網絡同時，系統可能會於此處顯示您瀏覽的網站清單</translation>
 <translation id="285241945869362924">自動建立音訊和影片字幕。音訊和字幕絕不會外洩。</translation>
@@ -2760,7 +2752,6 @@
 <translation id="3496689104192986836">電量 <ph name="PERCENTAGE" />%</translation>
 <translation id="3497501929010263034">來自 <ph name="VENDOR_NAME" /> 的 USB 裝置 (產品 ID：<ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">分享 Doodle</translation>
-<translation id="3498215018399854026">目前無法聯絡您的家長。請再試一次。</translation>
 <translation id="3500417806337761827">連接共用檔案時發生錯誤。已連接過多 SMB 共用檔案。</translation>
 <translation id="3503995387997205657">您可還原先前的應用程式</translation>
 <translation id="3505030558724226696">撤銷裝置存取權</translation>
@@ -2844,7 +2835,6 @@
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586787825263265024">需要可存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
-<translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">已允許安裝付款處理常式</translation>
 <translation id="3589766037099229847">已封鎖不安全的內容</translation>
@@ -4059,7 +4049,6 @@
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
 <translation id="4716483597559580346">執行 Powerwash 操作以提高安全性</translation>
-<translation id="471880041731876836">您沒有此網站的瀏覽權限</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用您的螢幕。</translation>
 <translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
@@ -4205,11 +4194,9 @@
 <translation id="4854317507773910281">選擇執行審核的家長帳戶</translation>
 <translation id="4854603338816296098">移除咗地址</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
-<translation id="4858792381671956233">您已詢問家長是否同意瀏覽此網站</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
 <translation id="4863769717153320198">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
-<translation id="486459320933704969">您必須獲得家長或監護人許可，才能瀏覽此網站</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4868281708609571334">訓練「Google 助理」識別<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
@@ -4887,7 +4874,6 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">從 Firefox 匯入的書籤</translation>
 <translation id="5502915260472117187">兒童</translation>
-<translation id="5503356662318814623">傳送訊息</translation>
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用和移動相機，以及使用麥克風</translation>
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
 <translation id="5505307013568720083">墨水用完</translation>
@@ -4943,7 +4929,6 @@
 <translation id="5555363196923735206">切換相機</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
 <translation id="5556459405103347317">重新載入</translation>
-<translation id="5558125320634132440">由於此網站含有兒童不宜內容，因此已被封鎖</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="55601339223879446">調整顯示屏內的桌面邊界</translation>
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
@@ -4957,7 +4942,6 @@
 <translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 嘅網站詳情</translation>
 <translation id="5572648434713976849">您會在網址列取得更貼近需求的建議</translation>
-<translation id="5572851009514199876">請啟動 Chrome 並登入帳戶，讓 Chrome 確認您是否擁有此網站的存取權。</translation>
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>
 <translation id="5575473780076478375">無痕模式擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
@@ -5116,7 +5100,6 @@
 <translation id="5728450728039149624">Smart Lock 螢幕鎖定選項</translation>
 <translation id="5729712731028706266">檢視(&amp;V)</translation>
 <translation id="5731247495086897348">貼上並前往(&amp;S)</translation>
-<translation id="5732392974455271431">您的家長可以為您解除封鎖此網站</translation>
 <translation id="5733109311583381874">將您的字詞增至用戶字典，以便自訂轉換候選字詞。</translation>
 <translation id="5733866499231170760">無效的 ID。您輸入的格式不正確。請檢查您收到的指示，以確保您以正確的格式輸入 ID。如果您無法解決此問題，請將欄位留空，並繼續安裝。</translation>
 <translation id="5734362860645681824">通訊工具</translation>
@@ -5841,7 +5824,6 @@
 <translation id="6410668567036790476">新增搜尋引擎</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
 <translation id="6414878884710400018">開啟系統偏好設定</translation>
-<translation id="6414888972213066896">您已詢問家長是否同意瀏覽此網站</translation>
 <translation id="6415900369006735853">透過手機連線至互聯網</translation>
 <translation id="6416743254476733475">請透過電腦允許或封鎖相關權限要求。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
@@ -6933,7 +6915,6 @@
 <translation id="744341768939279100">建立新的設定檔</translation>
 <translation id="744366959743242014">正在載入資料，最多可能需時幾秒才能完成。</translation>
 <translation id="7443806024147773267">系統會在您每次登入 Google 帳戶時都會存取密碼</translation>
-<translation id="7444046173054089907">系統已封鎖此網站</translation>
 <translation id="7444970023873202833">在「Google 相片」中探索更多美好回憶</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
@@ -7037,7 +7018,6 @@
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">已與您帳戶上的其他裝置同步。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">在這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能</translation>
-<translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7545466883021407599">無法連線至伺服器。請檢查您的網絡連線，然後再試一次。如果問題仍未解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" /> 設定均儲存在網絡硬碟中。這樣可能導致速度變慢、當機，甚至數據遺失。</translation>
 <translation id="7548856833046333824">檸檬水</translation>
@@ -7276,7 +7256,6 @@
 <translation id="7753735457098489144">儲存空間不足，因此無法完成安裝。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="7754347746598978109">不允許使用 JavaScript</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
-<translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
 <translation id="7757592200364144203">變更裝置名稱</translation>
 <translation id="7757739382819740102">附近所有聯絡人都可與您分享內容。此操作需要您的核准。</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
@@ -7501,7 +7480,6 @@
 <translation id="7952904276017482715">預期 ID 為「<ph name="EXPECTED_ID" />」，但實際為「<ph name="NEW_ID" />」</translation>
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
-<translation id="7955105108888461311">要求存取權</translation>
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機已解鎖，您將不需要輸入密碼或 PIN</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
@@ -7563,7 +7541,6 @@
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8011372169388649948">郁咗 <ph name="BOOKMARK_TITLE" />。</translation>
 <translation id="8011875486979733097">無法安裝 Steam</translation>
-<translation id="8012647001091218357">目前無法聯絡您的家長。請再試一次。</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8014154204619229810">正在執行更新程式。請稍後重新整理並再次查看。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> 無法還原至上一個安裝版本，請嘗試在裝置執行 Powerwash。</translation>
@@ -8717,7 +8694,6 @@
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>
 <translation id="9075413375877487220">「強化安全瀏覽」不信任此擴充程式。</translation>
-<translation id="9076283476770535406">此網站可能含有成人內容</translation>
 <translation id="9076523132036239772">抱歉，系統無法驗證您的電郵或密碼，請先連線至網絡。</translation>
 <translation id="9076821103818989526">側面板</translation>
 <translation id="9076977315710973122">SMB 共用</translation>
@@ -8788,7 +8764,6 @@
 <translation id="913411432238655354">在啟動時還原應用程式</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137157311132182254">偏好的搜尋引擎</translation>
-<translation id="9137248913990643158">使用此應用程式前，請先啟動 Chrome 並登入帳戶。</translation>
 <translation id="9137916601698928395">以 <ph name="USER" /> 身分開啟連結</translation>
 <translation id="9138978632494473300">在以下位置新增快速鍵：</translation>
 <translation id="9139258866388561662">登入「<ph name="WEB_DRIVE" />」即可完成下載</translation>
@@ -8900,7 +8875,6 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="947526284350604411">您的答案</translation>
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
-<translation id="949314938206378263">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>

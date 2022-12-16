@@ -336,7 +336,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1307165550267142340">Votre code a été créé</translation>
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="1307559529304613120">Échec de l'enregistrement du jeton d'accès aux API à long terme pour cet appareil.</translation>
-<translation id="1309375166585231290">Tes parents n'ont pas encore donné leur accord</translation>
 <translation id="1312811472299082263">Créer à partir d'un playbook Ansible ou d'un fichier de sauvegarde Crostini</translation>
 <translation id="1313405956111467313">Configuration automatique du proxy</translation>
 <translation id="131364520783682672">Verr. maj.</translation>
@@ -417,7 +416,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1395730723686586365">Processus de mise à jour lancé</translation>
 <translation id="1395832189806039783">Mettre en surbrillance l'élément sélectionné au clavier</translation>
 <translation id="1396139853388185343">Erreur de configuration de l'imprimante</translation>
-<translation id="1396259464226642517">Ce résultat était-il inattendu ? <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">Le nom d'utilisateur et le mot de passe saisis ne correspondent pas</translation>
 <translation id="1397500194120344683">Aucun appareil éligible. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils. Vous pouvez donc les utiliser comme clés de sécurité.</translation>
@@ -804,7 +802,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications, puis appuyez sur l'application que vous souhaitez désinstaller. Vous devrez peut-être balayer l'écran vers la gauche ou la droite pour localiser l'application. Ensuite, appuyez sur "Désinstaller" ou "Désactiver".<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Faire défiler vers le dernier onglet</translation>
 <translation id="1731911755844941020">Envoi de la requête...</translation>
-<translation id="1732445923934584865">Demander en personne</translation>
 <translation id="1733383495376208985">Chiffrer les données synchronisées avec votre propre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" />. Ceci ne s'applique pas aux modes de paiement et adresses Google Pay.</translation>
 <translation id="1734212868489994726">Bleu clair</translation>
 <translation id="1734230530703461088">Échec du chargement des extensions dans le délai imparti. Veuillez contacter votre administrateur.</translation>
@@ -1134,13 +1131,12 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="2034346955588403444">Ajouter un réseau Wi-Fi</translation>
 <translation id="2035211704574173780">Niveaux de gris</translation>
 <translation id="203574396658008164">Activer la prise de notes depuis l'écran de verrouillage</translation>
-<translation id="2036514476578229158">Tu as demandé à consulter ce site. Tes parents peuvent répondre dans Family Link.</translation>
 <translation id="2037445849770872822">La supervision est configurée pour ce compte Google. Pour configurer des paramètres de contrôle parental supplémentaires, sélectionnez "Continuer".
 
 Sinon, déconnectez-vous maintenant pour que les modifications apportées à ce compte soient répercutées sur cet appareil.
 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions par e-mail.</translation>
-<translation id="2039464276165755892">Masquer le contenu des notifications lorsqu'un tiers est détecté</translation>
+<translation id="2039464276165755892">Masquer les notifications lorsqu'une autre personne est détectée</translation>
 <translation id="2040460856718599782">Petit problème… Une erreur s'est produite lors de la tentative d'authentification. Veuillez vérifier vos identifiants de connexion, puis réessayer.</translation>
 <translation id="2040894699575719559">Position bloquée</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
@@ -1259,7 +1255,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2136372518715274136">Saisir le nouveau mot de passe</translation>
 <translation id="2136476978468204130">La phrase secrète que vous avez saisie est incorrecte</translation>
 <translation id="2137128126782078222">Ne pas autoriser les notifications de <ph name="WEBSITE" /></translation>
-<translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
 <translation id="2140788884185208305">État de la batterie</translation>
 <translation id="2142328300403846845">Ouvrir le lien avec le compte</translation>
@@ -1375,7 +1370,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2242687258748107519">Informations sur le fichier</translation>
 <translation id="2245603955208828424">Parcourez des éléments lettre après lettre avec les touches fléchées</translation>
 <translation id="2246129643805925002">Votre <ph name="DEVICE_TYPE" /> se met à jour automatiquement en arrière-plan pour vous permettre de bénéficier des dernières fonctionnalités et améliorations de sécurité. Vous pouvez consulter vos préférences de mise à jour dans les paramètres.</translation>
-<translation id="2246480341630108201">Ton parent n'a pas encore donné son accord</translation>
 <translation id="2246549592927364792">Obtenir des descriptions d'images de Google ?</translation>
 <translation id="2247738527273549923">Cet appareil est géré par votre organisation</translation>
 <translation id="2247870315273396641">Aperçu de la voix</translation>
@@ -1384,7 +1378,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2251218783371366160">Ouvrir avec le lecteur système</translation>
 <translation id="225163402930830576">Actualiser les réseaux</translation>
 <translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
-<translation id="2252017960592955005">Protection de l'affichage (bêta)</translation>
+<translation id="2252017960592955005">Protection anti-regard (bêta)</translation>
 <translation id="225240747099314620">Autoriser les identifiants pour le contenu protégé (le redémarrage de l'ordinateur peut être nécessaire)</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
@@ -1755,6 +1749,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2564520396658920462">L'exécution de JavaScript via AppleScript est désactivée. Pour l'activer, dans la barre de menu, accédez à Affichage &gt; Développeur &gt; Autoriser JavaScript dans les événements AppleScript. Pour en savoir plus, consultez la page https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Correcteur orthographique amélioré</translation>
 <translation id="2568774940984945469">Conteneur de barres d'infos</translation>
+<translation id="257088987046510401">Thèmes</translation>
 <translation id="2571655996835834626">Modifier les paramètres qui contrôlent l'accès des sites Web à des fonctionnalités telles que les cookies, le code JavaScript, les plug-ins, la géolocalisation, le micro, la caméra, etc.</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
 <translation id="2573276323521243649">Retour depuis la page de sélection de l'avatar</translation>
@@ -1895,7 +1890,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
-<translation id="2712173769900027643">Demander l'autorisation</translation>
 <translation id="2712207122921938368">Créer une clé d'accès sur un autre appareil</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
@@ -2003,7 +1997,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2792290659606763004">Supprimer les applications Android ?</translation>
 <translation id="2792465461386711506">Activez la synchronisation Chrome pour afficher les onglets Chrome récents depuis votre téléphone</translation>
 <translation id="2792697226874849938">Image "Restriction"</translation>
-<translation id="2794233252405721443">Site bloqué</translation>
 <translation id="2794522004398861033">Connectez-vous au Wi-Fi ou à Ethernet pour configurer la carte eSIM</translation>
 <translation id="2795074478966352573">Les comptes gérés avec Family Link ne sont pas encore acceptés</translation>
 <translation id="2795716239552913152">Les sites utilisent généralement votre position pour proposer des fonctionnalités ou des informations pertinentes, comme la météo locale ou des magasins à proximité</translation>
@@ -2074,7 +2067,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2850541429955027218">Ajouter un thème</translation>
 <translation id="2850672011315104382">Style de ponctuation</translation>
-<translation id="2851634818064021665">Tu n'es pas autorisé à consulter ce site</translation>
 <translation id="2851728849045278002">Un problème est survenu. Cliquez ici pour en savoir plus.</translation>
 <translation id="2852385257476173980">La liste des sites que vous consulterez pourra s'afficher ici dès que vous naviguerez sur le Web</translation>
 <translation id="285241945869362924">Crée automatiquement des sous-titres pour les contenus audio et vidéo. Les contenus audio et les sous-titres ne quittent pas votre appareil.</translation>
@@ -2746,7 +2738,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3496689104192986836">Niveau de la batterie : <ph name="PERCENTAGE" /> %</translation>
 <translation id="3497501929010263034">Appareil USB de <ph name="VENDOR_NAME" /> (produit <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Partager le doodle</translation>
-<translation id="3498215018399854026">Impossible de joindre votre parent pour le moment. Veuillez réessayer.</translation>
 <translation id="3500417806337761827">Échec lors du montage du partage. Un trop grand nombre de partages SMB sont déjà montés.</translation>
 <translation id="3503995387997205657">Vous pouvez restaurer vos précédentes applis</translation>
 <translation id="3505030558724226696">Retirer les droits d'accès aux appareils</translation>
@@ -2830,7 +2821,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3584169441612580296">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les modifier</translation>
 <translation id="3586787825263265024">L'appli <ph name="APPLICATION_NAME" /> nécessite que OneDrive soit disponible.</translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
-<translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3588790464166520201">Autorisé à installer des gestionnaires de paiement</translation>
 <translation id="3589766037099229847">Contenu non sécurisé bloqué</translation>
@@ -4044,7 +4034,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour plus de sécurité</translation>
-<translation id="471880041731876836">Vous n'êtes pas autorisé à consulter ce site</translation>
 <translation id="4722735765955348426">Mot de passe associé à <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Votre écran est partagé par le biais de l'application <ph name="APP_NAME" />.</translation>
 <translation id="4722989931633062466">Non autorisé(s) à afficher des invites de connexion tierces</translation>
@@ -4190,11 +4179,9 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4854317507773910281">Sélectionnez un compte parental pour la demande d'autorisation</translation>
 <translation id="4854603338816296098">Adresse supprimée</translation>
 <translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
-<translation id="4858792381671956233">Une demande d'autorisation a été envoyée à tes parents pour la consultation de ce site</translation>
 <translation id="4858913220355269194">Foot</translation>
 <translation id="4862642413395066333">Réponses OCSP de signature</translation>
 <translation id="4863769717153320198">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (par défaut)</translation>
-<translation id="486459320933704969">Un parent ou un représentant légal doit approuver l'accès à ce site Web</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'autorise à ajouter un compte scolaire.</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après leur téléchargement</translation>
 <translation id="4868281708609571334">Apprendre à l'Assistant Google à reconnaître la voix de <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -4872,7 +4859,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="5502500733115278303">Importés depuis Firefox</translation>
 <translation id="5502915260472117187">Un enfant</translation>
-<translation id="5503356662318814623">Envoyer un message</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra, et à utiliser le micro</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5505307013568720083">À court d'encre</translation>
@@ -4928,7 +4914,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5555363196923735206">Activer le mode selfie</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
-<translation id="5558125320634132440">Ce site a été bloqué, car il est possible qu'il comporte du contenu réservé à un public averti</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="55601339223879446">Adaptez les dimensions de votre Bureau à l'écran</translation>
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>
@@ -4942,7 +4927,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5571832155627049070">Personnalisez votre profil</translation>
 <translation id="5572252023412311448">Afficher les détails du site <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
-<translation id="5572851009514199876">Veuillez démarrer Chrome et vous connecter à votre compte pour que le navigateur puisse vérifier que vous êtes autorisé à accéder à ce site.</translation>
 <translation id="557506220935336383">Afficher les autorisations d'extensions pour les autres sites</translation>
 <translation id="5575473780076478375">Extension en mode navigation privée :<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème est survenu avec la demande d'enregistrement en mode de démonstration.</translation>
@@ -5104,7 +5088,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5728450728039149624">Options du verrouillage de l'écran Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Afficher</translation>
 <translation id="5731247495086897348">Coller l'URL et y a&amp;ccéder</translation>
-<translation id="5732392974455271431">Tes parents peuvent te le débloquer</translation>
 <translation id="5733109311583381874">Ajoutez vos propres mots aux dictionnaires personnels pour personnaliser les candidats à la conversion.</translation>
 <translation id="5733866499231170760">ID incorrect. Le format que vous avez saisi est incorrect. Veuillez consulter les instructions que vous avez reçues pour vous assurer de saisir l'ID au format correct. Si vous ne parvenez pas à résoudre ce problème, veuillez laisser le champ vide et continuer l'installation.</translation>
 <translation id="5734362860645681824">Communications</translation>
@@ -5829,7 +5812,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6410668567036790476">Ajouter un moteur de recherche</translation>
 <translation id="641469293210305670">Installer des mises à jour et des applications</translation>
 <translation id="6414878884710400018">Ouvrir les préférences système</translation>
-<translation id="6414888972213066896">Une demande d'autorisation a été envoyée à tes parents pour la consultation de ce site</translation>
 <translation id="6415900369006735853">Connectez-vous à Internet via votre téléphone</translation>
 <translation id="6416743254476733475">Autorisez ou bloquez ces actions sur votre ordinateur.</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
@@ -6923,7 +6905,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="744341768939279100">Créer un profil</translation>
 <translation id="744366959743242014">Chargement des données en cours. Cette opération peut prendre quelques secondes.</translation>
 <translation id="7443806024147773267">Accédez à vos mots de passe chaque fois que vous êtes connecté à votre compte Google</translation>
-<translation id="7444046173054089907">Ce site est bloqué</translation>
 <translation id="7444970023873202833">Découvrez plus de souvenirs dans Google Photos</translation>
 <translation id="7444983668544353857">Désactiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installer automatiquement des applications</translation>
@@ -7027,7 +7008,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> avec l'application <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Ce réseau est synchronisé avec d'autres appareils associés à votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Activer les fonctionnalités de débogage sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
-<translation id="7543525346216957623">Demande à tes parents</translation>
 <translation id="7545466883021407599">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si le problème persiste, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Avertissement : Vos paramètres <ph name="PRODUCT_NAME" /> sont enregistrés sur un lecteur réseau, ce qui peut entraîner des ralentissements, des plantages, voire la perte de données.</translation>
 <translation id="7548856833046333824">Limonade</translation>
@@ -7266,7 +7246,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7753735457098489144">Échec de l'installation en raison de l'espace de stockage insuffisant. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="7754347746598978109">Non autorisé à utiliser JavaScript</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
-<translation id="7755287808199759310">Ton parent peut te le débloquer</translation>
 <translation id="7757592200364144203">Modifier le nom de l'appareil</translation>
 <translation id="7757739382819740102">Les contacts à proximité peuvent partager des contenus avec vous. L'accord sera requis.</translation>
 <translation id="7757787379047923882">Texte partagé par <ph name="DEVICE_NAME" /></translation>
@@ -7491,7 +7470,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7952904276017482715">ID "<ph name="NEW_ID" />" reçu au lieu de l'ID "<ph name="EXPECTED_ID" />" attendu</translation>
 <translation id="7953669802889559161">Modes de saisie</translation>
 <translation id="7953955868932471628">Gérer les raccourcis</translation>
-<translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7955177647836564772">Si Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin de saisir de mot de passe ni de code</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Voir les informations sur l'appareil telles que son numéro de série ou son identifiant</translation>
@@ -7553,7 +7531,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> a été déplacé.</translation>
 <translation id="8011875486979733097">Impossible d'installer Steam</translation>
-<translation id="8012647001091218357">Impossible de joindre vos parents pour le moment. Veuillez réessayer.</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8014154204619229810">Le processus de mise à jour est en cours. Actualisez la page dans quelques instants et revérifiez.</translation>
 <translation id="8014206674403687691">Impossible de revenir à la version précédente de <ph name="IDS_SHORT_PRODUCT_NAME" />. Veuillez essayer de réinitialiser l'appareil avec la fonctionnalité Powerwash.</translation>
@@ -7965,7 +7942,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8380266723152870797">Nom de la fenêtre</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8382677870544805359">Pour pouvoir utiliser les fonctionnalités destinées aux entreprises, vous devrez rétablir la configuration d'usine de cet appareil.</translation>
-<translation id="8382715499079447151">Protection contre l'espionnage</translation>
+<translation id="8382715499079447151">Protection anti-regard</translation>
 <translation id="8382913212082956454">Copi&amp;er l'adresse e-mail</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Suivez ces étapes de dépannage :
     <ph name="BEGIN_LIST" />
@@ -8708,7 +8685,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Souris USB connectée.</translation>
 <translation id="9075413375877487220">Extension non approuvée par la navigation sécurisée avec protection renforcée</translation>
-<translation id="9076283476770535406">Il est possible qu'il comporte du contenu réservé aux adultes</translation>
 <translation id="9076523132036239772">Adresse e-mail ou mot de passe incorrect. Essayez tout d'abord de vous connecter à un réseau.</translation>
 <translation id="9076821103818989526">Panneau latéral</translation>
 <translation id="9076977315710973122">Partage SMB</translation>
@@ -8779,7 +8755,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="913411432238655354">Restaurer les applis au démarrage</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9137157311132182254">Moteur de recherche préféré</translation>
-<translation id="9137248913990643158">Veuillez démarrer Chrome et vous connecter à votre compte avant d'utiliser cette application</translation>
 <translation id="9137916601698928395">Ouvrir le lien avec le compte <ph name="USER" /></translation>
 <translation id="9138978632494473300">Ajouter des raccourcis vers les emplacements suivants :</translation>
 <translation id="9139258866388561662">Se connecter à <ph name="WEB_DRIVE" /> pour terminer le téléchargement</translation>
@@ -8891,7 +8866,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>
 <translation id="947526284350604411">Votre réponse</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne peut pas ouvrir les fichiers de ce dossier, car il contient des fichiers système</translation>
-<translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
 <translation id="950307215746360464">Guide de configuration</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé ou utilisé</translation>

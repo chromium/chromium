@@ -149,9 +149,9 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2080769225927880590">Mewngofnodi gyda Chyfrif Dilys</translation>
 <translation id="2103075008456228677">Agor history.google.com</translation>
+<translation id="21133533946938348">Pinio'r Tab</translation>
 <translation id="2116625576999540962">Cafodd <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> eitem eu symud</translation>
 <translation id="2122754583996902531">Rheolir eich porwr. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Gofyn am Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="2139867232736819575">Chwilio am Destun y Gwnaethoch ei Gopïo</translation>
 <translation id="214201757571129614">Mewngofnodi…</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
@@ -542,7 +542,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5062321486222145940">Gosod Google Drive</translation>
 <translation id="5083464117946352670">Ni ellir pennu maint y ffeil.</translation>
 <translation id="5090832849094901128">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Gallwch gadw tudalennau i'w darllen yn nes ymlaen neu all-lein. Bydd Chrome yn eich gofyn a ydych chi am gadw tudalennau hir.</translation>
 <translation id="5094827893301452931">Wedi cyhoeddi Tweet.</translation>
 <translation id="5118713593561876160">Diddordebau</translation>
 <translation id="5118764316110575523">Diffodd</translation>
@@ -598,7 +597,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5551897871312988470">Cynnig Cyfieithu</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
 <translation id="556042886152191864">Botwm</translation>
-<translation id="5580834567471114021">Ychwanegu at y Rhestr Ddarllen ar gyfer Nes Ymlaen?</translation>
 <translation id="5597915316964418992">Agorwch y Grid Tabiau</translation>
 <translation id="560322036295180549">Wedi'i ddiffodd gan eich sefydliad</translation>
 <translation id="5614553682702429503">Cadw'r cyfrinair?</translation>
@@ -638,7 +636,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5846482154967366008">Peiriant Chwilio</translation>
 <translation id="5854790677617711513">Hŷn na 30 diwrnod</translation>
 <translation id="5857090052475505287">Ffolder Newydd</translation>
-<translation id="5857675236236529683">Pan fyddwch yn barod, dewch o hyd i'ch rhestr ddarllen yma</translation>
 <translation id="5857770089550859117">Mae angen cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="5859715514067755465">Ymlaen</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -839,7 +836,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7108762695052995889">Mynd i'r Wefan</translation>
 <translation id="7133798577887235672">Enw Llawn</translation>
 <translation id="7136892417564438900">Nid yw'r camera ar gael</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> o funudau i'w darllen</translation>
 <translation id="7162168282402939716">Datgloi Tabiau Anhysbys gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Cadwch eich cyfrineiriau yn ddiogel rhag problemau diogelwch</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
@@ -1017,7 +1013,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8548878600947630424">Chwilio'r Dudalen...</translation>
 <translation id="8558480467877843976">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn pori neu'n tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="8588404856427128947">Diffodd</translation>
-<translation id="8590913940444621808">Peidio Byth â Gofyn</translation>
 <translation id="8591976964826315682">Rhwystro Cwcis Trydydd Parti yn y Modd Anhysbys</translation>
 <translation id="8605219856220328675">Cau'r tab.</translation>
 <translation id="8620640915598389714">Golygu</translation>

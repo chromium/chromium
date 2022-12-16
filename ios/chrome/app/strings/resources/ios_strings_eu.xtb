@@ -149,9 +149,9 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080769225927880590">Hasi saioa balio duen kontu batekin</translation>
 <translation id="2103075008456228677">Ireki history.google.com</translation>
+<translation id="21133533946938348">Ainguratu fitxa</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu mugitu dira</translation>
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Galdetu ea irakurketa-zerrendan gehitu nahi dudan</translation>
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="214201757571129614">Hasi saioa…</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
@@ -542,7 +542,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
 <translation id="5083464117946352670">Ezin da zehaztu fitxategiaren tamaina.</translation>
 <translation id="5090832849094901128">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua.</translation>
-<translation id="5092117651143801290">Orriak gorde ditzakezu, geroago edo konexiorik ez daukazunean irakurtzeko. Orri luzeak gorde nahi dituzun galdetuko dizu Chrome-k.</translation>
 <translation id="5094827893301452931">Txio egin da.</translation>
 <translation id="5118713593561876160">Interesak</translation>
 <translation id="5118764316110575523">Desaktibatuta</translation>
@@ -598,7 +597,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5551897871312988470">Eskaini itzultzea</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="556042886152191864">Botoia</translation>
-<translation id="5580834567471114021">Irakurketa-zerrendan gehitu nahi duzu geroagorako?</translation>
 <translation id="5597915316964418992">Ireki fitxen sareta</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
@@ -638,7 +636,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5846482154967366008">Bilatzailea</translation>
 <translation id="5854790677617711513">Duela 30 egunetik gorakoak</translation>
 <translation id="5857090052475505287">Karpeta berria</translation>
-<translation id="5857675236236529683">Prest zaudenean, bilatu irakurketa-zerrenda hemen</translation>
 <translation id="5857770089550859117">Pasaesaldia behar da sinkronizatzen hasteko.</translation>
 <translation id="5859715514067755465">Aurrera</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
@@ -839,7 +836,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7108762695052995889">Joan webgunera</translation>
 <translation id="7133798577887235672">Izen-abizenak</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
-<translation id="7153999225810839758"><ph name="TIME" /> minutu behar dira irakurtzeko</translation>
 <translation id="7162168282402939716">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="7172852049901402487">Babestu zure pasahitzak segurtasun-arazo guztietatik</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
@@ -1017,7 +1013,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8548878600947630424">Bilatu orrian…</translation>
 <translation id="8558480467877843976">Orain, Chrome erabili ahalko duzu arakatzen duzunean, edo mezuetako, dokumentuetako eta aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="8588404856427128947">Itzalita</translation>
-<translation id="8590913940444621808">Ez galdetu inoiz</translation>
 <translation id="8591976964826315682">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="8605219856220328675">Itxi fitxa.</translation>
 <translation id="8620640915598389714">Editatu</translation>

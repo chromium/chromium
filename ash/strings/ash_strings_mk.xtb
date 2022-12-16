@@ -127,6 +127,7 @@
 <translation id="1611993646327628135">Вклучено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
+<translation id="163517899691012366">Звукот на известувањата е исклучен кога е вклучено „Не вознемирувај“</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
@@ -179,7 +180,6 @@
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1869497990620230175">Брзи датотеки</translation>
-<translation id="1871703283152909317">Вклучете ги давата пристапи</translation>
 <translation id="1879018240766558464">Прозорците „Инкогнито“ не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +376,7 @@
 <translation id="3047761520276763270">Обидете се да кажете:</translation>
 <translation id="3051189971848907985">Се преименува профилот. Почекајте неколку минути.</translation>
 <translation id="3055162170959710888">Денес го користевте уредов <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Не е поддржано</translation>
 <translation id="3068711042108640621">Полицата е налево</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири го менито</translation>
@@ -410,6 +411,7 @@
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Поставување</translation>
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
+<translation id="3260969790895726815">Говорот се обработува локално, а диктирањето работи офлајн, но некои гласовни наредби нема да работат.</translation>
 <translation id="3269597722229482060">Десен клик</translation>
 <translation id="3289544412142055976">Апликациите на Linux не се поддржани во моментов</translation>
 <translation id="3289674678944039601">Се полни преку адаптер</translation>
@@ -791,9 +793,11 @@
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="533282197239610265">Прикажете ги уредите со Cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
+<translation id="5351427059191534258">Да се исклучи пристапот до камерата?</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5356963482258194581">Сменете на темна и светла тема. Кликнете со десното копче на работната површина и изберете „Тапети и стил“.</translation>
 <translation id="536019650977002321">Вашиот администратор не дозволува снимање аудио. Контактирајте со администраторот за повеќе информации.</translation>
+<translation id="5361524080961918551">Говорните датотеки на <ph name="LANGUAGE" /> јазик се делумно преземени</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Одете на оваа картичка</translation>
 <translation id="5377367976106153749">Да се вклучи пристапот до камерата?</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
@@ -903,6 +907,7 @@
 <translation id="5980301590375426705">Излези од гостин</translation>
 <translation id="598407983968395253">Употреби го шаблонот</translation>
 <translation id="598882571027504733">За да го добиете ажурирањето, рестартирајте го Chromebook додека тастатурата е прикачена.</translation>
+<translation id="6002179289567220515">Го искористивте физичкиот прекинувач за да исклучите 1 камера. Може да го исклучите пристапот и за сите камери.</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Се излегува од режим на огледало</translation>
 <translation id="602001110135236999">Лизгај налево</translation>
@@ -927,7 +932,6 @@
 <translation id="6095008505822982596">Брзина на говор</translation>
 <translation id="6099678161144790572">Изменето во изминатиот месец</translation>
 <translation id="6103838137565245112">систем</translation>
-<translation id="6107292179555508368">Пристапите до микрофонот и камерата се исклучени на уредов</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
@@ -944,9 +948,11 @@
 <translation id="619279033188484792">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Целосно наполни сега</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Не е поддржано од апликацијата</translation>
 <translation id="6210042900243040400">Поврзете го уредот (<ph name="NAME" />) претходно зачуван на <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
+<translation id="623116199192908855">Емитувајте го екранот од вашиот Chromebook</translation>
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -954,7 +960,6 @@
 <translation id="6259254695169772643">Користете го пенкалото за да изберете</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Се активира...</translation>
 <translation id="6274202259872570803">Снимка на екран</translation>
-<translation id="6282694724099204652">Вклучете ги пристапите за да дозволите апликациите и веб-страниците со дозвола да ги користат микрофоните и камерите на уредов.</translation>
 <translation id="6283712521836204486">„Не вознемирувај“ е исклучено.</translation>
 <translation id="6284232397434400372">Резолуцијата е променета</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> може повторно да се додаде подоцна со дозвола од родителот.</translation>
@@ -989,8 +994,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> бара да го ажурирате вашиот <ph name="DEVICE_TYPE" /> пред крајниот рок</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
 <translation id="6495400115277918834">Започна „Слика во слика“, притиснете Alt + Shift + V за да фокусирате</translation>
+<translation id="6497418457565568043">„Не вознемирувај“ е вклучено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Проверете дали вашиот Chromebook е на истата Wi-Fi мрежа со вашиот уред Chromecast.</translation>
 <translation id="6515727200518652613">Врската со камерата се изгуби, се прави обид за повторно поврзување.</translation>
 <translation id="6520517963145875092">Изберете прозорец за да сликате</translation>
 <translation id="652139407789908527">Вашиот екран ќе остане затемнет подолго од вообичаено (до една минута) при ова ажурирање. Не притискајте го копчето за вклучување додека ажурирањето е во тек.</translation>

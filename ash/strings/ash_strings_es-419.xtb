@@ -179,7 +179,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1862380676329487333">Actualizar y salir</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1869497990620230175">Archivos rápidos</translation>
-<translation id="1871703283152909317">Activar ambos accesos</translation>
 <translation id="1879018240766558464">Por el momento, las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
@@ -927,7 +926,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6095008505822982596">Velocidad de voz</translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="6107292179555508368">Los accesos al micrófono y a la cámara están desactivados en este dispositivo</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
@@ -954,7 +952,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6259254695169772643">Usa tu pluma stylus para realizar una selección</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activando...</translation>
 <translation id="6274202259872570803">Presentación en pantalla</translation>
-<translation id="6282694724099204652">Activa los accesos para permitir que las apps y las páginas web tengan permiso para usar los micrófonos y las cámaras de este dispositivo.</translation>
 <translation id="6283712521836204486">La función No interrumpir está desactivada.</translation>
 <translation id="6284232397434400372">Se cambió la resolución</translation>
 <translation id="6288235558961782912">Puedes volver a agregar a <ph name="USER_EMAIL_ADDRESS" /> más tarde con el permiso de tu madre o padre.</translation>

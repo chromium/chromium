@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080769225927880590">请使用一个有效的帐号登录</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
+<translation id="21133533946938348">固定标签页</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">请求添加到阅读清单</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="214201757571129614">登录…</translation>
 <translation id="2149973817440762519">修改书签</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。</translation>
-<translation id="5092117651143801290">您可保存页面以供日后/离线阅读。Chrome 会询问您是否要保存篇幅较长的页面。</translation>
 <translation id="5094827893301452931">Tweet 信息发布已完成。</translation>
 <translation id="5118713593561876160">兴趣</translation>
 <translation id="5118764316110575523">已关闭</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">询问是否翻译</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="556042886152191864">按钮</translation>
-<translation id="5580834567471114021">添加到阅读清单以供日后阅读？</translation>
 <translation id="5597915316964418992">打开标签页网格</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">搜索引擎</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857090052475505287">新文件夹</translation>
-<translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">访问网站</translation>
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
-<translation id="7153999225810839758">预计的阅读用时：<ph name="TIME" /> 分钟</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">在网页中查找...</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8588404856427128947">已关闭</translation>
-<translation id="8590913940444621808">永不询问</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8620640915598389714">编辑</translation>

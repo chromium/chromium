@@ -120,6 +120,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1546930421365146760">Ask your administrator to set up this device in the Google Admin console</translation>
+<translation id="1550406609415860283">Devices available</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
@@ -180,7 +181,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1862380676329487333">Update and sign out</translation>
 <translation id="1864454756846565995">USB-C device (rear port)</translation>
 <translation id="1869497990620230175">Quick files</translation>
-<translation id="1871703283152909317">Turn on both accesses</translation>
 <translation id="1879018240766558464">Incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
@@ -460,9 +460,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
+<translation id="3533126039236445965">Apps in shelf</translation>
 <translation id="3542066395059568317">You’ll see recommendations so that you can continue where you left off. You can right-click to remove recommendations.</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
+<translation id="3560174576767922131">Record video</translation>
 <translation id="3563775809269155755">Enable hotspot</translation>
 <translation id="3566240529365775567">Opened just now</translation>
 <translation id="3571734092741541777">Set up</translation>
@@ -655,6 +657,7 @@ Connect your device to power.</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
+<translation id="458210817642223147">Record GIF</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>
@@ -734,6 +737,7 @@ Connect your device to power.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Next sentence</translation>
+<translation id="5004607513195820459">Network is managed</translation>
 <translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Device microphone access is on</translation>
 <translation id="5030687792513154421">Time is up</translation>
@@ -932,7 +936,6 @@ Connect your device to power.</translation>
 <translation id="6095008505822982596">Speech rate</translation>
 <translation id="6099678161144790572">Edited in the past month</translation>
 <translation id="6103838137565245112">system</translation>
-<translation id="6107292179555508368">Microphone and camera accesses are off on this device</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> speech files downloaded</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirm download <ph name="FILENAME" /></translation>
@@ -961,7 +964,6 @@ Connect your device to power.</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activating...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Turn on access to allow apps and web pages with permission to use the microphone(s) and camera(s) on this device.</translation>
 <translation id="6283712521836204486">Do Not Disturb is off.</translation>
 <translation id="6284232397434400372">Resolution changed</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> can be re-added later with a parent’s permission.</translation>
@@ -1081,6 +1083,7 @@ New install</translation>
 <translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6931576957638141829">Save to</translation>
+<translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>

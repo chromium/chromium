@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
+<translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Предлагать добавлять страницы в список для чтения</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="214201757571129614">Войти</translation>
 <translation id="2149973817440762519">Закладка</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">Установить Google Диск</translation>
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">Сохраняйте страницы, чтобы прочитать их позже или в офлайн-режиме. Перед сохранением в Chrome длинных материалов вам будет предложено подтвердить это действие.</translation>
 <translation id="5094827893301452931">Опубликовано в Твиттере.</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="556042886152191864">Кнопка</translation>
-<translation id="5580834567471114021">Добавить в список для чтения?</translation>
 <translation id="5597915316964418992">Откройте сетку таблицы.</translation>
 <translation id="560322036295180549">Функция отключена вашей организацией</translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">Поисковая система</translation>
 <translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
 <translation id="5857090052475505287">Новая папка</translation>
-<translation id="5857675236236529683">Здесь вы найдете свой список для чтения</translation>
 <translation id="5857770089550859117">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="5859715514067755465">Вперед</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">Перейти на сайт</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
-<translation id="7153999225810839758">Чтение займет около <ph name="TIME" /> мин.</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">Найти на странице…</translation>
 <translation id="8558480467877843976">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chrome.</translation>
 <translation id="8588404856427128947">Выключено</translation>
-<translation id="8590913940444621808">Больше не спрашивать</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
 <translation id="8620640915598389714">Изменить</translation>
@@ -1102,6 +1097,7 @@
 <translation id="9219154867334666734">Поиск по вкладкам</translation>
 <translation id="9223358826628549784">Отчет отправлен</translation>
 <translation id="941747855997058526">Выбрать пароль</translation>
+<translation id="948048872540558976">Создать вкладку</translation>
 <translation id="952704832371081537">Отмена</translation>
 <translation id="953008885340860025">Вход в Chrome не выполнен</translation>
 <translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>

@@ -149,9 +149,9 @@
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080769225927880590">使用有效帳戶登入</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
+<translation id="21133533946938348">固定分頁</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="2122754583996902531">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">詢問是否加入閱讀清單</translation>
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
 <translation id="214201757571129614">登入…</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
@@ -542,7 +542,6 @@
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
 <translation id="5090832849094901128">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
-<translation id="5092117651143801290">你可以儲存頁面以便稍後閱讀或離線閱讀。Chrome 會詢問是否要儲存篇幅較長的頁面。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
 <translation id="5118713593561876160">興趣喜好</translation>
 <translation id="5118764316110575523">關閉</translation>
@@ -598,7 +597,6 @@
 <translation id="5551897871312988470">提供翻譯選項</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="556042886152191864">按鈕</translation>
-<translation id="5580834567471114021">要加入閱讀清單以便稍後瀏覽嗎？</translation>
 <translation id="5597915316964418992">開啟分頁方格</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -638,7 +636,6 @@
 <translation id="5846482154967366008">搜尋引擎</translation>
 <translation id="5854790677617711513">超過 30 天前</translation>
 <translation id="5857090052475505287">新資料夾</translation>
-<translation id="5857675236236529683">準備就緒後，即可在這裡查看閱讀清單</translation>
 <translation id="5857770089550859117">必須輸入通關密語，才能開始進行同步處理。</translation>
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -839,7 +836,6 @@
 <translation id="7108762695052995889">造訪網站</translation>
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
-<translation id="7153999225810839758">閱讀時間：<ph name="TIME" /> 分鐘</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
 <translation id="7173114856073700355">開啟設定</translation>
@@ -1017,7 +1013,6 @@
 <translation id="8548878600947630424">在網頁中尋找...</translation>
 <translation id="8558480467877843976">你現在隨時可以使用 Chrome 上網或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="8588404856427128947">關閉</translation>
-<translation id="8590913940444621808">一律不詢問</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁。</translation>
 <translation id="8620640915598389714">編輯</translation>

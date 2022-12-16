@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2584559707064218956">Gaan na Instellings om dit op te stel</translation>
 <translation id="2597774443162333062">Lêers sal vir ontfouting na Google toe gestuur word</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
 <translation id="2619761439309613843">Herlaai daagliks</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2638662041295312666">Aanmeldprent</translation>

@@ -149,9 +149,9 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2080769225927880590">Etibarlı Hesabla daxil olun</translation>
 <translation id="2103075008456228677">history.google.com linkində açın</translation>
+<translation id="21133533946938348">Tabı sancın</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> element köçürüldü</translation>
 <translation id="2122754583996902531">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
-<translation id="212623074644302906">Oxu Siyahısına əlavə edilməsini istəyin</translation>
 <translation id="2139867232736819575">Kopyalanmış Mətni Axtarın</translation>
 <translation id="214201757571129614">Giriş…</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
@@ -190,6 +190,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2421044535038393232">Redaktəyə Davam Edin</translation>
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
+<translation id="2451654228769116489">Tabı sancın</translation>
 <translation id="2461070143328828326">Parol Ayarları</translation>
 <translation id="2469960372084740698">Təhlükəsiz Baxış Deaktiv edilsin?</translation>
 <translation id="2473876017985765807">Artıq <ph name="WEBSITE" /> üçün parolu yadda saxlamısınız</translation>
@@ -542,7 +543,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
 <translation id="5083464117946352670">Fayl ölçüsünü müəyyənləşdirmək olmur.</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
-<translation id="5092117651143801290">Sonra və ya oflayn oxumaq üçün səhifələri yadda saxlaya bilərsiniz. Chrome uzun səhifələri saxlamaq istəyib-istəmədiyinizi soruşacaq.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
 <translation id="5118713593561876160">Maraqlar</translation>
 <translation id="5118764316110575523">Deaktiv</translation>
@@ -598,7 +598,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5551897871312988470">Tərcümə Təklif Edin</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="556042886152191864">Düymə</translation>
-<translation id="5580834567471114021">Daha sonra üçün Oxu Siyahısına əlavə edilsin?</translation>
 <translation id="5597915316964418992">Tab Torunu açın</translation>
 <translation id="560322036295180549">Təşkilatınız tərəfindən deaktiv edilib</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
@@ -638,7 +637,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5846482154967366008">Axtarış Sistemi</translation>
 <translation id="5854790677617711513">30 gündən çox</translation>
 <translation id="5857090052475505287">Yeni Qovluq</translation>
-<translation id="5857675236236529683">Hazır olduğunuz zaman oxu siyahınızı burada tapın</translation>
 <translation id="5857770089550859117">Sinxronizasiyanı başlamaq üçün parol söz tələb olunur.</translation>
 <translation id="5859715514067755465">Yönləndirin</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
@@ -675,6 +673,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6059830886158432458">Hekayələrinizi və fəaliyyətlərinizi burada idarə edin</translation>
 <translation id="6064824697233747382">Təşkilatınız sinxronizasiyanı deaktiv etməyi tələb edir.</translation>
 <translation id="6066301408025741299">Ləğv etmək üçün tıklayın.</translation>
+<translation id="6071409777669089905">Tabı sancmayın</translation>
 <translation id="60829778314739003">Qəbul edin və Davam edin</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
 <translation id="6103540626693881831">Cihazda Şifrələmə</translation>
@@ -839,7 +838,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7108762695052995889">Sayta daxil olun</translation>
 <translation id="7133798577887235672">Tam Ad</translation>
 <translation id="7136892417564438900">Kamera əlçatan deyil</translation>
-<translation id="7153999225810839758">Oxumaq üçün <ph name="TIME" /> dəqiqə lazımdır</translation>
 <translation id="7162168282402939716">Anonim tabları <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="7172852049901402487">Güvənlik məsələlərinə qarşı parollarınızı qoruyun</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
@@ -1017,7 +1015,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8548878600947630424">Səhifədə tapın...</translation>
 <translation id="8558480467877843976">İndi istənilən vaxt axtarış edərkən və ya mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
-<translation id="8590913940444621808">Heç vaxt soruşmayın</translation>
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="8605219856220328675">Paneli qapadın.</translation>
 <translation id="8620640915598389714">Redaktə edin</translation>

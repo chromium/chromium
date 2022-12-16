@@ -120,6 +120,7 @@
 <translation id="15373452373711364">Велики курсор</translation>
 <translation id="1546492247443594934">Радна површина 2</translation>
 <translation id="1546930421365146760">Затражите од администратора да подеси овај уређај у Google администраторској конзоли</translation>
+<translation id="1550406609415860283">Доступни уређаји</translation>
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
@@ -179,7 +180,6 @@
 <translation id="1862380676329487333">Ажурирај и одјави ме</translation>
 <translation id="1864454756846565995">Уређај са USB прикључком типа C (задњи порт)</translation>
 <translation id="1869497990620230175">Брз приступ фајловима</translation>
-<translation id="1871703283152909317">Укључи оба приступа</translation>
 <translation id="1879018240766558464">Прозори без архивирања тренутно нису подржани. Друге апликације ће бити сачуване.</translation>
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
@@ -457,9 +457,11 @@
 <translation id="3513798432020909783">Налогом управља <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ажурирајте уређај у року од 1 минута}one{Ажурирајте уређај у року од # минута}few{Ажурирајте уређај у року од # минута}other{Ажурирајте уређај у року од # минута}}</translation>
 <translation id="353086728817903341">Повезани сте са <ph name="NUM_DEVICES" /> уређаја</translation>
+<translation id="3533126039236445965">Апликације на полици</translation>
 <translation id="3542066395059568317">Видећете препоруке да бисте могли да наставите тамо где сте стали. Можете да кликнете десним тастером да бисте уклонили препоруке.</translation>
 <translation id="3552189655002856821">WiFi је искључен</translation>
 <translation id="3554637740840164787">Ставка <ph name="ITEM_TITLE" /> је закачена</translation>
+<translation id="3560174576767922131">Сними видео</translation>
 <translation id="3563775809269155755">Омогући хотспот</translation>
 <translation id="3566240529365775567">Отварано малопре</translation>
 <translation id="3571734092741541777">Подеси</translation>
@@ -653,6 +655,7 @@
 <translation id="4577274620589681794">Време је истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Прикажи прегледе</translation>
 <translation id="4578906031062871102">Мени Подешавања је отворен</translation>
+<translation id="458210817642223147">Сними GIF</translation>
 <translation id="4585337515783392668">Заустави пребацивање на непознати пријемник</translation>
 <translation id="4596144739579517758">Тамна тема је искључена</translation>
 <translation id="4611292653554630842">Пријави ме</translation>
@@ -732,6 +735,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Радна површина 16</translation>
 <translation id="5003993274120026347">Следећа реченица</translation>
+<translation id="5004607513195820459">Мрежом се управља</translation>
 <translation id="5016558321564993266">Укључите/искључите маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Приступ микрофону уређаја је укључен</translation>
 <translation id="5030687792513154421">Време је истекло</translation>
@@ -927,7 +931,6 @@
 <translation id="6095008505822982596">Брзина говора</translation>
 <translation id="6099678161144790572">Измењено протеклог месеца</translation>
 <translation id="6103838137565245112">систем</translation>
-<translation id="6107292179555508368">Приступ микрофону и камери је искључен на овом уређају</translation>
 <translation id="6114505516289286752">Преузети су фајлови са говором на језику <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдите преузимање фајла <ph name="FILENAME" /></translation>
@@ -954,7 +957,6 @@
 <translation id="6259254695169772643">Изаберите помоћу писаљке</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Активирање...</translation>
 <translation id="6274202259872570803">Видео снимак екрана</translation>
-<translation id="6282694724099204652">Укључите приступ да бисте омогућили апликацијама и веб-страницама са дозволом да користе микрофоне и камере на овом уређају.</translation>
 <translation id="6283712521836204486">Режим Не узнемиравај је искључен.</translation>
 <translation id="6284232397434400372">Резолуција је промењена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> може поново да се дода касније уз дозволу родитеља.</translation>
@@ -1072,6 +1074,7 @@
 <translation id="6901883536534621389">Испробајте покрете за кретање</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
+<translation id="6942518653766415536">Мени за формат снимања</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
