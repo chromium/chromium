@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
@@ -92,6 +93,11 @@ class AppLock : public Lock, public WithAppResources {
           WebAppTranslationManager& translation_manager,
           WebAppUiManager& ui_manager);
   ~AppLock();
+
+  base::WeakPtr<AppLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
+ private:
+  base::WeakPtrFactory<AppLock> weak_factory_{this};
 };
 
 }  // namespace web_app

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -60,6 +61,13 @@ class SharedWebContentsWithAppLock : public Lock,
       WebAppTranslationManager& translation_manager,
       WebAppUiManager& ui_manager);
   ~SharedWebContentsWithAppLock();
+
+  base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };
 
 }  // namespace web_app

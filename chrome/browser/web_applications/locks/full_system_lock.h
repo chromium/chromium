@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_FULL_SYSTEM_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_FULL_SYSTEM_LOCK_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
@@ -50,6 +51,13 @@ class FullSystemLock : public Lock, public WithAppResources {
                  WebAppTranslationManager& translation_manager,
                  WebAppUiManager& ui_manager);
   ~FullSystemLock();
+
+  base::WeakPtr<FullSystemLock> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<FullSystemLock> weak_factory_{this};
 };
 
 }  // namespace web_app

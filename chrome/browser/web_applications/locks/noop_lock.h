@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
 namespace content {
@@ -30,9 +31,13 @@ class NoopLock : public Lock {
  public:
   using LockDescription = NoopLockDescription;
 
-  explicit NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder)
-      : Lock(std::move(holder)) {}
-  ~NoopLock() = default;
+  explicit NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder);
+  ~NoopLock();
+
+  base::WeakPtr<NoopLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
+ private:
+  base::WeakPtrFactory<NoopLock> weak_factory_{this};
 };
 
 }  // namespace web_app
