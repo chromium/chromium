@@ -330,15 +330,13 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to keep the browsing data separate during the switch.
-// Flaky, crbug.com/1279995.
-- (void)DISABLED_testSignInSwitchAccountsAndKeepDataSeparate {
+- (void)testSignInSwitchAccountsAndKeepDataSeparate {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataKeepSeparateButton());
 }
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to import the browsing data during the switch.
-// Flaky, crbug.com/1279995.
-- (void)DISABLED_testSignInSwitchAccountsAndImportData {
+- (void)testSignInSwitchAccountsAndImportData {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataImportButton());
 }
 
@@ -1122,8 +1120,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.
-// Flaky, crbug.com/1279995.
-- (void)DISABLED_testSignInWithOneAccountStartSyncWithAnotherAccount {
+- (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
