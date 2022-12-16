@@ -251,7 +251,14 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyScreenCancel) {
 }
 
 // Tests the close button in SAML Screen.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlScreenCancel) {
+// TODO(crbug.com/1401612): re-enable this test. Flakily times out on
+// linux-chromeos-rel.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SamlScreenCancel DISABLED_SamlScreenCancel
+#else
+#define MAYBE_SamlScreenCancel SamlScreenCancel
+#endif
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_SamlScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
