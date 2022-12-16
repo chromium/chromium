@@ -315,6 +315,8 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return apps::AppTypeName::kExtension;
     case AppType::kStandaloneBrowserExtension:
       return apps::AppTypeName::kStandaloneBrowserExtension;
+    case AppType::kBruschetta:
+      return apps::AppTypeName::kBruschetta;
   }
 }
 
@@ -354,6 +356,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kStandaloneBrowserExtensionHistogramName;
     case apps::AppTypeName::kStandaloneBrowserWebApp:
       return kStandaloneBrowserWebAppHistogramName;
+    case apps::AppTypeName::kBruschetta:
+      return kBruschettaHistogramName;
   }
 }
 
@@ -389,6 +393,7 @@ bool ShouldRecordUkmForAppTypeName(AppType app_type) {
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kStandaloneBrowserExtension:
       return true;
+    case AppType::kBruschetta:
     case AppType::kUnknown:
     case AppType::kMacOs:
     case AppType::kPluginVm:
@@ -458,6 +463,8 @@ AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kExtension;
     case AppType::kStandaloneBrowserExtension:
       return apps::AppTypeName::kStandaloneBrowserExtension;
+    case AppType::kBruschetta:
+      return apps::AppTypeName::kBruschetta;
   }
 }
 

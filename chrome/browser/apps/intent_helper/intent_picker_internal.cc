@@ -213,6 +213,7 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
     case AppType::kBorealis:
+    case AppType::kBruschetta:
     case AppType::kStandaloneBrowserExtension:
       break;
     case AppType::kArc:

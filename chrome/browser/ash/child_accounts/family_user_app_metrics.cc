@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/user_manager/user_manager.h"
@@ -55,6 +56,8 @@ constexpr char kStandaloneBrowserAppsCountHistogramName[] = "FamilyUser.LacrosAp
 constexpr char kRemoteAppsCountHistogramName[] = "FamilyUser.RemoteAppsCount2";
 constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
+constexpr char kBruschettaAppsCountHistogramName[] =
+    "FamilyUser.BruschettaAppsCount2";
 constexpr char kSystemWebAppsCountHistogramName[] =
     "FamilyUser.SystemWebAppsCount2";
 constexpr char kStandaloneBrowserChromeAppCountHistogramName[] =
@@ -91,6 +94,8 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kRemoteAppsCountHistogramName;
     case apps::AppType::kBorealis:
       return kBorealisAppsCountHistogramName;
+    case apps::AppType::kBruschetta:
+      return kBruschettaAppsCountHistogramName;
     case apps::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
     case apps::AppType::kStandaloneBrowserChromeApp:

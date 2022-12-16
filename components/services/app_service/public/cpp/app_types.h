@@ -42,7 +42,8 @@ ENUM(AppType,
      kSystemWeb,                   // System web app.
      kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
      kExtension,                   // Browser extension.
-     kStandaloneBrowserExtension   // Extension hosted in Lacros.
+     kStandaloneBrowserExtension,  // Extension hosted in Lacros.
+     kBruschetta                   // Bruschetta app, see go/bruschetta.
 )
 
 // Whether an app is ready to launch, i.e. installed.

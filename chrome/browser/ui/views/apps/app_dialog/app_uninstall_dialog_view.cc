@@ -263,6 +263,13 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
       break;
+    case apps::AppType::kBruschetta:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // TODO(b/247636749): Implement Bruschetta uninstall.
+#else
+      NOTREACHED();
+#endif
+      break;
 
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:

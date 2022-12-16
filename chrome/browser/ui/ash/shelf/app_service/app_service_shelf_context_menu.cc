@@ -629,6 +629,8 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       NOTREACHED() << "Type " << (int)app_type_
                    << " should not appear in shelf.";
       return false;
+    case apps::AppType::kBruschetta:
+      return true;
   }
 }
 

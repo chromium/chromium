@@ -396,6 +396,8 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
       return api::autotest_private::AppType::APP_TYPE_REMOTE;
     case apps::AppType::kBorealis:
       return api::autotest_private::AppType::APP_TYPE_BOREALIS;
+    case apps::AppType::kBruschetta:
+      return api::autotest_private::AppType::APP_TYPE_BRUSCHETTA;
     case apps::AppType::kStandaloneBrowserExtension:
       return api::autotest_private::AppType::APP_TYPE_NONE;
     case apps::AppType::kStandaloneBrowserChromeApp:

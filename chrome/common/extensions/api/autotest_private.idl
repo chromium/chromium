@@ -40,7 +40,8 @@ namespace autotestPrivate {
     PluginVm,
     StandaloneBrowser,
     Remote,
-    Borealis
+    Borealis,
+    Bruschetta
   };
 
   // A mapping of apps::mojom::InstallSource

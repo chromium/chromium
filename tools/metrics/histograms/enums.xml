@@ -3990,6 +3990,7 @@ Unknown properties are collapsed to zero. -->
   <int value="14" label="Browser extension"/>
   <int value="15" label="Extension opened in Standalone browser"/>
   <int value="16" label="Web app opened in Standalone browser"/>
+  <int value="17" label="Bruschetta app"/>
 </enum>
 
 <enum name="AppTypeToMenuEntry">

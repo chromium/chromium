@@ -96,6 +96,7 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
+    case apps::AppType::kBruschetta:
     case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kStandaloneBrowserExtension:
       return false;

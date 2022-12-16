@@ -23,6 +23,7 @@ enum AppType {
   kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
   kExtension,             // Browser extension.
   kStandaloneBrowserExtension,  // Extension hosted in Lacros.
+  kBruschetta,            // Bruschetta app, see go/bruschetta.
 };
 
 // Augments a bool to include an 'unknown' value.

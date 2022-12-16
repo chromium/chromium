@@ -26,6 +26,7 @@ enum ApplicationType {
   APPLICATION_TYPE_STANDALONE_BROWSER_CHROME_APP = 12;
   APPLICATION_TYPE_EXTENSION = 13;
   APPLICATION_TYPE_STANDALONE_BROWSER_EXTENSION = 14;
+  APPLICATION_TYPE_BRUSCHETTA = 15;
 }
 
 // Describes the app installation source. Should be kept in sync with the one

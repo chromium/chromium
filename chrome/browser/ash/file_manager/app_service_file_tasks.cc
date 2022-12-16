@@ -102,6 +102,7 @@ TaskType GetTaskType(apps::AppType app_type) {
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
+    case apps::AppType::kBruschetta:
       return TASK_TYPE_UNKNOWN;
   }
 }

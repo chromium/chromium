@@ -124,6 +124,8 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::REMOTE_APP;
     case apps::AppType::kBorealis:
       return ash::BOREALIS_APP;
+    case apps::AppType::kBruschetta:
+      return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kMacOs:

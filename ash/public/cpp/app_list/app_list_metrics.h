@@ -176,6 +176,8 @@ enum SearchResultType {
   GAME_SEARCH,
   // A search result for OS personalization options.
   PERSONALIZATION,
+  // A Bruschetta App Result.
+  BRUSCHETTA_APP,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

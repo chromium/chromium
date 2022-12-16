@@ -41,6 +41,8 @@ std::string AppTypeToString(apps::AppType app_type) {
       return "Remote";
     case apps::AppType::kBorealis:
       return "Borealis";
+    case apps::AppType::kBruschetta:
+      return "Bruschetta";
     case apps::AppType::kSystemWeb:
       return "SystemWeb";
   }

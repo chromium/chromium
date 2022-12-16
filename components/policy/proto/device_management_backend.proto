@@ -1688,6 +1688,7 @@ message AppInfo {
     TYPE_WEB = 5;        // Web app.
     TYPE_PLUGINVM = 6;   // Plugin VM app.
     TYPE_BOREALIS = 7;   // Borealis app.
+    TYPE_BRUSCHETTA = 8;  // Bruschetta app.
   }
 
   enum Status {
@@ -3801,6 +3802,8 @@ message App {
     PLUGIN_VM = 6;
     // Borealis VM app.
     BOREALIS = 7;
+    // Bruschetta VM app.
+    BRUSCHETTA = 8;
   }
 
   // ID of the installed application. Package name for Android apps and 32

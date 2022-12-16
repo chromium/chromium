@@ -21,7 +21,8 @@ APP_ENUM_TO_STRING(AppType,
                    kSystemWeb,
                    kStandaloneBrowserChromeApp,
                    kExtension,
-                   kStandaloneBrowserExtension)
+                   kStandaloneBrowserExtension,
+                   kBruschetta)
 APP_ENUM_TO_STRING(Readiness,
                    kUnknown,
                    kReady,
@@ -139,6 +140,8 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_EXTENSION;
     case AppType::kStandaloneBrowserExtension:
       return ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER_EXTENSION;
+    case AppType::kBruschetta:
+      return ApplicationType::APPLICATION_TYPE_BRUSCHETTA;
   }
 }
 
@@ -237,6 +240,8 @@ AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type) {
       return AppType::kExtension;
     case apps::mojom::AppType::kStandaloneBrowserExtension:
       return AppType::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kBruschetta:
+      return AppType::kBruschetta;
   }
 }
 
@@ -272,6 +277,8 @@ mojom::AppType ConvertAppTypeToMojomAppType(AppType app_type) {
       return apps::mojom::AppType::kExtension;
     case AppType::kStandaloneBrowserExtension:
       return apps::mojom::AppType::kStandaloneBrowserExtension;
+    case AppType::kBruschetta:
+      return apps::mojom::AppType::kBruschetta;
   }
 }
 
