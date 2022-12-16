@@ -38,8 +38,6 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_d3d.h"
-#include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -78,11 +76,11 @@ static const char* kFragmentShaderSrc =
     "  gl_FragColor = texture2D(u_texture, v_texCoord);"
     "}\n";
 
-void FillYUV(uint8_t* data,
-             const gfx::Size& size,
-             uint8_t y_fill_value,
-             uint8_t u_fill_value,
-             uint8_t v_fill_value) {
+void FillNV12(uint8_t* data,
+              const gfx::Size& size,
+              uint8_t y_fill_value,
+              uint8_t u_fill_value,
+              uint8_t v_fill_value) {
   const size_t kYPlaneSize = size.width() * size.height();
   memset(data, y_fill_value, kYPlaneSize);
   uint8_t* uv_data = data + kYPlaneSize;
@@ -93,12 +91,12 @@ void FillYUV(uint8_t* data,
   }
 }
 
-void CheckYUV(const uint8_t* data,
-              size_t stride,
-              const gfx::Size& size,
-              uint8_t y_fill_value,
-              uint8_t u_fill_value,
-              uint8_t v_fill_value) {
+void CheckNV12(const uint8_t* data,
+               size_t stride,
+               const gfx::Size& size,
+               uint8_t y_fill_value,
+               uint8_t u_fill_value,
+               uint8_t v_fill_value) {
   const size_t kYPlaneSize = stride * size.height();
   const uint8_t* uv_data = data + kYPlaneSize;
   for (int i = 0; i < size.height(); i++) {
@@ -1549,7 +1547,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
   const size_t kDataSize = size.width() * size.height() * 3 / 2;
 
   std::vector<uint8_t> video_data(kDataSize);
-  FillYUV(video_data.data(), size, y_fill_value, u_fill_value, v_fill_value);
+  FillNV12(video_data.data(), size, y_fill_value, u_fill_value, v_fill_value);
 
   D3D11_SUBRESOURCE_DATA data = {};
   data.pSysMem = static_cast<const void*>(video_data.data());
@@ -1882,9 +1880,10 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
   ASSERT_TRUE(scoped_read_access);
 
-  auto* gl_image_d3d =
-      gl::GLImage::ToGLImageD3D(scoped_read_access->gl_image());
-  ASSERT_TRUE(gl_image_d3d);
+  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+      scoped_read_access->GetDCLayerOverlayImage();
+  ASSERT_TRUE(overlay_image);
+  EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Texture);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       shared_image_factory_->GetDeviceForTesting();
@@ -1902,15 +1901,15 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   d3d11_device->GetImmediateContext(&device_context);
 
   device_context->CopyResource(staging_texture.Get(),
-                               gl_image_d3d->texture().Get());
+                               overlay_image->nv12_texture());
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
   hr = device_context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0,
                            &mapped_resource);
   ASSERT_EQ(hr, S_OK);
 
-  CheckYUV(static_cast<const uint8_t*>(mapped_resource.pData),
-           mapped_resource.RowPitch, size, kYFillValue, kUFillValue,
-           kVFillValue);
+  CheckNV12(static_cast<const uint8_t*>(mapped_resource.pData),
+            mapped_resource.RowPitch, size, kYFillValue, kUFillValue,
+            kVFillValue);
 
   device_context->Unmap(staging_texture.Get(), 0);
 }
@@ -1938,7 +1937,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
       base::UnsafeSharedMemoryRegion::Create(kDataSize);
   {
     base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
-    FillYUV(shm_mapping.GetMemoryAs<uint8_t>(), size, 255, 255, 255);
+    FillNV12(shm_mapping.GetMemoryAs<uint8_t>(), size, 255, 255, 255);
   }
 
   constexpr size_t kNumPlanes = 2;
@@ -2083,12 +2082,10 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
   {
     base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
-    CheckYUV(shm_mapping.GetMemoryAs<uint8_t>(), size.width(), size,
-             kYClearValue, kUClearValue, kVClearValue);
+    CheckNV12(shm_mapping.GetMemoryAs<uint8_t>(), size.width(), size,
+              kYClearValue, kUClearValue, kVClearValue);
   }
 
-  // Both planes use the same underlying shared memory buffer with different
-  // offsets. Accessing via the Y plane overlay allows reading both planes.
   {
     auto overlay_representation =
         shared_image_representation_factory_->ProduceOverlay(
@@ -2097,12 +2094,13 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
     ASSERT_TRUE(scoped_read_access);
 
-    auto* gl_image_memory =
-        gl::GLImage::ToGLImageMemory(scoped_read_access->gl_image());
-    ASSERT_TRUE(gl_image_memory);
+    absl::optional<gl::DCLayerOverlayImage> overlay_image =
+        scoped_read_access->GetDCLayerOverlayImage();
+    ASSERT_TRUE(overlay_image);
+    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
 
-    CheckYUV(gl_image_memory->memory(), gl_image_memory->stride(), size,
-             kYClearValue, kUClearValue, kVClearValue);
+    CheckNV12(overlay_image->nv12_pixmap(), overlay_image->pixmap_stride(),
+              size, kYClearValue, kUClearValue, kVClearValue);
   }
 }
 

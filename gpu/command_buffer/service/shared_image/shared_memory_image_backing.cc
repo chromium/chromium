@@ -25,7 +25,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_image_memory.h"
 
 namespace gpu {
 namespace {
@@ -55,10 +54,8 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
  public:
   OverlayImageRepresentationImpl(SharedImageManager* manager,
                                  SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker,
-                                 scoped_refptr<gl::GLImage> gl_image)
-      : OverlayImageRepresentation(manager, backing, tracker),
-        gl_image_(std::move(gl_image)) {}
+                                 MemoryTypeTracker* tracker)
+      : OverlayImageRepresentation(manager, backing, tracker) {}
 
   ~OverlayImageRepresentationImpl() override = default;
 
@@ -69,10 +66,15 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
 
 #if BUILDFLAG(IS_WIN)
-  gl::GLImage* GetGLImage() override { return gl_image_.get(); }
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
+    // This should only be called for the backing which references the Y plane
+    // of an NV12 shmem GMB - see allow_shm_overlay in SharedImageFactory.
+    const auto& shm_wrapper = static_cast<SharedMemoryImageBacking*>(backing())
+                                  ->shared_memory_wrapper();
+    return absl::make_optional<gl::DCLayerOverlayImage>(
+        size(), shm_wrapper.GetMemory(), shm_wrapper.GetStride());
+  }
 #endif
-
-  scoped_refptr<gl::GLImage> gl_image_;
 };
 
 }  // namespace
@@ -139,18 +141,8 @@ SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   if (!shared_memory_wrapper_.IsValid())
     return nullptr;
-
-  auto gl_image =
-      base::WrapRefCounted<gl::GLImageMemory>(new gl::GLImageMemory(size()));
-  if (!gl_image->Initialize(shared_memory_wrapper_.GetMemory(),
-                            ToBufferFormat(format()),
-                            shared_memory_wrapper_.GetStride(),
-                            /*disable_pbo_upload=*/true)) {
-    DLOG(ERROR) << "Failed to initialize GLImageMemory";
-    return nullptr;
-  }
-  return std::make_unique<OverlayImageRepresentationImpl>(
-      manager, this, tracker, std::move(gl_image));
+  return std::make_unique<OverlayImageRepresentationImpl>(manager, this,
+                                                          tracker);
 }
 
 std::unique_ptr<VaapiImageRepresentation>

@@ -72,8 +72,9 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
 
   friend class DXGISwapChainOverlayImageRepresentation;
   bool Present(bool should_synchronize_present_with_vblank);
-  OverlayImageRepresentation::DCompLayerContent GetDCompLayerContent() const {
-    return OverlayImageRepresentation::DCompLayerContent(dxgi_swap_chain_);
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
+    return absl::make_optional<gl::DCLayerOverlayImage>(size(),
+                                                        dxgi_swap_chain_);
   }
 
   friend class SkiaGLImageRepresentationDXGISwapChain;

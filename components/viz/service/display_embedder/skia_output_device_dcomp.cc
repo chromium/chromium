@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -32,7 +33,6 @@
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
@@ -72,11 +72,11 @@ class SkiaOutputDeviceDComp::OverlayData {
     return *this;
   }
 
-  gpu::OverlayImageRepresentation::ScopedReadAccess* BeginOverlayAccess() {
+  absl::optional<gl::DCLayerOverlayImage> BeginOverlayAccess() {
     DCHECK(representation_);
     access_ = representation_->BeginScopedReadAccess();
     DCHECK(access_);
-    return access_.get();
+    return access_->GetDCLayerOverlayImage();
   }
 
   void EndOverlayAccess() { access_.reset(); }
@@ -197,38 +197,17 @@ void SkiaOutputDeviceDComp::PostSubBuffer(const gfx::Rect& rect,
 void SkiaOutputDeviceDComp::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   for (auto& dc_layer : overlays) {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
-    // Get GLImages for DC layer textures.
-    bool success = true;
-    for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
-      const gpu::Mailbox& mailbox = dc_layer.mailbox[i];
-      if (i > 0 && mailbox.IsZero())
-        break;
-
-      auto* read_access = BeginOverlayAccess(mailbox);
-      if (!read_access) {
-        success = false;
-        break;
-      }
-
-      if (auto dcomp_surface_proxy = read_access->GetDCOMPSurfaceProxy()) {
-        params->dcomp_surface_proxy = std::move(dcomp_surface_proxy);
-      } else if (auto* image = read_access->gl_image()) {
-        image->SetColorSpace(dc_layer.color_space);
-        params->images[i] = std::move(image);
-      } else {
-        success = false;
-        break;
-      }
-
-      scheduled_overlay_mailboxes_.insert(mailbox);
-    }
-
-    if (!success) {
-      DLOG(ERROR) << "Failed to get GLImage for DC layer.";
+    // Only use the first shared image mailbox for accessing as an overlay.
+    const gpu::Mailbox& mailbox = dc_layer.mailbox[0];
+    absl::optional<gl::DCLayerOverlayImage> overlay_image =
+        BeginOverlayAccess(mailbox);
+    if (!overlay_image) {
+      DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
       continue;
     }
 
+    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    params->overlay_image = std::move(overlay_image);
     params->z_order = dc_layer.z_order;
     params->content_rect = dc_layer.content_rect;
     params->quad_rect = dc_layer.quad_rect;
@@ -236,17 +215,21 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params->transform = dc_layer.transform;
     params->clip_rect = dc_layer.clip_rect;
     params->protected_video_type = dc_layer.protected_video_type;
+    params->color_space = dc_layer.color_space;
     params->hdr_metadata = dc_layer.hdr_metadata;
     params->is_video_fullscreen_letterboxing =
         dc_layer.is_video_fullscreen_letterboxing;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
-    if (!ScheduleDCLayer(std::move(params)))
+    if (!ScheduleDCLayer(std::move(params))) {
       DLOG(ERROR) << "ScheduleDCLayer failed";
+      continue;
+    }
+    scheduled_overlay_mailboxes_.insert(mailbox);
   }
 }
 
-gpu::OverlayImageRepresentation::ScopedReadAccess*
+absl::optional<gl::DCLayerOverlayImage>
 SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
   auto it = overlays_.find(mailbox);
   if (it != overlays_.end())
@@ -254,7 +237,7 @@ SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
 
   auto overlay = shared_image_representation_factory_->ProduceOverlay(mailbox);
   if (!overlay)
-    return nullptr;
+    return absl::nullopt;
 
   std::tie(it, std::ignore) = overlays_.emplace(mailbox, std::move(overlay));
   return it->second.BeginOverlayAccess();

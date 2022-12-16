@@ -278,7 +278,9 @@ class WrappedOverlayCompoundImageRepresentation
     return wrapped_->EndReadAccess(std::move(release_fence));
   }
 #if BUILDFLAG(IS_WIN)
-  gl::GLImage* GetGLImage() final { return wrapped_->GetGLImage(); }
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() final {
+    return wrapped_->GetDCLayerOverlayImage();
+  }
 #endif
 
  private:

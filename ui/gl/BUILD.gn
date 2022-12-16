@@ -303,6 +303,8 @@ component("gl") {
     sources += [
       "child_window_win.cc",
       "child_window_win.h",
+      "dc_layer_overlay_image.cc",
+      "dc_layer_overlay_image.h",
       "dc_layer_tree.cc",
       "dc_layer_tree.h",
       "dcomp_presenter.cc",

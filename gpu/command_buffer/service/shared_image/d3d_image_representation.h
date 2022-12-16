@@ -72,17 +72,14 @@ class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
  public:
   OverlayD3DImageRepresentation(SharedImageManager* manager,
                                 SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker,
-                                scoped_refptr<gl::GLImage> gl_image);
+                                MemoryTypeTracker* tracker);
   ~OverlayD3DImageRepresentation() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
 
-  gl::GLImage* GetGLImage() override;
-
-  scoped_refptr<gl::GLImage> gl_image_;
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
 };
 
 class D3D11VideoDecodeImageRepresentation

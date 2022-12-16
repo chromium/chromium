@@ -131,6 +131,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
   void EndAccessDawn(WGPUDevice device, WGPUTexture texture);
 #endif
 
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
+
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_for_testing()
       const {
     return dxgi_shared_handle_state_;

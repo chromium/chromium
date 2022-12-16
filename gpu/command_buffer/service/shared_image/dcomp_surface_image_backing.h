@@ -76,9 +76,9 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
 
   // For DCompSurfaceOverlayImageRepresentation implementation.
   friend class DCompSurfaceOverlayImageRepresentation;
-  OverlayImageRepresentation::DCompLayerContent GetDCompLayerContent() const {
-    return OverlayImageRepresentation::DCompLayerContent(dcomp_surface_,
-                                                         dcomp_surface_serial_);
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() {
+    return absl::make_optional<gl::DCLayerOverlayImage>(size(), dcomp_surface_,
+                                                        dcomp_surface_serial_);
   }
 
   // For DCompSurfaceSkiaImageRepresentation implementation.

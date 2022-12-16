@@ -20,10 +20,6 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/gl_image.h"
-#endif
-
 namespace gpu {
 namespace {
 
@@ -313,10 +309,10 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   auto access = overlay_rep->BeginScopedReadAccess();
 
 #if BUILDFLAG(IS_WIN)
-  // This should produce a GLImageMemory but there will still be no GPU backing.
-  auto* gl_image = access->gl_image();
-  ASSERT_TRUE(gl_image);
-  EXPECT_EQ(gl_image->GetType(), gl::GLImage::Type::MEMORY);
+  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+      access->GetDCLayerOverlayImage();
+  ASSERT_TRUE(overlay_image);
+  EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
 #endif
 
   EXPECT_FALSE(HasGpuBacking(compound_backing));

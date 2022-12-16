@@ -171,8 +171,9 @@ class DCompImageBackingFactoryTest : public testing::Test {
     Microsoft::WRL::ComPtr<IUnknown> content =
         shared_image_representation_factory_->ProduceOverlay(mailbox)
             ->BeginScopedReadAccess()
-            ->GetDCompLayerContent()
-            .content();
+            ->GetDCLayerOverlayImage()
+            ->dcomp_visual_content();
+    ASSERT_NE(nullptr, content);
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
     ASSERT_HRESULT_SUCCEEDED(content.As(&swap_chain));
@@ -368,8 +369,8 @@ TEST_F(DCompImageBackingFactoryTest,
   uint64_t previous_serial =
       shared_image_representation_factory_->ProduceOverlay(mailbox)
           ->BeginScopedReadAccess()
-          ->GetDCompLayerContent()
-          .surface_serial();
+          ->GetDCLayerOverlayImage()
+          ->dcomp_surface_serial();
 
   for (int i = 0; i < 10; i++) {
     {
@@ -385,8 +386,8 @@ TEST_F(DCompImageBackingFactoryTest,
     uint64_t current_serial =
         shared_image_representation_factory_->ProduceOverlay(mailbox)
             ->BeginScopedReadAccess()
-            ->GetDCompLayerContent()
-            .surface_serial();
+            ->GetDCLayerOverlayImage()
+            ->dcomp_surface_serial();
 
     // We only care that the previous serial is not the same as the previous
     EXPECT_NE(current_serial, previous_serial);
@@ -457,8 +458,8 @@ TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   Microsoft::WRL::ComPtr<IUnknown> content =
       shared_image_representation_factory_->ProduceOverlay(mailbox)
           ->BeginScopedReadAccess()
-          ->GetDCompLayerContent()
-          .content();
+          ->GetDCLayerOverlayImage()
+          ->dcomp_visual_content();
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
   ASSERT_HRESULT_SUCCEEDED(content.As(&swap_chain));
@@ -592,9 +593,9 @@ class DCompImageBackingFactoryVisualTreeTest
       std::unique_ptr<OverlayImageRepresentation::ScopedReadAccess>
           read_access = overlay_representation->BeginScopedReadAccess();
       ASSERT_NE(nullptr, read_access);
-      OverlayImageRepresentation::DCompLayerContent layer_content =
-          read_access->GetDCompLayerContent();
-      InitializeVisualTreeWithContent(layer_content.content());
+      Microsoft::WRL::ComPtr<IUnknown> layer_content =
+          read_access->GetDCLayerOverlayImage()->dcomp_visual_content();
+      InitializeVisualTreeWithContent(layer_content.Get());
       CommitAndWait();
     }
 
@@ -792,9 +793,9 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
       std::unique_ptr<OverlayImageRepresentation::ScopedReadAccess>
           read_access = overlay_representation->BeginScopedReadAccess();
       ASSERT_NE(nullptr, read_access);
-      OverlayImageRepresentation::DCompLayerContent layer_content =
-          read_access->GetDCompLayerContent();
-      InitializeVisualTreeWithContent(layer_content.content());
+      Microsoft::WRL::ComPtr<IUnknown> layer_content =
+          read_access->GetDCLayerOverlayImage()->dcomp_visual_content();
+      InitializeVisualTreeWithContent(layer_content.Get());
       CommitAndWait();
     }
 

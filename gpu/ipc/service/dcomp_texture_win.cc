@@ -47,8 +47,9 @@ class DCOMPTextureRepresentation : public OverlayImageRepresentation {
       : OverlayImageRepresentation(manager, backing, tracker),
         dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {}
 
-  scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() override {
-    return dcomp_surface_proxy_;
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
+    return absl::make_optional<gl::DCLayerOverlayImage>(size(),
+                                                        dcomp_surface_proxy_);
   }
 
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
@@ -56,8 +57,6 @@ class DCOMPTextureRepresentation : public OverlayImageRepresentation {
   }
 
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
-
-  gl::GLImage* GetGLImage() override { return nullptr; }
 
  private:
   scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy_;

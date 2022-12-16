@@ -5,12 +5,11 @@
 #ifndef UI_GL_DC_RENDERER_LAYER_PARAMS_H_
 #define UI_GL_DC_RENDERER_LAYER_PARAMS_H_
 
-#include <array>
-
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -20,36 +19,20 @@
 #include "ui/gl/gl_export.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <Unknwnbase.h>
-#include <wrl/client.h>
-#include "ui/gl/dcomp_surface_proxy.h"
+#include "ui/gl/dc_layer_overlay_image.h"
 #endif
 
-namespace gl {
-class GLImage;
-}
-
+// TODO(sunnyps): Move this to gl namespace and compile on Windows only.
 namespace ui {
 
 struct GL_EXPORT DCRendererLayerParams {
   DCRendererLayerParams();
   ~DCRendererLayerParams();
 
-  // Images to display in overlay.  There can either be two software video
-  // buffers for Y and UV planes, an NV12 hardware video image, or a swap chain
-  // image.  If a single image is specified, the second one must be nullptr.
-  enum : size_t { kNumImages = 2 };
-  using OverlayImages = std::array<scoped_refptr<gl::GLImage>, kNumImages>;
-  OverlayImages images;
-
 #if BUILDFLAG(IS_WIN)
-  // DCOMPSurfaceProxy corresponding to MF video renderer.
-  scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy;
-  // |dcomp_surface_serial| is associated with |dcomp_visual_content| of
-  // IDCompositionSurface type. New value indicates that dcomp surface data is
-  // updated.
-  uint64_t dcomp_surface_serial = 0;
-  Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content;
+  // Image to display in overlay - could be hardware or software video frame,
+  // swap chain, or dcomp surface.
+  absl::optional<gl::DCLayerOverlayImage> overlay_image;
 #endif
 
   // Stacking order relative to backbuffer which has z-order 0.
@@ -70,6 +53,8 @@ struct GL_EXPORT DCRendererLayerParams {
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
+
+  gfx::ColorSpace color_space;
 
   gfx::HDRMetadata hdr_metadata;
 

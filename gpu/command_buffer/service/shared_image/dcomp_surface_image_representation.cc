@@ -27,10 +27,10 @@ DCompSurfaceOverlayImageRepresentation::DCompSurfaceOverlayImageRepresentation(
 DCompSurfaceOverlayImageRepresentation::
     ~DCompSurfaceOverlayImageRepresentation() = default;
 
-OverlayImageRepresentation::DCompLayerContent
-DCompSurfaceOverlayImageRepresentation::GetDCompLayerContent() const {
+absl::optional<gl::DCLayerOverlayImage>
+DCompSurfaceOverlayImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<DCompSurfaceImageBacking*>(backing())
-      ->GetDCompLayerContent();
+      ->GetDCLayerOverlayImage();
 }
 
 bool DCompSurfaceOverlayImageRepresentation::BeginReadAccess(
@@ -41,11 +41,6 @@ bool DCompSurfaceOverlayImageRepresentation::BeginReadAccess(
 
 void DCompSurfaceOverlayImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {}
-
-gl::GLImage* DCompSurfaceOverlayImageRepresentation::GetGLImage() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
 
 DCompSurfaceSkiaImageRepresentation::DCompSurfaceSkiaImageRepresentation(
     scoped_refptr<SharedContextState> context_state,

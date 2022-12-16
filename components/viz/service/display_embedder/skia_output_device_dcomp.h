@@ -14,9 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 namespace gl {
+class DCLayerOverlayImage;
 class GLSurface;
 }  // namespace gl
 
@@ -49,6 +49,8 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
  protected:
+  class OverlayData;
+
   SkiaOutputDeviceDComp(
       gpu::MailboxManager* mailbox_manager,
       gpu::SharedImageRepresentationFactory*
@@ -59,9 +61,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
-  class OverlayData;
-
-  gpu::OverlayImageRepresentation::ScopedReadAccess* BeginOverlayAccess(
+  absl::optional<gl::DCLayerOverlayImage> BeginOverlayAccess(
       const gpu::Mailbox& mailbox);
 
   void CreateSkSurface();

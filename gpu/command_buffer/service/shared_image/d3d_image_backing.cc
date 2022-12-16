@@ -978,18 +978,22 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceOverlay");
-  scoped_refptr<gl::GLImage> gl_image = GetGLImage();
-  // Lazily create a GL image if it wasn't provided on initialization. There's
-  // no need to bind to a GL texture since the image is only used for overlay.
-  if (!gl_image) {
-    const auto internal_format = GLInternalFormat(format());
-    const auto data_type = GLDataType(format());
-    gl_image = base::MakeRefCounted<gl::GLImageD3D>(
-        size(), internal_format, data_type, color_space(), d3d11_texture_,
-        array_slice_, plane_index_, swap_chain_);
+  D3D11_TEXTURE2D_DESC desc;
+  d3d11_texture_->GetDesc(&desc);
+  if (swap_chain_ || desc.Format == DXGI_FORMAT_NV12) {
+    return std::make_unique<OverlayD3DImageRepresentation>(manager, this,
+                                                           tracker);
   }
-  return std::make_unique<OverlayD3DImageRepresentation>(manager, this, tracker,
-                                                         std::move(gl_image));
+  return nullptr;
+}
+
+absl::optional<gl::DCLayerOverlayImage>
+D3DImageBacking::GetDCLayerOverlayImage() {
+  if (swap_chain_) {
+    return absl::make_optional<gl::DCLayerOverlayImage>(size(), swap_chain_);
+  }
+  return absl::make_optional<gl::DCLayerOverlayImage>(size(), d3d11_texture_,
+                                                      array_slice_);
 }
 
 }  // namespace gpu

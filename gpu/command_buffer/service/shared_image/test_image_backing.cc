@@ -158,21 +158,12 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
 
-#if BUILDFLAG(IS_WIN)
-  gl::GLImage* GetGLImage() override {
-    gl_image_ = base::WrapRefCounted<gl::GLImage>(new gl::GLImage());
-    return gl_image_.get();
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBufferFenceSync() override {
     return nullptr;
   }
 #endif
- private:
-  scoped_refptr<gl::GLImage> gl_image_;
 };
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,

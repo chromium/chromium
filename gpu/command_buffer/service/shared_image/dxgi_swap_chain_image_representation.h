@@ -21,12 +21,11 @@ class DXGISwapChainOverlayImageRepresentation
   ~DXGISwapChainOverlayImageRepresentation() override;
 
  protected:
-  DCompLayerContent GetDCompLayerContent() const override;
+  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override;
 
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
-  gl::GLImage* GetGLImage() override;
 };
 
 // Representation of a DXGI swap chain backbuffer as a GL TexturePassthrough.

@@ -28,10 +28,10 @@ DXGISwapChainOverlayImageRepresentation::
 DXGISwapChainOverlayImageRepresentation::
     ~DXGISwapChainOverlayImageRepresentation() = default;
 
-OverlayImageRepresentation::DCompLayerContent
-DXGISwapChainOverlayImageRepresentation::GetDCompLayerContent() const {
+absl::optional<gl::DCLayerOverlayImage>
+DXGISwapChainOverlayImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<DXGISwapChainImageBacking*>(backing())
-      ->GetDCompLayerContent();
+      ->GetDCLayerOverlayImage();
 }
 
 bool DXGISwapChainOverlayImageRepresentation::BeginReadAccess(
@@ -47,11 +47,6 @@ bool DXGISwapChainOverlayImageRepresentation::BeginReadAccess(
 
 void DXGISwapChainOverlayImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {}
-
-gl::GLImage* DXGISwapChainOverlayImageRepresentation::GetGLImage() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
 
 GLTexturePassthroughDXGISwapChainBufferRepresentation::
     GLTexturePassthroughDXGISwapChainBufferRepresentation(
