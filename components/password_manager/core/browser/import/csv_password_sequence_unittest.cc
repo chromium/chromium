@@ -41,18 +41,21 @@ TEST(CSVPasswordSequenceTest, SkipsEmptyLines) {
 
 TEST(CSVPasswordSequenceTest, Iteration) {
   static constexpr char kCsv[] =
-      "Display Name,,Login,Secret Question,Password,URL,Timestamp\n"
-      "DN,value-of-an-empty-named-column,user,?,pwd,http://example.com,123\n"
-      ",<,Alice,123?,even,https://example.net,213,past header count = ignored\n"
-      ":),,Bob,ABCD!,odd,https://example.org,132\n";
+      "Display Name,,Login,Secret Question,Password,URL,Timestamp,Note\n"
+      "DN,value-of-an-empty-named-column,user,?,pwd,http://"
+      "example.com,123,\"Note\nwith two lines\"\n"
+      ",<,Alice,123?,even,https://example.net,213,,past header count = "
+      "ignored\n"
+      ":),,Bob,ABCD!,odd,https://example.org,132,regular note\n";
   constexpr struct {
     base::StringPiece url;
     base::StringPiece username;
     base::StringPiece password;
+    base::StringPiece note;
   } kExpectedCredentials[] = {
-      {"http://example.com", "user", "pwd"},
-      {"https://example.net", "Alice", "even"},
-      {"https://example.org", "Bob", "odd"},
+      {"http://example.com", "user", "pwd", "Note\nwith two lines"},
+      {"https://example.net", "Alice", "even", ""},
+      {"https://example.org", "Bob", "odd", "regular note"},
   };
   CSVPasswordSequence seq(kCsv);
   EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
@@ -64,6 +67,7 @@ TEST(CSVPasswordSequenceTest, Iteration) {
     EXPECT_EQ(GURL(expected.url), pwd.GetURL());
     EXPECT_EQ(expected.username, pwd.GetUsername());
     EXPECT_EQ(expected.password, pwd.GetPassword());
+    EXPECT_EQ(expected.note, pwd.GetNote());
     ++order;
   }
 }
@@ -80,6 +84,37 @@ TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
   EXPECT_EQ(GURL("http://a.com"), pwd.GetURL());
   EXPECT_EQ("l", pwd.GetUsername());
   EXPECT_EQ("p", pwd.GetPassword());
+}
+
+TEST(CSVPasswordSequenceTest, AcceptsDifferentNoteColumnNames) {
+  const std::string note_column_names[] = {"note", "notes", "comment",
+                                           "comments"};
+  for (auto const& note_column_name : note_column_names) {
+    const std::string kCsv =
+        "url,login,password," + note_column_name + "\nhttp://a.com,l,p,n";
+
+    CSVPasswordSequence seq(kCsv);
+    EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
+    ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
+    CSVPassword pwd = *seq.begin();
+
+    EXPECT_EQ("n", pwd.GetNote());
+  }
+}
+
+TEST(CSVPasswordSequenceTest, ContainsMultipleAcceptableNoteColumns) {
+  // In such cases note column names priority should be taken into account.
+  // note > notes > comment > comments
+  static constexpr char kCsv[] =
+      "url,login,password,comment,note,notes\n"
+      "http://a.com,l,p,note a,note b,note c";
+
+  CSVPasswordSequence seq(kCsv);
+  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
+  ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
+  CSVPassword pwd = *seq.begin();
+
+  EXPECT_EQ("note b", pwd.GetNote());
 }
 
 struct HeaderTestCase {

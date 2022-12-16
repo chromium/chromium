@@ -10,9 +10,9 @@
 namespace mojo {
 
 TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeMalformedURL) {
-  password_manager::CSVPassword input =
-      password_manager::CSVPassword("ww1.google.com", "username", "password",
-                                    password_manager::CSVPassword::Status::kOK);
+  password_manager::CSVPassword input = password_manager::CSVPassword(
+      "ww1.google.com", "username", "password", "note",
+      password_manager::CSVPassword::Status::kOK);
 
   password_manager::CSVPassword output;
   EXPECT_TRUE(
@@ -25,8 +25,9 @@ TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeMalformedURL) {
 
 TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeGoodURL) {
   GURL url("https://www.google.com");
-  password_manager::CSVPassword input = password_manager::CSVPassword(
-      url, "username", "password", password_manager::CSVPassword::Status::kOK);
+  password_manager::CSVPassword input =
+      password_manager::CSVPassword(url, "username", "password", "note",
+                                    password_manager::CSVPassword::Status::kOK);
 
   password_manager::CSVPassword output;
   EXPECT_TRUE(
@@ -39,7 +40,8 @@ TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeGoodURL) {
 
 TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeSyntaxError) {
   password_manager::CSVPassword input = password_manager::CSVPassword(
-      "", "", "", password_manager::CSVPassword::Status::kSyntaxError);
+      /*invalid_url=*/"", /*username=*/"", /*password=*/"", /*note=*/"",
+      password_manager::CSVPassword::Status::kSyntaxError);
 
   password_manager::CSVPassword output;
   EXPECT_TRUE(
@@ -50,7 +52,8 @@ TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeSyntaxError) {
 
 TEST(CsvPasswordParserTraitsTest, SerializeAndDeserializeSemanticError) {
   password_manager::CSVPassword input = password_manager::CSVPassword(
-      "", "", "", password_manager::CSVPassword::Status::kSemanticError);
+      /*invalid_url=*/"", /*username=*/"", /*password=*/"", /*note=*/"",
+      password_manager::CSVPassword::Status::kSemanticError);
 
   password_manager::CSVPassword output;
   EXPECT_TRUE(

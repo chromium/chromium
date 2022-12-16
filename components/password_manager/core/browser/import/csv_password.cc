@@ -36,23 +36,27 @@ CSVPassword::CSVPassword() : status_(Status::kSemanticError) {}
 CSVPassword::CSVPassword(GURL url,
                          std::string username,
                          std::string password,
+                         std::string note,
                          Status status)
     : url_(std::move(url)),
       username_(std::move(username)),
       password_(std::move(password)),
+      note_(std::move(note)),
       status_(status) {}
 
 CSVPassword::CSVPassword(std::string invalid_url,
                          std::string username,
                          std::string password,
+                         std::string note,
                          Status status)
     : url_(base::unexpected(std::move(invalid_url))),
       username_(std::move(username)),
       password_(std::move(password)),
+      note_(std::move(note)),
       status_(status) {}
 
 CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
-  if (row.empty() || map.size() != kLabelCount) {
+  if (row.empty()) {
     status_ = Status::kSemanticError;
     return;
   }
@@ -86,6 +90,9 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
       case Label::kPassword:
         password_ = ConvertUTF8(field);
         break;
+      case Label::KNote:
+        note_ = ConvertUTF8(field);
+        break;
     }
   }
 }
@@ -112,6 +119,10 @@ const std::string& CSVPassword::GetPassword() const {
 
 const std::string& CSVPassword::GetUsername() const {
   return username_;
+}
+
+const std::string& CSVPassword::GetNote() const {
+  return note_;
 }
 
 const base::expected<GURL, std::string>& CSVPassword::GetURL() const {

@@ -48,6 +48,9 @@ struct StructTraits<password_manager::mojom::CSVPasswordDataView,
   static const std::string& password(const password_manager::CSVPassword& r) {
     return r.GetPassword();
   }
+  static const std::string& note(const password_manager::CSVPassword& r) {
+    return r.GetNote();
+  }
   static bool Read(password_manager::mojom::CSVPasswordDataView data,
                    password_manager::CSVPassword* out);
 };

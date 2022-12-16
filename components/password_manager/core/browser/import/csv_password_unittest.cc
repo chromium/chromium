@@ -43,6 +43,7 @@ struct TestCase {
   std::string signon_realm;
   std::string username;
   std::string password;
+  std::string note;
   Status status = Status::kOK;
 };
 
@@ -84,6 +85,11 @@ class TestCaseBuilder {
     return *this;
   }
 
+  TestCaseBuilder& Note(std::string note) {
+    test_case_.note = std::move(note);
+    return *this;
+  }
+
   TestCaseBuilder& Status(Status status) {
     test_case_.status = status;
     return *this;
@@ -110,6 +116,7 @@ TEST_P(CSVPasswordTestSuccess, ShouldParse) {
   EXPECT_EQ(GURL(test_case.origin), csv_pwd.GetURL());
   EXPECT_EQ(test_case.username, csv_pwd.GetUsername());
   EXPECT_EQ(test_case.password, csv_pwd.GetPassword());
+  EXPECT_EQ(test_case.note, csv_pwd.GetNote());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -117,14 +124,18 @@ INSTANTIATE_TEST_SUITE_P(
     CSVPasswordTestSuccess,
     ::testing::Values(
         TestCaseBuilder("all columns specified")
-            .Map({{0, Label::kOrigin},
-                  {1, Label::kUsername},
-                  {2, Label::kPassword}})
-            .CSV("http://example.com,user,password")
+            .Map({
+                {0, Label::kOrigin},
+                {1, Label::kUsername},
+                {2, Label::kPassword},
+                {3, Label::KNote},
+            })
+            .CSV("http://example.com,user,password,secret note")
             .Origin("http://example.com")
             .SignonRealm("http://example.com/")
             .Username("user")
             .Password("password")
+            .Note("secret note")
             .Build(),
         TestCaseBuilder("empty username")
             .Map({{0, Label::kOrigin},
@@ -255,12 +266,7 @@ TEST_P(CSVPasswordTestFailure, ShouldFailWithStatus) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     CSVPasswordTestFailure,
-    ::testing::Values(TestCaseBuilder("no columns specified")
-                          .Map({})
-                          .CSV("http://example.com,user,password")
-                          .Status(Status::kSemanticError)
-                          .Build(),
-                      TestCaseBuilder("empty line")
+    ::testing::Values(TestCaseBuilder("empty line")
                           .Map({})
                           .CSV("")
                           .Status(Status::kSemanticError)
@@ -278,14 +284,6 @@ INSTANTIATE_TEST_SUITE_P(
                                 {2, Label::kPassword}})
                           .CSV("Url,Username,\"Password\n")
                           .Status(Status::kSyntaxError)
-                          .Build(),
-                      TestCaseBuilder("map not injective")
-                          .Map({{0, Label::kOrigin},
-                                {1, Label::kUsername},
-                                {2, Label::kPassword},
-                                {3, Label::kUsername}})
-                          .CSV("http://example.com,user,pwd,user2")
-                          .Status(Status::kSemanticError)
                           .Build()));
 
 }  // namespace password_manager

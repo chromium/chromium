@@ -52,6 +52,7 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
   GURL url;
   std::string username;
   std::string password;
+  std::string note;
 
   if (!data.ReadStatus(&status))
     return false;
@@ -61,8 +62,10 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
     return false;
   if (!data.ReadPassword(&password))
     return false;
+  if (!data.ReadNote(&note))
+    return false;
   if (url.is_valid()) {
-    *out = password_manager::CSVPassword(url, username, password, status);
+    *out = password_manager::CSVPassword(url, username, password, note, status);
     return true;
   }
   absl::optional<std::string> invalid_url;
@@ -70,7 +73,7 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
     return false;
   DCHECK(invalid_url.has_value());
   *out = password_manager::CSVPassword(invalid_url.value(), username, password,
-                                       status);
+                                       note, status);
   return true;
 }
 

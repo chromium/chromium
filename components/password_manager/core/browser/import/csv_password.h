@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "url/gurl.h"
 
@@ -24,7 +23,7 @@ namespace password_manager {
 // Partial parsing i.e. missing fields will also yield a valid CSVPassword.
 class CSVPassword {
  public:
-  enum class Label { kOrigin, kUsername, kPassword };
+  enum class Label { kOrigin, kUsername, kPassword, KNote };
   using ColumnMap = base::flat_map<size_t, Label>;
 
   // Status describes parsing errors.
@@ -34,20 +33,19 @@ class CSVPassword {
     kSemanticError = 2,
   };
 
-  // Number of values in the Label enum.
-  static constexpr size_t kLabelCount = 3;
-
   explicit CSVPassword();
   explicit CSVPassword(const ColumnMap& map, base::StringPiece csv_row);
   explicit CSVPassword(GURL url,
                        std::string username,
                        std::string password,
+                       std::string note,
                        Status status);
   // This constructor creates a valid CSVPassword but with an invalid_url, i.e.
   // the url is not a valid GURL.
   explicit CSVPassword(std::string invalid_url,
                        std::string username,
                        std::string password,
+                       std::string note,
                        Status status);
   CSVPassword(const CSVPassword&);
   CSVPassword(CSVPassword&&);
@@ -55,14 +53,13 @@ class CSVPassword {
   CSVPassword& operator=(CSVPassword&&);
   ~CSVPassword();
 
-  // Returns the status of the parse.
   Status GetParseStatus() const;
 
-  // Returns the password.
   const std::string& GetPassword() const;
 
-  // Returns the username.
   const std::string& GetUsername() const;
+
+  const std::string& GetNote() const;
 
   // Returns the URL or the original raw url in case of an invalid GURL.
   const base::expected<GURL, std::string>& GetURL() const;
@@ -73,6 +70,7 @@ class CSVPassword {
   base::expected<GURL, std::string> url_ = base::unexpected("");
   std::string username_;
   std::string password_;
+  std::string note_;
 
   Status status_;
 };
