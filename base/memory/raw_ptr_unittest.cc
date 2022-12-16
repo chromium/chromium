@@ -36,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag_types.h"
@@ -1326,6 +1327,39 @@ class PmfTestDerived : public PmfTestBase {
   using PmfTestBase::MemFunc;
   int MemFunc(float, double) { return 22; }
 };
+
+TEST_F(RawPtrTest, WorksWithOptional) {
+  int x = 0;
+  absl::optional<raw_ptr<int>> maybe_int;
+  EXPECT_FALSE(maybe_int.has_value());
+
+  maybe_int = nullptr;
+  ASSERT_TRUE(maybe_int.has_value());
+  EXPECT_EQ(nullptr, maybe_int.value());
+
+  maybe_int = &x;
+  ASSERT_TRUE(maybe_int.has_value());
+  EXPECT_EQ(&x, maybe_int.value());
+}
+
+TEST_F(RawPtrTest, WorksWithVariant) {
+  int x = 100;
+  absl::variant<int, raw_ptr<int>> vary;
+  ASSERT_EQ(0u, vary.index());
+  EXPECT_EQ(0, absl::get<int>(vary));
+
+  vary = x;
+  ASSERT_EQ(0u, vary.index());
+  EXPECT_EQ(100, absl::get<int>(vary));
+
+  vary = nullptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_EQ(nullptr, absl::get<raw_ptr<int>>(vary));
+
+  vary = &x;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_EQ(&x, absl::get<raw_ptr<int>>(vary));
+}
 
 }  // namespace
 
