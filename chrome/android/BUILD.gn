@@ -848,7 +848,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/httpclient:java",
       "//chrome/browser/commerce/merchant_viewer/android:java",
       "//chrome/browser/content_creation/notes/internal/android:java",
-      "//chrome/browser/content_creation/reactions/internal/android:java",
       "//chrome/browser/download/internal/android:java",
       "//chrome/browser/page_annotations/android:java",
       "//chrome/browser/password_check:internal_java",

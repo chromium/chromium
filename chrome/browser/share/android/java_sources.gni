@@ -85,8 +85,6 @@ share_java_sources = [
 share_java_deps = [
   "//chrome/browser/content_creation/notes/android:factory_java",
   "//chrome/browser/content_creation/notes/android:public_java",
-  "//chrome/browser/content_creation/reactions/android:factory_java",
-  "//chrome/browser/content_creation/reactions/android:public_java",
   "//components/feature_engagement/public:public_java",
   "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
   "//components/sync_device_info:sync_device_info_java",

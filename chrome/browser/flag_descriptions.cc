@@ -3700,11 +3700,6 @@ const char kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
     "Only enable the upload of clicks/views in Feed V2 after reaching "
     "conditions.";
 
-const char kLightweightReactionsAndroidName[] =
-    "Lightweight Reactions (Android)";
-const char kLightweightReactionsAndroidDescription[] =
-    "Enables the Lightweight Reactions entry point in the tab share sheet.";
-
 const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =
     "When enabled, ads blocked message will use the new Messages UI.";

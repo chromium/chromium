@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/browser_ui/share",
-  "+components/content_creation/reactions",
-  "+components/image_fetcher",
-]

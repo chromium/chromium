@@ -235,7 +235,6 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
-#include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/translate/content/android/translate_message.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
@@ -4188,10 +4187,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebNotesDynamicTemplatesName,
      flag_descriptions::kWebNotesDynamicTemplatesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(content_creation::kWebNotesDynamicTemplates)},
-    {"lightweight-reactions-android",
-     flag_descriptions::kLightweightReactionsAndroidName,
-     flag_descriptions::kLightweightReactionsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(content_creation::kLightweightReactions)},
     {"cormorant", flag_descriptions::kCormorantName,
      flag_descriptions::kCormorantDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kCormorant)},
