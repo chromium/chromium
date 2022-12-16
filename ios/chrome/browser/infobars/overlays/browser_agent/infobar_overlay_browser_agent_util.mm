@@ -33,6 +33,7 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   {
     auto banner_handler =
         std::make_unique<PasswordInfobarBannerInteractionHandler>(
+            browser,
             PasswordInfobarBannerOverlayRequestConfig::RequestSupport());
     auto modal_handler =
         std::make_unique<PasswordInfobarModalInteractionHandler>(
@@ -45,6 +46,7 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   {
     auto banner_handler =
         std::make_unique<PasswordInfobarBannerInteractionHandler>(
+            browser,
             PasswordInfobarBannerOverlayRequestConfig::RequestSupport());
     auto modal_handler =
         std::make_unique<PasswordInfobarModalInteractionHandler>(

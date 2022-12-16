@@ -15,6 +15,7 @@ source_set("passwords") {
   deps = [
     "//base",
     "//components/password_manager/core/browser",
+    "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser:test_support",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",
