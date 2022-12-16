@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="variant" content="?pipe=header(Origin-Agent-Cluster,%3F0)">
+<meta name="variant" content="?pipe=header(Origin-Agent-Cluster,%3F1)">
 <title>Origin-Isolation after navigating about:blank.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -15,10 +17,10 @@
 // html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html,
 // but restricts itself to the exact error condition.
 //
-// This test sets the Origin-Agent-Cluster: ?1 http header. The test should pass
-// with or without this header, but the regression involves inconsistent
-// clustering decisions, which requires clustering to be enabled in the first
-// place.
+// This test is run in two variants which differ in the Origin-Agent-Cluster
+// http header values, ?0 and ?1. The test should pass in either case, but the
+// regression we're testing for involves inconsistent clustering decisions,
+// which requires clustering to be enabled in the first place.
 promise_test(async test => {
   // Create a cross-origin iframe. Use the executor.html, so we can ask it
   // to execute scripts for us.
