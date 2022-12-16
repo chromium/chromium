@@ -7,6 +7,8 @@ found in the LICENSE file.
 
 <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/signin_promo_view_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -26,12 +28,113 @@ found in the LICENSE file.
             android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp">
 
-            <!-- TODO(crbug.com/1314490): Inline header and body here. -->
-            <include layout="@layout/sync_promo_view_header"/>
+            <ImageView
+                android:id="@+id/sync_promo_illustration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/sync_promo_illustration"
+                style="@style/SyncPromoIllustrationVisibility"/>
+
+            <ImageView
+                android:id="@+id/sync_promo_image"
+                android:layout_width="@dimen/sync_promo_account_image_size"
+                android:layout_height="@dimen/sync_promo_account_image_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"/>
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/sync_promo_close_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="top|end"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/close"
+                android:scaleType="center"
+                android:src="@drawable/btn_close"
+                android:visibility="gone"
+                app:tint="@macro/default_icon_color" />
 
         </FrameLayout>
 
-        <include layout="@layout/sync_promo_view_body"/>
+        <TextView
+              android:id="@+id/sync_promo_status_message"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="40dp"
+              android:layout_marginEnd="40dp"
+              android:layout_marginBottom="8dp"
+              android:gravity="center"
+              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+              android:text="@string/sync_error_card_title"
+              android:visibility="gone"/>
+
+          <TextView
+              android:id="@+id/sync_promo_title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
+              android:layout_marginBottom="12dp"
+              android:gravity="center"
+              android:lineSpacingMultiplier="1.25"
+              android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+              android:includeFontPadding="false"
+              android:visibility="gone"
+              tools:text="@string/sync_promo_title_settings"/>
+
+          <TextView
+              android:id="@+id/new_sync_promo_description"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
+              android:layout_marginBottom="12dp"
+              android:gravity="center"
+              android:lineSpacingMultiplier="1.25"
+              android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+              android:includeFontPadding="false"
+              tools:text="@string/sync_promo_description_settings"/>
+
+          <TextView
+              android:id="@+id/signin_promo_description"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="40dp"
+              android:layout_marginEnd="40dp"
+              android:layout_marginBottom="12dp"
+              android:gravity="center"
+              android:lineSpacingMultiplier="1.25"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+              tools:text="@string/signin_promo_description_settings"/>
+
+          <org.chromium.ui.widget.ButtonCompat
+              android:id="@+id/sync_promo_signin_button"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
+              android:ellipsize="end"
+              android:singleLine="true"
+              android:text="@string/sync_promo_continue_as"
+              style="@style/FilledButton.Flat" />
+
+          <org.chromium.ui.widget.ButtonCompat
+              android:id="@+id/sync_promo_choose_account_button"
+              style="@style/SigninButtonBorderlessRegular"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
+              android:ellipsize="end"
+              android:singleLine="true"
+              android:text="@string/signin_promo_choose_account"/>
 
     </LinearLayout>
 
