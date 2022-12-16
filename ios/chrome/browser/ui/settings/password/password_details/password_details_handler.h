@@ -31,6 +31,9 @@
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;
 
+// Called by the view controller when the user successfully copied a password.
+- (void)onPasswordCopiedByUser;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_

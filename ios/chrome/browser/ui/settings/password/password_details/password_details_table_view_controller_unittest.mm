@@ -57,6 +57,8 @@ constexpr char kPassword[] = "test";
 
 @property(nonatomic, assign) BOOL editingCalled;
 
+@property(nonatomic, assign) BOOL passwordCopiedByUserCalled;
+
 @end
 
 @implementation FakePasswordDetailsHandler
@@ -80,6 +82,10 @@ constexpr char kPassword[] = "test";
 
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
   self.editingCalled = YES;
+}
+
+- (void)onPasswordCopiedByUser {
+  self.passwordCopiedByUserCalled = YES;
 }
 
 @end
@@ -600,6 +606,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
   // Verify that the error histogram was emitted to the success bucket.
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
+
+  EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
 
 // Tests copy password works as intended when reauth was successful.
@@ -617,6 +625,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
   UIMenuController* menu = [UIMenuController sharedMenuController];
   EXPECT_EQ(1u, menu.menuItems.count);
   [passwordDetails copyPasswordDetails:menu];
+
+  EXPECT_TRUE(handler().passwordCopiedByUserCalled);
 
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   EXPECT_NSEQ(@"test", generalPasteboard.string);
@@ -655,6 +665,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
   // Verify that the error histogram was emitted to the success bucket.
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
+
+  EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
 
 // Tests error histogram is emitted when we fail copying a field.
@@ -672,6 +684,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
   // Verify that the error histogram was emitted to the failure bucket.
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", true, 1);
+
+  EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
 
 // Tests that there are multiple sections in the edit view.

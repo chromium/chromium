@@ -720,6 +720,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
       [self showToast:l10n_util::GetNSString(
                           IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE)
            forSuccess:YES];
+      DCHECK(self.handler);
+      [self.handler onPasswordCopiedByUser];
       break;
     }
     case ReauthenticationReasonEdit:

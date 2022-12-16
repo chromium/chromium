@@ -11,11 +11,13 @@
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -39,6 +41,9 @@
 
   // Manager responsible for password check feature.
   IOSChromePasswordCheckManager* _manager;
+
+  // The handler used for CredentialProviderPromoCommands.
+  id<CredentialProviderPromoCommands> _credentialProviderPromoHandler;
 }
 
 // Main view controller for this coordinator.
@@ -82,6 +87,10 @@
     _credential = credential;
     _manager = manager;
     _reauthenticationModule = reauthModule;
+    if (IsCredentialProviderExtensionPromoEnabled()) {
+      _credentialProviderPromoHandler = HandlerForProtocol(
+          browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
+    }
   }
   return self;
 }
@@ -104,6 +113,10 @@
     _affiliatedGroup = affiliatedGroup;
     _manager = manager;
     _reauthenticationModule = reauthModule;
+    if (IsCredentialProviderExtensionPromoEnabled()) {
+      _credentialProviderPromoHandler = HandlerForProtocol(
+          browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
+    }
   }
   return self;
 }
@@ -248,6 +261,15 @@
 
 - (void)showPasswordDetailsInEditModeWithoutAuthentication {
   [self.viewController showEditViewWithoutAuthentication];
+}
+
+- (void)onPasswordCopiedByUser {
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    DCHECK(_credentialProviderPromoHandler);
+    [_credentialProviderPromoHandler
+        showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                   PasswordCopied];
+  }
 }
 
 #pragma mark - Private
