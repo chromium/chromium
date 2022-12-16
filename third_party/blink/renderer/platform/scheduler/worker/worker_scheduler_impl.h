@@ -99,7 +99,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<NonMainThreadTaskQueue>,
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
+      recordreplay::CompareRefptrByPointerId<scoped_refptr<NonMainThreadTaskQueue>>>;
 
   TaskQueueVoterMap task_runners_;
 

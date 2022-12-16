@@ -192,6 +192,10 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
 
 void PictureLayerTiling::SetRasterSourceAndResize(
     scoped_refptr<RasterSource> raster_source) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("PictureLayerTiling::SetRasterSourceAndResize %d %d",
+                       raster_source->GetSize().width(), raster_source->GetSize().height());
+
   DCHECK(!raster_source->IsSolidColor());
   gfx::Size old_layer_bounds = raster_source_->GetSize();
   raster_source_ = std::move(raster_source);

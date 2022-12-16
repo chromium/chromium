@@ -807,6 +807,10 @@ void PictureLayerImpl::UpdateRasterSource(
 
   raster_source_->set_debug_name(DebugName());
 
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("PictureLayerTiling::SetRasterSourceAndResize %d %d",
+                       raster_source_->GetSize().width(), raster_source_->GetSize().height());
+
   // Register images from the new raster source, if the recording was updated.
   // TODO(khushalsagar): UMA the number of animated images in layer?
   if (recording_updated)
