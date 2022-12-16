@@ -252,8 +252,9 @@ class StartupBrowserCreator {
                               const base::FilePath& cur_dir,
                               Profile* profile);
 
-  // Callback after a profile has been initialized.
-  static void ProcessCommandLineOnProfileInitialized(
+  // Callback after a profile has been initialized. `profile` should be nullptr
+  // if `mode` is `StartupProfileMode::kProfilePicker`.
+  static void ProcessCommandLineWithProfile(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       StartupProfileMode mode,

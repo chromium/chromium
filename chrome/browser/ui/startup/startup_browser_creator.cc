@@ -1367,17 +1367,33 @@ bool StartupBrowserCreator::ProcessLoadApps(
 }
 
 // static
-void StartupBrowserCreator::ProcessCommandLineOnProfileInitialized(
+void StartupBrowserCreator::ProcessCommandLineWithProfile(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     StartupProfileMode mode,
     Profile* profile) {
-  if (!profile)
+  DCHECK_NE(mode, StartupProfileMode::kError);
+  if ((!base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit) ||
+       mode == StartupProfileMode::kBrowserWindow) &&
+      !profile) {
+    LOG(ERROR) << "Failed to load the profile.";
     return;
+  }
+  Profiles last_opened_profiles;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS multiple profiles doesn't apply.
+  // If no browser windows are open, i.e. the browser is being kept alive in
+  // background mode or for other processing, restore |last_opened_profiles|.
+  if (chrome::GetTotalBrowserCount() == 0) {
+    last_opened_profiles =
+        g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   StartupBrowserCreator startup_browser_creator;
   startup_browser_creator.ProcessCmdLineImpl(
       command_line, cur_dir, chrome::startup::IsProcessStartup::kNo,
-      {profile, mode}, Profiles());
+      {profile, mode}, last_opened_profiles);
 }
 
 // static
@@ -1385,29 +1401,28 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     const StartupProfilePathInfo& profile_path_info) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfileByPath(profile_path_info.path);
-
-  // The profile isn't loaded yet and so needs to be loaded asynchronously.
-  if (!profile) {
-    profile_manager->CreateProfileAsync(
-        profile_path_info.path,
-        base::BindOnce(&ProcessCommandLineOnProfileInitialized, command_line,
-                       cur_dir, profile_path_info.mode));
+  if (profile_path_info.mode == StartupProfileMode::kError)
     return;
+
+  Profile* profile = nullptr;
+  bool need_profile =
+      !base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit) ||
+      profile_path_info.mode == StartupProfileMode::kBrowserWindow;
+  if (need_profile) {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    profile = profile_manager->GetProfileByPath(profile_path_info.path);
+    // The profile isn't loaded yet and so needs to be loaded asynchronously.
+    if (!profile) {
+      profile_manager->CreateProfileAsync(
+          profile_path_info.path,
+          base::BindOnce(&ProcessCommandLineWithProfile, command_line, cur_dir,
+                         profile_path_info.mode));
+      return;
+    }
   }
-  StartupBrowserCreator startup_browser_creator;
-  Profiles last_opened_profiles;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS multiple profiles doesn't apply.
-  // If no browser windows are open, i.e. the browser is being kept alive in
-  // background mode or for other processing, restore |last_opened_profiles|.
-  if (chrome::GetTotalBrowserCount() == 0)
-    last_opened_profiles = profile_manager->GetLastOpenedProfiles();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  startup_browser_creator.ProcessCmdLineImpl(
-      command_line, cur_dir, chrome::startup::IsProcessStartup::kNo,
-      {profile, profile_path_info.mode}, last_opened_profiles);
+
+  ProcessCommandLineWithProfile(command_line, cur_dir, profile_path_info.mode,
+                                profile);
 }
 
 // static

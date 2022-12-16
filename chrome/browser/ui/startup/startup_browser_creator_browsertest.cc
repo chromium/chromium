@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -4218,7 +4219,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
                        ShowPickerWhenAlreadyLaunched) {
   // Preprequisite: The picker is shown on the first start-up
+  profiles::testing::WaitForPickerWidgetCreated();
   ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Close the picker.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ProfilePicker::Hide();
+  profiles::testing::WaitForPickerClosed();
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // Simulate a second start when the browser is already running.
   base::FilePath current_dir = base::FilePath();
@@ -4229,9 +4238,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kProfilePicker);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_dir, startup_profile_path_info);
-  base::RunLoop().RunUntilIdle();
 
   // The picker is shown again if no profile was previously opened.
+  profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
 
@@ -4434,13 +4443,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
 
   // Checks that it's possible to open the profile picker.
   EXPECT_FALSE(ProfilePicker::IsOpen());
-  base::RunLoop run_loop;
-  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
-      run_loop.QuitClosure());
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
-  run_loop.Run();
-  EXPECT_TRUE(ProfilePicker::IsOpen());
+  profiles::testing::WaitForPickerWidgetCreated();
 }
 
 class StartupBrowserCreatorLacrosGuestSessionTest
