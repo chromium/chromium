@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_request_id.h"
@@ -74,6 +75,21 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
 
 void RecordOutcomeSample(RequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
+}
+
+content_settings::ContentSettingConstraints ComputeConstraints(
+    RequestOutcome outcome,
+    bool implicit_result) {
+  if (!implicit_result) {
+    return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
+            content_settings::SessionModel::Durable};
+  }
+  if (outcome == RequestOutcome::kGrantedByFirstPartySet) {
+    return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+            content_settings::SessionModel::NonRestorableUserSession};
+  }
+  return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+          content_settings::SessionModel::UserSession};
 }
 
 }  // namespace
@@ -303,13 +319,6 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   DCHECK(settings_map);
   DCHECK(persist);
 
-  static const content_settings::ContentSettingConstraints ephemeral_grant = {
-      content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-      content_settings::SessionModel::UserSession};
-  static const content_settings::ContentSettingConstraints durable_grant = {
-      content_settings::GetConstraintExpiration(kExplicitGrantDuration),
-      content_settings::SessionModel::Durable};
-
   // This permission was allowed so store it either ephemerally or more
   // permanently depending on if the allow came from a prompt or automatic
   // grant.
@@ -326,7 +335,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, implicit_result ? ephemeral_grant : durable_grant);
+      content_setting, ComputeConstraints(outcome, implicit_result));
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,

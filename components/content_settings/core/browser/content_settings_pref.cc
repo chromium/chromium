@@ -105,9 +105,17 @@ bool ShouldRemoveSetting(bool off_the_record,
   if (off_the_record)
     return false;
 
-  // Clear non-Durable settings when no restoring a previous session.
-  return ((session_model != content_settings::SessionModel::Durable) &&
-          !restore_session);
+  // Clear non-restorable user session settings, or non-Durable settings when no
+  // restoring a previous session.
+  switch (session_model) {
+    case content_settings::SessionModel::Durable:
+      return false;
+    case content_settings::SessionModel::NonRestorableUserSession:
+      return true;
+    case content_settings::SessionModel::UserSession:
+    case content_settings::SessionModel::OneTime:
+      return !restore_session;
+  }
 }
 
 }  // namespace

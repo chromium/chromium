@@ -16,12 +16,18 @@ namespace content_settings {
 //              if set.
 // UserSession: Settings will persist no longer than the user session
 //              regardless of expiry date, if set.
+// NonRestorableUserSession: Same as UserSession, except this session-based
+//              setting will be reset when the user session ends regardless
+//              the restore setting. These settings will not be restored e.g.
+//              when the user selected "continue where you left off" or after
+//              a crash or update related restart.
 // OneTime:     Settings will persist for the current "tab session", meaning
 //              until the last tab from the origin is closed.
 enum class SessionModel {
   Durable = 0,
   UserSession = 1,
-  OneTime = 2,
+  NonRestorableUserSession = 2,
+  OneTime = 3,
   kMaxValue = OneTime,
 };
 
