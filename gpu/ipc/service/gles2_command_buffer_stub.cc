@@ -72,9 +72,7 @@ GLES2CommandBufferStub::GLES2CommandBufferStub(
                         sequence_id,
                         stream_id,
                         route_id),
-      gles2_decoder_(nullptr),
-      use_shared_images_swapchain_for_ppapi_(
-          features::UseSharedImagesSwapChainForPPAPI()) {}
+      gles2_decoder_(nullptr) {}
 
 GLES2CommandBufferStub::~GLES2CommandBufferStub() = default;
 
@@ -476,10 +474,6 @@ void GLES2CommandBufferStub::OnSetDefaultFramebufferSharedImage(
     bool preserve,
     bool needs_depth,
     bool needs_stencil) {
-  if (!use_shared_images_swapchain_for_ppapi_)
-    return;
-
-  // No need to pull texture updates.
   gles2_decoder_->SetDefaultFramebufferSharedImage(
       mailbox, samples_count, preserve, needs_depth, needs_stencil);
 }

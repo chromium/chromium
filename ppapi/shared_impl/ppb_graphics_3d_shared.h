@@ -68,9 +68,10 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
   void SwapBuffersACK(int32_t pp_error);
 
  protected:
-  PPB_Graphics3D_Shared(PP_Instance instance);
+  PPB_Graphics3D_Shared(PP_Instance instance, bool use_shared_images_swapchain);
   PPB_Graphics3D_Shared(const HostResource& host_resource,
-                        const gfx::Size& size);
+                        const gfx::Size& size,
+                        bool use_shared_images_swapchain);
   ~PPB_Graphics3D_Shared() override;
 
   virtual gpu::CommandBuffer* GetCommandBuffer() = 0;
