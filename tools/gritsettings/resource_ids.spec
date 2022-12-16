@@ -583,7 +583,7 @@
   # Lower bound for number of resource ids is the number of files, which is 3 in
   # in this case (HTML, JS and CSS file).
   "ash/webui/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [5],}},
+    "META": {"sizes": {"includes": [15],}},
     "includes": [3060],
   },
   "ash/webui/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd": {
@@ -610,7 +610,7 @@
   # src_internal is available. Lower bound for number of resource ids is number
   # of languages (74).
   "ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [120],}},  # Relies on src-internal.
+    "META": {"sizes": {"includes": [130],}},  # Relies on src-internal.
     "includes": [3120],
   },
   "ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd": {
