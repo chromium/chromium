@@ -789,13 +789,26 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
   }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
   // Linux should always use a custom allocator (to allocate buffers using
   // libva) and a PlatformVideoFramePool.
   CHECK(allocator.has_value());
   CHECK(main_frame_pool_->AsPlatformVideoFramePool());
   main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
       *allocator);
+#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
+  // Linux w/ V4L2 should not use a custom allocator
+  // Only tested with video_decode_accelerator_tests
+  // TODO(wenst@) Test with full Chromium Browser
+  CHECK(!allocator.has_value());
+  if (viable_candidate) {
+    // Instead, let V4L2 allocate the buffers if it can decode directly
+    // to the preferred formats. There's no need to allocate frames.
+    // This is not compatible with VdVideoDecodeAccelerator, which
+    // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
+    main_frame_pool_.reset();
+    return *viable_candidate;
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros should always use a PlatformVideoFramePool outside of tests (because
   // it doesn't need to handle ARC++/ARCVM requests) with no custom allocator
