@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -63,13 +64,13 @@ class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              FrameData data) override;
+                              gfx::FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                FrameData data) override;
+                                gfx::FrameData data) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;

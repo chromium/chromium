@@ -78,7 +78,7 @@ EGLConfig GLSurfaceWayland::GetConfig() {
 }
 
 gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback,
-                                              gl::FrameData data) {
+                                              gfx::FrameData data) {
   UpdateVisualSize();
   if (!window_->IsSurfaceConfigured()) {
     // The presentation |callback| must be called after gfx::SwapResult is sent.
@@ -97,7 +97,7 @@ gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
                                                 int width,
                                                 int height,
                                                 PresentationCallback callback,
-                                                gl::FrameData data) {
+                                                gfx::FrameData data) {
   UpdateVisualSize();
   if (!window_->IsSurfaceConfigured()) {
     // The presentation |callback| must be called after gfx::SwapResult is sent.

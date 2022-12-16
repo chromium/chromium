@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
@@ -48,7 +49,7 @@ void NativeViewGLSurfaceEGLX11::Destroy() {
 
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
     PresentationCallback callback,
-    FrameData data) {
+    gfx::FrameData data) {
   auto result = NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), data);
   if (result == gfx::SwapResult::SWAP_FAILED)
     return result;

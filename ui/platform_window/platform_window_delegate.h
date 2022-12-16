@@ -163,7 +163,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Requests a new LocalSurfaceId for the window tree of this platform window.
   // Returns the currently set child id (not the new one, since that requires
   // an asynchronous operation). Calling code can compare this value with
-  // the gl::FrameData::seq value to see when viz has produced a frame at or
+  // the gfx::FrameData::seq value to see when viz has produced a frame at or
   // after the (conceptually) inserted sequence point.
   virtual int64_t InsertSequencePoint();
 

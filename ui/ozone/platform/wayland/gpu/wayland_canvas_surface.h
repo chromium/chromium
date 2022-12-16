@@ -64,7 +64,7 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   bool SupportsOverridePlatformSize() const override;
   bool SupportsAsyncBufferSwap() const override;
   void OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
-                     gl::FrameData data) override;
+                     gfx::FrameData data) override;
 
  private:
   // Internal helper class, which creates a shared memory region, asks the

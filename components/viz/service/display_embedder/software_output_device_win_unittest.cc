@@ -11,7 +11,7 @@
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_surface.h"
+#include "ui/gfx/frame_data.h"
 
 using base::test::RunOnceClosure;
 using testing::_;
@@ -87,7 +87,7 @@ TEST_F(SoftwareOutputDeviceWinProxyTest, DrawWithSwap) {
   device_.OnSwapBuffers(
       base::BindOnce([](bool* val, const gfx::Size& size) { *val = true; },
                      &called),
-      gl::FrameData());
+      gfx::FrameData());
   EXPECT_FALSE(called);
 
   // Verify that DrawAck() runs the swap buffers callback.

@@ -177,7 +177,7 @@ unsigned int AwGLSurfaceExternalStencil::GetBackingFramebufferObject() {
 
 gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     PresentationCallback callback,
-    gl::FrameData frame_data) {
+    gfx::FrameData frame_data) {
   const auto& stencil_state =
       android_webview::ScopedAppGLStateRestore::Current()->stencil_state();
 

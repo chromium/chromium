@@ -247,7 +247,7 @@ void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor4f color,
 void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
                                            uint32_t frame_id,
                                            uint32_t buffer_id,
-                                           gl::FrameData data,
+                                           gfx::FrameData data,
                                            const gfx::Rect& bounds_rect,
                                            const gfx::RoundedCornersF& corners,
                                            float surface_scale_factor,
@@ -269,7 +269,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
 void WaylandBufferManagerGpu::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    gl::FrameData data,
+    gfx::FrameData data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK(gpu_thread_runner_);
   if (!gpu_thread_runner_->BelongsToCurrentThread()) {
@@ -499,7 +499,7 @@ void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor4f color,
 void WaylandBufferManagerGpu::CommitOverlaysTask(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    gl::FrameData data,
+    gfx::FrameData data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   DCHECK(remote_host_);

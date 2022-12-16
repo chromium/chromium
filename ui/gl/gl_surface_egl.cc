@@ -624,7 +624,7 @@ bool NativeViewGLSurfaceEGL::IsOffscreen() {
 
 gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffers(
     PresentationCallback callback,
-    FrameData data) {
+    gfx::FrameData data) {
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceEGL:RealSwapBuffers",
       "width", GetSize().width(),
       "height", GetSize().height());
@@ -969,7 +969,7 @@ bool NativeViewGLSurfaceEGL::GetFrameTimestampInfoIfAvailable(
 gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffersWithDamage(
     const std::vector<int>& rects,
     PresentationCallback callback,
-    FrameData data) {
+    gfx::FrameData data) {
   DCHECK(supports_swap_buffer_with_damage_);
 
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
@@ -990,7 +990,7 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
     int width,
     int height,
     PresentationCallback callback,
-    FrameData data) {
+    gfx::FrameData data) {
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceEGL:PostSubBuffer", "width", width,
                "height", height);
   DCHECK(supports_post_sub_buffer_);
@@ -1017,7 +1017,7 @@ bool NativeViewGLSurfaceEGL::SupportsCommitOverlayPlanes() {
 
 gfx::SwapResult NativeViewGLSurfaceEGL::CommitOverlayPlanes(
     PresentationCallback callback,
-    FrameData data) {
+    gfx::FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -1134,7 +1134,7 @@ bool PbufferGLSurfaceEGL::IsOffscreen() {
 }
 
 gfx::SwapResult PbufferGLSurfaceEGL::SwapBuffers(PresentationCallback callback,
-                                                 FrameData data) {
+                                                 gfx::FrameData data) {
   NOTREACHED() << "Attempted to call SwapBuffers on a PbufferGLSurfaceEGL.";
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -1224,7 +1224,7 @@ bool SurfacelessEGL::IsSurfaceless() const {
 }
 
 gfx::SwapResult SurfacelessEGL::SwapBuffers(PresentationCallback callback,
-                                            FrameData data) {
+                                            gfx::FrameData data) {
   LOG(ERROR) << "Attempted to call SwapBuffers with SurfacelessEGL.";
   return gfx::SwapResult::SWAP_FAILED;
 }

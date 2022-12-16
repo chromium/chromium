@@ -17,6 +17,7 @@ mojom("mojom") {
     "delegated_ink_point_renderer.mojom",
     "display_color_spaces.mojom",
     "font_render_params.mojom",
+    "frame_data.mojom",
     "gpu_extra_info.mojom",
     "gpu_fence_handle.mojom",
     "hdr_metadata.mojom",
@@ -335,6 +336,16 @@ mojom("mojom") {
       traits_sources = [ "linear_gradient_mojom_traits.cc" ]
       traits_headers = [ "linear_gradient_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx/geometry:geometry_skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.FrameData"
+          cpp = "::gfx::FrameData"
+        },
+      ]
+      traits_headers = [ "frame_data_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
     },
   ]
 

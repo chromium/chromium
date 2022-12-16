@@ -231,14 +231,14 @@ class MockPresenter : public gl::Presenter {
 
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gl::FrameData data) override {
+                        gfx::FrameData data) override {
     swap_completion_callbacks_.push_back(std::move(completion_callback));
     presentation_callbacks_.push_back(std::move(presentation_callback));
   }
 
   void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
-                                gl::FrameData data) override {
+                                gfx::FrameData data) override {
     swap_completion_callbacks_.push_back(std::move(completion_callback));
     presentation_callbacks_.push_back(std::move(presentation_callback));
   }

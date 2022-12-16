@@ -15,10 +15,10 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
-#include "ui/gl/gl_surface.h"
 
 namespace gpu {
 class SharedImageFactory;
@@ -117,15 +117,15 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       gfx::Size image_size);
   virtual void SwapBuffers(SwapCompletionCallback completion_callback,
                            BufferPresentedCallback presentation_callback,
-                           gl::FrameData data) = 0;
+                           gfx::FrameData data) = 0;
   virtual void PostSubBuffer(const gfx::Rect& rect,
                              SwapCompletionCallback completion_callback,
                              BufferPresentedCallback presentation_callback,
-                             gl::FrameData data) = 0;
+                             gfx::FrameData data) = 0;
   virtual void CommitOverlayPlanes(
       SwapCompletionCallback completion_callback,
       BufferPresentedCallback presentation_callback,
-      gl::FrameData data) = 0;
+      gfx::FrameData data) = 0;
   virtual void SchedulePrimaryPlane(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,

@@ -57,7 +57,7 @@ unsigned int AwGLSurface::GetBackingFramebufferObject() {
 }
 
 gfx::SwapResult AwGLSurface::SwapBuffers(PresentationCallback callback,
-                                         gl::FrameData data) {
+                                         gfx::FrameData data) {
   DCHECK(!pending_presentation_callback_);
   pending_presentation_callback_ = std::move(callback);
   return gfx::SwapResult::SWAP_ACK;

@@ -35,31 +35,31 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
   // GLSurface implementation.
   bool Initialize(gl::GLSurfaceFormat format) override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gl::FrameData data) override;
+                              gfx::FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback,
-                        gl::FrameData data) override;
+                        gfx::FrameData data) override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
                                         PresentationCallback callback,
-                                        gl::FrameData data) override;
+                                        gfx::FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
                                 PresentationCallback callback,
-                                gl::FrameData data) override;
+                                gfx::FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
-                          gl::FrameData data) override;
+                          gfx::FrameData data) override;
   gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gl::FrameData data) override;
+                                      gfx::FrameData data) override;
   void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
                                 PresentationCallback presentation_callback,
-                                gl::FrameData data) override;
+                                gfx::FrameData data) override;
   void SetVSyncEnabled(bool enabled) override;
 
  private:

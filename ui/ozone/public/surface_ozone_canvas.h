@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gl/gl_surface.h"
+#include "ui/gfx/frame_data.h"
 
 class SkCanvas;
 
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // do something else before the callback is called. Also check the comment
   // near the SupportsAsyncBufferSwap.
   virtual void OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
-                             gl::FrameData data);
+                             gfx::FrameData data);
 
   // Returns the maximum number of pending frames.
   virtual int MaxFramesPending() const;
