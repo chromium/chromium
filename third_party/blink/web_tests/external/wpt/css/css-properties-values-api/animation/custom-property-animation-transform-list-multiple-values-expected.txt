@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Animating a custom property of type <transform-list> containing multiple values assert_equals: expected "translateX(150px) scale(3)" but got "translateX(200px) scale(4)"
+FAIL Animating a custom property of type <transform-list> containing multiple values with a single keyframe assert_equals: expected "translateX(150px) scale(3)" but got "translateX(200px) scale(4)"
+FAIL Animating a custom property of type <transform-list> containing multiple values with additivity assert_equals: expected "translateX(100px) scale(2) translateX(250px) scale(3.5)" but got "translateX(300px) scale(4)"
+FAIL Animating a custom property of type <transform-list> containing multiple values with a single keyframe and additivity assert_equals: expected "translateX(100px) scale(2) translateX(150px) scale(2)" but got "translateX(300px) scale(3)"
+FAIL Animating a custom property of type <transform-list> containing multiple values with iterationComposite assert_equals: expected "translateX(250px) scale(11.5)" but got "translateX(100px) scale(4)"
+FAIL Animating a custom property of type <transform-list> containing multiple values and with mismatching list lengths assert_equals: expected "matrix(0, -1.5, 1.5, 0, 50, 0)" but got "rotate(180deg)"
+Harness: the test ran to completion.
+

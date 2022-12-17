@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Animating a custom property of type <resolution>#
+PASS Animating a custom property of type <resolution># with a single keyframe
+PASS Animating a custom property of type <resolution># with additivity
+PASS Animating a custom property of type <resolution># with a single keyframe and additivity
+FAIL Animating a custom property of type <resolution># with iterationComposite assert_equals: expected "250dppx, 275dppx" but got "50dppx, 75dppx"
+PASS Animating a custom property of type <resolution># with different lengths is discrete
+Harness: the test ran to completion.
+
