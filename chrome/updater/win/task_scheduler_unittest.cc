@@ -69,8 +69,9 @@ class TaskSchedulerTests : public ::testing::Test {
     task_scheduler_ = TaskScheduler::CreateInstance();
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
-    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
     EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
+    ASSERT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0));
+    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
   }
 
   void TearDown() override {
@@ -78,9 +79,10 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
 
     // Make sure every processes launched with scheduled task are completed.
-    test::WaitForProcessesToExit(kTestProcessExecutableName,
-                                 TestTimeouts::action_max_timeout());
+    EXPECT_TRUE(test::WaitForProcessesToExit(
+        kTestProcessExecutableName, TestTimeouts::action_max_timeout()));
     EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
+    EXPECT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0));
   }
 
   // Converts a base::Time that is in UTC and returns the corresponding local
