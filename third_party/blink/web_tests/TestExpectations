@@ -6418,7 +6418,7 @@ crbug.com/1395450 [ Debug Linux ] virtual/plz-dedicated-worker/http/tests/devtoo
 crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1395409 [ Mac ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
 crbug.com/1395409 [ Win ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
-
+crbug.com/1396422 [ Mac11-arm64 ] inspector-protocol/css/css-get-media-queries.js [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
@@ -6974,6 +6974,7 @@ crbug.com/1372007 http/tests/devtools/application-panel/resources-panel-websql.j
 # Flaky (sheriff 2022-12-15)
 crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
 crbug.com/1401318 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass Timeout ]
+crbug.com/1401318 [ Debug Linux ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass Timeout ]
 
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
