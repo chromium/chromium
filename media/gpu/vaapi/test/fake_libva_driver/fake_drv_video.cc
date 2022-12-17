@@ -454,10 +454,7 @@ VAStatus FakeSyncSurface(VADriverContextP ctx, VASurfaceID render_target) {
 VAStatus FakeQuerySurfaceStatus(VADriverContextP ctx,
                                 VASurfaceID render_target,
                                 VASurfaceStatus* status) {
-  media::internal::FakeDriver* fdrv =
-      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
-
-  CHECK(fdrv->SurfaceExists(render_target));
+  CHECK(false);
 
   return VA_STATUS_SUCCESS;
 }
@@ -606,12 +603,7 @@ VAStatus FakeAssociateSubpicture(VADriverContextP ctx,
                                  uint16_t dest_width,
                                  uint16_t dest_height,
                                  uint32_t flags) {
-  media::internal::FakeDriver* fdrv =
-      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
-
-  for (int i = 0; i < num_surfaces; i++) {
-    CHECK(fdrv->SurfaceExists(target_surfaces[i]));
-  }
+  CHECK(false);
 
   return VA_STATUS_SUCCESS;
 }
@@ -620,12 +612,7 @@ VAStatus FakeDeassociateSubpicture(VADriverContextP ctx,
                                    VASubpictureID subpicture,
                                    VASurfaceID* target_surfaces,
                                    int num_surfaces) {
-  media::internal::FakeDriver* fdrv =
-      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
-
-  for (int i = 0; i < num_surfaces; i++) {
-    CHECK(fdrv->SurfaceExists(target_surfaces[i]));
-  }
+  CHECK(false);
 
   return VA_STATUS_SUCCESS;
 }
