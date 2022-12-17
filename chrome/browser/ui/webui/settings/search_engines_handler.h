@@ -18,10 +18,6 @@
 
 class Profile;
 
-namespace extensions {
-class Extension;
-}
-
 namespace settings {
 
 class SearchEnginesHandler : public SettingsPageUIHandler,
@@ -92,10 +88,6 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
   base::Value::Dict CreateDictionaryForEngine(size_t index, bool is_default);
-
-  // Returns a dictionary to pass to WebUI representing the extension.
-  base::DictionaryValue* CreateDictionaryForExtension(
-      const extensions::Extension& extension);
 
   const raw_ptr<Profile> profile_;
 

@@ -47,7 +47,7 @@ const char kNtpCustomBackgroundResumeToken[] = "resume_token";
 const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
 const char kNtpCustomBackgroundMainColor[] = "background_main_color";
 
-base::DictionaryValue GetBackgroundInfoAsDict(
+base::Value::Dict GetBackgroundInfoAsDict(
     const GURL& background_url,
     const std::string& attribution_line_1,
     const std::string& attribution_line_2,
@@ -55,21 +55,21 @@ base::DictionaryValue GetBackgroundInfoAsDict(
     const absl::optional<std::string>& collection_id,
     const absl::optional<std::string>& resume_token,
     const absl::optional<int> refresh_timestamp) {
-  base::DictionaryValue background_info;
-  background_info.SetKey(kNtpCustomBackgroundURL,
-                         base::Value(background_url.spec()));
-  background_info.SetKey(kNtpCustomBackgroundAttributionLine1,
-                         base::Value(attribution_line_1));
-  background_info.SetKey(kNtpCustomBackgroundAttributionLine2,
-                         base::Value(attribution_line_2));
-  background_info.SetKey(kNtpCustomBackgroundAttributionActionURL,
-                         base::Value(action_url.spec()));
-  background_info.SetKey(kNtpCustomBackgroundCollectionId,
-                         base::Value(collection_id.value_or("")));
-  background_info.SetKey(kNtpCustomBackgroundResumeToken,
-                         base::Value(resume_token.value_or("")));
-  background_info.SetKey(kNtpCustomBackgroundRefreshTimestamp,
-                         base::Value(refresh_timestamp.value_or(0)));
+  base::Value::Dict background_info;
+  background_info.Set(kNtpCustomBackgroundURL,
+                      base::Value(background_url.spec()));
+  background_info.Set(kNtpCustomBackgroundAttributionLine1,
+                      base::Value(attribution_line_1));
+  background_info.Set(kNtpCustomBackgroundAttributionLine2,
+                      base::Value(attribution_line_2));
+  background_info.Set(kNtpCustomBackgroundAttributionActionURL,
+                      base::Value(action_url.spec()));
+  background_info.Set(kNtpCustomBackgroundCollectionId,
+                      base::Value(collection_id.value_or("")));
+  background_info.Set(kNtpCustomBackgroundResumeToken,
+                      base::Value(resume_token.value_or("")));
+  background_info.Set(kNtpCustomBackgroundRefreshTimestamp,
+                      base::Value(refresh_timestamp.value_or(0)));
 
   return background_info;
 }
@@ -190,12 +190,13 @@ void NtpCustomBackgroundService::OnNextCollectionImageAvailable() {
   std::string resume_token = background_service_->next_image_resume_token();
   int64_t timestamp = (clock_->Now() + base::Days(1)).ToTimeT();
 
-  base::DictionaryValue background_info = GetBackgroundInfoAsDict(
+  base::Value::Dict background_info = GetBackgroundInfoAsDict(
       image.image_url, attribution1, attribution2, image.attribution_action_url,
       image.collection_id, resume_token, timestamp);
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  pref_service_->Set(prefs::kNtpCustomBackgroundDict, background_info);
+  pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
+                         std::move(background_info));
 }
 
 void NtpCustomBackgroundService::OnNtpBackgroundServiceShuttingDown() {
@@ -335,10 +336,11 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
       FetchCustomBackgroundAndExtractBackgroundColor(background_url,
                                                      thumbnail_url);
     }
-    base::DictionaryValue background_info = GetBackgroundInfoAsDict(
+    base::Value::Dict background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
         absl::nullopt, absl::nullopt, absl::nullopt);
-    pref_service_->Set(prefs::kNtpCustomBackgroundDict, background_info);
+    pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
+                           std::move(background_info));
   } else {
     pref_service_->ClearPref(prefs::kNtpCustomBackgroundDict);
 

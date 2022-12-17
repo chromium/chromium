@@ -493,7 +493,7 @@ void BrowsingHistoryHandler::OnQueryComplete(
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
 
-  // Convert the result vector into a ListValue.
+  // Convert the result vector into a base::Value::List
   DCHECK(tracker);
   base::Value::List results_value;
   for (const BrowsingHistoryService::HistoryEntry& entry : results) {

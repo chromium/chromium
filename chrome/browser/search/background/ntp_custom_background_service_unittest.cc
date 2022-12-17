@@ -38,17 +38,17 @@ class MockNtpCustomBackgroundServiceObserver
   MOCK_METHOD0(OnNtpCustomBackgroundServiceShuttingDown, void());
 };
 
-base::DictionaryValue GetBackgroundInfoAsDict(const GURL& background_url,
-                                              const GURL& thumbnail_url) {
-  base::DictionaryValue background_info;
-  background_info.SetKey("background_url", base::Value(background_url.spec()));
-  background_info.SetKey("thumbnail_url", base::Value(thumbnail_url.spec()));
-  background_info.SetKey("attribution_line_1", base::Value(std::string()));
-  background_info.SetKey("attribution_line_2", base::Value(std::string()));
-  background_info.SetKey("attribution_action_url", base::Value(std::string()));
-  background_info.SetKey("collection_id", base::Value(std::string()));
-  background_info.SetKey("resume_token", base::Value(std::string()));
-  background_info.SetKey("refresh_timestamp", base::Value(0));
+base::Value::Dict GetBackgroundInfoAsDict(const GURL& background_url,
+                                          const GURL& thumbnail_url) {
+  base::Value::Dict background_info;
+  background_info.Set("background_url", base::Value(background_url.spec()));
+  background_info.Set("thumbnail_url", base::Value(thumbnail_url.spec()));
+  background_info.Set("attribution_line_1", base::Value(std::string()));
+  background_info.Set("attribution_line_2", base::Value(std::string()));
+  background_info.Set("attribution_action_url", base::Value(std::string()));
+  background_info.Set("collection_id", base::Value(std::string()));
+  background_info.Set("resume_token", base::Value(std::string()));
+  background_info.Set("refresh_timestamp", base::Value(0));
   return background_info;
 }
 
@@ -210,17 +210,15 @@ TEST_F(NtpCustomBackgroundServiceTest, UpdatingPrefUpdatesNtpTheme) {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile_.GetTestingPrefService();
-  pref_service->SetUserPref(
-      prefs::kNtpCustomBackgroundDict,
-      std::make_unique<base::Value>(GetBackgroundInfoAsDict(kUrlFoo, GURL())));
+  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
+                            GetBackgroundInfoAsDict(kUrlFoo, GURL()));
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlFoo, custom_background->custom_background_url);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
-  pref_service->SetUserPref(
-      prefs::kNtpCustomBackgroundDict,
-      std::make_unique<base::Value>(GetBackgroundInfoAsDict(kUrlBar, GURL())));
+  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
+                            GetBackgroundInfoAsDict(kUrlBar, GURL()));
 
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlBar, custom_background->custom_background_url);
@@ -279,9 +277,8 @@ TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
   EXPECT_TRUE(base::PathExists(path));
 
   // Update custom_background info via Sync.
-  pref_service->SetUserPref(
-      prefs::kNtpCustomBackgroundDict,
-      std::make_unique<base::Value>(GetBackgroundInfoAsDict(kUrl, GURL())));
+  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
+                            GetBackgroundInfoAsDict(kUrl, GURL()));
   task_environment_.RunUntilIdle();
 
   auto custom_background = custom_background_service_->GetCustomBackground();
