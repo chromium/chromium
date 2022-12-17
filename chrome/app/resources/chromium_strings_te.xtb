@@ -53,7 +53,7 @@
 <translation id="2313870531055795960">Chromiumలో స్టోర్ చేయబడిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chromium, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
 <translation id="2343156876103232566">ఇక్కడి నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromiumకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="2347108572062610441">ఈ ఎక్స్‌టెన్షన్‌ మీరు Chromiumని ప్రారంభించినప్పుడు చూపబడే పేజీని మార్చింది.</translation>
-<translation id="2359808026110333948">కొనసాగించు</translation>
+<translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2384373936468275798">మీ ఖాతా సైన్ ఇన్ వివరాల గడువు ముగిసినందున ChromiumOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="2396765026452590966"><ph name="EXTENSION_NAME" /> ఎక్స్‌టెన్షన్‌ మీరు Chromiumని ప్రారంభించినప్పుడు చూపబడే పేజీని మార్చింది.</translation>
 <translation id="2401032172288869980">ఈ సైట్ కోసం Chromiumకు కెమెరా, ఇంకా మైక్రోఫోన్ అనుమతులు అవసరం</translation>
@@ -96,7 +96,7 @@
 <translation id="3283186697780795848">Chromium వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
 <translation id="328888136576916638">Google API కీలు లేవు. Chromium కార్యాచరణలో కొంత భాగం నిలిపివేయబడుతుంది.</translation>
-<translation id="3296368748942286671">Chromium మూసివేయబడినప్పుడు నేపథ్య యాప్‌లను అమలు చేయడాన్ని కొనసాగించు</translation>
+<translation id="3296368748942286671">Chromium మూసివేయబడినప్పుడు నేపథ్య యాప్‌లను అమలు చేయడాన్ని కొనసాగించండి</translation>
 <translation id="3350761136195634146">ఈ ఖాతాతో ఇప్పటికే ఒక Chromium ప్రొఫైల్ ఉంది</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ప్రస్తుతం ఉన్న Chromium ప్రొఫైల్‌కు స్విచ్ చేయాలా?</translation>

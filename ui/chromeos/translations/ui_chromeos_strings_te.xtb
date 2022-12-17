@@ -304,7 +304,7 @@
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తరలించబడ్డాయి.</translation>
 <translation id="3685122418104378273">మొబైల్ డేటాను ఉపయోగిస్తున్నప్పుడు Google Drive సింక్ డిఫాల్ట్‌గా నిలిపివేయబడుతుంది.</translation>
-<translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయి.</translation>
+<translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయండి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
 <translation id="3722341589402358578">ఎర్రర్ ఏర్పడింది. కొన్ని ఐటెమ్‌లు ట్రాష్ చేయబడకపోవచ్చు.</translation>
@@ -500,7 +500,7 @@
 <translation id="5194713942430106590">నిలువు వరుసను ఆరోహణ క్రమంలో వర్గీకరించడానికి క్లిక్ చేయండి.</translation>
 <translation id="5211614973734216083">ఫారోస్</translation>
 <translation id="5218183485292899140">స్విస్ ఫ్రెంచ్</translation>
-<translation id="5234764350956374838">తొలగించు</translation>
+<translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5253070652067921974">సృష్టించినవారు</translation>
 <translation id="5257456363153333584">తూనీగ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ఫైళ్లను ఎక్కడి నుండైనా యాక్సెస్ చేయండి, ఆఫ్‌లైన్‌లో ఉన్నా కూడా.<ph name="MARKUP_2" />
@@ -735,7 +735,7 @@
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7165320105431587207">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో విఫలమైంది</translation>
 <translation id="7170041865419449892">పరిధిని దాటింది</translation>
-<translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
+<translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ఫైల్‌ను ఇలా సేవ్ చేయి</translation>
 <translation id="7229570126336867161">EVDO అవసరం</translation>
@@ -818,7 +818,7 @@
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో ఎర్రర్</translation>
 <translation id="7839804798877833423">ఈ ఫైళ్లను పొందడానికి మొబైల్ డేటాలో సుమారుగా <ph name="FILE_SIZE" /> ఉపయోగించబడుతుంది.</translation>
-<translation id="7846076177841592234">ఎంపికను రద్దు చేయి</translation>
+<translation id="7846076177841592234">ఎంపికను రద్దు చేయండి</translation>
 <translation id="7853966320808728790">ఫ్రెంచ్ BÉPO</translation>
 <translation id="7857117644404132472">మినహాయింపును జోడించండి</translation>
 <translation id="7868774406711971383">పోలిష్</translation>
@@ -863,7 +863,7 @@
 <translation id="8250690786522693009">లాటిన్</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>
 <translation id="8255595130163158297">ట్రాష్‌లోని అన్ని ఐటెమ్‌లు తొలగించబడతాయి, ఇంకా మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
-<translation id="8261506727792406068">తొలగించు</translation>
+<translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8261561378965667560">చైనీస్ శ్రేణి</translation>
 <translation id="8262872909443689080">అడ్మినిస్ట్రేటర్ పాలసీ</translation>
 <translation id="8264024885325823677">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>

@@ -13,7 +13,7 @@
 <translation id="1742469581923031760">కనెక్ట్ చేస్తోంది…</translation>
 <translation id="177040763384871009">రిమోట్ పరికరంలో క్లిక్ చేసిన లింక్‌లను క్లయింట్ బ్రౌజర్‌లో తెరవడం కోసం అనుమతించడానికి, మీరు సిస్టమ్ వెబ్ బ్రౌజర్‌ను "<ph name="URL_FORWARDER_NAME" />"కు మార్చాలి.</translation>
 <translation id="177096447311351977">ఈ క్లయింట్ కోసం ఛానెల్ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
-<translation id="1897488610212723051">తొలగించు</translation>
+<translation id="1897488610212723051">తొలగించండి</translation>
 <translation id="2009755455353575666">కనెక్షన్ విఫలమైంది</translation>
 <translation id="2038229918502634450">విధాన మార్పును అనుమతించడానికి హోస్ట్ పునఃప్రారంభించబడుతోంది.</translation>
 <translation id="2078880767960296260">హోస్ట్ ప్రక్రియ</translation>
@@ -26,7 +26,7 @@
 <translation id="225614027745146050">స్వాగతం</translation>
 <translation id="2320166752086256636">కీబోర్డ్‌ను దాచు</translation>
 <translation id="2329392777730037872">క్లయింట్ పరికరంలో <ph name="URL" />‌ను తెరవడం విఫలమైంది.</translation>
-<translation id="2359808026110333948">కొనసాగించు</translation>
+<translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2366718077645204424">హోస్ట్‌కు చేరుకోవడం సాధ్యపడలేదు. ఇది బహుశా మీరు ఉపయోగిస్తున్న నెట్‌వర్క్ కాన్ఫిగరేషన్ వల్ల ఏర్పడి ఉండవచ్చు.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ఆన్‌లైన్‌లో చివరిగా కనిపించినది <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />కు 'యాక్సెస్ సామర్థ్యం' అనుమతిని మంజూరు చేయండి</translation>
@@ -98,7 +98,7 @@
 <translation id="5170982930780719864">చెల్లని హోస్ట్ id.</translation>
 <translation id="5204575267916639804">FAQలు</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
-<translation id="5234764350956374838">తొలగించు</translation>
+<translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
 <translation id="533625276787323658">కనెక్ట్ చేయడానికి ఏదీ లేదు</translation>
 <translation id="5397086374758643919">Chrome రిమోట్ డెస్క్‌టాప్ హోస్ట్ అన్‌ఇన్‌స్టాలర్</translation>
@@ -151,7 +151,7 @@
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="7678209621226490279">ఎడమవైపున ఉంచు</translation>
-<translation id="7693372326588366043">హోస్ట్‌ల లిస్ట్‌ను రిఫ్రెష్ చేయి</translation>
+<translation id="7693372326588366043">హోస్ట్‌ల లిస్ట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="7714222945760997814">దీనిని రిపోర్ట్ చేయండి</translation>
 <translation id="7868137160098754906">దయచేసి రిమోట్ కంప్యూటర్ కోసం మీ PINను నమోదు చేయండి.</translation>
 <translation id="7895403300744144251">రిమోట్ కంప్యూటర్‌లోని భద్రతా విధానాలు మీ ఖాతా నుండి కనెక్షన్‌లను అనుమతించవు.</translation>

@@ -1131,7 +1131,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 Sinon, déconnectez-vous maintenant pour que les modifications apportées à ce compte soient répercutées sur cet appareil.
 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions par e-mail.</translation>
-<translation id="2039464276165755892">Masquer le contenu des notifications lorsqu'un tiers est détecté</translation>
+<translation id="2039464276165755892">Masquer les notifications lorsqu'une autre personne est détectée</translation>
 <translation id="2040460856718599782">Petit problème… Une erreur s'est produite lors de la tentative d'authentification. Veuillez vérifier vos identifiants de connexion, puis réessayer.</translation>
 <translation id="2040894699575719559">Position bloquée</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
@@ -1372,7 +1372,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2251218783371366160">Ouvrir avec le lecteur système</translation>
 <translation id="225163402930830576">Actualiser les réseaux</translation>
 <translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
-<translation id="2252017960592955005">Protection de l'affichage (bêta)</translation>
+<translation id="2252017960592955005">Protection anti-regard (bêta)</translation>
 <translation id="225240747099314620">Autoriser les identifiants pour le contenu protégé (le redémarrage de l'ordinateur peut être nécessaire)</translation>
 <translation id="2252617660166797081">En savoir plus sur la modification automatique du mot de passe</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
@@ -7878,7 +7878,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8380266723152870797">Nom de la fenêtre</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8382677870544805359">Pour pouvoir utiliser les fonctionnalités destinées aux entreprises, vous devrez rétablir la configuration d'usine de cet appareil.</translation>
-<translation id="8382715499079447151">Protection contre l'espionnage</translation>
+<translation id="8382715499079447151">Protection anti-regard</translation>
 <translation id="8382913212082956454">Copi&amp;er l'adresse e-mail</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Suivez ces étapes de dépannage :
     <ph name="BEGIN_LIST" />

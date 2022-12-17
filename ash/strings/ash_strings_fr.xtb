@@ -986,7 +986,7 @@ Nouvelle installation</translation>
 <translation id="6565007273808762236">Connexion eSIM indisponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Mettre à jour l'appareil d'ici 1 heure}one{Mettre à jour l'appareil d'ici # heure}other{Mettre à jour l'appareil d'ici # heures}}</translation>
 <translation id="6570902864550063460">En charge via USB</translation>
-<translation id="6574587113394758819">La notification de <ph name="APP_TITLE" /> est masquée, car la protection contre l'espionnage est activée</translation>
+<translation id="6574587113394758819">La notification <ph name="APP_TITLE" /> est masquée, car la protection anti-regard est activée</translation>
 <translation id="6574622320167699133">Déverrouillé par votre téléphone. Appuyez ou cliquez pour entrer.</translation>
 <translation id="6578407462441924264">Sans nom</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -995,7 +995,7 @@ Nouvelle installation</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
-<translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection contre l'espionnage est activée</translation>
+<translation id="6625718907317144388">Les notifications <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection anti-regard est activée</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> souhaite utiliser le micro</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
@@ -1306,7 +1306,7 @@ Nouvelle installation</translation>
 <translation id="8374601332003098278">Appuyez sur Entrée pour enregistrer une partie de l'écran</translation>
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>
 <translation id="8380784334203145311">Bonsoir,</translation>
-<translation id="8382715499079447151">Protection contre l'espionnage</translation>
+<translation id="8382715499079447151">Protection anti-regard</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8401850874595457088">Ouvrir le menu des langues</translation>
@@ -1344,7 +1344,7 @@ Nouvelle installation</translation>
 <translation id="857201607579416096">Le menu a été déplacé dans l'angle inférieur droit de l'écran.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Trier les applis par nom ou par couleur</translation>
-<translation id="8614517853887502247">Les notifications de <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection contre l'espionnage est activée</translation>
+<translation id="8614517853887502247">Les notifications <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection anti-regard est activée</translation>
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Paramètres d'accessibilité</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>

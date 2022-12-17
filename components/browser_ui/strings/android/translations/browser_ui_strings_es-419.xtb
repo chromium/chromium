@@ -67,7 +67,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="2434158240863470628">Se completó la descarga <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2442870161001914531">Solicitar siempre la versión de escritorio</translation>
+<translation id="2442870161001914531">Solicitar siempre el sitio para computadoras</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
 <translation id="2490684707762498678">Administradas por <ph name="APP_NAME" /></translation>
@@ -187,7 +187,7 @@
 <translation id="5050380848339752099">Este sitio está a punto de compartir información con una app fuera del modo Incógnito.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5082281938627763039">Esta acción borra las cookies y otros datos de sitios de <ph name="FPS_MEMBER" /> y de los sitios del grupo de sitios de <ph name="FPS_OWNER" /></translation>
-<translation id="5091013926750941408">Sitio para móviles</translation>
+<translation id="5091013926750941408">Sitio móvil</translation>
 <translation id="509133520954049755">Solicitar vista para computadoras de escritorio</translation>
 <translation id="5100237604440890931">Contraído; haz clic para expandir.</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
@@ -243,7 +243,7 @@
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6177111841848151710">Se bloqueó para el motor de búsqueda actual</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
-<translation id="6181444274883918285">Agregar excepción de sitio web</translation>
+<translation id="6181444274883918285">Agregar excepción de sitio</translation>
 <translation id="6192792657125177640">Excepciones</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -265,7 +265,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloqueados: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{Bloqueados: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6561560012278703671">Usar un tipo de aviso más discreto (bloquear las notificaciones emergentes para evitar interrupciones)</translation>
-<translation id="6593061639179217415">Sitio de escritorio</translation>
+<translation id="6593061639179217415">Sitio para computadoras</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Permanecer aquí</translation>
@@ -359,7 +359,7 @@
 <translation id="8447861592752582886">Revocar permiso para el dispositivo</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie en uso}other{# cookies en uso}}</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
-<translation id="848952951823693243">Solicitar siempre la versión para dispositivos móviles</translation>
+<translation id="848952951823693243">Solicitar siempre el sitio móvil</translation>
 <translation id="8499083585497694743">Dejar de silenciar el micrófono</translation>
 <translation id="851751545965956758">Impedir que los sitios se conecten a los dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
@@ -383,7 +383,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">La tecnología NFC está desactivada en este dispositivo. Actívala en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">No permitir que los sitio vean y cambien la información de los dispositivos NFC</translation>
-<translation id="8941729603749328384">www.ejemplo.com</translation>
+<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloquea las cookies en un sitio específico.</translation>
 <translation id="8959122750345127698">Navegación inaccesible: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Borrar</translation>

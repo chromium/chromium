@@ -29,7 +29,7 @@
 <translation id="1048785276086539861">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్ సింగిల్ పేజీ వీక్షణకు తిరిగి వస్తుంది</translation>
 <translation id="1050038467049342496">ఇతర యాప్‌లను మూసివేయండి</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో ప్రామాణీకరణదారు పరికరంతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
-<translation id="1055184225775184556">&amp;జోడించడాన్ని రద్దు చేయి</translation>
+<translation id="1055184225775184556">&amp;జోడించడాన్ని రద్దు చేయండి</translation>
 <translation id="1056663316309890343">ఫోటో సాఫ్ట్‌వేర్</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో Dino Run గేమ్‌ను ఆడటానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -54,7 +54,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> కోసం అనుమతిని ఎంచుకోండి</translation>
 <translation id="1112828774174131240">పురాతన వస్తువులు &amp; సేకరించిన వస్తువులు</translation>
-<translation id="1113869188872983271">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
+<translation id="1113869188872983271">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయండి</translation>
 <translation id="1123753900084781868">ప్రస్తుతానికి లైవ్ క్యాప్షన్ అందుబాటులో లేదు</translation>
 <translation id="1125573121925420732">వెబ్‌సైట్‌ల యొక్క భద్రతను అప్‌డేట్ చేస్తున్నప్పుడు హెచ్చరికలు కనిపించడం సాధారణమే. ఇది త్వరలోనే మెరుగుపరచబడుతుంది.</translation>
 <translation id="112840717907525620">విధాన కాష్ సరిపోయింది</translation>
@@ -475,7 +475,7 @@
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2135799067377889518">పురుషుల దుస్తులు</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
-<translation id="214556005048008348">పేమెంట్‌ను రద్దు చేయి</translation>
+<translation id="214556005048008348">పేమెంట్‌ను రద్దు చేయండి</translation>
 <translation id="2148613324460538318">కార్డ్‌ని జోడించండి</translation>
 <translation id="2149968176347646218">కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="2153609454945889823">Google Play Services for ARను ఇన్‌స్టాల్ చేయాలా?</translation>
@@ -556,7 +556,7 @@
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> మీ పరికరాన్ని మేనేజ్ చేస్తోంది, <ph name="ACCOUNT_MANAGER" /> మీ ఖాతాను మేనేజ్ చేస్తోంది.</translation>
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{రోజు కంటే తక్కువలో}=1{రోజులో}other{{NUM_DAYS} రోజుల్లో}}</translation>
 <translation id="2359629602545592467">అనేకం</translation>
-<translation id="2359808026110333948">కొనసాగించు</translation>
+<translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2361263712565360498">275 x 395 మి.మీ.</translation>
 <translation id="236340516568226369">టోగుల్ మెనూ పరిమాణాన్ని మార్చండి</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
@@ -568,7 +568,7 @@
 <translation id="239293030466334554">కన్వర్టిబుల్స్</translation>
 <translation id="2392959068659972793">విలువ సెట్ చేయని విధానాలను చూపు</translation>
 <translation id="239429038616798445">ఈ రవాణా పద్ధతి అందుబాటులో లేదు. వేరే పద్ధతిని ప్రయత్నించండి.</translation>
-<translation id="2396249848217231973">&amp;తొలగించడాన్ని రద్దు చేయి</translation>
+<translation id="2396249848217231973">&amp;తొలగించడాన్ని రద్దు చేయండి</translation>
 <translation id="2397836504670957718">ల్యాప్‌టాప్‌లు &amp; నోట్‌బుక్‌లు</translation>
 <translation id="2400600116338235695">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="2410754574180102685">ప్రభుత్వం-న్యాయ సంబంధిత</translation>
@@ -627,7 +627,7 @@
 <translation id="2552246211866555379">హగాకీ</translation>
 <translation id="2552295903035773204">ఇప్పటి నుండి కార్డ్‌లను నిర్ధారించడానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="2553853292994445426">మీ సెక్యూర్ DNS సెట్టింగ్‌లను చెక్ చేయండి. మీరు కాన్ఫిగర్ చేసిన సెక్యూర్ సర్వర్‌కు కనెక్ట్ కావడంలో వైఫల్యం ఎదురవుతూ ఉన్నట్టుంది.</translation>
-<translation id="2556876185419854533">&amp;సవరించడాన్ని రద్దు చేయి</translation>
+<translation id="2556876185419854533">&amp;సవరించడాన్ని రద్దు చేయండి</translation>
 <translation id="2557417190997681027">బిజినెస్ ట్రావెల్</translation>
 <translation id="2562087035394240049">ఎలా-చేయాలి, DIY &amp; నిపుణుల కంటెంట్</translation>
 <translation id="2563042576090522782">హనీమూన్‌లు &amp; రొమాంటిక్ విహారయాత్రలు</translation>
@@ -679,7 +679,7 @@
 <translation id="2679714844901977852">సురక్షితమైన, వేగవంతమైన చెక్ అవుట్‌ల కోసం మీ కార్డ్, అలాగే బిల్లింగ్ సమాచారాన్ని మీ Google ఖాతా <ph name="USER_EMAIL" />‌లో సేవ్ చేయండి</translation>
 <translation id="2684561033061424857">11x12</translation>
 <translation id="2687555958734450033">సరిపోయేలా అమర్చు</translation>
-<translation id="2688969097326701645">అవును, కొనసాగించు</translation>
+<translation id="2688969097326701645">అవును, కొనసాగించండి</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
 <translation id="2692131511336778528">సైన్స్ ఫిక్షన్ &amp; ఫాంటసీ</translation>
 <translation id="2699302886720511147">ఆమోదించే కార్డ్‌లు</translation>
@@ -880,7 +880,7 @@
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{సంబంధిత సైట్‌లతో సహా ఏ సైట్‌లు బ్లాక్ చేయలేదు}=1{సంబంధిత సైట్‌లతో సహా 1 సైట్ బ్లాక్ చేసింది}other{సంబంధిత సైట్‌లతో సహా # సైట్‌లు బ్లాక్ చేశాయి}}</translation>
 <translation id="3268451620468152448">ఓపెన్ ట్యాబ్‌లు</translation>
 <translation id="3270156322180235608">విమాన ప్రయాణం</translation>
-<translation id="3270847123878663523">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
+<translation id="3270847123878663523">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయండి</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3282497668470633863">కార్డ్‌లో పేరుని జోడించండి</translation>
@@ -991,7 +991,7 @@
 <translation id="3576616784287504635"><ph name="SITE" />లో పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3577902790357386792">జిమ్నాస్టిక్స్</translation>
-<translation id="3581089476000296252">ఈ పేజీ సిద్ధమైనప్పుడు Chrome మీకు తెలియజేస్తుంది. &lt;a&gt;రద్దు చేయి&lt;/a&gt;</translation>
+<translation id="3581089476000296252">ఈ పేజీ సిద్ధమైనప్పుడు Chrome మీకు తెలియజేస్తుంది. &lt;a&gt;రద్దు చేయండి&lt;/a&gt;</translation>
 <translation id="3582930987043644930">పేరు జోడించండి</translation>
 <translation id="3583757800736429874">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="3584299510153766161">దిగువ భాగంలో రెండు రంధ్రాలు</translation>
@@ -1156,7 +1156,7 @@
 <translation id="4023431997072828269">ఈ ఫారమ్ సురక్షితంగా లేని కనెక్షన్‌ను ఉపయోగించి సమర్పించబడుతోంది, కాబట్టి మీ సమాచారం ఇతరులకు కనిపిస్తుంది.</translation>
 <translation id="4024923292610332139">పాస్‌వర్డ్‌లను పూరించడం కోసం TouchIDని ఆఫ్ చేయండి</translation>
 <translation id="4025913568718019429">'Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లకు వెళ్లడానికి Enterను నొక్కండి</translation>
-<translation id="4030383055268325496">&amp;జోడించడాన్ని రద్దు చేయి</translation>
+<translation id="4030383055268325496">&amp;జోడించడాన్ని రద్దు చేయండి</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4040350669425716613">కళాశాలలు &amp; విశ్వవిద్యాలయాలు</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
@@ -1378,7 +1378,7 @@
 <translation id="4587425331216688090">Chrome నుండి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="459089498662672729"><ph name="ORIGIN_NAME" /> నుండి ఈ లొకేషన్‌కు పేస్ట్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా సిఫార్సు చేయబడదు</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" />కు గల మీ కనెక్షన్ ఆధునిక సైఫర్ సూట్ ఉపయోగించి ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది.</translation>
-<translation id="4594403342090139922">&amp;తొలగించడాన్ని రద్దు చేయి</translation>
+<translation id="4594403342090139922">&amp;తొలగించడాన్ని రద్దు చేయండి</translation>
 <translation id="4597348597567598915">సైజ్‌ 8</translation>
 <translation id="4598556348158889687">నిల్వ నిర్వహణ</translation>
 <translation id="4600084978141515058">వేగన్ వంటకాలు</translation>
@@ -1642,7 +1642,7 @@
 <translation id="5230733896359313003">డెలివరీ అడ్రస్‌</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
-<translation id="5234764350956374838">తొలగించు</translation>
+<translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5239623327352565343">లొకేషన్ అనుమతించబడింది</translation>
 <translation id="5242889659037569123">లగేజి &amp; ట్రావెల్ ఉపకరణాలు</translation>
 <translation id="5250209940322997802">"నెట్‌వర్క్‌కు కనెక్ట్ చేయండి"</translation>
@@ -2342,7 +2342,7 @@
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">పేమెంట్ ఆప్షన్‌లను సేవ్ చేసి, ఆటోమేటిక్‌గా ఫిల్ చేయండి</translation>
-<translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
+<translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7181261019481237103">అజ్ఞాత విండోను తెరువు</translation>
 <translation id="7182878459783632708">విధానాలను సెట్ చేయలేదు</translation>
 <translation id="7186367841673660872">ఈ పేజీ<ph name="ORIGINAL_LANGUAGE" />నుండి<ph name="LANGUAGE_LANGUAGE" />కు అనువదించబడింది</translation>
@@ -2743,7 +2743,7 @@
 <translation id="8184538546369750125">సార్వజనీన డిఫాల్ట్‌ను ఉపయోగించు (అనుమతించండి)</translation>
 <translation id="8186706823560132848">సాఫ్ట్‌వేర్</translation>
 <translation id="8190193880870196235">ఎక్స్‌టెన్షన్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
-<translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయి</translation>
+<translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" ఉన్న ఎక్స్‌టెన్ష‌న్‌ కోసం అప్‌డేట్‌ URL చెల్లదు.</translation>
 <translation id="8202097416529803614">ఆర్డర్ సారాంశం</translation>
 <translation id="8202370299023114387">వైరుధ్యం</translation>
@@ -2771,7 +2771,7 @@
 <translation id="8253091569723639551">బిల్లింగ్ అడ్రస్‌ ఆవశ్యకం</translation>
 <translation id="8257387598443225809">ఈ యాప్ మొబైల్ కోసం రూపొందించబడింది</translation>
 <translation id="825929999321470778">సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపండి</translation>
-<translation id="8261506727792406068">తొలగించు</translation>
+<translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262952874573525464">దిగువ భాగంలో కుట్టిన అంచులు</translation>
 <translation id="8265992338205884890">కనిపించే డేటా</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />గా సైన్ ఇన్ చేస్తోంది</translation>
@@ -2837,7 +2837,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8433057134996913067">దీని వలన మీరు చాలా వెబ్‌సైట్‌ల నుండి సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="8434840396568290395">పెంపుడు జంతువులు</translation>
-<translation id="8437238597147034694">&amp;తరలించడాన్ని రద్దు చేయి</translation>
+<translation id="8437238597147034694">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8438476240229491014">ఈ సెట్టింగ్‌ను గుర్తుంచుకోండి</translation>
 <translation id="8438786541497918448">కెమెరా, మైక్రోఫోన్‌ను ఉపయోగించాలా?</translation>
 <translation id="8443613539889492016">ర్యాప్ &amp; హిప్-హాప్</translation>
@@ -3087,7 +3087,7 @@
 <translation id="9141013498910525015">అడ్రస్‌లను నిర్వహించండి</translation>
 <translation id="9144951720726881238">గడువు తేదీ:</translation>
 <translation id="9148088599418889305">షిప్పింగ్ పద్ధతిని ఎంచుకోండి</translation>
-<translation id="9148507642005240123">&amp;సవరించడాన్ని రద్దు చేయి</translation>
+<translation id="9148507642005240123">&amp;సవరించడాన్ని రద్దు చేయండి</translation>
 <translation id="9150045010208374699">మీ కెమెరాను ఉపయోగించండి</translation>
 <translation id="9150685862434908345">మీ అడ్మినిస్ట్రేట‌ర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">అప్‌డేట్ చేయబడింది</translation>
