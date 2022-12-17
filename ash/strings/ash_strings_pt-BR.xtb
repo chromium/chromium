@@ -120,6 +120,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="15373452373711364">Cursor grande do mouse</translation>
 <translation id="1546492247443594934">Espaço de trabalho 2</translation>
 <translation id="1546930421365146760">Peça ao administrador para configurar este dispositivo no Google Admin Console.</translation>
+<translation id="1550406609415860283">Dispositivos disponíveis</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
@@ -174,7 +175,6 @@ Veja o que você pode fazer para começar.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">O <ph name="ITEM_TITLE" /> foi liberado</translation>
-<translation id="1836215606488044471">Assistente (carregando…)</translation>
 <translation id="1838895407229022812">O Modo noturno está desativado.</translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1862380676329487333">Atualizar e sair</translation>
@@ -262,7 +262,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2367186422933365202">Não foi possível fazer login no Chromebook</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
-<translation id="2375445874393996153">Não é mais possível pesquisar o que está na tela usando o Google Assistente.</translation>
 <translation id="2390318262976603432">Configurações de localidade</translation>
 <translation id="240006516586367791">Controles de mídia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, use sua impressão digital ou desbloqueie o smartphone</translation>
@@ -459,9 +458,11 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3513798432020909783">Conta gerenciada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo em 1 minuto}one{Atualize o dispositivo em # minuto}other{Atualize o dispositivo em # minutos}}</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3533126039236445965">Apps na estante</translation>
 <translation id="3542066395059568317">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, clique com o botão direito do mouse.</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
+<translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Ativar ponto de acesso</translation>
 <translation id="3566240529365775567">Aberto agora há pouco</translation>
 <translation id="3571734092741541777">Configurar</translation>
@@ -606,7 +607,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4324840740119394760">Dá acesso à câmera para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4351433414020964307">O Assistente está sendo carregado…</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Conectando...</translation>
@@ -654,6 +654,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4577274620589681794">Tempo esgotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar visualizações</translation>
 <translation id="4578906031062871102">Menu de configurações aberto</translation>
+<translation id="458210817642223147">Gravar GIF</translation>
 <translation id="4585337515783392668">Parar de transmitir para um destinatário desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado</translation>
 <translation id="4611292653554630842">Fazer login</translation>
@@ -733,6 +734,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Espaço de trabalho 16</translation>
 <translation id="5003993274120026347">Próxima frase</translation>
+<translation id="5004607513195820459">Rede gerenciada</translation>
 <translation id="5016558321564993266">Alterne o marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">O acesso ao microfone do dispositivo está ativado</translation>
 <translation id="5030687792513154421">Tempo esgotado</translation>
@@ -1078,6 +1080,7 @@ Nova instalação</translation>
 <translation id="6901883536534621389">Tente navegar usando gestos</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
 <translation id="6931576957638141829">Salvar em</translation>
+<translation id="6942518653766415536">Menu de formato de gravação</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6960565108681981554">Desativada. Entre em contato com a operadora.</translation>
 <translation id="6961121602502368900">O recurso "Silenciar smartphone" não está disponível no perfil de trabalho</translation>
@@ -1227,7 +1230,6 @@ Nova instalação</translation>
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Girar tela</translation>
-<translation id="7796353162336583443">Toque no botão da stylus na estante para criar uma nota, uma captura de tela, usar o Google Assistente, o apontador laser ou a lupa.</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>

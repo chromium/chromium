@@ -173,7 +173,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> byla odepnuta</translation>
-<translation id="1836215606488044471">Asistent (načítání...)</translation>
 <translation id="1838895407229022812">Noční režim je vypnutý.</translation>
 <translation id="1854180393107901205">Zastavit odesílání</translation>
 <translation id="1862380676329487333">Aktualizovat a odhlásit se</translation>
@@ -261,7 +260,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2367186422933365202">Přihlášení do Chromebooku se nezdařilo</translation>
 <translation id="2369165858548251131">„Ahoj“ čínsky</translation>
-<translation id="2375445874393996153">Vyhledávání obsahu na obrazovce pomocí Asistenta Google už není podporováno.</translation>
 <translation id="2390318262976603432">Nastavení národního prostředí</translation>
 <translation id="240006516586367791">Ovládání médií</translation>
 <translation id="2402411679569069051">Pokud chcete Chromebook odemknout, odemkněte telefon pomocí otisku prstu</translation>
@@ -603,7 +601,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="4324840740119394760">Umožňuje přístup k fotoaparátu aplikaci <ph name="APP_NAME" />, a všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="4333628967105022692">Lacros není podporován, když je přihlášeno více uživatelů.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4351433414020964307">Asistent se načítá...</translation>
 <translation id="4371348193907997655">Nastavení odesílání</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Připojování...</translation>
@@ -1217,7 +1214,6 @@ Nová instalace</translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7780094051999721182">zkratky</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
-<translation id="7796353162336583443">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít Asistenta Google, laserové ukazovátko nebo lupu.</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
 <translation id="7807067443225230855">Vyhledávání a Asistent</translation>

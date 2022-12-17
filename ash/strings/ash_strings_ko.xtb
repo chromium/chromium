@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> 고정 취소됨</translation>
-<translation id="1836215606488044471">어시스턴트(로드 중...)</translation>
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1862380676329487333">업데이트 및 로그아웃</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2367186422933365202">Chromebook에 로그인할 수 없음</translation>
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
-<translation id="2375445874393996153">Google 어시스턴트로 화면에 표시된 내용을 검색하는 기능은 더 이상 지원되지 않습니다.</translation>
 <translation id="2390318262976603432">언어 설정</translation>
 <translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2402411679569069051">Chromebook을 잠금 해제하려면 지문을 사용하거나 휴대전화를 잠금 해제하세요.</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
-<translation id="4351433414020964307">어시스턴트 로드 중...</translation>
 <translation id="4371348193907997655">전송 설정</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />퍼센트</translation>
 <translation id="4378551569595875038">연결 중...</translation>
@@ -1217,7 +1214,6 @@
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
-<translation id="7796353162336583443">실행기에서 스타일러스 버튼을 탭하여 메모를 작성하거나, 스크린샷을 찍거나, Google 어시스턴트, 레이저 포인터, 돋보기를 활용할 수 있습니다.</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
 <translation id="7798302898096527229">취소하려면 검색 또는 Shift 키를 누르세요.</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>

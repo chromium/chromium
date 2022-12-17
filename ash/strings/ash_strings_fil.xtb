@@ -120,6 +120,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="15373452373711364">Malaking mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1546930421365146760">Hilingin sa iyong administrator na i-set up ang device na ito sa Google Admin console</translation>
+<translation id="1550406609415860283">Mga device na available</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
@@ -174,7 +175,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Na-unpin ang <ph name="ITEM_TITLE" /></translation>
-<translation id="1836215606488044471">Assistant (naglo-load...)</translation>
 <translation id="1838895407229022812">Naka-off ang Night Light.</translation>
 <translation id="1854180393107901205">Ihinto ang pagka-cast</translation>
 <translation id="1862380676329487333">I-update at mag-sign out</translation>
@@ -262,7 +262,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2367186422933365202">Hindi makapag-sign in sa iyong Chromebook</translation>
 <translation id="2369165858548251131">"Kumusta" sa Chinese</translation>
-<translation id="2375445874393996153">Hindi na sinusuportahan ang paghahanap sa kung ano'ng nasa screen ko gamit ang Google Assistant.</translation>
 <translation id="2390318262976603432">Mga Setting ng Lokalidad</translation>
 <translation id="240006516586367791">Mga kontrol ng media</translation>
 <translation id="2402411679569069051">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo o i-unlock ang iyong telepono</translation>
@@ -462,6 +461,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3542066395059568317">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang mag-right-click para alisin ang mga rekomendasyon.</translation>
 <translation id="3552189655002856821">Naka-off ang Wi-Fi</translation>
 <translation id="3554637740840164787">Na-pin ang <ph name="ITEM_TITLE" /></translation>
+<translation id="3560174576767922131">Mag-record ng video</translation>
 <translation id="3563775809269155755">I-enable ang hotspot</translation>
 <translation id="3566240529365775567">Kakabukas lang</translation>
 <translation id="3571734092741541777">I-set up</translation>
@@ -606,7 +606,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4324840740119394760">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="4333628967105022692">Hindi sinusuportahan ang Lacros kapag maraming user ang naka-sign in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
-<translation id="4351433414020964307">Naglo-load ang Assistant...</translation>
 <translation id="4371348193907997655">Mga Cast Setting</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
@@ -654,6 +653,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4577274620589681794">Oras na · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Magpakita ng mga preview</translation>
 <translation id="4578906031062871102">Binuksan ang menu ng Mga Setting</translation>
+<translation id="458210817642223147">Mag-record ng GIF</translation>
 <translation id="4585337515783392668">Ihinto ang pag-cast sa isang hindi pa natutukoy na tagatanggap</translation>
 <translation id="4596144739579517758">Naka-off ang Madilim na tema</translation>
 <translation id="4611292653554630842">Mag-log in</translation>
@@ -733,6 +733,7 @@ Isaksak ang iyong device.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
+<translation id="5004607513195820459">Pinapamahalaan ang network</translation>
 <translation id="5016558321564993266">I-toggle ang marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Naka-on ang access sa mikropono ng device</translation>
 <translation id="5030687792513154421">Tapos na ang oras</translation>
@@ -1078,6 +1079,7 @@ Kaka-install lang</translation>
 <translation id="6901883536534621389">Sumubok ng mga galaw para mag-navigate</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
 <translation id="6931576957638141829">I-save sa</translation>
+<translation id="6942518653766415536">Menu ng format ng recording</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6960565108681981554">Hindi na-activate. Makipag-ugnayan sa iyong carrier.</translation>
 <translation id="6961121602502368900">Hindi available ang Pag-silent ng telepono sa profile sa trabaho</translation>
@@ -1227,7 +1229,6 @@ Kaka-install lang</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7780094051999721182">mga shortcut</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
-<translation id="7796353162336583443">I-tap ang button ng stylus sa shelf upang magsulat ng tala, mag-screenshot, gamitin ang Google Assistant, laser pointer, o magnifying glass.</translation>
 <translation id="7796735576426975947">Nakatago ang bagong notification</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
 <translation id="7807067443225230855">Paghahanap at Assistant</translation>

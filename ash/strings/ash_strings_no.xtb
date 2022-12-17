@@ -120,6 +120,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="15373452373711364">Stor markør</translation>
 <translation id="1546492247443594934">Skrivebord 2</translation>
 <translation id="1546930421365146760">Be administratoren din om å konfigurere denne enheten i Google Administrasjonskonsoll</translation>
+<translation id="1550406609415860283">Enheter er tilgjengelige</translation>
 <translation id="1550523713251050646">Klikk for å se flere alternativer</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
@@ -127,6 +128,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
+<translation id="163517899691012366">Varsler ignoreres når Ikke forstyrr er på</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
@@ -173,7 +175,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Løsnet <ph name="ITEM_TITLE" /></translation>
-<translation id="1836215606488044471">Assistent (laster inn …)</translation>
 <translation id="1838895407229022812">Nattlys er av.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1862380676329487333">Oppdater og logg av</translation>
@@ -261,7 +262,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2367186422933365202">Kan ikke logge på Chromebooken</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
-<translation id="2375445874393996153">Det er ikke lenger mulig å søke etter det som er på skjermen, med Google-assistenten.</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2402411679569069051">For å låse opp Chromebooken, bruk fingeravtrykket eller lås opp telefonen</translation>
@@ -375,6 +375,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3047761520276763270">Prøv å si:</translation>
 <translation id="3051189971848907985">Gir profilen nytt navn. Vent i noen minutter.</translation>
 <translation id="3055162170959710888">Du har brukt denne enheten i <ph name="USED_TIME" /> i dag</translation>
+<translation id="3062298103034426069">Støttes ikke</translation>
 <translation id="3068711042108640621">Hyllen er til venstre</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vis menyen</translation>
@@ -409,6 +410,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfigurer</translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
+<translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer uten nett, men enkelte talekommandoer fungerer ikke.</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
@@ -459,6 +461,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
+<translation id="3560174576767922131">Ta opp video</translation>
 <translation id="3563775809269155755">Slå på wifi-sone</translation>
 <translation id="3566240529365775567">Åpnet nå nettopp</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
@@ -603,7 +606,6 @@ Koble enheten til strøm.</translation>
 <translation id="4324840740119394760">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
-<translation id="4351433414020964307">Assistenten lastes inn …</translation>
 <translation id="4371348193907997655">Cast-innstillinger</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> prosent.</translation>
 <translation id="4378551569595875038">Kobler til …</translation>
@@ -651,6 +653,7 @@ Koble enheten til strøm.</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Innstillinger-menyen er åpnet</translation>
+<translation id="458210817642223147">Ta opp GIF</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4611292653554630842">Logg på</translation>
@@ -730,6 +733,7 @@ Koble enheten til strøm.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Skrivebord 16</translation>
 <translation id="5003993274120026347">Neste setning</translation>
+<translation id="5004607513195820459">Nettverket er administrert</translation>
 <translation id="5016558321564993266">Slå av/på markøren. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Tilgang til enhetsmikrofonen er på</translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
@@ -789,9 +793,11 @@ Koble enheten til strøm.</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="533282197239610265">Vis Cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (høyre)</translation>
+<translation id="5351427059191534258">Vil du slå av kameratilgangen?</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
 <translation id="5356963482258194581">Bytt mellom mørkt og lyst tema. Høyreklikk på skrivebordet, og velg Bakgrunn og stil.</translation>
 <translation id="536019650977002321">Administratoren din tillater ikke lydopptak. Kontakt administratoren for å få mer informasjon.</translation>
+<translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvis lastet ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gå til denne fanen</translation>
 <translation id="5377367976106153749">Vil du slå på tilgang til kameraet?</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
@@ -901,6 +907,7 @@ Koble enheten til strøm.</translation>
 <translation id="5980301590375426705">Avslutt gjesteøkten</translation>
 <translation id="598407983968395253">Bruk mal</translation>
 <translation id="598882571027504733">For å laste ned oppdateringen, start Chromebooken på nytt med tastaturet tilkoblet.</translation>
+<translation id="6002179289567220515">Du brukte den fysiske bryteren til å slå av ett kamera. Du kan også slå av tilgangen for alle kameraene.</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Avslutter speilingsmodus</translation>
 <translation id="602001110135236999">Rull til venstre</translation>
@@ -941,9 +948,11 @@ Koble enheten til strøm.</translation>
 <translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Lad helt nå</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Støttes ikke av appen</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
+<translation id="623116199192908855">Cast skjermen fra Chromebooken</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din for øyeblikket</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -985,8 +994,10 @@ Koble enheten til strøm.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> før tidsfristen</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
 <translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
+<translation id="6497418457565568043">Ikke forstyrr er på</translation>
 <translation id="6500896621837555595">Oppdater</translation>
 <translation id="6501401484702599040">Caster skjermen til <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Sjekk at Chromebooken er på samme wifi-nettverk som Chromecasten.</translation>
 <translation id="6515727200518652613">Kameraet er borte. Prøver å koble til igjen.</translation>
 <translation id="6520517963145875092">Velg et vindu du vil ta bilde av</translation>
 <translation id="652139407789908527">Skjermen blir tom i et lengre tidsrom enn vanlig (inntil et minutt) under denne oppdateringen. Ikke trykk på av/på-knappen mens oppdateringen pågår.</translation>
@@ -1068,6 +1079,7 @@ Nylig installert</translation>
 <translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6931576957638141829">Lagre i</translation>
+<translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
@@ -1217,7 +1229,6 @@ Nylig installert</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7780094051999721182">snarveier</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
-<translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
 <translation id="7796735576426975947">Et nytt varsel er skjult</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>

@@ -173,7 +173,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ether-rwyd: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Cafodd <ph name="ITEM_TITLE" /> ei ddadbinio</translation>
-<translation id="1836215606488044471">Assistant (wrthi'n llwytho...)</translation>
 <translation id="1838895407229022812">Mae Golau Nos wedi'i ddiffodd.</translation>
 <translation id="1854180393107901205">Stopio castio</translation>
 <translation id="1862380676329487333">Diweddaru ac allgofnodi</translation>
@@ -261,7 +260,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2367186422933365202">Methu â mewngofnodi i'ch Chromebook</translation>
 <translation id="2369165858548251131">"Helo" yn Tsieinëeg</translation>
-<translation id="2375445874393996153">Nid yw chwilio beth sydd ar fy sgrîn gyda Google Assistant yn cael ei gefnogi mwyach.</translation>
 <translation id="2390318262976603432">Gosodiadau Lle</translation>
 <translation id="240006516586367791">Rheolaethau cyfryngau</translation>
 <translation id="2402411679569069051">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd neu datglowch eich ffôn</translation>
@@ -603,7 +601,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4324840740119394760">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP_NAME" /> a phob ap a gwefan gyda chaniatâd y camera</translation>
 <translation id="4333628967105022692">Ni chefnogir Lacros tra bod sawl defnyddiwr wedi'u mewngofnodi.</translation>
 <translation id="4338109981321384717">Chwyddwydr</translation>
-<translation id="4351433414020964307">Mae Assistant yn llwytho...</translation>
 <translation id="4371348193907997655">Gosodiadau Castio</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cryfder signal <ph name="SIGNAL_STRENGTH" /> y cant</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
@@ -1217,7 +1214,6 @@ Gosodiad newydd</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7780094051999721182">llwybrau byr</translation>
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
-<translation id="7796353162336583443">Tapiwch y botwm pwyntil ysgrifennu ar y silff i gymryd nodiadau, tynnu sgrinlun, defnyddio Google Assistant, pwyntydd laser neu chwyddwydr.</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>
 <translation id="7798302898096527229">Pwyswch Search neu Shift i ganslo.</translation>
 <translation id="7807067443225230855">Search ac Assistant</translation>

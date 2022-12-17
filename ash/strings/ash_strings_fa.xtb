@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">اترنت: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">پین <ph name="ITEM_TITLE" /> برداشته شد</translation>
-<translation id="1836215606488044471">دستیار (درحال بار کردن…)</translation>
 <translation id="1838895407229022812">«نور شب» خاموش است</translation>
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1862380676329487333">به‌روزرسانی و خروج از سیستم</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2367186422933365202">‏نمی‌توان به سیستم Chromebook وارد شد</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
-<translation id="2375445874393996153">‏ویژگی جستجوی محتوای روی صفحه‌نمایش با «دستیار Google» دیگر پشتیبانی نمی‌شود.</translation>
 <translation id="2390318262976603432">تنظیمات منطقه زبانی</translation>
 <translation id="240006516586367791">کنترل‌های رسانه</translation>
 <translation id="2402411679569069051">‏برای باز کردن قفل Chromebook، از اثر انگشت استفاده کنید یا قفل تلفنتان را باز کنید</translation>
@@ -602,7 +600,6 @@
 <translation id="4324840740119394760">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="4333628967105022692">‏وقتی چند کاربر به سیستم وارد شده باشند، از Lacros پشتیبانی نمی‌شود.</translation>
 <translation id="4338109981321384717">ذره‌بین</translation>
-<translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
 <translation id="4371348193907997655">تنظیمات پخش محتوا</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
@@ -1216,7 +1213,6 @@
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7780094051999721182">میان‌برها</translation>
 <translation id="7780159184141939021">چرخش صفحه</translation>
-<translation id="7796353162336583443">‏برای یادداشت‌برداری، گرفتن نماگرفت، استفاده از «دستیار Google»، نشانگر لیزری یا ذره‌بین، روی دکمه قلم در قفسه ضربه بزنید.</translation>
 <translation id="7796735576426975947">اعلان جدید پنهان شده است</translation>
 <translation id="7798302898096527229">‏برای لغو کردن، Search یا Shift را فشار دهید.</translation>
 <translation id="7807067443225230855">جستجو و دستیار</translation>

@@ -590,6 +590,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1560279917909364275">Incluir en la lista de permitidas las aplicaciones para tomar notas autorizadas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1561424797596341174">La política anula las compilaciones de depuración del host de acceso remoto.</translation>
 <translation id="1561967320164410511">U2F y extensiones de confirmación individual</translation>
+<translation id="1562846754315919408">Mostrar notificaciones cuando se detecten dispositivos USB</translation>
 <translation id="1567718448549957373">Si se habilita la política o no se establece, se permitirán las solicitudes de autenticación <ph name="BASIC_AUTH" /> recibidas desde conexiones HTTP no seguras.
 
       Si se inhabilita la política, las solicitudes HTTP no seguras tendrán prohibido el uso del esquema de autenticación <ph name="BASIC_AUTH" />; solo se permitirán solicitudes HTTPS.
@@ -2089,6 +2090,7 @@ Si no se establece la política, <ph name="PRODUCT_OS_NAME" /> podrá selecciona
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="2964373560810620158">Evitar que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Permitir que los sitios usen SharedArrayBuffers</translation>
+<translation id="2969489219271682844">No mostrar notificaciones cuando se detecten dispositivos USB</translation>
 <translation id="2969568582351417848">Inhabilitar las advertencias de descarga de tipos de archivo asociados a dominios</translation>
 <translation id="2969797921412053304">Esta política define las URL a las que se otorgará acceso para usar la atestación remota de identidades de dispositivos durante el flujo de SAML en la pantalla de inicio de sesión.
 
@@ -2237,6 +2239,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica qué ocurre cuando un usuario que se autentica mediante un token de seguridad (por ejemplo, con una tarjeta inteligente) quita ese token durante una sesión. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: no ocurre nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sesión finaliza y se cierra la sesión del usuario. Si no se define esta política, se utiliza <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> de forma predeterminada.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
+<translation id="309885424548342662">Habilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3101035417394748390">Tamaño máximo (en bytes) que se puede transferir entre el cliente y el host mediante la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
@@ -2995,6 +2998,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Para obtener más información sobre las sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la especificación de <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
+<translation id="3788876528643861853">Inhabilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3790085888761753785">Si este ajuste está habilitado, los usuarios pueden iniciar sesión en su cuenta con Smart Lock. Es más permisivo que el funcionamiento habitual de Smart Lock, que solo permite a los usuarios desbloquear la pantalla.
 
       Si este ajuste está inhabilitado, los usuarios no podrán iniciar sesión con Smart Lock.
@@ -3077,6 +3081,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Cada entrada de la lista contiene un diccionario, que debe incluir el ID de la extensión en el campo "extension-id" y una URL de actualización en el campo "update-url".</translation>
 <translation id="3869180930654347954">Inhabilita Conjuntos propios para todos los usuarios afectados</translation>
+<translation id="3869566220234507038">Cargar siempre el navegador <ph name="LACROS_NAME" /> (<ph name="LACROS_ROOTFS_NAME" />)</translation>
 <translation id="3870035799352372700">Impedir que el Asistente de Google acceda al contexto de la pantalla durante las interacciones</translation>
 <translation id="3870059789954671543">Habilitar la función de accesibilidad que permite destacar el foco del teclado en la pantalla de inicio de sesión.
 
@@ -3975,6 +3980,23 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si la estantería se oculta automáticamente.</translation>
 <translation id="4812309945046430049">Color rojo para la retroiluminación del teclado</translation>
+<translation id="4812410063101047442">Este ajuste define qué versión del navegador <ph name="LACROS_NAME" /> se debe utilizar.
+
+Si se le asigna el valor <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> a esta política, el usuario podrá decidir qué versión del navegador <ph name="LACROS_NAME" /> se cargará: el binario desde la partición <ph name="LACROS_ROOTFS_NAME" /> o <ph name="LACROS_STATEFUL_NAME" />.
+Si el usuario no ha definido ninguna preferencia, se elegirá el binario con la versión más reciente.
+
+Si se asigna el valor <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> a esta política, siempre se debe cargar el binario <ph name="LACROS_ROOTFS_NAME" /> del navegador <ph name="LACROS_NAME" />.
+
+Si se asigna el valor <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> a esta política, siempre se debe cargar el binario <ph name="LACROS_STATEFUL_NAME" /> del navegador <ph name="LACROS_NAME" />.
+Usar este valor puede provocar un comportamiento inesperado si la versión del navegador <ph name="LACROS_STATEFUL_NAME" /> es anterior a la versión de <ph name="PRODUCT_OS_NAME" />.
+Este caso no es compatible y no se garantiza que funcione correctamente.
+
+Si esta política no se establece, la opción predeterminada será <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> en el caso de los usuarios gestionados por empresas y, en el caso de los usuarios no gestionados, la opción predeterminada será <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />.
+
+Ten en cuenta que, si cambias el valor de la política, puede que se pierdan datos del navegador <ph name="LACROS_NAME" /> si se pasa a una versión del navegador anterior a la actual. Por ejemplo, si la política cambia de <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> a <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> y la primera estaba actualizada. O si <ph name="PRODUCT_OS_NAME" /> se actualizó junto con <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" />, pero <ph name="LACROS_STATEFUL_NAME" /> aún no se ha actualizado.
+En estos casos, no se garantiza que la migración de datos se realice correctamente.
+
+Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> es una opción segura. Cambiar de <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> a <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> también es seguro.</translation>
 <translation id="4812714598405913256">Configurar el mensaje de vencimiento de las actualizaciones automáticas de la política DeviceMinimumVersion</translation>
 <translation id="4815581264328351694">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema</translation>
 <translation id="4816674326202173458">Permitir que el usuario de empresa sea principal y secundario (comportamiento predeterminado para usuarios no administrados)</translation>
@@ -4712,6 +4734,15 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
 <translation id="5563240289883266691">Habilitar los informes de uso de las aplicaciones de Linux</translation>
 <translation id="5565178130821694365">Es necesario introducir la contraseña cada dos días (48 horas)</translation>
 <translation id="5566210228171064229">Permitir imprimir con y sin PIN</translation>
+<translation id="5569504149646180067">Configura el inicio de sesión automático de usuarios con cuentas respaldadas por un proveedor de identidades en la nube de Microsoft®.
+
+Si se le asigna el valor 1 (<ph name="POLICY_VALUE_ENABLED" />) a esta política, los usuarios que inicien sesión en su ordenador con una cuenta respaldada por un proveedor de identidades en la nube de Microsoft® (es decir, <ph name="MS_AAD_NAME" /> o el proveedor de identidades de cuenta de consumidor de Microsoft®) o que hayan añadido una cuenta de trabajo o de centro educativo a <ph name="MS_WIN_NAME" /> podrán iniciar sesión en propiedades web usando esa identidad automáticamente. La información relativa al dispositivo y la cuenta del usuario se transmite al proveedor de identidades en la nube del usuario en cada evento de autenticación.
+
+Si se le asigna el valor 0 (<ph name="POLICY_VALUE_DISABLED" />) a esta política o no se establece, el inicio de sesión automático, como se ha descrito más arriba, se inhabilitará.
+
+Esta función está disponible a partir de <ph name="WIN_NAME" /> 10.
+
+Nota: Esta política no se aplica al modo Incógnito ni al modo Invitado.</translation>
 <translation id="5572971233886879856">Permite especificar el subconjunto de servidores de impresión a los que se solicitará información sobre impresoras del servidor. Esto solo se aplica a la política <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Si se usa esta política, solo las impresoras del servidor cuyos ID coincidan con los valores incluidos en esta política estarán disponibles para el usuario a través de esta política de dispositivos.
@@ -5674,6 +5705,11 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
       Si no se le asigna ningún valor o se le asigna Dejar que los usuarios decidan o Ninguno, los usuarios controlarán la detección automática de la zona horaria con los controles normales de chrome://settings.</translation>
 <translation id="6532769014584932288">Permitir wake locks</translation>
 <translation id="6533881418188970751">Preguntar al usuario dónde se guardará el archivo antes de descargarlo</translation>
+<translation id="653616551212414363">Si se habilita esta opción, se mostrará una notificación al usuario cuando se conecte un dispositivo USB en <ph name="PRODUCT_OS_NAME" />.
+
+      Si se inhabilita esta opción, no se mostrará ninguna notificación al usuario sobre dispositivos USB conectados.
+
+      Si esta política no se establece, los usuarios recibirán notificaciones sobre los dispositivos USB conectados.</translation>
 <translation id="6536600139108165863">Reinicio automático al cerrar el dispositivo</translation>
 <translation id="6538653424603921690">Inhabilitar siempre la pantalla de privacidad en la pantalla de inicio de sesión</translation>
 <translation id="6539246272469751178">Esta política no afecta a las aplicaciones para Android. Siempre utilizan el directorio de descargas predeterminado y no pueden acceder a ningún archivo que <ph name="PRODUCT_OS_NAME" /> haya descargado en un directorio de descargas que no sea el predeterminado.</translation>
@@ -5748,6 +5784,7 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
 <translation id="6575944031719151455">Si se define esta política, especificará la lista de cuentas locales del dispositivo que se muestran en la pantalla de inicio de sesión. Los identificadores se usan para distinguir las diversas cuentas locales del dispositivo.
 
       Si no se define esta política o se le asigna una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
+<translation id="6577760914164385949">Permitir el inicio de sesión automático con proveedores de identidades en la nube de Microsoft®</translation>
 <translation id="6580851705156412587">Bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
 <translation id="6581048059229620221">Si se inhabilita esta política, el host de asistencia remota no se podrá iniciar ni configurar para aceptar conexiones entrantes.
 
@@ -6217,6 +6254,7 @@ Si se inhabilita esta política o no se define, se aplicará el comportamiento p
 <translation id="7002040773317582266">Habilita la comprobación en tiempo real de las URL de marcos principales.</translation>
 <translation id="7003746348783715221">Preferencias de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Un indicador booleano que especifica si el controlador de protocolos debe ser la opción predeterminada.</translation>
+<translation id="7007403084376547341">Seleccionar binario del navegador <ph name="LACROS_NAME" /></translation>
 <translation id="7008308728445338159">Comprobaciones de interceptación de DNS habilitadas</translation>
 <translation id="7009043124653876961">Inhabilitar sugerencias de emojis cuando los usuarios escriben</translation>
 <translation id="7010006999849135962">Habilitar la autenticación sin PIN para el host de acceso remoto</translation>
@@ -6423,6 +6461,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7202925763179776247">Permitir restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
+<translation id="721617466745658461">Permitir que los usuarios seleccionen el binario del navegador <ph name="LACROS_NAME" /></translation>
 <translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación segura</translation>
 <translation id="721970071627370558">Inhabilitar los informes sobre el estado de la energía del dispositivo</translation>
 <translation id="7221574724100909818">Usar el icono del candado en el caso de las conexiones seguras</translation>
@@ -7964,6 +8003,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8707790573162457301">Ejecuta una limpieza de disco automática al iniciar sesión</translation>
 <translation id="8713535263782304771">Inhabilitar Navegación segura</translation>
 <translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
+<translation id="8719374569086645837">Cargar siempre el navegador <ph name="LACROS_NAME" /> (<ph name="LACROS_STATEFUL_NAME" />)</translation>
 <translation id="8720547069538712402">Permitir que los usuarios habiliten o inhabiliten el corrector ortográfico</translation>
 <translation id="8726080977639508431">Esta política controla cómo interpreta <ph name="PRODUCT_NAME" /> las políticas de listas de sitios y las políticas de listas de sospechosos en el caso de la función de compatibilidad con navegadores antiguos. Afecta a las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
@@ -8391,6 +8431,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
 <translation id="9133526448421932754">Color amarillo para la retroiluminación del teclado</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>
 <translation id="9136212796239682721">Inhabilitar la interfaz del cuadro de descargas</translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
 <translation id="9142561920976791097">Se usará el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados.</translation>

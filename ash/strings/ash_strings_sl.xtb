@@ -173,7 +173,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> je bil odpet</translation>
-<translation id="1836215606488044471">Pomočnik (nalaganje ...)</translation>
 <translation id="1838895407229022812">Nočna svetloba je izklopljena.</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1862380676329487333">Posodobi in odjavi</translation>
@@ -261,7 +260,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2367186422933365202">Prijava v Chromebook ni mogoča.</translation>
 <translation id="2369165858548251131">»Živijo« po kitajsko</translation>
-<translation id="2375445874393996153">Iskanje vsebine zaslona s Pomočnikom Google ni več podprto.</translation>
 <translation id="2390318262976603432">Nastavitve jezika</translation>
 <translation id="240006516586367791">Kontrolniki predstavnosti</translation>
 <translation id="2402411679569069051">Če želite odkleniti Chromebook, uporabite prstni odtis ali odklenite telefon.</translation>
@@ -603,7 +601,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
-<translation id="4351433414020964307">Pomočnik se nalaga ...</translation>
 <translation id="4371348193907997655">Nastavitve predvajanja</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, moč signala: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Povezovanje …</translation>
@@ -1217,7 +1214,6 @@ Nova namestitev</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
-<translation id="7796353162336583443">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti Pomočnika Google, laserski kazalnik ali povečevalno steklo.</translation>
 <translation id="7796735576426975947">Novo obvestilo je skrito</translation>
 <translation id="7798302898096527229">Za preklic pritisnite tipko za iskanje ali Shift.</translation>
 <translation id="7807067443225230855">Iskanje in Pomočnik</translation>

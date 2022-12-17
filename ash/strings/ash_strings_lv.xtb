@@ -173,7 +173,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
         <ph name="LOCALE" />.</translation>
 <translation id="1823873187264960516">Ethernet adrese: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> tika atsprausti</translation>
-<translation id="1836215606488044471">Asistents (notiek ielāde...)</translation>
 <translation id="1838895407229022812">Nakts režīms ir izslēgts.</translation>
 <translation id="1854180393107901205">Apturēt apraidi</translation>
 <translation id="1862380676329487333">Atjaunināt un izrakstīties</translation>
@@ -261,7 +260,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2367186422933365202">Nevar pierakstīties Chromebook datorā.</translation>
 <translation id="2369165858548251131">“Sveiki!” ķīniešu valodā</translation>
-<translation id="2375445874393996153">Vairs netiek atbalstīta ekrānā redzamā satura meklēšana, izmantojot Google asistentu.</translation>
 <translation id="2390318262976603432">Lokalizācijas iestatījumi</translation>
 <translation id="240006516586367791">Multivides vadīklas</translation>
 <translation id="2402411679569069051">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu vai atbloķējiet tālruni.</translation>
@@ -603,7 +601,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4324840740119394760">Atļauj piekļuvi kamerai lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="4333628967105022692">Pārlūks Lacros netiek atbalstīts, ja ir pierakstījušies vairāki lietotāji.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4351433414020964307">Notiek Asistenta ielāde...</translation>
 <translation id="4371348193907997655">Apraides iestatījumi</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signāla stiprums ir <ph name="SIGNAL_STRENGTH" />%.</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
@@ -1217,7 +1214,6 @@ Jauna instalācija</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7780094051999721182">saīsnes</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
-<translation id="7796353162336583443">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes vai ekrānuzņēmumus, izmantotu Google asistentu, lāzera rādītāju vai lupu.</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
 <translation id="7807067443225230855">Meklēšana un Asistents</translation>

@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />: відкріплено</translation>
-<translation id="1836215606488044471">Асистент (завантаження…)</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1862380676329487333">Оновити й вийти</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
-<translation id="2375445874393996153">Пошук вмісту екрана за допомогою Google Асистента більше не підтримується.</translation>
 <translation id="2390318262976603432">Налаштування мовного коду</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
 <translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">Буде надано доступ до камери для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="4333628967105022692">Lacros не підтримується, коли вхід здійснено в декілька облікових записів.</translation>
 <translation id="4338109981321384717">Лупа</translation>
-<translation id="4351433414020964307">Завантаження Асистента…</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
@@ -1217,7 +1214,6 @@
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7780094051999721182">комбінації клавіш</translation>
 <translation id="7780159184141939021">Обернути екран</translation>
-<translation id="7796353162336583443">Щоб додавати примітки та знімки екрана, користуватися Google Асистентом або використовувати стилус як лазерний вказівник чи лупу, торкніться кнопки стилуса на полиці.</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
 <translation id="7798302898096527229">Щоб скасувати, натисніть клавішу Search або Shift.</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>

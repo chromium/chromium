@@ -173,7 +173,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
-<translation id="1836215606488044471">Asistente (cargando…)</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1862380676329487333">Actualizar y salir</translation>
@@ -261,7 +260,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2367186422933365202">No se puede acceder a la Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
-<translation id="2375445874393996153">Ya no se admite la búsqueda de lo que aparece en pantalla con Asistente de Google.</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear la Chromebook, utiliza la huella dactilar o desbloquea el teléfono</translation>
@@ -604,7 +602,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4324840740119394760">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="4333628967105022692">Lacros no es compatible si acceden varios usuarios.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4351433414020964307">El Asistente se está cargando…</translation>
 <translation id="4371348193907997655">Configuración de transmisión</translation>
 <translation id="4378479437904450384">Intensidad de la señal de <ph name="WIRELESS_PROVIDER" />: <ph name="SIGNAL_STRENGTH" /> por ciento</translation>
 <translation id="4378551569595875038">Conectando…</translation>
@@ -1218,7 +1215,6 @@ Nueva instalación</translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
-<translation id="7796353162336583443">Presiona el botón de la pluma stylus en la biblioteca para tomar notas o capturas de pantalla, usar el Asistente de Google y activar las funciones de puntero láser o lupa.</translation>
 <translation id="7796735576426975947">Se ocultó una nueva notificación</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>

@@ -173,7 +173,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">L'épinglage de <ph name="ITEM_TITLE" /> été annulé</translation>
-<translation id="1836215606488044471">Assistant Google (chargement en cours…)</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
@@ -261,7 +260,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2367186422933365202">Impossible de se connecter à votre Chromebook</translation>
 <translation id="2369165858548251131">Comment dit-on « Bonjour » en chinois?</translation>
-<translation id="2375445874393996153">La recherche de ce qui s'affiche sur mon écran avec l'Assistant Google n'est plus prise en charge.</translation>
 <translation id="2390318262976603432">Paramètres régionaux</translation>
 <translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2402411679569069051">Pour déverrouiller votre Chromebook, utilisez votre empreinte digitale ou déverrouillez votre téléphone</translation>
@@ -603,7 +601,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4324840740119394760">Cela donne à l'appareil photo l'accès à <ph name="APP_NAME" /> et à toutes les applications et à tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
-<translation id="4351433414020964307">L'Assistant Google est en cours de chargement…</translation>
 <translation id="4371348193907997655">Paramètres de diffusion</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Connexion...</translation>
@@ -1217,7 +1214,6 @@ Nouvelle installation</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
-<translation id="7796353162336583443">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran ou pour utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="7807067443225230855">Recherche et Assistant Google</translation>

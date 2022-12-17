@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">助理</translation>
+<translation id="1962550982027027473">需要預設 APN</translation>
 <translation id="1977994649430373166">Google 個人檔案相片</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1999615961760456652">強制網絡入口</translation>
@@ -633,6 +634,7 @@
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
+<translation id="6838167112108853532">無法停用或移除此 APN。請確保啟用的附加 APN 都已停用或移除。</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6889786074662672253">重新啟動時，請勿拔除此外部裝置的插頭或關閉電腦。您可將此視窗縮到最小。此操作可能需要幾分鐘，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="6905724422583748843">返番去<ph name="PAGE_NAME" /></translation>

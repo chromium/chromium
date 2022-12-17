@@ -590,6 +590,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1560279917909364275">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">A política modifica as versões de depuração do host de acesso remoto</translation>
 <translation id="1561967320164410511">U2F e extensões para declaração individual</translation>
+<translation id="1562846754315919408">Mostrar notificações quando dispositivos USB forem detectados</translation>
 <translation id="1567718448549957373">Se a política for definida como "Ativada" ou não for definida, desafios de autenticação <ph name="BASIC_AUTH" /> recebidos por HTTP não seguro serão permitidos.
 
       Se a política for definida como "Desativada", solicitações HTTP não seguras não poderão usar o esquema de autenticação <ph name="BASIC_AUTH" />. Apenas conexões HTTPS seguras serão aceitas.
@@ -2095,6 +2096,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
       Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="2964373560810620158">Impedir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Permitir que os sites usem o SharedArrayBuffers</translation>
+<translation id="2969489219271682844">Não mostrar notificações quando dispositivos USB forem detectados</translation>
 <translation id="2969568582351417848">Desativar avisos de download com base na extensão do tipo de arquivo para os tipos especificados nos domínios</translation>
 <translation id="2969797921412053304">Esta política configura quais URLs terão acesso para usar o atestado remoto da identidade do dispositivo durante o fluxo SAML na tela de login.
 
@@ -2929,6 +2931,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Se você ativar essa configuração ou não definir um valor, o preenchimento automático será controlado pelo usuário, ou seja, ele poderá configurar perfis de preenchimento automático e ativar ou desativar o recurso quando quiser.</translation>
 <translation id="3733014427925403568">Dia da semana para o intervalo.</translation>
 <translation id="3736879847913515635">Ativar adição de uma pessoa no gerenciador de usuários</translation>
+<translation id="3744984310825999317">Permitir que o <ph name="PEPPER_NAME" /> use um novo decodificador para decodificação de vídeo acelerada por hardware.</translation>
 <translation id="3749259744154402564">Incompatível</translation>
 <translation id="3749511622128647337">Desativar saída de áudio</translation>
 <translation id="3750220015372671395">Bloquear a geração de chaves nesses sites</translation>
@@ -3078,6 +3081,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Cada entrada da lista contém um dicionário que deve incluir a identificação de extensão no campo 'extensão-id', e o URL de atualização no campo 'update-url'.</translation>
 <translation id="3869180930654347954">Desativar o First-Party Sets para todos os usuários afetados</translation>
+<translation id="3869566220234507038">Sempre carregar o navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
 <translation id="3870035799352372700">Impedir que o Google Assistente acesse o contexto da tela durante interações</translation>
 <translation id="3870059789954671543">Ativar o recurso de acessibilidade de destaque do foco no teclado na tela de login.
 
@@ -3886,6 +3890,7 @@ O suporte ao uso das raízes e do verificador de certificados disponibilizados p
 <translation id="4660356908994631271">Mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="4661889655253181651">As configurações de conteúdo permitem que você especifique como o conteúdo de um tipo específico (por exemplo, cookies, imagens ou JavaScript) é tratado.</translation>
 <translation id="4663509616441994711">Desativar a unificação das políticas da nuvem em nível de usuário.</translation>
+<translation id="4663588423815449593">Forçar o <ph name="PEPPER_NAME" /> a usar o decodificador de vídeo legado.</translation>
 <translation id="4665897631924472251">Configurações de gerenciamento de extensão</translation>
 <translation id="4666930704271463612">Especifica o subconjunto de servidores de impressão que serão consultados para impressoras de servidor.
 
@@ -3994,6 +3999,41 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão decidir se a estante é ocultada automaticamente ou não.</translation>
 <translation id="4812309945046430049">Luz de fundo vermelha do teclado</translation>
+<translation id="4812410063101047442">Essa configuração define qual navegador <ph name="LACROS_NAME" /> será usado.
+
+Se a política for definida como <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />,
+o usuário poderá decidir qual navegador <ph name="LACROS_NAME" /> carregar: binário da
+partição <ph name="LACROS_ROOTFS_NAME" /> ou <ph name="LACROS_STATEFUL_NAME" />.
+Se o usuário não definir nenhuma preferência, o binário com a versão mais recente será escolhido.
+
+Se a política for definida como <ph name="LACROS_SELECTION_ROOTFS_VALUE" />,
+o binário <ph name="LACROS_ROOTFS_NAME" /> do
+navegador <ph name="LACROS_NAME" /> sempre será carregado.
+
+Se a política for definida como <ph name="LACROS_SELECTION_STATEFUL_VALUE" />,
+o binário <ph name="LACROS_STATEFUL_NAME" /> do
+navegador <ph name="LACROS_NAME" /> sempre será carregado.
+O uso desse valor poderá causar um comportamento inesperado se a versão do navegador <ph name="LACROS_STATEFUL_NAME" />
+for mais antiga do que a versão do <ph name="PRODUCT_OS_NAME" />.
+Não há suporte para esse caso e pode ser que ele não funcione.
+
+Se a política for deixada sem definição, o padrão será <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> para usuários gerenciados por empresas e
+<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> para usuários não gerenciados.
+
+Observe que mudar valor da política poderá causar
+perda de dados do navegador <ph name="LACROS_NAME" /> se a versão do navegador
+for mais antiga que a atual. Por exemplo, se a
+política mudar de <ph name="LACROS_SELECTION_STATEFUL_VALUE" />
+para <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> e a primeira foi
+atualizada. Ou se o <ph name="PRODUCT_OS_NAME" /> foi
+atualizado junto com o navegador <ph name="LACROS_ROOTFS_NAME" />
+<ph name="LACROS_NAME" /> e
+<ph name="LACROS_STATEFUL_NAME" /> ainda não foi atualizado.
+Nessas situações, não há garantias de uma migração correta de dados.
+
+Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> ou <ph name="LACROS_SELECTION_ROOTFS_VALUE" />
+é uma opção segura. Trocar de <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> para <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />
+também é seguro.</translation>
 <translation id="4812714598405913256">Configurar a mensagem de expiração da atualização automática para a política DeviceMinimumVersion</translation>
 <translation id="4815581264328351694">Mostrar opções de acessibilidade no menu da bandeja do sistema</translation>
 <translation id="4816674326202173458">Permitir que o usuário corporativo seja ao mesmo tempo primário e secundário (comportamento padrão para usuários não gerenciados)</translation>
@@ -4454,6 +4494,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Não definir a política significa que os usuários não poderão jogar no <ph name="PRODUCT_OS_NAME" /> registrado, mas poderão fazer isso em outras circunstâncias.</translation>
 <translation id="5293285950307241933">Apagar todos os dados locais de usuário</translation>
+<translation id="5293619885162445352">Permitir que o <ph name="PEPPER_NAME" /> use o novo decodificador de vídeo.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
 <translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
@@ -4728,6 +4769,15 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="5563240289883266691">Ativar os relatórios de uso de apps Linux</translation>
 <translation id="5565178130821694365">É necessário digitar a senha a cada dois dias (48 horas)</translation>
 <translation id="5566210228171064229">Permitir impressão com e sem PIN</translation>
+<translation id="5569504149646180067">Configura o login automático de usuários em contas protegidas por um provedor de identidade na nuvem da Microsoft®.
+
+Ao definir essa política como 1 (<ph name="POLICY_VALUE_ENABLED" />), os usuários que fizerem login no computador usando uma conta protegida por um provedor de identidade na nuvem da Microsoft® (por exemplo, <ph name="MS_AAD_NAME" /> ou o provedor de identidade de conta de consumidor da Microsoft®) ou que adicionaram uma conta de trabalho ou escolar ao <ph name="MS_WIN_NAME" /> podem fazer login nas propriedades da Web automaticamente. As informações do dispositivo e da conta do usuário são transmitidas ao provedor de identidade na nuvem para cada evento de autenticação.
+
+Se ela for definida como 0 (<ph name="POLICY_VALUE_DISABLED" />) ou deixada sem definição, o login automático, conforme descrito acima, vai ser desativado.
+
+Esse recurso está disponível no <ph name="WIN_NAME" /> 10 e versões mais recentes.
+
+Observação: esta política não se aplica ao modo convidado ou de navegação anônima.</translation>
 <translation id="5572971233886879856">Especifica o subconjunto de servidores de impressão que serão consultados para impressoras de servidor. Isso só se aplica à política <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Se esta política for usada, somente as impressoras de servidor com IDs correspondentes aos valores desta política estarão disponíveis para o usuário por meio da política do dispositivo.
@@ -5392,6 +5442,18 @@ Se a política for deixada sem definição, nenhum domínio poderá acessar os U
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
 <translation id="6276087670023098167">Desativar relatórios sobre informações de identificação da máquina</translation>
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
+<translation id="6277043520666738324">Esta política controla se os plug-ins do <ph name="PEPPER_NAME" /> podem
+usar o novo decodificador para se comunicar com os de hardware, em vez do decodificador
+de vídeo legado.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum aplicativo PPAPI
+não funcione como esperado.
+
+Quando a política é ativada ou deixada sem definição, o navegador decide qual
+implementação é usada.
+Quando a política é desativada, o navegador usa a implementação antiga
+até que a política expire.</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6279722058145292462">A definição da política especifica, em dias, com que frequência um cliente muda a senha da conta da máquina. A senha é gerada aleatoriamente pelo cliente e não fica visível para o usuário. Se a política for desativada ou definida com um número alto de dias, poderá haver um impacto negativo na segurança, porque possíveis invasores terão mais tempo para descobrir a senha da conta da máquina e usá-la.
@@ -5685,6 +5747,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política não for definida, especifique a opção "Deixar os usuários decidirem" ou defina como "Nenhuma". Assim, os usuários controlarão a detecção automática de fuso horário usando os controles normais em chrome://settings.</translation>
 <translation id="6532769014584932288">Permitir wake locks</translation>
 <translation id="6533881418188970751">Perguntar ao usuário onde salvar o arquivo antes do download</translation>
+<translation id="653616551212414363">Se esta configuração estiver ativada, uma notificação vai ser mostrada para o usuário quando um dispositivo USB for conectado ao <ph name="PRODUCT_OS_NAME" />.
+
+      Se a configuração estiver desativada, nenhuma notificação sobre dispositivos USB conectados será mostrada ao usuário.
+
+      Se a política não for definida, os usuários vão receber notificações sobre dispositivos USB conectados.</translation>
 <translation id="6536600139108165863">Reinicialização automática no desligamento do dispositivo</translation>
 <translation id="6538653424603921690">Sempre desativar a tela de privacidade na tela de login</translation>
 <translation id="6539246272469751178">Esta política não tem nenhum efeito sobre apps Android. Os apps Android sempre usam o diretório de downloads padrão e não podem acessar nenhum arquivo transferido por download pelo <ph name="PRODUCT_OS_NAME" /> para um diretório de downloads não padrão.</translation>
@@ -6229,6 +6296,7 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="7002040773317582266">A verificação em tempo real de URLs do frame principal está ativada.</translation>
 <translation id="7003746348783715221">Preferências do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Uma sinalização booleana indicando se o gerenciador de protocolos precisa ser definido como padrão.</translation>
+<translation id="7007403084376547341">Selecionar o <ph name="LACROS_NAME" /> binário do navegador</translation>
 <translation id="7008308728445338159">Verificação de interceptações de DNS ativada</translation>
 <translation id="7009043124653876961">Desativar as sugestões de emojis quando o usuário digita</translation>
 <translation id="7010006999849135962">Ativar a autenticação sem PIN para o host de acesso remoto</translation>
@@ -6434,6 +6502,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7202925763179776247">Permitir restrições de downloads</translation>
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
+<translation id="721617466745658461">Permitir que os usuários selecionem o binário <ph name="LACROS_NAME" /> do navegador</translation>
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
 <translation id="721970071627370558">Desativar relatórios de status de energia do dispositivo</translation>
 <translation id="7221574724100909818">Usar o ícone de bloqueio em conexões seguras</translation>
@@ -7970,6 +8039,7 @@ para essa VM. É possível instalar várias VMs de uma configuração no mesmo d
 <translation id="8707790573162457301">Executar a limpeza de disco automática durante o login</translation>
 <translation id="8713535263782304771">Desativar o Navegação segura</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
+<translation id="8719374569086645837">Sempre carregar o navegador <ph name="LACROS_STATEFUL_NAME" /> <ph name="LACROS_NAME" /></translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
 <translation id="8726080977639508431">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
@@ -8394,6 +8464,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="913195841488580904">Bloquear acesso a uma lista de URLs</translation>
 <translation id="9133526448421932754">Luz de fundo amarela do teclado</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>
 <translation id="9136212796239682721">Desativar a IU de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
 <translation id="9142561920976791097">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado.</translation>

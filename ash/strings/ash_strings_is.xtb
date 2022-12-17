@@ -173,7 +173,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> var losað</translation>
-<translation id="1836215606488044471">Aðstoðarmaður (hleður...)</translation>
 <translation id="1838895407229022812">Slökkt er á næturljósi.</translation>
 <translation id="1854180393107901205">Hætta útsendingu</translation>
 <translation id="1862380676329487333">Uppfæra og skrá út</translation>
@@ -261,7 +260,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2367186422933365202">Ekki tókst að skrá þig inn á Chromebook</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
-<translation id="2375445874393996153">Ekki er lengur stuðningur við að leita að því sem er á skjánum með Google hjálpara.</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
 <translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
@@ -603,7 +601,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4324840740119394760">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
 <translation id="4333628967105022692">Lacros er ekki studdur þegar margir notendur eru innskráðir.</translation>
 <translation id="4338109981321384717">Stækkunargler</translation>
-<translation id="4351433414020964307">Verið er að hlaða aðstoðarmann...</translation>
 <translation id="4371348193907997655">Stillingar útsendingar</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /> prósent.</translation>
 <translation id="4378551569595875038">Tengist...</translation>
@@ -1217,7 +1214,6 @@ Ný uppsetning</translation>
 <translation id="7768784765476638775">Textaupplestur</translation>
 <translation id="7780094051999721182">flýtileiðir</translation>
 <translation id="7780159184141939021">Snúa skjánum</translation>
-<translation id="7796353162336583443">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota Google hjálparann, leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="7796735576426975947">Ný tilkynning falin</translation>
 <translation id="7798302898096527229">Ýttu á leitar- eða Shift-lykil til að hætta við.</translation>
 <translation id="7807067443225230855">Leit og aðstoðarmaður</translation>

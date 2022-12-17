@@ -173,7 +173,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> è stato sbloccato</translation>
-<translation id="1836215606488044471">Assistente (caricamento…)</translation>
 <translation id="1838895407229022812">Luminosità notturna non attiva.</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1862380676329487333">Aggiorna e disconnetti</translation>
@@ -261,7 +260,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2367186422933365202">Impossibile accedere a Chromebook</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
-<translation id="2375445874393996153">Non c'è più la possibilità di eseguire ricerche sullo schermo con l'Assistente Google.</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2402411679569069051">Per sbloccare Chromebook, utilizza la tua impronta o sblocca il telefono</translation>
@@ -456,6 +454,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
+<translation id="3533126039236445965">App nella barra delle app</translation>
 <translation id="3542066395059568317">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi fare clic con il tasto destro del mouse sui consigli per rimuoverli.</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
@@ -604,7 +603,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4324840740119394760">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
-<translation id="4351433414020964307">L'assistente è in fase di caricamento…</translation>
 <translation id="4371348193907997655">Impostazioni di trasmissione</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento</translation>
 <translation id="4378551569595875038">Connessione...</translation>
@@ -1218,7 +1216,6 @@ Nuova installazione</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
-<translation id="7796353162336583443">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare l'Assistente Google, il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>

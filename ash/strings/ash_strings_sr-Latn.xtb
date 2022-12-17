@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">Укључено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
+<translation id="163517899691012366">Обавештења се игноришу када је укључено Не узнемиравај</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уређаја</translation>
 <translation id="1639239467298939599">Учитава се</translation>
 <translation id="1654477262762802994">Започните гласовну претрагу</translation>
@@ -174,7 +175,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Ставка <ph name="ITEM_TITLE" /> је откачена</translation>
-<translation id="1836215606488044471">Помоћник (учитава се...)</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1862380676329487333">Ажурирај и одјави ме</translation>
@@ -262,7 +262,6 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2367186422933365202">Не можете да се пријавите на Chromebook</translation>
 <translation id="2369165858548251131">„Здраво“ на кинеском</translation>
-<translation id="2375445874393996153">Претрага садржаја на екрану помоћу Google помоћника више није подржана.</translation>
 <translation id="2390318262976603432">Подешавања локалитета</translation>
 <translation id="240006516586367791">Контроле медија</translation>
 <translation id="2402411679569069051">Да бисте откључали Chromebook, користите отисак прста или откључајте телефон</translation>
@@ -376,6 +375,7 @@
 <translation id="3047761520276763270">Пробајте да кажете:</translation>
 <translation id="3051189971848907985">Мења се име профила. Сачекајте неколико минута.</translation>
 <translation id="3055162170959710888">Данас користите овај уређај већ <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Није подржано</translation>
 <translation id="3068711042108640621">Полица на левој страни</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири мени</translation>
@@ -410,6 +410,7 @@
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Подешавање</translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
+<translation id="3260969790895726815">Говор се обрађује локално и диктирање ради офлајн, али неке гласовне команде не раде.</translation>
 <translation id="3269597722229482060">Десни клик</translation>
 <translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
 <translation id="3289674678944039601">Пуни се преко адаптера</translation>
@@ -607,7 +608,6 @@
 <translation id="4324840740119394760">Ово омогућава приступ камери за <ph name="APP_NAME" /> и све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="4333628967105022692">Lacros није подржан када је пријављено више корисника.</translation>
 <translation id="4338109981321384717">Лупа</translation>
-<translation id="4351433414020964307">Помоћник се учитава...</translation>
 <translation id="4371348193907997655">Подешавања пребацивања</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /> посто</translation>
 <translation id="4378551569595875038">Повезује се...</translation>
@@ -795,9 +795,11 @@
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="533282197239610265">Прегледајте уређаје за пребацивање</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (десна)</translation>
+<translation id="5351427059191534258">Желите да искључите приступ камери?</translation>
 <translation id="5352250171825660495">Тамна тема је укључена</translation>
 <translation id="5356963482258194581">Прелазите са тамне на светлу тему и обрнуто. Кликните десним тастером на радну површину и изаберите Позадина и стил.</translation>
 <translation id="536019650977002321">Администратор не дозвољава снимање звука. Додатне информације потражите од администратора.</translation>
+<translation id="5361524080961918551">Фајлови говора за језик <ph name="LANGUAGE" /> су делимично преузети</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Идите на ову картицу</translation>
 <translation id="5377367976106153749">Желите да укључите приступ камери?</translation>
 <translation id="5379115545237091094">Превише покушаја</translation>
@@ -907,6 +909,7 @@
 <translation id="5980301590375426705">Затвори као гост</translation>
 <translation id="598407983968395253">Користи шаблон</translation>
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
+<translation id="6002179289567220515">Користили сте физички прекидач да бисте искључили 1 камеру. Можете и да искључите приступ за све камере.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Излазак из режима са пресликавањем</translation>
 <translation id="602001110135236999">Помери налево</translation>
@@ -947,9 +950,11 @@
 <translation id="619279033188484792">Прегледајте недавне слике, медијски садржај и обавештења телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Одмах напуните до краја</translation>
 <translation id="6193431488227440296">Развојна</translation>
+<translation id="6200515304866777730">Апликација не подржава</translation>
 <translation id="6210042900243040400">Повежите уређај <ph name="NAME" /> претходно сачуван на <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Сада истовремено можете да снимате себе и екран</translation>
 <translation id="622484624075952240">Надоле</translation>
+<translation id="623116199192908855">Пребацујте екран са Chromebook-а</translation>
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> тренутно користи камеру и микрофон</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -991,8 +996,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> тражи да ажурирате <ph name="DEVICE_TYPE" /> пре истека рока</translation>
 <translation id="649452524636452238">PIN паметне картице</translation>
 <translation id="6495400115277918834">Покренута је слика у слици, Alt+Shift+V да бисте фокусирали</translation>
+<translation id="6497418457565568043">Не узнемиравај је укључено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Уверите се да је Chromebook повезан на исту WiFi мрежу као и Chromecast уређај.</translation>
 <translation id="6515727200518652613">Веза са камером је прекинута, покушава да се поново повеже.</translation>
 <translation id="6520517963145875092">Изаберите прозор за снимање</translation>
 <translation id="652139407789908527">Током овог ажурирања екран ће бити празан дуже него обично (и до минут). Не притискајте дугме за укључивање док је ажурирање у току.</translation>
@@ -1224,7 +1231,6 @@
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7780094051999721182">пречице</translation>
 <translation id="7780159184141939021">Ротирајте екран</translation>
-<translation id="7796353162336583443">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили Google помоћник, ласерски показивач или лупу.</translation>
 <translation id="7796735576426975947">Ново обавештење је скривено</translation>
 <translation id="7798302898096527229">Притисните тастер за претрагу или Shift да бисте отказали.</translation>
 <translation id="7807067443225230855">Претрага и Помоћник</translation>

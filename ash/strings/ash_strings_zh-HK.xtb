@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">已經將<ph name="ITEM_TITLE" />取消置頂</translation>
-<translation id="1836215606488044471">小幫手 (正在載入…)</translation>
 <translation id="1838895407229022812">「夜燈模式」已關閉。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1862380676329487333">更新並登出</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
-<translation id="2375445874393996153">系統不再支援透過「Google 助理」搜尋螢幕上的顯示內容。</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
 <translation id="240006516586367791">媒體控制項</translation>
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">此操作會允許 <ph name="APP_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
-<translation id="4351433414020964307">正在載入小幫手…</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
@@ -1215,7 +1212,6 @@
 <translation id="7768784765476638775">選取以朗讀</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
-<translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="7807067443225230855">搜尋和助理功能</translation>

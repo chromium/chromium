@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> の固定を解除しました</translation>
-<translation id="1836215606488044471">アシスタント（読み込み中...）</translation>
 <translation id="1838895407229022812">夜間モードはオフです。</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1862380676329487333">更新してログアウト</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2367186422933365202">Chromebook にログインできません</translation>
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
-<translation id="2375445874393996153">画面の表示内容を Google アシスタントで検索することはできなくなりました。</translation>
 <translation id="2390318262976603432">言語 / 地域設定</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
 <translation id="2402411679569069051">Chromebook のロックを解除するには、指紋認証を使用するか、スマートフォンのロックを解除します</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="4333628967105022692">複数のユーザーがログインしている場合、Lacros はサポートされません。</translation>
 <translation id="4338109981321384717">虫メガネ</translation>
-<translation id="4351433414020964307">アシスタントを読み込んでいます...</translation>
 <translation id="4371348193907997655">キャスト設定</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />、電波強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">接続中...</translation>
@@ -1218,7 +1215,6 @@
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
-<translation id="7796353162336583443">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、Google アシスタント、レーザー ポインタ、虫メガネを使用したりすることができます。</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>

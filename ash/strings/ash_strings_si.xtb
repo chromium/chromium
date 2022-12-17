@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
-<translation id="1836215606488044471">සහායක (පූරණය වේ...)</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2367186422933365202">ඔබගේ Chromebook වෙත පිරීමට නොහැකිය</translation>
 <translation id="2369165858548251131">චීන භාෂාවෙන් "Hello"</translation>
-<translation id="2375445874393996153">Google සහායක සමඟ මගේ තිරයේ ඇති දේ සෙවීම තවදුරටත් සහාය නොදක්වයි.</translation>
 <translation id="2390318262976603432">පෙදෙසි සැකසීම්</translation>
 <translation id="240006516586367791">මාධ්‍ය පාලන</translation>
 <translation id="2402411679569069051">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න හෝ ඔබගේ දුරකථනය අගුලු හරින්න</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">මෙය <ph name="APP_NAME" /> සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="4333628967105022692">බහුපරිශීලකයින් පුරා සිටින අතරතුර Lacros සහාය නොදක්වයි.</translation>
 <translation id="4338109981321384717">විශාලක කාචය</translation>
-<translation id="4351433414020964307">සහායක පූරණය වේ...</translation>
 <translation id="4371348193907997655">විකාශ සැකසීම්</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, සංඥා ප්‍රබලතාව සියයට <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
@@ -1217,7 +1214,6 @@
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
 <translation id="7780094051999721182">කෙටි මං</translation>
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
-<translation id="7796353162336583443">සටහනක්, තිර රුවක් ගැනීමට, Google සහායක, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රාක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="7796735576426975947">නව දැනුම්දීම සඟවා ඇත</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="7807067443225230855">සෙවීම සහ සහායක</translation>

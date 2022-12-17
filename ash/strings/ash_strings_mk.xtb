@@ -174,7 +174,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
-<translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
@@ -262,7 +261,6 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2367186422933365202">Не може да се најавите на вашиот Chromebook</translation>
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
-<translation id="2375445874393996153">Пребарувањето на содржините на екранот со „Помошникот на Google“ веќе не е поддржано.</translation>
 <translation id="2390318262976603432">Поставки за локален стандард</translation>
 <translation id="240006516586367791">Контроли за аудиовизуелни содржини</translation>
 <translation id="2402411679569069051">За да го отклучите вашиот Chromebook, користете го отпечатокот или отклучете го телефонот</translation>
@@ -607,7 +605,6 @@
 <translation id="4324840740119394760">Ова дозволува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="4333628967105022692">Lacros не е поддржан кога се најавени повеќе корисници.</translation>
 <translation id="4338109981321384717">Лупа</translation>
-<translation id="4351433414020964307">„Помошникот“ се вчитува…</translation>
 <translation id="4371348193907997655">Поставки за Cast</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Се поврзува…</translation>
@@ -1228,7 +1225,6 @@
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7780094051999721182">кратенки</translation>
 <translation id="7780159184141939021">Ротација на екранот</translation>
-<translation id="7796353162336583443">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот или пак, да го користите „Помошникотна Google“, ласерскиот покажувач или лупата.</translation>
 <translation id="7796735576426975947">Сокриено е ново известување</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>

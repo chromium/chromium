@@ -173,7 +173,6 @@
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ஷெல்ஃபிலிருந்து அகற்றப்பட்டது</translation>
-<translation id="1836215606488044471">அசிஸ்டண்ட் (ஏற்றுகிறது...)</translation>
 <translation id="1838895407229022812">நைட் லைட் ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1862380676329487333">புதுப்பித்து வெளியேறு</translation>
@@ -261,7 +260,6 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2367186422933365202">Chromebookகில் உள்நுழைய முடியவில்லை</translation>
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
-<translation id="2375445874393996153">திரையில் இருப்பவற்றை Google Assistant மூலம் தேடுவது இனி ஆதரிக்கப்படாது.</translation>
 <translation id="2390318262976603432">மொழி அமைப்புகள்</translation>
 <translation id="240006516586367791">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="2402411679569069051">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும் அல்லது மொபைலை அன்லாக் செய்யவும்</translation>
@@ -603,7 +601,6 @@
 <translation id="4324840740119394760">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="4333628967105022692">பல பயனர்கள் உள்நுழைந்திருக்கும்போது Lacros உலாவியைப் பயன்படுத்த இயலாது.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
-<translation id="4351433414020964307">அசிஸ்டண்ட்டை ஏற்றுகிறது...</translation>
 <translation id="4371348193907997655">அலைபரப்பு அமைப்புகள்</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /> சதவீதம்</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
@@ -1217,7 +1214,6 @@
 <translation id="7768784765476638775">பேசும் திரை</translation>
 <translation id="7780094051999721182">ஷார்ட்கட்கள்</translation>
 <translation id="7780159184141939021">திரைச் சுழற்சி</translation>
-<translation id="7796353162336583443">குறிப்பெடுக்க, ஸ்கிரீன்ஷாட்டை எடுக்க, Google அசிஸ்டண்ட், லேசர் பாயிண்டர் அல்லது உருப்பெருக்கியைப் பயன்படுத்த, ஷெல்ஃபில் உள்ள ஸ்டைலஸ் பட்டனைத் தட்டவும்.</translation>
 <translation id="7796735576426975947">புதிய அறிவிப்பு மறைக்கப்பட்டுள்ளது</translation>
 <translation id="7798302898096527229">ரத்துசெய்ய, தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>
 <translation id="7807067443225230855">தேடல் மற்றும் அசிஸ்டண்ட்</translation>
