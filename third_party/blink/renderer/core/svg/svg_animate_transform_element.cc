@@ -55,6 +55,12 @@ void SVGAnimateTransformElement::ResolveTargetProperty() {
   css_property_id_ = CSSPropertyID::kInvalid;
 }
 
+SVGPropertyBase* SVGAnimateTransformElement::CreateUnderlyingValueForAnimation()
+    const {
+  DCHECK(IsAnimatingSVGDom());
+  return To<SVGTransformList>(target_property_->BaseValueBase()).Clone();
+}
+
 SVGPropertyBase* SVGAnimateTransformElement::ParseValue(
     const String& value) const {
   DCHECK(IsAnimatingSVGDom());

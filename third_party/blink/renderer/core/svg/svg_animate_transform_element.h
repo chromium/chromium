@@ -40,6 +40,7 @@ class SVGAnimateTransformElement final : public SVGAnimateElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
+  SVGPropertyBase* CreateUnderlyingValueForAnimation() const override;
   SVGPropertyBase* ParseValue(const String&) const override;
 
   SVGTransformType transform_type_;

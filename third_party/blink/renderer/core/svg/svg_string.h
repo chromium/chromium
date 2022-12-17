@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -77,6 +78,13 @@ class SVGString final : public SVGPropertyBase {
 
  private:
   String value_;
+};
+
+template <>
+struct DowncastTraits<SVGString> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGString::ClassType();
+  }
 };
 
 }  // namespace blink

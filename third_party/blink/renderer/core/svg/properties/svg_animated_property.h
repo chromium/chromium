@@ -54,7 +54,6 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
   virtual const SVGPropertyBase& BaseValueBase() const = 0;
   virtual bool IsAnimating() const = 0;
 
-  virtual SVGPropertyBase* CreateAnimatedValue() = 0;
   virtual void SetAnimatedValue(SVGPropertyBase*) = 0;
   virtual void AnimationEnded() = 0;
 
@@ -140,10 +139,6 @@ class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
         (is_attr_removal || parse_status != SVGParseStatus::kNoError))
       base_value_->SetInitial(InitialValueStorage());
     return parse_status;
-  }
-
-  SVGPropertyBase* CreateAnimatedValue() override {
-    return base_value_->Clone();
   }
 
   void SetAnimatedValue(SVGPropertyBase* value) override {

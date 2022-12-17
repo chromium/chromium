@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -69,6 +70,13 @@ class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
 
  private:
   bool value_;
+};
+
+template <>
+struct DowncastTraits<SVGBoolean> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGBoolean::ClassType();
+  }
 };
 
 }  // namespace blink

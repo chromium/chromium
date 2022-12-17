@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -113,6 +114,13 @@ class SVGEnumeration : public SVGPropertyBase {
 
   uint16_t value_;
   const SVGEnumerationMap& map_;
+};
+
+template <>
+struct DowncastTraits<SVGEnumeration> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGEnumeration::ClassType();
+  }
 };
 
 #define DECLARE_SVG_ENUM_MAP(cpp_enum_type) \
