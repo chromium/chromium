@@ -49,13 +49,12 @@ class MaplikeReadAcccess {
 }  // namespace bindings
 
 template <typename IDLInterface>
-class MaplikeReadAPIs
-    : public PairSyncIterable<IDLInterface>,
-      public bindings::MaplikeReadAcccess<
-          typename PairSyncIterable<IDLInterface>::IDLKeyType,
-          typename PairSyncIterable<IDLInterface>::IDLValueType,
-          typename PairSyncIterable<IDLInterface>::KeyType,
-          typename PairSyncIterable<IDLInterface>::ValueType> {};
+class Maplike : public PairSyncIterable<IDLInterface>,
+                public bindings::MaplikeReadAcccess<
+                    typename PairSyncIterable<IDLInterface>::IDLKeyType,
+                    typename PairSyncIterable<IDLInterface>::IDLValueType,
+                    typename PairSyncIterable<IDLInterface>::KeyType,
+                    typename PairSyncIterable<IDLInterface>::ValueType> {};
 
 }  // namespace blink
 

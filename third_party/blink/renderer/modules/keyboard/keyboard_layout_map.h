@@ -15,7 +15,7 @@
 namespace blink {
 
 class KeyboardLayoutMap final : public ScriptWrappable,
-                                public MaplikeReadAPIs<KeyboardLayoutMap> {
+                                public Maplike<KeyboardLayoutMap> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -19,7 +19,7 @@ namespace blink {
 
 class CSSFontFeatureValuesRule;
 
-using FeatureValuesMaplike = MaplikeReadAPIs<CSSFontFeatureValuesMap>;
+using FeatureValuesMaplike = Maplike<CSSFontFeatureValuesMap>;
 
 class CSSFontFeatureValuesMap : public ScriptWrappable,
                                 public FeatureValuesMaplike {

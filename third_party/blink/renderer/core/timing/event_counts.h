@@ -15,8 +15,7 @@
 
 namespace blink {
 
-class EventCounts final : public ScriptWrappable,
-                          public MaplikeReadAPIs<EventCounts> {
+class EventCounts final : public ScriptWrappable, public Maplike<EventCounts> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

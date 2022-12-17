@@ -13,9 +13,8 @@
 
 namespace blink {
 
-class BluetoothServiceDataMap final
-    : public ScriptWrappable,
-      public MaplikeReadAPIs<BluetoothServiceDataMap> {
+class BluetoothServiceDataMap final : public ScriptWrappable,
+                                      public Maplike<BluetoothServiceDataMap> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

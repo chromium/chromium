@@ -20,7 +20,7 @@ namespace blink {
 class AudioParam;
 
 class AudioParamMap final : public ScriptWrappable,
-                            public MaplikeReadAPIs<AudioParamMap> {
+                            public Maplike<AudioParamMap> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

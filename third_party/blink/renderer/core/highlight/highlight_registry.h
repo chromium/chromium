@@ -26,7 +26,7 @@ namespace blink {
 using HighlightRegistryMap =
     HeapLinkedHashSet<Member<HighlightRegistryMapEntry>,
                       HashTraits<Member<HighlightRegistryMapEntry>>>;
-using HighlightRegistryMapIterable = MaplikeReadAPIs<HighlightRegistry>;
+using HighlightRegistryMapIterable = Maplike<HighlightRegistry>;
 class LocalFrame;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,

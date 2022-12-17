@@ -25,7 +25,7 @@ class ToggleRootList;
 // Represents the set of toggles on an element.
 using ToggleMap = HeapHashMap<AtomicString, Member<CSSToggle>>;
 
-using CSSToggleMapMaplike = MaplikeReadAPIs<CSSToggleMap>;
+using CSSToggleMapMaplike = Maplike<CSSToggleMap>;
 
 class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
                                  public CSSToggleMapMaplike,

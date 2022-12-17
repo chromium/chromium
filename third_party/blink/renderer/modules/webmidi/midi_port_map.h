@@ -15,8 +15,7 @@
 namespace blink {
 
 template <typename InterfaceType, typename ValueType>
-class MIDIPortMap : public ScriptWrappable,
-                    public MaplikeReadAPIs<InterfaceType> {
+class MIDIPortMap : public ScriptWrappable, public Maplike<InterfaceType> {
  public:
   explicit MIDIPortMap(const HeapVector<Member<ValueType>>& entries)
       : entries_(entries) {}

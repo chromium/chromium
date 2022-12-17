@@ -23,7 +23,7 @@ Vector<webrtc::NonStandardGroupId> GetExposedGroupIds(
 
 // https://w3c.github.io/webrtc-pc/#rtcstatsreport-object
 class RTCStatsReport final : public ScriptWrappable,
-                             public MaplikeReadAPIs<RTCStatsReport> {
+                             public Maplike<RTCStatsReport> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
