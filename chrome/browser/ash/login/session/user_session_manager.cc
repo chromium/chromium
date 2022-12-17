@@ -30,6 +30,7 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -1090,7 +1091,7 @@ void UserSessionManager::OnSessionRestoreStateChanged(
   // subject to an exploit. See http://crbug.com/677312.
   if (IsOnlineSignin(user_context_) &&
       state == OAuth2LoginManager::SESSION_RESTORE_FAILED) {
-    LOG(ERROR)
+    SYSLOG(ERROR)
         << "Session restore failed for online sign-in, terminating session.";
     chrome::AttemptUserExit();
     return;
@@ -1160,7 +1161,8 @@ void UserSessionManager::OnUsersSignInConstraintsChanged() {
       continue;
     }
     if (!user_manager->IsUserAllowed(*user)) {
-      LOG(ERROR) << "The current user is not allowed, terminating the session.";
+      SYSLOG(ERROR)
+          << "The current user is not allowed, terminating the session.";
       chrome::AttemptUserExit();
     }
   }
