@@ -24,7 +24,8 @@ class BrokerSimpleMessage;
 class BrokerHost {
  public:
   BrokerHost(const BrokerSandboxConfig& policy,
-             BrokerChannel::EndPoint ipc_channel);
+             BrokerChannel::EndPoint ipc_channel,
+             pid_t sandboxed_process_pid);
 
   BrokerHost(const BrokerHost&) = delete;
   BrokerHost& operator=(const BrokerHost&) = delete;
@@ -35,6 +36,8 @@ class BrokerHost {
   void LoopAndHandleRequests();
 
  private:
+  [[nodiscard]] absl::optional<std::string> RewritePathname(
+      const char* pathname);
   [[nodiscard]] absl::optional<std::pair<const char*, int>> GetPathAndFlags(
       BrokerSimpleMessage* message);
 
@@ -72,6 +75,7 @@ class BrokerHost {
 
   const raw_ref<const BrokerSandboxConfig> policy_;
   const BrokerChannel::EndPoint ipc_channel_;
+  const pid_t sandboxed_process_pid_;
 };
 
 }  // namespace syscall_broker

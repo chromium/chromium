@@ -64,7 +64,9 @@ bool BrokerProcess::ForkSignalBasedBroker(
   BrokerChannel::EndPoint ipc_reader, ipc_writer;
   BrokerChannel::CreatePair(&ipc_reader, &ipc_writer);
 
-  int child_pid = fork();
+  pid_t parent_pid = getpid();
+
+  pid_t child_pid = fork();
   if (child_pid == -1)
     return false;
 
@@ -89,7 +91,8 @@ bool BrokerProcess::ForkSignalBasedBroker(
 
   CHECK(std::move(broker_process_init_callback).Run(*policy_));
 
-  BrokerHost broker_host_signal_based(*policy_, std::move(ipc_reader));
+  BrokerHost broker_host_signal_based(*policy_, std::move(ipc_reader),
+                                      parent_pid);
   broker_host_signal_based.LoopAndHandleRequests();
   _exit(1);
   NOTREACHED();

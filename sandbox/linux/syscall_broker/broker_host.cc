@@ -24,6 +24,8 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_permission_list.h"
@@ -36,6 +38,9 @@ namespace syscall_broker {
 
 namespace {
 
+const char kProcSelf[] = "/proc/self/";
+const size_t kProcSelfNumChars = sizeof(kProcSelf) - 1;
+
 // A little open(2) wrapper to handle some oddities for us. In the general case
 // make a direct system call since we want to keep in control of the broker
 // process' system calls profile to be able to loosely sandbox it.
@@ -46,6 +51,17 @@ int sys_open(const char* pathname, int flags) {
 }
 
 }  // namespace
+
+// Applies a rewrite from /proc/self/ to /proc/[pid of sandboxed process]/.
+// Returns either a rewritten or the original pathname.
+absl::optional<std::string> BrokerHost::RewritePathname(const char* pathname) {
+  if (base::StartsWith(pathname, kProcSelf)) {
+    return base::StringPrintf("/proc/%d/%s", sandboxed_process_pid_,
+                              pathname + kProcSelfNumChars);
+  }
+
+  return absl::nullopt;
+}
 
 absl::optional<std::pair<const char*, int>> BrokerHost::GetPathAndFlags(
     BrokerSimpleMessage* message) {
@@ -71,6 +87,12 @@ void BrokerHost::AccessFileForIPC(const char* requested_filename,
     return;
   }
 
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
+  }
+
   if (access(file_to_access, mode) < 0) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
@@ -91,6 +113,12 @@ void BrokerHost::MkdirFileForIPC(const char* requested_filename,
     RAW_CHECK(
         reply->AddIntToMessage(-policy_->file_permissions->denied_errno()));
     return;
+  }
+
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
   }
 
   if (mkdir(file_to_access, mode) < 0) {
@@ -117,7 +145,12 @@ void BrokerHost::OpenFileForIPC(const char* requested_filename,
         reply->AddIntToMessage(-policy_->file_permissions->denied_errno()));
     return;
   }
-  CHECK(file_to_open);
+
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_open);
+  if (rewritten_filename.has_value()) {
+    file_to_open = rewritten_filename.value().c_str();
+  }
 
   opened_file->reset(sys_open(file_to_open, flags));
   if (!opened_file->is_valid()) {
@@ -147,6 +180,18 @@ void BrokerHost::RenameFileForIPC(const char* old_filename,
     return;
   }
 
+  absl::optional<std::string> old_rewritten_filename =
+      RewritePathname(old_file_to_access);
+  if (old_rewritten_filename) {
+    old_file_to_access = old_rewritten_filename.value().c_str();
+  }
+
+  absl::optional<std::string> new_rewritten_filename =
+      RewritePathname(new_file_to_access);
+  if (new_rewritten_filename) {
+    new_file_to_access = new_rewritten_filename.value().c_str();
+  }
+
   if (rename(old_file_to_access, new_file_to_access) < 0) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
@@ -164,6 +209,12 @@ void BrokerHost::ReadlinkFileForIPC(const char* requested_filename,
     RAW_CHECK(
         reply->AddIntToMessage(-policy_->file_permissions->denied_errno()));
     return;
+  }
+
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
   }
 
   char buf[PATH_MAX];
@@ -187,6 +238,12 @@ void BrokerHost::RmdirFileForIPC(const char* requested_filename,
     return;
   }
 
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
+  }
+
   if (rmdir(file_to_access) < 0) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
@@ -208,6 +265,12 @@ void BrokerHost::StatFileForIPC(BrokerCommand command_type,
     RAW_CHECK(
         reply->AddIntToMessage(-policy_->file_permissions->denied_errno()));
     return;
+  }
+
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
   }
 
   if (command_type == COMMAND_STAT) {
@@ -255,6 +318,12 @@ void BrokerHost::UnlinkFileForIPC(const char* requested_filename,
     return;
   }
 
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
+  }
+
   if (unlink(file_to_access) < 0) {
     RAW_CHECK(reply->AddIntToMessage(-errno));
     return;
@@ -273,6 +342,12 @@ void BrokerHost::InotifyAddWatchForIPC(base::ScopedFD inotify_fd,
     RAW_CHECK(
         message->AddIntToMessage(-policy_->file_permissions->denied_errno()));
     return;
+  }
+
+  absl::optional<std::string> rewritten_filename =
+      RewritePathname(file_to_access);
+  if (rewritten_filename.has_value()) {
+    file_to_access = rewritten_filename.value().c_str();
   }
 
   int wd = inotify_add_watch(inotify_fd.get(), file_to_access, mask);
@@ -408,8 +483,11 @@ bool BrokerHost::HandleRemoteCommand(BrokerSimpleMessage* message,
 }
 
 BrokerHost::BrokerHost(const BrokerSandboxConfig& policy,
-                       BrokerChannel::EndPoint ipc_channel)
-    : policy_(policy), ipc_channel_(std::move(ipc_channel)) {}
+                       BrokerChannel::EndPoint ipc_channel,
+                       pid_t sandboxed_process_pid)
+    : policy_(policy),
+      ipc_channel_(std::move(ipc_channel)),
+      sandboxed_process_pid_(sandboxed_process_pid) {}
 
 BrokerHost::~BrokerHost() = default;
 
@@ -417,7 +495,7 @@ BrokerHost::~BrokerHost() = default;
 // A request should have a file descriptor attached on which we will reply and
 // that we will then close.
 // A request should start with an int that will be used as the command type.
-void BrokerHost::BrokerHost::LoopAndHandleRequests() {
+void BrokerHost::LoopAndHandleRequests() {
   for (;;) {
     BrokerSimpleMessage message;
     errno = 0;

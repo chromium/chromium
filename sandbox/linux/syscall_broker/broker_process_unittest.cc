@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_client.h"
@@ -719,6 +720,62 @@ TEST(BrokerProcess, BrokerDiesOnClosedChannel) {
   EXPECT_EQ(broker_pid, process_info.si_pid);
   EXPECT_EQ(CLD_EXITED, process_info.si_code);
   EXPECT_EQ(1, process_info.si_status);
+}
+
+void TestRewriteProcSelfHelper(bool fast_check_in_client) {
+  std::vector<BrokerFilePermission> proc_status_permissions = {
+      BrokerFilePermission::ReadOnly("/proc/self/status")};
+
+  BrokerCommandSet command_set = MakeBrokerCommandSet({COMMAND_OPEN});
+
+  {
+    // Nonexistent file with no permissions to see file.
+    auto policy = absl::make_optional<BrokerSandboxConfig>(
+        command_set, proc_status_permissions, kFakeErrnoSentinel);
+    BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                              fast_check_in_client);
+
+    ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+    int fd = open_broker.GetBrokerClientSignalBased()->Open(
+        "/proc/self/status", O_RDONLY | O_NONBLOCK);
+    // This should open /proc/[pid]/status even though it wasn't the exact
+    // string that Open() requested.
+    ASSERT_GE(fd, 0);
+
+    // Reading /proc/self/status should return the same PID as the current
+    // process's PID, not the broker's.
+    char buf[4096];
+
+    ssize_t num_read = HANDLE_EINTR(read(fd, buf, sizeof(buf)));
+    ASSERT_GE(IGNORE_EINTR(close(fd)), 0);
+
+    ASSERT_GT(num_read, 0);
+
+    base::StringPiece status(buf, static_cast<size_t>(num_read));
+    base::StringPiece tracer("Pid:\t");
+
+    base::StringPiece::size_type pid_index = status.find(tracer);
+    ASSERT_NE(pid_index, base::StringPiece::npos);
+    pid_index += tracer.size();
+    base::StringPiece::size_type pid_end_index = status.find('\n', pid_index);
+    ASSERT_NE(pid_end_index, base::StringPiece::npos);
+
+    base::StringPiece pid_str(buf + pid_index, pid_end_index - pid_index);
+    int pid = 0;
+    ASSERT_TRUE(base::StringToInt(pid_str, &pid));
+
+    ASSERT_EQ(pid, getpid());
+
+    // TODO(mpdenton): maybe also test in a different pid namespace?
+  }
+}
+
+TEST(BrokerProcess, RewriteProcSelfClient) {
+  TestRewriteProcSelfHelper(true);
+}
+
+TEST(BrokerProcess, RewriteProcSelfHost) {
+  TestRewriteProcSelfHelper(false);
 }
 
 TEST(BrokerProcess, CreateFile) {
