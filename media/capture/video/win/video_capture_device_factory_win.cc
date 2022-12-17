@@ -600,6 +600,10 @@ void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
 
   ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
       dev_info_statics;
+  // Calling `GetActivationFactory` may load the DLL containing the
+  // `IDeviceInformationStatics` APIs. Temporarily increase the priority
+  // of this background thread to prevent hangs caused by priority inversion.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   HRESULT hr = GetActivationFactory<
       ABI::Windows::Devices::Enumeration::IDeviceInformationStatics,
       RuntimeClass_Windows_Devices_Enumeration_DeviceInformation>(
