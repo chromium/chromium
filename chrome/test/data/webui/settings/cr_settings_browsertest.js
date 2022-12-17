@@ -901,25 +901,37 @@ var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsSiteSettingsPageTest', 'SiteSettingsPage', function() {
+// TODO(crbug.com/1401833): Flaky.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_SiteSettingsPage DISABLED_SiteSettingsPage');
+GEN('#else');
+GEN('#define MAYBE_SiteSettingsPage SiteSettingsPage');
+GEN('#endif');
+TEST_F('CrSettingsSiteSettingsPageTest', 'MAYBE_SiteSettingsPage', function() {
   mocha.run();
 });
 
+// TODO(crbug.com/1401833): Flaky.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_UnusedSitePermissionsReview DISABLED_UnusedSitePermissionsReview');
+GEN('#else');
+GEN('#define MAYBE_UnusedSitePermissionsReview UnusedSitePermissionsReview');
+GEN('#endif');
 TEST_F(
-    'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    'CrSettingsSiteSettingsPageTest', 'MAYBE_UnusedSitePermissionsReview',
     function() {
       mocha.run();
     });
 
+// TODO(crbug.com/1401833): Flaky.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_UnusedSitePermissionsReviewDisabled DISABLED_UnusedSitePermissionsReviewDisabled');
+GEN('#else');
+GEN('#define MAYBE_UnusedSitePermissionsReviewDisabled UnusedSitePermissionsReviewDisabled');
+GEN('#endif');
 TEST_F(
-    'CrSettingsSiteSettingsPageTest', 'UnusedSitePermissionsReview',
-    function() {
-      mocha.run();
-    });
-
-TEST_F(
-    'CrSettingsSiteSettingsPageTest', 'UnusedSitePermissionsReviewDisabled',
-    function() {
+    'CrSettingsSiteSettingsPageTest',
+    'MAYBE_UnusedSitePermissionsReviewDisabled', function() {
       mocha.run();
     });
 
