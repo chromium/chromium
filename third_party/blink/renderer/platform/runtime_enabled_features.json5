@@ -884,7 +884,7 @@
     {
       // Explainer: https://github.com/DevSDK/css-trigonometric-functions
       name: "CSSTrigonometricFunctions",
-      status: "test",
+      status: "stable",
     },
     // Support for registered custom properties with <image> syntax.
     {
