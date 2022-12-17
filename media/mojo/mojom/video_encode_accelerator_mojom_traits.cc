@@ -233,6 +233,9 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
     return false;
   }
   metadata->qp = data.qp();
+  if (!data.ReadEncodedSize(&metadata->encoded_size)) {
+    return false;
+  }
 
   return data.ReadCodecMetadata(metadata);
 }

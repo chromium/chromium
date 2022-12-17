@@ -86,8 +86,10 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
                            const char* detail);
 
   // Ask MediaCodec what input buffer layout it prefers and set values of
-  // |input_buffer_stride_| and |input_buffer_yplane_height_|
-  bool SetInputBufferLayout();
+  // |input_buffer_stride_| and |input_buffer_yplane_height_|. If the codec
+  // does not provide these values, sets up |aligned_size_| such that encoded
+  // frames are cropped to the nearest 16x16 alignment.
+  bool SetInputBufferLayout(const gfx::Size& configured_size);
 
   // Read a frame from |pending_frames_| put it into an input buffer
   // available in |media_codec_input_buffers_| and ask |media_codec_| to encode
@@ -100,8 +102,8 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   void DrainOutput();
 
   // Read config data from |media_codec_output_buffers_| and copy it to
-  // |config_data_|. |config_data_| is later used to preappent it to
-  // key-frame encoded chunks.
+  // |config_data_|. |config_data_| is later propagated to key-frame encoded
+  // chunks.
   bool DrainConfig();
 
   void NotifyMediaCodecError(std::string message, media_status_t status);
@@ -166,6 +168,9 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
 
   // SPS and PPS NALs etc.
   std::vector<uint8_t> config_data_;
+
+  // Required for encoders which are missing stride information.
+  absl::optional<gfx::Size> aligned_size_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

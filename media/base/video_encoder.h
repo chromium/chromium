@@ -38,6 +38,10 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   bool key_frame = false;
   int temporal_id = 0;
   gfx::ColorSpace color_space;
+
+  // Some platforms may adjust the encoding size to meet hardware requirements.
+  // If not set, the encoded size is the same as configured.
+  absl::optional<gfx::Size> encoded_size;
 };
 
 class MEDIA_EXPORT VideoEncoder {

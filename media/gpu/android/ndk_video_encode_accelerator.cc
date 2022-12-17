@@ -5,6 +5,7 @@
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include "base/android/build_info.h"
+#include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -17,12 +18,12 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/mediacodec_stubs.h"
-#include "third_party/libyuv/include/libyuv/convert_from.h"
-#include "third_party/libyuv/include/libyuv/scale.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
 
 namespace {
+
 // Default distance between key frames. About 100 seconds between key frames,
 // the same default value we use on Windows.
 constexpr uint32_t kDefaultGOPLength = 3000;
@@ -94,7 +95,7 @@ BASE_FEATURE(kAndroidNdkVideoEncoder,
              "AndroidNdkVideoEncoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-static bool InitMediaCodec() {
+bool InitMediaCodec() {
   // We need at least Android P for AMediaCodec_getInputFormat(), but in
   // Android P we have issues with CFI and dynamic linker on arm64. However
   // GetSupportedProfiles() needs Q+, so just limit to Q.
@@ -107,7 +108,7 @@ static bool InitMediaCodec() {
     return false;
 
   media_gpu_android::StubPathMap paths;
-  static const base::FilePath::CharType kMediacodecPath[] =
+  constexpr base::FilePath::CharType kMediacodecPath[] =
       FILE_PATH_LITERAL("libmediandk.so");
 
   paths[media_gpu_android::kModuleMediacodec].push_back(kMediacodecPath);
@@ -201,15 +202,6 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Non 16x16 aligned resolutions don't work with MediaCodec unfortunately, see
-  // https://crbug.com/1084702 for details.
-  if (config.input_visible_size.width() % 16 != 0 ||
-      config.input_visible_size.height() % 16 != 0) {
-    MEDIA_LOG(ERROR, log_) << "MediaCodec is only tested with resolutions "
-                              "that are 16x16 aligned.";
-    return false;
-  }
-
   auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   if (!IsThereGoodMediaCodecFor(codec)) {
     MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: " << mime;
@@ -220,24 +212,52 @@ bool NdkVideoEncodeAccelerator::Initialize(
   auto media_format = CreateVideoFormat(mime, config, effective_framerate_,
                                         COLOR_FORMAT_YUV420_SEMIPLANAR);
 
-  media_codec_.reset(AMediaCodec_createEncoderByType(mime.c_str()));
-  if (!media_codec_) {
-    MEDIA_LOG(ERROR, log_) << "Can't create media codec for mime type: "
-                           << mime;
-    return false;
-  }
-  media_status_t status =
-      AMediaCodec_configure(media_codec_.get(), media_format.get(), nullptr,
-                            nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
-  if (status != AMEDIA_OK) {
-    MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
-    return false;
-  }
+  // We do the following in a loop since we may need to recreate the MediaCodec
+  // if it doesn't unaligned resolutions.
+  auto configured_size = config_.input_visible_size;
+  do {
+    media_codec_.reset(AMediaCodec_createEncoderByType(mime.c_str()));
+    if (!media_codec_) {
+      MEDIA_LOG(ERROR, log_)
+          << "Can't create media codec for mime type: " << mime;
+      return false;
+    }
+    media_status_t status =
+        AMediaCodec_configure(media_codec_.get(), media_format.get(), nullptr,
+                              nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+    if (status != AMEDIA_OK) {
+      MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
+      return false;
+    }
 
-  if (!SetInputBufferLayout()) {
-    MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
-    return false;
-  }
+    if (!SetInputBufferLayout(configured_size)) {
+      MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
+      return false;
+    }
+
+    if (aligned_size_.value_or(configured_size) != configured_size) {
+      // Give the client a chance to handle realignment itself.
+      VideoEncoderInfo encoder_info;
+      encoder_info.requested_resolution_alignment = 16;
+      encoder_info.apply_alignment_to_all_simulcast_layers = true;
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+              client_ptr_factory_->GetWeakPtr(), encoder_info));
+
+      // We must recreate the MediaCodec now since setParameters() doesn't work
+      // consistently across devices and versions of Android.
+      AMediaCodec_stop(media_codec_.get());
+      media_codec_.reset();
+
+      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_WIDTH,
+                            aligned_size_->width());
+      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_HEIGHT,
+                            aligned_size_->height());
+      configured_size = *aligned_size_;
+    }
+  } while (!media_codec_);
 
   // Set MediaCodec callbacks and switch it to async mode
   AMediaCodecOnAsyncNotifyCallback callbacks{
@@ -246,7 +266,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
       &NdkVideoEncodeAccelerator::OnAsyncFormatChanged,
       &NdkVideoEncodeAccelerator::OnAsyncError,
   };
-  status =
+  media_status_t status =
       AMediaCodec_setAsyncNotifyCallback(media_codec_.get(), callbacks, this);
   if (status != AMEDIA_OK) {
     MEDIA_LOG(ERROR, log_) << "Can't set media codec callback. Error "
@@ -334,24 +354,56 @@ void NdkVideoEncodeAccelerator::Destroy() {
   delete this;
 }
 
-bool NdkVideoEncodeAccelerator::SetInputBufferLayout() {
+bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
+    const gfx::Size& configured_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!media_codec_)
-    return false;
+  DCHECK(media_codec_);
+  DCHECK(!configured_size.IsEmpty());
 
   MediaFormatPtr input_format(AMediaCodec_getInputFormat(media_codec_.get()));
-  if (!input_format) {
+  if (!input_format)
     return false;
-  }
 
+  // Non 16x16 aligned resolutions don't work well with MediaCodec
+  // unfortunately, see https://crbug.com/1084702 for details. It seems they
+  // only work when stride/y_plane_height information is provided.
+  const auto aligned_size =
+      gfx::Size(base::bits::AlignDown(configured_size.width(), 16),
+                base::bits::AlignDown(configured_size.height(), 16));
+
+  bool require_aligned_resolution = false;
   if (!AMediaFormat_getInt32(input_format.get(), AMEDIAFORMAT_KEY_STRIDE,
                              &input_buffer_stride_)) {
-    input_buffer_stride_ = config_.input_visible_size.width();
+    input_buffer_stride_ = aligned_size.width();
+    require_aligned_resolution = true;
   }
   if (!AMediaFormat_getInt32(input_format.get(), AMEDIAFORMAT_KEY_SLICE_HEIGHT,
                              &input_buffer_yplane_height_)) {
-    input_buffer_yplane_height_ = config_.input_visible_size.height();
+    input_buffer_yplane_height_ = aligned_size.height();
+    require_aligned_resolution = true;
   }
+
+  if (!require_aligned_resolution)
+    return true;
+
+  // If the size is already aligned, nothing to do.
+  if (config_.input_visible_size == aligned_size)
+    return true;
+
+  // Otherwise, we need to crop to the nearest 16x16 alignment.
+  if (aligned_size.IsEmpty()) {
+    MEDIA_LOG(ERROR, log_) << "MediaCodec on this platform requires 16x16 "
+                              "alignment, which is not possible for: "
+                           << config_.input_visible_size.ToString();
+    return false;
+  }
+
+  aligned_size_ = aligned_size;
+
+  MEDIA_LOG(INFO, log_)
+      << "MediaCodec encoder requires 16x16 aligned resolution. Cropping to "
+      << aligned_size_->ToString();
+
   return true;
 }
 
@@ -414,6 +466,9 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     return;
   }
 
+  const auto visible_size =
+      aligned_size_.value_or(frame->visible_rect().size());
+
   uint8_t* dst_y = buffer_ptr;
   const int dst_stride_y = input_buffer_stride_;
   const int uv_plane_offset =
@@ -422,7 +477,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   const int dst_stride_uv = input_buffer_stride_;
 
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
-      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, frame->coded_size());
+      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, visible_size);
   const size_t queued_size =
       // size of Y-plane plus padding till UV-plane
       uv_plane_offset +
@@ -443,22 +498,20 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   bool converted = false;
   if (frame->format() == PIXEL_FORMAT_I420) {
     converted = !libyuv::I420ToNV12(
-        frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
-        frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
-        frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane),
-        dst_y, dst_stride_y, dst_uv, dst_stride_uv, frame->coded_size().width(),
-        frame->coded_size().height());
-  } else if (frame->format() == PIXEL_FORMAT_NV12) {
-    // No actual scaling will be performed since src and dst sizes are the same
-    // NV12Scale() works simply as glorified memcpy.
-    converted = !libyuv::NV12Scale(
         frame->visible_data(VideoFrame::kYPlane),
         frame->stride(VideoFrame::kYPlane),
-        frame->visible_data(VideoFrame::kUVPlane),
-        frame->stride(VideoFrame::kUVPlane), frame->coded_size().width(),
-        frame->coded_size().height(), dst_y, dst_stride_y, dst_uv,
-        dst_stride_uv, frame->coded_size().width(),
-        frame->coded_size().height(), libyuv::kFilterBox);
+        frame->visible_data(VideoFrame::kUPlane),
+        frame->stride(VideoFrame::kUPlane),
+        frame->visible_data(VideoFrame::kVPlane),
+        frame->stride(VideoFrame::kVPlane), dst_y, dst_stride_y, dst_uv,
+        dst_stride_uv, visible_size.width(), visible_size.height());
+  } else if (frame->format() == PIXEL_FORMAT_NV12) {
+    converted = !libyuv::NV12Copy(frame->visible_data(VideoFrame::kYPlane),
+                                  frame->stride(VideoFrame::kYPlane),
+                                  frame->visible_data(VideoFrame::kUVPlane),
+                                  frame->stride(VideoFrame::kUVPlane), dst_y,
+                                  dst_stride_y, dst_uv, dst_stride_uv,
+                                  visible_size.width(), visible_size.height());
   }
 
   if (!converted) {
@@ -666,14 +719,18 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   }
   memcpy(output_dst, buf_data, mc_buffer_size);
 
-  auto timestamp = base::Microseconds(mc_buffer_info.presentationTimeUs);
-  timestamp = RetrieveRealTimestamp(timestamp);
+  auto timestamp = RetrieveRealTimestamp(
+      base::Microseconds(mc_buffer_info.presentationTimeUs));
+  auto metadata = BitstreamBufferMetadata(mc_buffer_size + config_size,
+                                          key_frame, timestamp);
+  if (aligned_size_)
+    metadata.encoded_size = aligned_size_;
+
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::BitstreamBufferReady,
                      client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
-                     BitstreamBufferMetadata(mc_buffer_size + config_size,
-                                             key_frame, timestamp)));
+                     metadata));
   AMediaCodec_releaseOutputBuffer(media_codec_.get(),
                                   output_buffer.buffer_index, false);
 }

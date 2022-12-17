@@ -205,6 +205,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
   }
+  static absl::optional<gfx::Size> encoded_size(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.encoded_size;
+  }
 
   static bool Read(media::mojom::BitstreamBufferMetadataDataView data,
                    media::BitstreamBufferMetadata* out_metadata);

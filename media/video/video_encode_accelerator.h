@@ -149,6 +149,10 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   absl::optional<Vp9Metadata> vp9;
   absl::optional<Av1Metadata> av1;
   absl::optional<H265Metadata> h265;
+
+  // Some platforms may adjust the encoding size to meet hardware requirements.
+  // If not set, the encoded size is the same as configured.
+  absl::optional<gfx::Size> encoded_size;
 };
 
 // Video encoder interface.

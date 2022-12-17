@@ -1101,10 +1101,13 @@ void VideoEncoder::CallOutputCallback(
       last_output_color_space_ = output_color_space;
     }
 
+    auto encoded_size =
+        output.encoded_size.value_or(active_config->options.frame_size);
+
     auto* decoder_config = VideoDecoderConfig::Create();
     decoder_config->setCodec(active_config->codec_string);
-    decoder_config->setCodedHeight(active_config->options.frame_size.height());
-    decoder_config->setCodedWidth(active_config->options.frame_size.width());
+    decoder_config->setCodedHeight(encoded_size.height());
+    decoder_config->setCodedWidth(encoded_size.width());
 
     if (active_config->display_size.has_value()) {
       decoder_config->setDisplayAspectHeight(

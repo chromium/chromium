@@ -1086,8 +1086,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       media::BindToCurrentLoop(
           base::BindOnce(&RTCVideoEncoder::Impl::UseOutputBitstreamBufferId,
                          weak_this_, bitstream_buffer_id))));
-  image._encodedWidth = input_visible_size_.width();
-  image._encodedHeight = input_visible_size_.height();
+  auto encoded_size = metadata.encoded_size.value_or(input_visible_size_);
+  image._encodedWidth = encoded_size.width();
+  image._encodedHeight = encoded_size.height();
   image.SetTimestamp(rtp_timestamp.value());
   image.capture_time_ms_ = capture_timestamp_ms.value();
   image._frameType =

@@ -726,6 +726,9 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   else if (metadata.h265.has_value())
     result.temporal_id = metadata.h265.value().temporal_idx;
 
+  if (metadata.encoded_size)
+    result.encoded_size = metadata.encoded_size;
+
   DCHECK_EQ(buffer_id, 0);
   // There is always one output buffer.
   const base::WritableSharedMemoryMapping& mapping =

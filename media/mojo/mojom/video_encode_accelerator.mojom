@@ -299,6 +299,7 @@ struct BitstreamBufferMetadata {
   mojo_base.mojom.TimeDelta timestamp;
   int32 qp;
   CodecMetadata? codec_metadata;
+  gfx.mojom.Size? encoded_size;
 };
 
 interface VideoEncodeAcceleratorClient {
