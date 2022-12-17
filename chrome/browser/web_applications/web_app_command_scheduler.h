@@ -203,6 +203,11 @@ class WebAppCommandScheduler {
   void LaunchAppWithCustomParams(apps::AppLaunchParams params,
                                  LaunchWebAppCallback callback);
 
+  // Used to schedule a synchronization of a web app's OS states with the
+  // current DB states.
+  void SynchronizeOsIntegration(const AppId& app_id,
+                                base::OnceClosure synchronize_callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 

@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -110,7 +111,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
             std::move(scoped_keep_alive)));
     provider->os_integration_manager().UninstallOsHooks(app_id, options,
                                                         synchronize_barrier);
-    provider->os_integration_manager().Synchronize(
+    provider->scheduler().SynchronizeOsIntegration(
         app_id, base::BindOnce(synchronize_barrier, OsHooksErrors()));
   }
 }
