@@ -1,3 +1,6 @@
+<?php
+header("Origin-Agent-Cluster: ?0");
+?>
 <!DOCTYPE html>
 <html>
 <head>

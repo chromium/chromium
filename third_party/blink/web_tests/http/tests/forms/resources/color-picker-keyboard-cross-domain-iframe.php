@@ -1,3 +1,6 @@
+<?php
+header("Origin-Agent-Cluster: ?0");
+?>
 <html>
   <input type="color" id="color" value="#126465">
 

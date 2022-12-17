@@ -1,3 +1,6 @@
+<?php
+header("Origin-Agent-Cluster: ?0");
+?>
 <html>
   <input type="date" id="date" value="2019-12-12">
 
