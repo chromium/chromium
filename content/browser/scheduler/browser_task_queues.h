@@ -48,6 +48,11 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // practice.
     kBestEffort,
 
+    // Those are tasks that affect the UI, but not urgent enough to run
+    // immediately, those tasks are either deferred or run based on the
+    // scheduling policy.
+    kDeferrableUserBlocking,
+
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
     // priority as kDefault.
@@ -78,6 +83,16 @@ class CONTENT_EXPORT BrowserTaskQueues {
   static constexpr size_t kNumQueueTypes =
       static_cast<size_t>(QueueType::kMaxValue) + 1;
 
+  class CONTENT_EXPORT QueueData {
+   public:
+    QueueData();
+    ~QueueData();
+    QueueData(QueueData&& other);
+    scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
+    std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
+        voter_;
+  };
+
   // Handle to a BrowserTaskQueues instance that can be used from any thread
   // as all operations are thread safe.
   //
@@ -99,9 +114,14 @@ class CONTENT_EXPORT BrowserTaskQueues {
       return browser_task_runners_[static_cast<size_t>(queue_type)];
     }
 
-    // Informs that startup is complete. Can be called multiple times.
+    // Called after startup is complete, enables all task queues and can
+    // be called multiple times.
     void OnStartupComplete();
 
+    // Called quite early in startup after initialising the owning thread's
+    // scheduler, before we call RunLoop::Run on the thread.
+    // Note: default_task_queue_ doesn't need to be enabled as it is not
+    // disabled during startup.
     // Enables all task queues except the effort ones. Can be called multiple
     // times.
     void EnableAllExceptBestEffortQueues();
@@ -144,6 +164,13 @@ class CONTENT_EXPORT BrowserTaskQueues {
         browser_task_runners_;
   };
 
+  // Creates queue voters for all task queues created within this
+  // BrowserTaskQueues object, then zips voters with the queues in
+  // a QueueData object..
+  // NOTE: You can only call this function from the thread that owns the
+  // task queues, and you can only use the voters on the same thread.
+  std::array<QueueData, kNumQueueTypes> GetQueueData() const;
+
   // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(
       BrowserThread::ID thread_id,
@@ -166,18 +193,12 @@ class CONTENT_EXPORT BrowserTaskQueues {
   void EnableAllExceptBestEffortQueues();
 
   base::sequence_manager::TaskQueue* GetBrowserTaskQueue(QueueType type) const {
-    return queue_data_[static_cast<size_t>(type)].task_queue.get();
+    return queue_data_[static_cast<size_t>(type)].task_queue_.get();
   }
 
   std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
   CreateBrowserTaskRunners() const;
 
-  struct QueueData {
-    QueueData();
-    ~QueueData();
-    scoped_refptr<base::sequence_manager::TaskQueue> task_queue;
-    std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter> voter;
-  };
   std::array<QueueData, kNumQueueTypes> queue_data_;
 
   // Helper queue to make sure private methods run on the associated thread. the

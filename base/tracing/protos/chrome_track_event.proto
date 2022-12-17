@@ -912,6 +912,9 @@ message SequenceManagerTask {
     WORKER_THROTTLEABLE_TQ = 49;
     WORKER_UNPAUSABLE_TQ = 50;
     WORKER_WEB_SCHEDULING_TQ = 51;
+
+    UI_USER_BLOCKING_DEFERRABLE_TQ = 52;
+    IO_USER_BLOCKING_DEFERRABLE_TQ = 53;
   }
 
   optional Priority priority = 1;

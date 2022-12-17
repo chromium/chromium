@@ -4,6 +4,8 @@
 
 #include "content/browser/scheduler/browser_task_queues.h"
 
+#include <array>
+#include <cstdint>
 #include <iterator>
 
 #include "base/bind.h"
@@ -63,6 +65,8 @@ QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::UI_BEST_EFFORT_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
       return QueueName::UI_DEFAULT_TQ;
+    case BrowserTaskQueues::QueueType::kDeferrableUserBlocking:
+      return QueueName::UI_USER_BLOCKING_DEFERRABLE_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
       return QueueName::UI_USER_BLOCKING_TQ;
     case BrowserTaskQueues::QueueType::kUserVisible:
@@ -82,6 +86,8 @@ QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::IO_BEST_EFFORT_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
       return QueueName::IO_DEFAULT_TQ;
+    case BrowserTaskQueues::QueueType::kDeferrableUserBlocking:
+      return QueueName::IO_USER_BLOCKING_DEFERRABLE_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
       return QueueName::IO_USER_BLOCKING_TQ;
     case BrowserTaskQueues::QueueType::kUserVisible:
@@ -109,21 +115,14 @@ QueueName GetTaskQueueName(BrowserThread::ID thread_id,
   return QueueName::UNKNOWN_TQ;
 }
 
-QueueName GetDefaultQueueName(BrowserThread::ID thread_id) {
-  switch (thread_id) {
-    case BrowserThread::UI:
-      return QueueName::UI_THREAD_TQ;
-    case BrowserThread::IO:
-      return QueueName::IO_THREAD_TQ;
-    case BrowserThread::ID_COUNT:
-      break;
-  }
-  NOTREACHED();
-  return QueueName::UNKNOWN_TQ;
-}
-
 }  // namespace
 
+BrowserTaskQueues::QueueData::QueueData() = default;
+BrowserTaskQueues::QueueData::~QueueData() = default;
+BrowserTaskQueues::QueueData::QueueData(BrowserTaskQueues::QueueData&& other) {
+  task_queue_ = std::move(other.task_queue_);
+  voter_ = std::move(other.voter_);
+}
 BrowserTaskQueues::Handle::~Handle() = default;
 
 BrowserTaskQueues::Handle::Handle(BrowserTaskQueues* outer)
@@ -155,23 +154,23 @@ void BrowserTaskQueues::Handle::ScheduleRunAllPendingTasksForTesting(
           base::ScopedClosureRunner(std::move(on_pending_task_ran))));
 }
 
-BrowserTaskQueues::QueueData::QueueData() = default;
-BrowserTaskQueues::QueueData::~QueueData() = default;
-
 BrowserTaskQueues::BrowserTaskQueues(
     BrowserThread::ID thread_id,
     base::sequence_manager::SequenceManager* sequence_manager) {
   for (size_t i = 0; i < queue_data_.size(); ++i) {
-    queue_data_[i].task_queue = sequence_manager->CreateTaskQueue(
+    queue_data_[i].task_queue_ = sequence_manager->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
             GetTaskQueueName(thread_id, static_cast<QueueType>(i))));
-    queue_data_[i].voter = queue_data_[i].task_queue->CreateQueueEnabledVoter();
-    queue_data_[i].voter->SetVoteToEnable(false);
+    queue_data_[i].voter_ =
+        queue_data_[i].task_queue_->CreateQueueEnabledVoter();
+    if (static_cast<QueueType>(i) != QueueType::kDefault) {
+      queue_data_[i].voter_->SetVoteToEnable(false);
+    }
   }
 
   // Default task queue
-  default_task_queue_ = sequence_manager->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(GetDefaultQueueName(thread_id)));
+  default_task_queue_ =
+      queue_data_[static_cast<uint32_t>(QueueType::kDefault)].task_queue_;
 
   GetBrowserTaskQueue(QueueType::kUserVisible)
       ->SetQueuePriority(QueuePriority::kLowPriority);
@@ -208,7 +207,7 @@ BrowserTaskQueues::BrowserTaskQueues(
 
 BrowserTaskQueues::~BrowserTaskQueues() {
   for (auto& queue : queue_data_) {
-    queue.task_queue->ShutdownTaskQueue();
+    queue.task_queue_->ShutdownTaskQueue();
   }
   control_queue_->ShutdownTaskQueue();
   default_task_queue_->ShutdownTaskQueue();
@@ -221,15 +220,26 @@ BrowserTaskQueues::CreateBrowserTaskRunners() const {
   std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
       task_runners;
   for (size_t i = 0; i < queue_data_.size(); ++i) {
-    task_runners[i] = queue_data_[i].task_queue->task_runner();
+    task_runners[i] = queue_data_[i].task_queue_->task_runner();
   }
   return task_runners;
+}
+
+std::array<BrowserTaskQueues::QueueData, BrowserTaskQueues::kNumQueueTypes>
+BrowserTaskQueues::GetQueueData() const {
+  std::array<BrowserTaskQueues::QueueData, BrowserTaskQueues::kNumQueueTypes>
+      queue_data;
+  for (size_t i = 0; i < queue_data.size(); ++i) {
+    queue_data[i].task_queue_ = queue_data_[i].task_queue_;
+    queue_data[i].voter_ = queue_data[i].task_queue_->CreateQueueEnabledVoter();
+  }
+  return queue_data;
 }
 
 void BrowserTaskQueues::OnStartupComplete() {
   // Enable all queues
   for (const auto& queue : queue_data_) {
-    queue.voter->SetVoteToEnable(true);
+    queue.voter_->SetVoteToEnable(true);
   }
 
   // Update ServiceWorker task queue priority.
@@ -247,7 +257,7 @@ void BrowserTaskQueues::OnStartupComplete() {
 void BrowserTaskQueues::EnableAllExceptBestEffortQueues() {
   for (size_t i = 0; i < queue_data_.size(); ++i) {
     if (i != static_cast<size_t>(QueueType::kBestEffort))
-      queue_data_[i].voter->SetVoteToEnable(true);
+      queue_data_[i].voter_->SetVoteToEnable(true);
   }
 }
 
@@ -266,7 +276,7 @@ void BrowserTaskQueues::StartRunAllPendingTasksForTesting(
     base::ScopedClosureRunner on_pending_task_ran) {
   ++run_all_pending_nesting_level_;
   for (const auto& queue : queue_data_) {
-    queue.task_queue->InsertFence(InsertFencePosition::kNow);
+    queue.task_queue_->InsertFence(InsertFencePosition::kNow);
   }
   default_task_queue_->InsertFence(InsertFencePosition::kNow);
   run_all_pending_tasks_queue_->task_runner()->PostTask(
@@ -280,7 +290,7 @@ void BrowserTaskQueues::EndRunAllPendingTasksForTesting(
   --run_all_pending_nesting_level_;
   if (run_all_pending_nesting_level_ == 0) {
     for (const auto& queue : queue_data_) {
-      queue.task_queue->RemoveFence();
+      queue.task_queue_->RemoveFence();
     }
     default_task_queue_->RemoveFence();
   }
