@@ -383,6 +383,11 @@ public class DownloadManagerDialog {
             }
 
             @Override
+            public void onDownloadItemFinished(DownloadItem item) {
+                onDownloadItemUpdated(item);
+            }
+
+            @Override
             public void onDownloadItemRemoved(String guid) {
                 List<DownloadItem> items = new ArrayList<>(adapter.getCurrentList());
 

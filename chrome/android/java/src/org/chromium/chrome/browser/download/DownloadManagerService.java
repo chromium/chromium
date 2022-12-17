@@ -121,6 +121,8 @@ public class DownloadManagerService implements DownloadController.Observer,
         /** Called when a download is updated. */
         void onDownloadItemUpdated(DownloadItem item);
 
+        void onDownloadItemFinished(DownloadItem item);
+
         /** Called when a download has been removed. */
         void onDownloadItemRemoved(String guid);
 
@@ -1443,9 +1445,18 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemUpdated(DownloadItem item) {
-        for (DownloadObserver adapter : mDownloadObservers) {
-            adapter.onDownloadItemUpdated(item);
+
+        if (item.isComplete() && !item.hasBeenExternallyRemoved()) {
+            for (DownloadObserver adapter : mDownloadObservers) {
+                adapter.onDownloadItemFinished(item);
+            }
+        } else {
+            for (DownloadObserver adapter : mDownloadObservers) {
+                adapter.onDownloadItemUpdated(item);
+            }
         }
+
+
     }
 
     // Deprecated after new download backend.

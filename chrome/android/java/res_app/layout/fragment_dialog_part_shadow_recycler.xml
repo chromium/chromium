@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ark.browser.ui.widget.ShadowLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:hl_shadowLimit="0dp"
+    app:hl_cornerRadius_leftBottom="24dp"
+    app:hl_cornerRadius_rightBottom="24dp"
+    app:hl_shadowBackColor="?attr/backgroundColor"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"/>
+
+        <View
+            android:layout_width="56dp"
+            android:layout_height="4dp"
+            android:background="@drawable/bg_round_accent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="8dp"
+            />
+
+    </LinearLayout>
+
+</com.ark.browser.ui.widget.ShadowLayout>

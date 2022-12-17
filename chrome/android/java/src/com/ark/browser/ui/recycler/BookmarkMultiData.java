@@ -1,4 +1,4 @@
-package com.ark.browser.ui.multidata;
+package com.ark.browser.ui.recycler;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -17,7 +17,6 @@ import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.ui.fragment.dialog.BookmarkFolderPickerDialog;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.utils.KeywordUtil;
-import com.ark.browser.utils.ThreadPool;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
 import com.zpj.recyclerview.EasyViewHolder;

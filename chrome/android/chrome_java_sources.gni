@@ -82,6 +82,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/translate/TranslateIntentHandler.java",
   "java/src/com/ark/browser/translate/TranslateUtils.java",
 
+  "java/src/com/ark/browser/ui/adapter/PageAdapter.java",
+
   "java/src/com/ark/browser/ui/dialog/BookmarkManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/DownloadManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/HistoryManagerDialog.java",
@@ -103,11 +105,16 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/HistoryStackDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/PageActionDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/RecyclerPartShadowDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/SearchEngineSelectDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ShareDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ToolsDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/UserAgentSelectDialog.java",
 
+  "java/src/com/ark/browser/ui/fragment/download/DownloadChildFragment.java",
+  "java/src/com/ark/browser/ui/fragment/download/DownloadDetailFragment.java",
+  "java/src/com/ark/browser/ui/fragment/download/DownloadFilterDialog.java",
+  "java/src/com/ark/browser/ui/fragment/download/DownloadFragment.java",
   "java/src/com/ark/browser/ui/fragment/download/DownloadMultiData.java",
 
   "java/src/com/ark/browser/ui/fragment/search/FlowHeaderMultiData.java",
@@ -119,10 +126,12 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/drawable/CircleDrawable.java",
 
-  "java/src/com/ark/browser/ui/multidata/BaseHeaderMultiData.java",
-  "java/src/com/ark/browser/ui/multidata/BookmarkMultiData.java",
+  "java/src/com/ark/browser/ui/recycler/BaseHeaderMultiData.java",
+  "java/src/com/ark/browser/ui/recycler/BookmarkMultiData.java",
+  "java/src/com/ark/browser/ui/recycler/FlowLayoutManager.java",
 
   "java/src/com/ark/browser/ui/widget/AnimProgressBar.java",
+  "java/src/com/ark/browser/ui/widget/BlockGraphView.java",
   "java/src/com/ark/browser/ui/widget/BottomController.java",
   "java/src/com/ark/browser/ui/widget/CheckBoxItem.java",
   "java/src/com/ark/browser/ui/widget/DialogHeaderLayout.java",
@@ -138,6 +147,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/widget/StatusBarView.java",
   "java/src/com/ark/browser/ui/widget/TextCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/TitleHeaderLayout.java",
+  "java/src/com/ark/browser/ui/widget/TitleTextView.java",
   "java/src/com/ark/browser/ui/widget/indicator/CoolIndicator.java",
   "java/src/com/ark/browser/ui/widget/indicator/DrawableWrapper.java",
   "java/src/com/ark/browser/ui/widget/indicator/ShiftDrawable.java",

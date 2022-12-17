@@ -1,0 +1,16 @@
+<com.zpj.widget.toolbar.ZToolBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tool_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:z_toolbar_fillStatusBar="true"
+    app:z_toolbar_statusBarColor="?attr/backgroundColor"
+    app:z_toolbar_titleBarColor="?attr/backgroundColor"
+    app:z_toolbar_showBottomLine="false"
+    app:z_toolbar_leftType="imageButton"
+    app:z_toolbar_leftImageResource="@drawable/btn_back"
+    app:z_toolbar_centerType="textView"
+    app:z_toolbar_centerText="Title"
+    app:z_toolbar_centerTextColor="@color/google_black_400"
+    />

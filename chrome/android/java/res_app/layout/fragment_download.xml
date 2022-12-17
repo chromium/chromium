@@ -1,0 +1,96 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    android:orientation="vertical"
+    >
+
+    <!--	android:background="?attr/backgroundColor"-->
+
+    <!--	android:background="@color/white"-->
+
+    <!--	<com.ms_square.etsyblur.BlurringView-->
+    <!--		android:id="@id/blurring_view"-->
+    <!--		android:layout_width="match_parent"-->
+    <!--		app:radius="17"-->
+    <!--		app:overlayColor="#ddffffff"-->
+    <!--		android:layout_height="match_parent"-->
+    <!--		/>-->
+
+    <!--	<eightbitlab.com.blurview.BlurView-->
+    <!--		android:id="@+id/blurView"-->
+    <!--		android:layout_width="match_parent"-->
+    <!--		android:layout_height="match_parent"-->
+    <!--		app:blurOverlayColor="#78ffffff">-->
+
+    <!--	</eightbitlab.com.blurview.BlurView>-->
+
+    <com.zpj.widget.toolbar.ZToolBar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:z_toolbar_fillStatusBar="true"
+        app:z_toolbar_statusBarColor="?attr/backgroundColor"
+        app:z_toolbar_titleBarColor="?attr/backgroundColor"
+        app:z_toolbar_showBottomLine="false"
+        app:z_toolbar_leftType="imageButton"
+        app:z_toolbar_leftImageResource="@drawable/btn_back"
+        app:z_toolbar_centerType="textView"
+        app:z_toolbar_centerText="下载管理"
+        app:z_toolbar_rightType="imageButton"
+        app:z_toolbar_rightImageResource="@drawable/ic_more"
+        />
+
+    <net.lucode.hackware.magicindicator.MagicIndicator
+        android:id="@+id/magic_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/tool_bar"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginVertical="6dp" />
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/magic_indicator"
+        android:layout_above="@id/storage_info"
+        />
+
+    <!--	<View-->
+    <!--		android:layout_below="@id/tool_bar"-->
+    <!--		style="@style/layout_shadow_bottom"/>-->
+
+<!--    <include layout="@layout/layout_shadow_bottom"-->
+<!--        android:layout_below="@id/magic_indicator"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="8dp"-->
+<!--        android:visibility="gone"-->
+<!--        />-->
+
+<!--    <include layout="@layout/layout_shadow_up"-->
+<!--        android:layout_above="@id/storage_info"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="8dp"-->
+<!--        android:visibility="gone"-->
+<!--        />-->
+
+
+    <TextView android:id="@+id/storage_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="可用:1GB / 总共:128GB"
+        android:padding="8dp"
+        android:textSize="12sp"
+        android:textColor="?attr/textColorMinor"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>

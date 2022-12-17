@@ -6,6 +6,14 @@ import("//build/config/android/rules.gni")
 
 assert(is_android)
 
+android_aar_prebuilt("com_zpj_magicindicator_java") {
+  aar_path = "libs/MagicIndicator-1.7.0.aar"
+  info_path = "libs/MagicIndicator.info"
+  deps = [
+    "//third_party/androidx:androidx_viewpager_viewpager_java",
+  ]
+}
+
 android_aar_prebuilt("com_zpj_utils_java") {
   aar_path = "libs/ZUtils-2.0.0.aar"
   info_path = "libs/ZUtils.info"

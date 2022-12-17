@@ -1,4 +1,4 @@
-package com.ark.browser.ui.multidata;
+package com.ark.browser.ui.recycler;
 
 import android.view.View;
 

@@ -68,9 +68,10 @@ public class SettingsFragment extends BaseSwipeBackFragment
         itemSearchEngine = findViewById(R.id.item_search_engine);
         itemSearchEngine.setOnItemClickListener(this);
 
-
-        TemplateUrl defaultTemplateUrl = TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
-        itemSearchEngine.setInfoText(defaultTemplateUrl.getShortName());
+        TemplateUrlServiceFactory.get().runWhenLoaded(() -> {
+            TemplateUrl defaultTemplateUrl = TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+            itemSearchEngine.setInfoText(defaultTemplateUrl.getShortName());
+        });
 
         itemUserAgent = findViewById(R.id.item_user_agent);
         itemUserAgent.setOnItemClickListener(this);

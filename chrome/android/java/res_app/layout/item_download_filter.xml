@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="8dp"
+    >
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_round_accent"
+        android:text="全部"
+        android:textSize="12sp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:fontFamily="sans-serif"
+        android:typeface="serif"
+        >
+
+    </TextView>
+
+</FrameLayout>

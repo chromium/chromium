@@ -82,6 +82,15 @@
         <attr name="civ_circle_background_color" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="DetailLayout">
+        <attr name="left_text" format="string" />
+        <attr name="left_text_color" format="color"/>
+        <attr name="right_text" format="string" />
+        <attr name="right_text_maxEms" format="integer"/>
+        <attr name="right_text_maxLines" format="integer"/>
+        <attr name="right_text_color" format="color"/>
+    </declare-styleable>
+
     <attr name="backgroundColor" format="color" />
     <attr name="backgroundColorDark" format="color" />
     <attr name="backgroundColorAccent" format="color" />

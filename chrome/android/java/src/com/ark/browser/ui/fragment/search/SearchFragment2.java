@@ -29,7 +29,7 @@ import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.download.DownloadMultiData;
-import com.ark.browser.ui.multidata.BookmarkMultiData;
+import com.ark.browser.ui.recycler.BookmarkMultiData;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.ui.widget.TitleHeaderLayout;
 import com.ark.browser.utils.ArkLogger;
@@ -847,6 +847,11 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
 
             @Override
             public void onDownloadItemUpdated(DownloadItem item) {
+
+            }
+
+            @Override
+            public void onDownloadItemFinished(DownloadItem item) {
 
             }
 

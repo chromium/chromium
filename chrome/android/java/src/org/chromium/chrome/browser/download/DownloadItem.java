@@ -16,6 +16,8 @@ import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
 
+import java.io.File;
+
 /**
  * A generic class representing a download item. The item can be either downloaded through the
  * Android DownloadManager, or through Chrome's network stack.
@@ -32,11 +34,20 @@ public class DownloadItem {
     private long mEndTime;
     private boolean mHasBeenExternallyRemoved;
 
+    private Boolean mIsRemoved;
+
     public DownloadItem(boolean useAndroidDownloadManager, DownloadInfo info) {
         mUseAndroidDownloadManager = useAndroidDownloadManager;
         mDownloadInfo = info;
         if (mDownloadInfo != null) mContentId.namespace = mDownloadInfo.getContentId().namespace;
         mContentId.id = getId();
+    }
+
+    public boolean isRemoved() {
+        if (mIsRemoved == null) {
+            mIsRemoved = !new File(mDownloadInfo.getFilePath()).exists();
+        }
+        return mIsRemoved;
     }
 
     /**

@@ -24,6 +24,8 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
+import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;
+import com.zpj.fragmentation.anim.FragmentAnimator;
 import com.zpj.skin.SkinEngine;
 import com.zpj.skin.SkinLayoutInflater;
 import com.zpj.utils.StatusBarUtils;
@@ -48,6 +50,11 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     private ArkMainFragment mFragment;
 
     private SkinLayoutInflater mLayoutInflater;
+
+    @Override
+    public FragmentAnimator onCreateFragmentAnimator() {
+        return new DefaultHorizontalAnimator();
+    }
 
     @NonNull
     @Override

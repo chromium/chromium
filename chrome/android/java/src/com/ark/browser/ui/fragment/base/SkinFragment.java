@@ -13,7 +13,15 @@ import com.zpj.skin.SkinLayoutInflater;
 public abstract class SkinFragment extends BaseFragment {
 
     protected void initStatusBar() {
-        if (getTopFragment() == this && getTopChildFragment() == null && toolbar != null && toolbar.getVisibility() == View.VISIBLE) {
+//        if (getTopFragment() == this && getTopChildFragment() == null && toolbar != null && toolbar.getVisibility() == View.VISIBLE) {
+//            if (AppConfig.isNightMode()) {
+//                lightStatusBar();
+//            } else {
+//                darkStatusBar();
+//            }
+//        }
+
+        if (getParentFragment() == null && getTopFragment() == this) {
             if (AppConfig.isNightMode()) {
                 lightStatusBar();
             } else {

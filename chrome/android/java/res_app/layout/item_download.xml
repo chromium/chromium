@@ -100,12 +100,10 @@
         android:id="@+id/btn_action"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="8dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         android:src="@drawable/ic_download_pending"
-        android:background="?android:attr/actionBarItemBackground"
-        android:tint="#333333" />
+        android:background="?android:attr/actionBarItemBackground" />
 
 </RelativeLayout>
