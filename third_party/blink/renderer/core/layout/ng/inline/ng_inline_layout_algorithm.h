@@ -153,8 +153,6 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
   unsigned quirks_mode_ : 1;
 
-  NGLogicalLineItems* const cached_line_items_;
-
 #if DCHECK_IS_ON()
   // True if |box_states_| is taken from |context_|, to check the |box_states_|
   // is the same as when it is rebuilt.

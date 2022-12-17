@@ -35,6 +35,11 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   // the next line.
   NGLogicalLineItems* LogicalLineItems() { return &logical_line_items_; }
 
+  // Acquire/release temporary |NGLogicalLineItems|, used for a short period of
+  // time, but needed multiple times in a context.
+  NGLogicalLineItems& AcquireTempLogicalLineItems();
+  void ReleaseTempLogicalLineItems(NGLogicalLineItems&);
+
   // Returns the NGInlineLayoutStateStack in this context.
   bool HasBoxStates() const { return box_states_.has_value(); }
   NGInlineLayoutStateStack* BoxStates() { return &*box_states_; }
@@ -67,6 +72,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   NGLogicalLineItems& logical_line_items_ =
       *MakeGarbageCollected<NGLogicalLineItems>();
+  NGLogicalLineItems* temp_logical_line_items_ = nullptr;
 
   absl::optional<NGInlineLayoutStateStack> box_states_;
 
@@ -76,6 +82,23 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
+
+inline NGLogicalLineItems&
+NGInlineChildLayoutContext::AcquireTempLogicalLineItems() {
+  if (NGLogicalLineItems* line_items = temp_logical_line_items_) {
+    temp_logical_line_items_ = nullptr;
+    DCHECK_EQ(line_items->size(), 0u);
+    return *line_items;
+  }
+  return *MakeGarbageCollected<NGLogicalLineItems>();
+}
+
+inline void NGInlineChildLayoutContext::ReleaseTempLogicalLineItems(
+    NGLogicalLineItems& line_items) {
+  DCHECK(&line_items);
+  line_items.clear();
+  temp_logical_line_items_ = &line_items;
+}
 
 }  // namespace blink
 
