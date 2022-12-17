@@ -2309,14 +2309,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool ForceDark() const { return DarkColorScheme() && ColorSchemeForced(); }
 
-  void SetHasStaticViewportUnits() {
-    SetViewportUnitFlags(ViewportUnitFlags() |
-                         static_cast<unsigned>(ViewportUnitFlag::kStatic));
-  }
-  void SetHasDynamicViewportUnits() {
-    SetViewportUnitFlags(ViewportUnitFlags() |
-                         static_cast<unsigned>(ViewportUnitFlag::kDynamic));
-  }
   bool HasStaticViewportUnits() const {
     return ViewportUnitFlags() &
            static_cast<unsigned>(ViewportUnitFlag::kStatic);
@@ -3230,6 +3222,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // WritingMode
   WritingDirectionMode GetWritingDirection() const {
     return {GetWritingMode(), Direction()};
+  }
+
+  void SetHasStaticViewportUnits() {
+    SetViewportUnitFlags(ViewportUnitFlags() |
+                         static_cast<unsigned>(ViewportUnitFlag::kStatic));
+  }
+  void SetHasDynamicViewportUnits() {
+    SetViewportUnitFlags(ViewportUnitFlags() |
+                         static_cast<unsigned>(ViewportUnitFlag::kDynamic));
   }
 
  private:

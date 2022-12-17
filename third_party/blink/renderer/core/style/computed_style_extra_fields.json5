@@ -186,21 +186,18 @@
       field_size: 2,
       default_value: "0",
       type_name: "unsigned",
-      writable: true,
     },
     {
       name: "HasRemUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      writable: true,
     },
     {
       name: "HasEmUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      writable: true,
     },
     // Whether we used a length unit that must be resolved against the measure
     // of a certain glyph in some font.
@@ -209,14 +206,12 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      writable: true,
     },
     {
       name: "HasContainerRelativeUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      writable: true,
     },
     {
       name: "HasLineHeightRelativeUnits",
@@ -224,7 +219,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-      writable: true,
     },
     // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
     // that uses font metrics in its calculation.
@@ -1098,7 +1092,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      writable: true,
     },
     {
       name: "DependsOnStyleContainerQueries",
@@ -1106,7 +1099,6 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      writable: true,
     },
     {
       // Set to true if this ComputedStyle is for an element whose ::first-line

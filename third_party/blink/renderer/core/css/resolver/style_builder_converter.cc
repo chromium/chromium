@@ -548,7 +548,7 @@ FontDescription::Size StyleBuilderConverter::ConvertFontSize(
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kMath) {
     auto scale_factor = MathScriptScaleFactor(state);
-    state.Style()->SetHasGlyphRelativeUnits();
+    state.StyleBuilder().SetHasGlyphRelativeUnits();
     return FontDescription::Size(0, (scale_factor * parent_size.value),
                                  parent_size.is_absolute);
   }

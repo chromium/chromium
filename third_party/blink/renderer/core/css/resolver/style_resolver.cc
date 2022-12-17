@@ -333,29 +333,29 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
     return;
   }
 
-  ComputedStyle* style = state.Style();
+  ComputedStyleBuilder& builder = state.StyleBuilder();
 
   if (flags & static_cast<Flags>(Flag::kEm)) {
-    style->SetHasEmUnits();
+    builder.SetHasEmUnits();
   }
   if (flags & static_cast<Flags>(Flag::kRem)) {
-    style->SetHasRemUnits();
+    builder.SetHasRemUnits();
   }
   if (flags & static_cast<Flags>(Flag::kGlyphRelative)) {
-    style->SetHasGlyphRelativeUnits();
+    builder.SetHasGlyphRelativeUnits();
   }
   if (flags & static_cast<Flags>(Flag::kLineHeightRelative)) {
-    style->SetHasLineHeightRelativeUnits();
+    builder.SetHasLineHeightRelativeUnits();
   }
   if (flags & static_cast<Flags>(Flag::kStaticViewport)) {
-    style->SetHasStaticViewportUnits();
+    builder.SetHasStaticViewportUnits();
   }
   if (flags & static_cast<Flags>(Flag::kDynamicViewport)) {
-    style->SetHasDynamicViewportUnits();
+    builder.SetHasDynamicViewportUnits();
   }
   if (flags & static_cast<Flags>(Flag::kContainerRelative)) {
-    style->SetDependsOnSizeContainerQueries(true);
-    style->SetHasContainerRelativeUnits();
+    builder.SetDependsOnSizeContainerQueries(true);
+    builder.SetHasContainerRelativeUnits();
   }
 }
 
@@ -1330,17 +1330,17 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.HasFlag(MatchFlag::kAffectedByActive))
     state.StyleBuilder().SetAffectedByActive();
   if (match_result.DependsOnSizeContainerQueries())
-    state.Style()->SetDependsOnSizeContainerQueries(true);
+    state.StyleBuilder().SetDependsOnSizeContainerQueries(true);
   if (match_result.DependsOnStyleContainerQueries())
-    state.Style()->SetDependsOnStyleContainerQueries(true);
+    state.StyleBuilder().SetDependsOnStyleContainerQueries(true);
   if (match_result.FirstLineDependsOnSizeContainerQueries())
     state.StyleBuilder().SetFirstLineDependsOnSizeContainerQueries(true);
   if (match_result.DependsOnStaticViewportUnits())
-    state.Style()->SetHasStaticViewportUnits();
+    state.StyleBuilder().SetHasStaticViewportUnits();
   if (match_result.DependsOnDynamicViewportUnits())
-    state.Style()->SetHasDynamicViewportUnits();
+    state.StyleBuilder().SetHasDynamicViewportUnits();
   if (match_result.DependsOnRemContainerQueries())
-    state.Style()->SetHasRemUnits();
+    state.StyleBuilder().SetHasRemUnits();
   if (match_result.ConditionallyAffectsAnimations())
     state.SetCanAffectAnimations();
   if (!match_result.CustomHighlightNames().empty()) {
@@ -1469,8 +1469,9 @@ void StyleResolver::ApplyBaseStyle(
     // Similarly, if a style went from using viewport units to not,
     // the flags can stick around in the incremental version. This can cause
     // invalidations when none are needed, but is otherwise harmless.
-    state.Style()->SetViewportUnitFlags(state.Style()->ViewportUnitFlags() |
-                                        incremental_style->ViewportUnitFlags());
+    state.StyleBuilder().SetViewportUnitFlags(
+        state.StyleBuilder().ViewportUnitFlags() |
+        incremental_style->ViewportUnitFlags());
 
     DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(incremental_style.get(),
                                                         *state.Style()));
