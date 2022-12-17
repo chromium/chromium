@@ -1137,7 +1137,7 @@ void Shell::Init(
     // keyboard and |wallpaper_controller_| because we will need to observe when
     // the extracted wallpaper color changes.
     keyboard_backlight_color_controller_ =
-        std::make_unique<KeyboardBacklightColorController>();
+        std::make_unique<KeyboardBacklightColorController>(local_state_);
   }
 
   window_positioner_ = std::make_unique<WindowPositioner>();

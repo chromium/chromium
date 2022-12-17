@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -47,14 +46,37 @@ bool ShouldUseDefaultColor(SkColor color) {
 
 }  // namespace
 
-KeyboardBacklightColorController::KeyboardBacklightColorController()
+KeyboardBacklightColorController::KeyboardBacklightColorController(
+    PrefService* local_state)
     : keyboard_backlight_color_nudge_controller_(
-          std::make_unique<KeyboardBacklightColorNudgeController>()) {
+          std::make_unique<KeyboardBacklightColorNudgeController>()),
+      local_state_(local_state) {
   Shell::Get()->rgb_keyboard_manager()->AddObserver(this);
+
+  // local_state may be null in tests.
+  if (local_state_) {
+    pref_change_registrar_local_.Init(local_state_);
+    pref_change_registrar_local_.Add(
+        prefs::kPersonalizationKeyboardBacklightColor,
+        base::BindRepeating(&KeyboardBacklightColorController::
+                                OnKeyboardBacklightColorLocalStateChanged,
+                            base::Unretained(this)));
+  }
 }
 
 KeyboardBacklightColorController::~KeyboardBacklightColorController() {
   Shell::Get()->rgb_keyboard_manager()->RemoveObserver(this);
+}
+
+void KeyboardBacklightColorController::
+    OnKeyboardBacklightColorLocalStateChanged() {
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::LOGIN_PRIMARY) {
+    DisplayBacklightColor(
+        static_cast<personalization_app::mojom::BacklightColor>(
+            local_state_->GetInteger(
+                prefs::kPersonalizationKeyboardBacklightColor)));
+  }
 }
 
 // static
@@ -116,6 +138,13 @@ void KeyboardBacklightColorController::OnRgbKeyboardSupportedChanged(
       if (wallpaper_controller->GetKMeanColor() != kInvalidWallpaperColor) {
         OnWallpaperColorsChanged();
       }
+    }
+    if (Shell::Get()->session_controller()->GetSessionState() ==
+        session_manager::SessionState::LOGIN_PRIMARY) {
+      DisplayBacklightColor(
+          static_cast<personalization_app::mojom::BacklightColor>(
+              local_state_->GetInteger(
+                  prefs::kPersonalizationKeyboardBacklightColor)));
     }
   } else {
     session_observer_.Reset();

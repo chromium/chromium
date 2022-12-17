@@ -14,6 +14,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,7 +32,7 @@ class ASH_EXPORT KeyboardBacklightColorController
       public SessionObserver,
       public WallpaperControllerObserver {
  public:
-  KeyboardBacklightColorController();
+  explicit KeyboardBacklightColorController(PrefService* local_state);
 
   KeyboardBacklightColorController(const KeyboardBacklightColorController&) =
       delete;
@@ -60,6 +62,11 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;
+
+  // Callback function for PrefChangeRegistrar, when policy value populates the
+  // local state during the sign-in screen, display the keyboard backlight
+  // color.
+  void OnKeyboardBacklightColorLocalStateChanged();
 
   KeyboardBacklightColorNudgeController*
   keyboard_backlight_color_nudge_controller() {
@@ -95,6 +102,10 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   std::unique_ptr<KeyboardBacklightColorNudgeController>
       keyboard_backlight_color_nudge_controller_;
+
+  const raw_ptr<PrefService> local_state_ = nullptr;
+
+  PrefChangeRegistrar pref_change_registrar_local_;
 
   base::WeakPtrFactory<KeyboardBacklightColorController> weak_ptr_factory_{
       this};

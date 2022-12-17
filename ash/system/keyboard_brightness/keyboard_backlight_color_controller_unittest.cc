@@ -84,8 +84,8 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = std::make_unique<KeyboardBacklightColorController>();
-    controller_->OnRgbKeyboardSupportedChanged(true);
+    controller_ =
+        std::make_unique<KeyboardBacklightColorController>(local_state());
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
   }
 
@@ -133,6 +133,7 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorUpdatesPref) {
 }
 
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
   // Verify the user starts with wallpaper-extracted color.
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
@@ -140,7 +141,7 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   // Expect the Wallpaper color to be set to the default as wallpaper color is
   // not valid in this state.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 1);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
   EXPECT_EQ(kDefaultColor, displayed_color());
 
   controller_->SetBacklightColor(
@@ -163,6 +164,7 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
 
 TEST_F(KeyboardBacklightColorControllerTest,
        DisplaysDefaultColorForNearlyBlackColor) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
   TestWallpaperObserver observer;
   SimulateUserLogin(account_id_1);
   gfx::ImageSkia one_shot_wallpaper =
