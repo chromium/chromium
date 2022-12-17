@@ -137,6 +137,8 @@
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
+#include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
@@ -5059,11 +5061,19 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif
 
   if (profile && profile->GetPrefs()) {
-    MaybeAddThrottle(
-        HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
-            handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-            profile->GetPrefs()),
-        &throttles);
+    if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
+      MaybeAddThrottle(
+          HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
+              handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+              profile->GetPrefs()),
+          &throttles);
+    } else {
+      MaybeAddThrottle(
+          HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
+              handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+              profile->GetPrefs()),
+          &throttles);
+    }
   }
 
   MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(handle), &throttles);
@@ -5892,7 +5902,10 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   interceptors.push_back(
       std::make_unique<SearchPrefetchURLLoaderInterceptor>(frame_tree_node_id));
 
-  if (base::FeatureList::IsEnabled(features::kHttpsOnlyMode)) {
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
+    interceptors.push_back(
+        std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id));
+  } else {
     interceptors.push_back(
         std::make_unique<HttpsOnlyModeUpgradeInterceptor>(frame_tree_node_id));
   }

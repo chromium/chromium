@@ -1666,6 +1666,10 @@ const char kHttpsOnlyModeDescription[] =
     "Adds a setting under chrome://settings/security to opt-in to HTTPS-First "
     "Mode.";
 
+const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
+const char kHttpsFirstModeV2Description[] =
+    "Enable rearchitected version of HTTPS-First Mode.";
+
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "Enable automatically upgrading all top-level navigations to HTTPS with "

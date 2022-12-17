@@ -59356,6 +59356,7 @@ from previous Chrome versions.
   <int value="-832154680"
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
+  <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824829316" label="UsbDeviceDefaultAttachToArcVm:enabled"/>
@@ -59893,6 +59894,7 @@ from previous Chrome versions.
   <int value="-518037829" label="ProjectorExcludeTranscript:disabled"/>
   <int value="-517913118" label="OmahaMinSdkVersionAndroid:enabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
+  <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>
   <int value="-513967943" label="CryptAuthV2Enrollment:disabled"/>
