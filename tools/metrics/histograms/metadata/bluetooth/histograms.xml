@@ -396,6 +396,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.{FastPairPairingProtocol}.{FastPairDeviceType}.{FastPairNotificationType}"
+    enum="FastPairEngagementFlowEvent" expires_after="2023-02-26">
+  <owner>jackshira@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair flow, split per protocol, per device
+    type, and per notification type of the device from its metadata. Emitted
+    when the discovery UI is shown, the discovery UI is dismissed, pairing
+    progress begins, pairing fails, pairing succeeded, the error UI is
+    dismissed, and/or when the setting button on the error UI is pressed.
+    TODO(b/262923607): Remove once structured metrics for Fast Pair are
+    implemented.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+  <token key="FastPairDeviceType">
+    <variant name="HeadphonesDeviceType" summary="Device Type: Headphones"/>
+    <variant name="SpeakerDeviceType" summary="Device Type: Speaker"/>
+    <variant name="TrueWirelessHeadphonesDeviceType"
+        summary="Device Type: True Wireless Headphones"/>
+    <variant name="UnspecifiedDeviceType" summary="Device Type: Unspecified"/>
+  </token>
+  <token key="FastPairNotificationType">
+    <variant name="FastPairNotificationType"
+        summary="Notification Type: Fast Pair. Notification launches the fast
+                 pair intent."/>
+    <variant name="FastPairOneNotificationType"
+        summary="Notification Type: Fast Pair One. Notification launches the
+                 fast pair intent, but doesn't include an anti-spoofing key."/>
+    <variant name="UnspecifiedNotificationType"
+        summary="Notification Type: Unspecified"/>
+  </token>
+</histogram>
+
+<histogram
     name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.{FastPairPairingProtocol}.{FastPairTrackedModelID}"
     enum="FastPairEngagementFlowEvent" expires_after="2023-02-26">
   <owner>dclasson@google.com</owner>

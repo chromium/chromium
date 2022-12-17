@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/message_stream:test_support",
     "//ash/quick_pair/pairing:test_support",
+    "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
     "//ash/quick_pair/repository:test_support",
     "//ash/quick_pair/scanning:test_support",

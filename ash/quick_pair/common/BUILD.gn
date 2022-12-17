@@ -41,6 +41,7 @@ component("common") {
 
   deps = [
     "//ash/constants:constants",
+    "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/quick_pair/public/mojom",

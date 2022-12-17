@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -202,6 +203,12 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairProtocolPairingSteps {
   kPairingComplete = 8,
   kMaxValue = kPairingComplete,
 };
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
+    const Device& device,
+    const nearby::fastpair::Device& device_details,
+    FastPairEngagementFlowEvent event);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,

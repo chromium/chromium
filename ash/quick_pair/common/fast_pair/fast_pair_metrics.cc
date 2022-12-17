@@ -5,11 +5,22 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/protocol.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 
 namespace {
+
+const char kDeviceTypeHeadphones[] = "HeadphonesDeviceType";
+const char kDeviceTypeSpeaker[] = "SpeakerDeviceType";
+const char kDeviceTypeTrueWirelessHeadphones[] =
+    "TrueWirelessHeadphonesDeviceType";
+const char kDeviceTypeUnspecified[] = "UnspecifiedDeviceType";
+
+const char kNotificationTypeFastPair[] = "FastPairNotificationType";
+const char kNotificationTypeFastPairOne[] = "FastPairOneNotificationType";
+const char kNotificationTypeUnspecified[] = "UnspecifiedNotificationType";
 
 // Error strings should be kept in sync with the strings reflected in
 // device/bluetooth/bluez/bluetooth_socket_bluez.cc.
@@ -368,6 +379,64 @@ ConnectToServiceError GetConnectToServiceError(const std::string& error) {
   return ConnectToServiceError::kUnknownError;
 }
 
+absl::optional<std::string> GetFastPairDeviceType(
+    const nearby::fastpair::Device& device_metadata) {
+  // Needs to stay up to date with `DeviceType` enum in
+  // ash/quick_pair/proto/enums.proto. We only expect these device
+  // types because of filtering in the scanning component. Always expected to
+  // be one of these values.
+  DCHECK(device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::HEADPHONES ||
+         device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::SPEAKER ||
+         device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES ||
+         device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED);
+  if (device_metadata.device_type() ==
+      nearby::fastpair::DeviceType::HEADPHONES) {
+    return kDeviceTypeHeadphones;
+  } else if (device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::SPEAKER) {
+    return kDeviceTypeSpeaker;
+  } else if (device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES) {
+    return kDeviceTypeTrueWirelessHeadphones;
+  } else if (device_metadata.device_type() ==
+             nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED) {
+    return kDeviceTypeUnspecified;
+  } else {
+    return absl::nullopt;
+  }
+}
+
+absl::optional<std::string> GetFastPairNotificationType(
+    const nearby::fastpair::Device& device_metadata) {
+  // Needs to stay up to date with `NotificationType` enum in
+  // ash/quick_pair/proto/enums.proto. We only expect these notification
+  // types because of filtering in the scanning component. Always expected to
+  // be one of these values.
+  DCHECK(device_metadata.notification_type() ==
+             nearby::fastpair::NotificationType::FAST_PAIR ||
+         device_metadata.notification_type() ==
+             nearby::fastpair::NotificationType::FAST_PAIR_ONE ||
+         device_metadata.notification_type() ==
+             nearby::fastpair::NotificationType::NOTIFICATION_TYPE_UNSPECIFIED);
+  if (device_metadata.notification_type() ==
+      nearby::fastpair::NotificationType::FAST_PAIR) {
+    return kNotificationTypeFastPair;
+  } else if (device_metadata.notification_type() ==
+             nearby::fastpair::NotificationType::FAST_PAIR_ONE) {
+    return kNotificationTypeFastPairOne;
+  } else if (device_metadata.notification_type() ==
+             nearby::fastpair::NotificationType::
+                 NOTIFICATION_TYPE_UNSPECIFIED) {
+    return kNotificationTypeUnspecified;
+  } else {
+    return absl::nullopt;
+  }
+}
+
 const char kEngagementFlowInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.InitialPairingProtocol";
 const char kEngagementFlowSubsequentMetric[] =
@@ -591,10 +660,77 @@ const std::string GetAccountKeyWriteResultRetroactiveModelIdMetric(
          GetFastPairTrackedModelId(device.metadata_id);
 }
 
+absl::optional<std::string>
+GetEngagementFunnelInitialDeviceTypeNotificationTypeMetric(
+    const nearby::fastpair::Device& device_metadata) {
+  absl::optional<std::string> device_type =
+      GetFastPairDeviceType(device_metadata);
+  absl::optional<std::string> notification_type =
+      GetFastPairNotificationType(device_metadata);
+
+  if (!device_type || !notification_type) {
+    return absl::nullopt;
+  }
+
+  return std::string(kEngagementFlowInitialMetric) + "." + device_type.value() +
+         "." + notification_type.value();
+}
+
+absl::optional<std::string>
+GetEngagementFunnelSubsequentDeviceTypeNotificationTypeMetric(
+    const nearby::fastpair::Device& device_metadata) {
+  absl::optional<std::string> device_type =
+      GetFastPairDeviceType(device_metadata);
+  absl::optional<std::string> notification_type =
+      GetFastPairNotificationType(device_metadata);
+
+  if (!device_type || !notification_type) {
+    return absl::nullopt;
+  }
+
+  return std::string(kEngagementFlowSubsequentMetric) + "." +
+         device_type.value() + "." + notification_type.value();
+}
+
 }  // namespace
 
 namespace ash {
 namespace quick_pair {
+
+void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
+    const Device& device,
+    const nearby::fastpair::Device& device_details,
+    FastPairEngagementFlowEvent event) {
+  absl::optional<std::string> funnel_name;
+
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      funnel_name = GetEngagementFunnelInitialDeviceTypeNotificationTypeMetric(
+          device_details);
+
+      if (!funnel_name) {
+        break;
+      }
+
+      base::UmaHistogramSparse(funnel_name.value(), static_cast<int>(event));
+      break;
+    // The retroactive pairing flow is not included here because it does not
+    // involve a discovery notification or have an error notification on
+    // failures. It's flow is captured in `FastPairRetroactiveFlowEvent`.
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
+      funnel_name =
+          GetEngagementFunnelSubsequentDeviceTypeNotificationTypeMetric(
+              device_details);
+      if (!funnel_name) {
+        break;
+      }
+
+      base::UmaHistogramSparse(funnel_name.value(), static_cast<int>(event));
+      break;
+  }
+}
 
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event) {
