@@ -7,18 +7,14 @@ package com.ark.browser.tab;
 import android.app.Activity;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
@@ -43,23 +39,29 @@ public class ArkInterceptNavigationDelegateClientImpl implements InterceptNaviga
     ArkInterceptNavigationDelegateClientImpl(ArkTabImpl tab) {
         mTab = tab;
         mTabObserver = new EmptyTabObserver() {
+
             @Override
             public void onContentChanged(Tab tab) {
                 mInterceptNavigationDelegate.associateWithWebContents(tab.getWebContents());
             }
 
+            @Override
+            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                if (window != null) {
+                    mInterceptNavigationDelegate.setExternalNavigationHandler(
+                            createExternalNavigationHandler());
+                }
+            }
+
 //            @Override
-//            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-//                if (window != null) {
-//                    mInterceptNavigationDelegate.setExternalNavigationHandler(
-//                            createExternalNavigationHandler());
-//                }
+//            public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+//                mInterceptNavigationDelegate.setExternalNavigationHandler(
+//                        createExternalNavigationHandler());
 //            }
 
             @Override
-            public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
-                mInterceptNavigationDelegate.setExternalNavigationHandler(
-                        createExternalNavigationHandler());
+            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
+                mInterceptNavigationDelegate.onNavigationStart(navigationHandle);
             }
 
             @Override

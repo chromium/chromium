@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,7 @@ import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.dialog.ToolsDialog;
-import com.ark.browser.ui.fragment.search.SearchFragment2;
+import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.utils.KeyboardUtils;
@@ -24,8 +23,6 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -112,7 +109,7 @@ public class BottomController {
         loadingTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new SearchFragment2().show(mContext);
+                new SearchFragment().show(mContext);
             }
         });
 

@@ -80,7 +80,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
+public class SearchFragment extends BaseDialogFragment<SearchFragment>
         implements HistoryProvider.BrowsingHistoryObserver,
         View.OnClickListener,
         IEasy.OnItemClickListener<SearchHistory>,
@@ -138,7 +138,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
     private String keyword = "";
     private boolean enterAnimEnd = false;
 
-    public SearchFragment2() {
+    public SearchFragment() {
         setMaxHeight(MATCH_PARENT);
         setDialogBackgroundColor(Color.TRANSPARENT);
     }
@@ -194,8 +194,10 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
                             .setOptionMenus("全部清除")
                             .setOnItemClickListener((position, menu) -> {
                                 ZToast.normal(menu.getTitle().toString());
-                                ThreadPool.executeIO(SearchHistoryManager::deleteAllLocalSearchHistory);
-                                initFlowLayout();
+                                ThreadPool.executeIO(() -> {
+                                    SearchHistoryManager.deleteAllLocalSearchHistory();
+                                    ThreadPool.postOnUIThread(SearchFragment.this::initFlowLayout);
+                                });
                             })
                             .setAttachView(v)
                             .show(holder.getContext());
@@ -365,7 +367,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
 
     @Override
     protected int getImplLayoutId() {
-        return R.layout.fragment_search2;
+        return R.layout.fragment_search;
     }
 
     @Override
@@ -558,7 +560,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
         flowHeaderMultiData.setOnItemLongClickListener(this);
 
         ThreadPool.executeIO(() -> {
-            List<SearchHistory> historyList = SearchHistoryManager.getSearchHistoryLimited();
+            List<SearchHistory> historyList = SearchHistoryManager.getSearchHistoryLimited(10);
             ThreadPool.runOnUIThread(() -> {
                 flowHeaderMultiData.setData(historyList);
                 mRecycler.notifyDataSetChanged();
@@ -603,14 +605,14 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
 
     private void insertToDB(String query) {
         ThreadPool.executeIO(() -> {
-            SearchHistory history = SearchHistoryManager.getSearchHistoryByText(query);
-            if (history == null) {
-                history = new SearchHistory();
-                history.setText(query);
-            }
-            history.setTime(System.currentTimeMillis());
-//            history.saveSync();
+//            SearchHistory history = SearchHistoryManager.getSearchHistoryByText(query);
+//            if (history == null) {
+//                history = new SearchHistory();
+//                history.setText(query);
+//            }
+//            history.setTime(System.currentTimeMillis());
 
+            SearchHistoryManager.saveSearchHistory(query);
             ThreadPool.runOnUIThread(this::initFlowLayout);
         });
 
@@ -817,10 +819,11 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
 
                 downloadManagerService.removeDownloadObserver(this);
 
+                List<DownloadItem> items = new ArrayList<>(list);
                 ThreadPool.execute(() -> {
 
                     if (!TextUtils.isEmpty(keyword)) {
-                        Iterator<DownloadItem> it = list.iterator();
+                        Iterator<DownloadItem> it = items.iterator();
                         while (it.hasNext()) {
                             DownloadInfo item = it.next().getDownloadInfo();
                             if (!item.getFileName().toLowerCase().contains(keyword)
@@ -832,7 +835,7 @@ public class SearchFragment2 extends BaseDialogFragment<SearchFragment2>
                         }
                     }
                     ThreadPool.runOnUIThread(() -> {
-                        downloadMultiData.setData(list);
+                        downloadMultiData.setData(items);
                         stickHeader4.setTitle("下载文件(" + downloadMultiData.getCount() + ")");
                         downloadMultiData.notifyDataSetChange();
                     });

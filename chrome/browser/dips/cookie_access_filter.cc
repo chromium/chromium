@@ -41,8 +41,13 @@ void CookieAccessFilter::AddAccess(const GURL& url, Type type) {
     accesses_.back().type = CookieAccessType::kReadWrite;
     return;
   }
-  accesses_.push_back({url, type == Type::kChange ? CookieAccessType::kWrite
-                                                  : CookieAccessType::kRead});
+  // 解决"CookieAccessFilter failed to map all accesses"问题
+  CookieAccessType access_type = type == Type::kChange ? CookieAccessType::kWrite : CookieAccessType::kRead;
+  if (!accesses_.empty() && accesses_.back().url == url) {
+    accesses_.back().type = access_type;
+    return;
+  }
+  accesses_.push_back({url, access_type});
 }
 
 bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,

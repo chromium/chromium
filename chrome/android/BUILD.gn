@@ -226,7 +226,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_download_child.xml",
     "//chrome/android/java/res_app/layout/fragment_download_detail.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
-    "//chrome/android/java/res_app/layout/fragment_search2.xml",
+    "//chrome/android/java/res_app/layout/fragment_search.xml",
     "//chrome/android/java/res_app/layout/fragment_settings.xml",
 
     "//chrome/android/java/res_app/layout/item_checkbox.xml",

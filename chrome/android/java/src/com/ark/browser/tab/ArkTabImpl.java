@@ -1128,7 +1128,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
-        cacheThumbnail();
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);

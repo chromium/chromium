@@ -96,7 +96,7 @@ void DIPSBounceDetector::OnCookiesAccessed(
 
 void DIPSBounceDetector::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
+  if (!navigation_handle->HasCommitted() || !navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 

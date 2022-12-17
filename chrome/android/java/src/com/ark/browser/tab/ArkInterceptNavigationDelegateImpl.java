@@ -3,17 +3,26 @@ package com.ark.browser.tab;
 import android.text.TextUtils;
 
 import com.ark.browser.core.UserAgentManager;
+import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabJni;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
@@ -37,74 +46,45 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
     public ArkInterceptNavigationDelegateImpl(Tab tab, InterceptNavigationDelegateClient client) {
         super(client);
         this.mTab = tab;
-        this.mTab.addObserver(new EmptyTabObserver() {
-
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                mLoadNewPage = false;
-                super.onPageLoadStarted(tab, url);
-                ArkLogger.d(TAG, "onPageLoadStarted url=" + tab.getUrl().getSpec());
-            }
-
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                super.onPageLoadFinished(tab, url);
-                ArkLogger.d(TAG, "onPageLoadFinished url=" + tab.getUrl().getSpec());
-            }
-
-            @Override
-            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                super.onDidStartNavigation(tab, navigationHandle);
-                ArkLogger.d(TAG, "onDidStartNavigation url=" + tab.getUrl().getSpec());
-            }
-
-            @Override
-            public void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {
-                super.onDidRedirectNavigation(tab, navigationHandle);
-                ArkLogger.d(TAG, "onDidRedirectNavigation url=" + tab.getUrl()
-                        + " originalUrl=" + tab.getOriginalUrl());
-
-                String host = navigationHandle.getUrl().getHost();
-                if (TextUtils.equals(host, tab.getOriginalUrl().getHost())) {
-                    return;
-                }
-
-                int index = UserAgentManager.getUserAgentIndexByUrl(tab.getOriginalUrl());
-                UserAgentManager.setUserAgentByUrl(host, index);
-            }
-
-            @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                ArkLogger.d(TAG, "onDidFinishNavigation navigationHandle=" + navigationHandle);
-                if (mLoadNewPage) {
-                    ArkLogger.d(TAG, "onDidFinishNavigation mLoadNewPage deltaTime=" + (System.currentTimeMillis() - start));
-                    mLoadNewPage = false;
-
-                    WebContents webContents = mClient.getWebContents();
-                    if (webContents != null) {
-                        NavigationController navigationController = webContents.getNavigationController();
-                        navigationController.pruneForwardEntries();
-                    }
-
-                    GURL url = navigationHandle.getUrl();
-                    LoadUrlParams params = new LoadUrlParams(url);
-                    params.setHasUserGesture(navigationHandle.hasUserGesture());
-                    params.setInitiatorOrigin(navigationHandle.getInitiatorOrigin());
-                    params.setBaseUrlForDataUrl(navigationHandle.getBaseUrlForDataUrl().getSpec());
-                    params.setReferrer(new Referrer(navigationHandle.getReferrerUrl().getSpec(),
-                            ReferrerPolicy.DEFAULT));
-                    params.setIsRendererInitiated(navigationHandle.isRendererInitiated());
-
-                    Log.e(TAG, "shouldIgnoreNavigation params=" + params);
-
-
-                    ((ArkTabImpl) mTab).openNewPage(params);
-                }
-            }
-        });
     }
 
+    @Override
+    public void onNavigationStart(NavigationHandle navigation) {
+        mLoadNewPage = false;
+    }
 
+    @Override
+    public void onNavigationFinished(NavigationHandle navigationHandle) {
+        ArkLogger.d(TAG, "onDidFinishNavigation navigationHandle=" + navigationHandle);
+        if (mLoadNewPage) {
+            ArkLogger.d(TAG, "onDidFinishNavigation mLoadNewPage deltaTime=" + (System.currentTimeMillis() - start));
+            mLoadNewPage = false;
+
+            WebContents webContents = mClient.getWebContents();
+            if (webContents != null) {
+                NavigationController navigationController = webContents.getNavigationController();
+                navigationController.pruneForwardEntries();
+            }
+
+//            GURL url = navigationHandle.getUrl();
+//            LoadUrlParams params = new LoadUrlParams(url);
+//            params.setHasUserGesture(navigationHandle.hasUserGesture());
+//            params.setInitiatorOrigin(navigationHandle.getInitiatorOrigin());
+//            params.setBaseUrlForDataUrl(navigationHandle.getBaseUrlForDataUrl().getSpec());
+//            params.setReferrer(new Referrer(navigationHandle.getReferrerUrl().getSpec(),
+//                    ReferrerPolicy.DEFAULT));
+//            params.setIsRendererInitiated(navigationHandle.isRendererInitiated());
+//
+//            Log.e(TAG, "shouldIgnoreNavigation params=" + params);
+//
+//
+//            ((ArkTabImpl) mTab).openNewPage(params);
+            return;
+        }
+
+
+        super.onNavigationFinished(navigationHandle);
+    }
 
 //    @Override
 //    public void onNavigationFinished(NavigationHandle navigation) {
@@ -220,6 +200,26 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
 
             start = System.currentTimeMillis();
             mLoadNewPage = true;
+
+
+//            WebContents webContents = mClient.getWebContents();
+//            if (webContents != null) {
+//                NavigationController navigationController = webContents.getNavigationController();
+//                navigationController.pruneForwardEntries();
+//            }
+
+            GURL url = navigationHandle.getUrl();
+            LoadUrlParams params = new LoadUrlParams(url);
+            params.setHasUserGesture(navigationHandle.hasUserGesture());
+            params.setInitiatorOrigin(navigationHandle.getInitiatorOrigin());
+            params.setBaseUrlForDataUrl(navigationHandle.getBaseUrlForDataUrl().getSpec());
+            params.setReferrer(new Referrer(navigationHandle.getReferrerUrl().getSpec(),
+                    ReferrerPolicy.DEFAULT));
+            params.setIsRendererInitiated(navigationHandle.isRendererInitiated());
+
+            Log.e(TAG, "shouldIgnoreNavigation params=" + params);
+
+            ((ArkTabImpl) mTab).openNewPage(params);
             return true;
         }
 

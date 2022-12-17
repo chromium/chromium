@@ -5,13 +5,17 @@
 package com.ark.browser.tab;
 
 import android.os.Handler;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.core.UserAgentManager;
+import com.ark.browser.core.utils.PolicyAuditor;
+import com.ark.browser.core.utils.PolicyAuditor.AuditEvent;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -22,8 +26,6 @@ import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
-import com.ark.browser.core.utils.PolicyAuditor;
-import com.ark.browser.core.utils.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -193,6 +195,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
         public void didFinishLoad(GlobalRenderFrameHostId frameId, GURL url, boolean isKnownValid,
                 boolean isInPrimaryMainFrame, @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
+            mTab.cacheThumbnail();
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
                     mTab.pushNativePageStateToNavigationEntry();
@@ -246,6 +249,14 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didRedirectNavigation(NavigationHandle navigation) {
+
+            String host = navigation.getUrl().getHost();
+            GURL originalUrl = mTab.getOriginalUrl();
+            if (!TextUtils.equals(host, originalUrl.getHost())) {
+                int index = UserAgentManager.getUserAgentIndexByUrl(originalUrl);
+                UserAgentManager.setUserAgentByUrl(host, index);
+            }
+
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().onDidRedirectNavigation(mTab, navigation);
@@ -254,6 +265,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didFinishNavigation(NavigationHandle navigation) {
+            mTab.cacheThumbnail();
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().onDidFinishNavigation(mTab, navigation);

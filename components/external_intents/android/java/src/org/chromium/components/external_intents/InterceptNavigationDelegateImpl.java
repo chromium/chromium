@@ -58,6 +58,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         associateWithWebContents(mClient.getWebContents());
     }
 
+    public void onNavigationStart(NavigationHandle navigation) {
+
+    }
+
     // Invoked by the client when a navigation has finished in the context in which this object is
     // operating.
     public void onNavigationFinished(NavigationHandle navigation) {

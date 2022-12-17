@@ -15,6 +15,5 @@ public interface UserData {
      *          call {@link UserDataHost#destroy()} explicitly at the end of its
      *          lifetime to have all of its {@link UserData#destroy()} get invoked.
      */
-    default void
-        destroy() {}
+    default void destroy() {}
 }

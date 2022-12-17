@@ -118,7 +118,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/download/DownloadMultiData.java",
 
   "java/src/com/ark/browser/ui/fragment/search/FlowHeaderMultiData.java",
-  "java/src/com/ark/browser/ui/fragment/search/SearchFragment2.java",
+  "java/src/com/ark/browser/ui/fragment/search/SearchFragment.java",
   "java/src/com/ark/browser/ui/fragment/search/VerticalTranslateAnimator.java",
 
   "java/src/com/ark/browser/ui/fragment/settings/SettingsFragment.java",
