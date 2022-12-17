@@ -97,7 +97,7 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
   // For cases when the notes differ within grouped passwords (e.g: a
   // credential exists in both account and profile stores), respective notes
   // should be concatenated and linebreak used as a delimiter.
-  std::vector<const std::u16string> notes_with_duplicates;
+  std::vector<std::u16string> notes_with_duplicates;
   for (const auto& form : forms) {
     // Only notes with an empty `unique_display_name` are supported in the
     // settings UI.
@@ -109,7 +109,7 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
   }
   auto unique_notes =
       base::MakeFlatSet<std::u16string>(std::move(notes_with_duplicates));
-  note = base::JoinString(std::vector<const std::u16string>(
+  note = base::JoinString(std::vector<std::u16string>(
                               unique_notes.begin(), unique_notes.end()),
                           u"\n");
 
