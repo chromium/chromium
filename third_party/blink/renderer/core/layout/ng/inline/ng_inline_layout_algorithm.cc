@@ -66,7 +66,8 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
       context_(context),
       column_spanner_path_(column_spanner_path),
       baseline_type_(container_builder_.Style().GetFontBaseline()),
-      quirks_mode_(inline_node.GetDocument().InLineHeightQuirksMode()) {
+      quirks_mode_(inline_node.GetDocument().InLineHeightQuirksMode()),
+      cached_line_items_(MakeGarbageCollected<NGLogicalLineItems>()) {
   DCHECK(context);
 }
 
@@ -179,7 +180,8 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
   line_info.ItemsData().GetOpenTagItems(break_token->ItemIndex(), &open_items);
 
   // Create box states for tags that are not closed yet.
-  NGLogicalLineItems& line_box = *MakeGarbageCollected<NGLogicalLineItems>();
+  DCHECK_EQ(cached_line_items_->size(), 0u);
+  NGLogicalLineItems& line_box = *cached_line_items_;
   box_states->OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                                 quirks_mode_, &line_box);
   for (const NGInlineItem* item : open_items) {
@@ -197,7 +199,8 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
     const NGInlineBreakToken* break_token) const {
   NGInlineLayoutStateStack rebuilt;
   RebuildBoxStates(line_info, break_token, &rebuilt);
-  NGLogicalLineItems& line_box = *MakeGarbageCollected<NGLogicalLineItems>();
+  DCHECK_EQ(cached_line_items_->size(), 0u);
+  NGLogicalLineItems& line_box = *cached_line_items_;
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                             quirks_mode_, &line_box);
   DCHECK(box_states_);
@@ -1632,8 +1635,8 @@ void NGInlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
   NGBidiParagraph::IndicesInVisualOrder(levels, &indices_in_visual_order);
 
   // Reorder to the visual order.
-  NGLogicalLineItems& visual_items =
-      *MakeGarbageCollected<NGLogicalLineItems>();
+  DCHECK_EQ(cached_line_items_->size(), 0u);
+  NGLogicalLineItems& visual_items = *cached_line_items_;
   visual_items.ReserveInitialCapacity(line_box->size());
   for (unsigned logical_index : indices_in_visual_order)
     visual_items.AddChild(std::move((*line_box)[logical_index]));
