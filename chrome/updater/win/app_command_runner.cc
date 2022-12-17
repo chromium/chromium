@@ -257,7 +257,8 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
 
   process = base::LaunchProcess(
       base::StrCat(
-          {QuoteForCommandLineToArgvW(executable.value()), L" ", parameters}),
+          {base::CommandLine::QuoteForCommandLineToArgvW(executable.value()),
+           L" ", parameters}),
       options);
   if (!process.IsValid()) {
     const HRESULT hr = HRESULTFromLastError();
@@ -312,8 +313,13 @@ absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
       return absl::nullopt;
     }
 
+    constexpr wchar_t kQuotableCharacters[] = L" \t\\\"";
     formatted_command_line.append(
-        QuoteForCommandLineToArgvW(*formatted_parameter));
+        formatted_parameter->find_first_of(kQuotableCharacters) ==
+                std::wstring::npos
+            ? *formatted_parameter  // no quoting needed, use as-is.
+            : base::CommandLine::QuoteForCommandLineToArgvW(
+                  *formatted_parameter));
 
     if (i + 1 < parameters.size())
       formatted_command_line.push_back(L' ');

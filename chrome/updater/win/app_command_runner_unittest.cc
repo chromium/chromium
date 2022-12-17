@@ -192,23 +192,21 @@ TEST_F(AppCommandRunnerTest,
 
       // Special characters in the substitution.
       // embedded \ and \\.
-      {{L"%1"}, L"a\\b\\\\c", {L"a\\b\\\\c"}},
+      {{L"%1"}, L"\"a\\b\\\\c\"", {L"a\\b\\\\c"}},
       // trailing \.
-      {{L"%1"}, L"a\\", {L"a\\"}},
+      {{L"%1"}, L"\"a\\\\\"", {L"a\\"}},
       // trailing \\.
-      {{L"%1"}, L"a\\\\", {L"a\\\\"}},
+      {{L"%1"}, L"\"a\\\\\\\\\"", {L"a\\\\"}},
       // only \\.
-      {{L"%1"}, L"\\\\", {L"\\\\"}},
-      // empty.
-      {{L"%1"}, L"\"\"", {L""}},
+      {{L"%1"}, L"\"\\\\\\\\\"", {L"\\\\"}},
       // embedded quote.
-      {{L"%1"}, L"a\\\"b", {L"a\"b"}},
+      {{L"%1"}, L"\"a\\\"b\"", {L"a\"b"}},
       // trailing quote.
-      {{L"%1"}, L"abc\\\"", {L"abc\""}},
+      {{L"%1"}, L"\"abc\\\"\"", {L"abc\""}},
       // embedded \\".
-      {{L"%1"}, L"a\\\\\\\\\\\"b", {L"a\\\\\"b"}},
+      {{L"%1"}, L"\"a\\\\\\\\\\\"b\"", {L"a\\\\\"b"}},
       // trailing \\".
-      {{L"%1"}, L"abc\\\\\\\\\\\"", {L"abc\\\\\""}},
+      {{L"%1"}, L"\"abc\\\\\\\\\\\"\"", {L"abc\\\\\""}},
       // embedded space.
       {{L"%1"}, L"\"abc def\"", {L"abc def"}},
       // trailing space.

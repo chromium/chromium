@@ -303,7 +303,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
   EXPECT_EQ(0UL, info.exec_actions.size());
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
   ASSERT_EQ(1UL, info.exec_actions.size());
-  EXPECT_EQ(QuoteForCommandLineToArgvW(command_line1.GetProgram().value()),
+  EXPECT_EQ(base::CommandLine::QuoteForCommandLineToArgvW(
+                command_line1.GetProgram().value()),
             info.exec_actions[0].application_path.value());
   EXPECT_EQ(command_line1.GetArgumentsString(), info.exec_actions[0].arguments);
 
@@ -318,7 +319,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
   // the previous contents of the struct.
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName2, &info));
   ASSERT_EQ(1UL, info.exec_actions.size());
-  EXPECT_EQ(command_line2.GetProgram().value(),
+  EXPECT_EQ(base::CommandLine::QuoteForCommandLineToArgvW(
+                command_line2.GetProgram().value()),
             info.exec_actions[0].application_path.value());
   EXPECT_EQ(command_line2.GetArgumentsString(), info.exec_actions[0].arguments);
 

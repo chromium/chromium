@@ -304,8 +304,9 @@ base::FilePath StartProcmonLogging() {
 
   const std::wstring& cmdline = base::StrCat(
       {kProcmonPath, L" /AcceptEula /LoadConfig ",
-       QuoteForCommandLineToArgvW(pmc_path.value()), L" /BackingFile ",
-       QuoteForCommandLineToArgvW(pml_file.value()),
+       base::CommandLine::QuoteForCommandLineToArgvW(pmc_path.value()),
+       L" /BackingFile ",
+       base::CommandLine::QuoteForCommandLineToArgvW(pml_file.value()),
        L" /Quiet /externalcapture"});
   base::LaunchOptions options;
   options.start_hidden = true;

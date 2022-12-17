@@ -699,11 +699,13 @@ std::wstring BuildMsiCommandLine(
                  {L" ",
                   base::UTF8ToWide(base::ToUpperASCII(kInstallerDataSwitch)),
                   L"=",
-                  QuoteForCommandLineToArgvW(installer_data_file->value())})
+                  base::CommandLine::QuoteForCommandLineToArgvW(
+                      installer_data_file->value())})
            : L"",
        L" REBOOT=ReallySuppress /qn /i ",
-       QuoteForCommandLineToArgvW(msi_installer.value()), L" /log ",
-       QuoteForCommandLineToArgvW(
+       base::CommandLine::QuoteForCommandLineToArgvW(msi_installer.value()),
+       L" /log ",
+       base::CommandLine::QuoteForCommandLineToArgvW(
            msi_installer.AddExtension(L".log").value())});
 }
 
@@ -716,8 +718,8 @@ std::wstring BuildExeCommandLine(
   }
 
   return base::StrCat(
-      {QuoteForCommandLineToArgvW(exe_installer.value()), L" ", arguments,
-       [&installer_data_file]() {
+      {base::CommandLine::QuoteForCommandLineToArgvW(exe_installer.value()),
+       L" ", arguments, [&installer_data_file]() {
          if (!installer_data_file)
            return std::wstring();
 
@@ -976,49 +978,6 @@ absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
 
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath::FromASCII(kExecutableName);
-}
-
-// TODO(crbug.com/1369674): Merge with `base::CommandLine`.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
-  if (input.empty())
-    return L"\"\"";
-
-  constexpr wchar_t kCharactersThatMayNeedEncoding[] = L" \t\\\"";
-  if (input.find_first_of(kCharactersThatMayNeedEncoding) == std::wstring::npos)
-    return input;
-
-  constexpr wchar_t kWhitespaceCharacters[] = L" \t";
-  const bool input_needs_quoting =
-      input.find_first_of(kWhitespaceCharacters) != std::wstring::npos;
-
-  std::wstring output;
-  if (input_needs_quoting)
-    output.push_back(L'"');
-
-  for (size_t i = 0; i < input.size(); ++i) {
-    if (input[i] == L'\\') {
-      size_t end = i + 1;
-      while (end < input.size() && input[end] == L'\\')
-        ++end;
-
-      // Before a quote, output 2n backslashes.
-      output.append(std::wstring(
-          (end - i) * (1 + ((end == input.size() && input_needs_quoting) ||
-                            input[end] == L'"')),
-          L'\\'));
-
-      i = end - 1;
-    } else if (input[i] == L'"') {
-      output.append(L"\\\"");
-    } else {
-      output.push_back(input[i]);
-    }
-  }
-
-  if (input_needs_quoting)
-    output.push_back(L'"');
-
-  return output;
 }
 
 }  // namespace updater

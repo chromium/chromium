@@ -198,7 +198,9 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
       ::CommandLineToArgvW(cmd_line, &num_args));
   for (int i = 1; i != num_args; ++i) {
     if (!args.append(L" ") ||
-        !args.append(QuoteForCommandLineToArgvW(argv.get()[i]).c_str())) {
+        !args.append(
+            base::CommandLine::QuoteForCommandLineToArgvW(argv.get()[i])
+                .c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }
@@ -252,9 +254,11 @@ ProcessExitResult RunSetup(const wchar_t* setup_path,
   CommandString cmd_line;
 
   // Put the quoted path to setup.exe in cmd_line first, then the args.
-  if (!cmd_line.assign(base::StrCat({QuoteForCommandLineToArgvW(setup_path),
-                                     L" ", cmd_line_args})
-                           .c_str())) {
+  if (!cmd_line.assign(
+          base::StrCat(
+              {base::CommandLine::QuoteForCommandLineToArgvW(setup_path), L" ",
+               cmd_line_args})
+              .c_str())) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
@@ -331,9 +335,10 @@ ProcessExitResult InstallerMain(HMODULE module) {
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path))
     return ProcessExitResult(UNABLE_TO_GET_EXE_PATH);
-  const base::CommandLine command_line = base::CommandLine::FromString(
-      base::StrCat({QuoteForCommandLineToArgvW(exe_path.value()), L" ",
-                    cmd_line_args.get()}));
+  const base::CommandLine command_line =
+      base::CommandLine::FromString(base::StrCat(
+          {base::CommandLine::QuoteForCommandLineToArgvW(exe_path.value()),
+           L" ", cmd_line_args.get()}));
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
 

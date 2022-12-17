@@ -338,16 +338,6 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // processes exited cleanly.
 bool StopGoogleUpdateProcesses(UpdaterScope scope);
 
-// Quotes `input` if necessary so that it will be interpreted as a single
-// command-line parameter according to the rules for ::CommandLineToArgvW.
-//
-// Follows the encoding and quoting rules of `CommandLineToArgvW`/C++ `main`.
-// https://learn.microsoft.com/en-us/search/?terms=CommandLineToArgvW and
-// http://msdn.microsoft.com/en-us/library/17w5ykft.aspx.
-//
-// See examples in the `WinUtil.QuoteForCommandLineToArgvW*` unit tests.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& input);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

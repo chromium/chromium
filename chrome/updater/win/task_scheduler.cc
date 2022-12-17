@@ -628,8 +628,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     // Quotes the command line before `put_Path`.
     hr = exec_action->put_Path(
-        base::win::ScopedBstr(
-            QuoteForCommandLineToArgvW(run_command.GetProgram().value()))
+        base::win::ScopedBstr(base::CommandLine::QuoteForCommandLineToArgvW(
+                                  run_command.GetProgram().value()))
             .Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set path of exec action. " << std::hex << hr;
