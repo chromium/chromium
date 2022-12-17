@@ -317,7 +317,10 @@ base::FilePath StartProcmonLogging() {
     return {};
   }
 
-  // Gives time for the procmon process to start logging.
+  // Gives time for the procmon process to start logging. Without a sleep,
+  // `procmon` is unable to fully initialize the logging, and subsequently when
+  // `procmon /Terminate` is called to terminate the logging `procmon`, it
+  // causes the PML log file to corrupt.
   base::PlatformThread::Sleep(base::Seconds(3));
 
   return pml_file;
@@ -330,12 +333,7 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
   }
 
   for (const std::wstring& cmdline :
-       {base::StrCat({kProcmonPath, L" /Terminate"}),
-        base::StrCat({kProcmonPath, L" /AcceptEula /OpenLog ",
-                      QuoteForCommandLineToArgvW(pml_file.value()),
-                      L" /SaveAs ",
-                      QuoteForCommandLineToArgvW(
-                          pml_file.ReplaceExtension(L".CSV").value())})}) {
+       {base::StrCat({kProcmonPath, L" /Terminate"})}) {
     base::LaunchOptions options;
     options.start_hidden = true;
     options.wait = true;
