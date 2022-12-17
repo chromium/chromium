@@ -302,7 +302,7 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
 
 int64_t WindowTreeHostPlatform::InsertSequencePoint() {
   int64_t seq =
-      compositor()->local_surface_id_from_parent().child_sequence_number();
+      compositor()->local_surface_id_from_parent().parent_sequence_number();
   compositor()->RequestNewLocalSurfaceId();
   return seq;
 }
