@@ -49,6 +49,9 @@ constexpr base::TimeDelta kTuckWindowBounceEndDuration =
 constexpr base::TimeDelta kUntuckWindowAnimationDuration =
     base::Milliseconds(400);
 
+constexpr base::TimeDelta kSlideHandleForOverviewDuration =
+    base::Milliseconds(200);
+
 // Returns the tuck handle bounds aligned with `window_bounds`.
 const gfx::Rect GetTuckHandleBounds(bool left, const gfx::Rect& window_bounds) {
   const gfx::Point tuck_handle_origin =
@@ -188,10 +191,11 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   DCHECK(window_to_activate);
   wm::ActivateWindow(window_to_activate);
 
-  Shell::Get()->activation_client()->AddObserver(this);
-
   targeter_ = std::make_unique<aura::ScopedWindowTargeter>(
       window_, std::make_unique<aura::NullWindowTargeter>());
+
+  Shell::Get()->activation_client()->AddObserver(this);
+  overview_observer_.Observe(Shell::Get()->overview_controller());
 }
 
 ScopedWindowTucker::~ScopedWindowTucker() {
@@ -274,6 +278,46 @@ void ScopedWindowTucker::OnWindowActivated(ActivationReason reason,
   // Note that `UntuckWindow()` destroys `this`.
   if (gained_active == window_)
     UntuckWindow();
+}
+
+void ScopedWindowTucker::OnOverviewModeStarting() {
+  OnOverviewModeChanged(/*in_overview=*/true);
+}
+
+void ScopedWindowTucker::OnOverviewModeEndingAnimationComplete(bool canceled) {
+  OnOverviewModeChanged(/*in_overview=*/false);
+}
+
+void ScopedWindowTucker::OnOverviewModeChanged(bool in_overview) {
+  // Slide the tuck handle offscreen if entering overview mode, or back onscreen
+  // if exiting overview mode.
+  aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
+  const gfx::Rect bounds = tuck_handle->bounds();
+  gfx::Rect target_bounds =
+      GetTuckHandleBounds(left_, window_->GetTargetBounds());
+  if (in_overview) {
+    const int x_offset = left_ ? -kTuckHandleWidth : kTuckHandleWidth;
+    target_bounds.Offset(x_offset, 0);
+  }
+
+  if (target_bounds == bounds) {
+    return;
+  }
+
+  tuck_handle->SetBounds(target_bounds);
+  const gfx::Transform transform =
+      gfx::TransformBetweenRects(gfx::RectF(target_bounds), gfx::RectF(bounds));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetTransform(tuck_handle, transform)
+      .Then()
+      .SetDuration(kSlideHandleForOverviewDuration)
+      .SetTransform(tuck_handle, gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void ScopedWindowTucker::UntuckWindow() {

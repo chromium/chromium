@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -19,7 +21,8 @@ namespace ash {
 // Scoped class which makes modifications while a window is tucked. It owns a
 // tuck handle widget that will bring the hidden window back onscreen. Users of
 // the class need to ensure that window outlives instance of this class.
-class ScopedWindowTucker : public wm::ActivationChangeObserver {
+class ScopedWindowTucker : public wm::ActivationChangeObserver,
+                           public OverviewObserver {
  public:
   // Creates an instance for `window` where `left` is the side of the screen
   // that the tuck handle is on.
@@ -40,8 +43,16 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver {
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  // OverviewObserver:
+  void OnOverviewModeStarting() override;
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override;
+
  private:
   class TuckHandle;
+
+  // Slides the tuck handle offscreen and onscreen when entering and exiting
+  // overview mode respectively.
+  void OnOverviewModeChanged(bool in_overview);
 
   // Destroys `this_`, which will untuck `window_` and set the window bounds
   // back onscreen.
@@ -61,6 +72,9 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver {
 
   views::UniqueWidgetPtr tuck_handle_widget_ =
       std::make_unique<views::Widget>();
+
+  base::ScopedObservation<OverviewController, OverviewObserver>
+      overview_observer_{this};
 };
 
 }  // namespace ash

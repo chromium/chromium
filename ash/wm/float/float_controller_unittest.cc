@@ -1491,6 +1491,36 @@ TEST_F(TabletWindowFloatTest, ClickOnEdgeDoesNotUntuck) {
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 }
 
+// Tests that the tuck handle is offscreen in overview mode.
+TEST_F(TabletWindowFloatTest, TuckHandleOffscreenInOverview) {
+  const gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  auto* float_controller = Shell::Get()->float_controller();
+
+  // Tuck the window in the bottom right.
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  // The tuck handle widget is normally onscreen.
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(window.get());
+  EXPECT_TRUE(
+      display_bounds.Contains(tuck_handle_widget->GetWindowBoundsInScreen()));
+
+  // Tests that on entering overview, the tuck handle is offscreen.
+  EnterOverview();
+  EXPECT_FALSE(
+      display_bounds.Contains(tuck_handle_widget->GetWindowBoundsInScreen()));
+
+  // Tests that on leaving overview, the tuck handle is onscreen again.
+  ExitOverview();
+  EXPECT_TRUE(
+      display_bounds.Contains(tuck_handle_widget->GetWindowBoundsInScreen()));
+}
+
 TEST_F(TabletWindowFloatTest, UntuckWindowGestures) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   // The window is magnetized to the bottom right by default.
