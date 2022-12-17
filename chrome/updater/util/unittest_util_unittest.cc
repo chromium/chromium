@@ -23,8 +23,13 @@ namespace updater::test {
 
 TEST(UnitTestUtil, Processes) {
 #if BUILDFLAG(IS_WIN)
+  // Ensure the test process is not running before the test.
+  EXPECT_TRUE(KillProcesses(kTestProcessExecutableName, 0));
+  EXPECT_TRUE(WaitForProcessesToExit(kTestProcessExecutableName,
+                                     TestTimeouts::action_timeout()));
   EXPECT_FALSE(IsProcessRunning(kTestProcessExecutableName));
 
+  // Start two long-lived processes and expect to find them running.
   std::vector<base::Process> long_running;
   long_running.push_back(LongRunningProcess(nullptr));
   long_running.push_back(LongRunningProcess(nullptr));
@@ -33,6 +38,8 @@ TEST(UnitTestUtil, Processes) {
   }
   EXPECT_TRUE(IsProcessRunning(kTestProcessExecutableName));
 
+  // Terminate the long-lived processes, expect to find them not running, then
+  // inspect their exit code.
   constexpr int kExitCode = 12345;
   EXPECT_FALSE(WaitForProcessesToExit(kTestProcessExecutableName,
                                       base::Milliseconds(1)));
@@ -40,7 +47,6 @@ TEST(UnitTestUtil, Processes) {
   EXPECT_TRUE(WaitForProcessesToExit(kTestProcessExecutableName,
                                      TestTimeouts::action_timeout()));
   EXPECT_FALSE(IsProcessRunning(kTestProcessExecutableName));
-
   for (const base::Process& p : long_running) {
     int exit_code = 0;
     EXPECT_TRUE(
