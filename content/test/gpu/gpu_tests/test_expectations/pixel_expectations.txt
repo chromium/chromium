@@ -378,6 +378,9 @@ crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerate
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
+# Unexplained timeout
+crbug.com/1401962 [ android android-sm-a135m ] Pixel_BackgroundImage [ RetryOnFailure ]
+
 crbug.com/1373965 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ Failure ]
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
