@@ -385,10 +385,21 @@ VAStatus FakeCreateContext(VADriverContextP ctx,
     CHECK(fdrv->SurfaceExists(render_targets[i]));
   }
 
+  *context = fdrv->CreateContext(
+      config_id, picture_width, picture_height, flag,
+      std::vector<VASurfaceID>(
+          render_targets,
+          render_targets + base::checked_cast<size_t>(num_render_targets)));
+
   return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeDestroyContext(VADriverContextP ctx, VAContextID context) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  fdrv->DestroyContext(context);
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -399,6 +410,11 @@ VAStatus FakeCreateBuffer(VADriverContextP ctx,
                           unsigned int num_elements,
                           void* data,
                           VABufferID* buf_id) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->ContextExists(context));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -428,6 +444,8 @@ VAStatus FakeBeginPicture(VADriverContextP ctx,
 
   CHECK(fdrv->SurfaceExists(render_target));
 
+  CHECK(fdrv->ContextExists(context));
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -435,10 +453,20 @@ VAStatus FakeRenderPicture(VADriverContextP ctx,
                            VAContextID context,
                            VABufferID* buffers,
                            int num_buffers) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->ContextExists(context));
+
   return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeEndPicture(VADriverContextP ctx, VAContextID context) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  CHECK(fdrv->ContextExists(context));
+
   return VA_STATUS_SUCCESS;
 }
 

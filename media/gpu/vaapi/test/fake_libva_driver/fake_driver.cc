@@ -48,4 +48,26 @@ void FakeDriver::DestroySurface(FakeSurface::IdType id) {
   surface_.DestroyObject(id);
 }
 
+FakeContext::IdType FakeDriver::CreateContext(
+    VAConfigID config_id,
+    int picture_width,
+    int picture_height,
+    int flag,
+    std::vector<VASurfaceID> render_targets) {
+  return context_.CreateObject(config_id, picture_width, picture_height, flag,
+                               std::move(render_targets));
+}
+
+bool FakeDriver::ContextExists(FakeContext::IdType id) {
+  return context_.ObjectExists(id);
+}
+
+const FakeContext& FakeDriver::GetContext(FakeContext::IdType id) {
+  return context_.GetObject(id);
+}
+
+void FakeDriver::DestroyContext(FakeContext::IdType id) {
+  context_.DestroyObject(id);
+}
+
 }  // namespace media::internal

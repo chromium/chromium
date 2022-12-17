@@ -19,6 +19,8 @@ source_set("fake_libva_driver_internals") {
   sources = [
     "fake_config.cc",
     "fake_config.h",
+    "fake_context.cc",
+    "fake_context.h",
     "fake_driver.cc",
     "fake_driver.h",
     "fake_surface.cc",

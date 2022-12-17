@@ -236,16 +236,39 @@ TEST_F(FakeDriverTest, CanBeginPictureForValidSurfaceID) {
                        /*height=*/720, surfaces, kNumSurfaces,
                        /*surface_attribs=*/nullptr, /*num_attribs=*/0));
 
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  VAContextID context_id;
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720, /*flag=*/0, surfaces,
+                            kNumSurfaces, &context_id));
+
   for (unsigned int i = 0; i < kNumSurfaces; i++) {
-    const VAStatus va_res =
-        vaBeginPicture(display_, /*context=*/0, surfaces[i]);
+    const VAStatus va_res = vaBeginPicture(display_, context_id, surfaces[i]);
     EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
   }
 }
 
 TEST_F(FakeDriverTest, BeginPictureCrashesForInvalidSurfaceID) {
-  EXPECT_DEATH(vaBeginPicture(display_, /*context=*/0, /*render_target=*/0),
-               "");
+  VAConfigID config_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+
+  VAContextID context_id;
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                      /*picture_height=*/720, /*flag=*/0, /*surfaces=*/nullptr,
+                      /*num_surfaces=*/0, &context_id));
+
+  EXPECT_DEATH(vaBeginPicture(display_, context_id, /*render_target=*/0), "");
 }
 
 TEST_F(FakeDriverTest, CanSyncSurfaceForValidSurfaceID) {

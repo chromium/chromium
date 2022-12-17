@@ -8,6 +8,7 @@
 #include <va/va.h>
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/object_tracker.h"
 
@@ -38,9 +39,19 @@ class FakeDriver {
   const FakeSurface& GetSurface(FakeSurface::IdType id);
   void DestroySurface(FakeSurface::IdType id);
 
+  FakeContext::IdType CreateContext(VAConfigID config_id,
+                                    int picture_width,
+                                    int picture_height,
+                                    int flag,
+                                    std::vector<VASurfaceID> render_targets);
+  bool ContextExists(FakeContext::IdType id);
+  const FakeContext& GetContext(FakeContext::IdType id);
+  void DestroyContext(FakeContext::IdType id);
+
  private:
   ObjectTracker<FakeConfig> config_;
   ObjectTracker<FakeSurface> surface_;
+  ObjectTracker<FakeContext> context_;
 };
 
 }  // namespace media::internal
