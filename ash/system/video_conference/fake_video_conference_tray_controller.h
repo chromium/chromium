@@ -10,19 +10,23 @@
 
 namespace ash {
 
+namespace fake_video_conference {
+class EffectRepository;
+}
+
 // A fake version of VideoConferenceTrayController that will be use in tests or
 // mocking in the emulator.
 class ASH_EXPORT FakeVideoConferenceTrayController
     : public VideoConferenceTrayController {
  public:
-  FakeVideoConferenceTrayController() = default;
+  FakeVideoConferenceTrayController();
 
   FakeVideoConferenceTrayController(const FakeVideoConferenceTrayController&) =
       delete;
   FakeVideoConferenceTrayController& operator=(
       const FakeVideoConferenceTrayController&) = delete;
 
-  ~FakeVideoConferenceTrayController() override = default;
+  ~FakeVideoConferenceTrayController() override;
 
   // VideoConferenceTrayController:
   void SetCameraMuted(bool muted) override;
@@ -35,6 +39,9 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   // Indicates whether camera/microphone is muted.
   bool camera_muted_ = false;
   bool microphone_muted_ = false;
+
+  // General-purpose repository for fake effects.
+  std::unique_ptr<fake_video_conference::EffectRepository> effect_repository_;
 };
 
 }  // namespace ash

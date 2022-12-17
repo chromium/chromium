@@ -15,7 +15,11 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-namespace ash::fake_video_conference {
+namespace ash {
+
+class FakeVideoConferenceTrayController;
+
+namespace fake_video_conference {
 
 // A convenience base class, for creating a delegate that hosts the simplest
 // type of effect there is i.e. a toggle with only one state.
@@ -181,6 +185,33 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   std::vector<int> num_activations_for_testing_;
 };
 
-}  // namespace ash::fake_video_conference
+// A simple residence for any fake effects used for testing. For all of these
+// fake effects to be registered, the feature `VcControlsUiFakeEffects` must be
+// enabled.
+class EffectRepository {
+ public:
+  explicit EffectRepository(FakeVideoConferenceTrayController* controller);
+
+  EffectRepository(const EffectRepository&) = delete;
+  EffectRepository& operator=(const EffectRepository&) = delete;
+
+  ~EffectRepository();
+
+ private:
+  FakeVideoConferenceTrayController* controller_;
+  std::unique_ptr<CatEarsEffect> cat_ears_;
+  std::unique_ptr<DogFurEffect> dog_fur_;
+  std::unique_ptr<SpaceshipEffect> spaceship_;
+  std::unique_ptr<OfficeBunnyEffect> office_bunny_;
+  std::unique_ptr<CalmForestEffect> calm_forest_;
+  std::unique_ptr<StylishKitchenEffect> stylish_kitchen_;
+  std::unique_ptr<GreenhouseEffect> greenhouse_;
+  std::unique_ptr<ShaggyFurEffect> shaggy_fur_;
+  std::unique_ptr<SuperCutnessEffect> super_cuteness_;
+};
+
+}  // namespace fake_video_conference
+
+}  // namespace ash
 
 #endif  // ASH_SYSTEM_VIDEO_CONFERENCE_EFFECTS_FAKE_VIDEO_CONFERENCE_EFFECTS_H_

@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "ui/views/controls/button/button.h"
 
@@ -208,6 +210,59 @@ void SuperCutnessEffect::OnEffectControlActivated(int effect_id, int value) {
 int SuperCutnessEffect::GetNumActivationsForTesting(int value) {
   DCHECK(value >= 0 && value < static_cast<int>(HowCute::kMaxNumValues));
   return num_activations_for_testing_[value];
+}
+
+// This registers/unregisters all effects owned by `EffectRepository`.
+// Comment-out the `RegisterDelegate`/`UnregisterDelegate` calls for effects
+// that are not needed e.g. to test `ash::video_conference::BubbleView` with
+// only one or two registered effects.
+EffectRepository::EffectRepository(
+    ash::FakeVideoConferenceTrayController* controller)
+    : controller_(controller),
+      cat_ears_(std::make_unique<CatEarsEffect>()),
+      dog_fur_(std::make_unique<DogFurEffect>()),
+      spaceship_(std::make_unique<SpaceshipEffect>()),
+      office_bunny_(std::make_unique<OfficeBunnyEffect>()),
+      calm_forest_(std::make_unique<CalmForestEffect>()),
+      stylish_kitchen_(std::make_unique<StylishKitchenEffect>()),
+      greenhouse_(std::make_unique<GreenhouseEffect>()),
+      shaggy_fur_(std::make_unique<ShaggyFurEffect>()),
+      super_cuteness_(std::make_unique<SuperCutnessEffect>()) {
+  DCHECK(controller_);
+  if (features::IsVcControlsUiFakeEffectsEnabled()) {
+    controller_->effects_manager().RegisterDelegate(cat_ears_.get());
+    controller_->effects_manager().RegisterDelegate(dog_fur_.get());
+    controller_->effects_manager().RegisterDelegate(spaceship_.get());
+    controller_->effects_manager().RegisterDelegate(office_bunny_.get());
+    controller_->effects_manager().RegisterDelegate(calm_forest_.get());
+    controller_->effects_manager().RegisterDelegate(stylish_kitchen_.get());
+    controller_->effects_manager().RegisterDelegate(greenhouse_.get());
+    controller_->effects_manager().RegisterDelegate(shaggy_fur_.get());
+    controller_->effects_manager().RegisterDelegate(super_cuteness_.get());
+  }
+}
+
+EffectRepository::~EffectRepository() {
+  if (features::IsVcControlsUiFakeEffectsEnabled()) {
+    controller_->effects_manager().UnregisterDelegate(cat_ears_.get());
+    cat_ears_.reset();
+    controller_->effects_manager().UnregisterDelegate(dog_fur_.get());
+    dog_fur_.reset();
+    controller_->effects_manager().UnregisterDelegate(spaceship_.get());
+    spaceship_.reset();
+    controller_->effects_manager().UnregisterDelegate(office_bunny_.get());
+    office_bunny_.reset();
+    controller_->effects_manager().UnregisterDelegate(calm_forest_.get());
+    calm_forest_.reset();
+    controller_->effects_manager().UnregisterDelegate(stylish_kitchen_.get());
+    stylish_kitchen_.reset();
+    controller_->effects_manager().UnregisterDelegate(greenhouse_.get());
+    greenhouse_.reset();
+    controller_->effects_manager().UnregisterDelegate(shaggy_fur_.get());
+    shaggy_fur_.reset();
+    controller_->effects_manager().UnregisterDelegate(super_cuteness_.get());
+    super_cuteness_.reset();
+  }
 }
 
 }  // namespace ash::fake_video_conference

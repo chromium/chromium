@@ -4,10 +4,20 @@
 
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 
+#include "ash/system/video_conference/effects/fake_video_conference_effects.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
+
+FakeVideoConferenceTrayController::FakeVideoConferenceTrayController()
+    : effect_repository_(
+          std::make_unique<fake_video_conference::EffectRepository>(
+              /*controller=*/this)) {}
+
+FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {
+  effect_repository_.reset();
+}
 
 void FakeVideoConferenceTrayController::SetCameraMuted(bool muted) {
   camera_muted_ = muted;

@@ -2079,6 +2079,12 @@ BASE_FEATURE(kUserActivityPrediction,
 // Enable or disable the ChromeOS video conferencing controls UI.
 BASE_FEATURE(kVcControlsUi, "VcControlsUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable the fake effects for ChromeOS video conferencing controls
+// UI. Only meaningful in the emulator.
+BASE_FEATURE(kVcControlsUiFakeEffects,
+             "VcControlsUiFakeEffects",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable multitouch for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardMultitouch,
              "VirtualKeyboardMultitouch",
@@ -2236,8 +2242,9 @@ bool AreCaptureModeDemoToolsEnabled() {
 }
 
 bool AreContextualNudgesEnabled() {
-  if (!IsHideShelfControlsInTabletModeEnabled())
+  if (!IsHideShelfControlsInTabletModeEnabled()) {
     return false;
+  }
   return base::FeatureList::IsEnabled(kContextualNudges);
 }
 
@@ -3176,6 +3183,10 @@ bool IsVCPortraitRelightingEnabled() {
 
 bool IsVcControlsUiEnabled() {
   return base::FeatureList::IsEnabled(kVcControlsUi);
+}
+
+bool IsVcControlsUiFakeEffectsEnabled() {
+  return base::FeatureList::IsEnabled(kVcControlsUiFakeEffects);
 }
 
 bool IsViewPpdEnabled() {

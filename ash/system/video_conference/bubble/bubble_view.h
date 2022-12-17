@@ -22,6 +22,13 @@ class BubbleView : public TrayBubbleView {
   BubbleView(const BubbleView&) = delete;
   BubbleView& operator=(const BubbleView&) = delete;
   ~BubbleView() override = default;
+
+  // views::View:
+  void AddedToWidget() override;
+
+ private:
+  // Unowned by `BubbleView`.
+  VideoConferenceTrayController* controller_;
 };
 
 }  // namespace video_conference
