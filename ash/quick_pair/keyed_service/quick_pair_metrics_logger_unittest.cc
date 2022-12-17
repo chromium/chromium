@@ -58,6 +58,9 @@ constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
 const char kFastPairRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
+const char kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata[] =
+    "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps."
+    "TrueWirelessHeadphonesDeviceType.FastPairNotificationType";
 constexpr char kFastPairPairTimeMetricInitial[] =
     "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol2";
 constexpr char kFastPairPairTimeMetricSubsequent[] =
@@ -1607,6 +1610,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountShown) {
       1);
   EXPECT_EQ(
       histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown),
+      1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
           kFastPairRetroactiveEngagementFlowMetric,
           FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
       0);
@@ -1658,6 +1666,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissed) {
   EXPECT_EQ(
       histogram_tester().GetBucketCount(
           kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
+      1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
           FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed),
       1);
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1712,6 +1725,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissedByUser) {
       0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByUser),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountUiDismissedByUser),
             1);
@@ -1795,6 +1813,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissedByTimeout) {
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountUiDismissedByTimeout),
             1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountUiDismissedByTimeout),
+            1);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
@@ -1818,6 +1841,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
   EXPECT_EQ(
       histogram_tester().GetBucketCount(
           kFastPairRetroactiveEngagementFlowMetric,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
+      1);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
           FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed),
       1);
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1872,6 +1900,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountLearnMorePressed) {
       0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountLearnMorePressed),
             1);
@@ -1934,6 +1967,16 @@ TEST_F(QuickPairMetricsLoggerTest,
                     kAssociateAccountSavePressedAfterLearnMorePressed),
             1);
   EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountSavePressedAfterLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountDismissedByUserAfterLearnMorePressed),
@@ -1978,6 +2021,11 @@ TEST_F(QuickPairMetricsLoggerTest,
       0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountLearnMorePressed),
             1);
@@ -2035,12 +2083,22 @@ TEST_F(QuickPairMetricsLoggerTest,
                     kAssociateAccountLearnMorePressed),
             1);
   EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountSavePressedAfterLearnMorePressed),
             0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kFastPairRetroactiveEngagementFlowMetric,
+                FastPairRetroactiveEngagementFlowEvent::
+                    kAssociateAccountDismissedByUserAfterLearnMorePressed),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kFastPairRetroactiveEngagementFlowMetricWithFakeMetadata,
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountDismissedByUserAfterLearnMorePressed),
             1);

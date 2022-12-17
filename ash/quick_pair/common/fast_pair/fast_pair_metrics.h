@@ -211,6 +211,12 @@ void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
     FastPairEngagementFlowEvent event);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
+    const Device& device,
+    const nearby::fastpair::Device& device_details,
+    FastPairRetroactiveEngagementFlowEvent event);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

@@ -692,6 +692,22 @@ GetEngagementFunnelSubsequentDeviceTypeNotificationTypeMetric(
          device_type.value() + "." + notification_type.value();
 }
 
+absl::optional<std::string>
+GetEngagementFunnelRetroactiveDeviceTypeNotificationTypeMetric(
+    const nearby::fastpair::Device& device_metadata) {
+  absl::optional<std::string> device_type =
+      GetFastPairDeviceType(device_metadata);
+  absl::optional<std::string> notification_type =
+      GetFastPairNotificationType(device_metadata);
+
+  if (!device_type || !notification_type) {
+    return absl::nullopt;
+  }
+
+  return std::string(kRetroactiveEngagementFlowMetric) + "." +
+         device_type.value() + "." + notification_type.value();
+}
+
 }  // namespace
 
 namespace ash {
@@ -728,6 +744,36 @@ void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
       }
 
       base::UmaHistogramSparse(funnel_name.value(), static_cast<int>(event));
+      break;
+  }
+}
+
+void RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
+    const Device& device,
+    const nearby::fastpair::Device& device_details,
+    FastPairRetroactiveEngagementFlowEvent event) {
+  absl::optional<std::string> funnel_name;
+
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      break;
+    // This is only implemented for the retroactive pairing scenario since it's
+    // flow is unique compared to the initial and subsequent flow : it shows
+    // an associate account notification to start the scenario, whereas initial
+    // and subsequent show a discovery notification, and there is no error
+    // notification if there is a failure.
+    case Protocol::kFastPairRetroactive:
+      funnel_name =
+          GetEngagementFunnelRetroactiveDeviceTypeNotificationTypeMetric(
+              device_details);
+
+      if (!funnel_name) {
+        break;
+      }
+
+      base::UmaHistogramSparse(funnel_name.value(), static_cast<int>(event));
+      break;
+    case Protocol::kFastPairSubsequent:
       break;
   }
 }

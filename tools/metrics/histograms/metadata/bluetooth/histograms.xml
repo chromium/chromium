@@ -1116,6 +1116,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps.{FastPairDeviceType}.{FastPairNotificationType}"
+    enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2023-06-11">
+  <owner>jackshira@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair flow for the retroactive pairing
+    scenario, per device type and per notification type from its metadata.
+    Emitted when the associate account UI is shown, the associate account UI is
+    dismissed, the save to account button is pressed on the associate account
+    UI, and when the learn more button is pressed on the associate account UI.
+    TODO(b/262923607): Remove once structured metrics for Fast Pair are
+    implemented.
+  </summary>
+  <token key="FastPairDeviceType">
+    <variant name="HeadphonesDeviceType" summary="Device Type: Headphones"/>
+    <variant name="SpeakerDeviceType" summary="Device Type: Speaker"/>
+    <variant name="TrueWirelessHeadphonesDeviceType"
+        summary="Device Type: True Wireless Headphones"/>
+    <variant name="UnspecifiedDeviceType" summary="Device Type: Unspecified"/>
+  </token>
+  <token key="FastPairNotificationType">
+    <variant name="FastPairNotificationType"
+        summary="Notification Type: Fast Pair. Notification launches the fast
+                 pair intent."/>
+    <variant name="FastPairOneNotificationType"
+        summary="Notification Type: Fast Pair One. Notification launches the
+                 fast pair intent, but doesn't include an anti-spoofing key."/>
+    <variant name="UnspecifiedNotificationType"
+        summary="Notification Type: Unspecified"/>
+  </token>
+</histogram>
+
+<histogram
     name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps.{FastPairTrackedModelID}"
     enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2023-02-26">
   <owner>dclasson@google.com</owner>

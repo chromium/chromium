@@ -44,6 +44,32 @@ void GetDeviceMetadataAndLogEngagementFunnelWithMetadata(
                      event));
 }
 
+void AttemptToRecordRetroactiveEngagementFunnelFlowWithMetadata(
+    scoped_refptr<Device> device,
+    FastPairRetroactiveEngagementFlowEvent event,
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
+  // TODO(b/262452942): Add logic to retry fetching metadata to record funnel
+  // flow. Currently we are missing logging if fetching metadata fails, and we
+  // do not retry.
+  if (!device_metadata) {
+    return;
+  }
+
+  RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
+      *device, device_metadata->GetDetails(), event);
+}
+
+void GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+    scoped_refptr<Device> device,
+    FastPairRetroactiveEngagementFlowEvent event) {
+  FastPairRepository::Get()->GetDeviceMetadata(
+      device->metadata_id,
+      base::BindOnce(
+          &AttemptToRecordRetroactiveEngagementFunnelFlowWithMetadata, device,
+          event));
+}
+
 }  // namespace
 
 QuickPairMetricsLogger::QuickPairMetricsLogger(
@@ -329,6 +355,8 @@ void QuickPairMetricsLogger::OnRetroactivePairFound(
   AttemptRecordingFastPairRetroactiveEngagementFlow(
       *device,
       FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown);
+  GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+      device, FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown);
   RecordRetroactiveSuccessFunnelFlow(
       FastPairRetroactiveSuccessFunnelEvent::kDeviceDetected);
 }
@@ -342,12 +370,18 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountSavePressedAfterLearnMorePressed);
+        GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+            device, FastPairRetroactiveEngagementFlowEvent::
+                        kAssociateAccountSavePressedAfterLearnMorePressed);
         associate_account_learn_more_devices_.erase(device);
         break;
       }
 
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed);
+      GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+          device,
           FastPairRetroactiveEngagementFlowEvent::kAssociateAccountSavePressed);
       RecordRetroactiveSuccessFunnelFlow(
           FastPairRetroactiveSuccessFunnelEvent::kSaveRequested);
@@ -365,12 +399,18 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device, FastPairRetroactiveEngagementFlowEvent::
                        kAssociateAccountLearnMorePressed);
+      GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+          device, FastPairRetroactiveEngagementFlowEvent::
+                      kAssociateAccountLearnMorePressed);
       break;
     case AssociateAccountAction::kDismissedByUser:
       if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountDismissedByUserAfterLearnMorePressed);
+        GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+            device, FastPairRetroactiveEngagementFlowEvent::
+                        kAssociateAccountDismissedByUserAfterLearnMorePressed);
         associate_account_learn_more_devices_.erase(device);
         break;
       }
@@ -378,11 +418,18 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device, FastPairRetroactiveEngagementFlowEvent::
                        kAssociateAccountUiDismissedByUser);
+      GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+          device, FastPairRetroactiveEngagementFlowEvent::
+                      kAssociateAccountUiDismissedByUser);
       break;
     case AssociateAccountAction::kDismissedByTimeout:
       if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device,
+            FastPairRetroactiveEngagementFlowEvent::
+                kAssociateAccountDismissedByTimeoutAfterLearnMorePressed);
+        GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+            device,
             FastPairRetroactiveEngagementFlowEvent::
                 kAssociateAccountDismissedByTimeoutAfterLearnMorePressed);
         associate_account_learn_more_devices_.erase(device);
@@ -392,18 +439,27 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device, FastPairRetroactiveEngagementFlowEvent::
                        kAssociateAccountUiDismissedByTimeout);
+      GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+          device, FastPairRetroactiveEngagementFlowEvent::
+                      kAssociateAccountUiDismissedByTimeout);
       break;
     case AssociateAccountAction::kDismissedByOs:
       if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::
                          kAssociateAccountDismissedAfterLearnMorePressed);
+        GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+            device, FastPairRetroactiveEngagementFlowEvent::
+                        kAssociateAccountDismissedAfterLearnMorePressed);
         associate_account_learn_more_devices_.erase(device);
         break;
       }
 
       AttemptRecordingFastPairRetroactiveEngagementFlow(
           *device,
+          FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed);
+      GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
+          device,
           FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiDismissed);
       break;
   }
