@@ -292,6 +292,10 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return this.i18n('subpageBackButtonAriaRoleDescription', this.pageTitle);
   }
 
+  private getLearnMoreAriaLabel_() {
+    return this.i18n('subpageLearnMoreAriaLabel', this.pageTitle);
+  }
+
   // Override FindShortcutMixin methods.
   override handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen) {

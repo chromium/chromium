@@ -8,6 +8,9 @@
   <message name="IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the settings page to navigate away from the currently displaying subpage to the previous visited page. This text will only be announced by ChromeVox and will not be visible in the UI.">
     Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Bluetooth</ex> subpage</ph>.
   </message>
+  <message name="IDS_SETTINGS_SUBPAGE_LEARN_MORE_ARIA_LABEL" desc="Text read by screen readers when focusing the learn more icon button which corresponds to the subpage title. If the icon button is activated, an external page with the corresponding help article is opened. This text will only be announced by screen readers and will not be visible in the UI.">
+    Learn more about: <ph name="SUBPAGE_TITLE">$1<ex>Payment methods</ex></ph>
+  </message>
 
   <!-- Caption Subpage (strings used by the <settings-captions> element) -->
   <message name="IDS_SETTINGS_CAPTIONS" desc="Title of the subpage for settings related to captions">

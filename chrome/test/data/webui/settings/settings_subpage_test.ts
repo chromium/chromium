@@ -82,6 +82,12 @@ suite('SettingsSubpage', function() {
     assertTrue(!!icon);
     // Check that the icon is forced to always use 'ltr' mode.
     assertEquals('ltr', icon!.getAttribute('dir'));
+    // Check that the icon has proper a11y label.
+    subpage.pageTitle = 'Title';
+    flush();
+    assertEquals(
+        subpage.i18n('subpageLearnMoreAriaLabel', subpage.pageTitle),
+        icon.ariaLabel);
   });
 
   test('favicon', function() {

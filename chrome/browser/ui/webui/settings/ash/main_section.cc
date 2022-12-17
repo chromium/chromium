@@ -156,6 +156,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_LABEL},
       {"subpageBackButtonAriaRoleDescription",
        IDS_SETTINGS_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION},
+      {"subpageLearnMoreAriaLabel", IDS_SETTINGS_SUBPAGE_LEARN_MORE_ARIA_LABEL},
       {"notValidWebAddress", IDS_SETTINGS_NOT_VALID_WEB_ADDRESS},
       {"notValidWebAddressForContentType",
        IDS_SETTINGS_NOT_VALID_WEB_ADDRESS_FOR_CONTENT_TYPE},

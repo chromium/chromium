@@ -93,7 +93,7 @@
       <slot name="subpage-title-extra"></slot>
       <template is="dom-if" if="[[learnMoreUrl]]">
         <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
-            aria-label="$i18n{learnMore}" on-click="onHelpClick_">
+            aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]" on-click="onHelpClick_">
         </cr-icon-button>
       </template>
       <template is="dom-if" if="[[searchLabel]]">
