@@ -26,6 +26,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonWasClicked);
 constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
     "(el) => { return !el.checked; }";
+constexpr char kClickElement[] = "(el) => { return el.click(); }";
 
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -209,27 +210,31 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                       kCheckJsElementIsChecked),
 
       // Turn off Battery Saver Mode
-      MoveMouseTo(kPerformanceSettingsPage, battery_saver_toggle), ClickMouse(),
+      ExecuteJsAt(kPerformanceSettingsPage, battery_saver_toggle,
+                  kClickElement),
       WaitForButtonStateChange(battery_saver_toggle, false),
       CheckBatteryStateLogged(histogram_tester,
                               BatterySaverModeState::kDisabled, 1),
 
       // Turn Battery Saver Mode back on
-      MoveMouseTo(kPerformanceSettingsPage, battery_saver_toggle), ClickMouse(),
+      ExecuteJsAt(kPerformanceSettingsPage, battery_saver_toggle,
+                  kClickElement),
       WaitForButtonStateChange(battery_saver_toggle, true),
       CheckBatteryStateLogged(histogram_tester,
                               BatterySaverModeState::kEnabledBelowThreshold, 1),
 
       // Change Battery Saver Setting to turn on when unplugged
-      MoveMouseTo(kPerformanceSettingsPage, turn_on_when_unplugged_button),
+      ExecuteJsAt(kPerformanceSettingsPage, turn_on_when_unplugged_button,
+                  kClickElement),
       ClickMouse(),
       WaitForButtonStateChange(turn_on_when_unplugged_button, true),
       CheckBatteryStateLogged(histogram_tester,
                               BatterySaverModeState::kEnabledOnBattery, 1),
 
       // Change Battery Saver Setting to turn on when battery is at 20%
-      MoveMouseTo(kPerformanceSettingsPage, turn_on_at_threshold_button),
-      ClickMouse(), WaitForButtonStateChange(turn_on_at_threshold_button, true),
+      ExecuteJsAt(kPerformanceSettingsPage, turn_on_at_threshold_button,
+                  kClickElement),
+      WaitForButtonStateChange(turn_on_at_threshold_button, true),
       CheckBatteryStateLogged(
           histogram_tester, BatterySaverModeState::kEnabledBelowThreshold, 2));
 }
