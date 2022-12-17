@@ -8,6 +8,7 @@
 #include <bitset>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -152,59 +153,57 @@ class SANDBOX_EXPORT BrokerFilePermission {
             kAllowInotifyAddWatchWithIntermediates);
   }
 
-  // Returns true if |requested_filename| is allowed to be accessed
-  // by this permission as per access(2).
-  // If |file_to_access| is not NULL, it is set to point to either
-  // the |requested_filename| in the case of a recursive match,
-  // or a pointer to the matched path in the allowlist if an absolute
-  // match.
-  // |mode| is per mode argument of access(2).
-  // Async signal safe if |file_to_access| is NULL
-  bool CheckAccess(const char* requested_filename,
-                   int mode,
-                   const char** file_to_access) const;
+  // Returns nullptr if |requested_filename| is NOT allowed to be accessed
+  // by this permission with the given |mode| as per access(2).
+  //
+  // Otherwise, the returned C-string is either |requested_filename| in the
+  // case of a recursive match, or a pointer to the matched path in the
+  // allowlist if an absolute match.
+  //
+  // Async signal safe.
+  [[nodiscard]] const char* CheckAccess(const char* requested_filename,
+                                        int mode) const;
 
-  // Returns true if |requested_filename| is allowed to be opened
+  // Returns {nullptr, _} if |requested_filename| is NOT allowed to be opened
   // by this permission.
-  // If |file_to_open| is not NULL it is set to point to either
-  // the |requested_filename| in the case of a recursive match,
-  // or a pointer the matched path in the allowlist if an absolute
-  // match.
-  // If not NULL, |unlink_after_open| is set to point to true if the
-  // caller is required to unlink the path after opening.
-  // Async signal safe if |file_to_open| is NULL.
-  bool CheckOpen(const char* requested_filename,
-                 int flags,
-                 const char** file_to_open,
-                 bool* unlink_after_open) const;
+  //
+  // Otherwise, the returned C-string is either |requested_filename| in the
+  // case of a recursive match, or a pointer to the matched path in the
+  // allowlist if an absolute match. And, the returned boolean indicates whether
+  // or not the caller is required to unlink the path after opening.
+  //
+  // Async signal safe.
+  [[nodiscard]] std::pair<const char*, bool> CheckOpen(
+      const char* requested_filename,
+      int flags) const;
 
-  // Returns true if |requested_filename| is allowed to be stat'd
+  // Returns nullptr if |requested_filename| is NOT allowed to be stat'd
   // by this permission as per stat(2). Differs from CheckAccess()
   // in that if create permission is granted to a file, we permit
   // stat() on all of its leading components.
-  // If |file_to_access| is not NULL, it is set to point to either
-  // the |requested_filename| in the case of a recursive match,
-  // or a pointer to the matched path in the allowlist if an absolute
-  // match.
-  // Async signal safe if |file_to_access| is NULL
-  bool CheckStatWithIntermediates(const char* requested_filename,
-                                  const char** file_to_access) const;
+  //
+  // Otherwise, the returned C-string is either |requested_filename| in the
+  // case of a recursive match, or a pointer to the matched path in the
+  // allowlist if an absolute match.
+  //
+  // Async signal safe.
+  [[nodiscard]] const char* CheckStatWithIntermediates(
+      const char* requested_filename) const;
 
-  // Returns true if |requested_filename| is allowed by this permission to be
-  // added to an inotify instance's watch list by inotify_add_watch(2), with the
-  // specific |mask|. Differs from CheckAccess() in that if inotify_add_watch
-  // permission is granted to a file, we permit inotify_add_watch() on all of
-  // its leading components.
+  // Returns nullptr if |requested_filename| is NOT allowed by this
+  // permission to be added to an inotify instance's watch list by
+  // inotify_add_watch(2), with the specific |mask|. Differs from CheckAccess()
+  // in that if inotify_add_watch permission is granted to a file, we permit
+  // inotify_add_watch() on all of its leading components.
   //
-  // If |file_to_inotify_add_watch| is not NULL, it is set to point to either
-  // the |requested_filename| in the case of a recursive match, or a pointer to
-  // the matched path in the allowlist if an absolute match.
+  // Otherwise, the returned C-string is either |requested_filename| in the
+  // case of a recursive match, or a pointer to the matched path in the
+  // allowlist if an absolute match.
   //
-  // Async signal safe if |file_to_inotify_add_watch| is NULL
-  bool CheckInotifyAddWatchWithIntermediates(
+  // Async signal safe.
+  [[nodiscard]] const char* CheckInotifyAddWatchWithIntermediates(
       const char* requested_filename,
-      uint32_t mask,
-      const char** file_to_inotify_add_watch) const;
+      uint32_t mask) const;
 
  private:
   friend class BrokerFilePermissionTester;
@@ -262,33 +261,32 @@ class SANDBOX_EXPORT BrokerFilePermission {
   // * Is an absolute path
   // * No trailing slash
   // * No /../ path traversal
-  static bool ValidatePath(const char* path);
+  [[nodiscard]] static bool ValidatePath(const char* path);
 
   // MatchPath returns true if |requested_filename| is covered by this instance
-  bool MatchPath(const char* requested_filename) const;
+  [[nodiscard]] bool MatchPath(const char* requested_filename) const;
 
   // Helper routine for CheckAccess() and CheckStat(). Must be safe to call
   // from an async signal context.
-  bool CheckAccessInternal(const char* requested_filename,
-                           int mode,
-                           const char** file_to_access) const;
+  [[nodiscard]] const char* CheckAccessInternal(const char* requested_filename,
+                                                int mode) const;
 
   // Helper routine for CheckStatWithIntermediates() and
   // CheckInotifyAddWatchWithIntermediates() to return true if one of the
   // following is true:
   // 1. |requested_filename| matches a leading directory of |path_|.
   // 2. |can_match_full_path| is true and |path_| == |requested_filename|.
-  bool CheckIntermediates(const char* requested_filename,
-                          bool can_match_full_path) const;
+  [[nodiscard]] bool CheckIntermediates(const char* requested_filename,
+                                        bool can_match_full_path) const;
 
   // Used in by BrokerFilePermissionTester for tests.
   static const char* GetErrorMessageForTests();
 
   void DieOnInvalidPermission();
 
-  // These are not const as std::vector requires copy-assignment and this class
-  // is stored in vectors. All methods are marked const so the compiler will
-  // still enforce no changes outside of the constructor.
+  // These are not const to support the move constructor. All methods are marked
+  // const so the compiler will still enforce no changes outside of the
+  // constructor.
   std::string path_;
   std::bitset<kMaxValueBitPos + 1> flags_;
 };

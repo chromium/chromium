@@ -10,99 +10,116 @@
 namespace sandbox {
 namespace syscall_broker {
 
-bool CommandAccessIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* requested_filename,
-                         int requested_mode,
-                         const char** filename_to_use) {
-  return command_set.test(COMMAND_ACCESS) &&
-         policy.GetFileNameIfAllowedToAccess(requested_filename, requested_mode,
-                                             filename_to_use);
+const char* CommandAccessIsSafe(const BrokerCommandSet& command_set,
+                                const BrokerPermissionList& policy,
+                                const char* requested_filename,
+                                int requested_mode) {
+  if (!command_set.test(COMMAND_ACCESS)) {
+    return nullptr;
+  }
+
+  return policy.GetFileNameIfAllowedToAccess(requested_filename,
+                                             requested_mode);
 }
 
-bool CommandMkdirIsSafe(const BrokerCommandSet& command_set,
-                        const BrokerPermissionList& policy,
-                        const char* requested_filename,
-                        const char** filename_to_use) {
-  return command_set.test(COMMAND_MKDIR) &&
-         policy.GetFileNameIfAllowedToOpen(requested_filename,
-                                           O_RDWR | O_CREAT | O_EXCL,
-                                           filename_to_use, nullptr);
+const char* CommandMkdirIsSafe(const BrokerCommandSet& command_set,
+                               const BrokerPermissionList& policy,
+                               const char* requested_filename) {
+  if (!command_set.test(COMMAND_MKDIR)) {
+    return nullptr;
+  }
+
+  return policy
+      .GetFileNameIfAllowedToOpen(requested_filename, O_RDWR | O_CREAT | O_EXCL)
+      .first;
 }
 
-bool CommandOpenIsSafe(const BrokerCommandSet& command_set,
-                       const BrokerPermissionList& policy,
-                       const char* requested_filename,
-                       int requested_flags,
-                       const char** filename_to_use,
-                       bool* unlink_after_open) {
-  return command_set.test(COMMAND_OPEN) &&
-         policy.GetFileNameIfAllowedToOpen(
-             requested_filename,
-             requested_flags & ~kCurrentProcessOpenFlagsMask, filename_to_use,
-             unlink_after_open);
+std::pair<const char*, bool> CommandOpenIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename,
+    int requested_flags) {
+  if (!command_set.test(COMMAND_OPEN)) {
+    return {nullptr, false};
+  }
+
+  return policy.GetFileNameIfAllowedToOpen(
+      requested_filename, requested_flags & ~kCurrentProcessOpenFlagsMask);
 }
 
-bool CommandReadlinkIsSafe(const BrokerCommandSet& command_set,
-                           const BrokerPermissionList& policy,
-                           const char* requested_filename,
-                           const char** filename_to_use) {
-  return command_set.test(COMMAND_READLINK) &&
-         policy.GetFileNameIfAllowedToOpen(requested_filename, O_RDONLY,
-                                           filename_to_use, nullptr);
-}
-
-bool CommandRenameIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* old_filename,
-                         const char* new_filename,
-                         const char** old_filename_to_use,
-                         const char** new_filename_to_use) {
-  return command_set.test(COMMAND_RENAME) &&
-         policy.GetFileNameIfAllowedToOpen(old_filename,
-                                           O_RDWR | O_CREAT | O_EXCL,
-                                           old_filename_to_use, nullptr) &&
-         policy.GetFileNameIfAllowedToOpen(new_filename,
-                                           O_RDWR | O_CREAT | O_EXCL,
-                                           new_filename_to_use, nullptr);
-}
-
-bool CommandRmdirIsSafe(const BrokerCommandSet& command_set,
-                        const BrokerPermissionList& policy,
-                        const char* requested_filename,
-                        const char** filename_to_use) {
-  return command_set.test(COMMAND_RMDIR) &&
-         policy.GetFileNameIfAllowedToOpen(requested_filename,
-                                           O_RDWR | O_CREAT | O_EXCL,
-                                           filename_to_use, nullptr);
-}
-
-bool CommandStatIsSafe(const BrokerCommandSet& command_set,
-                       const BrokerPermissionList& policy,
-                       const char* requested_filename,
-                       const char** filename_to_use) {
-  return command_set.test(COMMAND_STAT) &&
-         policy.GetFileNameIfAllowedToStat(requested_filename, filename_to_use);
-}
-
-bool CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* requested_filename,
-                         const char** filename_to_use) {
-  return command_set.test(COMMAND_UNLINK) &&
-         policy.GetFileNameIfAllowedToOpen(requested_filename,
-                                           O_RDWR | O_CREAT | O_EXCL,
-                                           filename_to_use, nullptr);
-}
-
-bool CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
+const char* CommandReadlinkIsSafe(const BrokerCommandSet& command_set,
                                   const BrokerPermissionList& policy,
-                                  const char* requested_filename,
-                                  uint32_t mask,
-                                  const char** filename_to_use) {
-  return command_set.test(COMMAND_INOTIFY_ADD_WATCH) &&
-         policy.GetFileNameIfAllowedToInotifyAddWatch(requested_filename, mask,
-                                                      filename_to_use);
+                                  const char* requested_filename) {
+  if (!command_set.test(COMMAND_READLINK)) {
+    return nullptr;
+  }
+
+  return policy.GetFileNameIfAllowedToOpen(requested_filename, O_RDONLY).first;
+}
+
+std::pair<const char*, const char*> CommandRenameIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* old_filename,
+    const char* new_filename) {
+  if (!command_set.test(COMMAND_RENAME)) {
+    return {nullptr, nullptr};
+  }
+
+  auto old_allowed = policy.GetFileNameIfAllowedToOpen(
+      old_filename, O_RDWR | O_CREAT | O_EXCL);
+  auto new_allowed = policy.GetFileNameIfAllowedToOpen(
+      new_filename, O_RDWR | O_CREAT | O_EXCL);
+  if (!old_allowed.first || !new_allowed.first) {
+    return {nullptr, nullptr};
+  }
+
+  return {old_allowed.first, new_allowed.first};
+}
+
+const char* CommandRmdirIsSafe(const BrokerCommandSet& command_set,
+                               const BrokerPermissionList& policy,
+                               const char* requested_filename) {
+  if (!command_set.test(COMMAND_RMDIR)) {
+    return nullptr;
+  }
+
+  return policy
+      .GetFileNameIfAllowedToOpen(requested_filename, O_RDWR | O_CREAT | O_EXCL)
+      .first;
+}
+
+const char* CommandStatIsSafe(const BrokerCommandSet& command_set,
+                              const BrokerPermissionList& policy,
+                              const char* requested_filename) {
+  if (!command_set.test(COMMAND_STAT)) {
+    return nullptr;
+  }
+
+  return policy.GetFileNameIfAllowedToStat(requested_filename);
+}
+
+const char* CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
+                                const BrokerPermissionList& policy,
+                                const char* requested_filename) {
+  if (!command_set.test(COMMAND_UNLINK)) {
+    return nullptr;
+  }
+
+  return policy
+      .GetFileNameIfAllowedToOpen(requested_filename, O_RDWR | O_CREAT | O_EXCL)
+      .first;
+}
+
+const char* CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
+                                         const BrokerPermissionList& policy,
+                                         const char* requested_filename,
+                                         uint32_t mask) {
+  if (!command_set.test(COMMAND_INOTIFY_ADD_WATCH)) {
+    return nullptr;
+  }
+
+  return policy.GetFileNameIfAllowedToInotifyAddWatch(requested_filename, mask);
 }
 
 }  // namespace syscall_broker

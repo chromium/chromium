@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/posix/unix_domain_socket.h"
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
@@ -36,7 +35,7 @@ BrokerClient::BrokerClient(const BrokerSandboxConfig& policy,
       ipc_channel_(std::move(ipc_channel)),
       fast_check_in_client_(fast_check_in_client) {}
 
-BrokerClient::~BrokerClient() {}
+BrokerClient::~BrokerClient() = default;
 
 int BrokerClient::Access(const char* pathname, int mode) const {
   if (!pathname)
@@ -44,8 +43,7 @@ int BrokerClient::Access(const char* pathname, int mode) const {
 
   if (fast_check_in_client_ &&
       !CommandAccessIsSafe(policy_->allowed_command_set,
-                           *policy_->file_permissions, pathname, mode,
-                           nullptr)) {
+                           *policy_->file_permissions, pathname, mode)) {
     return -policy_->file_permissions->denied_errno();
   }
   return PathAndFlagsSyscall(COMMAND_ACCESS, pathname, mode);
@@ -57,7 +55,7 @@ int BrokerClient::Mkdir(const char* pathname, int mode) const {
 
   if (fast_check_in_client_ &&
       !CommandMkdirIsSafe(policy_->allowed_command_set,
-                          *policy_->file_permissions, pathname, nullptr)) {
+                          *policy_->file_permissions, pathname)) {
     return -policy_->file_permissions->denied_errno();
   }
   return PathAndFlagsSyscall(COMMAND_MKDIR, pathname, mode);
@@ -69,8 +67,8 @@ int BrokerClient::Open(const char* pathname, int flags) const {
 
   if (fast_check_in_client_ &&
       !CommandOpenIsSafe(policy_->allowed_command_set,
-                         *policy_->file_permissions, pathname, flags, nullptr,
-                         nullptr)) {
+                         *policy_->file_permissions, pathname, flags)
+           .first) {
     return -policy_->file_permissions->denied_errno();
   }
   return PathAndFlagsSyscallReturningFD(COMMAND_OPEN, pathname, flags);
@@ -82,7 +80,7 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
 
   if (fast_check_in_client_ &&
       !CommandReadlinkIsSafe(policy_->allowed_command_set,
-                             *policy_->file_permissions, path, nullptr)) {
+                             *policy_->file_permissions, path)) {
     return -policy_->file_permissions->denied_errno();
   }
 
@@ -128,8 +126,8 @@ int BrokerClient::Rename(const char* oldpath, const char* newpath) const {
 
   if (fast_check_in_client_ &&
       !CommandRenameIsSafe(policy_->allowed_command_set,
-                           *policy_->file_permissions, oldpath, newpath,
-                           nullptr, nullptr)) {
+                           *policy_->file_permissions, oldpath, newpath)
+           .first) {
     return -policy_->file_permissions->denied_errno();
   }
 
@@ -159,7 +157,7 @@ int BrokerClient::Rmdir(const char* path) const {
 
   if (fast_check_in_client_ &&
       !CommandRmdirIsSafe(policy_->allowed_command_set,
-                          *policy_->file_permissions, path, nullptr)) {
+                          *policy_->file_permissions, path)) {
     return -policy_->file_permissions->denied_errno();
   }
   return PathOnlySyscall(COMMAND_RMDIR, path);
@@ -173,7 +171,7 @@ int BrokerClient::Stat(const char* pathname,
 
   if (fast_check_in_client_ &&
       !CommandStatIsSafe(policy_->allowed_command_set,
-                         *policy_->file_permissions, pathname, nullptr)) {
+                         *policy_->file_permissions, pathname)) {
     return -policy_->file_permissions->denied_errno();
   }
   return StatFamilySyscall(COMMAND_STAT, pathname, follow_links, sb,
@@ -188,7 +186,7 @@ int BrokerClient::Stat64(const char* pathname,
 
   if (fast_check_in_client_ &&
       !CommandStatIsSafe(policy_->allowed_command_set,
-                         *policy_->file_permissions, pathname, nullptr)) {
+                         *policy_->file_permissions, pathname)) {
     return -policy_->file_permissions->denied_errno();
   }
   return StatFamilySyscall(COMMAND_STAT64, pathname, follow_links, sb,
@@ -201,7 +199,7 @@ int BrokerClient::Unlink(const char* path) const {
 
   if (fast_check_in_client_ &&
       !CommandUnlinkIsSafe(policy_->allowed_command_set,
-                           *policy_->file_permissions, path, nullptr)) {
+                           *policy_->file_permissions, path)) {
     return -policy_->file_permissions->denied_errno();
   }
   return PathOnlySyscall(COMMAND_UNLINK, path);
@@ -215,8 +213,8 @@ int BrokerClient::InotifyAddWatch(int fd,
 
   if (fast_check_in_client_ &&
       !CommandInotifyAddWatchIsSafe(policy_->allowed_command_set,
-                                    *policy_->file_permissions, pathname, mask,
-                                    nullptr)) {
+                                    *policy_->file_permissions, pathname,
+                                    mask)) {
     return -policy_->file_permissions->denied_errno();
   }
 

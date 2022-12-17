@@ -62,56 +62,56 @@ inline BrokerCommandSet MakeBrokerCommandSet(
 // Helper functions to perform the same permissions test on either side
 // (client or broker process) of a broker IPC command. The implementations
 // must be safe when called from an async signal handler.
-bool CommandAccessIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* requested_filename,
-                         int requested_mode,  // e.g. F_OK, R_OK, W_OK.
-                         const char** filename_to_use);
+// They all return nullptr when permission checks fail.
+[[nodiscard]] const char* CommandAccessIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename,
+    int requested_mode  // e.g. F_OK, R_OK, W_OK.
+);
 
-bool CommandMkdirIsSafe(const BrokerCommandSet& command_set,
-                        const BrokerPermissionList& policy,
-                        const char* requested_filename,
-                        const char** filename_to_use);
+[[nodiscard]] const char* CommandMkdirIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename);
 
-bool CommandOpenIsSafe(const BrokerCommandSet& command_set,
-                       const BrokerPermissionList& policy,
-                       const char* requested_filename,
-                       int requested_flags,  // e.g. O_RDONLY, O_RDWR.
-                       const char** filename_to_use,
-                       bool* unlink_after_open);
+[[nodiscard]] std::pair<const char*, bool> CommandOpenIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename,
+    int requested_flags  // e.g. O_RDONLY, O_RDWR.
+);
 
-bool CommandReadlinkIsSafe(const BrokerCommandSet& command_set,
-                           const BrokerPermissionList& policy,
-                           const char* requested_filename,
-                           const char** filename_to_use);
+[[nodiscard]] const char* CommandReadlinkIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename);
 
-bool CommandRenameIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* old_filename,
-                         const char* new_filename,
-                         const char** old_filename_to_use,
-                         const char** new_filename_to_use);
+[[nodiscard]] std::pair<const char*, const char*> CommandRenameIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* old_filename,
+    const char* new_filename);
 
-bool CommandRmdirIsSafe(const BrokerCommandSet& command_set,
-                        const BrokerPermissionList& policy,
-                        const char* requested_filename,
-                        const char** filename_to_use);
+[[nodiscard]] const char* CommandRmdirIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename);
 
-bool CommandStatIsSafe(const BrokerCommandSet& command_set,
-                       const BrokerPermissionList& policy,
-                       const char* requested_filename,
-                       const char** filename_to_use);
+[[nodiscard]] const char* CommandStatIsSafe(const BrokerCommandSet& command_set,
+                                            const BrokerPermissionList& policy,
+                                            const char* requested_filename);
 
-bool CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
-                         const BrokerPermissionList& policy,
-                         const char* requested_filename,
-                         const char** filename_to_use);
+[[nodiscard]] const char* CommandUnlinkIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename);
 
-bool CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
-                                  const BrokerPermissionList& policy,
-                                  const char* requested_filename,
-                                  uint32_t mask,
-                                  const char** filename_to_use);
+[[nodiscard]] const char* CommandInotifyAddWatchIsSafe(
+    const BrokerCommandSet& command_set,
+    const BrokerPermissionList& policy,
+    const char* requested_filename,
+    uint32_t mask);
 
 }  // namespace syscall_broker
 }  // namespace sandbox
