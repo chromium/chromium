@@ -744,4 +744,19 @@ TEST_F(PhoneHubTrayTest, SafeAccessToHeaderView) {
   phone_hub_tray_->UpdateHeaderVisibility();
 }
 
+TEST_F(PhoneHubTrayTest, MultiDisplay) {
+  // Connect a second display, make sure the phone hub tray is shown still.
+  UpdateDisplay("500x400,500x400");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  EXPECT_EQ(2U, root_windows.size());
+
+  auto* secondary_phone_hub_tray =
+      StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+          ->phone_hub_tray();
+  secondary_phone_hub_tray->SetPhoneHubManager(&phone_hub_manager_);
+
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+  EXPECT_TRUE(secondary_phone_hub_tray->GetVisible());
+}
+
 }  // namespace ash

@@ -146,6 +146,8 @@ void SystemTrayModel::SetPhoneHubManager(
       ->message_center_controller()
       ->phone_hub_notification_controller()
       ->SetManager(phone_hub_manager);
+
+  phone_hub_manager_ = phone_hub_manager;
 }
 
 }  // namespace ash

@@ -24,6 +24,9 @@ class TrayNetworkStateModel;
 class UpdateModel;
 class VirtualKeyboardModel;
 class CalendarModel;
+namespace phonehub {
+class PhoneHubManager;
+}
 
 // Top level model of SystemTray.
 class SystemTrayModel : public SystemTray {
@@ -79,6 +82,7 @@ class SystemTrayModel : public SystemTray {
   }
   SystemTrayClient* client() { return client_; }
   CalendarModel* calendar_model() { return calendar_model_.get(); }
+  phonehub::PhoneHubManager* phone_hub_manager() { return phone_hub_manager_; }
 
  private:
   std::unique_ptr<ClockModel> clock_;
@@ -94,6 +98,9 @@ class SystemTrayModel : public SystemTray {
 
   // Client interface in chrome browser. May be null in tests.
   SystemTrayClient* client_ = nullptr;
+
+  // Unowned.
+  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 };
 
 }  // namespace ash
