@@ -13,10 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -32,7 +30,6 @@ constexpr base::TimeDelta kOtherDuration = base::Milliseconds(4242);
 struct TabStateParams {
   bool has_saved_frames;
   bool destination_is_loaded;
-  bool tab_switch_metrics2_enabled;
   const char* histogram_suffix;
 };
 
@@ -41,41 +38,18 @@ constexpr TabStateParams kTabStatesToTest[] = {
     {
         .has_saved_frames = true,
         .destination_is_loaded = true,
-        .tab_switch_metrics2_enabled = false,
         .histogram_suffix = "WithSavedFrames",
     },
-    {
-        .has_saved_frames = true,
-        .destination_is_loaded = true,
-        .tab_switch_metrics2_enabled = true,
-        .histogram_suffix = "WithSavedFrames",
-    },
-
     // NoSavedFrames_Loaded
     {
         .has_saved_frames = false,
         .destination_is_loaded = true,
-        .tab_switch_metrics2_enabled = false,
         .histogram_suffix = "NoSavedFrames_Loaded",
     },
-    {
-        .has_saved_frames = false,
-        .destination_is_loaded = true,
-        .tab_switch_metrics2_enabled = true,
-        .histogram_suffix = "NoSavedFrames_Loaded",
-    },
-
     // NoSavedFrames_NotLoaded
     {
         .has_saved_frames = false,
         .destination_is_loaded = false,
-        .tab_switch_metrics2_enabled = false,
-        .histogram_suffix = "NoSavedFrames_NotLoaded",
-    },
-    {
-        .has_saved_frames = false,
-        .destination_is_loaded = false,
-        .tab_switch_metrics2_enabled = true,
         .histogram_suffix = "NoSavedFrames_NotLoaded",
     },
 };
@@ -84,33 +58,19 @@ class ContentToVisibleTimeReporterTest
     : public ::testing::TestWithParam<TabStateParams> {
  protected:
   ContentToVisibleTimeReporterTest() : tab_state_(GetParam()) {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kTabSwitchMetrics2,
-        tab_state_.tab_switch_metrics2_enabled);
-
+    duration_histograms_.push_back("Browser.Tabs.TotalSwitchDuration2");
     duration_histograms_.push_back(base::StrCat(
-        {"Browser.Tabs.TotalSwitchDuration.", tab_state_.histogram_suffix}));
-    incomplete_duration_histograms_.push_back(
-        base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration.",
-                      tab_state_.histogram_suffix}));
-    result_histograms_.push_back(base::StrCat(
-        {"Browser.Tabs.TabSwitchResult.", tab_state_.histogram_suffix}));
+        {"Browser.Tabs.TotalSwitchDuration2.", tab_state_.histogram_suffix}));
 
-    if (tab_state_.tab_switch_metrics2_enabled) {
-      // Additional metrics logged when the TabSwitchMetrics2 feature is
-      // enabled.
-      // TODO(crbug.com/1164477): When the feature is enabled both the old and
-      // new histograms are logged, so that the old histograms with and without
-      // the feature can be easily compared in an A/B test. When the feature
-      // ships by default remove the old histograms.
-      duration_histograms_.push_back(base::StrCat(
-          {"Browser.Tabs.TotalSwitchDuration2.", tab_state_.histogram_suffix}));
-      incomplete_duration_histograms_.push_back(
-          base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration2.",
-                        tab_state_.histogram_suffix}));
-      result_histograms_.push_back(base::StrCat(
-          {"Browser.Tabs.TabSwitchResult2.", tab_state_.histogram_suffix}));
-    }
+    incomplete_duration_histograms_.push_back(
+        "Browser.Tabs.TotalIncompleteSwitchDuration2");
+    incomplete_duration_histograms_.push_back(
+        base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration2.",
+                      tab_state_.histogram_suffix}));
+
+    result_histograms_.push_back("Browser.Tabs.TabSwitchResult2");
+    result_histograms_.push_back(base::StrCat(
+        {"Browser.Tabs.TabSwitchResult2.", tab_state_.histogram_suffix}));
 
     // Expect all histograms to be empty.
     ExpectHistogramsEmptyExcept({});
@@ -119,26 +79,17 @@ class ContentToVisibleTimeReporterTest
   void ExpectHistogramsEmptyExcept(
       const std::vector<std::string>& histograms_with_values) {
     constexpr const char* kAllHistograms[] = {
-        // Pre-TabSwitchMetrics2 feature.
-        "Browser.Tabs.TotalSwitchDuration.WithSavedFrames",
-        "Browser.Tabs.TotalSwitchDuration.NoSavedFrames_Loaded",
-        "Browser.Tabs.TotalSwitchDuration.NoSavedFrames_NotLoaded",
-        "Browser.Tabs.TotalIncompleteSwitchDuration.WithSavedFrames",
-        "Browser.Tabs.TotalIncompleteSwitchDuration.NoSavedFrames_Loaded",
-        "Browser.Tabs.TotalIncompleteSwitchDuration.NoSavedFrames_"
-        "NotLoaded",
-        "Browser.Tabs.TabSwitchResult.WithSavedFrames",
-        "Browser.Tabs.TabSwitchResult.NoSavedFrames_Loaded",
-        "Browser.Tabs.TabSwitchResult.NoSavedFrames_NotLoaded",
-        // With TabSwitchMetrics2 feature.
+        "Browser.Tabs.TotalSwitchDuration2",
         "Browser.Tabs.TotalSwitchDuration2.WithSavedFrames",
         "Browser.Tabs.TotalSwitchDuration2.NoSavedFrames_Loaded",
         "Browser.Tabs.TotalSwitchDuration2.NoSavedFrames_NotLoaded",
+        "Browser.Tabs.TotalIncompleteSwitchDuration2",
         "Browser.Tabs.TotalIncompleteSwitchDuration2.WithSavedFrames",
         "Browser.Tabs.TotalIncompleteSwitchDuration2.NoSavedFrames_"
         "Loaded",
         "Browser.Tabs.TotalIncompleteSwitchDuration2.NoSavedFrames_"
         "NotLoaded",
+        "Browser.Tabs.TabSwitchResult2",
         "Browser.Tabs.TabSwitchResult2.WithSavedFrames",
         "Browser.Tabs.TabSwitchResult2.NoSavedFrames_Loaded",
         "Browser.Tabs.TabSwitchResult2.NoSavedFrames_NotLoaded",
@@ -180,9 +131,6 @@ class ContentToVisibleTimeReporterTest
     }
   }
 
-  // Create `feature_list_` before `task_environment_` and destroy it after to
-  // avoid a race in destruction.
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ContentToVisibleTimeReporter tab_switch_time_recorder_;
@@ -207,8 +155,8 @@ TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -238,8 +186,8 @@ TEST_P(ContentToVisibleTimeReporterTest, PresentationFailure) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
   std::move(callback).Run(gfx::PresentationFeedback::Failure());
 
   ExpectHistogramsEmptyExcept(result_histograms_);
@@ -259,8 +207,8 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start1, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -285,8 +233,8 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start2, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
   const auto end2 = start2 + kOtherDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end2, end2 - start2, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -312,21 +260,17 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
       ContentToVisibleTimeReporter::TabSwitchResult::kSuccess, 1);
 }
 
-// When the TabSwitchMetrics2 feature is enabled, if TabWasHidden is not called
-// an incomplete tab switch is reported.
+// If TabWasHidden is not called an incomplete tab switch is reported.
 // TODO(crbug.com/1289266): Find and remove all cases where TabWasHidden is not
 // called.
 TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
-  if (!tab_state_.tab_switch_metrics2_enabled)
-    GTEST_SKIP();
-
   const auto start1 = base::TimeTicks::Now();
   auto callback1 = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start1, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
 
   task_environment_.FastForwardBy(kDuration);
 
@@ -337,8 +281,8 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start2, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ false));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/false));
   const auto end2 = start2 + kOtherDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end2, end2 - start2, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -375,8 +319,8 @@ TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ false,
-          /* show_reason_bfcache_restore */ true));
+          /*show_reason_tab_switching=*/false,
+          /*show_reason_bfcache_restore=*/true));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -398,8 +342,8 @@ TEST_P(ContentToVisibleTimeReporterTest,
       tab_state_.has_saved_frames,
       blink::mojom::RecordContentToVisibleTimeRequest::New(
           start, tab_state_.destination_is_loaded,
-          /* show_reason_tab_switching */ true,
-          /* show_reason_bfcache_restore */ true));
+          /*show_reason_tab_switching=*/true,
+          /*show_reason_bfcache_restore=*/true));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);

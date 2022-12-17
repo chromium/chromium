@@ -611,31 +611,9 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() {
   return view_.get();
 }
 
-VisibleTimeRequestTrigger*
+VisibleTimeRequestTrigger&
 RenderWidgetHostImpl::GetVisibleTimeRequestTrigger() {
-  auto* trigger = delegate()->GetVisibleTimeRequestTrigger();
-
-  // Use the delegate's trigger only if the kTabSwitchMetrics2 feature is
-  // enabled. Note that `trigger` can be null in unit tests even if the feature
-  // is enabled.
-  if (trigger && trigger->is_tab_switch_metrics2_feature_enabled())
-    return trigger;
-
-  // Go through this widget's view if the kTabSwitchMetrics2 feature is NOT
-  // enabled. This is different from delegate()->GetVisibleTimeRequestTrigger()
-  // which goes through the current view for the WebContents - this widget may
-  // not be current.
-  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
-  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
-  // becomes the default.
-  if (GetView()) {
-    trigger = GetView()->GetVisibleTimeRequestTrigger();
-    if (trigger) {
-      DCHECK(!trigger->is_tab_switch_metrics2_feature_enabled());
-      return trigger;
-    }
-  }
-  return nullptr;
+  return delegate()->GetVisibleTimeRequestTrigger();
 }
 
 const viz::FrameSinkId& RenderWidgetHostImpl::GetFrameSinkId() {

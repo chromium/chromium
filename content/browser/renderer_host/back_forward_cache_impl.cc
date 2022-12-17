@@ -306,14 +306,10 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
   // cases like page navigating back with window.history.back(), while being
   // hidden.
   if (rfh->delegate()->GetVisibility() != Visibility::HIDDEN) {
-    // The trigger can be null in unit tests.
-    auto* trigger = rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger();
-    if (trigger) {
-      trigger->UpdateRequest(navigation_start,
-                             false /* destination_is_loaded */,
-                             false /* show_reason_tab_switching */,
-                             true /* show_reason_bfcache_restore */);
-    }
+    rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger().UpdateRequest(
+        navigation_start, /*destination_is_loaded=*/false,
+        /*show_reason_tab_switching=*/false,
+        /*show_reason_bfcache_restore=*/true);
   }
 }
 

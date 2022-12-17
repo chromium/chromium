@@ -77,6 +77,11 @@ RenderViewHostDelegateView* MockRenderWidgetHostDelegate::GetDelegateView() {
   return &rvh_delegate_view_;
 }
 
+VisibleTimeRequestTrigger&
+MockRenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
+  return visible_time_request_trigger_;
+}
+
 bool MockRenderWidgetHostDelegate::ShouldIgnoreInputEvents() {
   return should_ignore_input_events_;
 }

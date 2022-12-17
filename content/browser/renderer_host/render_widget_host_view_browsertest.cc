@@ -5,13 +5,11 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include <stdint.h>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -50,7 +48,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
@@ -81,11 +79,6 @@
 namespace content {
 
 namespace {
-
-using ::testing::AssertionFailure;
-using ::testing::AssertionResult;
-using ::testing::AssertionSuccess;
-using ::testing::PrintToString;
 
 // Convenience macro: Short-circuit a pass for the tests where platform support
 // for forced-compositing mode (or disabled-compositing mode) is lacking.
@@ -1130,8 +1123,7 @@ INSTANTIATE_TEST_SUITE_P(
     kTestCompositingModes);
 
 class RenderWidgetHostViewPresentationFeedbackBrowserTest
-    : public NoCompositingRenderWidgetHostViewBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public NoCompositingRenderWidgetHostViewBrowserTest {
  public:
   RenderWidgetHostViewPresentationFeedbackBrowserTest(
       const RenderWidgetHostViewPresentationFeedbackBrowserTest&) = delete;
@@ -1139,10 +1131,9 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
       const RenderWidgetHostViewPresentationFeedbackBrowserTest&) = delete;
 
  protected:
-  RenderWidgetHostViewPresentationFeedbackBrowserTest() {
-    features_.InitWithFeatureState(blink::features::kTabSwitchMetrics2,
-                                   GetParam());
-  }
+  using TabSwitchResult = blink::ContentToVisibleTimeReporter::TabSwitchResult;
+
+  RenderWidgetHostViewPresentationFeedbackBrowserTest() = default;
 
   ~RenderWidgetHostViewPresentationFeedbackBrowserTest() override = default;
 
@@ -1169,100 +1160,39 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
 
   // Set a VisibleTimeRequest that will be sent the first time the widget
   // becomes visible. The default parameters request a tab switch measurement.
-  AssertionResult CreateVisibleTimeRequest(
-      bool show_reason_tab_switching = true,
-      bool show_reason_bfcache_restore = false) {
-    VisibleTimeRequestTrigger* request_trigger =
-        GetRenderWidgetHostView()->host()->GetVisibleTimeRequestTrigger();
-    if (!request_trigger) {
-      return AssertionFailure() << "GetVisibleTimeRequestTrigger returned null";
-    }
-    request_trigger->UpdateRequest(
-        base::TimeTicks::Now(), /*destination_is_loaded=*/true,
-        show_reason_tab_switching, show_reason_bfcache_restore);
-    return AssertionSuccess();
+  void CreateVisibleTimeRequest(bool show_reason_tab_switching = true,
+                                bool show_reason_bfcache_restore = false) {
+    GetRenderWidgetHostView()
+        ->host()
+        ->GetVisibleTimeRequestTrigger()
+        .UpdateRequest(base::TimeTicks::Now(), /*destination_is_loaded=*/true,
+                       show_reason_tab_switching, show_reason_bfcache_restore);
   }
 
-  enum class HistogramToExpect {
-    kTotalSwitchDuration,
-    kTotalIncompleteSwitchDuration,
-    kNothing,  // Expect no tab switch histogram to be logged.
-  };
-
-  AssertionResult WaitForPresentationFeedback(
-      HistogramToExpect histogram_to_expect) {
-    // If TabSwitchMetrics2 is enabled, both Browser.Tabs.TotalSwitchDuration.*
-    // and Browser.Tabs.TotalSwitchDuration2.* will be logged, along with an
-    // unsuffixed aggregate Browser.Tabs.TotalSwitchDuration2.
-    const size_t expected_histogram_count =
-        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 3
-                                                                          : 1;
-
-    // Expect one of Browser.Tabs.TotalSwitchDuration.* or
-    // Browser.Tabs.TotalIncompleteSwitchDuration.*.
-    //
-    // Browser.Tabs.TabSwitchResult.* is also logged with a result code, but the
-    // HistogramTest API makes it easier to count the number of samples for any
-    // suffix of TotalSwitchDuration than to check the exact histogram values
-    // for each possible suffix of TabSwitchResult.
-    const char* expected_prefix = nullptr;
-    std::vector<std::string> unexpected_prefixes;
-    switch (histogram_to_expect) {
-      case HistogramToExpect::kTotalSwitchDuration:
-        expected_prefix = "Browser.Tabs.TotalSwitchDuration";
-        unexpected_prefixes.push_back(
-            "Browser.Tabs.TotalIncompleteSwitchDuration");
-        break;
-      case HistogramToExpect::kTotalIncompleteSwitchDuration:
-        expected_prefix = "Browser.Tabs.TotalIncompleteSwitchDuration";
-        unexpected_prefixes.push_back("Browser.Tabs.TotalSwitchDuration");
-        break;
-      case HistogramToExpect::kNothing:
-        unexpected_prefixes.push_back("Browser.Tabs.TotalSwitchDuration");
-        unexpected_prefixes.push_back(
-            "Browser.Tabs.TotalIncompleteSwitchDuration");
-        break;
+  void ExpectPresentationFeedback(TabSwitchResult expected_result) {
+    // Wait for the expected result (only) to be logged.
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    while (histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult2")
+               .empty()) {
+      ASSERT_LT(base::TimeTicks::Now() - start_time,
+                TestTimeouts::action_timeout())
+          << "Timed out waiting for Browser.Tabs.TabSwitchResult2.";
+      GiveItSomeTime();
     }
+    histogram_tester_.ExpectUniqueSample("Browser.Tabs.TabSwitchResult2",
+                                         expected_result, 1);
+  }
 
+  void ExpectNoPresentationFeedback() {
+    const base::TimeTicks start_time = base::TimeTicks::Now();
     // The full action_timeout is excessively long when expecting nothing to be
     // logged.
-    const base::TimeDelta timeout =
-        histogram_to_expect == HistogramToExpect::kNothing
-            ? base::Seconds(1)
-            : TestTimeouts::action_timeout();
-
-    // Wait for the expected histograms (only) to be logged.
-    const base::TimeTicks start_time = base::TimeTicks::Now();
-    while (base::TimeTicks::Now() - start_time < timeout) {
+    while (base::TimeTicks::Now() - start_time < base::Seconds(1)) {
       GiveItSomeTime();
-
-      for (const std::string& unexpected_prefix : unexpected_prefixes) {
-        if (!histogram_tester_.GetTotalCountsForPrefix(unexpected_prefix)
-                 .empty()) {
-          return AssertionFailure()
-                 << "Unexpected histogram " << unexpected_prefix
-                 << ". All histograms: "
-                 << PrintToString(histogram_tester_.GetTotalCountsForPrefix(
-                        "Browser.Tabs."));
-        }
-      }
-      if (expected_prefix &&
-          histogram_tester_.GetTotalCountsForPrefix(expected_prefix).size() ==
-              expected_histogram_count) {
-        return AssertionSuccess();
-      }
+      ASSERT_TRUE(
+          histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult2")
+              .empty());
     }
-
-    if (expected_prefix) {
-      return AssertionFailure()
-             << "Timed out waiting for " << expected_prefix
-             << ". All histograms: "
-             << PrintToString(
-                    histogram_tester_.GetTotalCountsForPrefix("Browser.Tabs."));
-    }
-
-    // Expected nothing, got nothing.
-    return AssertionSuccess();
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -1300,98 +1230,74 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   }
 #endif
 
-  base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
 };
 
-// Alias for tests that will only pass if blink::features::kTabSwitchMetrics2 is
-// enabled, because the original tab switch metric implementation didn't cover
-// all corner cases.
-using RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest =
-    RenderWidgetHostViewPresentationFeedbackBrowserTest;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                         ::testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(
-    Metrics2Only,
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    ::testing::Values(true));
-
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
                        Show) {
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
-  EXPECT_TRUE(
-      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kSuccess);
 }
 
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
                        ShowThenHide) {
-  // Browser.Tabs.TotalIncompleteSwitchDuration.* is logged when the widget
-  // is hidden before presenting a frame.
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+  // An incomplete tab switch is logged when the widget is hidden before
+  // presenting a frame.
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   GetRenderWidgetHostView()->Hide();
-  EXPECT_TRUE(WaitForPresentationFeedback(
-      HistogramToExpect::kTotalIncompleteSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kIncomplete);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    HiddenButPainting) {
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       HiddenButPainting) {
   // Browser.Tabs.* is not logged if the page becomes "visible" due to a hidden
   // capturer.
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(
       PageVisibilityState::kHiddenButPainting);
-  EXPECT_TRUE(WaitForPresentationFeedback(HistogramToExpect::kNothing));
+  ExpectNoPresentationFeedback();
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    ShowWhileCapturing) {
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       ShowWhileCapturing) {
   // Frame is captured and then becomes visible.
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(
       PageVisibilityState::kHiddenButPainting);
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
-  EXPECT_TRUE(
-      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kSuccess);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    HideWhileCapturing) {
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       HideWhileCapturing) {
   // Capture starts and frame becomes "hidden" before a render frame is
   // presented.
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   GetRenderWidgetHostView()->ShowWithVisibility(
       PageVisibilityState::kHiddenButPainting);
-  EXPECT_TRUE(WaitForPresentationFeedback(
-      HistogramToExpect::kTotalIncompleteSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kIncomplete);
 }
 
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
                        ShowWithoutTabSwitchRequest) {
-  ASSERT_TRUE(CreateVisibleTimeRequest(/*show_reason_tab_switching=*/false,
-                                       /*show_reason_bfcache_restore=*/true));
+  CreateVisibleTimeRequest(/*show_reason_tab_switching=*/false,
+                           /*show_reason_bfcache_restore=*/true);
   // Browser.Tabs.* is not logged if not requested.
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
-  EXPECT_TRUE(WaitForPresentationFeedback(HistogramToExpect::kNothing));
+  ExpectNoPresentationFeedback();
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    ShowThenHideWithoutTabSwitchRequest) {
-  ASSERT_TRUE(CreateVisibleTimeRequest(/*show_reason_tab_switching=*/false,
-                                       /*show_reason_bfcache_restore=*/true));
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       ShowThenHideWithoutTabSwitchRequest) {
+  CreateVisibleTimeRequest(/*show_reason_tab_switching=*/false,
+                           /*show_reason_bfcache_restore=*/true);
   // Browser.Tabs.* is not logged if not requested.
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   GetRenderWidgetHostView()->Hide();
-  EXPECT_TRUE(WaitForPresentationFeedback(HistogramToExpect::kNothing));
+  ExpectNoPresentationFeedback();
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1402,43 +1308,37 @@ IN_PROC_BROWSER_TEST_P(
 // presentation feedback is logged when the state is UseParentLayerCompositor.
 
 // TODO(https://crbug.com/1164477): These tests don't match the behaviour of the
-// browser. In production the kTotalSwitchDuration histograms are logged but in
-// this test, the presentation time request is swallowed during the
+// browser. In production the Browser.Tabs.* histograms are logged but in this
+// test, the presentation time request is swallowed during the
 // UseParentLayerCompositor state. Need to find out what's wrong with the test
 // setup.
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    DISABLED_ShowWithParentLayer) {
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       DISABLED_ShowWithParentLayer) {
+  CreateVisibleTimeRequest();
   ScopedParentLayer parent_layer(GetBrowserCompositor());
   GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
-  EXPECT_TRUE(
-      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kSuccess);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    DISABLED_ShowThenAddParentLayer) {
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       DISABLED_ShowThenAddParentLayer) {
+  CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   ScopedParentLayer parent_layer(GetBrowserCompositor());
   GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
-  EXPECT_TRUE(
-      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kSuccess);
 }
 
-IN_PROC_BROWSER_TEST_P(
-    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
-    DISABLED_ShowThenRemoveParentLayer) {
-  ASSERT_TRUE(CreateVisibleTimeRequest());
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
+                       DISABLED_ShowThenRemoveParentLayer) {
+  CreateVisibleTimeRequest();
   ScopedParentLayer parent_layer(GetBrowserCompositor());
   GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   GetBrowserCompositor()->SetParentUiLayer(nullptr);
-  EXPECT_TRUE(
-      WaitForPresentationFeedback(HistogramToExpect::kTotalSwitchDuration));
+  ExpectPresentationFeedback(TabSwitchResult::kSuccess);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

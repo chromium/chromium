@@ -212,12 +212,7 @@ std::string CompressAndSaveBitmap(const std::string& dir,
 
 blink::mojom::RecordContentToVisibleTimeRequestPtr
 TakeContentToVisibleTimeRequest(RenderWidgetHostImpl* host) {
-  // The trigger can be null in unit tests.
-  auto* visible_time_request_trigger = host->GetVisibleTimeRequestTrigger();
-  auto content_to_visible_start_state =
-      visible_time_request_trigger ? visible_time_request_trigger->TakeRequest()
-                                   : nullptr;
-  return content_to_visible_start_state;
+  return host->GetVisibleTimeRequestTrigger().TakeRequest();
 }
 
 bool IsFullscreenSurfaceSyncSupported() {

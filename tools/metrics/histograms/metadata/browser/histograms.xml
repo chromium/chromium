@@ -611,21 +611,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.Tabs.TabSwitchHasRWHV" enum="BooleanExists"
-    expires_after="2023-04-16">
-  <owner>joenotcharles@google.com</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Reported at the beginning of every tab switch to record whether a
-    RenderWidgetHostView existed for the target tab. If not, the
-    Browser.Tabs.TabSwitchResult family of metrics will be recorded for the tab
-    switch if the TabSwitchMetrics2 feature is enabled (new behaviour) but not
-    if it is disabled (existing behaviour). So the count of
-    Browser.Tabs.TabSwitchHasRWHV == false should equal the number of extra
-    Browser.Tabs.TabSwitchResult records received with the feature enabled.
-  </summary>
-</histogram>
-
 <histogram name="Browser.Tabs.TabSwitchResult2{TabSwitchingType}"
     enum="TabSwitchResult" expires_after="2023-01-26">
   <owner>fdoray@chromium.org</owner>
@@ -634,23 +619,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether a frame was presented after a tab switch event. Recorded based on
     the destination tab state when the tab switch starts: {TabSwitchingType}
-  </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType"/>
-</histogram>
-
-<histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
-    enum="TabSwitchResult" expires_after="2023-01-26">
-  <obsolete>
-    Replaced by Browser.Tabs.TabSwitchResult2 in M107. Still logged in parallel
-    until M108 to give automated test suites time to update (see
-    http://shortn/_hpallg5Q7H.)
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <owner>joenotcharles@google.com</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether a frame was presented after a tab switch event. Not recorded in
-    several cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
@@ -669,25 +637,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
-<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
-    units="ms" expires_after="2023-01-26">
-  <obsolete>
-    Replaced by Browser.Tabs.TotalIncompleteSwitchDuration2 in M107. Still
-    logged in parallel until M108 to give automated test suites time to update
-    (see http://shortn/_hpallg5Q7H.)
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>joenotcharles@google.com</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The time between a tab switch input event timestamp and when the tab is
-    hidden, if no frame is presented in the meantime. Not recorded in several
-    cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
-  </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType"/>
-</histogram>
-
 <histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
     units="ms" expires_after="2024-01-26">
   <owner>jonross@chromium.org</owner>
@@ -697,25 +646,6 @@ chromium-metrics-reviews@google.com.
     The time between the input event timestamp and the frame presentation time
     on a tab switch. Recorded based on the destination tab state when the tab
     switch starts: {TabSwitchingType}
-  </summary>
-  <token key="TabSwitchingType" variants="TabSwitchingType"/>
-</histogram>
-
-<histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
-    expires_after="2023-01-26">
-  <obsolete>
-    Replaced by Browser.Tabs.TotalSwitchDuration2 in M107. Still logged in
-    parallel until M108 to give automated test suites time to update (see
-    http://shortn/_hpallg5Q7H.)
-  </obsolete>
-  <owner>ejoe@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>joenotcharles@google.com</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The time between the input event timestamp and the frame presentation time
-    on a tab switch. Not recorded in several cases described at
-    http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>

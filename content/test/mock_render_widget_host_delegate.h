@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/test/stub_render_view_host_delegate_view.h"
 
@@ -64,6 +65,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   TextInputManager* GetTextInputManager() override;
   bool IsFullscreen() override;
   RenderViewHostDelegateView* GetDelegateView() override;
+  VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
   bool ShouldIgnoreInputEvents() override;
 
  private:
@@ -77,6 +79,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
       KeyboardEventProcessingResult::NOT_HANDLED;
   StubRenderViewHostDelegateView rvh_delegate_view_;
   bool should_ignore_input_events_ = false;
+  VisibleTimeRequestTrigger visible_time_request_trigger_;
 };
 
 }  // namespace content

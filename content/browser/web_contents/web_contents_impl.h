@@ -973,7 +973,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsShowingContextMenuOnPage() const override;
   void DidChangeScreenOrientation() override;
   gfx::Rect GetWindowsControlsOverlayRect() const override;
-  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger() final;
+  VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() final;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 

@@ -68,20 +68,10 @@ class CONTENT_EXPORT VisibleTimeRequestTrigger {
   // |last_request_| to null.
   blink::mojom::RecordContentToVisibleTimeRequestPtr TakeRequest();
 
-  // Returns true if blink::features::kTabSwitchMetrics2 is enabled, which
-  // affects the measurement behaviour. This lets any caller with access to a
-  // VisibleTimeRequestTrigger check the cached value to avoid slow feature
-  // lookups on the critical path.
-  bool is_tab_switch_metrics2_feature_enabled() const {
-    return is_tab_switch_metrics2_feature_enabled_;
-  }
-
  private:
   // The last visible event start request. This should only be set and
   // retrieved using UpdateRequest and TakeRequest.
   blink::mojom::RecordContentToVisibleTimeRequestPtr last_request_;
-
-  bool is_tab_switch_metrics2_feature_enabled_;
 };
 
 }  // namespace content

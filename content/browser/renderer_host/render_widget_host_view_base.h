@@ -25,7 +25,6 @@
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
-#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -38,6 +37,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-forward.h"
@@ -562,10 +562,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual ui::Compositor* GetCompositor();
 
-  // Returns the object that tracks content to visible events for the
-  // RenderWidgetHostView.
-  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
-
   virtual void EnterFullscreenMode(
       const blink::mojom::FullscreenOptions& options) {}
   virtual void ExitFullscreenMode() {}
@@ -734,12 +730,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 
   absl::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
-
-  // TODO(crbug.com/1164477): The VisibleTimeRequestTrigger is now stored in
-  // WebContentsImpl. This obsolete version is only used when
-  // blink::features::kTabSwitchMetrics2 is disabled. Remove it once the
-  // feature is validated and becomes the default.
-  VisibleTimeRequestTrigger visible_time_request_trigger_;
 
   // True when StopFlingingIfNecessary() calls StopFling().
   bool view_stopped_flinging_for_test_ = false;

@@ -224,8 +224,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   }
 
   // Returns the object that tracks the start of content to visible events for
-  // the WebContents. May be nullptr if there is no RenderWidgetHostView.
-  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
+  // the WebContents.
+  VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger();
 
   // RenderWidgetHost implementation.
   const viz::FrameSinkId& GetFrameSinkId() override;

@@ -9565,43 +9565,14 @@ void WebContentsImpl::UpdateBrowserControlsState(
 
 void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded) {
-  // TODO(crbug.com/1164477): Remove this UMA once the TabSwitchMetrics2
-  // experiment ends.
-  //
-  // The experiment is showing a mix shift, with more records received in
-  // the experiment group. The control group should preserve the old
-  // behaviour where Browser.Tabs.* metrics were never recorded if there
-  // was no RenderWidgetHostView at the time of the tab switch. To verify
-  // that this accounts for the mix shift, expect that:
-  //
-  // 1. The difference in Browser.Tabs.* record count between the control
-  //    and enabled groups will match the count of
-  //    Browser.Tabs.TabSwitchHasRWHV == false in the enabled group.
-  //
-  // 2. The count of Browser.Tabs.TabSwitchHasRWHV in the control and
-  //    enabled groups are equal.
-  base::UmaHistogramBoolean("Browser.Tabs.TabSwitchHasRWHV",
-                            GetRenderWidgetHostView());
-
-  auto* trigger = GetVisibleTimeRequestTrigger();
-  if (!trigger)
-    return;
-  trigger->UpdateRequest(start_time, destination_is_loaded,
-                         /*show_reason_tab_switching=*/true,
-                         /*show_reason_bfcache_restore=*/false);
+  GetVisibleTimeRequestTrigger().UpdateRequest(
+      start_time, destination_is_loaded,
+      /*show_reason_tab_switching=*/true,
+      /*show_reason_bfcache_restore=*/false);
 }
 
-VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
-  if (visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled())
-    return &visible_time_request_trigger_;
-  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
-  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
-  // becomes the default.
-  if (auto* view =
-          static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
-    return view->GetVisibleTimeRequestTrigger();
-  }
-  return nullptr;
+VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {
+  return visible_time_request_trigger_;
 }
 
 std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(

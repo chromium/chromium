@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base_observer.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1033,13 +1034,6 @@ ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
   return nullptr;
 }
 
-VisibleTimeRequestTrigger*
-RenderWidgetHostViewBase::GetVisibleTimeRequestTrigger() {
-  return visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled()
-             ? nullptr
-             : &visible_time_request_trigger_;
-}
-
 ui::mojom::VirtualKeyboardMode
 RenderWidgetHostViewBase::GetVirtualKeyboardMode() {
   // Only platforms supporting these APIs will implement this.
@@ -1055,28 +1049,12 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   if (!host())
     return;
 
-  auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
+  VisibleTimeRequestTrigger& visible_time_request_trigger =
+      host_->GetVisibleTimeRequestTrigger();
 
-  // The trigger can be null in unit tests.
-  if (!visible_time_request_trigger) {
-    if (host_->is_hidden())
-      NotifyHostAndDelegateOnWasShown(nullptr);
-    return;
-  }
-
-  // NB: don't call visible_time_request_trigger->TakeRequest() unless the
+  // NB: don't call visible_time_request_trigger.TakeRequest() unless the
   // request will be used. If it isn't used here it must be left in the trigger
   // for the next call.
-
-  if (!visible_time_request_trigger->is_tab_switch_metrics2_feature_enabled()) {
-    // Legacy path ignores `page_visibiity` so that the semantic of the older
-    // metric doesn't change.
-    if (host_->is_hidden()) {
-      NotifyHostAndDelegateOnWasShown(
-          visible_time_request_trigger->TakeRequest());
-    }
-    return;
-  }
 
   const bool web_contents_is_visible =
       page_visibility == PageVisibilityState::kVisible;
@@ -1087,7 +1065,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     // though the WebContents is hidden or occluded, for example due to being
     // captured, so it should not be included in visibility time metrics.
     NotifyHostAndDelegateOnWasShown(
-        web_contents_is_visible ? visible_time_request_trigger->TakeRequest()
+        web_contents_is_visible ? visible_time_request_trigger.TakeRequest()
                                 : nullptr);
     return;
   }
@@ -1099,7 +1077,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     // The widget is already rendering, but now the WebContents is becoming
     // visible, so send any visibility time request to the compositor now.
     if (auto visible_time_request =
-            visible_time_request_trigger->TakeRequest()) {
+            visible_time_request_trigger.TakeRequest()) {
       RequestPresentationTimeFromHostOrDelegate(
           std::move(visible_time_request));
     }

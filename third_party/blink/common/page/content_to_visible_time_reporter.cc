@@ -8,12 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -62,7 +60,7 @@ ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
     mojom::RecordContentToVisibleTimeRequestPtr start_state) {
   DCHECK(!start_state->event_start_time.is_null());
-  if (IsTabSwitchMetric2FeatureEnabled() && tab_switch_start_state_ &&
+  if (tab_switch_start_state_ &&
       tab_switch_start_state_->show_reason_tab_switching &&
       start_state->show_reason_tab_switching) {
     // Missed a tab hide, so record an incomplete tab switch. As a side effect
@@ -108,8 +106,7 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
   if (tab_switch_start_state_ &&
-      (!IsTabSwitchMetric2FeatureEnabled() ||
-       tab_switch_start_state_->show_reason_tab_switching)) {
+      tab_switch_start_state_->show_reason_tab_switching) {
     RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
                                    true /* show_reason_tab_switching */,
                                    false /* show_reason_bfcache_restore */,
@@ -119,14 +116,6 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
   // No matter what the show reason, clear `tab_switch_start_state_` which is no
   // longer valid.
   ResetTabSwitchStartState();
-}
-
-bool ContentToVisibleTimeReporter::IsTabSwitchMetric2FeatureEnabled() {
-  if (!is_tab_switch_metric2_feature_enabled_) {
-    is_tab_switch_metric2_feature_enabled_ =
-        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2);
-  }
-  return *is_tab_switch_metric2_feature_enabled_;
 }
 
 void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
@@ -180,65 +169,29 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   const char* suffix =
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
 
-  if (IsTabSwitchMetric2FeatureEnabled()) {
-    // Record result histogram.
-    base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult2",
-                                  tab_switch_result);
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
-        tab_switch_result);
-
-    // Record latency histogram.
-    switch (tab_switch_result) {
-      case TabSwitchResult::kSuccess:
-        base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration2",
-                                      tab_switch_duration);
-        base::UmaHistogramMediumTimes(
-            base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
-            tab_switch_duration);
-        break;
-      case TabSwitchResult::kMissedTabHide:
-      case TabSwitchResult::kIncomplete:
-        base::UmaHistogramMediumTimes(
-            "Browser.Tabs.TotalIncompleteSwitchDuration2", tab_switch_duration);
-        base::UmaHistogramMediumTimes(
-            base::StrCat(
-                {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
-            tab_switch_duration);
-        break;
-      case TabSwitchResult::kPresentationFailure:
-        // Do nothing.
-        break;
-      case TabSwitchResult::DEPRECATED_kUnhandled:
-        NOTREACHED();
-        break;
-    }
-  }
-
-  // TODO(crbug.com/1164477): Remove these deprecated metrics in M108 after
-  // automated test suites have been updated to use the new metrics. Until then
-  // log them in parallel. (Google-internal details at
-  // http://shortn/_hpallg5Q7H.)
-
   // Record result histogram.
+  base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult2",
+                                tab_switch_result);
   base::UmaHistogramEnumeration(
-      base::StrCat({"Browser.Tabs.TabSwitchResult.", suffix}),
+      base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
       tab_switch_result);
 
   // Record latency histogram.
   switch (tab_switch_result) {
     case TabSwitchResult::kSuccess:
-      base::UmaHistogramTimes(
-          base::StrCat({"Browser.Tabs.TotalSwitchDuration.", suffix}),
+      base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration2",
+                                    tab_switch_duration);
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
           tab_switch_duration);
       break;
     case TabSwitchResult::kMissedTabHide:
-      // This was not included in the v1 histograms.
-      DCHECK(IsTabSwitchMetric2FeatureEnabled());
-      [[fallthrough]];
     case TabSwitchResult::kIncomplete:
-      base::UmaHistogramTimes(
-          base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration.", suffix}),
+      base::UmaHistogramMediumTimes(
+          "Browser.Tabs.TotalIncompleteSwitchDuration2", tab_switch_duration);
+      base::UmaHistogramMediumTimes(
+          base::StrCat(
+              {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
           tab_switch_duration);
       break;
     case TabSwitchResult::kPresentationFailure:

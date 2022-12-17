@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/browser_task_environment.h"
@@ -101,6 +102,11 @@ class RenderWidgetHostDelegateEditCommandCounter
   void Paste() override {}
   void PasteAndMatchStyle() override {}
   void SelectAll() override {}
+  VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override {
+    return visible_time_request_trigger_;
+  }
+
+  VisibleTimeRequestTrigger visible_time_request_trigger_;
 };
 
 class RenderWidgetHostViewMacEditCommandHelperTest : public PlatformTest {

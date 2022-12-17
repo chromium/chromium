@@ -504,11 +504,6 @@ BLINK_COMMON_EXPORT void ClearUnthrottledNestedTimeoutOverrideCacheForTesting();
 BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
 BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
 
-// If enabled, ContentToVisibleTimeReporter logs
-// Browser.Tabs.TotalSwitchDuration2.* instead of
-// Browser.Tabs.TotalSwitchDuration.*.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTabSwitchMetrics2);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
 
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
