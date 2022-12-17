@@ -5235,11 +5235,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
 
-    {"omnibox-most-visited-tiles-title-wrap-around",
-     flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundName,
-     flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesTitleWrapAround)},
-
     {"omnibox-remove-excessive-recycled-view-clear-calls",
      flag_descriptions::kOmniboxRemoveExcessiveRecycledViewClearCallsName,
      flag_descriptions::
@@ -6507,11 +6502,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"ntp-tiles-title-wrap-around",
-     flag_descriptions::kNewTabPageTilesTitleWrapAroundName,
-     flag_descriptions::kNewTabPageTilesTitleWrapAroundDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNewTabPageTilesTitleWrapAround)},
-
     {"new-window-app-menu", flag_descriptions::kNewWindowAppMenuName,
      flag_descriptions::kNewWindowAppMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewWindowAppMenu)},

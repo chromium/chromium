@@ -376,12 +376,6 @@ BASE_FEATURE(kMostVisitedTiles,
              "OmniboxMostVisitedTiles",
              enabled_by_default_android_only);
 
-// If enabled, permits the title on the MostVisitedTiles to wrap around to
-// second line.
-BASE_FEATURE(kMostVisitedTilesTitleWrapAround,
-             "OmniboxMostVisitedTilesTitleWrapAround",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
 // prefixes. Will also adjust the location bar UI and omnibox text selection to

@@ -2024,12 +2024,6 @@ const char kOmniboxMostVisitedTilesAddRecycledViewPoolDescription[] =
     "Add a recycled view pool to omnibox most visited tiles carousel to "
     "increase tile view reuse and reduce jackiness.";
 
-const char kOmniboxMostVisitedTilesTitleWrapAroundName[] =
-    "Omnibox Most Visited Tiles Title wrap around";
-const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[] =
-    "Permits longer MV Tiles titles to wrap around to the second line "
-    "to reduce ellipsizing longer titles.";
-
 const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[] =
     "Omnibox Remove Excessive Recycled View Clear Calls";
 const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[] =
@@ -3759,12 +3753,6 @@ const char kNetworkServiceInProcessName[] =
 const char kNetworkServiceInProcessDescription[] =
     "When enabled, the network service runs on the browser process. Otherwise, "
     "it runs on a dedicated process.";
-
-const char kNewTabPageTilesTitleWrapAroundName[] =
-    "NTP Tiles Title wrap around";
-const char kNewTabPageTilesTitleWrapAroundDescription[] =
-    "Permits longer Tile titles to wrap around to the second line "
-    "to reduce ellipsizing and improve clarity.";
 
 const char kNewWindowAppMenuName[] = "Show a menu item 'New Window'";
 const char kNewWindowAppMenuDescription[] =

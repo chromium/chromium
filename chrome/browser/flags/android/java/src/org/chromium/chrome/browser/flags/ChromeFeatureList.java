@@ -381,8 +381,6 @@ public abstract class ChromeFeatureList {
     public static final String MESSAGES_FOR_ANDROID_SYNC_ERROR = "MessagesForAndroidSyncError";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
-    public static final String NEW_TAB_PAGE_TILES_TITLE_WRAP_AROUND =
-            "NewTabPageTilesTitleWrapAround";
     public static final String NEW_WINDOW_APP_MENU = "NewWindowAppMenu";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String OFFLINE_INDICATOR = "OfflineIndicator";
@@ -399,8 +397,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
     public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
             "OmniboxMostVisitedTilesAddRecycledViewPool";
-    public static final String OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND =
-            "OmniboxMostVisitedTilesTitleWrapAround";
     public static final String OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS =
             "OmniboxRemoveExcessiveRecycledViewClearCalls";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =

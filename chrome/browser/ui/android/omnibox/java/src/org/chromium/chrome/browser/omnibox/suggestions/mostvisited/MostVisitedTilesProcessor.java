@@ -56,7 +56,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull FaviconFetcher mFaviconFetcher;
     private final int mMinCarouselItemViewHeight;
     private @Nullable RecycledViewPool mMostVisitedTilesRecycledViewPool;
-    private boolean mShouldWrapTitleText;
     private boolean mEnableOrganicRepeatableQueries;
 
     /**
@@ -100,8 +99,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public void onNativeInitialized() {
         super.onNativeInitialized();
 
-        mShouldWrapTitleText = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND);
         mEnableOrganicRepeatableQueries =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES);
 
@@ -130,7 +127,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             final int itemIndex = elementIndex;
 
             tileModel.set(TileViewProperties.TITLE, title);
-            tileModel.set(TileViewProperties.TITLE_LINES, mShouldWrapTitleText ? 2 : 1);
+            tileModel.set(TileViewProperties.TITLE_LINES, 1);
             tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
                     () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
             tileModel.set(TileViewProperties.ON_CLICK, v -> {

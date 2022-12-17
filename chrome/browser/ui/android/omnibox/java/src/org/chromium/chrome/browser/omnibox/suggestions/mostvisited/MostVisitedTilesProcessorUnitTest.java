@@ -68,8 +68,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND,
-        ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+@EnableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
@@ -308,7 +307,6 @@ public final class MostVisitedTilesProcessorUnitTest {
         assertEquals(expectedDescription, tileModel.get(TileViewProperties.CONTENT_DESCRIPTION));
     }
 
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND)
     @Test
     public void testDescriptionWrapping_singleLine() {
         mProcessor.onNativeInitialized();
@@ -319,18 +317,6 @@ public final class MostVisitedTilesProcessorUnitTest {
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
         assertEquals(1, tileModel.get(TileViewProperties.TITLE_LINES));
-    }
-
-    @Test
-    public void testDescriptionWrapping_wrappingLine() {
-        mProcessor.onNativeInitialized();
-        List<ListItem> tileList =
-                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-
-        assertEquals(1, tileList.size());
-        ListItem tileItem = tileList.get(0);
-        PropertyModel tileModel = tileItem.model;
-        assertEquals(2, tileModel.get(TileViewProperties.TITLE_LINES));
     }
 
     // The test below confirm that Repeatable Query appears like URL navigation if the feature is
