@@ -79,7 +79,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       // Resources for testing.
       {"test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS},
       {"test_loader_util.js", IDR_WEBUI_JS_TEST_LOADER_UTIL_JS},
-      {"test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML},
+      {"test_loader.html", IDR_WEBUI_GENERATED_TEST_LOADER_HTML},
   };
   source->AddResourcePaths(kResources);
 

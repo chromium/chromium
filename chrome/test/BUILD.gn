@@ -9617,7 +9617,6 @@ if (!is_android) {
       "//third_party/mocha/mocha.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//tools/metrics/histograms/enums.xml",
-      "//ui/webui/resources/html/test_loader.html",
       "//ui/webui/resources/js/",
     ]
     data += js2gtest_js_libraries

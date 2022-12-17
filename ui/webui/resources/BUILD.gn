@@ -15,10 +15,23 @@ generate_grd("build_grd") {
   grd_prefix = "webui_generated"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
+  input_files = [ "test_loader.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (!is_chromeos_ash && !is_android) {
+    # Roboto Font. Roboto-Regular and Roboto-Light is already available on
+    # Android, and Roboto-Medium is not used on Android. All 6 weights of
+    # Roboto are available on Chrome OS.
+    input_files += [
+      "roboto/roboto-bold.woff2",
+      "roboto/roboto-medium.woff2",
+      "roboto/roboto-regular.woff2",
+    ]
+  }
+
   public_deps = [
     ":build_ts_grdp",
     "css:build_grdp",
-    "html:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
     "js/metrics_reporter:build_grdp",
@@ -26,25 +39,12 @@ generate_grd("build_grd") {
   ]
   grdp_files = [
     "$target_gen_dir/css/resources.grdp",
-    "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
   ]
-
-  if (!is_chromeos_ash && !is_android) {
-    # Roboto Font. Roboto-Regular and Roboto-Light is already available on
-    # Android, and Roboto-Medium is not used on Android. All 6 weights of
-    # Roboto are available on Chrome OS.
-    input_files_base_dir = rebase_path(".", "//")
-    input_files = [
-      "roboto/roboto-bold.woff2",
-      "roboto/roboto-medium.woff2",
-      "roboto/roboto-regular.woff2",
-    ]
-  }
 
   if (include_polymer) {
     public_deps += [
