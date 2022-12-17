@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/cast_config_controller.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -35,7 +36,9 @@ class TestCastConfigController : public CastConfigController {
   bool HasMediaRouterForPrimaryProfile() const override { return true; }
   bool HasSinksAndRoutes() const override { return false; }
   bool HasActiveRoute() const override { return false; }
-  bool AccessCodeCastingEnabled() const override { return false; }
+  bool AccessCodeCastingEnabled() const override {
+    return access_code_casting_enabled_;
+  }
   void RequestDeviceRefresh() override {}
   const std::vector<SinkAndRoute>& GetSinksAndRoutes() override {
     return sinks_and_routes_;
@@ -48,6 +51,7 @@ class TestCastConfigController : public CastConfigController {
     stop_casting_route_id_ = route_id;
   }
 
+  bool access_code_casting_enabled_ = false;
   std::vector<SinkAndRoute> sinks_and_routes_;
   size_t cast_to_sink_count_ = 0;
   size_t stop_casting_count_ = 0;
@@ -117,6 +121,10 @@ class CastDetailedViewTest : public AshTestBase {
   // Removes simulated cast devices.
   void ResetCastDevices() { detailed_view_->OnDevicesUpdated({}); }
 
+  views::View* GetAddAccessCodeDeviceView() {
+    return detailed_view_->add_access_code_device_;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
@@ -150,6 +158,19 @@ TEST_F(CastDetailedViewTest, ClickOnViewClosesBubble) {
   LeftClickOn(first_view);
   EXPECT_EQ(cast_config_.cast_to_sink_count_, 1u);
   EXPECT_EQ(delegate_->close_bubble_call_count(), 1u);
+}
+
+TEST_F(CastDetailedViewTest, AccessCodeCasting) {
+  cast_config_.access_code_casting_enabled_ = true;
+  ResetCastDevices();
+  views::View* add_access_code_device = GetAddAccessCodeDeviceView();
+  ASSERT_TRUE(add_access_code_device);
+
+  LeftClickOn(add_access_code_device);
+  EXPECT_EQ(GetSystemTrayClient()->show_access_code_casting_dialog_count(), 1);
+  // The bubble is not closed via the delegate, because it happens via a focus
+  // change when the dialog appears.
+  EXPECT_EQ(delegate_->close_bubble_call_count(), 0u);
 }
 
 TEST_F(CastDetailedViewTest, ZeroStateView) {

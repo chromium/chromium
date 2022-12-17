@@ -127,6 +127,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
   int show_network_create_count() const { return show_network_create_count_; }
 
+  int show_access_code_casting_dialog_count() const {
+    return show_access_code_casting_dialog_count_;
+  }
+
   int show_calendar_event_count() const { return show_calendar_event_count_; }
 
   const std::string& last_network_type() const { return last_network_type_; }
@@ -170,6 +174,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   std::string last_arc_vpn_app_id_;
   int show_firmware_update_count_ = 0;
   int show_network_create_count_ = 0;
+  int show_access_code_casting_dialog_count_ = 0;
   int show_calendar_event_count_ = 0;
   std::string last_bluetooth_settings_device_id_;
   std::string last_network_settings_network_id_;

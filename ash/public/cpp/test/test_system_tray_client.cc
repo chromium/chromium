@@ -122,7 +122,9 @@ void TestSystemTrayClient::SetLocaleAndExit(
     const std::string& locale_iso_code) {}
 
 void TestSystemTrayClient::ShowAccessCodeCastingDialog(
-    AccessCodeCastDialogOpenLocation open_location) {}
+    AccessCodeCastDialogOpenLocation open_location) {
+  ++show_access_code_casting_dialog_count_;
+}
 
 void TestSystemTrayClient::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,
