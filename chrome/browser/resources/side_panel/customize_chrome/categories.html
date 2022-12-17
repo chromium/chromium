@@ -55,10 +55,14 @@
     }
   }
 
-  .image-container img {
+  .image-container img,
+  .image-container div {
+    position: absolute;
+  }
+
+  .collection img {
     height: 100%;
     left: 50%;
-    position: absolute;
     top: 0;
     transform: translateX(-50%);
   }
@@ -107,6 +111,45 @@
     margin-inline-start: 0;
     width: 13px;
   }
+
+  #uploadIcon {
+    --cr-icon-image: url(icons/upload.svg);
+    --cr-icon-size: 21px;
+    height: 21px;
+    left: 50%;
+    margin: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 21px;
+  }
+
+  #miniNewTabPage {
+    left: 12%;
+    top: 15%;
+  }
+
+  .chrome-color {
+    height: 50%;
+    width: 100%;
+  }
+
+  .chrome-color:first-child {
+    background-color: var(--google-blue-700);
+    top: 0;
+  }
+
+  .chrome-color:nth-child(2) {
+    background-color: var(--google-blue-500);
+    top: 50%;
+  }
+
+  #chromeWebStore {
+    height: 32px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+  }
 </style>
 <div id="container">
   <div id="headerContainer">
@@ -118,17 +161,23 @@
   <cr-grid columns="6">
     <div class="tile" tabindex="0" id="classicChromeTile"
         role="button" on-click="onClassicChromeClick_">
-      <!-- TODO(crbug.com/1384245): add image for classic chrome -->
-      <div class="image-container"></div>
+      <div class="image-container">
+        <img id="miniNewTabPage" src="icons/corner_new_tab_page.svg"></img>
+      </div>
       <div class="label">$i18n{classicChrome}</div>
     </div>
     <div class="tile" tabindex="0" id="uploadImageTile"
         role="button" on-click="onUploadImageClick_">
-      <div class="image-container"></div>
+      <div class="image-container">
+        <div id="uploadIcon" class="cr-icon"></div>
+      </div>
       <div class="label">$i18n{uploadImage}</div>
     </div>
     <div class="tile" tabindex="0" role="button">
-      <div class="image-container"></div>
+      <div class="image-container">
+        <div class="chrome-color"></div>
+        <div class="chrome-color"></div>
+      </div>
       <div class="label">$i18n{chromeColors}</div>
     </div>
     <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]">
@@ -145,7 +194,9 @@
     </template>
     <div class="tile" tabindex="0" role="button"
         on-click="onChromeWebStoreClick_" id="chromeWebStoreTile">
-      <div class="image-container"></div>
+      <div class="image-container">
+        <img id="chromeWebStore" src="icons/chrome_web_store.svg"></img>
+      </div>
       <div class="label">
         <div class="cr-icon icon-external"></div>
         $i18n{chromeWebStore}
