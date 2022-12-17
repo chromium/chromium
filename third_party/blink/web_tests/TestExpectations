@@ -2334,10 +2334,6 @@ crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
 
-
-# image-set() does not yet support default resolution
-crbug.com/1400898 external/wpt/css/css-images/image-set/image-set-no-res-rendering.html [ Failure ]
-
 # image-set() does not yet support URLs without the url function notation
 crbug.com/1400901 external/wpt/css/css-images/image-set/image-set-no-url-rendering.html [ Failure ]
 

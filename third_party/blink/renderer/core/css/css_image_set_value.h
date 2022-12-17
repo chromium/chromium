@@ -37,7 +37,7 @@ namespace blink {
 class Document;
 class StyleImage;
 
-class CSSImageSetValue : public CSSValueList {
+class CORE_EXPORT CSSImageSetValue : public CSSValueList {
  public:
   explicit CSSImageSetValue();
   ~CSSImageSetValue();

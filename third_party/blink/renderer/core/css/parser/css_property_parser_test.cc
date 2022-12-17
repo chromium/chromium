@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -670,6 +671,21 @@ TEST_F(CSSPropertyUseCounterTest, CSSPropertyBackgroundImageImageSet) {
 
   ParseProperty(CSSPropertyID::kBackgroundImage, "image-set(url(foo) 2x)");
   EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST(CSSPropertyParserTest, ImageSetDefaultResolution) {
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kBackgroundImage, "image-set(url(foo))",
+      StrictCSSParserContext(SecureContextMode::kSecureContext));
+  ASSERT_NE(value, nullptr);
+
+  const CSSValueList* val_list = To<CSSValueList>(value);
+  ASSERT_NE(val_list, nullptr);
+  ASSERT_EQ(val_list->length(), 1U);
+
+  const CSSImageSetValue& image_set_value =
+      To<CSSImageSetValue>(val_list->Last());
+  EXPECT_EQ("image-set(url(\"foo\") 1x)", image_set_value.CustomCSSText());
 }
 
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {

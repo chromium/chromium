@@ -3090,17 +3090,27 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
       image->SetInitiator(fetch_initiator_type_names::kUacss);
     image_set->Append(*image);
 
-    const CSSParserToken& token = args.ConsumeIncludingWhitespace();
-    if (token.GetType() != kDimensionToken)
-      return nullptr;
-    if (token.Value() != "x")
-      return nullptr;
-    DCHECK(token.GetUnitType() == CSSPrimitiveValue::UnitType::kDotsPerPixel);
-    double image_scale_factor = token.NumericValue();
-    if (image_scale_factor <= 0)
-      return nullptr;
-    image_set->Append(*CSSNumericLiteralValue::Create(
-        image_scale_factor, CSSPrimitiveValue::UnitType::kNumber));
+    if (args.Peek().GetType() != kDimensionToken &&
+        RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+      image_set->Append(*CSSNumericLiteralValue::Create(
+          1, CSSPrimitiveValue::UnitType::kNumber));
+    } else {
+      const CSSParserToken& token = args.ConsumeIncludingWhitespace();
+
+      if (token.GetType() != kDimensionToken) {
+        return nullptr;
+      }
+      if (token.Value() != "x") {
+        return nullptr;
+      }
+      DCHECK(token.GetUnitType() == CSSPrimitiveValue::UnitType::kDotsPerPixel);
+      double image_scale_factor = token.NumericValue();
+      if (image_scale_factor <= 0) {
+        return nullptr;
+      }
+      image_set->Append(*CSSNumericLiteralValue::Create(
+          image_scale_factor, CSSPrimitiveValue::UnitType::kNumber));
+    }
   } while (ConsumeCommaIncludingWhitespace(args));
 
   if (!args.AtEnd())
