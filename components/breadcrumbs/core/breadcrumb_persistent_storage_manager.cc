@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
-#include "base/debug/alias.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_split.h"
@@ -18,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 
@@ -36,9 +34,7 @@ constexpr auto kMinDelayBetweenWrites = base::Milliseconds(250);
 void DoWriteEventsToFile(const base::FilePath& file_path,
                          const size_t position,
                          const std::string& events,
-                         const bool append,
-                         const size_t write_counter,
-                         const size_t write_counter_at_last_full_rewrite) {
+                         const bool append) {
   const base::MemoryMappedFile::Region region = {0, kPersistedFilesizeInBytes};
   base::MemoryMappedFile file;
   int flags = base::File::FLAG_READ | base::File::FLAG_WRITE;
@@ -52,25 +48,9 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                       base::MemoryMappedFile::READ_WRITE_EXTEND);
 
   if (file_valid) {
-    const size_t remaining_length = kPersistedFilesizeInBytes - position;
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1327267): Remove this once crashes in this function are
-    // understood. The first and last values are delimiters to aid in finding
-    // this array on the stack, as CrOS and Android crashes are hard to debug.
-    size_t debug_data[] = {0x1234beef,
-                           reinterpret_cast<size_t>(file.data()),
-                           file.length(),
-                           position,
-                           events.length(),
-                           write_counter,
-                           write_counter_at_last_full_rewrite,
-                           0x5678beef};
-    base::debug::Alias(&debug_data);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-
     char* data = reinterpret_cast<char*>(file.data());
-    base::strlcpy(&data[position], events.c_str(), remaining_length);
+    base::strlcpy(&data[position], events.c_str(),
+                  kPersistedFilesizeInBytes - position);
   }
 }
 
@@ -200,18 +180,11 @@ void BreadcrumbPersistentStorageManager::Write(const std::string& events,
     file_position_ = 0;
   }
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DoWriteEventsToFile, breadcrumbs_file_path_,
-                     file_position_.value(), events, append, write_counter_,
-                     write_counter_at_last_full_rewrite_));
+      FROM_HERE, base::BindOnce(&DoWriteEventsToFile, breadcrumbs_file_path_,
+                                file_position_.value(), events, append));
   file_position_.value() += events.size();
   last_written_time_ = base::TimeTicks::Now();
   pending_breadcrumbs_.clear();
-
-  ++write_counter_;
-  if (!append) {
-    write_counter_at_last_full_rewrite_ = write_counter_;
-  }
 }
 
 void BreadcrumbPersistentStorageManager::EventAdded(const std::string& event) {
