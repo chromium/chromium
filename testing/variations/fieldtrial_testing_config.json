@@ -7275,24 +7275,9 @@
             "experiments": [
                 {
                     "name": "AndroidExperiments",
-                    "params": {
-                        "MaxNumRepeatableQueries": "4",
-                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
-                        "OmniboxMaxURLMatches": "8",
-                        "PrivilegeRepeatableQueries": "true",
-                        "ScaleRepeatableQueriesScore": "true",
-                        "UIMaxAutocompleteMatches": "10"
-                    },
+                    "params": {},
                     "enable_features": [
-                        "AndroidAuxiliarySearch",
-                        "NewTabPageTilesTitleWrapAround",
-                        "OmniboxDynamicMaxAutocomplete",
-                        "OmniboxFocusTriggersSRPZeroSuggest",
-                        "OmniboxMaxURLMatches",
-                        "OmniboxMostVisitedTilesTitleWrapAround",
-                        "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "OrganicRepeatableQueries"
+                        "OmniboxFocusTriggersSRPZeroSuggest"
                     ]
                 }
             ]
