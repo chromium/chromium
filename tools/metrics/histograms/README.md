@@ -511,12 +511,16 @@ the values emitted to are correct. Finally, for count histograms, make sure
 that buckets capture enough precision for your needs over the range.
 
 Pro tip: You can filter the set of histograms shown on `chrome://histograms` by
-specifying a prefix. For example, `chrome://histograms/Extensions.Load` shows
-only histograms whose names match the pattern "Extensions.Load*".
+appending to the URL. For example, `chrome://histograms/UserActions` shows
+only histograms whose names contain "UserActions", such as
+"UMA.UserActionsCount".
 
 In addition to testing interactively, you can have unit tests examine the
 values emitted to histograms. See [histogram_tester.h](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_tester.h)
 for details.
+
+See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
+for more thorough manual testing if needed.
 
 ## Interpreting the Resulting Data
 

@@ -112,6 +112,9 @@ In addition to testing interactively, unit tests can check the number of times a
 user action was emitted. See [user_action_tester.h](https://cs.chromium.org/chromium/src/base/test/metrics/user_action_tester.h)
 for details.
 
+See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
+for more thorough manual testing if needed.
+
 ## Interpreting the resulting data
 
 The top of [go/uma-guide](http://go/uma-guide) has good advice on how to go
