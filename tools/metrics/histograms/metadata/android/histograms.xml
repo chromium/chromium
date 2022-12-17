@@ -3356,6 +3356,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Survey.InfoBarClosingState"
     enum="InfoBarClosingStates" expires_after="2023-04-23">
+  <obsolete>
+    Deprecated in December 2022 as part of survey message post-launch cleanup
+    since the messages system records dismissal reasons using
+    Android.Messages.Dismissed.ChromeSurvey.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>

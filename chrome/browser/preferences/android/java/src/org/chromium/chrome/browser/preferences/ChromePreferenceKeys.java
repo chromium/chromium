@@ -124,7 +124,7 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix CHROME_SURVEY_DOWNLOAD_ATTEMPTS =
             new KeyPrefix("Chrome.Survey.DownloadAttempts.*");
     /**
-     * Key prefix used to indicate the timestamps when the survey info bar is displayed for a
+     * Key prefix used to indicate the timestamps when the survey prompt is displayed for a
      * certain survey.
      */
     public static final KeyPrefix CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP =

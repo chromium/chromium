@@ -2116,9 +2116,6 @@ extern const char
 extern const char kMessagesForAndroidAdsBlockedName[];
 extern const char kMessagesForAndroidAdsBlockedDescription[];
 
-extern const char kMessagesForAndroidChromeSurveyName[];
-extern const char kMessagesForAndroidChromeSurveyDescription[];
-
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
 

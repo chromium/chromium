@@ -51361,6 +51361,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 </enum>
 
 <enum name="InfoBarClosingStates">
+  <obsolete>
+    Deprecated as of December 2022.
+  </obsolete>
   <int value="0" label="Accepted survey"/>
   <int value="1" label="Tapped close button"/>
   <int value="2" label="Indirectly closed while visible"/>
@@ -97199,7 +97202,7 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SurveyFilteringResult">
-  <int value="0" label="Survey info bar already displayed"/>
+  <int value="0" label="Survey prompt already displayed"/>
   <int value="1" label="Chrome Home enabled for less than one week [removed]"/>
   <int value="2" label="Force Survey On command present"/>
   <int value="3" label="User already sampled today"/>

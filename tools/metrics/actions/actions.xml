@@ -3433,6 +3433,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.Survey.ShowSurveyInfoBar">
+  <obsolete>
+    Deprecated 12/2022 as part of survey message launch cleanup.
+  </obsolete>
   <owner>danielpark@chromium.org</owner>
   <description>The survey infobar was displayed.</description>
 </action>

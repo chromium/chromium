@@ -36,10 +36,6 @@ BASE_FEATURE(kMessagesForAndroidAdsBlocked,
              "MessagesForAndroidAdsBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidChromeSurvey,
-             "MessagesForAndroidChromeSurvey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidInfrastructure,
              "MessagesForAndroidInfrastructure",
              base::FEATURE_ENABLED_BY_DEFAULT);

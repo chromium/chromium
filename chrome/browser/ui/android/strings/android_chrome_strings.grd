@@ -4163,9 +4163,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Chrome survey -->
-      <message name="IDS_CHROME_SURVEY_PROMPT" desc="Message shown that invites the user to take a survey about Chrome. 'Help' and 'improve' are imperative verbs. 'Take survey' is a tappable link. When tapped, a survey about Chrome opens.">
-        Help improve Chrome. <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Take survey<ph name="END_LINK">&lt;/LINK&gt;</ph>
-      </message>
       <message name="IDS_CHROME_SURVEY_MESSAGE_TITLE" desc="Message shown that invites the user to take a survey about Chrome. 'Help' and 'improve' are imperative verbs.">
         Help improve Chrome?
       </message>

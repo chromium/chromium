@@ -369,8 +369,6 @@ public abstract class ChromeFeatureList {
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MARK_HTTP_AS = "MarkHttpAs";
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
-    public static final String MESSAGES_FOR_ANDROID_CHROME_SURVEY =
-            "MessagesForAndroidChromeSurvey";
     public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
             "MessagesForAndroidInfrastructure";
     public static final String MESSAGES_FOR_ANDROID_PERMISSION_UPDATE =

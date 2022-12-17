@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.survey;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
@@ -30,16 +30,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.RealObject;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
@@ -47,18 +44,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.infobar.SurveyInfoBar;
-import org.chromium.chrome.browser.infobar.SurveyInfoBarDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.survey.ChromeSurveyController.InfoBarClosingState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -74,7 +66,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Map.Entry;
 
 /**
  * "Integration" style unit tests for {@link ChromeSurveyController} that mocks most of the
@@ -82,12 +74,7 @@ import java.util.concurrent.TimeUnit;
  */
 // clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = { BackgroundShadowAsyncTask.class,
-            ChromeSurveyControllerFlowTest.ShadowChromeFeatureList.class,
-            ChromeSurveyControllerFlowTest.ShadowSurveyInfoBar.class,
-            ChromeSurveyControllerFlowTest.ShadowInfoBarContainer.class
-        })
+@Config(manifest = Config.NONE, shadows = {BackgroundShadowAsyncTask.class})
 //TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 // Set user is selected and by pass the rate limit. The rate limiting logic is tested in
@@ -96,60 +83,6 @@ import java.util.concurrent.TimeUnit;
 public class ChromeSurveyControllerFlowTest {
     // clang-format on
     private static final String TEST_TRIGGER_ID = "test_trigger_id";
-
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        static final Map<String, String> sParamValues = new HashMap<>();
-        static boolean sEnableSurvey;
-        static boolean sEnableMessages;
-
-        @Implementation
-        public static boolean isEnabled(String featureName) {
-            if (featureName.equals(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)) {
-                return sEnableMessages;
-            }
-            return featureName.equals(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
-                    && sEnableSurvey;
-        }
-
-        @Implementation
-        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
-            Assert.assertTrue("Survey is not enabled.", isEnabled(feature));
-            return sParamValues.getOrDefault(paramKey, "");
-        }
-
-        @Implementation
-        public static int getFieldTrialParamByFeatureAsInt(
-                String featureName, String paramName, int defaultValue) {
-            Assert.assertTrue("Survey is not enabled.", isEnabled(featureName));
-            return sParamValues.containsKey(paramName)
-                    ? Integer.valueOf(sParamValues.get(paramName))
-                    : defaultValue;
-        }
-    }
-
-    @Implements(SurveyInfoBar.class)
-    static class ShadowSurveyInfoBar {
-        static PayloadCallbackHelper<SurveyInfoBarDelegate> sShowInfoBarCallback;
-
-        @Implementation
-        public static void showSurveyInfoBar(WebContents webContents, int displayLogoResId,
-                SurveyInfoBarDelegate surveyInfoBarDelegate) {
-            Assert.assertNotNull("sShowInfoBarCallback is null.", sShowInfoBarCallback);
-            sShowInfoBarCallback.notifyCalled(surveyInfoBarDelegate);
-        }
-    }
-
-    @Implements(InfoBarContainer.class)
-    static class ShadowInfoBarContainer {
-        @RealObject
-        static InfoBarContainer sInfoBarContainer;
-
-        @Implementation
-        public static InfoBarContainer get(Tab tab) {
-            return sInfoBarContainer;
-        }
-    }
 
     @Rule
     public MockitoRule mRule = MockitoJUnit.rule();
@@ -162,8 +95,6 @@ public class ChromeSurveyControllerFlowTest {
     Tab mMockTab;
     @Mock
     WebContents mMockWebContent;
-    @Mock
-    InfoBarContainer mMockInfoBarContainer;
     @Mock
     ActivityLifecycleDispatcher mMockLifecycleDispatcher;
     @Mock
@@ -183,15 +114,15 @@ public class ChromeSurveyControllerFlowTest {
     private TabObserver mTabObserver;
     private PauseResumeWithNativeObserver mLifecycleObserver;
 
+    Map<String, String> mFieldTrialParams;
+
     @Before
     public void setup() {
-        ShadowChromeFeatureList.sEnableSurvey = true;
-        ShadowChromeFeatureList.sParamValues.put(
-                ChromeSurveyController.SITE_ID_PARAM_NAME, TEST_TRIGGER_ID);
+        mFieldTrialParams = new HashMap<>();
+        mFieldTrialParams.put(ChromeSurveyController.SITE_ID_PARAM_NAME, TEST_TRIGGER_ID);
         // By setting MAX_NUMBER to 1, #isRandomSelectedBySurvey is always true.
-        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_NUMBER, "1");
-        ShadowInfoBarContainer.sInfoBarContainer = mMockInfoBarContainer;
-        ShadowSurveyInfoBar.sShowInfoBarCallback = new PayloadCallbackHelper<>();
+        mFieldTrialParams.put(ChromeSurveyController.MAX_NUMBER, "1");
+        enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
 
         SurveyController.setInstanceForTesting(mTestSurveyController);
 
@@ -211,9 +142,7 @@ public class ChromeSurveyControllerFlowTest {
     public void tearDown() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ChromeSurveyController.resetMessageShownForTesting();
-        ShadowChromeFeatureList.sParamValues.clear();
-        ShadowChromeFeatureList.sEnableSurvey = false;
-        ShadowChromeFeatureList.sEnableMessages = false;
+        FeatureList.setTestValues(null);
         UmaRecorderHolder.resetForTesting();
 
         CommandLine.getInstance().removeSwitch(ChromeSurveyController.COMMAND_LINE_PARAM_NAME);
@@ -237,7 +166,7 @@ public class ChromeSurveyControllerFlowTest {
         Assert.assertTrue("Survey should be enabled by feature flag.",
                 ChromeSurveyController.isSurveyEnabled());
 
-        ShadowChromeFeatureList.sEnableSurvey = false;
+        enableChromeSurveyNextFeatureWithParams(null, false);
         Assert.assertFalse("Survey should be disabled by feature flag.",
                 ChromeSurveyController.isSurveyEnabled());
 
@@ -295,7 +224,8 @@ public class ChromeSurveyControllerFlowTest {
     @Test
     public void testStartDownloadIfEligibleTask_DownloadCapZero() {
         CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+        mFieldTrialParams.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+        enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
 
         initializeChromeSurveyController();
         assertDownloadAttempted(true);
@@ -304,8 +234,8 @@ public class ChromeSurveyControllerFlowTest {
     @Test
     public void testStartDownloadIfEligibleTask_DownloadWithinCap() {
         CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-        ShadowChromeFeatureList.sParamValues.put(
-                ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "99");
+        mFieldTrialParams.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "99");
+        enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
 
         assertDownloadAttempted(false);
         initializeChromeSurveyController();
@@ -315,7 +245,8 @@ public class ChromeSurveyControllerFlowTest {
     @Test
     public void testStartDownloadIfEligibleTask_DownloadReachCap() {
         CommandLine.getInstance().removeSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY);
-        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "2");
+        mFieldTrialParams.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "2");
+        enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
         mSharedPreferencesManager.writeInt(mPrefKeyDownloadAttempts, 2);
 
         initializeChromeSurveyController();
@@ -325,27 +256,12 @@ public class ChromeSurveyControllerFlowTest {
 
     @Test
     public void testStartDownloadIfEligibleTask_DownloadCapZero_ForceEnable() {
-        ShadowChromeFeatureList.sParamValues.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+        mFieldTrialParams.put(ChromeSurveyController.MAX_DOWNLOAD_ATTEMPTS, "0");
+        enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
 
         assertDownloadAttempted(false);
         initializeChromeSurveyController();
         assertDownloadAttempted(true);
-    }
-
-    @Test
-    public void testSurveyInfobarUI() {
-        setupTabMocks();
-        initializeChromeSurveyController();
-        assertCallbackAssignedInSurveyController();
-
-        // Verify the survey should be attempted to present on a valid tab.
-        mockTabReady();
-        // Verify that the feature flag for the survey messages UI is disabled
-        Assert.assertFalse(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY));
-        mTestSurveyController.onDownloadSuccessRunnable.run();
-        assertSurveyInfoBarShown(true);
-        verifyNoMoreInteractions(mMessageDispatcher);
     }
 
     @Test
@@ -356,19 +272,9 @@ public class ChromeSurveyControllerFlowTest {
 
         // Verify the survey should be attempted to present on a valid tab.
         mockTabReady();
-        ShadowChromeFeatureList.sEnableMessages = true;
-        // Verify that the feature flag for the survey messages UI is enabled
-        Assert.assertTrue(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY));
         Assert.assertNotNull(mMessageDispatcher);
         mTestSurveyController.onDownloadSuccessRunnable.run();
-        assertSurveyInfoBarShown(false);
-        assertSurveyMessagesEnqueued();
-    }
-
-    @Test
-    public void testPresentSurvey_ValidTab_SurveyInfobarDelegate() {
-        presentSurveyInfoBarInValidTab();
+        assertSurveyMessageEnqueued(true);
     }
 
     @Test
@@ -381,13 +287,13 @@ public class ChromeSurveyControllerFlowTest {
         Mockito.doReturn(true).when(mMockTab).isLoading();
         mTestSurveyController.onDownloadSuccessRunnable.run();
 
-        assertSurveyInfoBarShown(false);
+        assertSurveyMessageEnqueued(false);
         Assert.assertNotNull("Tab observer should be registered.", mTabObserver);
 
         // Assume tab loading is complete.
         mockTabReady();
         mTabObserver.onPageLoadFinished(mMockTab, null);
-        assertSurveyInfoBarShown(true);
+        assertSurveyMessageEnqueued(true);
     }
 
     @Test
@@ -400,13 +306,13 @@ public class ChromeSurveyControllerFlowTest {
         Mockito.doReturn(false).when(mMockTab).isUserInteractable();
         mTestSurveyController.onDownloadSuccessRunnable.run();
 
-        assertSurveyInfoBarShown(false);
+        assertSurveyMessageEnqueued(false);
         Assert.assertNotNull("Tab observer should be registered.", mTabObserver);
 
         // Assume tab loading is complete.
         mockTabReady();
         mTabObserver.onInteractabilityChanged(mMockTab, true);
-        assertSurveyInfoBarShown(true);
+        assertSurveyMessageEnqueued(true);
     }
 
     @Test
@@ -419,7 +325,7 @@ public class ChromeSurveyControllerFlowTest {
         Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(null);
         mTestSurveyController.onDownloadSuccessRunnable.run();
 
-        assertSurveyInfoBarShown(false);
+        assertSurveyMessageEnqueued(false);
         Assert.assertNotNull(
                 "TabModelSelectorObserver should be registered.", mTabModelSelectorObserver);
 
@@ -427,7 +333,7 @@ public class ChromeSurveyControllerFlowTest {
         mockTabReady();
         Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(mMockTab);
         mTabModelSelectorObserver.onChange();
-        assertSurveyInfoBarShown(true);
+        assertSurveyMessageEnqueued(true);
     }
 
     @Test
@@ -440,7 +346,7 @@ public class ChromeSurveyControllerFlowTest {
         Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(null);
         mTestSurveyController.onDownloadSuccessRunnable.run();
 
-        assertSurveyInfoBarShown(false);
+        assertSurveyMessageEnqueued(false);
         Assert.assertNotNull(
                 "TabModelSelectorObserver should be registered.", mTabModelSelectorObserver);
 
@@ -450,126 +356,34 @@ public class ChromeSurveyControllerFlowTest {
         mockTabReady();
         Mockito.when(mMockModelSelector.getCurrentTab()).thenReturn(mMockTab);
         mTabModelSelectorObserver.onChange();
-        assertSurveyInfoBarShown(false);
+        assertSurveyMessageEnqueued(false);
         Assert.assertNull("TabModelSelectorObserver is unregistered since UMA upload is disabled.",
                 mTabModelSelectorObserver);
     }
 
     @Test
-    public void testSurveyInfoBarDelegate_getLifecycleDispatcher() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-        Assert.assertEquals("#getLifecycleDispatcher is different.", mMockLifecycleDispatcher,
-                surveyInfoBarDelegate.getLifecycleDispatcher());
-    }
+    public void testMessages_PrimaryAction() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
 
-    @Test
-    public void testSurveyInfoBarDelegate_getSurveyPromptString() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        Assert.assertEquals("#getPromptString is different.",
-                ContextUtils.getApplicationContext().getString(R.string.chrome_survey_prompt),
-                surveyInfoBarDelegate.getSurveyPromptString());
-    }
-
-    @Test
-    public void testSurveyInfoBarDelegate_onSurveyTriggered() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        surveyInfoBarDelegate.onSurveyTriggered();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+        messageModel.get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.PRIMARY_ACTION);
+        assertPromptDisplayedRecorded();
         assertDownloadAttemptRecordedWithSample(1);
-        assertInfoBarDisplayedRecorded();
     }
 
     @Test
-    public void testSurveyInfoBarDelegate_onSurveyTriggered_DownloadBefore() {
+    public void testMessages_PrimaryAction_DownloadBefore() {
         final int downloadAttempted = 3;
         mSharedPreferencesManager.writeInt(mPrefKeyDownloadAttempts, downloadAttempted);
 
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
 
-        surveyInfoBarDelegate.onSurveyTriggered();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+        messageModel.get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.PRIMARY_ACTION);
+        assertPromptDisplayedRecorded();
         assertDownloadAttemptRecordedWithSample(downloadAttempted + 1);
-        assertInfoBarDisplayedRecorded();
-    }
-
-    @Test
-    public void testSurveyInfoBarDelegate_onSurveyInfoBarClosed() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        surveyInfoBarDelegate.onSurveyInfoBarClosed(
-                /*viaCloseButton=*/false, /*visibleWhenClosed=*/true);
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.VISIBLE_INDIRECT);
-        assertInfoBarDisplayedNotRecorded("onSurveyInfoBarClosed with VISIBLE_INDIRECT "
-                + "should not result in info bar displayed being recorded.");
-
-        surveyInfoBarDelegate.onSurveyInfoBarClosed(
-                /*viaCloseButton=*/false, /*visibleWhenClosed=*/false);
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.HIDDEN_INDIRECT);
-        assertInfoBarDisplayedNotRecorded("onSurveyInfoBarClosed with HIDDEN_INDIRECT "
-                + "should not result in info bar displayed being recorded.");
-
-        // #onSurveyInfoBarClosed(true, false) is not a valid case, so skipped in test.
-        surveyInfoBarDelegate.onSurveyInfoBarClosed(
-                /*viaCloseButton=*/true, /*visibleWhenClosed=*/true);
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.CLOSE_BUTTON);
-        assertInfoBarDisplayedRecorded();
-    }
-
-    @Test
-    public void testSurveyInfoBarDelegate_onSurveyInfoBarTabBecomeInteractable() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        surveyInfoBarDelegate.onSurveyInfoBarTabInteractabilityChanged(true);
-        Shadows.shadowOf(Looper.myLooper())
-                .idleFor(ChromeSurveyController.REQUIRED_VISIBILITY_DURATION_MS,
-                        TimeUnit.MILLISECONDS);
-        assertInfoBarDisplayedRecorded();
-    }
-
-    @Test
-    public void testSurveyInfoBarDelegate_onSurveyInfoBarTabBecomeNotInteractable() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        surveyInfoBarDelegate.onSurveyInfoBarTabInteractabilityChanged(true);
-        Shadows.shadowOf(Looper.myLooper())
-                .idleFor(ChromeSurveyController.REQUIRED_VISIBILITY_DURATION_MS - 1,
-                        TimeUnit.MILLISECONDS);
-        surveyInfoBarDelegate.onSurveyInfoBarTabInteractabilityChanged(false);
-        Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        assertInfoBarDisplayedNotRecorded("Info bar should not be recorded as displayed "
-                + "if interactivity changed before minimum required visibility duration.");
-    }
-
-    @Test
-    public void testSurveyInfoBarDelegate_onSurveyInfoBarTabHidden() {
-        presentSurveyInfoBarInValidTab();
-        SurveyInfoBarDelegate surveyInfoBarDelegate =
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking();
-
-        surveyInfoBarDelegate.onSurveyInfoBarTabInteractabilityChanged(true);
-        Shadows.shadowOf(Looper.myLooper())
-                .idleFor(ChromeSurveyController.REQUIRED_VISIBILITY_DURATION_MS - 1,
-                        TimeUnit.MILLISECONDS);
-        surveyInfoBarDelegate.onSurveyInfoBarTabHidden();
-        Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        assertInfoBarDisplayedNotRecorded("Info bar should not be recorded as displayed "
-                + "if hidden before minimum required visibility duration.");
     }
 
     @Test
@@ -606,7 +420,6 @@ public class ChromeSurveyControllerFlowTest {
 
     @Test
     public void testMessages_NotShownOnExpiredSurvey() {
-        ShadowChromeFeatureList.sEnableMessages = true;
         setupTabMocks();
         initializeChromeSurveyController();
         assertCallbackAssignedInSurveyController();
@@ -660,24 +473,12 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     @Test
-    public void testMessages_Dismiss_PrimaryAction() {
-        presentMessages();
-        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
-
-        messageModel.get(MessageBannerProperties.ON_DISMISSED)
-                .onResult(DismissReason.PRIMARY_ACTION);
-        assertInfoBarDisplayedRecorded();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
-    }
-
-    @Test
     public void testMessages_Dismiss_Gesture() {
         presentMessages();
         PropertyModel messageModel = mMessagePropertyCaptor.getValue();
 
         messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.GESTURE);
-        assertInfoBarDisplayedRecorded();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.CLOSE_BUTTON);
+        assertPromptDisplayedRecorded();
     }
 
     @Test
@@ -686,24 +487,21 @@ public class ChromeSurveyControllerFlowTest {
         PropertyModel messageModel = mMessagePropertyCaptor.getValue();
 
         messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TIMER);
-        assertInfoBarDisplayedRecorded();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.VISIBLE_INDIRECT);
+        assertPromptDisplayedRecorded();
     }
 
-    // Inspired by crbug.com/1245624: When tab is destroyed, InfoBarDisplayed should not be
+    // Inspired by crbug.com/1245624: When tab is destroyed, PromptDisplayed should not be
     // recorded.
     @Test
     public void testMessages_Dismiss_Destroy() {
         presentMessages();
         PropertyModel messageModel = mMessagePropertyCaptor.getValue();
 
-        Mockito.doReturn(true).when(mMockTab).isDestroyed();
-        Mockito.doReturn(true).when(mActivity).isDestroyed();
         int[] dismissReasons = {DismissReason.TAB_DESTROYED, DismissReason.ACTIVITY_DESTROYED,
                 DismissReason.SCOPE_DESTROYED};
         for (int reason : dismissReasons) {
             messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(reason);
-            assertInfoBarDisplayedNotRecorded(
+            assertPromptDisplayedNotRecorded(
                     "Messages destroyed should not directly result in close state recorded.");
         }
     }
@@ -718,8 +516,7 @@ public class ChromeSurveyControllerFlowTest {
 
         // Simulate the invocation of the message dismissal callback.
         messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TAB_SWITCHED);
-        assertInfoBarDisplayedRecorded();
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.UNKNOWN);
+        assertPromptDisplayedRecorded();
     }
 
     @Test
@@ -735,9 +532,8 @@ public class ChromeSurveyControllerFlowTest {
         // Simulate the invocation of the message dismissal callback.
         messageModel.get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.DISMISSED_BY_FEATURE);
-        Assert.assertFalse("SharedPreference for InfoBarShown should not be recorded.",
+        Assert.assertFalse("SharedPreference for PromptShown should not be recorded.",
                 SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
-        assertInfoBarClosingStateRecorded(InfoBarClosingState.UNKNOWN);
     }
 
     private void initializeChromeSurveyController() {
@@ -751,19 +547,7 @@ public class ChromeSurveyControllerFlowTest {
         ShadowLooper.runUiThreadTasks();
     }
 
-    private void presentSurveyInfoBarInValidTab() {
-        setupTabMocks();
-        initializeChromeSurveyController();
-        assertCallbackAssignedInSurveyController();
-
-        // Verify the survey should be attempted to present on a valid tab.
-        mockTabReady();
-        mTestSurveyController.onDownloadSuccessRunnable.run();
-        assertSurveyInfoBarShown(true);
-    }
-
     private void presentMessages() {
-        ShadowChromeFeatureList.sEnableMessages = true;
         setupTabMocks();
         initializeChromeSurveyController();
         assertCallbackAssignedInSurveyController();
@@ -777,7 +561,7 @@ public class ChromeSurveyControllerFlowTest {
         // Verify the survey should be attempted to present on a valid tab.
         mockTabReady();
         mTestSurveyController.onDownloadSuccessRunnable.run();
-        assertSurveyMessagesEnqueued();
+        assertSurveyMessageEnqueued(true);
         Assert.assertNotNull("mTabObserver is null.", mTabObserver);
         Assert.assertNotNull("mLifecycleObserver is null.", mLifecycleObserver);
     }
@@ -823,41 +607,29 @@ public class ChromeSurveyControllerFlowTest {
                 mTestSurveyController.onDownloadFailureRunnable);
     }
 
-    private void assertSurveyInfoBarShown(boolean shown) {
-        Assert.assertEquals("presentSurvey should triggered.", shown ? 1 : 0,
-                ShadowSurveyInfoBar.sShowInfoBarCallback.getCallCount());
-        if (shown) {
-            Assert.assertNotNull("SurveyInfoBarDelegate is null.",
-                    ShadowSurveyInfoBar.sShowInfoBarCallback.getOnlyPayloadBlocking());
+    private void assertSurveyMessageEnqueued(boolean enqueued) {
+        if (enqueued) {
+            verify(mMessageDispatcher)
+                    .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
+            Assert.assertNotNull("Message captor is null.", mMessagePropertyCaptor.getValue());
+        } else {
+            verify(mMessageDispatcher, never())
+                    .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
         }
     }
 
-    private void assertSurveyMessagesEnqueued() {
-        verify(mMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
-        Assert.assertNotNull("Message captor is null.", mMessagePropertyCaptor.getValue());
-    }
-
-    private void assertInfoBarClosingStateRecorded(@InfoBarClosingState int state) {
-        int count = RecordHistogram.getHistogramValueCountForTesting(
-                "Android.Survey.InfoBarClosingState", state);
-        Assert.assertEquals(
-                String.format("InfoBarClosingState for state <%d> is not recorded.", state), 1,
-                count);
-    }
-
-    private void assertInfoBarDisplayedRecorded() {
+    private void assertPromptDisplayedRecorded() {
         if (mTabObserver != null) {
             verify(mMockTab).removeObserver(mTabObserver);
         }
         if (mLifecycleObserver != null) {
             verify(mMockLifecycleDispatcher).unregister(mLifecycleObserver);
         }
-        Assert.assertTrue("SharedPreference for InfoBarShown is not recorded.",
+        Assert.assertTrue("SharedPreference for PromptShown is not recorded.",
                 SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
     }
 
-    private void assertInfoBarDisplayedNotRecorded(String reason) {
+    private void assertPromptDisplayedNotRecorded(String reason) {
         Assert.assertFalse(
                 reason, SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
     }
@@ -877,6 +649,20 @@ public class ChromeSurveyControllerFlowTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Survey.DownloadAttemptsBeforeAccepted", sample));
+    }
+
+    private void enableChromeSurveyNextFeatureWithParams(
+            Map<String, String> params, boolean enable) {
+        TestValues testValues = new TestValues();
+        String featureName = ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID;
+        testValues.addFeatureFlagOverride(featureName, enable);
+        if (params != null) {
+            for (Entry<String, String> param : params.entrySet()) {
+                testValues.addFieldTrialParamOverride(
+                        featureName, param.getKey(), param.getValue());
+            }
+        }
+        FeatureList.setTestValues(testValues);
     }
 
     private static class TestSurveyController extends SurveyController {

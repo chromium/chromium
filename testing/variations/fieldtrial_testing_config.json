@@ -209,8 +209,7 @@
                         "site-id": "78FakAwAN0tK1KeaPYj0PoiAHrrQ"
                     },
                     "enable_features": [
-                        "ChromeSurveyNextAndroid",
-                        "MessagesForAndroidChromeSurvey"
+                        "ChromeSurveyNextAndroid"
                     ]
                 }
             ]

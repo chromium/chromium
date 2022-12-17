@@ -29,7 +29,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -77,7 +76,7 @@ public class ChromeSurveyControllerTest {
                 mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = SharedPreferencesManager.getInstance();
-        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
     }
 
     @After
@@ -87,7 +86,7 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
-    public void testInfoBarDisplayedBefore() {
+    public void testPromptDisplayedBefore() {
         final String triggerId1 = "triggerId1";
         final String triggerId2 = "triggerId2";
 
@@ -106,22 +105,22 @@ public class ChromeSurveyControllerTest {
                 mSharedPreferences.contains(prefKey1));
         Assert.assertFalse("SharedPref for triggerId2 should not be recorded.",
                 mSharedPreferences.contains(prefKey2));
-        Assert.assertFalse("Infobar for triggerId1 is marked displayed.",
-                controller1.hasInfoBarBeenDisplayed());
-        Assert.assertFalse("Infobar for triggerId2 is marked displayed.",
-                controller2.hasInfoBarBeenDisplayed());
+        Assert.assertFalse(
+                "Prompt for triggerId1 is marked displayed.", controller1.hasPromptBeenDisplayed());
+        Assert.assertFalse(
+                "Prompt for triggerId2 is marked displayed.", controller2.hasPromptBeenDisplayed());
 
         mSharedPreferences.writeLong(prefKey1, System.currentTimeMillis());
-        Assert.assertTrue("Infobar for triggerId1 should be marked displayed.",
-                controller1.hasInfoBarBeenDisplayed());
-        Assert.assertFalse("Infobar for triggerId2 should not be marked displayed yet.",
-                controller2.hasInfoBarBeenDisplayed());
-        verifyFilteringResultRecorded(FilteringResult.SURVEY_INFOBAR_ALREADY_DISPLAYED, 1);
+        Assert.assertTrue("Prompt for triggerId1 should be marked displayed.",
+                controller1.hasPromptBeenDisplayed());
+        Assert.assertFalse("Prompt for triggerId2 should not be marked displayed yet.",
+                controller2.hasPromptBeenDisplayed());
+        verifyFilteringResultRecorded(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED, 1);
 
         mSharedPreferences.writeLong(prefKey2, System.currentTimeMillis());
-        Assert.assertTrue("Infobar for trggerId2 should be marked displayed.",
-                controller2.hasInfoBarBeenDisplayed());
-        verifyFilteringResultRecorded(FilteringResult.SURVEY_INFOBAR_ALREADY_DISPLAYED, 2);
+        Assert.assertTrue("Prompt for trggerId2 should be marked displayed.",
+                controller2.hasPromptBeenDisplayed());
+        verifyFilteringResultRecorded(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED, 2);
     }
 
     @Test
@@ -161,39 +160,38 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
-    public void testShowInfoBarTabApplicable() {
+    public void testShowPromptTabApplicable() {
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(false).when(mTab).isLoading();
 
-        mTestController.showInfoBarIfApplicable(mTab, null, null);
-        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabInfobarShown());
+        mTestController.showPromptIfApplicable(mTab, null, null);
+        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabPromptShown());
         verify(mTab, atLeastOnce()).isUserInteractable();
         verify(mTab, atLeastOnce()).isLoading();
     }
 
     @Test
-    public void testShowInfoBarTabNotApplicable() {
+    public void testShowPromptTabNotApplicable() {
         doReturn(false).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isLoading();
 
-        mTestController.showInfoBarIfApplicable(mTab, null, null);
-        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        mTestController.showPromptIfApplicable(mTab, null, null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
         verify(mTab, atLeastOnce()).isUserInteractable();
     }
 
     @Test
-    public void testShowInfoBarUmaUploadNotEnabled() {
+    public void testShowPromptUmaUploadNotEnabled() {
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isLoading();
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
 
-        mTestController.showInfoBarIfApplicable(mTab, null, null);
-        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        mTestController.showPromptIfApplicable(mTab, null, null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
         verify(mTab, atLeastOnce()).isUserInteractable();
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY})
     public void testSurveyAvailableWebContentsLoaded() {
         doReturn(mTab).when(mSelector).getCurrentTab();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -202,7 +200,7 @@ public class ChromeSurveyControllerTest {
         doReturn(false).when(mWebContents).isLoading();
 
         mTestController.onSurveyAvailable(null);
-        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabInfobarShown());
+        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabPromptShown());
 
         verify(mSelector, atLeastOnce()).getCurrentTab();
         verify(mTab, atLeastOnce()).isIncognito();
@@ -215,7 +213,7 @@ public class ChromeSurveyControllerTest {
         doReturn(null).when(mSelector).getCurrentTab();
 
         mTestController.onSurveyAvailable(null);
-        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
         verify(mSelector).addObserver(any());
     }
 
@@ -223,7 +221,7 @@ public class ChromeSurveyControllerTest {
     public void testSurveyAvailableUmaDisabled() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         mTestController.onSurveyAvailable(null);
-        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
         verify(mSelector, never()).addObserver(any());
     }
 
@@ -339,7 +337,7 @@ public class ChromeSurveyControllerTest {
             mTab = tab;
         }
 
-        public Tab getLastTabInfobarShown() {
+        public Tab getLastTabPromptShown() {
             return mTab;
         }
     }

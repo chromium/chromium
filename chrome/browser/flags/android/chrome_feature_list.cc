@@ -334,7 +334,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kTranslateAssistContent,
     &language::kTranslateIntent,
     &media_router::kCafMRPDeferredDiscovery,
-    &messages::kMessagesForAndroidChromeSurvey,
     &messages::kMessagesForAndroidInfrastructure,
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflineIndicatorFeature,

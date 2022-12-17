@@ -4626,11 +4626,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "messages-for-android-chrome-survey",
-    "owners": [ "pavely", "aishwaryarj" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "messages-for-android-infrastructure",
     "owners": [ "lazzzis", "aishwaryarj" ],
     "expiry_milestone": 112

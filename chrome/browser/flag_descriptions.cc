@@ -3699,10 +3699,6 @@ const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =
     "When enabled, ads blocked message will use the new Messages UI.";
 
-const char kMessagesForAndroidChromeSurveyName[] = "Chrome Survey Messages UI";
-const char kMessagesForAndroidChromeSurveyDescription[] =
-    "When enabled, survey prompt will use the new Messages UI.";
-
 const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
