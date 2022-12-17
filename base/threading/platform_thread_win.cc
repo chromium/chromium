@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/activity_tracker.h"
@@ -46,14 +48,6 @@ namespace {
 // Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
 // |kUseThreadPriorityLowest| Feature.
 std::atomic<bool> g_use_thread_priority_lowest{false};
-
-// The most common value returned by ::GetThreadPriority() after background
-// thread mode is enabled on Windows 7.
-constexpr int kWin7BackgroundThreadModePriority = 4;
-
-// Value sometimes returned by ::GetThreadPriority() after thread priority is
-// set to normal on Windows 7.
-constexpr int kWin7NormalPriority = 3;
 
 // These values are sometimes returned by ::GetThreadPriority().
 constexpr int kWinNormalPriority1 = 5;
@@ -237,10 +231,7 @@ void AssertMemoryPriority(HANDLE thread, int memory_priority) {
       reinterpret_cast<decltype(&::GetThreadInformation)>(::GetProcAddress(
           ::GetModuleHandle(L"Kernel32.dll"), "GetThreadInformation"));
 
-  if (!get_thread_information_fn) {
-    DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-    return;
-  }
+  DCHECK(get_thread_information_fn);
 
   MEMORY_PRIORITY_INFORMATION memory_priority_information = {};
   DCHECK(get_thread_information_fn(thread, ::ThreadMemoryPriority,
@@ -542,14 +533,8 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
     return ThreadPriorityForTest::kBackground;
 
   switch (priority) {
-    case kWin7BackgroundThreadModePriority:
-      DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-      return ThreadPriorityForTest::kBackground;
     case THREAD_PRIORITY_BELOW_NORMAL:
       return ThreadPriorityForTest::kUtility;
-    case kWin7NormalPriority:
-      DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-      [[fallthrough]];
     case THREAD_PRIORITY_NORMAL:
       return ThreadPriorityForTest::kNormal;
     case kWinNormalPriority1:

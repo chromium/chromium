@@ -17,9 +17,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
-#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_winrt_initializer.h"
-#include "base/win/windows_version.h"
 #endif
 
 namespace base {
@@ -327,18 +325,8 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
 std::unique_ptr<win::ScopedWindowsThreadEnvironment>
 ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
   std::unique_ptr<win::ScopedWindowsThreadEnvironment> scoped_environment;
-  switch (environment) {
-    case WorkerEnvironment::COM_MTA: {
-      if (win::GetVersion() >= win::Version::WIN8) {
-        scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
-      } else {
-        scoped_environment = std::make_unique<win::ScopedCOMInitializer>(
-            win::ScopedCOMInitializer::kMTA);
-      }
-      break;
-    }
-    default:
-      break;
+  if (environment == WorkerEnvironment::COM_MTA) {
+    scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
   }
 
   DCHECK(!scoped_environment || scoped_environment->Succeeded());

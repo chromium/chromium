@@ -17,9 +17,8 @@ namespace base {
 
 // It has been observed that calling
 // :SetThreadPriority(THREAD_MODE_BACKGROUND_BEGIN) in an IDLE_PRIORITY_CLASS
-// process doesn't always affect the return value of ::GetThreadPriority() or
-// the base priority reported in Process Explorer (on Win7, the values are
-// sometimes affected while on Win8+ they are never affected). It does however
+// process never affects the return value of ::GetThreadPriority() or
+// the base priority reported in Process Explorer. It does however
 // set the memory and I/O priorities to very low. This test confirms that
 // behavior which we suspect is a Windows kernel bug. If this test starts
 // failing, the mitigation for https://crbug.com/901483 in
@@ -50,24 +49,15 @@ TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   // Begin thread mode background.
   EXPECT_TRUE(::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_BEGIN));
 
-  // On Win8, GetThreadPriority() stays NORMAL. On Win7, it can stay NORMAL or
-  // switch to one of the various priorities that are observed after entering
-  // thread mode background in a NORMAL_PRIORITY_CLASS process. On all Windows
-  // versions, memory priority becomes VERY_LOW.
+  // On Win10+, GetThreadPriority() stays NORMAL and memory priority becomes
+  // VERY_LOW.
   //
   // Note: this documents the aforementioned kernel bug. Ideally this would
   // *not* be the case.
   const int priority_after_thread_mode_background_begin =
       ::GetThreadPriority(thread_handle);
-  if (win::GetVersion() == win::Version::WIN7) {
-    const ThreadPriorityForTest priority =
-        PlatformThread::GetCurrentThreadPriorityForTest();
-    EXPECT_TRUE(priority == ThreadPriorityForTest::kNormal ||
-                priority == ThreadPriorityForTest::kBackground);
-  } else {
-    EXPECT_EQ(priority_after_thread_mode_background_begin,
-              THREAD_PRIORITY_NORMAL);
-  }
+  EXPECT_EQ(priority_after_thread_mode_background_begin,
+            THREAD_PRIORITY_NORMAL);
   internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_VERY_LOW);
 
   PlatformThread::Sleep(base::Seconds(1));
