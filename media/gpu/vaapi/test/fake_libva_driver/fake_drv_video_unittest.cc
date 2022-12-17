@@ -36,12 +36,12 @@ class FakeDriverTest : public testing::Test {
     int major_version;
     int minor_version;
 
-    ASSERT_EQ(vaInitialize(display_, &major_version, &minor_version),
-              VA_STATUS_SUCCESS);
+    ASSERT_EQ(VA_STATUS_SUCCESS,
+              vaInitialize(display_, &major_version, &minor_version));
   }
 
   void TearDown() override {
-    ASSERT_EQ(vaTerminate(display_), VA_STATUS_SUCCESS);
+    ASSERT_EQ(VA_STATUS_SUCCESS, vaTerminate(display_));
   }
 
  protected:
@@ -57,7 +57,7 @@ TEST_F(FakeDriverTest, VerifyQueryConfigProfiles) {
 
   const VAStatus va_res =
       vaQueryConfigProfiles(display_, va_profiles.data(), &num_va_profiles);
-  EXPECT_EQ(va_res, VA_STATUS_SUCCESS);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
 
   std::set<VAProfile> unique_profiles(va_profiles.begin(), va_profiles.end());
   EXPECT_EQ(va_profiles.size(), unique_profiles.size());
@@ -74,7 +74,7 @@ TEST_F(FakeDriverTest, CanCreateConfig) {
 }
 
 TEST_F(FakeDriverTest, QueryConfigAttributesForValidConfigID) {
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
@@ -108,7 +108,7 @@ TEST_F(FakeDriverTest, QueryConfigAttributesCrashesForInvalidConfigID) {
 }
 
 TEST_F(FakeDriverTest, CreateContextForValidConfigID) {
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
@@ -123,7 +123,7 @@ TEST_F(FakeDriverTest, CreateContextForValidConfigID) {
 }
 
 TEST_F(FakeDriverTest, CreateContextCrashesForInvalidConfigID) {
-  VAContextID context_id;
+  VAContextID context_id = VA_INVALID_ID;
   EXPECT_DEATH(
       vaCreateContext(display_, /*config_id=*/0, /*picture_width=*/1280,
                       /*picture_height=*/720, /*flag=*/0,
@@ -133,7 +133,7 @@ TEST_F(FakeDriverTest, CreateContextCrashesForInvalidConfigID) {
 }
 
 TEST_F(FakeDriverTest, QuerySurfaceAttributesForValidConfigID) {
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
@@ -158,7 +158,7 @@ TEST_F(FakeDriverTest, QuerySurfaceAttributesCrashesForInvalidConfigID) {
 }
 
 TEST_F(FakeDriverTest, DestroyConfigForValidConfigID) {
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
@@ -236,13 +236,13 @@ TEST_F(FakeDriverTest, CanBeginPictureForValidSurfaceID) {
                        /*height=*/720, surfaces, kNumSurfaces,
                        /*surface_attribs=*/nullptr, /*num_attribs=*/0));
 
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
                      /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
 
-  VAContextID context_id;
+  VAContextID context_id = VA_INVALID_ID;
   ASSERT_EQ(VA_STATUS_SUCCESS,
             vaCreateContext(display_, config_id, /*picture_width=*/1280,
                             /*picture_height=*/720, /*flag=*/0, surfaces,
@@ -255,13 +255,13 @@ TEST_F(FakeDriverTest, CanBeginPictureForValidSurfaceID) {
 }
 
 TEST_F(FakeDriverTest, BeginPictureCrashesForInvalidSurfaceID) {
-  VAConfigID config_id;
+  VAConfigID config_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
                      /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
 
-  VAContextID context_id;
+  VAContextID context_id = VA_INVALID_ID;
   ASSERT_EQ(
       VA_STATUS_SUCCESS,
       vaCreateContext(display_, config_id, /*picture_width=*/1280,
@@ -386,6 +386,266 @@ TEST_F(FakeDriverTest, CanDestroySurfacesForValidSurfaceIDs) {
 TEST_F(FakeDriverTest, DestroySurfacesCrashesForInvalidSurfaceIDs) {
   VASurfaceID invalid_id[1] = {0};
   EXPECT_DEATH(vaDestroySurfaces(display_, invalid_id, /*num_surfaces=*/1), "");
+}
+
+TEST_F(FakeDriverTest, CanCreateContext) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420, /*width=*/1280,
+                       /*height=*/720, surfaces, kNumSurfaces,
+                       /*surface_attribs=*/nullptr, /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+
+  const VAStatus va_res = vaCreateContext(
+      display_, config_id, /*picture_width=*/1280, /*picture_height=*/720,
+      /*flag=*/0, surfaces, kNumSurfaces, &context_id);
+  ASSERT_EQ(VA_STATUS_SUCCESS, va_res);
+  EXPECT_NE(VA_INVALID_ID, context_id);
+}
+
+TEST_F(FakeDriverTest, CanCreateBufferForValidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720,
+                            /*flag=*/0, surfaces, kNumSurfaces, &context_id));
+  ASSERT_NE(VA_INVALID_ID, context_id);
+
+  VABufferID buf_id = VA_INVALID_ID;
+  VABufferType buf_type = VASliceDataBufferType;
+  const VAStatus va_res = vaCreateBuffer(display_, context_id, buf_type,
+                                         /*size=*/1024, /*num_elements=*/1,
+                                         /*data=*/nullptr, &buf_id);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, CreateBufferCrashesForInvalidContextID) {
+  VABufferID buf_id = VA_INVALID_ID;
+  VABufferType buf_type = VASliceDataBufferType;
+  EXPECT_DEATH(vaCreateBuffer(display_, /*context_id=*/0, buf_type,
+                              /*size=*/1024, /*num_elements=*/1,
+                              /*data=*/nullptr, &buf_id),
+               "");
+}
+
+TEST_F(FakeDriverTest, CanBeginPictureForValidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720,
+                            /*flag=*/0, surfaces, kNumSurfaces, &context_id));
+  ASSERT_NE(VA_INVALID_ID, context_id);
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    const VAStatus va_res = vaBeginPicture(display_, context_id, surfaces[i]);
+    EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+  }
+}
+
+TEST_F(FakeDriverTest, BeginPictureCrashesForInvalidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    EXPECT_DEATH(vaBeginPicture(display_, /*context=*/0, surfaces[i]), "");
+  }
+}
+
+TEST_F(FakeDriverTest, CanRenderPictureForValidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720,
+                            /*flag=*/0, surfaces, kNumSurfaces, &context_id));
+  ASSERT_NE(VA_INVALID_ID, context_id);
+
+  // TODO(b/258275488): Provide a valid Buffer ID once that functionality is
+  // implemented.
+  const VAStatus va_res = vaRenderPicture(
+      display_, context_id, /*buf_id=*/nullptr, /*num_buffers=*/0);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, RenderPictureCrashesForInvalidContextID) {
+  // TODO(b/258275488): Provide a valid Buffer ID once that functionality is
+  // implemented.
+  EXPECT_DEATH(vaRenderPicture(display_, /*context=*/0, /*buf_id=*/nullptr,
+                               /*num_buffers=*/0),
+               "");
+}
+
+TEST_F(FakeDriverTest, CanEndPictureForValidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720,
+                            /*flag=*/0, surfaces, kNumSurfaces, &context_id));
+  ASSERT_NE(VA_INVALID_ID, context_id);
+
+  const VAStatus va_res = vaEndPicture(display_, context_id);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, EndPictureCrashesForInvalidContextID) {
+  EXPECT_DEATH(vaEndPicture(display_, /*context=*/0), "");
+}
+
+TEST_F(FakeDriverTest, CanDestroyContextForValidContextID) {
+  constexpr unsigned int kNumSurfaces = 32;
+  VASurfaceID surfaces[kNumSurfaces];
+  std::fill(surfaces, surfaces + kNumSurfaces, VA_INVALID_SURFACE);
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateSurfaces(display_, /*format=*/VA_RT_FORMAT_YUV420,
+                             /*width=*/1280, /*height=*/720, surfaces,
+                             kNumSurfaces, /*surface_attribs=*/nullptr,
+                             /*num_attribs=*/0));
+
+  for (unsigned int i = 0; i < kNumSurfaces; i++) {
+    ASSERT_NE(VA_INVALID_SURFACE, surfaces[i]);
+  }
+
+  VAConfigID config_id = VA_INVALID_ID;
+
+  ASSERT_EQ(
+      VA_STATUS_SUCCESS,
+      vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
+                     /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
+  ASSERT_NE(VA_INVALID_ID, config_id);
+
+  VAContextID context_id = VA_INVALID_ID;
+
+  ASSERT_EQ(VA_STATUS_SUCCESS,
+            vaCreateContext(display_, config_id, /*picture_width=*/1280,
+                            /*picture_height=*/720,
+                            /*flag=*/0, surfaces, kNumSurfaces, &context_id));
+  ASSERT_NE(VA_INVALID_ID, context_id);
+
+  const VAStatus va_res = vaDestroyContext(display_, context_id);
+  EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+}
+
+TEST_F(FakeDriverTest, DestroyContextCrashesForInvalidContextID) {
+  EXPECT_DEATH(vaDestroyContext(display_, /*context=*/0), "");
 }
 
 int main(int argc, char** argv) {
