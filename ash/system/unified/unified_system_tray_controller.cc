@@ -474,6 +474,9 @@ void UnifiedSystemTrayController::ShowAudioDetailedView() {
 }
 
 void UnifiedSystemTrayController::ShowNotifierSettingsView() {
+  if (features::IsOsSettingsAppBadgingToggleEnabled())
+    return;
+
   DCHECK(Shell::Get()->session_controller()->ShouldShowNotificationTray());
   DCHECK(!Shell::Get()->session_controller()->IsScreenLocked());
   ShowDetailedView(std::make_unique<UnifiedNotifierSettingsController>(this));

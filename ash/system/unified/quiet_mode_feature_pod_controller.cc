@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
@@ -87,6 +88,12 @@ void QuietModeFeaturePodController::OnIconPressed() {
 }
 
 void QuietModeFeaturePodController::OnLabelPressed() {
+  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
+    // Now that app badging has been moved to OS Settings, this detailed view is
+    // not required.
+    FeaturePodControllerBase::OnLabelPressed();
+    return;
+  }
   TrackDiveInUMA();
   tray_controller_->ShowNotifierSettingsView();
 }
