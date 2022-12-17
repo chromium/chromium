@@ -1119,6 +1119,8 @@
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
+      'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-win-x86-intel-exp': 'dawn_tests_release_trybot_x86_reclient',
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot_reclient',
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86_reclient',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
