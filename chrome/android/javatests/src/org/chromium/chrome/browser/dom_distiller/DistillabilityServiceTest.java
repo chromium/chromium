@@ -20,19 +20,22 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarContainerObserver;
-import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageStateHandler;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -58,36 +61,12 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // TODO(crbug.com/1383323): Implement Messages based (or feature independent) method of
-    // verification that normal page triggers ReaderMode prompt.
-    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE,
-            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
-    public void
-    testServiceAliveAfterNativePage() throws TimeoutException {
+    @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
-
-        InfoBarContainerObserver infoBarObserver = new InfoBarContainerObserver() {
-            @Override
-            public void onAddInfoBar(InfoBarContainer container, InfoBar infoBar, boolean isFirst) {
-                if (infoBar instanceof ReaderModeInfoBar) readerShownCallbackHelper.notifyCalled();
-            }
-
-            @Override
-            public void onRemoveInfoBar(
-                    InfoBarContainer container, InfoBar infoBar, boolean isLast) {}
-
-            @Override
-            public void onInfoBarContainerAttachedToWindow(boolean hasInfobars) {}
-
-            @Override
-            public void onInfoBarContainerShownRatioChanged(
-                    InfoBarContainer container, float shownRatio) {}
-        };
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getInfoBarContainer().addObserver(infoBarObserver));
 
         TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
@@ -97,12 +76,27 @@ public class DistillabilityServiceTest {
         int curCallCount = finishHelper.getCallCount();
         mActivityTestRule.loadUrl("chrome://history/");
         finishHelper.waitForCallback(curCallCount, 1);
+        verifyReaderModeMessageShown(readerShownCallbackHelper);
         Assert.assertEquals(0, readerShownCallbackHelper.getCallCount());
 
         // Navigate to a normal page.
         curCallCount = readerShownCallbackHelper.getCallCount();
         mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
+        verifyReaderModeMessageShown(readerShownCallbackHelper);
         readerShownCallbackHelper.waitForCallback(curCallCount, 1);
         Assert.assertEquals(1, readerShownCallbackHelper.getCallCount());
+    }
+
+    private void verifyReaderModeMessageShown(CallbackHelper readerShownCallbackHelper)
+            throws ExecutionException {
+        MessageDispatcher messageDispatcher = TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> MessageDispatcherProvider.from(
+                                mActivityTestRule.getActivity().getWindowAndroid()));
+        List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
+                messageDispatcher, MessageIdentifier.READER_MODE);
+        if (messages.size() > 0 && MessagesTestHelper.getCurrentMessage(messages.get(0)) != null) {
+            readerShownCallbackHelper.notifyCalled();
+        }
     }
 }

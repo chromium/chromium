@@ -152,14 +152,6 @@ public class DomDistillerTabUtils {
     }
 
     /**
-     * Returns true if reader mode prompt should be displayed as a message. Otherwise it will be
-     * displayed as an infobar.
-     */
-    public static boolean useMessagesForReaderModePrompt() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE);
-    }
-
-    /**
      * Set an InterceptNavigationDelegate on a WebContents.
      * @param delegate The navigation delegate.
      * @param webContents The WebContents to bind the delegate to.

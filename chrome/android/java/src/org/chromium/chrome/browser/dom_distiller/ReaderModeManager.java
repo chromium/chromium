@@ -525,7 +525,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
 
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
-        if (messageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
+        if (messageDispatcher != null) {
             if (!mMessageRequestedForNavigation) {
                 // If feature is disabled, reader mode message ui is only shown once per tab.
                 if (mMessageShown) {

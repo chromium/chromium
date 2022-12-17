@@ -64,10 +64,6 @@ BASE_FEATURE(kMessagesForAndroidPopupBlocked,
              "MessagesForAndroidPopupBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidReaderMode,
-             "MessagesForAndroidReaderMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidSaveCard,
              "MessagesForAndroidSaveCard",
              base::FEATURE_DISABLED_BY_DEFAULT);

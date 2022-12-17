@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityS
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
-import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -76,7 +75,11 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageStateHandler;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -84,6 +87,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -125,11 +129,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/1225333): Implement corresponding test for messages.
-    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE)
-    @DisabledTest(message = "https://crbug.com/1328942")
-    public void testReaderModeInfobarShown() {
-        waitForReaderModeInfobar();
+    public void testReaderModePromptShown() {
+        waitForReaderModeMessage();
     }
 
     @Test
@@ -451,14 +452,17 @@ public class ReaderModeTest implements CustomMainActivityStart {
     }
 
     /**
-     * Wait until a {@link ReaderModeInfoBar} shows up.
+     * Wait until a Reader Mode message shows up.
      */
-    private void waitForReaderModeInfobar() {
+    private void waitForReaderModeMessage() {
         CriteriaHelper.pollUiThread(() -> {
-            for (InfoBar infobar : mDownloadTestRule.getInfoBars()) {
-                if (infobar instanceof ReaderModeInfoBar) return true;
-            }
-            return false;
+            MessageDispatcher messageDispatcher = TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> MessageDispatcherProvider.from(
+                                    mDownloadTestRule.getActivity().getWindowAndroid()));
+            List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
+                    messageDispatcher, MessageIdentifier.READER_MODE);
+            return messages.size() > 0;
         });
     }
 

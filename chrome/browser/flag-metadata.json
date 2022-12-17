@@ -4671,11 +4671,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "messages-for-android-reader-mode",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "messages-for-android-save-card",
     "owners": [ "lazzzis", "aishwaryarj" ],
     "expiry_milestone": 112

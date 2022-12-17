@@ -159,18 +159,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
-    public void testUI_triggered_infobar() {
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
-                mManager.getDistillationStatus());
-        verify(mReaderModeInfobarJniMock).create(mTab);
-        verifyNoMoreInteractions(mMessageDispatcher);
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
     public void testUI_triggered_messages() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
@@ -178,7 +166,6 @@ public class ReaderModeManagerTest {
         verify(mMessageDispatcher)
                 .enqueueMessage(
                         any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
     @Test
@@ -205,19 +192,17 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
     public void testUI_notTriggered_afterDismiss() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        verify(mReaderModeInfobarJniMock).create(mTab);
+        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
         mManager.onClosed();
 
         mManager.tryShowingPrompt();
-        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+        verifyNoMoreInteractions(mMessageDispatcher);
     }
 
     @Test
     @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
     public void testUI_notTriggered_muted() {
         mManager.muteSiteForTesting(mTab.getUrl());
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -229,7 +214,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
     public void testUI_notTriggered_mutedByDomain() {
         mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOG));
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -243,7 +227,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
     public void testUI_notTriggered_notMutedByDomain() {
         mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -255,8 +238,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE,
-            ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
             ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void
     testUI_notTriggered_contextualPageActionUiEnabled() {

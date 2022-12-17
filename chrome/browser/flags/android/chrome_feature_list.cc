@@ -336,7 +336,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &media_router::kCafMRPDeferredDiscovery,
     &messages::kMessagesForAndroidChromeSurvey,
     &messages::kMessagesForAndroidInfrastructure,
-    &messages::kMessagesForAndroidReaderMode,
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflineIndicatorFeature,
     &offline_pages::kOfflinePagesCTFeature,  // See crbug.com/620421.
