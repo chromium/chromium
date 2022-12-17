@@ -487,7 +487,6 @@ crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass Timeout ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Failure Pass ]
-crbug.com/1205673 [ Win ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
 crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
@@ -781,7 +780,6 @@ crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-control
 # Cross-origin iframe layerization is buggy with empty iframes.
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
-crbug.com/1266900 [ Mac11 ] fast/events/touch/gesture/right-click-gestures-set-cursor-at-correct-position.html [ Crash Pass ]
 crbug.com/1266900 [ Mac12 ] fast/events/touch/gesture/right-click-gestures-set-cursor-at-correct-position.html [ Crash Pass ]
 
 # Needs rebaseline on Fuchsia.
@@ -3024,7 +3022,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/selectors/invalidation/media-pseudo-classes-in-has.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/credential-management/fedcm-iframe.https.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Timeout ]
@@ -3718,7 +3715,6 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/repeat-auto-fill-007.html [ F
 crbug.com/618969 external/wpt/css/css-grid/subgrid/repeat-auto-fill-008.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Crash Failure Timeout ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
 
 # [css-animations]
 
@@ -3900,7 +3896,6 @@ crbug.com/1052642 external/wpt/service-workers/service-worker/unregister-immedia
 
 # Sheriff failures 2017-07-03
 crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html [ Pass Timeout ]
-crbug.com/746128 [ Mac ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Failure Pass ]
 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
@@ -5724,7 +5719,6 @@ crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html
 
 # Flaky with setTimeout without clamp
 crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
-crbug.com/1302309 external/wpt/streams/transferable/writable-stream.html [ Failure Pass ]
 
 # Test is very flaky (score of 223).
 crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Failure Pass Timeout ]
