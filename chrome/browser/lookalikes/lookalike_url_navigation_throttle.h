@@ -10,8 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -24,6 +26,11 @@ class NavigationHandle;
 class Profile;
 
 struct DomainInfo;
+
+// A feature to enable Prewarming the Lookalike check during navigation. URLs in
+// the redirect chain are queried while the request is on the wire instead of
+// when the request is ready to commit.
+BASE_DECLARE_FEATURE(kPrewarmLookalikeCheck);
 
 // Returns true if the redirect is deemed to be safe. These are generally
 // defensive registrations where the domain owner redirects the IDN to the ASCII
@@ -48,6 +55,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
+  ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
   static std::unique_ptr<LookalikeUrlNavigationThrottle>
@@ -104,8 +112,41 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
       LookalikeUrlMatchType match_type,
       bool triggered_by_initial_url);
 
+  // Kicks off a task to prewarm the lookalike checks for URLs in this
+  // navigations redirect chain.
+  void PrewarmLookalikeCheckAsync();
+
+  // Synchronously runs the lookalike checks for this navigation's front of the
+  // redirect chain and the current back of the redirect chain. Stores the
+  // result in |lookalike_cache_|.
+  void PrewarmLookalikeCheckSync();
+
+  // Used as a callback, calls |PrewarmLookalikeCheckSync()|.
+  void PrewarmLookalikeCheckSyncWithSites(
+      const std::vector<DomainInfo>& engaged_sites);
+
+  // Caches the lookalike check for |url| in |lookalike_cache_| if it has not
+  // already been cached during the navigation.
+  void PrewarmLookalikeCheckForURL(
+      const GURL& url,
+      const std::vector<DomainInfo>& engaged_sites);
+
   raw_ptr<Profile> profile_;
   bool use_test_profile_ = false;
+
+  // Cached results from checking if a URL host is a lookalike. Also stores the
+  // match type and suggested url. The lifetime of |this| is scoped to a single
+  // navigation, which leaves the results of this check relatively fresh.
+  std::map<std::string, std::tuple<bool, LookalikeUrlMatchType, GURL>>
+      lookalike_cache_;
+
+  // The number of lookalike async checks started from |WillRedirect()|. Used
+  // to limit the number of attempts at caching the lookalike check.
+  int redirect_lookup_cache_checks_ = 0;
+
+  // Holds a cancellable callback to run |PrewarmLookalikeCheckAsync()|
+  // asynchronously.
+  base::OneShotTimer lookup_timer_;
 
   base::WeakPtrFactory<LookalikeUrlNavigationThrottle> weak_factory_{this};
 };

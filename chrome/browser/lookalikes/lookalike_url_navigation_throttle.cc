@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,10 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -69,6 +74,10 @@ void RecordPerformCheckLatenciesForAllowedNavigation(
 
 }  // namespace
 
+BASE_FEATURE(kPrewarmLookalikeCheck,
+             "PrewarmLookalikeCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
@@ -86,7 +95,74 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
   if (service->EngagedSitesNeedUpdating())
     service->ForceUpdateEngagedSites(base::DoNothing());
 #endif
+  if (base::FeatureList::IsEnabled(kPrewarmLookalikeCheck))
+    PrewarmLookalikeCheckAsync();
   return content::NavigationThrottle::PROCEED;
+}
+
+ThrottleCheckResult LookalikeUrlNavigationThrottle::WillRedirectRequest() {
+  if (base::FeatureList::IsEnabled(kPrewarmLookalikeCheck) &&
+      redirect_lookup_cache_checks_ <
+          base::GetFieldTrialParamByFeatureAsInt(
+              kPrewarmLookalikeCheck, "redirect_lookup_cache_limit", 10)) {
+    redirect_lookup_cache_checks_++;
+    PrewarmLookalikeCheckAsync();
+  }
+  return content::NavigationThrottle::PROCEED;
+}
+
+void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckAsync() {
+  if (lookup_timer_.IsRunning())
+    return;
+  lookup_timer_.Start(
+      FROM_HERE, base::TimeDelta(),
+      base::BindOnce(&LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync,
+                     base::Unretained(this)));
+}
+
+void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites(
+    const std::vector<DomainInfo>& engaged_sites) {
+  PrewarmLookalikeCheckSync();
+}
+
+void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync() {
+  // Update engaged sites if needed, and try again.
+  LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
+  if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
+    service->ForceUpdateEngagedSites(base::BindOnce(
+        &LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites,
+        weak_factory_.GetWeakPtr()));
+    return;
+  }
+  auto engaged_sites = service->GetLatestEngagedSites();
+
+  // At any point in the navigation, look up the first URL in the chain, and the
+  // last known URL in the chain. The path is not needed for the checks, so only
+  // lookup each host once by ignoring the path.
+  const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
+  const GURL& last_url = navigation_handle()->GetURL();
+
+  PrewarmLookalikeCheckForURL(first_url, engaged_sites);
+  PrewarmLookalikeCheckForURL(last_url, engaged_sites);
+}
+
+void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckForURL(
+    const GURL& url,
+    const std::vector<DomainInfo>& engaged_sites) {
+  auto host = url.host();
+  if (lookalike_cache_.count(host) > 0) {
+    return;
+  }
+
+  LookalikeUrlMatchType match_type;
+  GURL suggested_url;
+  base::TimeDelta get_domain_info_duration;
+
+  bool is_lookalike = IsLookalikeUrl(url, engaged_sites, &match_type,
+                                     &suggested_url, &get_domain_info_duration);
+
+  lookalike_cache_[host] =
+      std::make_tuple(is_lookalike, match_type, suggested_url);
 }
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
@@ -268,6 +344,7 @@ void LookalikeUrlNavigationThrottle::PerformChecksDeferred(
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     const std::vector<DomainInfo>& engaged_sites) {
+  lookup_timer_.Stop();
   base::TimeTicks perform_checks_start = base::TimeTicks::Now();
 
   // The last URL in the redirect chain must be the same as the commit URL,
@@ -291,17 +368,40 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   LookalikeUrlMatchType first_match_type;
   GURL first_suggested_url;
   base::TimeDelta first_url_get_domain_info_duration;
-  bool first_is_lookalike =
-      first_url.host() != last_url.host() &&
-      IsLookalikeUrl(first_url, engaged_sites, &first_match_type,
-                     &first_suggested_url, &first_url_get_domain_info_duration);
+  bool first_is_lookalike;
+
+  if (first_url.host() == last_url.host()) {
+    first_is_lookalike = false;
+  } else if (lookalike_cache_.count(first_url.host())) {
+    // Don't set a value for |first_url_get_domain_info_duration| as it was run
+    // earlier and no longer represents cost to blocking the navigation.
+    const auto& tuple = lookalike_cache_[first_url.host()];
+    first_is_lookalike = std::get<0>(tuple);
+    first_match_type = std::get<1>(tuple);
+    first_suggested_url = std::get<2>(tuple);
+  } else {
+    first_is_lookalike = IsLookalikeUrl(first_url, engaged_sites,
+                                        &first_match_type, &first_suggested_url,
+                                        &first_url_get_domain_info_duration);
+  }
 
   LookalikeUrlMatchType last_match_type;
   GURL last_suggested_url;
   base::TimeDelta last_url_get_domain_info_duration;
-  bool last_is_lookalike =
-      IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
-                     &last_suggested_url, &last_url_get_domain_info_duration);
+  bool last_is_lookalike;
+
+  if (lookalike_cache_.count(last_url.host())) {
+    // Don't set a value for |last_url_get_domain_info_duration| as it was run
+    // earlier and no longer represents cost to blocking the navigation.
+    const auto& tuple = lookalike_cache_[last_url.host()];
+    last_is_lookalike = std::get<0>(tuple);
+    last_match_type = std::get<1>(tuple);
+    last_suggested_url = std::get<2>(tuple);
+  } else {
+    last_is_lookalike =
+        IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
+                       &last_suggested_url, &last_url_get_domain_info_duration);
+  }
 
   base::TimeDelta is_lookalike_url_duration =
       base::TimeTicks::Now() - is_lookalike_url_start;
