@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentDirectory, FileKey, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
+import {CurrentDirectory, DirectoryContent, FileKey, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
-import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction} from '../actions/current_directory.js';
+import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from '../actions/current_directory.js';
 
 /**
  * @fileoverview
@@ -38,12 +38,26 @@ export function changeDirectory(
     };
   }
 
+  let content = currentState.currentDirectory?.content;
+  let hasDlpDisabledFiles =
+      currentState.currentDirectory?.hasDlpDisabledFiles || false;
+  // Use empty content when it isn't defined or it's navigating to a new
+  // directory. The content will be updated again after a successful scan.
+  if (!content || currentState.currentDirectory?.key !== action.payload.key) {
+    content = {
+      keys: [],
+    };
+    hasDlpDisabledFiles = false;
+  }
+
   let currentDirectory: CurrentDirectory = {
     key: action.payload.key,
     status: action.payload.status,
     pathComponents: [],
+    content: content,
     rootType: undefined,
     selection,
+    hasDlpDisabledFiles: hasDlpDisabledFiles,
   };
 
   // The new directory might not be in the allEntries yet, this might happen
@@ -100,11 +114,21 @@ function getEmptySelection(keys: FileKey[] = []): Selection {
  */
 export function updateSelection(
     currentState: State, action: ChangeSelectionAction): State {
-  // TODO: When we have all the keys from current directory, we should validate
-  // that selectedKeys belongs to current directory.
-  const selection = getEmptySelection(action.payload.selectedKeys);
+  if (!currentState.currentDirectory) {
+    console.warn('Missing `currentDirectory`');
+    return currentState;
+  }
 
-  for (const key of action.payload.selectedKeys) {
+  const selectedKeys = action.payload.selectedKeys;
+  const contentKeys = new Set(currentState.currentDirectory!.content.keys);
+  if (!selectedKeys.every(key => contentKeys.has(key))) {
+    console.warn('Got selected keys that are not in current directory');
+    return currentState;
+  }
+
+  const selection = getEmptySelection(selectedKeys);
+
+  for (const key of selectedKeys) {
     const fileData = currentState.allEntries[key];
     if (!fileData) {
       console.warn(`Missing entry: ${key}`);
@@ -176,4 +200,63 @@ export function updateFileTasks(
     ...currentState,
     currentDirectory,
   };
+}
+
+/**
+ * Updates the content in for the current directory.
+ */
+export function updateDirectoryContent(
+    currentState: State, action: UpdateDirectoryContentAction): State {
+  if (!currentState.currentDirectory) {
+    console.warn('Missing `currentDirectory`');
+    return currentState;
+  }
+
+  const initialContent: DirectoryContent =
+      currentState.currentDirectory?.content ?? {keys: []};
+  const keys = action.payload.entries.map(e => e.toURL());
+  const content: DirectoryContent = {
+    ...initialContent,
+    keys,
+  };
+
+  let currentDirectory: CurrentDirectory = {
+    ...currentState.currentDirectory,
+    content,
+  };
+  const newState: State = {
+    ...currentState,
+    currentDirectory,
+  };
+  currentDirectory = {
+    ...currentDirectory,
+    hasDlpDisabledFiles: hasDlpDisabledFiles(newState),
+  };
+
+  return {
+    ...newState,
+    currentDirectory,
+  };
+}
+
+/**
+ * Returns true if any of the entries in `currentDirectory` are DLP disabled,
+ * and false otherwise.
+ */
+export function hasDlpDisabledFiles(currentState: State): boolean {
+  const content = currentState.currentDirectory?.content;
+  if (!content) {
+    return false;
+  }
+  for (const key of content!.keys) {
+    const fileData = currentState.allEntries[key];
+    if (!fileData) {
+      console.warn(`Missing entry: ${key}`);
+      continue;
+    }
+    if (fileData!.metadata.isRestrictedForDestination) {
+      return true;
+    }
+  }
+  return false;
 }

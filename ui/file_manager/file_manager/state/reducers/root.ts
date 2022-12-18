@@ -5,8 +5,8 @@
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 
-import {cacheEntries, clearCachedEntries} from './all_entries.js';
-import {changeDirectory, updateFileTasks, updateSelection} from './current_directory.js';
+import {cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
+import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
 import {search} from './search.js';
 
 /**
@@ -33,6 +33,10 @@ export function rootReducer(currentState: State, action: Action): State {
       return clearCachedEntries(state, action);
     case ActionType.SEARCH:
       return search(state, action);
+    case ActionType.UPDATE_DIRECTORY_CONTENT:
+      return updateDirectoryContent(state, action);
+    case ActionType.UPDATE_METADATA:
+      return updateMetadata(state, action);
     default:
       console.error(`invalid action: ${action}`);
       return state;

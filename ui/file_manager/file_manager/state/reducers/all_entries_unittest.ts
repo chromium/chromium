@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -13,12 +13,13 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
 import {FileSelectionHandler} from '../../foreground/js/file_selection.js';
+import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {TaskController} from '../../foreground/js/task_controller.js';
 import {ActionType} from '../actions.js';
 import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
-import {cd, changeSelection} from '../for_tests.js';
+import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, updMetadata} from '../for_tests.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 
 import {clearCachedEntries} from './all_entries.js';
@@ -49,30 +50,29 @@ export function setUp() {
   fileSystem.populate([
     '/dir-1/',
     '/dir-2/sub-dir/',
-    '/dir-2/file.txt',
+    '/dir-2/file-1.txt',
+    '/dir-2/file-2.txt',
     '/dir-3/',
   ]);
 }
 
-function allEntriesSize(): number {
-  return Object.keys(store.getState().allEntries).length;
-}
-
 /** Tests that entries get cached in the allEntries. */
 export function testAllEntries() {
-  assertEquals(0, allEntriesSize(), 'allEntries should start empty');
+  assertEquals(
+      0, allEntriesSize(store.getState()), 'allEntries should start empty');
 
   const dir1 = fileSystem.entries['/dir-1'];
   const dir2 = fileSystem.entries['/dir-2'];
   const dir2SubDir = fileSystem.entries['/dir-2/sub-dir'];
   cd(store, dir1);
-  assertEquals(1, allEntriesSize(), 'dir-1 should be cached');
+  assertEquals(1, allEntriesSize(store.getState()), 'dir-1 should be cached');
 
   cd(store, dir2);
-  assertEquals(2, allEntriesSize(), 'dir-2 should be cached');
+  assertEquals(2, allEntriesSize(store.getState()), 'dir-2 should be cached');
 
   cd(store, dir2SubDir);
-  assertEquals(3, allEntriesSize(), 'dir-2/sub-dir/ should be cached');
+  assertEquals(
+      3, allEntriesSize(store.getState()), 'dir-2/sub-dir/ should be cached');
 }
 
 export async function testClearStaleEntries(done: () => void) {
@@ -86,17 +86,19 @@ export async function testClearStaleEntries(done: () => void) {
   cd(store, dir3);
   cd(store, dir2SubDir);
 
-  assertEquals(4, allEntriesSize(), 'all entries should be cached');
+  assertEquals(
+      4, allEntriesSize(store.getState()), 'all entries should be cached');
 
   // Wait for the async clear to be called.
-  await waitUntil(() => allEntriesSize() < 4);
+  await waitUntil(() => allEntriesSize(store.getState()) < 4);
 
   // It should keep the current directory and all its parents that were
   // previously cached.
   assertEquals(
-      2, allEntriesSize(), 'only dir-2 and dir-2/sub-dir should be cached');
-  assertDeepEquals(
-      Object.keys(store.getState().allEntries).sort(),
+      2, allEntriesSize(store.getState()),
+      'only dir-2 and dir-2/sub-dir should be cached');
+  assertAllEntriesEqual(
+      store,
       ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/sub-dir']);
 
   // Running the clear multiple times should not change:
@@ -107,14 +109,17 @@ export async function testClearStaleEntries(done: () => void) {
   clearCachedEntries(store.getState(), action);
   clearCachedEntries(store.getState(), action);
   assertEquals(
-      2, allEntriesSize(), 'only dir-2 and dir-2/sub-dir should be cached');
+      2, allEntriesSize(store.getState()),
+      'only dir-2 and dir-2/sub-dir should be cached');
 
   done();
 }
 
 export function testCacheEntries() {
   const dir1 = fileSystem.entries['/dir-1'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const file1 = fileSystem.entries['/dir-2/file-1.txt'];
+  const md = window.fileManager.metadataModel as unknown as MockMetadataModel;
+  md.set(file1, {isRestrictedForDestination: true});
 
   // Cache a directory via changeDirectory.
   cd(store, dir1);
@@ -126,18 +131,19 @@ export function testCacheEntries() {
   assertEquals(
       resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
   assertEquals(resultEntry.type, EntryType.FS_API);
+  assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
 
   // Cache a file via changeSelection.
-  changeSelection(store, [file]);
-  resultEntry = store.getState().allEntries[file.toURL()];
+  changeSelection(store, [file1]);
+  resultEntry = store.getState().allEntries[file1.toURL()];
   assertTrue(!!resultEntry);
-  assertEquals(resultEntry.entry, file);
+  assertEquals(resultEntry.entry, file1);
   assertFalse(resultEntry.isDirectory);
-  assertEquals(resultEntry.label, file.name);
+  assertEquals(resultEntry.label, file1.name);
   assertEquals(
       resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
   assertEquals(resultEntry.type, EntryType.FS_API);
-
+  assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   const recentRoot =
       new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
   cd(store, recentRoot);
@@ -162,4 +168,46 @@ export function testCacheEntries() {
   assertEquals(
       resultEntry.volumeType, VolumeManagerCommon.VolumeType.DOWNLOADS);
   assertEquals(resultEntry.type, EntryType.VOLUME_ROOT);
+  assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
+}
+
+export function testUpdateMetadata() {
+  const dir1 = fileSystem.entries['/dir-1'];
+  const file1 = fileSystem.entries['/dir-2/file-1.txt'];
+  const file2 = fileSystem.entries['/dir-2/file-2.txt'];
+  const md = window.fileManager.metadataModel as unknown as MockMetadataModel;
+  md.set(file1, {isRestrictedForDestination: true});
+  md.set(file2, {isRestrictedForDestination: false});
+
+  // Cache a directory via changeDirectory.
+  cd(store, dir1);
+  assertEquals(1, allEntriesSize(store.getState()));
+  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
+  assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
+
+  // Cache a file via changeSelection.
+  changeSelection(store, [file1]);
+  assertEquals(2, allEntriesSize(store.getState()));
+  resultEntry = store.getState().allEntries[file1.toURL()];
+  assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
+  assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
+
+  // Update the metadata: it should first cache missing entries, and append the
+  // new metadata to the already fetched values.
+  const metadata: MetadataItem = new MetadataItem();
+  metadata.isDlpRestricted = true;
+  updMetadata(store, [{entry: file1, metadata}, {entry: file2, metadata}]);
+
+  resultEntry = store.getState().allEntries[dir1.toURL()];
+  assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
+  assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
+
+  resultEntry = store.getState().allEntries[file1.toURL()];
+  assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
+  assertTrue(!!resultEntry.metadata.isDlpRestricted);
+
+  resultEntry = store.getState().allEntries[file2.toURL()];
+  assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
+  assertTrue(!!resultEntry.metadata.isDlpRestricted);
 }

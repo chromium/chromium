@@ -5,9 +5,10 @@
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {PropStatus} from '../externs/ts/state.js';
+import {FileKey, PropStatus, State} from '../externs/ts/state.js';
 
-import {changeDirectory, updateSelection} from './actions/current_directory.js';
+import {EntryMetadata, updateMetadata} from './actions/all_entries.js';
+import {changeDirectory, updateDirectoryContent, updateSelection} from './actions/current_directory.js';
 import {StateSelector, Store, waitForState} from './store.js';
 
 /**
@@ -15,6 +16,25 @@ import {StateSelector, Store, waitForState} from './store.js';
  * fails.
  */
 export function assertStateEquals(want: any, got: any) {
+  assertDeepEquals(
+      want, got,
+      `\nWANT:\n${JSON.stringify(want, null, 2)}\nGOT:\n${
+          JSON.stringify(got, null, 2)}\n\n`);
+}
+
+/**
+ * Returns the `allEntries` size of the passed State.
+ */
+export function allEntriesSize(state: State): number {
+  return Object.keys(state.allEntries).length;
+}
+
+/**
+ * Compares the current state's allEntries field to the expected list. Fails
+ * with a nicely formatted message if there's a mismatch.
+ */
+export function assertAllEntriesEqual(store: Store, want: FileKey[]) {
+  const got = Object.keys(store.getState().allEntries).sort();
   assertDeepEquals(
       want, got,
       `\nWANT:\n${JSON.stringify(want, null, 2)}\nGOT:\n${
@@ -33,6 +53,16 @@ export function changeSelection(store: Store, entries: Entry[]) {
     selectedKeys: entries.map(e => e.toURL()),
     entries,
   }));
+}
+
+/** Updates the metadata in the store. */
+export function updMetadata(store: Store, metadata: EntryMetadata[]) {
+  store.dispatch(updateMetadata({metadata}));
+}
+
+/** Updates the directory content in the store. */
+export function updateContent(store: Store, entries: Entry[]) {
+  store.dispatch(updateDirectoryContent({entries}));
 }
 
 /**

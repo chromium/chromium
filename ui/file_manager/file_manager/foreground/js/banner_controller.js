@@ -13,8 +13,11 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {Banner} from '../../externs/banner.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
@@ -237,6 +240,19 @@ export class BannerController extends EventTarget {
     this.customBannerFilters_ = {};
 
     /**
+     * @private {!Store}
+     */
+    this.store_ = getStore();
+    this.store_.subscribe(this);
+
+    /**
+     * Cached value of `this.store_.currentDirectory.hasDisabledFiles`, to avoid
+     * unnecessary reconciling.
+     * @private {boolean}
+     */
+    this.hasDlpDisabledFiles_ = false;
+
+    /**
      * The volumeId that is pending a volume size update, updateVolumeSizeStats_
      * will remove the volumeId once updated. This is cleared when the debounced
      * version of updateVolumeSizeStats_ executes.
@@ -267,6 +283,16 @@ export class BannerController extends EventTarget {
           (changes, areaName) => this.onStorageChanged_(changes, areaName));
       this.directoryModel_.addEventListener(
           'directory-changed', event => this.onDirectoryChanged_(event));
+    }
+  }
+
+  /** @param {!State} state latest state from the store. */
+  onStateChanged(state) {
+    const changedHasDlpDisabledFiles =
+        !!state.currentDirectory?.hasDlpDisabledFiles;
+    if (this.hasDlpDisabledFiles_ !== changedHasDlpDisabledFiles) {
+      this.hasDlpDisabledFiles_ = changedHasDlpDisabledFiles;
+      this.reconcile();
     }
   }
 
@@ -357,8 +383,9 @@ export class BannerController extends EventTarget {
       // Register a custom filter that checks if DLP restricted banner should
       // be shown.
       this.registerCustomBannerFilter_(DlpRestrictedBannerName, {
-        // TODO(crbug.com/1358062): Correctly handle file open dialogs.
-        shouldShow: () => (this.volumeManager_.hasDisabledVolumes()),
+        shouldShow: () =>
+            (this.volumeManager_.hasDisabledVolumes() ||
+             this.hasDlpDisabledFiles_),
         context: () => ({type: this.dialogType_}),
       });
     }

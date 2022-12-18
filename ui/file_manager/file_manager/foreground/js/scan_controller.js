@@ -4,6 +4,9 @@
 
 import {metrics} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Store} from '../../externs/ts/store.js';
+import {updateDirectoryContent} from '../../state/actions/current_directory.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
@@ -33,6 +36,9 @@ export class ScanController {
 
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
+
+    /** @private @const {!Store} */
+    this.store_ = getStore();
 
     /**
      * Whether a scan is in progress.
@@ -115,6 +121,9 @@ export class ScanController {
           'scan-completed', this.directoryModel_.getCurrentDirName());
     }
 
+    // Update the store with the new entries before hiding the spinner.
+    this.updateStore_();
+
     this.hideSpinner_();
 
     if (this.scanUpdatedTimer_) {
@@ -139,6 +148,16 @@ export class ScanController {
             [10, 100, 1000], /*tolerance=*/ 0.2);
       }
     }
+  }
+
+  /**
+   * Sends the scanned directory content to the Store.
+   * @private
+   */
+  updateStore_() {
+    const entries = /** @type {!Array<!Entry>} */ (
+        this.directoryModel_.getFileList().slice());
+    this.store_.dispatch(updateDirectoryContent({entries}));
   }
 
   /**

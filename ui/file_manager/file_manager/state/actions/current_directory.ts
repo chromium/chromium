@@ -33,6 +33,14 @@ export interface ChangeFileTasksAction extends BaseAction {
   payload: FileTasks;
 }
 
+/** Action to update the current directory's content. */
+export interface UpdateDirectoryContentAction extends BaseAction {
+  type: ActionType.UPDATE_DIRECTORY_CONTENT;
+  payload: {
+    entries: Array<Entry|FilesAppEntry>,
+  };
+}
+
 /** Factory for the ChangeDirectoryAction. */
 export function changeDirectory({to, toKey, status}: {
   to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
@@ -61,6 +69,16 @@ export function updateSelection(payload: ChangeSelectionAction['payload']):
 export function updateFileTasks(payload: FileTasks): ChangeFileTasksAction {
   return {
     type: ActionType.CHANGE_FILE_TASKS,
+    payload,
+  };
+}
+
+/** Factory for the UpdateDirectoryContentAction. */
+export function updateDirectoryContent(
+    payload: UpdateDirectoryContentAction['payload']):
+    UpdateDirectoryContentAction {
+  return {
+    type: ActionType.UPDATE_DIRECTORY_CONTENT,
     payload,
   };
 }

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import {util} from '../../common/js/util.js';
+import {Store} from '../../externs/ts/store.js';
+import {updateMetadata} from '../../state/actions/all_entries.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -32,6 +35,9 @@ export class MetadataUpdateController {
 
     /** @private @const {!FileMetadataFormatter} */
     this.fileMetadataFormatter_ = fileMetadataFormatter;
+
+    /** @private {!Store} */
+    this.store_ = getStore();
 
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
         this.onPreferencesChanged_.bind(this));
@@ -80,6 +86,7 @@ export class MetadataUpdateController {
    * @private
    */
   onCachedMetadataUpdate_(event) {
+    this.updateStore_(event.entries);
     this.listContainer_.dataModel.refreshGroupBySnapshot();
     // TODO(hirono): Specify property name instead of metadata type.
     this.listContainer_.currentView.updateListItemsMetadata(
@@ -115,6 +122,21 @@ export class MetadataUpdateController {
       this.listContainer_.table.setDateTimeFormat(use12hourClock);
       this.refreshCurrentDirectoryMetadata();
     });
+  }
+
+  /**
+   * Sends the new metadata to the Store.
+   * @private
+   */
+  updateStore_(entries) {
+    const metadata = entries.map(
+        e => ({
+          entry: e,
+          metadata: this.metadataModel_.getCache(
+              [e], this.directoryModel_.getPrefetchPropertyNames())[0],
+        }));
+
+    this.store_.dispatch(updateMetadata({metadata}));
   }
 }
 

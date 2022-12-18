@@ -6,10 +6,13 @@ import {FileType} from '../../common/js/file_type.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {EntryType, State} from '../../externs/ts/state.js';
+import {CurrentDirectory, EntryType, State} from '../../externs/ts/state.js';
+import {constants} from '../../foreground/js/constants.js';
 import {Action, ActionType} from '../actions.js';
-import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
+import {ClearStaleCachedEntriesAction, UpdateMetadataAction} from '../actions/all_entries.js';
 import {getStore} from '../store.js';
+
+import {hasDlpDisabledFiles} from './current_directory.js';
 
 /**
  * Schedules the routine to remove stale entries from `allEntries`.
@@ -46,6 +49,10 @@ export function clearCachedEntries(
     for (const component of state.currentDirectory!.pathComponents) {
       entriesToKeep.add(component.key);
     }
+
+    for (const key of state.currentDirectory!.content.keys) {
+      entriesToKeep.add(key);
+    }
   }
   const selectionKeys = state.currentDirectory?.selection.keys ?? [];
   if (selectionKeys) {
@@ -65,6 +72,13 @@ export function clearCachedEntries(
   return state;
 }
 
+const prefetchPropertyNames = Array.from(new Set([
+  ...constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES,
+  ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+]));
+
 /**
  * Converts the entry to the Store representation of an Entry and appends the
  * entry to the Store.
@@ -82,7 +96,7 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
 
   const entryData = allEntries[key] || {};
   const metadata = metadataModel ?
-      metadataModel.getCache([entry as FileEntry], [])[0] :
+      metadataModel.getCache([entry as FileEntry], prefetchPropertyNames)[0] :
       undefined;
 
   allEntries[key] = {
@@ -105,7 +119,8 @@ export function cacheEntries(currentState: State, action: Action): State {
   // Schedule to clear the cached entries from the state.
   scheduleClearCachedEntries();
 
-  if (action.type === ActionType.CHANGE_SELECTION) {
+  if (action.type === ActionType.CHANGE_SELECTION ||
+      action.type === ActionType.UPDATE_DIRECTORY_CONTENT) {
     for (const entry of action.payload.entries) {
       appendEntry(currentState, entry);
     }
@@ -118,6 +133,11 @@ export function cacheEntries(currentState: State, action: Action): State {
     }
 
     appendEntry(currentState, entry);
+  }
+  if (action.type === ActionType.UPDATE_METADATA) {
+    for (const entryMetadata of action.payload.metadata) {
+      appendEntry(currentState, entryMetadata.entry);
+    }
   }
 
   return currentState;
@@ -157,4 +177,33 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
       console.warn(`Invalid entry.type_name='${entry.type_name}`);
       return EntryType.FS_API;
   }
+}
+
+/**
+ * Reducer that updates the metadata of the entries and returns the new state.
+ */
+export function updateMetadata(
+    currentState: State, action: UpdateMetadataAction): State {
+  for (const entryMetadata of action.payload.metadata) {
+    const key = entryMetadata.entry.toURL();
+    const fileData = currentState.allEntries[key];
+    const metadata = {...fileData.metadata, ...entryMetadata.metadata};
+    currentState.allEntries[key] = {
+      ...fileData,
+      metadata,
+    };
+  }
+  if (!currentState.currentDirectory) {
+    console.warn('Missing `currentDirectory`');
+    return currentState;
+  }
+  const currentDirectory: CurrentDirectory = {
+    ...currentState.currentDirectory,
+    hasDlpDisabledFiles: hasDlpDisabledFiles(currentState),
+  };
+
+  return {
+    ...currentState,
+    currentDirectory,
+  };
 }
