@@ -104,6 +104,7 @@ const {
   fromJsMakeDebuggeeValue,
   fromJsGetObjectByCdpId,
   fromJsGetNodeId,
+  fromJsGetBoxModel,
   fromJsGetMatchedStylesForNode,
 
   // network
@@ -575,7 +576,7 @@ function clearPauseDataCallback() {
 function makeDebuggeeValue(plainObject) {
   assert(!plainObject?.objectId);
   const remoteObject = fromJsMakeDebuggeeValue(plainObject);
-  assert(remoteObject.objectId);
+  assert(remoteObject?.objectId);
   return remoteObject;
 }
 
@@ -939,7 +940,6 @@ ProtocolObjectPreview.prototype = {
     // TODO: eval getter
     
     const value = buildRrpObjectFromCdpObject(cdpValue);
-    log(`DDBG addGetterValue: ${name}=${JSON.stringify(value)}`);
     this.getterValues.set(name, { name, ...value });
   },
 
@@ -1093,6 +1093,7 @@ function previewBlinkNode(node) {
   let style;
   if (node.style) {
     style = registerPlainObject(node.style);
+    // TODO: clean up when done w/ RUN-981
     log(`DDBG preview.node.style: ${style} (${typeof node.style})`);
   }
 
@@ -1548,44 +1549,32 @@ function getNodeBoundingClientRects(nodeRrpId) {
 /**
  * @see https://static.replay.io/protocol/tot/DOM/#type-BoxModel
  */
-function DOM_getBoxModel({ node }) {
+function DOM_getBoxModel({ node: nodeRrpId }) {
+  const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
+  /**
+   * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel
+   */
+  const cdpModel = fromJsGetBoxModel(nodeId);
 
-  // TODO: consider using domAgent->getContentQuads for this instead. Should allow for better accuracy
-  //   Issue: https://linear.app/replay/issue/RUN-886/nodepicker-improve-highlight-on-hover
+  const model = { 
+    node: nodeRrpId
+  };
 
-  if (!gLastBoundingClientRectsByNodeRrpId.size) {
-    // compute all basic bounding client rect sizes
-    DOM_getAllBoundingClientRects();
+  if (cdpModel) {
+    const {
+      content, padding, border, margin,
+      // width, height, shapeOutside
+    } = cdpModel;
+    Object.assign(
+      model,
+      {
+        content, 
+        padding, 
+        border, 
+        margin
+      }
+    );
   }
-  const rects = getNodeBoundingClientRects(node);
-
-  // hackfix: simply use the normal (not tight) bounding rects for all for now
-  const model = { node };
-  for (const box of ["content", "padding", "border", "margin"]) {
-    const quads = [];
-    for (const rect of rects) {
-      const [left, top, right, bottom] = rect;
-      quads.push(left, top, right, top, right, bottom, left, bottom);
-    }
-    model[box] = quads;
-  }
-
-
-  // const model = { node };
-  // for (const box of ["content", "padding", "border", "margin"]) {
-  //   const compactQuads = [];
-  //   // https://hacks.mozilla.org/2014/03/introducing-the-getboxquads-api/
-  //   if (nodeObj.getBoxQuads) {
-  //     const quads = nodeObj.getBoxQuads({
-  //       box,
-  //       relativeTo: window.document,
-  //     });
-  //     for (const { p1, p2, p3, p4 } of quads) {
-  //       compactQuads.push(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);
-  //     }
-  //   // }
-  //   model[box] = compactQuads;
-  // }
 
   return { model };
 }
@@ -2961,14 +2950,19 @@ static void fromJsMakeDebuggeeValue(
      */
     std::vector<uint8_t> json;
     v8_crdtp::json::ConvertCBORToJSON(v8_crdtp::SpanFrom(cbor), &json);
-    auto remoteObjectStr =
+    auto remoteObjectJsonStr =
         v8::String::NewFromOneByte(isolate, json.data(),
                                    v8::NewStringType::kNormal, json.size())
             .ToLocalChecked();
-    args.GetReturnValue().Set(remoteObjectStr);
-  } else {
-    args.GetReturnValue().SetNull();
+    auto s = ToCoreString(remoteObjectJsonStr);
+
+    auto remoteObject = v8::JSON::Parse(context, remoteObjectJsonStr);
+    if (!remoteObject.IsEmpty()) {
+      args.GetReturnValue().Set(remoteObject.ToLocalChecked());
+      return;
+    }
   }
+  args.GetReturnValue().SetNull();
 }
 
 static void fromJsGetObjectByCdpId(
@@ -3332,7 +3326,10 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
       // hackfix: bind node here (because the DOMAgent is not informed about the
       // actual DOM)
       int nodeId = domAgent->BindDocumentNode(node);
+      
+      // TODO: clean up when done w/ RUN-981
       P("DDBG fromJsGetNodeId %s -> %d", *cdpId, nodeId);
+
       args.GetReturnValue().Set(v8::Number::New(isolate, nodeId));
       return;
     } else {
@@ -3344,11 +3341,11 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // auto response = domAgent->requestNode(cdpId, &nodeId);
   args.GetReturnValue().SetNull();
 
+  // TODO: clean up when done w/ RUN-981
   // // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
   // v8::String::Utf8Value cdpId(isolate, args[0]);
   // const uint8_t* cdpIdPtr = reinterpret_cast<const uint8_t*>(*cdpId);
   // v8_inspector::StringView cdpIdV8(cdpIdPtr, cdpId.length());
-
   // v8::Local<v8::Object> plainObject;
   // if (getObjectByCdpId(isolate, cdpIdV8, plainObject)) {
   //   Node* node = V8Node::ToImpl(plainObject);
@@ -3376,7 +3373,8 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // args.GetReturnValue().SetNull();
 }
 
-static void fromJsGetMatchedStylesForNode(
+
+static void fromJsGetBoxModel(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsNumber() &&
         "[RuntimeError] must be called with a single number");
@@ -3384,7 +3382,38 @@ static void fromJsGetMatchedStylesForNode(
   v8::Isolate* isolate = args.GetIsolate();
   auto nodeId = (int)args[0].As<v8::Integer>()->Value();
 
-  // TODO: this crashes :(
+  auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
+
+  int backend_node_id = 0;
+  String object_id;
+  std::unique_ptr<protocol::DOM::BoxModel> boxModel;
+  auto response =
+      domAgent->getBoxModel(nodeId, backend_node_id, object_id, &boxModel);
+
+  if (!response.IsSuccess()) {
+    recordreplay::Print(
+        "[RuntimeError] InspectorDOMAgent.getBoxModel failed (nodeId: %d, Code: "
+        "%d): %s",
+        nodeId, response.Code(), response.Message().c_str());
+  } else {
+    auto result = convertCborToJS(isolate, boxModel.get());
+    if (!result.IsEmpty()) {
+      args.GetReturnValue().Set(result.ToLocalChecked());
+      return;
+    }
+  }
+
+  args.GetReturnValue().SetNull();
+}
+
+
+static void fromJsGetMatchedStylesForNode(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsNumber() &&
+        "[RuntimeError] must be called with a single number");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  auto nodeId = (int)args[0].As<v8::Integer>()->Value();
 
   auto* cssAgent = getOrCreateInspectorCSSAgent(isolate);
 
@@ -3399,9 +3428,11 @@ static void fromJsGetMatchedStylesForNode(
       nodeId, &inlineStyle, &attributesStyle, &matchedCssRules,
       &pseudoIdMatches, &inheritedEntries, &cssKeyframesRules);
 
+  // WIP: will fix everything up and clean up when done w/ RUN-981
+
   // TODO: only care about these two for now:
-  // matchedCssRules
-  // inheritedEntries
+  //    matchedCssRules
+  //    inheritedEntries
 
   if (!response.IsSuccess()) {
     recordreplay::Print(
@@ -3409,34 +3440,20 @@ static void fromJsGetMatchedStylesForNode(
         "%d): %s",
         nodeId, response.Code(), response.Message().c_str());
   } else {
-    recordreplay::Print("DDBG MatchedStylesForNode 1 %d %d",
-                        inlineStyle.isJust(), attributesStyle.isJust());
     if (matchedCssRules.isJust()) {
-      recordreplay::Print("DDBG MatchedStylesForNode 2");
       protocol::CSS::RuleMatch* firstRule =
           matchedCssRules.fromJust()->at(0).get();
       blink::protocol::String defaultCssText("(no css text)");
       auto firstRuleCssText =
           firstRule->getRule()->getStyle()->getCssText(defaultCssText);
-      recordreplay::Print("DDBG MatchingSelectors firstRule (%d): %s",
-                          firstRule->getMatchingSelectors()->at(0),
-                          firstRuleCssText.Ascii().c_str());
       auto result = convertCborToJS(isolate, firstRule);
-      recordreplay::Print("DDBG MatchedStylesForNode 3");
       if (!result.IsEmpty()) {
-        recordreplay::Print("DDBG MatchedStylesForNode 4");
-        args.GetReturnValue().Set(result.ToLocalChecked());
+        // args.GetReturnValue().Set(result.ToLocalChecked());
         return;
       }
     }
   }
-  recordreplay::Print("DDBG MatchedStylesForNode 5");
   args.GetReturnValue().SetNull();
-
-  // convertCborToJS();
-
-  // TODO:
-  // matchedCssRules.fromJust()->at(0)->getRule();
 }
 
 /** ###########################################################################
@@ -3564,6 +3581,7 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   // SetFunctionProperty(isolate, args, "jsPreviewBlinkObjectForObjectId",
   // jsPreviewBlinkObjectForObjectId);
   SetFunctionProperty(isolate, args, "fromJsGetNodeId", fromJsGetNodeId);
+  SetFunctionProperty(isolate, args, "fromJsGetBoxModel", fromJsGetBoxModel);
   SetFunctionProperty(isolate, args, "fromJsGetMatchedStylesForNode",
                       fromJsGetMatchedStylesForNode);
 
