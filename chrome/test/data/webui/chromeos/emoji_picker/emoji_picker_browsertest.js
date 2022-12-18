@@ -170,3 +170,20 @@ var EmojiPickerPrefixSearchTest =
 TEST_F('EmojiPickerPrefixSearchTest', 'All', function() {
   mocha.run();
 });
+
+var EmojiPickerGIFTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_gif_test.js&host=test';
+  }
+};
+
+TEST_F('EmojiPickerGIFTest', 'All', function() {
+  mocha.run();
+});

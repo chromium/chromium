@@ -86,6 +86,16 @@ export const CATEGORY_METADATA:
       },
     ];
 
+export const GIF_CATEGORY_METADATA:
+    Array<{name: CategoryEnum, icon: string, active: boolean}> = [
+      ...CATEGORY_METADATA,
+      {
+        name: CategoryEnum.GIF,
+        icon: 'emoji_picker_v2:emoji_gif',
+        active: false,
+      },
+    ];
+
 const CATEGORY_TABS = {
   'emoji': [
     {

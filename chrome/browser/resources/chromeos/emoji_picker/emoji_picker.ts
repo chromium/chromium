@@ -20,7 +20,7 @@ import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
-import {CATEGORY_METADATA, EMOJI_GROUP_TABS, V2_SUBCATEGORY_TABS, V2_TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
+import {CATEGORY_METADATA, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, V2_SUBCATEGORY_TABS, V2_TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
 import {CategoryEnum, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
 
@@ -42,6 +42,7 @@ export class EmojiPicker extends PolymerElement {
         ],
         [CategoryEnum.EMOTICON]: ['/emoticon_ordering.json'],
         [CategoryEnum.SYMBOL]: ['/symbol_ordering.json'],
+        [CategoryEnum.GIF]: [''],
       },
     };
   }
@@ -154,17 +155,20 @@ export class EmojiPicker extends PolymerElement {
   override ready() {
     super.ready();
 
+    const METADATA =
+        this.gifSupport ? GIF_CATEGORY_METADATA : CATEGORY_METADATA;
+
     // Ensure first category is emoji for compatibility with V1.
-    if (CATEGORY_METADATA[0]?.name !== CategoryEnum.EMOJI) {
-      throw new Error(`First category is ${
-          CATEGORY_METADATA[0]?.name} but must be 'emoji'.`);
+    if (METADATA[0]?.name !== CategoryEnum.EMOJI) {
+      throw new Error(
+          `First category is ${METADATA[0]?.name} but must be 'emoji'.`);
     }
 
     const dataUrls = EmojiPicker.configs().dataUrls;
     // Create an ordered list of category and urls based on the order that
     // categories need to appear in the UIs.
     const categoryDataUrls =
-        CATEGORY_METADATA.filter((item) => dataUrls[item.name])
+        METADATA.filter((item) => dataUrls[item.name])
             .map(
                 item => ({'category': item.name, 'urls': dataUrls[item.name]}));
 
@@ -1081,12 +1085,16 @@ export class EmojiPicker extends PolymerElement {
     return itemPagination === currentPagination ? 0 : -1;
   }
 
-  getCategoryMetadata(category: string) {
-    return CATEGORY_METADATA.map(data => ({
-                                   name: data.name,
-                                   icon: data.icon,
-                                   active: data.name === category,
-                                 }));
+  // The gifSupport field ensures that this function gets called when
+  // gifSupport is updated, allowing the correct categories to be shown
+  getCategoryMetadata(gifSupport: boolean, category: string) {
+    // This determines whether the GIF category button will appear
+    const METADATA = gifSupport ? GIF_CATEGORY_METADATA : CATEGORY_METADATA;
+    return METADATA.map(data => ({
+                          name: data.name,
+                          icon: data.icon,
+                          active: data.name === category,
+                        }));
   }
 
   private getTabs() {

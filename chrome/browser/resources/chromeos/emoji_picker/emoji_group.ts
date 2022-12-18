@@ -23,6 +23,7 @@ const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
   [CategoryEnum.EMOTICON]: EmojiGroupLayoutType.FLEX_LAYOUT,
   [CategoryEnum.SYMBOL]: EmojiGroupLayoutType.GRID_LAYOUT,
+  [CategoryEnum.GIF]: EmojiGroupLayoutType.FLEX_LAYOUT,
 };
 
 export interface EmojiGroupComponent {
