@@ -1301,7 +1301,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
   PA_ALWAYS_INLINE T* get() const { return GetForExtraction(); }
 
-  explicit PA_ALWAYS_INLINE operator bool() const { return !!wrapped_ptr_; }
+  constexpr explicit PA_ALWAYS_INLINE operator bool() const {
+    return !!wrapped_ptr_;
+  }
 
   template <typename U = T,
             typename Unused = std::enable_if_t<
