@@ -214,6 +214,9 @@
       <message name="IDS_EXTENSION_CRX_EXISTS" desc="Warning displayed in pack dialog when the crx file already exists.">
         There is already a CRX file present with this name.
       </message>
+      <message name="IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE" desc="Install warning displayed when a content script's size would exceed the per-file or per-extension maximum size.">
+        Could not load file '<ph name="RELATIVE_PATH">$1<ex>file.js</ex></ph>' for content script as it would exceed the maximum script size or the extension's maximum total content script size.
+      </message>
       <message name="IDS_EXTENSION_DIRECTORY_NO_EXISTS" desc="Warning displayed in pack dialog when the extension directory does not exist.">
         Input directory must exist.
       </message>

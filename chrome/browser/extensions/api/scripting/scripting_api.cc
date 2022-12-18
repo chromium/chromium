@@ -501,8 +501,9 @@ ValidateContentScriptsResult ValidateParsedScriptsOnFileThread(
   // Validate that claimed script resources actually exist, and are UTF-8
   // encoded.
   std::string error;
-  bool are_script_files_valid =
-      script_parsing::ValidateFileSources(*scripts, symlink_policy, &error);
+  std::vector<InstallWarning> warnings;
+  bool are_script_files_valid = script_parsing::ValidateFileSources(
+      *scripts, symlink_policy, &error, &warnings);
 
   return std::make_pair(std::move(scripts), are_script_files_valid
                                                 ? absl::nullopt

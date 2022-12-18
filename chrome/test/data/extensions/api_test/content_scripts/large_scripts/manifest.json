@@ -1,0 +1,29 @@
+{
+  "name": "Large content scripts",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Content scripts that surpass the size limit are not loaded.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://example.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["big.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject_element.js", "change_title.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["inject_element_2.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

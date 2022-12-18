@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
@@ -17,6 +18,25 @@
 
 namespace extensions {
 namespace script_parsing {
+
+// Returns the maximum length allowed in an individual script file. Scripts
+// above this length will not be loaded.
+size_t GetMaxScriptLength();
+
+// Returns the maximum allowed total length for all scripts loaded for a single
+// extension. Any scripts past this limit will not be loaded.
+size_t GetMaxScriptsLengthPerExtension();
+
+using ScopedMaxScriptLengthOverride = base::AutoReset<size_t>;
+
+// Temporarily sets the max per-file limit to `max`. The value gets reset once
+// the AutoReset falls out of scope and is destroyed.
+ScopedMaxScriptLengthOverride CreateScopedMaxScriptLengthForTesting(size_t max);
+
+// Temporarily sets the per-extension limit to `max`. The value gets reset once
+// the AutoReset falls out of scope and is destroyed.
+ScopedMaxScriptLengthOverride
+CreateScopedMaxScriptsLengthPerExtensionForTesting(size_t max);
 
 // Converts api::content_scripts::RunAt to mojom::RunLocation.
 mojom::RunLocation ConvertManifestRunLocation(
@@ -56,7 +76,8 @@ bool ParseFileSources(const Extension* extension,
 // I/O.
 bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
-                         std::string* error);
+                         std::string* error,
+                         std::vector<InstallWarning>* warnings);
 
 ExtensionResource::SymlinkPolicy GetSymlinkPolicy(const Extension* extension);
 

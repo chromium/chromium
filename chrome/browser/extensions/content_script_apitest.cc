@@ -45,9 +45,12 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/utils/content_script_utils.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -58,6 +61,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -404,6 +408,36 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("Failed to fetch", listener.message());
+}
+
+// Test that content scripts that exceed the individual script size limit or the
+// total extensions script limit will not be loaded/injected, and will generate
+// an install warning.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, LargeScriptFilesNotLoaded) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(800u);
+  auto extension_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptsLengthPerExtensionForTesting(1000u);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ResultCatcher result_catcher;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("content_scripts/large_scripts"),
+                    {.ignore_manifest_warnings = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  std::vector<InstallWarning> expected_warnings;
+  expected_warnings.emplace_back(
+      l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
+                                u"big.js"),
+      api::content_scripts::ManifestKeys::kContentScripts);
+  expected_warnings.emplace_back(
+      l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
+                                u"inject_element_2.js"),
+      api::content_scripts::ManifestKeys::kContentScripts);
+
+  EXPECT_EQ(extension->install_warnings(), expected_warnings);
 }
 
 class ContentScriptCssInjectionTest : public ExtensionApiTest {

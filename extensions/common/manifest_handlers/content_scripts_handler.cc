@@ -256,7 +256,7 @@ bool ContentScriptsHandler::Validate(
   // and are UTF-8 encoded.
   return script_parsing::ValidateFileSources(
       ContentScriptsInfo::GetContentScripts(extension),
-      script_parsing::GetSymlinkPolicy(extension), error);
+      script_parsing::GetSymlinkPolicy(extension), error, warnings);
 }
 
 }  // namespace extensions

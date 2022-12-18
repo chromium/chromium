@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
@@ -36,16 +38,46 @@ namespace script_parsing {
 
 namespace {
 
+size_t g_max_script_length_in_bytes = 1024u * 1024u * 500u;  // 500 MB.
+size_t g_max_scripts_length_per_extension_in_bytes =
+    1024u * 1024u * 1024u;  // 1 GB.
+
 // Returns false and sets the error if script file can't be loaded, or if it's
-// not UTF-8 encoded.
+// not UTF-8 encoded. If a script file can be loaded but will exceed
+// `max_script_length`, return true but add an install warning to `warnings`.
+// Otherwise, decrement `remaining_length` by the script file's size.
 bool IsScriptValid(const base::FilePath& path,
                    const base::FilePath& relative_path,
+                   size_t max_script_length,
                    int message_id,
-                   std::string* error) {
+                   std::string* error,
+                   std::vector<InstallWarning>* warnings,
+                   size_t& remaining_length) {
+  InstallWarning script_file_too_large_warning(
+      l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
+                                relative_path.LossyDisplayName()),
+      api::content_scripts::ManifestKeys::kContentScripts);
+  if (remaining_length == 0u) {
+    warnings->push_back(std::move(script_file_too_large_warning));
+    return true;
+  }
+
   std::string content;
-  if (!base::PathExists(path) || !base::ReadFileToString(path, &content)) {
-    *error =
-        l10n_util::GetStringFUTF8(message_id, relative_path.LossyDisplayName());
+  std::string file_not_read_error =
+      l10n_util::GetStringFUTF8(message_id, relative_path.LossyDisplayName());
+
+  if (!base::PathExists(path)) {
+    *error = file_not_read_error;
+    return false;
+  }
+
+  bool read_successful =
+      base::ReadFileToStringWithMaxSize(path, &content, max_script_length);
+  // If the size of the file in `path` exceeds `max_script_length`,
+  // ReadFileToStringWithMaxSize will return false but `content` will contain
+  // the file's content truncated to `max_script_length`.
+  if (!read_successful && content.length() != max_script_length) {
+    *error = file_not_read_error;
     return false;
   }
 
@@ -55,10 +87,37 @@ bool IsScriptValid(const base::FilePath& path,
     return false;
   }
 
+  if (read_successful) {
+    remaining_length -= content.size();
+  } else {
+    // Even though the script file is over the max size, we don't throw a hard
+    // error so as not to break any existing extensions for which this is the
+    // case.
+    warnings->push_back(std::move(script_file_too_large_warning));
+  }
   return true;
 }
 
 }  // namespace
+
+size_t GetMaxScriptLength() {
+  return g_max_script_length_in_bytes;
+}
+
+size_t GetMaxScriptsLengthPerExtension() {
+  return g_max_scripts_length_per_extension_in_bytes;
+}
+
+ScopedMaxScriptLengthOverride CreateScopedMaxScriptLengthForTesting(  // IN-TEST
+    size_t max) {
+  return ScopedMaxScriptLengthOverride(&g_max_script_length_in_bytes, max);
+}
+
+ScopedMaxScriptLengthOverride
+CreateScopedMaxScriptsLengthPerExtensionForTesting(size_t max) {
+  return ScopedMaxScriptLengthOverride(
+      &g_max_scripts_length_per_extension_in_bytes, max);
+}
 
 mojom::RunLocation ConvertManifestRunLocation(
     api::content_scripts::RunAt run_at) {
@@ -209,15 +268,21 @@ bool ParseFileSources(const Extension* extension,
 
 bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
-                         std::string* error) {
+                         std::string* error,
+                         std::vector<InstallWarning>* warnings) {
+  size_t remaining_scripts_length = GetMaxScriptsLengthPerExtension();
+
   for (const std::unique_ptr<UserScript>& script : scripts) {
     for (const std::unique_ptr<UserScript::File>& js_script :
          script->js_scripts()) {
       const base::FilePath& path = ExtensionResource::GetFilePath(
           js_script->extension_root(), js_script->relative_path(),
           symlink_policy);
-      if (!IsScriptValid(path, js_script->relative_path(),
-                         IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED, error)) {
+      size_t max_script_length =
+          std::min(remaining_scripts_length, GetMaxScriptLength());
+      if (!IsScriptValid(path, js_script->relative_path(), max_script_length,
+                         IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED, error, warnings,
+                         remaining_scripts_length)) {
         return false;
       }
     }
@@ -227,8 +292,11 @@ bool ValidateFileSources(const UserScriptList& scripts,
       const base::FilePath& path = ExtensionResource::GetFilePath(
           css_script->extension_root(), css_script->relative_path(),
           symlink_policy);
-      if (!IsScriptValid(path, css_script->relative_path(),
-                         IDS_EXTENSION_LOAD_CSS_FAILED, error)) {
+      size_t max_script_length =
+          std::min(remaining_scripts_length, GetMaxScriptLength());
+      if (!IsScriptValid(path, css_script->relative_path(), max_script_length,
+                         IDS_EXTENSION_LOAD_CSS_FAILED, error, warnings,
+                         remaining_scripts_length)) {
         return false;
       }
     }

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
@@ -111,7 +112,8 @@ struct VerifyContentInfo {
 // couldn't be read.
 std::tuple<absl::optional<std::string>, ReadScriptContentSource>
 ReadScriptContent(UserScript::File* script_file,
-                  const absl::optional<int>& script_resource_id) {
+                  const absl::optional<int>& script_resource_id,
+                  size_t& remaining_length) {
   const base::FilePath& path = ExtensionResource::GetFilePath(
       script_file->extension_root(), script_file->relative_path(),
       ExtensionResource::SYMLINKS_MUST_RESOLVE_WITHIN_ROOT);
@@ -127,11 +129,20 @@ ReadScriptContent(UserScript::File* script_file,
     return {absl::nullopt, ReadScriptContentSource::kFile};
   }
 
+  size_t max_script_length =
+      std::min(remaining_length, script_parsing::GetMaxScriptLength());
   std::string content;
-  if (!base::ReadFileToString(path, &content)) {
-    LOG(WARNING) << "Failed to load user script file: " << path.value();
+  if (!base::ReadFileToStringWithMaxSize(path, &content, max_script_length)) {
+    if (content.empty()) {
+      LOG(WARNING) << "Failed to load user script file: " << path.value();
+    } else {
+      LOG(WARNING) << "Failed to load user script file, maximum size exceeded: "
+                   << path.value();
+    }
     return {absl::nullopt, ReadScriptContentSource::kFile};
   }
+
+  remaining_length -= content.size();
   return {std::move(content), ReadScriptContentSource::kFile};
 }
 
@@ -202,9 +213,11 @@ void LoadScriptContent(const mojom::HostID& host_id,
                        UserScript::File* script_file,
                        const absl::optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
-                       const scoped_refptr<ContentVerifier>& verifier) {
+                       const scoped_refptr<ContentVerifier>& verifier,
+                       size_t& remaining_length) {
   DCHECK(script_file);
-  auto [content, source] = ReadScriptContent(script_file, script_resource_id);
+  auto [content, source] =
+      ReadScriptContent(script_file, script_resource_id, remaining_length);
 
   bool needs_content_verification = source == ReadScriptContentSource::kFile;
   if (needs_content_verification && verifier.get()) {
@@ -265,6 +278,23 @@ void FillScriptFileResourceIds(const UserScript::FileList& script_files,
   }
 }
 
+// Returns the total length of scripts that were previously loaded (i.e. not
+// present in `added_script_ids`).
+size_t GetTotalLoadedScriptsLength(
+    UserScriptList* user_scripts,
+    const std::set<std::string>& added_script_ids) {
+  size_t total_length = 0u;
+  for (const std::unique_ptr<UserScript>& script : *user_scripts) {
+    if (added_script_ids.count(script->id()) == 0) {
+      for (const auto& js_script : script->js_scripts())
+        total_length += js_script->GetContent().length();
+      for (const auto& js_script : script->css_scripts())
+        total_length += js_script->GetContent().length();
+    }
+  }
+  return total_length;
+}
+
 void LoadUserScripts(
     UserScriptList* user_scripts,
     ScriptResourceIds script_resource_ids,
@@ -277,6 +307,17 @@ void LoadUserScripts(
   size_t manifest_script_length = 0u;
   size_t dynamic_script_length = 0u;
 
+  // Calculate the remaining storage allocated for scripts for this extension by
+  // subtracting the length of all loaded scripts from the extension's max
+  // scripts length. Note that subtraction is only done if the result will be
+  // positive (to avoid unsigned wraparound).
+  size_t loaded_length =
+      GetTotalLoadedScriptsLength(user_scripts, added_script_ids);
+  size_t remaining_length =
+      loaded_length >= script_parsing::GetMaxScriptsLengthPerExtension()
+          ? 0u
+          : script_parsing::GetMaxScriptsLengthPerExtension() - loaded_length;
+
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
     size_t script_files_length = 0u;
 
@@ -287,7 +328,7 @@ void LoadUserScripts(
       if (script_file->GetContent().empty()) {
         LoadScriptContent(script->host_id(), script_file.get(),
                           script_resource_ids[script_file.get()], nullptr,
-                          verifier);
+                          verifier, remaining_length);
       }
 
       script_files_length += script_file->GetContent().length();
@@ -303,7 +344,8 @@ void LoadUserScripts(
         if (script_file->GetContent().empty()) {
           LoadScriptContent(script->host_id(), script_file.get(),
                             script_resource_ids[script_file.get()],
-                            localization_messages.get(), verifier);
+                            localization_messages.get(), verifier,
+                            remaining_length);
         }
 
         script_files_length += script_file->GetContent().length();
