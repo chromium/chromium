@@ -36,7 +36,7 @@ def make_constructors(cg_context):
                        member_initializer_list=[
                            "${base_class_name}(source, kind)",
                        ]),
-        CxxFuncDeclNode(name="~${class_name}",
+        CxxFuncDeclNode(name="~SyncIterator",
                         arg_decls=[],
                         return_type="",
                         override=True,
