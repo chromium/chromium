@@ -221,7 +221,7 @@ PASS Origin parsing: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://
 PASS Origin parsing: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Origin parsing: <http://./> against <about:blank>
 PASS Origin parsing: <http://../> against <about:blank>
-FAIL Origin parsing: <h://.> against <about:blank> assert_equals: origin expected "h://." but got "file://"
+FAIL Origin parsing: <h://.> against <about:blank> assert_equals: origin expected "null" but got "file://"
 PASS Origin parsing: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Origin parsing: <#> against <test:test>
 PASS Origin parsing: <#x> against <mailto:x@x.com>
