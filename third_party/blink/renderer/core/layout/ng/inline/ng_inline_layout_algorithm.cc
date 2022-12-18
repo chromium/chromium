@@ -1214,6 +1214,9 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   //   - `clear` in start direction of initial letter containing block.
   //
   // [1] https://drafts.csswg.org/css-inline/#short-para-initial-letter
+  // TODO(crbug.com/1402001): `LogicalLineItems()` is unused, and thus is always
+  // empty. Replace it with the correct condition, then remove
+  // `LogicalLineItems()`.
   if (context_->LogicalLineItems()->IsEmpty()) {
     const EClear clear_type =
         UNLIKELY(Node().HasInitialLetterBox())
@@ -1244,10 +1247,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
   const NGInlineBreakToken* break_token = BreakToken();
 
-  NGFragmentItemsBuilder* items_builder = context_->ItemsBuilder();
-  NGLogicalLineItems* line_box = items_builder
-                                     ? items_builder->AcquireLogicalLineItems()
-                                     : context_->LogicalLineItems();
+  NGFragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
+  DCHECK(items_builder);
+  NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
+  DCHECK(line_box);
 
   bool is_line_created = false;
   LayoutUnit line_block_size;

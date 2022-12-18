@@ -33,6 +33,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   // Returns an instance of |NGLogicalLineItems|. This is reused when laying out
   // the next line.
+  // TODO(crbug.com/1402001): Deprecated, remove once all usages are gone.
   NGLogicalLineItems* LogicalLineItems() { return &logical_line_items_; }
 
   // Acquire/release temporary |NGLogicalLineItems|, used for a short period of
