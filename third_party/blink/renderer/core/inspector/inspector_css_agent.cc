@@ -846,12 +846,14 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
         inherited_entries,
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules) {
-  Response response = AssertEnabled();
-  if (!response.IsSuccess())
-    return response;
+
+  // hackfix: run this without enabling the agent (kinda works!)
+  // Response response = AssertEnabled();
+  // if (!response.IsSuccess())
+  //   return response;
 
   Element* element = nullptr;
-  response = dom_agent_->AssertElement(node_id, element);
+  auto response = dom_agent_->AssertElement(node_id, element);
   if (!response.IsSuccess())
     return response;
 

@@ -308,6 +308,10 @@ void InspectorDOMAgent::ReleaseDanglingNodes() {
   dangling_node_to_id_maps_.clear();
 }
 
+int InspectorDOMAgent::BindDocumentNode(Node* node) {
+  return Bind(node, document_node_to_id_map_);
+}
+
 int InspectorDOMAgent::Bind(Node* node, NodeToIdMap* nodes_map) {
   if (!nodes_map)
     return 0;
