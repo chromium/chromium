@@ -51,3 +51,6 @@ Local Modifications:
    https://crbug.com/1341377
  - SystemSnapshotLinux.Basic is disabled on Android: https://crbug.com/1362091
  - Updated ANDROID_API from 24 to 26: https://crbug.com/1379422
+ - #include path was modified "base/allocator/buildflags.h" ->
+   "base/allocator/partition_allocator/partition_alloc_buildflags.h", because
+   BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) was moved. crrev.com/c/3963596

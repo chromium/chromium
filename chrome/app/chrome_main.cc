@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"

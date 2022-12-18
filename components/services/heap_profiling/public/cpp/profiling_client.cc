@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"

@@ -14,7 +14,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/files/file_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/sanitizer_buildflags.h"

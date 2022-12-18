@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"

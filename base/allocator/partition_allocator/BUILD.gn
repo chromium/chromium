@@ -384,7 +384,7 @@ buildflag_header("partition_alloc_buildflags") {
   # gen/base/allocator/buildflags.h defines and chrome includes.
   flags = [
     "USE_PARTITION_ALLOC=$use_partition_alloc",
-    "ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT=$use_partition_alloc_as_malloc",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
 
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",

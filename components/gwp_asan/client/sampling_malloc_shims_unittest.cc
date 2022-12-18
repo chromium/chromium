@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/callback_helpers.h"
 #include "base/memory/page_size.h"

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"

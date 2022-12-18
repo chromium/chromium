@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/types/strong_alias.h"

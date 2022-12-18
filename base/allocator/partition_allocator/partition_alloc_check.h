@@ -28,7 +28,7 @@
 // As a consequence:
 // - When PartitionAlloc is not malloc(), use the regular macros
 // - Otherwise, crash immediately. This provides worse error messages though.
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // For official build discard log strings to reduce binary bloat.
 #if !CHECK_WILL_STREAM()
 // See base/check.h for implementation details.
@@ -70,7 +70,7 @@
 #define PA_DCHECK(condition) PA_BASE_DCHECK(condition)
 #define PA_PCHECK(condition) PA_BASE_PCHECK(condition)
 #define PA_DPCHECK(condition) PA_BASE_DPCHECK(condition)
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.

@@ -14,8 +14,8 @@
 #include <sstream>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/memory/page_size.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"

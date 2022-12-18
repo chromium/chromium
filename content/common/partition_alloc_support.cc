@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/page_allocator.h"

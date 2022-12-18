@@ -10,13 +10,12 @@
 #include <atomic>
 #include <memory>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
 #include "base/no_destructor.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #if BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #endif  // BUILDFLAG(STARSCAN)

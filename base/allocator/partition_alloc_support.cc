@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"

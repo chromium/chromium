@@ -161,7 +161,7 @@ class PartitionRootEnumerator {
 
 #endif  // PA_USE_PARTITION_ROOT_ENUMERATOR
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace {
 
@@ -283,7 +283,7 @@ void PartitionAllocMallocHookOnAfterForkInChild() {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace internal {
 
@@ -951,7 +951,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   }
 
   // Called without the lock, might allocate.
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PartitionAllocMallocInitOnce();
 #endif
 
@@ -964,10 +964,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
 template <bool thread_safe>
 PartitionRoot<thread_safe>::~PartitionRoot() {
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PA_CHECK(!flags.with_thread_cache)
       << "Must not destroy a partition with a thread cache";
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
   if (initialized)

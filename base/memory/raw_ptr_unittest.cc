@@ -12,7 +12,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"

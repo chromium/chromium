@@ -4,7 +4,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
@@ -106,7 +105,7 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
         {BackupRefPtrEnabledProcesses::kAllProcesses, "all-processes"}};
 
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
-    kBackupRefPtrEnabledProcessesParam{
+    kBackupRefPtrEnabledProcessesParam {
   &kPartitionAllocBackupRefPtr, "enabled-processes",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))

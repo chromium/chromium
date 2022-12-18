@@ -9,6 +9,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif

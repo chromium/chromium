@@ -27,8 +27,8 @@
 #include <algorithm>
 #include <new>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/bind.h"
 #include "base/logging.h"

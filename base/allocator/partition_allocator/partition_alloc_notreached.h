@@ -22,11 +22,11 @@
              __FILE__ "(" PA_STRINGIFY(__LINE__) ") PA_NOTREACHED() hit.") \
        : PA_EAT_CHECK_STREAM_PARAMS()
 
-#elif BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
-    defined(OFFICIAL_BUILD) && defined(NDEBUG) && BUILDFLAG(PA_DCHECK_IS_ON)
+#elif BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OFFICIAL_BUILD) && \
+    defined(NDEBUG) && BUILDFLAG(PA_DCHECK_IS_ON)
 
 // PA_DCHECK(condition) is PA_CHECK(condition) if BUILDFLAG(PA_DCHECK_IS_ON).
-// When BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT), OFFICIAL_BUILD,
+// When BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC), OFFICIAL_BUILD,
 // NDEBUG are defined, PA_CHECK(false) is IMMEDIATE_CRASH(). Since
 // IMMEDIATE_CRASH() hints __builtin_unreachable() to the compiler, the
 // following code causes compile failure:

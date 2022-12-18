@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"

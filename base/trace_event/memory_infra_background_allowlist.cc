@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

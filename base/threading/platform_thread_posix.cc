@@ -17,7 +17,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/activity_tracker.h"

@@ -62,7 +62,7 @@
 #include <sys/time.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && BUILDFLAG(IS_MAC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
 #include <OpenCL/opencl.h>
 #endif
 
@@ -4707,8 +4707,8 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 // Not on chromecast, since gtest considers extra output from itself as a test
 // failure:
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
-    defined(PA_HAS_DEATH_TESTS) && !BUILDFLAG(PA_IS_CASTOS)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_HAS_DEATH_TESTS) && \
+    !BUILDFLAG(PA_IS_CASTOS)
 
 namespace {
 
@@ -4784,7 +4784,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) &&
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_HAS_DEATH_TESTS) &&  !BUILDFLAG(PA_IS_CASTOS)
 
 // Checks the bucket index logic.
@@ -5104,8 +5104,7 @@ TEST_P(PartitionAllocTest, PartitionTagDirectMapBasic) {
 
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
-#if BUILDFLAG(PA_IS_CAST_ANDROID) && \
-    BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(PA_IS_CAST_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"
@@ -5171,16 +5170,16 @@ TEST_P(PartitionAllocTest, SortFreelist) {
   allocator.root()->Free(first_ptr);
 }
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
-    BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_LINUX) && \
+    defined(ARCH_CPU_64_BITS)
 TEST_P(PartitionAllocTest, CrashOnUnknownPointer) {
   int not_a_heap_object = 42;
   EXPECT_DEATH(allocator.root()->Free(&not_a_heap_object), "");
 }
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) &&
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_64_BITS)
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && BUILDFLAG(IS_MAC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
 
 // Adapted from crashpad tests.
 class ScopedOpenCLNoOpKernel {
@@ -5275,7 +5274,7 @@ TEST_P(PartitionAllocTest, OpenCL) {
 #endif
 }
 
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) &&
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(IS_MAC)
 
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {

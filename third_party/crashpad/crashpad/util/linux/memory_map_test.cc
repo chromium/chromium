@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"

@@ -10,7 +10,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
@@ -21,6 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"

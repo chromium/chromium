@@ -122,8 +122,7 @@ static_assert(sizeof(void*) != 8, "");
 // Too expensive for official builds, as it adds cache misses to all
 // allocations. On the other hand, we want wide metrics coverage to get
 // realistic profiles.
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
-    !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
 #define PA_THREAD_CACHE_ALLOC_STATS
 #endif
 
@@ -203,8 +202,7 @@ static_assert(sizeof(void*) == 8);
 // - BUILDFLAG(PA_DCHECK_IS_ON) due to runtime cost
 // - thread_local TLS to simplify the implementation
 // - Not on Android due to bot failures
-#if BUILDFLAG(PA_DCHECK_IS_ON) &&                          \
-    BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
+#if BUILDFLAG(PA_DCHECK_IS_ON) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_HAS_ALLOCATION_GUARD
 #endif
@@ -226,8 +224,7 @@ constexpr bool kUseLazyCommit = false;
 
 // PartitionAlloc uses PartitionRootEnumerator to acquire all
 // PartitionRoots at BeforeFork and to release at AfterFork.
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
-    defined(PA_HAS_ATFORK_HANDLER)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_HAS_ATFORK_HANDLER)
 #define PA_USE_PARTITION_ROOT_ENUMERATOR
 #endif
 

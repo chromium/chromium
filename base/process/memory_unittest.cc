@@ -15,6 +15,7 @@
 #include "base/allocator/allocator_check.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"

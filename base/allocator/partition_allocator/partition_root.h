@@ -1254,7 +1254,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   //
   // On Android Chromecast devices, this is already checked in PartitionFree()
   // in the shim.
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(PA_IS_CAST_ANDROID))
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif

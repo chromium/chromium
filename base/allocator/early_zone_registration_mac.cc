@@ -7,7 +7,7 @@
 #include <mach/mach.h>
 #include <malloc/malloc.h>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 // BASE_EXPORT tends to be defined as soon as anything from //base is included.
 #if defined(BASE_EXPORT)

@@ -26,7 +26,7 @@
 #include <sys/resource.h>
 #endif
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
@@ -53,7 +53,7 @@ void* ThreadFunc(void* params) {
     delegate = thread_params->delegate;
 
 #if !BUILDFLAG(IS_NACL)
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     PCScan::NotifyThreadCreated(GetStackPointer());
 #endif
 #endif
@@ -61,7 +61,7 @@ void* ThreadFunc(void* params) {
 
   delegate->ThreadMain();
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PCScan::NotifyThreadDestroyed();
 #endif
 

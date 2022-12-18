@@ -10,7 +10,7 @@
 #include <atomic>
 #include <utility>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
