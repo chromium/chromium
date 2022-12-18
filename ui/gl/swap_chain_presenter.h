@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
-#include "ui/gl/dc_renderer_layer_params.h"
 
 namespace gl {
 
@@ -41,7 +41,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // returns a modified |visual_transform| and |visual_clip_rect| that should be
   // used instead of the ones on |overlay|.
   // Returns true on success.
-  bool PresentToSwapChain(ui::DCRendererLayerParams& overlay,
+  bool PresentToSwapChain(DCLayerOverlayParams& overlay,
                           gfx::Transform* visual_transform,
                           gfx::Rect* visual_clip_rect);
 
@@ -134,19 +134,18 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // needed to scale the swap chain backbuffer to the monitor size.
   // The visual_clip_rect will be adjusted to the monitor size for fullscreen
   // mode, and to the video overlay quad for letterboxing mode.
-  void AdjustTargetToOptimalSizeIfNeeded(
-      const ui::DCRendererLayerParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect);
+  void AdjustTargetToOptimalSizeIfNeeded(const DCLayerOverlayParams& params,
+                                         const gfx::Rect& overlay_onscreen_rect,
+                                         gfx::Size* swap_chain_size,
+                                         gfx::Transform* visual_transform,
+                                         gfx::Rect* visual_clip_rect);
 
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the fullscreen DWM optimizations.
   bool AdjustTargetToFullScreenSizeIfNeeded(
       const gfx::Size& monitor_size,
-      const ui::DCRendererLayerParams& params,
+      const DCLayerOverlayParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
       gfx::Transform* visual_transform,
@@ -154,14 +153,14 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   void AdjustTargetForFullScreenLetterboxing(
       const gfx::Size& monitor_size,
-      const ui::DCRendererLayerParams& params,
+      const DCLayerOverlayParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
       gfx::Transform* visual_transform,
       gfx::Rect* visual_clip_rect);
 
   // Returns optimal swap chain size for given layer.
-  gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params,
+  gfx::Size CalculateSwapChainSize(const DCLayerOverlayParams& params,
                                    gfx::Transform* visual_transform,
                                    gfx::Rect* visual_clip_rect);
 
@@ -207,7 +206,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
   // Present the Direct Composition surface from MediaFoundationRenderer.
-  bool PresentDCOMPSurface(ui::DCRendererLayerParams& overlay,
+  bool PresentDCOMPSurface(DCLayerOverlayParams& overlay,
                            gfx::Transform* visual_transform,
                            gfx::Rect* visual_clip_rect);
 

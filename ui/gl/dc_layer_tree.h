@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/dc_renderer_layer_params.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
@@ -88,7 +88,7 @@ class DCLayerTree {
       DirectCompositionChildSurfaceWin* root_surface);
 
   // Schedule an overlay layer for the next CommitAndClearPendingOverlays call.
-  bool ScheduleDCLayer(std::unique_ptr<ui::DCRendererLayerParams> params);
+  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
 
   // Called by SwapChainPresenter to initialize video processor that can handle
   // at least given input and output size.  The video processor is shared across
@@ -209,7 +209,7 @@ class DCLayerTree {
   // Given pending overlays, builds or updates visual tree.
   // Returns true if commit succeeded.
   bool BuildVisualTreeHelper(
-      const std::vector<std::unique_ptr<ui::DCRendererLayerParams>>& overlays,
+      const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
       // True if the caller determined that rebuilding the tree is required.
       bool needs_rebuild_visual_tree);
 
@@ -260,7 +260,7 @@ class DCLayerTree {
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
 
   // List of pending overlay layers from ScheduleDCLayer().
-  std::vector<std::unique_ptr<ui::DCRendererLayerParams>> pending_overlays_;
+  std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
 
   // List of swap chain presenters for previous frame.
   std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;

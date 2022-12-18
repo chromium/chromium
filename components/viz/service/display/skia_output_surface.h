@@ -56,7 +56,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 #elif BUILDFLAG(IS_APPLE)
   using OverlayList = CALayerOverlayList;
 #elif BUILDFLAG(IS_WIN)
-  using OverlayList = DCLayerOverlayList;
+  using OverlayList = std::vector<DCLayerOverlayCandidate>;
 #elif BUILDFLAG(IS_OZONE)
   using OverlayList = std::vector<OverlayCandidate>;
 #else

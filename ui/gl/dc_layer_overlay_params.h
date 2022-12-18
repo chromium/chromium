@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_DC_RENDERER_LAYER_PARAMS_H_
-#define UI_GL_DC_RENDERER_LAYER_PARAMS_H_
+#ifndef UI_GL_DC_LAYER_OVERLAY_PARAMS_H_
+#define UI_GL_DC_LAYER_OVERLAY_PARAMS_H_
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,24 +16,18 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/gl_export.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/dc_layer_overlay_image.h"
-#endif
+namespace gl {
 
-// TODO(sunnyps): Move this to gl namespace and compile on Windows only.
-namespace ui {
+struct GL_EXPORT DCLayerOverlayParams {
+  DCLayerOverlayParams();
+  ~DCLayerOverlayParams();
 
-struct GL_EXPORT DCRendererLayerParams {
-  DCRendererLayerParams();
-  ~DCRendererLayerParams();
-
-#if BUILDFLAG(IS_WIN)
   // Image to display in overlay - could be hardware or software video frame,
   // swap chain, or dcomp surface.
-  absl::optional<gl::DCLayerOverlayImage> overlay_image;
-#endif
+  absl::optional<DCLayerOverlayImage> overlay_image;
 
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;
@@ -61,6 +55,6 @@ struct GL_EXPORT DCRendererLayerParams {
   bool is_video_fullscreen_letterboxing = false;
 };
 
-}  // namespace ui
+}  // namespace gl
 
-#endif  // UI_GL_DC_RENDERER_LAYER_PARAMS_H_
+#endif  // UI_GL_DC_LAYER_OVERLAY_PARAMS_H_

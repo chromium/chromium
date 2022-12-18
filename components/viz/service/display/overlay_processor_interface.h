@@ -53,8 +53,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   using PlatformOverlayCandidate = CALayerOverlay;
   using CandidateList = CALayerOverlayList;
 #elif BUILDFLAG(IS_WIN)
-  using PlatformOverlayCandidate = DCLayerOverlay;
-  using CandidateList = DCLayerOverlayList;
+  using PlatformOverlayCandidate = DCLayerOverlayCandidate;
+  using CandidateList = std::vector<DCLayerOverlayCandidate>;
 #else
   // Default.
   using PlatformOverlayCandidate = OverlayCandidate;
@@ -66,7 +66,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   virtual bool DisableSplittingQuads() const;
 
-  // Used by Window's DCLayerOverlay system and OverlayProcessorUsingStrategy.
+  // Used by Window's DCLayerOverlayCandidate system and
+  // OverlayProcessorUsingStrategy.
   static void RecordOverlayDamageRectHistograms(
       bool is_overlay,
       bool has_occluding_surface_damage,

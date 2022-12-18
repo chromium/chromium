@@ -26,7 +26,7 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
  public:
-  using CandidateList = DCLayerOverlayList;
+  using CandidateList = std::vector<DCLayerOverlayCandidate>;
 
   OverlayProcessorWin(
       OutputSurface* output_surface,

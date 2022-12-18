@@ -84,8 +84,7 @@ class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
   // to remain in the layer tree. This surface's backbuffer doesn't have to be
   // scheduled with ScheduleDCLayer, as it's automatically placed in the layer
   // tree at z-order 0.
-  bool ScheduleDCLayer(
-      std::unique_ptr<ui::DCRendererLayerParams> params) override;
+  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   void SetFrameRate(float frame_rate) override;
 
   // VSyncObserver implementation.

@@ -55,11 +55,11 @@ class VSyncProvider;
 
 namespace ui {
 struct CARendererLayerParams;
-struct DCRendererLayerParams;
 }  // namespace ui
 
 namespace gl {
 
+struct DCLayerOverlayParams;
 class GLContext;
 class GLImage;
 class EGLTimestampClient;
@@ -276,8 +276,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // All arguments correspond to their CALayer properties.
   virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
 
-  virtual bool ScheduleDCLayer(
-      std::unique_ptr<ui::DCRendererLayerParams> params);
+  virtual bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
 
   // Enables or disables DC layers, returning success. If failed, it is possible
   // that the context is no longer current.
@@ -440,8 +439,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
       OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
-  bool ScheduleDCLayer(
-      std::unique_ptr<ui::DCRendererLayerParams> params) override;
+  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   bool SetEnableDCLayers(bool enable) override;
   bool IsSurfaceless() const override;
   bool SupportsViewporter() const override;

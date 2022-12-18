@@ -26,14 +26,14 @@ class DisplayResourceProvider;
 
 // TODO(weiliangc): Eventually fold this into OverlayProcessorWin and
 // OverlayCandidate class.
-// Holds all information necessary to construct a
-// DCLayer from a DrawQuad.
-class VIZ_SERVICE_EXPORT DCLayerOverlay {
+// Holds all information necessary to construct a direct composition overlay
+// from a DrawQuad.
+class VIZ_SERVICE_EXPORT DCLayerOverlayCandidate {
  public:
-  DCLayerOverlay();
-  DCLayerOverlay(const DCLayerOverlay& other);
-  DCLayerOverlay& operator=(const DCLayerOverlay& other);
-  ~DCLayerOverlay();
+  DCLayerOverlayCandidate();
+  DCLayerOverlayCandidate(const DCLayerOverlayCandidate& other);
+  DCLayerOverlayCandidate& operator=(const DCLayerOverlayCandidate& other);
+  ~DCLayerOverlayCandidate();
 
   // Resource ids for video Y and UV planes, a single NV12 image, or a swap
   // chain image. See DirectCompositionSurfaceWin for details.
@@ -73,8 +73,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
   bool is_video_fullscreen_letterboxing = false;
 };
 
-typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
-
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     : public gl::DirectCompositionOverlayCapsObserver {
  public:
@@ -100,7 +98,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                        AggregatedRenderPass* render_pass,
                        gfx::Rect* damage_rect,
                        SurfaceDamageRectList surface_damage_rect_list,
-                       DCLayerOverlayList* dc_layer_overlays,
+                       std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
                        bool is_video_capture_enabled,
                        bool is_page_fullscreen_mode);
   void ClearOverlayState();
@@ -124,17 +122,18 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   // UpdateDCLayerOverlays() adds the quad at |it| to the overlay list
   // |dc_layer_overlays|.
-  void UpdateDCLayerOverlays(const gfx::RectF& display_rect,
-                             AggregatedRenderPass* render_pass,
-                             const QuadList::Iterator& it,
-                             const gfx::Rect& quad_rectangle_in_target_space,
-                             const gfx::Rect& occluding_damage_rect,
-                             bool is_overlay,
-                             QuadList::Iterator* new_it,
-                             size_t* new_index,
-                             gfx::Rect* damage_rect,
-                             DCLayerOverlayList* dc_layer_overlays,
-                             bool is_page_fullscreen_mode);
+  void UpdateDCLayerOverlays(
+      const gfx::RectF& display_rect,
+      AggregatedRenderPass* render_pass,
+      const QuadList::Iterator& it,
+      const gfx::Rect& quad_rectangle_in_target_space,
+      const gfx::Rect& occluding_damage_rect,
+      bool is_overlay,
+      QuadList::Iterator* new_it,
+      size_t* new_index,
+      gfx::Rect* damage_rect,
+      std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
+      bool is_page_fullscreen_mode);
 
   // Returns an iterator to the element after |it|.
   QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,
@@ -149,7 +148,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                           const QuadList::Iterator& it,
                           size_t processed_overlay_count,
                           gfx::Rect* damage_rect,
-                          DCLayerOverlay* dc_layer);
+                          DCLayerOverlayCandidate* dc_layer);
 
   void UpdateRootDamageRect(const gfx::RectF& display_rect,
                             gfx::Rect* damage_rect);
@@ -159,10 +158,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                                const gfx::Rect& occluding_damage_rect,
                                gfx::Rect* damage_rect);
 
-  void InsertDebugBorderDrawQuad(const DCLayerOverlayList* dc_layer_overlays,
-                                 AggregatedRenderPass* render_pass,
-                                 const gfx::RectF& display_rect,
-                                 gfx::Rect* damage_rect);
+  void InsertDebugBorderDrawQuad(
+      const std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
+      AggregatedRenderPass* render_pass,
+      const gfx::RectF& display_rect,
+      gfx::Rect* damage_rect);
   bool IsPreviousFrameUnderlayRect(const gfx::Rect& quad_rectangle,
                                    size_t index);
 

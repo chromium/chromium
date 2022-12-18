@@ -35,7 +35,7 @@ include_rules = [
   "+ui/gfx/hdr_metadata.h",
   "+ui/gfx/video_types.h",
   "+ui/gl/ca_renderer_layer_params.h",
-  "+ui/gl/dc_renderer_layer_params.h",
+  "+ui/gl/dc_layer_overlay_params.h",
   "+ui/gl/direct_composition_support.h",
   "+ui/gl/gl_fence.h",
   "+ui/gl/gl_utils.h",

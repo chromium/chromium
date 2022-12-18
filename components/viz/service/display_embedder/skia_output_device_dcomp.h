@@ -18,6 +18,7 @@
 
 namespace gl {
 class DCLayerOverlayImage;
+struct DCLayerOverlayParams;
 class GLSurface;
 }  // namespace gl
 
@@ -30,10 +31,6 @@ namespace gles2 {
 class FeatureInfo;
 }  // namespace gles2
 }  // namespace gpu
-
-namespace ui {
-struct DCRendererLayerParams;
-}  // namespace ui
 
 namespace viz {
 
@@ -72,7 +69,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   void CreateSkSurface();
 
   virtual bool ScheduleDCLayer(
-      std::unique_ptr<ui::DCRendererLayerParams> params) = 0;
+      std::unique_ptr<gl::DCLayerOverlayParams> params) = 0;
 
   virtual gfx::Size GetRootSurfaceSize() const = 0;
 
@@ -126,7 +123,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
 
  protected:
   bool ScheduleDCLayer(
-      std::unique_ptr<ui::DCRendererLayerParams> params) override;
+      std::unique_ptr<gl::DCLayerOverlayParams> params) override;
   gfx::Size GetRootSurfaceSize() const override;
   gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
                                   BufferPresentedCallback feedback,

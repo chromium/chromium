@@ -30,7 +30,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gl/dc_renderer_layer_params.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
@@ -207,7 +207,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
       continue;
     }
 
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<gl::DCLayerOverlayParams>();
     params->overlay_image = std::move(overlay_image);
     params->z_order = dc_layer.z_order;
     params->content_rect = dc_layer.content_rect;
@@ -369,7 +369,7 @@ SkSurface* SkiaOutputDeviceDCompGLSurface::BeginPaint(
 void SkiaOutputDeviceDCompGLSurface::EndPaint() {}
 
 bool SkiaOutputDeviceDCompGLSurface::ScheduleDCLayer(
-    std::unique_ptr<ui::DCRendererLayerParams> params) {
+    std::unique_ptr<gl::DCLayerOverlayParams> params) {
   return gl_surface_->ScheduleDCLayer(std::move(params));
 }
 

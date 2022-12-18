@@ -187,7 +187,7 @@ void DirectCompositionSurfaceWin::OnVSync(base::TimeTicks vsync_time,
 }
 
 bool DirectCompositionSurfaceWin::ScheduleDCLayer(
-    std::unique_ptr<ui::DCRendererLayerParams> params) {
+    std::unique_ptr<DCLayerOverlayParams> params) {
   return layer_tree_->ScheduleDCLayer(std::move(params));
 }
 

@@ -138,7 +138,7 @@ DCLayerResult ValidateYUVQuad(
 
 void FromYUVQuad(const YUVVideoDrawQuad* quad,
                  const gfx::Transform& transform_to_root_target,
-                 DCLayerOverlay* dc_layer) {
+                 DCLayerOverlayCandidate* dc_layer) {
   // Direct composition path only supports single NV12 buffer, or two buffers
   // one each for Y and UV planes.
   DCHECK(quad->y_plane_resource_id() && quad->u_plane_resource_id());
@@ -200,7 +200,7 @@ DCLayerResult ValidateTextureQuad(
 
 void FromTextureQuad(const TextureDrawQuad* quad,
                      const gfx::Transform& transform_to_root_target,
-                     DCLayerOverlay* dc_layer) {
+                     DCLayerOverlayCandidate* dc_layer) {
   dc_layer->resources[kTextureResourceIndex] = quad->resource_id();
   dc_layer->z_order = 1;
   dc_layer->content_rect = gfx::Rect(quad->resource_size_in_pixels());
@@ -422,9 +422,10 @@ void RecordDCLayerResult(DCLayerResult result, QuadList::ConstIterator it) {
 }
 
 // This function records the damage rect rect of the current frame.
-void RecordOverlayHistograms(DCLayerOverlayList* dc_layer_overlays,
-                             bool has_occluding_surface_damage,
-                             const gfx::Rect* damage_rect) {
+void RecordOverlayHistograms(
+    std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
+    bool has_occluding_surface_damage,
+    const gfx::Rect* damage_rect) {
   // If an underlay is found, we record the damage rect of this frame as an
   // underlay.
   bool is_overlay = true;
@@ -472,11 +473,12 @@ bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
 
 }  // namespace
 
-DCLayerOverlay::DCLayerOverlay() = default;
-DCLayerOverlay::DCLayerOverlay(const DCLayerOverlay& other) = default;
-DCLayerOverlay& DCLayerOverlay::operator=(const DCLayerOverlay& other) =
-    default;
-DCLayerOverlay::~DCLayerOverlay() = default;
+DCLayerOverlayCandidate::DCLayerOverlayCandidate() = default;
+DCLayerOverlayCandidate::DCLayerOverlayCandidate(
+    const DCLayerOverlayCandidate& other) = default;
+DCLayerOverlayCandidate& DCLayerOverlayCandidate::operator=(
+    const DCLayerOverlayCandidate& other) = default;
+DCLayerOverlayCandidate::~DCLayerOverlayCandidate() = default;
 
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     const DebugRendererSettings* debug_settings,
@@ -614,7 +616,7 @@ void DCLayerOverlayProcessor::UpdateRootDamageRect(
 }
 
 void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
-    const DCLayerOverlayList* dc_layer_overlays,
+    const std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,
     gfx::Rect* damage_rect) {
@@ -732,7 +734,7 @@ void DCLayerOverlayProcessor::Process(
     AggregatedRenderPass* render_pass,
     gfx::Rect* damage_rect,
     SurfaceDamageRectList surface_damage_rect_list,
-    DCLayerOverlayList* dc_layer_overlays,
+    std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
     bool is_video_capture_enabled,
     bool is_page_fullscreen_mode) {
   bool this_frame_has_occluding_damage_rect = false;
@@ -1055,12 +1057,12 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     QuadList::Iterator* new_it,
     size_t* new_index,
     gfx::Rect* damage_rect,
-    DCLayerOverlayList* dc_layer_overlays,
+    std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,
     bool is_page_fullscreen_mode) {
   // Record the result first before ProcessForOverlay().
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
-  DCLayerOverlay dc_layer;
+  DCLayerOverlayCandidate dc_layer;
   dc_layer.is_video_fullscreen_letterboxing =
       is_page_fullscreen_mode
           ? IsFullScreenLetterboxing(it, render_pass->quad_list.end(),
@@ -1133,7 +1135,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     const QuadList::Iterator& it,
     size_t processed_overlay_count,
     gfx::Rect* damage_rect,
-    DCLayerOverlay* dc_layer) {
+    DCLayerOverlayCandidate* dc_layer) {
   // Assign decreasing z-order so that underlays processed earlier, and hence
   // which are above the subsequent underlays, are placed above in the direct
   // composition visual tree.

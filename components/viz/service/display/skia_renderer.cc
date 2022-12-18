@@ -2681,7 +2681,7 @@ void SkiaRenderer::ScheduleOverlays() {
   }
 #elif BUILDFLAG(IS_WIN)
   for (auto& dc_layer_overlay : current_frame()->overlay_list) {
-    for (size_t i = 0; i < DCLayerOverlay::kNumResources; ++i) {
+    for (size_t i = 0; i < DCLayerOverlayCandidate::kNumResources; ++i) {
       ResourceId resource_id = dc_layer_overlay.resources[i];
       if (resource_id == kInvalidResourceId)
         break;

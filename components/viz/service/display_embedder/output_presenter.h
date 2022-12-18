@@ -135,7 +135,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 #elif BUILDFLAG(IS_APPLE)
   using OverlayPlaneCandidate = CALayerOverlay;
 #elif BUILDFLAG(IS_WIN)
-  using OverlayPlaneCandidate = DCLayerOverlay;
+  using OverlayPlaneCandidate = DCLayerOverlayCandidate;
 #else
   // Default.
   using OverlayPlaneCandidate = OverlayCandidate;

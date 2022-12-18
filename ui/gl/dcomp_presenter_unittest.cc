@@ -22,7 +22,7 @@
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gl/dc_renderer_layer_params.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -196,7 +196,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   EXPECT_NE(texture, nullptr);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
@@ -222,7 +222,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   EXPECT_EQ(2u, last_present_count);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
@@ -246,7 +246,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   EXPECT_NE(texture, nullptr);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
@@ -285,7 +285,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   gfx::Rect quad_rect = gfx::Rect(100, 100);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
@@ -315,7 +315,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   quad_rect = gfx::Rect(32, 48);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
@@ -352,7 +352,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   gfx::Rect quad_rect = gfx::Rect(42, 42);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
@@ -376,7 +376,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   quad_rect = gfx::Rect(124, 136);
 
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
@@ -413,7 +413,7 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
   // Clear video
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = gfx::Rect(texture_size);
@@ -437,7 +437,7 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
   // Software protected video
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = gfx::Rect(texture_size);
@@ -517,8 +517,8 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     ASSERT_HRESULT_SUCCEEDED(root_surface->EndDraw());
 
     // Schedule the root surface as a normal overlay
-    std::unique_ptr<ui::DCRendererLayerParams> params =
-        std::make_unique<ui::DCRendererLayerParams>();
+    std::unique_ptr<DCLayerOverlayParams> params =
+        std::make_unique<DCLayerOverlayParams>();
     params->z_order = 0;
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = params->quad_rect;
@@ -541,7 +541,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
         CreateNV12Texture(d3d11_device, texture_size);
 
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = content_rect;
     params->quad_rect = quad_rect;
@@ -577,7 +577,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
         CreateNV12Texture(d3d11_device, texture_size);
 
     {
-      auto params = std::make_unique<ui::DCRendererLayerParams>();
+      auto params = std::make_unique<DCLayerOverlayParams>();
       params->overlay_image.emplace(texture_size, texture);
       params->content_rect = gfx::Rect(texture_size);
       params->quad_rect = gfx::Rect(texture_size);
@@ -591,7 +591,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     // Scaling up the swapchain with the same image should cause it to be
     // transformed again, but not presented again.
     {
-      auto params = std::make_unique<ui::DCRendererLayerParams>();
+      auto params = std::make_unique<DCLayerOverlayParams>();
       params->overlay_image.emplace(texture_size, texture);
       params->content_rect = gfx::Rect(texture_size);
       params->quad_rect = gfx::Rect(window_size);
@@ -653,7 +653,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 
   std::vector<uint8_t> nv12_pixmap(stride * 3 * y_size.height() / 2, 0xff);
 
-  auto params = std::make_unique<ui::DCRendererLayerParams>();
+  auto params = std::make_unique<DCLayerOverlayParams>();
   params->overlay_image =
       DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride);
   params->content_rect = gfx::Rect(y_size);
@@ -732,7 +732,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
       CreateNV12Texture(d3d11_device, texture_size);
 
   // Layer with empty content rect.
-  auto params = std::make_unique<ui::DCRendererLayerParams>();
+  auto params = std::make_unique<DCLayerOverlayParams>();
   params->overlay_image.emplace(texture_size, texture);
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
@@ -890,7 +890,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 
   // (1) Test if swap chain is overridden to window size (100, 100).
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(window_size);
@@ -913,7 +913,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 
   // (2) Test if swap chain is overridden to window size (100, 100).
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(30, 30);
     params->quad_rect = gfx::Rect(window_size);
@@ -938,7 +938,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   gfx::Rect on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() - 2, monitor_size.height() - 2);
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(50, 50);
     params->quad_rect = on_screen_rect;
@@ -971,7 +971,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() + 2, monitor_size.height() + 2);
   {
-    auto params = std::make_unique<ui::DCRendererLayerParams>();
+    auto params = std::make_unique<DCLayerOverlayParams>();
     params->overlay_image.emplace(texture_size, texture);
     params->content_rect = gfx::Rect(50, 50);
     params->quad_rect = on_screen_rect;
@@ -1072,7 +1072,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     ASSERT_TRUE(SUCCEEDED(swap_chain->Present1(0, 0, &present_params)));
 
-    auto dc_layer_params = std::make_unique<ui::DCRendererLayerParams>();
+    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
     dc_layer_params->overlay_image =
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
@@ -1098,7 +1098,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     ASSERT_TRUE(SUCCEEDED(swap_chain->Present1(0, 0, &present_params)));
 
-    auto dc_layer_params = std::make_unique<ui::DCRendererLayerParams>();
+    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
     dc_layer_params->overlay_image =
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
@@ -1122,7 +1122,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   {
     ASSERT_TRUE(SUCCEEDED(swap_chain->Present1(0, 0, &present_params)));
 
-    auto dc_layer_params = std::make_unique<ui::DCRendererLayerParams>();
+    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
     dc_layer_params->overlay_image =
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
@@ -1146,7 +1146,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     float clear_color[] = {0.0, 0.0, 1.0, 1.0};
     context->ClearRenderTargetView(rtv.Get(), clear_color);
 
-    auto dc_layer_params = std::make_unique<ui::DCRendererLayerParams>();
+    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
     dc_layer_params->overlay_image =
         DCLayerOverlayImage(swap_chain_size, swap_chain);
     dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
@@ -1209,7 +1209,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
       CreateNV12Texture(d3d11_device, texture_size);
 
-  auto params = std::make_unique<ui::DCRendererLayerParams>();
+  auto params = std::make_unique<DCLayerOverlayParams>();
   params->overlay_image.emplace(texture_size, texture);
   params->content_rect = gfx::Rect(texture_size);
   params->quad_rect = gfx::Rect(window_size);

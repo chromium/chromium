@@ -540,7 +540,7 @@ gfx::Size SwapChainPresenter::GetMonitorSize() {
 }
 
 void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
-    const ui::DCRendererLayerParams& params,
+    const DCLayerOverlayParams& params,
     const gfx::Rect& overlay_onscreen_rect,
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
@@ -561,7 +561,7 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
 
 bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
     const gfx::Size& monitor_size,
-    const ui::DCRendererLayerParams& params,
+    const DCLayerOverlayParams& params,
     const gfx::Rect& overlay_onscreen_rect,
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
@@ -653,7 +653,7 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
 
 void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     const gfx::Size& monitor_size,
-    const ui::DCRendererLayerParams& params,
+    const DCLayerOverlayParams& params,
     const gfx::Rect& overlay_onscreen_rect,
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
@@ -816,7 +816,7 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
 }
 
 gfx::Size SwapChainPresenter::CalculateSwapChainSize(
-    const ui::DCRendererLayerParams& params,
+    const DCLayerOverlayParams& params,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect) {
   // Swap chain size is the minimum of the on-screen size and the source size so
@@ -1062,7 +1062,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   return true;
 }
 
-bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params,
+bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
                                             gfx::Transform* visual_transform,
                                             gfx::Rect* visual_clip_rect) {
   DCHECK(params.overlay_image);
@@ -1332,7 +1332,7 @@ void SwapChainPresenter::RecordPresentationStatistics() {
   }
 }
 
-bool SwapChainPresenter::PresentDCOMPSurface(ui::DCRendererLayerParams& params,
+bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
                                              gfx::Transform* visual_transform,
                                              gfx::Rect* visual_clip_rect) {
   // TODO(crbug.com/999747): Include an early out path in case the same dcomp

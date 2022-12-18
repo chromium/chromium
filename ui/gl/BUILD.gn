@@ -50,8 +50,6 @@ component("gl") {
   sources = [
     "buffer_format_utils.cc",
     "buffer_format_utils.h",
-    "dc_renderer_layer_params.cc",
-    "dc_renderer_layer_params.h",
     "dual_gpu_state.cc",
     "dual_gpu_state.h",
     "egl_timestamps.h",
@@ -299,6 +297,8 @@ component("gl") {
       "child_window_win.h",
       "dc_layer_overlay_image.cc",
       "dc_layer_overlay_image.h",
+      "dc_layer_overlay_params.cc",
+      "dc_layer_overlay_params.h",
       "dc_layer_tree.cc",
       "dc_layer_tree.h",
       "dcomp_presenter.cc",
