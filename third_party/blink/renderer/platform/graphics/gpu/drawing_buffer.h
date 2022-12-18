@@ -477,7 +477,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                                  ClearOption clear_option);
 
   // The same as reset(), but leaves GL state dirty.
-  bool ResizeFramebufferInternal(const gfx::Size&);
+  bool ResizeFramebufferInternal(GLenum requested_format, const gfx::Size&);
 
   // The same as resolveAndBindForReadAndDraw(), but leaves GL state dirty.
   void ResolveMultisampleFramebufferInternal();
@@ -603,10 +603,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // The alpha type that was requested (opaque, premul, or unpremul).
   const SkAlphaType requested_alpha_type_;
 
-  // Does our allocation have an alpha channel that was explicitly allocated
-  // (there is no concept of an implicitly created alpha channel). This
-  // determines if |multisample_renderbuffer_| allocates an alpha channel.
-  bool have_alpha_channel_ = false;
+  // The requested format (GL_RGB, GL_RGBA, or GL_RGBA16F).
+  GLenum requested_format_ = GL_NONE;
+
+  // The format with which ColorBuffers used for compositing will be allocated.
+  viz::ResourceFormat color_buffer_format_ = viz::RGBA_8888;
+
   Platform::GraphicsInfo graphics_info_;
   const bool using_swap_chain_;
   bool low_latency_enabled_ = false;
@@ -669,8 +671,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   gfx::ColorSpace color_space_;
 
   AntialiasingMode anti_aliasing_mode_ = kAntialiasingModeNone;
-
-  bool use_half_float_storage_ = false;
 
   int max_texture_size_ = 0;
   int sample_count_ = 0;

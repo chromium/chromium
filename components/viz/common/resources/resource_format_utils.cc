@@ -168,6 +168,40 @@ int BitsPerPixel(ResourceFormat format) {
   return 0;
 }
 
+int AlphaBits(ResourceFormat format) {
+  switch (format) {
+    case RGBA_F16:
+      return 16;
+    case BGRA_8888:
+    case RGBA_8888:
+    case YUVA_420_TRIPLANAR:
+    case ALPHA_8:
+      return 8;
+    case RGBA_4444:
+      return 4;
+    case RGBA_1010102:
+    case BGRA_1010102:
+      return 2;
+    case RGBX_8888:
+    case BGRX_8888:
+    case P010:
+    case RG16_EXT:
+    case RGB_565:
+    case LUMINANCE_F16:
+    case R16_EXT:
+    case BGR_565:
+    case RG_88:
+    case YVU_420:
+    case YUV_420_BIPLANAR:
+    case LUMINANCE_8:
+    case RED_8:
+    case ETC1:
+      return 0;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 unsigned int GLDataType(ResourceFormat format) {
   DCHECK_LE(format, RESOURCE_FORMAT_MAX);
   static const GLenum format_gl_data_type[] = {

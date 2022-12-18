@@ -247,13 +247,15 @@ DrawingBuffer::DrawingBuffer(
                                 ? (premultiplied_alpha ? kPremul_SkAlphaType
                                                        : kUnpremul_SkAlphaType)
                                 : kOpaque_SkAlphaType),
+      requested_format_((pixel_format == CanvasPixelFormat::kF16)
+                            ? GL_RGBA16F
+                            : (want_alpha_channel ? GL_RGBA8 : GL_RGB8)),
       graphics_info_(graphics_info),
       using_swap_chain_(using_swap_chain),
       low_latency_enabled_(desynchronized),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),
-      use_half_float_storage_(pixel_format == CanvasPixelFormat::kF16),
       filter_quality_(filter_quality),
       chromium_image_usage_(chromium_image_usage),
       opengl_flip_y_extension_(
@@ -355,7 +357,8 @@ bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
 }
 
 bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
-  return requested_alpha_type_ == kOpaque_SkAlphaType && have_alpha_channel_;
+  return requested_alpha_type_ == kOpaque_SkAlphaType &&
+         AlphaBits(color_buffer_format_);
 }
 
 void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
@@ -883,7 +886,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 
   // Specifying a half-float backbuffer requires and implicitly enables
   // half-float backbuffer extensions.
-  if (use_half_float_storage_) {
+  if (requested_format_ == GL_RGBA16F) {
     const char* color_buffer_extension = webgl_version_ > kWebGL1
                                              ? "GL_EXT_color_buffer_float"
                                              : "GL_EXT_color_buffer_half_float";
@@ -950,32 +953,6 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   }
 #endif
 
-  // Initialize the alpha allocation settings based on the features and
-  // workarounds in use.
-  if (requested_alpha_type_ == kOpaque_SkAlphaType) {
-    have_alpha_channel_ = false;
-    // The following workarounds are used in order of importance; the
-    // first is a correctness issue, the second a major performance
-    // issue, and the third a minor performance issue.
-    if (ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-            gpu::DISABLE_GL_RGB_FORMAT)) {
-      // This configuration will
-      //  - allow invalid CopyTexImage to RGBA targets
-      //  - fail valid FramebufferBlit from RGB targets
-      // https://crbug.com/776269
-      have_alpha_channel_ = true;
-    } else if (WantExplicitResolve() &&
-               ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-                   gpu::DISABLE_WEBGL_RGB_MULTISAMPLING_USAGE)) {
-      // This configuration avoids the above issues because
-      //  - CopyTexImage is invalid from multisample renderbuffers
-      //  - FramebufferBlit is invalid to multisample renderbuffers
-      have_alpha_channel_ = true;
-    }
-  } else {
-    have_alpha_channel_ = true;
-  }
-
   state_restorer_->SetFramebufferBindingDirty();
   gl_->GenFramebuffers(1, &fbo_);
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
@@ -989,7 +966,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
     if (opengl_flip_y_extension_)
       gl_->FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_FLIP_Y_MESA, 1);
   }
-  if (!ResizeFramebufferInternal(size)) {
+
+  if (!ResizeFramebufferInternal(requested_format_, size)) {
     DLOG(ERROR) << "Initialization failed to allocate backbuffer of size "
                 << size.width() << " x " << size.height() << ".";
     return false;
@@ -1419,12 +1397,50 @@ gfx::Size DrawingBuffer::AdjustSize(const gfx::Size& desired_size,
 
 bool DrawingBuffer::Resize(const gfx::Size& new_size) {
   ScopedStateRestorer scoped_state_restorer(this);
-  return ResizeFramebufferInternal(new_size);
+  return ResizeFramebufferInternal(requested_format_, new_size);
 }
 
-bool DrawingBuffer::ResizeFramebufferInternal(const gfx::Size& new_size) {
+bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
+                                              const gfx::Size& new_size) {
   DCHECK(state_restorer_);
   DCHECK(!new_size.IsEmpty());
+
+  // Initialize the alpha allocation settings based on the features and
+  // workarounds in use.
+  requested_format_ = requested_format;
+  switch (requested_format_) {
+    case GL_RGB8:
+      color_buffer_format_ = viz::RGBX_8888;
+      // The following workarounds are used in order of importance; the
+      // first is a correctness issue, the second a major performance
+      // issue, and the third a minor performance issue.
+      if (ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
+              gpu::DISABLE_GL_RGB_FORMAT)) {
+        // This configuration will
+        //  - allow invalid CopyTexImage to RGBA targets
+        //  - fail valid FramebufferBlit from RGB targets
+        // https://crbug.com/776269
+        color_buffer_format_ = viz::RGBA_8888;
+      } else if (WantExplicitResolve() &&
+                 ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
+                     gpu::DISABLE_WEBGL_RGB_MULTISAMPLING_USAGE)) {
+        // This configuration avoids the above issues because
+        //  - CopyTexImage is invalid from multisample renderbuffers
+        //  - FramebufferBlit is invalid to multisample renderbuffers
+        color_buffer_format_ = viz::RGBA_8888;
+      }
+      break;
+    case GL_RGBA8:
+      color_buffer_format_ = viz::RGBA_8888;
+      break;
+    case GL_RGBA16F:
+      color_buffer_format_ = viz::RGBA_F16;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   gfx::Size adjusted_size = AdjustSize(new_size, size_, max_texture_size_);
   if (adjusted_size.IsEmpty())
     return false;
@@ -1603,11 +1619,22 @@ bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const gfx::Size& size) {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, multisample_fbo_);
   gl_->BindRenderbuffer(GL_RENDERBUFFER, multisample_renderbuffer_);
   // Note that the multisample rendertarget will allocate an alpha channel
-  // based on `have_alpha_channel_`, not `requested_alpha_type`, since it
-  // will resolve into the ColorBuffer.
-  GLenum internal_format = have_alpha_channel_ ? GL_RGBA8_OES : GL_RGB8_OES;
-  if (use_half_float_storage_) {
-    internal_format = GL_RGBA16F_EXT;
+  // based on the ColorBuffer's format, since it will resolve into the
+  // ColorBuffer.
+  GLenum internal_format = GL_NONE;
+  switch (color_buffer_format_) {
+    case viz::RGBX_8888:
+      internal_format = GL_RGB8_OES;
+      break;
+    case viz::RGBA_8888:
+      internal_format = GL_RGBA8_OES;
+      break;
+    case viz::RGBA_F16:
+      internal_format = GL_RGBA16F;
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
   if (has_eqaa_support) {
     gl_->RenderbufferStorageMultisampleAdvancedAMD(
@@ -1652,10 +1679,7 @@ void DrawingBuffer::Bind(GLenum target) {
 }
 
 GLenum DrawingBuffer::StorageFormat() const {
-  if (use_half_float_storage_) {
-    return GL_RGBA16F_EXT;
-  }
-  return requested_alpha_type_ == kOpaque_SkAlphaType ? GL_RGB8 : GL_RGBA8;
+  return requested_format_;
 }
 
 sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
@@ -1850,35 +1874,22 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
 
-  viz::ResourceFormat format;
-  if (have_alpha_channel_) {
-    format = use_half_float_storage_ ? viz::RGBA_F16 : viz::RGBA_8888;
-  } else {
-    DCHECK(!use_half_float_storage_);
-    format = viz::RGBX_8888;
-  }
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
   if (using_swap_chain_) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
-        sii->CreateSwapChain(format, size, color_space_, origin,
+        sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
                              back_buffer_alpha_type,
                              usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
   } else {
     if (ShouldUseChromiumImage()) {
-      gfx::BufferFormat buffer_format;
-      if (have_alpha_channel_) {
-        buffer_format = use_half_float_storage_ ? gfx::BufferFormat::RGBA_F16
-                                                : gfx::BufferFormat::RGBA_8888;
-      } else {
-        DCHECK(!use_half_float_storage_);
-        buffer_format = gfx::BufferFormat::RGBX_8888;
-        if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-                gfx::BufferFormat::BGRX_8888,
-                ContextProvider()->GetCapabilities())) {
-          buffer_format = gfx::BufferFormat::BGRX_8888;
-        }
+      gfx::BufferFormat buffer_format = BufferFormat(color_buffer_format_);
+      if (buffer_format == gfx::BufferFormat::RGBX_8888 &&
+          gpu::IsImageFromGpuMemoryBufferFormatSupported(
+              gfx::BufferFormat::BGRX_8888,
+              ContextProvider()->GetCapabilities())) {
+        buffer_format = gfx::BufferFormat::BGRX_8888;
       }
       // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
@@ -1918,8 +1929,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       back_buffer_mailbox = sii->CreateSharedImage(
-          format, size, color_space_, origin, back_buffer_alpha_type, usage,
-          gpu::kNullSurfaceHandle);
+          color_buffer_format_, size, color_space_, origin,
+          back_buffer_alpha_type, usage, gpu::kNullSurfaceHandle);
     }
   }
 
@@ -1940,8 +1951,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
-        weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-        nullptr, front_buffer_mailbox);
+        weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
+        texture_id, nullptr, front_buffer_mailbox);
   }
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   texture_id =
@@ -1969,8 +1980,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   }
 
   return base::MakeRefCounted<ColorBuffer>(
-      weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-      std::move(gpu_memory_buffer), back_buffer_mailbox);
+      weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
+      texture_id, std::move(gpu_memory_buffer), back_buffer_mailbox);
 }
 
 void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
