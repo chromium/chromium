@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ArcAppKillDailyType">
-  <variant name=".Cached" summary="with cached priority"/>
+  <variant name=".CachedDaily" summary="with cached priority"/>
   <variant name=".ForegroundDaily" summary="when foreground"/>
   <variant name=".OomDaily" summary="by Linux's OOM killer"/>
   <variant name=".PerceptibleDaily" summary="when perceptible"/>
