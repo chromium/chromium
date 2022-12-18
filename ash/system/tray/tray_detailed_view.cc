@@ -418,9 +418,12 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   int start_width = start_view->GetPreferredSize().width();
   int end_width = end_view->GetPreferredSize().width();
   if (start_width < end_width) {
+    DCHECK(start_view->GetVisible());
     start_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, 0, end_width - start_width)));
   } else {
+    // Ensure the end container is visible, even if it has no buttons.
+    tri_view_->SetContainerVisible(TriView::Container::END, true);
     end_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, start_width - end_width, 0, 0)));
   }
