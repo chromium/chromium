@@ -127,6 +127,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
+<translation id="163517899691012366">Bezovta qilinmasin rejimi yoniqligida bildirishnomalar ovozsiz chiqariladi</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
@@ -373,6 +374,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3047761520276763270">Aytib koʻring:</translation>
 <translation id="3051189971848907985">Profil qayta nomlanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
+<translation id="3062298103034426069">Hozircha ishlamaydi</translation>
 <translation id="3068711042108640621">Javon chapda</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menyuni ochish</translation>
@@ -407,6 +409,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3252573918265662711">Sozlash</translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
+<translation id="3260969790895726815">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish oflayn rejimda ishlaydi, lekin ayrim ovozli buyruqlar ishlamaydi.</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
 <translation id="3289544412142055976">Linux ilovalari hozirda ishlamaydi</translation>
 <translation id="3289674678944039601">Adapter orqali quvvat olmoqda</translation>
@@ -786,9 +789,11 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5331975486040154427">USB-C qurilma (chap tomondagi orqa port)</translation>
 <translation id="533282197239610265">Translatsiya qurilmalarini ochish</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (oʻng)</translation>
+<translation id="5351427059191534258">Kameraga ruxsat faolsizlantirilsinmi?</translation>
 <translation id="5352250171825660495">Tungi mavzu yoniq</translation>
 <translation id="5356963482258194581">Tungi va kunduzni mavzularni almashtirish. Ish stolida oʻng klikni bosib, Fon rasmi va uslub bandini tanlang.</translation>
 <translation id="536019650977002321">Administrator audio yozib olishni taqiqlagan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> tilidagi nutq fayllari qisman yuklab olindi</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu varaqni ochish</translation>
 <translation id="5377367976106153749">Kameraga ruxsat yoqilsinmi?</translation>
 <translation id="5379115545237091094">Juda ko‘p urinishlar bo‘ldi</translation>
@@ -898,6 +903,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5980301590375426705">Chiqish (mehmon)</translation>
 <translation id="598407983968395253">Andozadan foydalanish</translation>
 <translation id="598882571027504733">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni tashqi klavuatura orqali o‘chirib yoqing.</translation>
+<translation id="6002179289567220515">1 ta kamerani oʻchirish uchun jismoniy kalitdan foydalangansiz. Shuningdek, barcha kameralar uchun ruxsatni ham faolsizlantirishingiz mumkin.</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
@@ -938,9 +944,11 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="619279033188484792">Telefoningizdagi oxirgi rasmlar, media va bildirishnomalarni <ph name="DEVICE_TYPE" /> qurilmasida koʻring</translation>
 <translation id="619335566042889110">Toʻliq quvvatlang</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Ilovada ishlamaydi</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> qurilmasini oldin saqlangan <ph name="EMAIL" /> hisobiga ulang</translation>
 <translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
+<translation id="623116199192908855">Chromebook qurilmangizdan ekraningizni translatsiya qiling</translation>
 <translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hozir kamera va mikrofondan foydalanmoqda</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +990,10 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ushbu <ph name="DEVICE_TYPE" /> tizimini muddati tugamasdan yangilashni talab qilmoqda</translation>
 <translation id="649452524636452238">Smart kartaning PIN kodi</translation>
 <translation id="6495400115277918834">Tasvir ustida tasvir ochildi, fokuslash uchun Alt+Shift+V tugmalarini bosing</translation>
+<translation id="6497418457565568043">Bezovta qilinmasin rejmi yoniq</translation>
 <translation id="6500896621837555595">Yangilash</translation>
 <translation id="6501401484702599040">Ekran “<ph name="RECEIVER_NAME" />” qurilmasiga translatsiya qilinmoqda</translation>
+<translation id="6508923215158854599">Chromebook Chromecast qurilmangiz bilan bir xil Wi-Fi tarmoqqa ulanganini tekshiring.</translation>
 <translation id="6515727200518652613">Kamera yoʻqoldi. Qayta ulanmoqda.</translation>
 <translation id="6520517963145875092">Suratga olish uchun oynani tanlang</translation>
 <translation id="652139407789908527">Ekran bu safar yangilanish vaqtida odatdagidan uzoqroq yonmay turishi mumkin. Yangilanish vaqtida quvvat tugmasini bosmay turing.</translation>

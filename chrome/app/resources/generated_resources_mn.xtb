@@ -29,6 +29,7 @@
 <translation id="1022489261739821355">Таны <ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" /> дээрх нууц үгнүүдийг харуулж байна</translation>
 <translation id="1026655690966755180">Порт нэмэх</translation>
 <translation id="1026822031284433028">Зураг ачаалах</translation>
+<translation id="1028604629594230522">Chrome таны зочлох магадлалтай хуудаснуудыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална.</translation>
 <translation id="1028700151766901954">Шалтгаан: LBS <ph name="DEFAULT_OPEN_BROWSER" />-д өгөгдсөн хэвээр үлдэнэ.</translation>
 <translation id="1029317248976101138">Татаж харах</translation>
 <translation id="1031362278801463162">Ачаалах явцыг харах</translation>
@@ -637,6 +638,7 @@
 <translation id="1591679663873027990">USB төхөөрөмжид хандах зөвшөөрлийг Parallels Desktop-д өгөх. USB төхөөрөмжийг салгасны дараа Parallels Desktop үүнийг санахгүй.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> нь таны <ph name="DEVICE_TYPE" />-г шинэчлэх ADB дебагийг идэвхгүй болгосон. Дахин эхлүүлэхийн өмнө файлуудаа хуулбарлана уу.</translation>
 <translation id="1592126057537046434">Шуурхай хариултын орчуулга</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{Таны хэсэг хугацаанд зочлоогүй <ph name="BEGIN_BOLD" />1 caйтаас<ph name="END_BOLD" /> зөвшөөрлүүдийг хассан}other{Таны хэсэг хугацаанд зочлоогүй <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаас<ph name="END_BOLD" /> зөвшөөрлүүдийг хассан}}</translation>
 <translation id="1593594475886691512">Хэлбэршүүлж байна...</translation>
 <translation id="159359590073980872">Зургийн кэш</translation>
 <translation id="1593926297800505364">Төлбөрийн хэрэгслийг хадгалах</translation>
@@ -1058,6 +1060,7 @@
 <translation id="1941995177877935582">Товч харгалзуулалтыг харуулах</translation>
 <translation id="1942128823046546853">Таны бүх вебсайт дээрх өгөгдлийг унших болон өөрчлөх</translation>
 <translation id="1944528062465413897">Bluetooth хослуулах код:</translation>
+<translation id="1944535645109964458">Боломжтой passkey байхгүй</translation>
 <translation id="1944921356641260203">Шинэчлэлт хийх тухай мэдээлэл олдлоо</translation>
 <translation id="1947136734041527201">Таныг таниулбарын үйлчилгээтэй бүртгэлээ ашиглан вебсайтуудад нэвтрэх боломжийг олгоно</translation>
 <translation id="1949584741547056205">Шуурхай хариулт</translation>
@@ -1974,6 +1977,7 @@
 <translation id="2766161002040448006">Эцэг эхээс асуух</translation>
 <translation id="2767077837043621282">Таны Chromebook-г шинэчилж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2767127727915954024">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FILENAME" />-г засах боломжтой байна</translation>
+<translation id="2769174155451290427">Зураг байршуулсан</translation>
 <translation id="2770465223704140727">Жагсаалтаас устгах</translation>
 <translation id="2770690685823456775">Нууц үгээ өөр фолдерт экспортлох</translation>
 <translation id="2770929488047004208">Мониторын нягтрал</translation>
@@ -2254,6 +2258,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">Зөвхөн ижил сайтын аюулгүй холболтод</translation>
 <translation id="3012917896646559015">Та өөрийн компьютерийг засварын төвд илгээхийн тулд компьютерийн техник хангамжийн үйлдвэрлэгчтэй нэн даруй холбогдоно уу.</translation>
+<translation id="3014717196148502230">Chrome таны зочлох магадлалтай илүү олон хуудсыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална.</translation>
 <translation id="301525898020410885">Хэлийг танай Байгууллагаас тохируулсан байна</translation>
 <translation id="3015639418649705390">Одоо дахин ажиллуулах</translation>
 <translation id="3016381065346027039">Оролтын бүртгэл алга</translation>
@@ -2286,6 +2291,7 @@
 <translation id="3037754279345160234">Домайнд нэгдэхийн тулд тохиргоог задалж чадахгүй байна. Админтайгаа холбогдоно уу.</translation>
 <translation id="3038612606416062604">Хэвлэгчийг гараар нэмэх</translation>
 <translation id="3039491566278747710">Офлайн удирдамжийг төхөөрөмж дээр суулгаж чадсангүй.</translation>
+<translation id="3043016484125065343">Хавчуургаа харахын тулд нэвтрэх</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />-с</translation>
 <translation id="304499331062371949">Аливаа өргөтгөлд <ph name="SITE_NAME" />-г унших болон өөрчлөхийг бүү зөвшөөр</translation>
@@ -3766,6 +3772,7 @@
 <translation id="4458535500699390320">Энэ таб идэвхгүй байхад Санах ой хэмнэгч бусад ажилд зориулж санах ойг чөлөөлсөн. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
+<translation id="4461483878391246134">Хэзээ ч орчуулга санал болгохгүй хэл нэмнэ үү</translation>
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-д <ph name="TIME" />-н цагийн хязгаар тохируулсан</translation>
 <translation id="4466839823729730432">Дурсамжуудаа эндээс хараарай</translation>
@@ -3911,6 +3918,7 @@
 <translation id="4589713469967853491">Логуудыг Татаж авсан файлын лавлахад амжилттай бичлээ.</translation>
 <translation id="4590324241397107707">Өгөгдлийн сангийн хадгалалт</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-д хадгалсан төхөөрөмж байхгүй</translation>
+<translation id="4592525994536856567">Үзэх болон хайх нь илүү хурдан байдаг.</translation>
 <translation id="4592891116925567110">Мэдрэгч үзгийн зурдаг апп</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> руу очих</translation>
 <translation id="4594218792629569101">Хуудсыг жагсаалтынхаа доод тал руу зөөхийн тулд “Уншсан гэж тэмдэглэх”-ийг сонгоно уу</translation>
@@ -4418,6 +4426,7 @@
 <translation id="5078796286268621944">ПИН код буруу байна</translation>
 <translation id="5079010647467150187">Бүрэлдэхүүн VPN нэмэх...</translation>
 <translation id="508059534790499809">Kerberos тасалбарыг дахин шинэчлэх</translation>
+<translation id="5081960376148623587">Хуудаснуудыг урьдчилан ачаалах эсэхийг сонгоно уу</translation>
 <translation id="5084328598860513926">Нийлүүлэлтийн урсгал тасалдлаа. Дахин оролдоно уу эсвэл төхөөрөмж өмчлөгч, администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Шинэчлэлтүүдийг шалгаж байна</translation>
 <translation id="5086082738160935172">HID</translation>
@@ -4446,6 +4455,7 @@
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" />-г хасах</translation>
 <translation id="5111646998522066203">Нууцлалын цонхыг хаах</translation>
 <translation id="5111692334209731439">&amp; Хадгалагдсан хуудсын менежер</translation>
+<translation id="5111794652433847656">Энэ төхөөрөмжид <ph name="APP_NAME" />-д зориулсан passkey байхгүй байна</translation>
 <translation id="5112577000029535889">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
 <translation id="511313294362309725">Хурдан холбохыг асаах</translation>
 <translation id="5113739826273394829">Хэрэв та энэхүү дүрсэн тэмдэгт дээр дарсан тохиолдолд та энэхүү <ph name="DEVICE_TYPE" /> төхөөрөмжийг гараар түгжих болно. Дараагийн удаа нэвтрэхийн тулд та өөрийн нууц үгийг оруулах шаардлагатай.</translation>
@@ -5298,6 +5308,7 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн байна</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">Товчлол харагч</translation>
+<translation id="5911545422157959623">Зочны горимд хавчуурга боломжгүй</translation>
 <translation id="5914724413750400082">Модулиуд (<ph name="MODULUS_NUM_BITS" /> бит): 
 <ph name="MODULUS_HEX_DUMP" /> 
 Нийтийн жишиг (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит): 
@@ -5390,6 +5401,7 @@
 <translation id="5990266201903445068">Зөвхөн Wi-Fi-р</translation>
 <translation id="5990386583461751448">Орчуулсан</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа энэ аппыг устгахыг хүснэ үү.}other{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа эдгээр аппыг устгахыг хүснэ үү.}}</translation>
+<translation id="5993508466487156420">{NUM_SITES,plural, =1{1 сайтыг шалгаж дууслаа}other{{NUM_SITES} сайтыг шалгаж дууслаа}}</translation>
 <translation id="5997337190805127100">Сайтын хандалтын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
 <translation id="6001839398155993679">Эхэлцгээе</translation>
@@ -5573,6 +5585,7 @@
 <translation id="6163363155248589649">&amp;Хэвийн</translation>
 <translation id="6163376401832887457">Kerberos-н тохиргоо</translation>
 <translation id="6163522313638838258">Бүгдийг өргөтгөх...</translation>
+<translation id="6164832038898943453">Автоматаар орчуулах хэл нэмнэ үү</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166185671393271715">Нууц үгийг Chrome-д импортлох</translation>
 <translation id="6169040057125497443">Микрофоноо шалгана уу.</translation>
@@ -5990,6 +6003,7 @@
 <translation id="6568283005472142698">Таб хайлт</translation>
 <translation id="65711204837946324">Татах зөвшөөрөл шаардана</translation>
 <translation id="6571772921213691236">Нэвтрэх өгөгдлийг засна уу</translation>
+<translation id="6572081226337824427">Таны зочилдог зарим хуудсыг урьдчилан ачаална.</translation>
 <translation id="657229725818377235">Аюултай вебсайтууд болон татаж авах файлуудын эсрэг илүү их хамгаалалт аваарай</translation>
 <translation id="6573096386450695060">Байнга зөвшөөрөх</translation>
 <translation id="6573497332121198392">Товчлолыг хасах боломжгүй</translation>
@@ -6074,6 +6088,7 @@
 <translation id="6646476869708241165">Хурдан холбохыг унтраах</translation>
 <translation id="6647228709620733774">Netscape Certification Authority Revocation URL</translation>
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
+<translation id="6647690760956378579">Төрөлхийн дуу хоолойг урьдчилан сонсох</translation>
 <translation id="6648911618876616409">Шаардлагатай шинэчлэлтийг суулгахад бэлэн байна. Эхлүүлэхийн тулд нэвтэрнэ үү.</translation>
 <translation id="6649018507441623493">Түр хүлээнэ үү…</translation>
 <translation id="665061930738760572">Шинэ цонхонд нээх &amp;</translation>
@@ -6137,11 +6152,13 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> болон бусад 1 таб}other{<ph name="PAGE_TITLE" /> болон бусад # таб}}</translation>
 <translation id="6709133671862442373">Мэдээ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />-ыг ашиглан холбогдоно уу</translation>
+<translation id="6709802811835274327">Та күүкиг зөвшөөрсөн тохиолдолд Chrome тэдгээрийг урьдчилан ачаалах үед ашиглаж магадгүй.</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6710394144992407503">Вэб хуудсан дээр текст бичихдээ зөв бичгийн алдаа байгаа эсэхийг шалгана уу</translation>
 <translation id="6711146141291425900">Таталтуудад <ph name="WEB_DRIVE" /> бүртгэл холбоно уу</translation>
 <translation id="6712943853047024245">Та аль хэдийн <ph name="WEBSITE" />-д энэ хэрэглэгчийн нэрээр нууц үг хадгалсан байна</translation>
 <translation id="6713233729292711163">Ажлын профайл нэмэх</translation>
+<translation id="6713668088933662563">Эдгээр хэлээр орчуулахыг хэзээ ч бүү санал болго</translation>
 <translation id="6715803357256707211">Таны Linux аппликэйшнийг суулгах явцад алдаа гарлаа. Дэлгэрэнгүй мэдээлэл авах бол мэдэгдэл дээр товшино уу.</translation>
 <translation id="671619610707606484">Энэ нь сайтуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг арилгана</translation>
 <translation id="6716798148881908873">Сүлжээний холболт тасарлаа. Сүлжээний холболтоо шалгах эсвэл өөр Wi-Fi сүлжээг туршиж үзнэ үү.</translation>
@@ -7047,6 +7064,7 @@
 <translation id="7573594921350120855">Сайтууд ихэвчлэн видео чат зэрэг харилцаа холбооны онцлогуудад зориулж таны видео камерыг ашигладаг</translation>
 <translation id="7574650250151586813">Текст бичихийн тулд Daydream гарын аппыг шинэчилнэ үү</translation>
 <translation id="7574676002608048667">Нууц үг илгээх</translation>
+<translation id="7575272930307342804">Навигацын тохиргоо</translation>
 <translation id="7576690715254076113">Шалгах</translation>
 <translation id="7576976045740938453">Демо горимын бүртгэлд алдаа гарлаа.</translation>
 <translation id="7578137152457315135">Хурууны хээний тохиргоо</translation>
@@ -7896,6 +7914,7 @@
 <translation id="833262891116910667">Тодруулах</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8336407002559723354">Шинэчлэлт нь <ph name="MONTH_AND_YEAR" /> дуусна</translation>
+<translation id="8336463659890584292">Сайт өөрийн хуудсан дээр холбооснуудыг нууцлалтайгаар урьдчилан ачаалахыг хүсэхэд Chrome Google-н серверүүдийг ашиглана. Энэ нь таны таниулбарыг урьдчилан ачаалсан сайтаас нуух ч Google ямар сайтуудыг урьдчилан ачаалдгийг мэдэж авна.</translation>
 <translation id="8336739000755212683">Төхөөрөмжийн бүртгэлийн зургийг өөрчлөх</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Энэ төхөөрөмжийг 1 цагийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}other{Энэ төхөөрөмжийг {HOURS} цагийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}}</translation>
 <translation id="8337047789441383384">Та энэ аюулгүй байдлын түлхүүрийг аль хэдийн бүртгүүлсэн байна. Та үүнийг дахин бүртгүүлэх шаардлагагүй.</translation>
@@ -8353,6 +8372,7 @@
 <translation id="8774379074441005279">Сэргээхийг баталгаажуулах</translation>
 <translation id="8774934320277480003">Дээд хүрээ</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>
+<translation id="8775329533241312400">Үзэх болон хайх нь стандарт урьдчилан ачаалахаас илүү хурдан байдаг.</translation>
 <translation id="8775653927968399786">{0,plural, =1{Таны <ph name="DEVICE_TYPE" />-г # секундийн дараа автоматаар түгжинэ.
 <ph name="DOMAIN" /> таныг ухаалаг картаа оруулсан хэвээр байхыг шаардана.}other{Таны <ph name="DEVICE_TYPE" />-г # секундийн дараа автоматаар түгжинэ.
 <ph name="DOMAIN" /> таныг ухаалаг картаа оруулсан хэвээр байхыг шаардана.}}</translation>

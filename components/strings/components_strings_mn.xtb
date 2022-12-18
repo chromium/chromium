@@ -1012,6 +1012,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> таны микрофоныг ашиглах хүсэлтэй байна</translation>
 <translation id="3533328374079021623">Шуудангийн хайрцаг 5</translation>
 <translation id="3537165859691846083">Том захидал</translation>
+<translation id="3542628208405253498">Картын зураг</translation>
 <translation id="3542768452570884558">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="3547746132308051926">20 x 24 инч</translation>
 <translation id="3550112004925580947">Зочлох үйлчилгээний салбар</translation>
@@ -1102,6 +1103,7 @@
 <translation id="3745099705178523657">Таныг баталгаажуулсны дараа таны Google бүртгэлээс картын дэлгэрэнгүйг энэ сайтад хуваалцах болно.</translation>
 <translation id="3748148204939282805">Танаар аюултай программ суулгуулах эсвэл таны нууц үг, утасны дугаар эсвэл кредит карт зэрэг хувийн мэдээллийг задруулах зорилготой халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-д байна. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Нисэхийн салбар</translation>
+<translation id="3752543821772132562"><ph name="POLICY_NAME" />-г тохируулаагүй тул үл хэрэгссэн.</translation>
 <translation id="3754210790023674521">Дэлгэцэн доторх дэлгэцээс гарах</translation>
 <translation id="3759461132968374835">Танд сүүлийн үед мэдээллэсэн ямар нэг алдаа осол алга байна. Алдаа ослыг тайлагнах тохиргоог хаасан үед тохиолдсон аливаа алдаа осол нь энд гарч ирэхгүй.</translation>
 <translation id="3760561303380396507">Карт баталгаажуулалтын кодын оронд Windows Hello-г ашиглах уу?</translation>
@@ -2912,6 +2914,7 @@
 <translation id="8355270400102541638">Дотоод гэмтлийн контекст:</translation>
 <translation id="8363502534493474904">Нислэгийн горимыг унтрааж байна</translation>
 <translation id="8364627913115013041">Тохиргоо хийгдээгүй.</translation>
+<translation id="836616551641291797">Таны хөтчийг хэрхэн удирддаг талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>
 <translation id="8368027906805972958">Үл мэдэгдэх эсвэл дэмжигдээгүй төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play үйлчилгээ</translation>

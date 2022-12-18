@@ -30,6 +30,7 @@
 <translation id="1022489261739821355">‏آپ کے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے پاس ورڈز کو دکھایا جا رہا ہے</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
+<translation id="1028604629594230522">‏Chrome صفحات کو پیشگی لوڈ کرتا ہے جنہیں آپ ملاحظہ کر سکتے ہیں، تاکہ وہ آپ کے ملاحظہ کرتے وقت مزید تیزی سے لوڈ ہو سکیں۔</translation>
 <translation id="1028700151766901954">‏وجہ: LBS بطور ڈیفالٹ <ph name="DEFAULT_OPEN_BROWSER" /> میں رہتا ہے۔</translation>
 <translation id="1029317248976101138">زوم کریں</translation>
 <translation id="1031362278801463162">پیش منظر لوڈ کیا جا رہا ہے</translation>
@@ -643,6 +644,7 @@
 <translation id="15916883652754430">سسٹم کی آواز کی ترتیبات</translation>
 <translation id="1592074621872221573">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے جو آپ کے <ph name="DEVICE_TYPE" /> کو ری سیٹ کر دے گا۔ ری اسٹارٹ کرنے سے پہلے اپنی فائلز کا بیک اپ لیں۔</translation>
 <translation id="1592126057537046434">فوری جوابات کا ترجمہ</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> سے اجازتیں ہٹائی گئیں جسے آپ نے کچھ وقت سے ملاحظہ نہیں کیا ہے}other{ٓ<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> سے اجازتیں ہٹائی گئیں جنہیں آپ نے کچھ وقت سے ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="1593594475886691512">فارمیٹ کیا جا رہا ہے…</translation>
 <translation id="159359590073980872">تصویر کیش</translation>
 <translation id="1593926297800505364">ادائیگی کا طریقہ محفوظ کریں</translation>
@@ -1058,6 +1060,7 @@
 <translation id="1941995177877935582">کلید کی نقشہ سازی دکھائیں</translation>
 <translation id="1942128823046546853">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="1944528062465413897">بلوٹوتھ جوڑا بنانے کا کوڈ:</translation>
+<translation id="1944535645109964458">کوئی پاس کی دستیاب نہیں ہے</translation>
 <translation id="1944921356641260203">اپ ڈیٹ ملا</translation>
 <translation id="1947136734041527201">آپ کو اس اکاؤنٹ کا استعمال کرتے ہوئے ویب سائٹس میں سائن ان کرنے دیتا ہے جن کی شناختی سروس آپ کے پاس ہے</translation>
 <translation id="1949584741547056205">فوری جوابات</translation>
@@ -1975,6 +1978,7 @@
 <translation id="2766161002040448006">والدین سے پوچھیں</translation>
 <translation id="2767077837043621282">‏آپ کی Chromebook کو اپ ڈیٹ نہیں کیا جا سکا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2767127727915954024">اس سائٹ کے لیے آپ کے سبھی ٹیبز کو بند کرنے تک <ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکے گا</translation>
+<translation id="2769174155451290427">اپ لوڈ کردہ تصویر</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> موقوف کریں</translation>
 <translation id="2770465223704140727">فہرست سے ہٹائیں</translation>
 <translation id="2770690685823456775">اپنے پاسورڈز کو کسی دوسرے فولڈر میں برآمد کریں</translation>
@@ -2257,6 +2261,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">صرف اس جیسی سائٹ کے کنکشنز کو محفوظ کریں</translation>
 <translation id="3012917896646559015">اپنا کمپیوٹر کسی مرمتی سہولت میں بھیجنے کیلئے براہ کرم فوری طور پر اپنے ہارڈ ویئر مینوفیکچرر سے رابطہ کریں۔</translation>
+<translation id="3014717196148502230">‏Chrome اور بھی زیادہ صفحات کو پیشگی لوڈ کرتا ہے جن کا آپ ممکنہ طور پر ملاحظہ کر سکتے ہیں، تاکہ وہ آپ کے ملاحظہ کرتے وقت مزید تیزی سے لوڈ ہو سکیں۔</translation>
 <translation id="301525898020410885">زبان آپ کی تنظیم کے ذریعے سیٹ کی جاتی ہے</translation>
 <translation id="3015639418649705390">ابھی دوبارہ شروع کریں</translation>
 <translation id="3016381065346027039">کوئی لاگ اندراجات نہیں ہے</translation>
@@ -2289,6 +2294,7 @@
 <translation id="3037754279345160234">ڈومین میں شمولیت کے لیے کنفیگریشن کو پارس نہیں کیا جا سکتا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3038612606416062604">دستی طور پر پرنٹر شامل کریں</translation>
 <translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
+<translation id="3043016484125065343">اپنے بُک مارکس دیکھنے کے لیے سائن ان کریں</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> سے</translation>
 <translation id="304499331062371949">کسی بھی ایکسٹینشن کو <ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی اجازت نہ دیں</translation>
@@ -3775,6 +3781,7 @@
 <translation id="4458535500699390320">جب یہ ٹیب غیر فعال تھا، میموری سیور نے دوسرے ٹاسکس کے لیے میموری کو خالی کر دیا۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دنوں قبل فعال کیا گیا</translation>
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
+<translation id="4461483878391246134">کبھی بھی ترجمہ کی پیشکش نہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
 <translation id="4466839823729730432">اپنی یادیں یہاں دیکھیں</translation>
@@ -3919,6 +3926,7 @@
 <translation id="4589713469967853491">ڈاؤن لوڈ ڈائریکٹری میں کامیابی کے ساتھ لکھے گئے لاگز۔</translation>
 <translation id="4590324241397107707">ڈیٹابیس اسٹوریج</translation>
 <translation id="459204634473266369">کوئی بھی آلہ <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں ہے</translation>
+<translation id="4592525994536856567">براؤز اور تلاش کرنا تیزر تر ہے۔</translation>
 <translation id="4592891116925567110">اسٹائلس ڈرائنگ ایپ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> پر &amp;جائیں</translation>
 <translation id="4594218792629569101">صفحہ کو اپنی فہرست کے نیچے لے جانے کے لیے "پڑھا ہوا کے بطور نشان زد کریں" کو منتخب کریں</translation>
@@ -4427,6 +4435,7 @@
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5079010647467150187">‏پہلے سے موجود VPN کو شامل کریں...</translation>
 <translation id="508059534790499809">‏Kerberos ٹکٹ ریفریش کریں</translation>
+<translation id="5081960376148623587">منتخب کریں کہ آیا صفحات کو پیشگی لوڈ کیا جائے</translation>
 <translation id="5084328598860513926">فراہمی کے بہاؤ میں مداخلت ہو گئی۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5085162214018721575">اپ ڈیٹس چیک کرنا</translation>
 <translation id="5086082738160935172">HID</translation>
@@ -4455,6 +4464,7 @@
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ہٹائیں</translation>
 <translation id="5111646998522066203">پوشیدگی وضع سے باہر نکلیں</translation>
 <translation id="5111692334209731439">&amp;بک مارک مینیجر</translation>
+<translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
 <translation id="5112577000029535889">&amp;ڈیولپر ٹولز</translation>
 <translation id="511313294362309725">فاسٹ پئیر آن کریں</translation>
 <translation id="5113739826273394829">اگر آپ اس آئیکن پر کلک کرتے ہیں تو آپ دستی طور پر اس <ph name="DEVICE_TYPE" /> کو مقفل کر دیں گے۔ اگلی بار، داخل ہونے کیلئے آپ کو اپنا پاس ورڈ ٹائپ کرنے کی ضرورت ہوگی۔</translation>
@@ -5309,6 +5319,7 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آف لائن ہے</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">شارٹ کٹ ناظر</translation>
+<translation id="5911545422157959623">بُک مارکس مہمان وضع میں دستیاب نہیں ہیں</translation>
 <translation id="5914724413750400082">ماڈیولس (<ph name="MODULUS_NUM_BITS" /> بٹس):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -5403,6 +5414,7 @@
 <translation id="5990266201903445068">‏صرف Wi-Fi</translation>
 <translation id="5990386583461751448">ترجمہ شدہ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ویب کی براؤزنگ جاری رکھنے کو یقینی بنانے کے لیے، اپنے منتظم سے اس ایپلیکیشن کو ہٹانے کا مطالبہ کریں۔}other{ویب کی براؤزنگ جاری رکھنے کو یقینی بنانے کے لیے، اپنے منتظم سے ان ایپلیکیشنز کو ہٹانے کا مطالبہ کریں۔}}</translation>
+<translation id="5993508466487156420">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ مکمل}other{{NUM_SITES} سائٹس کا جائزہ مکمل}}</translation>
 <translation id="5997337190805127100">سائٹ تک رسائی کے بارے میں مزید جانیں</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' کے <ph name="RESULT_COUNT" /> نتائج</translation>
 <translation id="6001839398155993679">آئیے شروع کریں</translation>
@@ -5587,6 +5599,7 @@
 <translation id="6163363155248589649">&amp;حسب معمول</translation>
 <translation id="6163376401832887457">‏Kerberos کی ترتیبات</translation>
 <translation id="6163522313638838258">سبھی کو پھیلائیں…</translation>
+<translation id="6164832038898943453">خودکار طور پر ترجمہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166185671393271715">‏Chrome پر پاس ورڈز درآمد کریں</translation>
 <translation id="6169040057125497443">براہ کرم اپنا مائیکروفون چیک کریں۔</translation>
@@ -6004,6 +6017,7 @@
 <translation id="6568283005472142698">ٹیب تلاش</translation>
 <translation id="65711204837946324">ڈاؤن لوڈ کرنے کے لیے اجازت درکار ہے</translation>
 <translation id="6571772921213691236">سائن ان ڈیٹا میں ترمیم کریں</translation>
+<translation id="6572081226337824427">آپ کے ملاحظہ کردہ صفحات میں سے کچھ پیشگی لوڈ کردہ ہیں۔</translation>
 <translation id="657229725818377235">خطرناک ویب سائٹس اور ڈاؤن لوڈز کے خلاف مزید تحفظ حاصل کریں</translation>
 <translation id="6573096386450695060">ہمیشہ اجازت دیں</translation>
 <translation id="6573497332121198392">شارٹ کٹ نہیں ہٹایا جا سکتا</translation>
@@ -6088,6 +6102,7 @@
 <translation id="6646476869708241165">فاسٹ پئیر آف کریں</translation>
 <translation id="6647228709620733774">‏Netscape سرٹیفکیشن اتھارٹی کا منسوخی URL</translation>
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
+<translation id="6647690760956378579">قدرتی آواز کا پیش منظر</translation>
 <translation id="6648911618876616409">انسٹال کرنے کیلئے ایک اہم اپ ڈیٹ تیار ہے۔ شروع کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6649018507441623493">بس ایک سیکنڈ…</translation>
 <translation id="665061930738760572">نئی ونڈو میں کھولیں</translation>
@@ -6151,11 +6166,13 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> اور 1 دیگر ٹیب}other{<ph name="PAGE_TITLE" /> اور # دیگر ٹیبز}}</translation>
 <translation id="6709133671862442373">خبریں</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> کا استعمال کر کے منسلک کریں</translation>
+<translation id="6709802811835274327">‏اگر آپ کوکیز کی اجازت دیتے ہیں تو Chrome پیشگی لوڈنگ کے دوران ان کا استعمال کر سکتا ہے۔</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6710394144992407503">آپ ویب صفحات پر ٹیکسٹ ٹائپ کرتے وقت املا کی غلطیاں چیک کریں</translation>
 <translation id="6711146141291425900">ڈاؤن لوڈز کیلئے <ph name="WEB_DRIVE" /> اکاؤنٹ لنک کریں</translation>
 <translation id="6712943853047024245">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے اس صارف نام کے ساتھ پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="6713233729292711163">دفتری پروفائل شامل کریں</translation>
+<translation id="6713668088933662563">ان زبانوں کو ترجمہ کرنے کی کبھی بھی پیشکش نہ کریں</translation>
 <translation id="6715803357256707211">‏آپ کی Linux ایپلیکیشن کو انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔ تفصیلات کے لیے اطلاع پر کلک کریں۔</translation>
 <translation id="671619610707606484">اس سے سائٹس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا صاف ہو جائے گا</translation>
 <translation id="6716798148881908873">‏نیٹ ورک کنکشن منقطع ہو گیا۔ اپنا نیٹ ورک کنکشن چیک کریں یا دوسرا Wi-Fi نیٹ ورک آزمائیں۔</translation>
@@ -7065,6 +7082,7 @@
 <translation id="7573594921350120855">سائٹس عام طور پر ویڈیو چیٹ جیسی کمیونیکشن کی خصوصیات کے لیے آپ کا ویڈیو کیمرا استعمال کرتی ہیں</translation>
 <translation id="7574650250151586813">‏متن ٹائپ کرنے کیلئے، Daydream کی بورڈ ایپ اپ ڈیٹ کریں</translation>
 <translation id="7574676002608048667">پاس ورڈ بھیجیں</translation>
+<translation id="7575272930307342804">نیویگیشن کنٹرولز</translation>
 <translation id="7576690715254076113">ملائیں</translation>
 <translation id="7576976045740938453">ڈیمو موڈ اکاؤنٹ کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
 <translation id="7578137152457315135">فنگر پرنٹ کی ترتیبات</translation>
@@ -7917,6 +7935,7 @@
 <translation id="833262891116910667">ہائی لائٹ کریں</translation>
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
 <translation id="8336407002559723354">اپ ڈیٹس <ph name="MONTH_AND_YEAR" /> کو ختم ہو جائیں گی</translation>
+<translation id="8336463659890584292">‏جب سائٹ اپنے صفحے پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome ‏Google سرورز کا استعمال کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے لیکن Google جانتا ہے کہ کونسی سائٹس پیشگی لوڈ ہوتی ہیں۔</translation>
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="8337047789441383384">آپ یہ سیکیورٹی کلید پہلے ہی رجسٹر کر چکے ہیں۔ آپ کو اسے دوبارہ رجسٹر کرنے کی ضرورت نہیں ہے۔</translation>
@@ -8377,6 +8396,7 @@
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
+<translation id="8775329533241312400">معیاری پیشگی لوڈنگ سے تیز براؤز اور تلاش کرنا۔</translation>
 <translation id="8775653927968399786">{0,plural, =1{آپ کا <ph name="DEVICE_TYPE" /> # سیکنڈ میں خودکار طور پر مقفل ہو جائے گا۔
 <ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}other{آپ کا <ph name="DEVICE_TYPE" /> # سیکنڈ میں خودکار طور پر مقفل ہو جائے گا۔
 <ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}}</translation>

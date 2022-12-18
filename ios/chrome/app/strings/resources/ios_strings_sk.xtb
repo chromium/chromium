@@ -190,6 +190,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2421044535038393232">Ďalej upravovať</translation>
 <translation id="2434405374328098816">Heslo pre používateľské meno <ph name="USERNAME" /> ste už uložili na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
+<translation id="2451654228769116489">Pripnúť kartu</translation>
 <translation id="2461070143328828326">Nastavenia hesla</translation>
 <translation id="2469960372084740698">Chcete vypnúť Bezpečné prehliadanie?</translation>
 <translation id="2473876017985765807">Už ste si uložili heslo pre web <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
 <translation id="6064824697233747382">Vaša organizácia vyžaduje, aby ste vypli synchronizáciu.</translation>
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
+<translation id="6071409777669089905">Odopnúť kartu</translation>
 <translation id="60829778314739003">Súhlasiť a pokračovať</translation>
 <translation id="6084848228346514841">Výber kariet</translation>
 <translation id="6103540626693881831">Šifrovanie v zariadení</translation>

@@ -733,7 +733,7 @@ Povežite uređaj na napajanje.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">16. radna površina</translation>
 <translation id="5003993274120026347">Sljedeća rečenica</translation>
-<translation id="5004607513195820459">Mrežom upravlja administrator</translation>
+<translation id="5004607513195820459">Mrežom se upravlja</translation>
 <translation id="5016558321564993266">Uključite/isključite označivač. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Pristup mikrofonu uređaja je uključen</translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
@@ -1079,7 +1079,7 @@ Nova instalacija</translation>
 <translation id="6901883536534621389">Isprobajte pokret da navigirate</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
 <translation id="6931576957638141829">Sačuvaj u</translation>
-<translation id="6942518653766415536">Izbornik formata snimke</translation>
+<translation id="6942518653766415536">Meni formata snimanja</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na radnom profilu</translation>

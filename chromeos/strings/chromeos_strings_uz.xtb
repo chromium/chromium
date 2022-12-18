@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
 <translation id="2584559707064218956">Sozlash uchun Sozlamalarni oching</translation>
 <translation id="2597774443162333062">Fayllar batafsil koʻrib chiqilishi uchun Google serverlariga yuboriladi</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
