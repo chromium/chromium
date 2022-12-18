@@ -599,13 +599,14 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   std::unique_ptr<Extensions3DUtil> extensions_util_;
   gfx::Size size_;
   const bool discard_framebuffer_supported_;
-  // Did the user request an alpha channel be allocated.
-  const bool want_alpha_channel_;
+
+  // The alpha type that was requested (opaque, premul, or unpremul).
+  const SkAlphaType requested_alpha_type_;
+
   // Does our allocation have an alpha channel that was explicitly allocated
   // (there is no concept of an implicitly created alpha channel). This
   // determines if |multisample_renderbuffer_| allocates an alpha channel.
   bool have_alpha_channel_ = false;
-  const bool premultiplied_alpha_;
   Platform::GraphicsInfo graphics_info_;
   const bool using_swap_chain_;
   bool low_latency_enabled_ = false;
@@ -635,10 +636,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // (if antialias:false) or resolve results (if antialias:true). Then
   // CopyTextureCHROMIUM is used to multiply the alpha channel into the color
   // channels when copying into the GMB.
+  bool premultiplied_alpha_false_texture_needed_ = false;
   GLuint premultiplied_alpha_false_texture_ = 0;
-
-  // A mailbox for the premultiplied_alpha_false_texture_, created lazily if we
-  // need to produce it.
   gpu::Mailbox premultiplied_alpha_false_mailbox_;
 
   // When wantExplicitResolve() returns false, the target of all draw and

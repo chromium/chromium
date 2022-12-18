@@ -243,8 +243,10 @@ DrawingBuffer::DrawingBuffer(
       gl_(ContextProvider()->ContextGL()),
       extensions_util_(std::move(extensions_util)),
       discard_framebuffer_supported_(discard_framebuffer_supported),
-      want_alpha_channel_(want_alpha_channel),
-      premultiplied_alpha_(premultiplied_alpha),
+      requested_alpha_type_(want_alpha_channel
+                                ? (premultiplied_alpha ? kPremul_SkAlphaType
+                                                       : kUnpremul_SkAlphaType)
+                                : kOpaque_SkAlphaType),
       graphics_info_(graphics_info),
       using_swap_chain_(using_swap_chain),
       low_latency_enabled_(desynchronized),
@@ -353,7 +355,7 @@ bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
 }
 
 bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
-  return !want_alpha_channel_ && have_alpha_channel_;
+  return requested_alpha_type_ == kOpaque_SkAlphaType && have_alpha_channel_;
 }
 
 void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
@@ -476,7 +478,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
 void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
   DCHECK(pixels);
   DCHECK(state_restorer_);
-  bool need_premultiply = want_alpha_channel_ && !premultiplied_alpha_;
+  bool need_premultiply = requested_alpha_type_ == kUnpremul_SkAlphaType;
   WebGLImageConversion::AlphaOp op =
       need_premultiply ? WebGLImageConversion::kAlphaDoPremultiply
                        : WebGLImageConversion::kAlphaDoNothing;
@@ -763,7 +765,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   ResolveAndPresentSwapChainIfNeeded();
 
   scoped_refptr<ColorBuffer> canvas_resource_buffer =
-      UsingSwapChain() ? front_color_buffer_ : back_color_buffer_;
+      using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
 
   SkImageInfo resource_info =
       SkImageInfo::MakeN32Premul(canvas_resource_buffer->size.width(),
@@ -891,7 +893,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
     }
     // Support for RGB half-float renderbuffers is absent from ES3. Do not
     // attempt to expose them.
-    if (!want_alpha_channel_) {
+    if (requested_alpha_type_ == kOpaque_SkAlphaType) {
       DLOG(ERROR) << "RGB half-float renderbuffers are not supported.";
       return false;
     }
@@ -907,8 +909,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
   // We can't use anything other than explicit resolve for swap chain.
   bool supports_implicit_resolve =
-      !UsingSwapChain() && extensions_util_->SupportsExtension(
-                               "GL_EXT_multisampled_render_to_texture");
+      !using_swap_chain_ && extensions_util_->SupportsExtension(
+                                "GL_EXT_multisampled_render_to_texture");
   if (webgl_preferences.anti_aliasing_mode == kAntialiasingModeUnspecified) {
     if (use_multisampling) {
       anti_aliasing_mode_ = kAntialiasingModeMSAAExplicitResolve;
@@ -950,9 +952,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 
   // Initialize the alpha allocation settings based on the features and
   // workarounds in use.
-  if (want_alpha_channel_) {
-    have_alpha_channel_ = true;
-  } else {
+  if (requested_alpha_type_ == kOpaque_SkAlphaType) {
     have_alpha_channel_ = false;
     // The following workarounds are used in order of importance; the
     // first is a correctness issue, the second a major performance
@@ -972,6 +972,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
       //  - FramebufferBlit is invalid to multisample renderbuffers
       have_alpha_channel_ = true;
     }
+  } else {
+    have_alpha_channel_ = true;
   }
 
   state_restorer_->SetFramebufferBindingDirty();
@@ -1089,10 +1091,12 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
 
   GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
   GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
-  if (want_alpha_channel_ && premultiplied_alpha_ && !premultiply_alpha)
+  if (requested_alpha_type_ == kPremul_SkAlphaType && !premultiply_alpha) {
     unpack_unpremultiply_alpha_needed = GL_TRUE;
-  else if (want_alpha_channel_ && !premultiplied_alpha_ && premultiply_alpha)
+  } else if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+             premultiply_alpha) {
     unpack_premultiply_alpha_needed = GL_TRUE;
+  }
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
                            viz::ResourceFormat, const gfx::Size&,
@@ -1123,8 +1127,9 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
   GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
-  if (want_alpha_channel_ && !premultiplied_alpha_)
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType) {
     unpack_premultiply_alpha_needed = GL_TRUE;
+  }
 
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
                            viz::ResourceFormat, const gfx::Size&,
@@ -1171,20 +1176,18 @@ cc::Layer* DrawingBuffer::CcLayer() {
 
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    layer_->SetContentsOpaque(!want_alpha_channel_);
-    layer_->SetBlendBackgroundColor(want_alpha_channel_);
-    // If premultiplied_alpha_false_texture_ exists, then premultiplied_alpha_
-    // has already been handled via CopySubTextureCHROMIUM -- the alpha channel
-    // has been multiplied into the color channels. In this case, or if
-    // premultiplied_alpha_ is true, then the layer should consider its contents
-    // to be premultiplied.
-    //
-    // The only situation where the layer should consider its contents
-    // un-premultiplied is when premultiplied_alpha_ is false, and
-    // premultiplied_alpha_false_texture_ does not exist.
-    DCHECK(!(premultiplied_alpha_ && premultiplied_alpha_false_texture_));
-    layer_->SetPremultipliedAlpha(premultiplied_alpha_ ||
-                                  premultiplied_alpha_false_texture_);
+    layer_->SetContentsOpaque(requested_alpha_type_ == kOpaque_SkAlphaType);
+    layer_->SetBlendBackgroundColor(requested_alpha_type_ !=
+                                    kOpaque_SkAlphaType);
+    if (premultiplied_alpha_false_texture_) {
+      // If premultiplied_alpha_false_texture_ exists, then premultiplication
+      // has already been handled via CopySubTextureCHROMIUM.
+      DCHECK(requested_alpha_type_ == kUnpremul_SkAlphaType);
+      layer_->SetPremultipliedAlpha(true);
+    } else {
+      layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
+                                    kUnpremul_SkAlphaType);
+    }
     layer_->SetHDRConfiguration(hdr_mode_, hdr_metadata_);
     layer_->SetNearestNeighbor(filter_quality_ ==
                                cc::PaintFlags::FilterQuality::kNone);
@@ -1259,8 +1262,7 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
   // the non-premultiplied rendering results. These will be copied into the GMB
   // via CopySubTextureCHROMIUM, performing the premultiplication step then.
   // This also applies to swap chains which are exported via AsCanvasResource().
-  if ((ShouldUseChromiumImage() || UsingSwapChain()) && have_alpha_channel_ &&
-      !premultiplied_alpha_) {
+  if (premultiplied_alpha_false_texture_needed_) {
     gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
     state_restorer_->SetTextureBindingDirty();
     // TODO(kbr): unify with code in CreateColorBuffer.
@@ -1601,11 +1603,10 @@ bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const gfx::Size& size) {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, multisample_fbo_);
   gl_->BindRenderbuffer(GL_RENDERBUFFER, multisample_renderbuffer_);
   // Note that the multisample rendertarget will allocate an alpha channel
-  // based on |have_alpha_channel_|, not |want_alpha_channel_|, since it
+  // based on `have_alpha_channel_`, not `requested_alpha_type`, since it
   // will resolve into the ColorBuffer.
   GLenum internal_format = have_alpha_channel_ ? GL_RGBA8_OES : GL_RGB8_OES;
   if (use_half_float_storage_) {
-    DCHECK(want_alpha_channel_);
     internal_format = GL_RGBA16F_EXT;
   }
   if (has_eqaa_support) {
@@ -1651,7 +1652,10 @@ void DrawingBuffer::Bind(GLenum target) {
 }
 
 GLenum DrawingBuffer::StorageFormat() const {
-  return want_alpha_channel_ ? GL_RGBA8 : GL_RGB8;
+  if (use_half_float_storage_) {
+    return GL_RGBA16F_EXT;
+  }
+  return requested_alpha_type_ == kOpaque_SkAlphaType ? GL_RGB8 : GL_RGBA8;
 }
 
 sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
@@ -1770,8 +1774,9 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
   ScopedStateRestorer scoped_state_restorer(this);
   ResolveIfNeeded();
 
-  if (!UsingSwapChain())
+  if (!using_swap_chain_) {
     return;
+  }
 
   DCHECK_EQ(texture_target_, static_cast<unsigned>(GL_TEXTURE_2D));
 
@@ -1852,10 +1857,11 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     DCHECK(!use_half_float_storage_);
     format = viz::RGBX_8888;
   }
-  if (UsingSwapChain()) {
+  SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
+  if (using_swap_chain_) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
         sii->CreateSwapChain(format, size, color_space_, origin,
-                             kPremul_SkAlphaType,
+                             back_buffer_alpha_type,
                              usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
@@ -1894,7 +1900,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
               gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-              origin, kPremul_SkAlphaType, usage | additional_usage_flags);
+              origin, back_buffer_alpha_type, usage | additional_usage_flags);
         }
       }
     }
@@ -1906,20 +1912,30 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // the case of ShouldUseChromiumImage() we instead keep this buffer
       // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
       // convert during copy.
-      SkAlphaType alpha_type = kPremul_SkAlphaType;
-      if (!ShouldUseChromiumImage() && !premultiplied_alpha_)
-        alpha_type = kUnpremul_SkAlphaType;
+      if (!ShouldUseChromiumImage() &&
+          requested_alpha_type_ == kUnpremul_SkAlphaType) {
+        back_buffer_alpha_type = kUnpremul_SkAlphaType;
+      }
 
-      back_buffer_mailbox =
-          sii->CreateSharedImage(format, size, color_space_, origin, alpha_type,
-                                 usage, gpu::kNullSurfaceHandle);
+      back_buffer_mailbox = sii->CreateSharedImage(
+          format, size, color_space_, origin, back_buffer_alpha_type, usage,
+          gpu::kNullSurfaceHandle);
     }
+  }
+
+  // If it was requested that our format be unpremultiplied, but the backbuffer
+  // that we will use for compositing will be premultiplied, then we will need
+  // to create a separate unpremultiplied staging backbuffer for WebGL to render
+  // to.
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      requested_alpha_type_ != back_buffer_alpha_type) {
+    premultiplied_alpha_false_texture_needed_ = true;
   }
 
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   if (!front_buffer_mailbox.IsZero()) {
-    DCHECK(UsingSwapChain());
+    DCHECK(using_swap_chain_);
     // Import frontbuffer of swap chain into GL.
     texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
         front_buffer_mailbox.name);
@@ -1935,7 +1951,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   gl_->BindTexture(texture_target_, texture_id);
 
   // Clear the alpha channel if RGB emulation is required.
-  if (!want_alpha_channel_ && have_alpha_channel_) {
+  if (DefaultBufferRequiresAlphaChannelToBePreserved()) {
     GLuint fbo = 0;
 
     state_restorer_->SetClearStateDirty();
