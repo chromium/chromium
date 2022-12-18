@@ -24,6 +24,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
@@ -438,9 +439,6 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       {ui::kColorNativeHeaderSeparatorBorderInactive, ColorType::kMidground,
        ColorState::kInactive},
       {ui::kColorNativeLabelForeground, ColorType::kWindowFg},
-      {ui::kColorNativeTabForegroundInactiveFrameActive, ColorType::kButtonFg},
-      {ui::kColorNativeTabForegroundInactiveFrameInactive, ColorType::kButtonFg,
-       ColorState::kInactive},
       {ui::kColorNativeTextfieldBorderUnfocused, ColorType::kMidground,
        ColorState::kInactive},
       {ui::kColorNativeToolbarBackground, ColorType::kButtonBg},
@@ -454,6 +452,13 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       shim_->GetFrameColor(ColorState::kNormal, use_custom_frame)};
   mixer[ui::kColorFrameInactive] = {
       shim_->GetFrameColor(ColorState::kInactive, use_custom_frame)};
+
+  const SkColor button_fg =
+      shim_->GetColor(ColorType::kButtonFg, ColorState::kNormal);
+  mixer[ui::kColorNativeTabForegroundInactiveFrameActive] =
+      ui::BlendForMinContrast({button_fg}, {ui::kColorFrameActive});
+  mixer[ui::kColorNativeTabForegroundInactiveFrameInactive] =
+      ui::BlendForMinContrast({button_fg}, {ui::kColorFrameInactive});
 }
 
 DISABLE_CFI_VCALL
