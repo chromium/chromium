@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL Property margin-trim value 'none' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block-start block-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-start inline-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block-start inline-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-start block-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-end block-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-end block-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'block-start block-end inline-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-start block-start inline-end block-end' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim value 'inline-start inline-end block-start' assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+
