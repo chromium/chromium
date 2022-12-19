@@ -229,10 +229,8 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
-        // clang-format on
         loadTestPage(MultiWindowKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
@@ -256,9 +254,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    // clang-format off
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
-        // clang-format on
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
