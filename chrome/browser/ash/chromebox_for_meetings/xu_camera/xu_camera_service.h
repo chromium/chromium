@@ -95,8 +95,14 @@ class XuCameraService : public CfmObserver,
   uint8_t CtrlThroughQuery(int file_descriptor,
                            const mojom::ControlQueryPtr& query,
                            std::vector<uint8_t>& data,
-                           unsigned int request);
-
+                           const uint8_t& query_request);
+  uint8_t CtrlThroughMapping(int file_descriptor,
+                             const mojom::ControlMappingPtr& mapping,
+                             std::vector<uint8_t>& data,
+                             const mojom::GetFn& fn);
+  void ConvertLength(std::vector<uint8_t>& data, uint32_t type);
+  template <typename T>
+  void CopyToData(T* value, std::vector<uint8_t>& data, size_t size);
   Delegate* delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera> receivers_;
