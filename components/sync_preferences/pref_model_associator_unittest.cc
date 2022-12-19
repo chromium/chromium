@@ -350,14 +350,17 @@ TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
 }
 
 TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
-  base::DictionaryValue local_dict_value;
-  local_dict_value.SetInteger("key", 0);
+  base::Value::Dict local_dict_value;
+  local_dict_value.Set("key", 0);
 
-  base::DictionaryValue server_dict_value;
-  server_dict_value.SetInteger("key.subkey", 0);
+  base::Value::Dict server_dict_value;
+  server_dict_value.SetByDottedPath("key.subkey", 0);
 
+  // TODO(https://crbug.com/1187026): Migrate MergePreference() to
+  // take a base::Value::Dict.
   base::Value merged_value(pref_sync_service_->MergePreference(
-      kDictionaryPrefName, local_dict_value, server_dict_value));
+      kDictionaryPrefName, base::Value(local_dict_value.Clone()),
+      base::Value(server_dict_value.Clone())));
 
   EXPECT_EQ(merged_value, server_dict_value);
 }
