@@ -288,8 +288,12 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
         Layer() ? Layer()->Transform() : nullptr);
     // Compare local scale before and after.
     if (old_squared_scale != new_squared_scale) {
-      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this))
+      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
         To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
+        if (GetNode() == GetDocument().documentElement()) {
+          box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+        }
+      }
     }
   }
 }
