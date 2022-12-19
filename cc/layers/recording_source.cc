@@ -71,6 +71,10 @@ bool RecordingSource::UpdateAndExpandInvalidation(
     Region* invalidation,
     const gfx::Size& layer_size,
     const gfx::Rect& new_recorded_viewport) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::UpdateAndExpandInvalidation %d %d",
+                       layer_size.width(), layer_size.height());
+
   bool updated = false;
 
   if (size_ != layer_size)
@@ -114,6 +118,9 @@ gfx::Size RecordingSource::GetSize() const {
 }
 
 void RecordingSource::SetEmptyBounds() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::SetEmptyBounds");
+
   size_ = gfx::Size();
   is_solid_color_ = false;
 

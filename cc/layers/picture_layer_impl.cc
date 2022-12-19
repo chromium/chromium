@@ -740,6 +740,10 @@ void PictureLayerImpl::UpdateRasterSource(
     Region* new_invalidation,
     const PictureLayerTilingSet* pending_set,
     const PaintWorkletRecordMap* pending_paint_worklet_records) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource %d %d",
+                       raster_source->GetSize().width(), raster_source->GetSize().height());
+
   // The bounds and the pile size may differ if the pile wasn't updated (ie.
   // PictureLayer::Update didn't happen). In that case the pile will be empty.
   DCHECK(raster_source->GetSize().IsEmpty() ||
@@ -808,7 +812,7 @@ void PictureLayerImpl::UpdateRasterSource(
   raster_source_->set_debug_name(DebugName());
 
   // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("PictureLayerTiling::SetRasterSourceAndResize %d %d",
+  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #5 %d %d",
                        raster_source_->GetSize().width(), raster_source_->GetSize().height());
 
   // Register images from the new raster source, if the recording was updated.
