@@ -4,16 +4,90 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 
 namespace web_app {
+
+namespace {
+
+void GetSignedWebBundleIdByPath(
+    const base::FilePath& path,
+    base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
+        callback) {
+  std::unique_ptr<SignedWebBundleReader> reader =
+      SignedWebBundleReader::Create(path, /*base_url=*/absl::nullopt);
+
+  SignedWebBundleReader* reader_raw_ptr = reader.get();
+
+  auto [callback_first, callback_second] =
+      base::SplitOnceCallback(std::move(callback));
+
+  SignedWebBundleReader::IntegrityBlockReadResultCallback
+      integrity_block_result_callback = base::BindOnce(
+          [](base::OnceCallback<void(
+                 base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
+             const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+             base::OnceCallback<void(
+                 SignedWebBundleReader::SignatureVerificationAction)>
+                 verify_callback) {
+            std::move(verify_callback)
+                .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
+                    "Stopped after reading the integrity block."));
+            DCHECK(!public_key_stack.empty());
+            web_package::SignedWebBundleId bundle_id =
+                web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+                    public_key_stack[0]);
+            std::move(callback).Run(
+                IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id));
+          },
+          std::move(callback_first));
+
+  SignedWebBundleReader::ReadErrorCallback read_error_callback = base::BindOnce(
+      [](std::unique_ptr<SignedWebBundleReader> reader_ownership,
+         base::OnceCallback<void(
+             base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
+         absl::optional<
+             SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
+             read_error) {
+        DCHECK(read_error.has_value());
+
+        if (!absl::holds_alternative<SignedWebBundleReader::AbortedByCaller>(
+                read_error.value())) {
+          web_package::mojom::BundleIntegrityBlockParseErrorPtr* error_ptr =
+              absl::get_if<
+                  web_package::mojom::BundleIntegrityBlockParseErrorPtr>(
+                  &read_error.value());
+          // only other possible variant, as the other 2 variants shouldn't be
+          // reachable.
+          DCHECK(error_ptr);
+
+          std::move(callback).Run(base::unexpected(base::StrCat(
+              {"Failed to read the integrity block of the signed web bundle: ",
+               (*error_ptr)->message})));
+        }
+      },
+      std::move(reader), std::move(callback_second));
+  ;
+
+  reader_raw_ptr->StartReading(std::move(integrity_block_result_callback),
+                               std::move(read_error_callback));
+}
+
+}  // namespace
 
 // static
 base::expected<IsolatedWebAppUrlInfo, std::string>
@@ -49,6 +123,30 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
 IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
     const web_package::SignedWebBundleId& web_bundle_id) {
   return IsolatedWebAppUrlInfo(web_bundle_id);
+}
+
+// static
+void IsolatedWebAppUrlInfo::CreateFromIsolationData(
+    const IsolationData& isolation_data,
+    base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
+        callback) {
+  absl::visit(base::Overloaded{
+                  [&](const IsolationData::InstalledBundle&) {
+                    std::move(callback).Run(base::unexpected(
+                        "Getting IsolationInfo from |InstalledBundle| is not "
+                        "implemented"));
+                  },
+                  [&](const IsolationData::DevModeBundle& dev_mode_bundle) {
+                    GetSignedWebBundleIdByPath(dev_mode_bundle.path,
+                                               std::move(callback));
+                  },
+                  [&](const IsolationData::DevModeProxy&) {
+                    std::move(callback).Run(
+                        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                            web_package::SignedWebBundleId::
+                                CreateRandomForDevelopment()));
+                  }},
+              isolation_data.content);
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -19,6 +20,8 @@ class StoragePartitionConfig;
 }  // namespace content
 
 namespace web_app {
+
+struct IsolationData;
 
 // Wraps an Isolated Web App URL and provides methods to access data derived
 // from the URL.
@@ -35,6 +38,17 @@ class IsolatedWebAppUrlInfo {
   // Creates an IsolatedWebAppUrlInfo instance from a SignedWebBundleId object.
   static IsolatedWebAppUrlInfo CreateFromSignedWebBundleId(
       const web_package::SignedWebBundleId& web_bundle_id);
+
+  // Creates an IsolatedWebAppUrlInfo instance corresponding to the IWA
+  // located at |isolation_data|.
+  //
+  // For proxy-based dev mode IWAs a random hostname will be generated, and
+  // for signed bundles the hostname will be extracted from the bundle's
+  // integrity block.
+  static void CreateFromIsolationData(
+      const IsolationData& isolation_data,
+      base::OnceCallback<
+          void(base::expected<IsolatedWebAppUrlInfo, std::string>)> callback);
 
   // Returns the origin of the IWA that this URL refers to.
   const url::Origin& origin() const;

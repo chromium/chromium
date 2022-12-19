@@ -20,11 +20,6 @@ class Profile;
 
 namespace web_app {
 
-void GetIsolationInfo(
-    const IsolationData& isolation_data,
-    base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
-        callback);
-
 base::expected<absl::optional<IsolationData>, std::string>
 GetIsolationDataFromCommandLine(const base::CommandLine& command_line,
                                 const PrefService* prefs);
