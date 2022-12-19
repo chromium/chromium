@@ -79,8 +79,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   // unnecessary casts. Owned by parent class.
   raw_ptr<gles2::GLES2Decoder> gles2_decoder_;
 
-  const bool use_shared_images_swapchain_for_ppapi_;
-
   base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_{this};
 };
 

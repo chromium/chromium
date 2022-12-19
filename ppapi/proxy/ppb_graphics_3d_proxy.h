@@ -38,7 +38,8 @@ class PPAPI_PROXY_EXPORT Graphics3D : public PPB_Graphics3D_Shared {
  public:
   Graphics3D(const HostResource& resource,
              const gfx::Size& size,
-             const bool single_buffer);
+             const bool single_buffer,
+             bool use_shared_images_swapchain);
 
   Graphics3D(const Graphics3D&) = delete;
   Graphics3D& operator=(const Graphics3D&) = delete;

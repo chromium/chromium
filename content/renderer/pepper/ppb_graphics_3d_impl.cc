@@ -34,6 +34,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "ui/gfx/switches.h"
 
 using ppapi::thunk::EnterResourceNoLock;
 using ppapi::thunk::PPB_Graphics3D_API;
@@ -152,7 +153,9 @@ class PPB_Graphics3D_Impl::ColorBuffer {
 };
 
 PPB_Graphics3D_Impl::PPB_Graphics3D_Impl(PP_Instance instance)
-    : PPB_Graphics3D_Shared(instance),
+    : PPB_Graphics3D_Shared(instance,
+                            /*use_shared_images_swapchain=*/features::
+                                UseSharedImagesSwapChainForPPAPI()),
       bound_to_instance_(false),
       commit_pending_(false),
       has_alpha_(false),
@@ -422,8 +425,11 @@ bool PPB_Graphics3D_Impl::InitRaw(
 
   if (shared_state_region)
     *shared_state_region = &command_buffer_->GetSharedStateRegion();
-  if (capabilities)
+  if (capabilities) {
     *capabilities = command_buffer_->GetCapabilities();
+    capabilities->use_shared_images_swapchain_for_ppapi =
+        use_shared_images_swapchain_;
+  }
   if (command_buffer_id)
     *command_buffer_id = command_buffer_->GetCommandBufferID();
 

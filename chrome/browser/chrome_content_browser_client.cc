@@ -336,6 +336,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/switches.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -2940,7 +2941,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
   if (process_type != switches::kZygoteProcess) {
     DCHECK(g_browser_process);
     PrefService* local_state = g_browser_process->local_state();
@@ -2949,6 +2949,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed)) {
       command_line->AppendSwitch(
           ::switches::kDisableUseMojoVideoDecoderForPepper);
+    }
+    if (!local_state->GetBoolean(
+            policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed)) {
+      command_line->AppendSwitch(
+          ::switches::kDisablePPAPISharedImagesSwapChain);
     }
   }
 }

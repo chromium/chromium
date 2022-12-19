@@ -12,20 +12,19 @@
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ppapi/c/pp_errors.h"
-#include "ui/gfx/switches.h"
 
 namespace ppapi {
 
-PPB_Graphics3D_Shared::PPB_Graphics3D_Shared(PP_Instance instance)
+PPB_Graphics3D_Shared::PPB_Graphics3D_Shared(PP_Instance instance,
+                                             bool use_shared_images_swapchain)
     : Resource(OBJECT_IS_IMPL, instance),
-      use_shared_images_swapchain_(
-          features::UseSharedImagesSwapChainForPPAPI()) {}
+      use_shared_images_swapchain_(use_shared_images_swapchain) {}
 
 PPB_Graphics3D_Shared::PPB_Graphics3D_Shared(const HostResource& host_resource,
-                                             const gfx::Size& size)
+                                             const gfx::Size& size,
+                                             bool use_shared_images_swapchain)
     : Resource(OBJECT_IS_PROXY, host_resource),
-      use_shared_images_swapchain_(
-          features::UseSharedImagesSwapChainForPPAPI()),
+      use_shared_images_swapchain_(use_shared_images_swapchain),
       size_(size) {}
 
 PPB_Graphics3D_Shared::~PPB_Graphics3D_Shared() {

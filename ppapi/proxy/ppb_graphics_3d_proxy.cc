@@ -48,8 +48,15 @@ gpu::CommandBuffer::State GetErrorState() {
 
 Graphics3D::Graphics3D(const HostResource& resource,
                        const gfx::Size& size,
-                       const bool single_buffer)
-    : PPB_Graphics3D_Shared(resource, size), single_buffer(single_buffer) {}
+                       const bool single_buffer,
+                       bool use_shared_images_swapchain)
+    : PPB_Graphics3D_Shared(resource, size, use_shared_images_swapchain),
+      single_buffer(single_buffer) {
+  // This log is to make diagnosing any outages for Enterprise customers
+  // easier.
+  LOG(WARNING) << "Graphics3D initialized. use_shared_images_swapchain: "
+               << use_shared_images_swapchain_;
+}
 
 Graphics3D::~Graphics3D() {
   DestroyGLES2Impl();
@@ -269,7 +276,8 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
 
   scoped_refptr<Graphics3D> graphics_3d(
       new Graphics3D(result, attrib_helper.offscreen_framebuffer_size,
-                     attrib_helper.single_buffer));
+                     attrib_helper.single_buffer,
+                     capabilities.use_shared_images_swapchain_for_ppapi));
   if (!graphics_3d->Init(share_gles2, capabilities, std::move(shared_state),
                          command_buffer_id)) {
     return 0;
