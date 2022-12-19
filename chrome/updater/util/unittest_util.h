@@ -13,7 +13,6 @@
 
 namespace base {
 class TimeDelta;
-class FilePath;
 }  // namespace base
 
 namespace updater {
@@ -63,11 +62,12 @@ bool DeleteFileAndEmptyParentDirectories(
 base::FilePath GetLogDestinationDir();
 
 // Initializes the logging for the unit test and redirects the log output to
-// ${ISOLATED_OUTDIR} if the directory is available. The unit tests can't log
-// into the updater directory because that directory is touched by the
-// integration tests. This function must be called after the `base::TestSuite`
-// instance is created, because `base::TestSuite` initializes logging too.
-void InitLoggingForUnitTest();
+// ${ISOLATED_OUTDIR} if the directory is available. `log_base_path` is the base
+// name of the log file in the above directory. The unit tests can't log into
+// the updater directory because that directory is touched by the integration
+// tests. This function must be called after the `base::TestSuite` instance is
+// created, because `base::TestSuite` initializes logging too.
+void InitLoggingForUnitTest(const base::FilePath& log_base_path);
 
 #if BUILDFLAG(IS_WIN)
 // Change Windows Defender settings to skip scanning the paths used by the

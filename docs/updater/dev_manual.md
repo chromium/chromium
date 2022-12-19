@@ -174,7 +174,8 @@ is different: the updater logs in the product directory, while the unit tests
 log into a directory defined by the environment variable `${ISOLATED_OUTDIR}`.
 When run by Swarming, the updater logs are copied into `${ISOLATED_OUTDIR}` too,
 so that after the swarming task has completed, both types of logs are
-available as CAS outputs.
+available as CAS outputs. The logs for `updater_tests_system` and
+`integration_test_helper` are merged into `updater_tests_system.log`.
 
 Non-bot systems can set up this environment variable to collect logs for
 debugging when the tests are run locally.

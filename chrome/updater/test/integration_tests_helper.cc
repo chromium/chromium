@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -386,9 +387,12 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
 
   // Use the ${ISOLATED_OUTDIR} as a log destination. `test_suite` must be
-  // defined before setting log items.
+  // defined before setting log items. The integration test helper always
+  // logs into the same file as the `updater_tests_system` because the programs
+  // are used together.
   base::TestSuite test_suite(argc, argv);
-  updater::test::InitLoggingForUnitTest();
+  updater::test::InitLoggingForUnitTest(
+      base::FilePath(FILE_PATH_LITERAL("updater_test_system.log")));
 #if BUILDFLAG(IS_WIN)
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(

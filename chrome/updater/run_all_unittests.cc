@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -17,6 +18,8 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/test/integration_test_commands.h"
+#include "chrome/updater/test_scope.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/unittest_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -25,7 +28,6 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -197,7 +199,14 @@ int main(int argc, char** argv) {
 
   // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.
   base::TestSuite test_suite(argc, argv);
-  updater::test::InitLoggingForUnitTest();
+  updater::test::InitLoggingForUnitTest(base::FilePath([]() {
+    switch (updater::GetTestScope()) {
+      case updater::UpdaterScope::kSystem:
+        return FILE_PATH_LITERAL("updater_test_system.log");
+      case updater::UpdaterScope::kUser:
+        return FILE_PATH_LITERAL("updater_test.log");
+    }
+  }()));
   chrome::RegisterPathProvider();
   return base::LaunchUnitTestsWithOptions(
       argc, argv, 1, 10, true, base::BindRepeating([]() {
