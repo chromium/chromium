@@ -2,41 +2,82 @@
   #showShortcutsToggleContainer {
     align-items: center;
     display: flex;
-    margin-bottom: 16px;
+    height: 40px;
     margin-inline-start: 16px;
+  }
+
+  #showShortcutsToggleTitle {
+    font-size: 13px;
+    margin-inline-end: 163px;
   }
 
   #options {
     align-items: center;
     display: flex;
-    margin-bottom: 24px;
-    margin-inline-start: 40px;
+  }
+
+  iron-collapse {
+    --iron-collapse-transition-duration: 300ms;
+  }
+
+  hr {
+    background-color: var(--horizontal-rule-color);
+    border: none;
+    height: 1px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    width: 288px;
+  }
+
+  #options {
+    margin-inline-start: 16px;
+  }
+
+  cr-radio-group {
+    --cr-radio-group-item-padding: 0px;
+    width: 288px;
+  }
+
+  cr-radio-button {
+    align-items: flex-end;
+    flex-direction: column;
+    float: right;
+    margin-inline-start: 16px;
+  }
+
+  .option-container {
+    height: 40px;
+    margin-bottom: 16px;
+    margin-inline-start: 24px;
+  }
+
+  .option-description {
+    color: var(--cr-secondary-text-color)
   }
 </style>
 <div id="showShortcutsToggleContainer">
-  <div id="showShortcutsToggle">$i18n{showShortcutsToggle}</div>
+  <div id="showShortcutsToggleTitle">$i18n{showShortcutsToggle}</div>
   <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
-      checked="[[show_]]" on-change="onShowChange_"></cr-toggle>
+    checked="[[show_]]" on-change="onShowShortcutsToggleChange_"></cr-toggle>
 </div>
 <div id="options">
-  <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
+  <iron-collapse opened="[[show_]]">
+    <hr>
+    <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
       selected="[[shortcutsRadioSelection_(customLinksEnabled_)]]"
       on-selected-changed="onShortcutsRadioSelectionChanged_">
-    <cr-radio-button id="customLinksButton" name="customLinksOption">
-      <div id="customLinksTitleContainer">
-      <div id="customLinksTitle">$i18n{myShortcuts}</div>
-      <div id="customLinksDescription">
-        $i18n{shortcutsCurated}
+      <cr-radio-button id="customLinksButton" name="customLinksOption">
+      </cr-radio-button>
+      <div class="option-container">
+        <div class="option-label">$i18n{myShortcuts}</div>
+        <div class="option-description">$i18n{shortcutsCurated}</div>
       </div>
-    </div>
-    </cr-radio-button>
-    <cr-radio-button id="mostVisitedButton" name="mostVisitedOption">
-      <div id="mostVisitedTitleContainer">
-        <div id="mostVisitedTitle">$i18n{mostVisited}</div>
-        <div id="mostVisitedDescription">
-          $i18n{shortcutsSuggested}
-        </div>
+      <cr-radio-button id="mostVisitedButton" name="mostVisitedOption">
+      </cr-radio-button>
+      <div class="option-container">
+        <div>$i18n{mostVisited}</div>
+        <div class="option-description">$i18n{shortcutsSuggested}</div>
       </div>
-    </cr-radio-button>
-  </cr-radio-group>
+    </cr-radio-group>
+  </iron-collapse>
 </div>

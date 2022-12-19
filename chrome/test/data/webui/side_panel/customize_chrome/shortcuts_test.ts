@@ -14,7 +14,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {installMock} from './test_support.js';
 
 suite('ShortcutsTest', () => {
-  let customizeShortcuts: ShortcutsElement;
+  let customizeShortcutsElement: ShortcutsElement;
   let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
 
   setup(async () => {
@@ -32,26 +32,28 @@ suite('ShortcutsTest', () => {
       customLinksEnabled,
       shortcutsVisible,
     }));
-    customizeShortcuts = document.createElement('customize-chrome-shortcuts');
-    document.body.appendChild(customizeShortcuts);
+    customizeShortcutsElement =
+        document.createElement('customize-chrome-shortcuts');
+    document.body.appendChild(customizeShortcutsElement);
     await handler.whenCalled('getMostVisitedSettings');
   }
 
   function assertShown(shown: boolean) {
-    assertEquals(shown, customizeShortcuts.$.showShortcutsToggle.checked);
+    assertEquals(
+        shown, customizeShortcutsElement.$.showShortcutsToggle.checked);
   }
 
   function assertCustomLinksEnabled() {
     assertEquals(
         'customLinksOption',
-        customizeShortcuts.$.shortcutsRadioSelection.selected);
+        customizeShortcutsElement.$.shortcutsRadioSelection.selected);
     assertShown(true);
   }
 
   function assertUseMostVisited() {
     assertEquals(
         'mostVisitedOption',
-        customizeShortcuts.$.shortcutsRadioSelection.selected);
+        customizeShortcutsElement.$.shortcutsRadioSelection.selected);
     assertShown(true);
   }
 
@@ -59,13 +61,13 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ false);
     assertShown(false);
-    customizeShortcuts.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showShortcutsToggle.click();
     assertCustomLinksEnabled();
-    customizeShortcuts.$.mostVisitedButton.click();
+    customizeShortcutsElement.$.mostVisitedButton.click();
     assertUseMostVisited();
-    customizeShortcuts.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showShortcutsToggle.click();
     assertShown(false);
-    customizeShortcuts.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showShortcutsToggle.click();
     assertUseMostVisited();
   });
 
@@ -73,31 +75,51 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    customizeShortcuts.$.showShortcutsToggle.click();
-    const [customLinksEnabled, visible] = await setSettingsCalled;
+    customizeShortcutsElement.$.showShortcutsToggle.click();
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    const selector =
+        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse');
+
+    assertTrue(!!selector);
+    assertEquals(true, selector.opened);
     assertFalse(customLinksEnabled);
-    assertTrue(visible);
+    assertTrue(shortcutsVisible);
+  });
+
+  test('turning toggle off hides settings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    customizeShortcutsElement.$.showShortcutsToggle.click();
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    const selector =
+        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse');
+
+    assertTrue(!!selector);
+    assertEquals(false, selector.opened);
+    assertFalse(customLinksEnabled);
+    assertFalse(shortcutsVisible);
   });
 
   test('enable custom links calls setMostVisitedSettings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
     assertUseMostVisited();
-    customizeShortcuts.$.customLinksButton.click();
+    customizeShortcutsElement.$.customLinksButton.click();
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, visible] = await setSettingsCalled;
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     assertTrue(customLinksEnabled);
-    assertTrue(visible);
+    assertTrue(shortcutsVisible);
   });
 
   test('enable most visited calls setMostVisitedSettings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
     assertCustomLinksEnabled();
-    customizeShortcuts.$.mostVisitedButton.click();
+    customizeShortcutsElement.$.mostVisitedButton.click();
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    const [customLinksEnabled, visible] = await setSettingsCalled;
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     assertFalse(customLinksEnabled);
-    assertTrue(visible);
+    assertTrue(shortcutsVisible);
   });
 });

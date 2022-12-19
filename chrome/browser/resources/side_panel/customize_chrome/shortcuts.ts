@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -77,7 +78,7 @@ export class ShortcutsElement extends PolymerElement {
     return this.customLinksEnabled_ ? 'customLinksOption' : 'mostVisitedOption';
   }
 
-  private onShowChange_(e: CustomEvent<boolean>) {
+  private onShowShortcutsToggleChange_(e: CustomEvent<boolean>) {
     this.show_ = e.detail;
     this.setMostVisitedSettings_();
   }
