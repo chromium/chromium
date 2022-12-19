@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
-    enum="LaunchErrorCodes" expires_after="2023-03-12">
+    enum="LaunchErrorCodes" expires_after="2023-06-30">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.WinLastError"
-    enum="WinGetLastError" expires_after="2022-12-31">
+    enum="WinGetLastError" expires_after="2023-06-30">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
