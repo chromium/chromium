@@ -260,11 +260,11 @@ Mojo Core, and loading ICU datafiles.
 A key difference between our needs here and those of a normal unittest is that
 we very likely do not want to be running in a special single-threaded mode. We
 want to be able to trigger issues related to threading, sequencing and ordering,
-and making sure that the UI, IO and threadpool threads behave as close to a 
+and making sure that the UI, IO and threadpool threads behave as close to a
 normal browser process as possible is desirable.
 
-It's likely better to be conservative here - while it might appear that an 
-interface to be tested has no interaction with the UI thread, and so we could 
+It's likely better to be conservative here - while it might appear that an
+interface to be tested has no interaction with the UI thread, and so we could
 save some resources by only having a real IO thread, it's often very difficult
 to establish this with certainty.
 
@@ -437,6 +437,7 @@ the rough structure of the presentation service fuzzer")
 Make a corpus directory and fire up your shiny new fuzzer!
 
 ```
+ ~/chromium/src% set ASAN_OPTIONS=detect_odr_violation=0,handle_abort=1,handle_sigtrap=1,handle_sigill=1
  ~/chromium/src% out/Default/code_cache_host_mojolpm_fuzzer /dev/shm/corpus
 INFO: Seed: 3273881842
 INFO: Loaded 1 modules   (1121912 inline 8-bit counters): 1121912 [0x559151a1aea8, 0x559151b2cd20),
@@ -719,6 +720,20 @@ The first of these is any crash on the `fuzzer_thread`. Code in the
 implementation should never, under any circumstances be running on this thread,
 so any crash on this thread is the result of a bug in the fuzzer itself, or
 one of the other causes mentioned below.
+
+In AddressSanitizer builds this case can be automatically identified by
+additional instrumentation, which is implemented as part of
+`content::mojolpm::FuzzerEnvironment` but will need to be duplicated for fuzzers
+in other areas of the codebase. This instrumentation prints additional output as
+part of the ASan report, and should make the fuzzer exit cleanly for these false
+positives so that further instrumentation should ignore these crashes.
+
+```
+MojoLPM: FALSE POSITIVE
+This crash occurred on the fuzzer thread, so it is a false positive and
+does not represent a security issue. In MojoLPM, the fuzzer thread
+represents the unprivileged renderer process.
+```
 
 The second is DCHECK or other failures during Mojo serialization. Various traits
 assert that they are serializing reasonable values - since we need to reuse this
