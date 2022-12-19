@@ -1588,6 +1588,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("fileListAriaAttributes"),
                       TestCase("fileListFocusFirstItem"),
                       TestCase("fileListSelectLastFocusedItem"),
+                      TestCase("fileListSortWithKeyboard"),
                       TestCase("fileListKeyboardSelectionA11y"),
                       TestCase("fileListMouseSelectionA11y"),
                       TestCase("fileListDeleteMultipleFiles"),

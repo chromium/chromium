@@ -296,6 +296,18 @@ export class Table {
    */
   handleSorted_(e) {
     this.header_.redraw();
+    // If we have 'focus-outline-visible' on the root HTML element and focus
+    // has reverted to the body element it means this sort header creation
+    // was the result of a keyboard action so set focus to the (newly
+    // recreated) sort button in that case.
+    if (document.querySelector('html.focus-outline-visible') &&
+        (document.activeElement instanceof HTMLBodyElement)) {
+      const sortButton =
+          this.header_.querySelector('cr-icon-button[tabindex="0"]');
+      if (sortButton) {
+        sortButton.focus();
+      }
+    }
     this.onDataModelSorted();
   }
 

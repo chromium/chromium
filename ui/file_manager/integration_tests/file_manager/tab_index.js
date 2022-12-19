@@ -77,6 +77,8 @@ testcase.tabindexFocus = async () => {
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
   chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
+  chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
 
@@ -112,6 +114,8 @@ testcase.tabindexFocusDownloads = async () => {
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
@@ -176,6 +180,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
       await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'sort-direction-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 
@@ -258,6 +264,7 @@ testcase.tabindexOpenDialogDownloads = async () => {
     'sort-button',
     'gear-button',
     'dismiss-button',
+    'sort-direction-button',
     'file-list',
   ];
   return tabindexFocus(

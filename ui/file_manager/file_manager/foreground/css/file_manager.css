@@ -2097,6 +2097,7 @@ body.files-ng #list-container .table-header-cell:first-child
 .table-header-label .sort-icon {
   --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
   --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-focus-outline-color: var(--cros-focus-ring-color);
   --cr-icon-button-hover-background-color: var(--cros-ripple-color);
   --cr-icon-button-size: 32px;
   border-radius: 50%;
