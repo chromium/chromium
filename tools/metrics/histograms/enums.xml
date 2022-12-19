@@ -5959,12 +5959,6 @@ others/histograms.xml -->
   <int value="5" label="Scroll"/>
 </enum>
 
-<enum name="AutocompleteActionPredictorAction">
-  <int value="0" label="PRERENDER"/>
-  <int value="1" label="PRECONNECT"/>
-  <int value="2" label="NONE"/>
-</enum>
-
 <enum name="AutocompleteActionPredictorDatabaseAction">
   <int value="0" label="ADD"/>
   <int value="1" label="UPDATE"/>
@@ -5983,43 +5977,6 @@ others/histograms.xml -->
 <enum name="AutocompleteEvents">
   <int value="0" label="Suggestions Shown"/>
   <int value="1" label="Suggestion Selected"/>
-</enum>
-
-<enum name="AutocompleteMatchType">
-  <int value="0" label="URL_WHAT_YOU_TYPED"/>
-  <int value="1" label="HISTORY_URL"/>
-  <int value="2" label="HISTORY_TITLE"/>
-  <int value="3" label="HISTORY_BODY"/>
-  <int value="4" label="HISTORY_KEYWORD"/>
-  <int value="5" label="NAVSUGGEST"/>
-  <int value="6" label="SEARCH_WHAT_YOU_TYPED"/>
-  <int value="7" label="SEARCH_HISTORY"/>
-  <int value="8" label="SEARCH_SUGGEST"/>
-  <int value="9" label="SEARCH_SUGGEST_ENTITY"/>
-  <int value="10" label="SEARCH_SUGGEST_TAIL"/>
-  <int value="11" label="SEARCH_SUGGEST_PERSONALIZED"/>
-  <int value="12" label="SEARCH_SUGGEST_PROFILE"/>
-  <int value="13" label="SEARCH_OTHER_ENGINE"/>
-  <int value="14" label="EXTENSION_APP_DEPRECATED"/>
-  <int value="15" label="CONTACT_DEPRECATED"/>
-  <int value="16" label="BOOKMARK_TITLE"/>
-  <int value="17" label="NAVSUGGEST_PERSONALIZED"/>
-  <int value="18" label="CALCULATOR"/>
-  <int value="19" label="CLIPBOARD_URL"/>
-  <int value="20" label="VOICE_SUGGEST"/>
-  <int value="21" label="PHYSICAL_WEB_DEPRECATED"/>
-  <int value="22" label="PHYSICAL_WEB_OVERFLOW_DEPRECATED"/>
-  <int value="23" label="TAB_SEARCH_DEPRECATED"/>
-  <int value="24" label="DOCUMENT_SUGGESTION"/>
-  <int value="25" label="PEDAL"/>
-  <int value="26" label="CLIPBOARD_TEXT"/>
-  <int value="27" label="CLIPBOARD_IMAGE"/>
-  <int value="28" label="TILE_SUGGESTION"/>
-  <int value="29" label="TILE_NAVSUGGEST"/>
-  <int value="30" label="OPEN_TAB"/>
-  <int value="31" label="HISTORY_CLUSTER"/>
-  <int value="32" label="NULL_RESULT_MESSAGE"/>
-  <int value="33" label="STARTER_PACK"/>
 </enum>
 
 <enum name="AutoDSEPermissionRevertTransition">

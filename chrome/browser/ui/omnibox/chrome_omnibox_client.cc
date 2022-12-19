@@ -355,10 +355,6 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
         user_text, current_match, web_contents);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.Action",
-                            recommended_action,
-                            AutocompleteActionPredictor::LAST_PREDICT_ACTION);
-
   switch (recommended_action) {
     case AutocompleteActionPredictor::ACTION_PRERENDER:
       // It's possible that there is no current page, for instance if the tab
@@ -473,9 +469,6 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   if (match.destination_url.SchemeIs(extensions::kExtensionScheme))
     return;
 
-  // Warm up DNS Prefetch cache, or preconnect to a search service.
-  UMA_HISTOGRAM_ENUMERATION("Autocomplete.MatchType", match.type,
-                            AutocompleteMatchType::NUM_TYPES);
   auto* loading_predictor =
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
   if (loading_predictor) {

@@ -1204,18 +1204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autocomplete.MatchType" enum="AutocompleteMatchType"
-    expires_after="2021-10-04">
-  <owner>tbansal@chromium.org</owner>
-  <owner>ryansturm@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Type of AutocompleteMatch. Recorded every time the autocomplete action
-    predictor in omnibox triggers a preresolve, or a preconnect.
-  </summary>
-</histogram>
-
 <histogram name="AutocompleteActionPredictor.AccurateCount" units="units"
     expires_after="M85">
   <obsolete>
@@ -1235,18 +1223,6 @@ chromium-metrics-reviews@google.com.
     Prerender.OmniboxNavigationsUsedPrerenderCount histograms, it's possible to
     determine the effect of changing the confidence threshold on the accuracy of
     prerendering prediction.
-  </summary>
-</histogram>
-
-<histogram name="AutocompleteActionPredictor.Action"
-    enum="AutocompleteActionPredictorAction" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The distribution of network actions recommended by the
-    AutocompleteActionPredictor. A network action can be one of the enumerated
-    AutocompleteActionPredictor::Action values: PRERENDER, PRECONNECT, or NONE.
-    The AutocompleteActionPredictor recommends one of these based on a
-    confidence score for a given URL and user-entered text pair.
   </summary>
 </histogram>
 
