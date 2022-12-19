@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 
 namespace ash::auth {
@@ -24,6 +25,8 @@ class QuickUnlockStorageDelegate {
                                       const std::string& token) = 0;
   virtual void SetUserContext(const ::user_manager::User* user,
                               std::unique_ptr<UserContext> user_context) = 0;
+
+  virtual PrefService* GetPrefService(const ::user_manager::User& user) = 0;
 };
 
 }  // namespace ash::auth

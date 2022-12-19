@@ -4,7 +4,10 @@
 
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "base/values.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
@@ -99,6 +102,27 @@ void RecoveryFactorEditor::OnGetAuthFactorsConfiguration(
   }
 
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+
+  PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+  const PrefService::Preference* recovery_pref =
+      prefs->FindPreference(prefs::kRecoveryFactorBehavior);
+  const base::Value is_configured_value{
+      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kRecovery)};
+  // In case the recovery pref value is recommended to be what we would set it
+  // to, we do not set it. This means that we do not consider the user to have
+  // overridden it in this case.
+  // This way, RecoveryFactorEditor can also be used from places where the user
+  // has not explicitly opted in, e.g. during OOBE.
+  if (recovery_pref && recovery_pref->IsRecommended() &&
+      recovery_pref->GetValue() != nullptr) {
+    if (*recovery_pref->GetValue() != is_configured_value) {
+      prefs->Set(prefs::kRecoveryFactorBehavior, is_configured_value);
+    }
+  } else {
+    prefs->Set(prefs::kRecoveryFactorBehavior, is_configured_value);
+  }
+
   quick_unlock_storage_->SetUserContext(user, std::move(context));
 
   std::move(callback).Run(ConfigureResult::kSuccess);

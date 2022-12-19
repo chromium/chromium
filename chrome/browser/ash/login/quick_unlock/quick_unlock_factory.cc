@@ -85,6 +85,12 @@ ash::auth::QuickUnlockStorageDelegate& QuickUnlockFactory::GetDelegate() {
 
       auth_token->ReplaceUserContext(std::move(context));
     }
+
+    PrefService* GetPrefService(const ::user_manager::User& user) override {
+      Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(&user);
+      CHECK(profile);
+      return profile->GetPrefs();
+    }
   };
 
   static base::NoDestructor<Delegate> delegate;

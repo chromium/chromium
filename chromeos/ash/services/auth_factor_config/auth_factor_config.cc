@@ -75,29 +75,40 @@ void AuthFactorConfig::GetManagementType(
     const std::string& auth_token,
     mojom::AuthFactor factor,
     base::OnceCallback<void(mojom::ManagementType)> callback) {
-  if (!features::IsCryptohomeRecoverySetupEnabled()) {
-    // Log always, crash on debug builds.
-    LOG(ERROR) << "AuthFactorConfig::GetManagementType is a fake";
-    NOTIMPLEMENTED();
-    std::move(callback).Run(mojom::ManagementType::kNone);
-    return;
-  }
+  switch (factor) {
+    case mojom::AuthFactor::kRecovery: {
+      DCHECK(features::IsCryptohomeRecoverySetupEnabled());
+      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      CHECK(user);
+      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+      CHECK(prefs);
+      const mojom::ManagementType result =
+          prefs->IsManagedPreference(prefs::kRecoveryFactorBehavior)
+              ? mojom::ManagementType::kDevice
+              : mojom::ManagementType::kUser;
 
-  std::move(callback).Run(mojom::ManagementType::kNone);
+      std::move(callback).Run(result);
+      break;
+    }
+  }
 }
 
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
                                   mojom::AuthFactor factor,
                                   base::OnceCallback<void(bool)> callback) {
-  if (!features::IsCryptohomeRecoverySetupEnabled()) {
-    // Log always, crash on debug builds.
-    LOG(ERROR) << "AuthFactorConfig::IsEditable is a fake";
-    NOTIMPLEMENTED();
-    std::move(callback).Run(false);
-    return;
-  }
+  switch (factor) {
+    case mojom::AuthFactor::kRecovery: {
+      DCHECK(features::IsCryptohomeRecoverySetupEnabled());
+      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      CHECK(user);
+      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+      CHECK(prefs);
 
-  std::move(callback).Run(true);
+      std::move(callback).Run(
+          prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior));
+      break;
+    }
+  }
 }
 
 }  // namespace ash::auth
