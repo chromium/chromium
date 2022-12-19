@@ -73,8 +73,6 @@ bool ProcessClientCertProvisioningRequest(
     const em::ClientCertificateProvisioningRequest& provisioning_request,
     em::ClientCertificateProvisioningResponse* provisioning_response) {
   if (provisioning_request.has_start_csr_request()) {
-    // TODO(b/260323905): Temporary logging.
-    LOG(INFO) << "Processing StartCsrRequest";
     std::string decoded_va_challenge_b64;
     DCHECK(base::Base64Decode(kValueChallengeB64, &decoded_va_challenge_b64));
     em::StartCsrResponse* start_csr_response =
@@ -89,23 +87,17 @@ bool ProcessClientCertProvisioningRequest(
   }
 
   if (provisioning_request.has_finish_csr_request()) {
-    // TODO(b/260323905): Temporary logging.
-    LOG(INFO) << "Processing FinishCsrRequest";
     provisioning_response->mutable_finish_csr_response();
     return true;
   }
 
   if (provisioning_request.has_download_cert_request()) {
-    // TODO(b/260323905): Temporary logging.
-    LOG(INFO) << "Processing DownloadCertRequest";
     // Issue a certificate for the client's `public_key`.
     // The issuer_cert_builder certificate is also generated on the fly.
     // Both issuer_cert_builder certificate and issued certificate have a
     // SubjectCommonName "TastTest" because the tests currently expects that.
     std::string pem_cert = GeneratePEMEncodedCertificate(
         provisioning_request.public_key(), "TastTest", "TastTest");
-    // TODO(b/260323905): Temporary logging.
-    LOG(INFO) << "Generated PEM cert: " << pem_cert;
     em::DownloadCertResponse* download_cert_response =
         provisioning_response->mutable_download_cert_response();
     download_cert_response->set_pem_encoded_certificate(pem_cert);
@@ -146,11 +138,8 @@ RequestHandlerForClientCertProvisioning::HandleRequest(
                               "Invalid request parameter");
   }
 
-  // TODO(b/260323905): Temporary logging.
-  std::string content = device_management_response.SerializeAsString();
-  LOG(INFO) << "Responding "
-            << base::Base64Encode(base::as_bytes(base::make_span(content)));
-  return CreateHttpResponse(net::HTTP_OK, content);
+  return CreateHttpResponse(net::HTTP_OK,
+                            device_management_response.SerializeAsString());
 }
 
 }  // namespace policy
