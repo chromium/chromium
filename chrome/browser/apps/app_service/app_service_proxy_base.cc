@@ -4,23 +4,26 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 
+#include <stddef.h>
+#include <map>
+#include <type_traits>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/containers/extend.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -28,16 +31,16 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/url_data_source.h"
-#include "extensions/common/constants.h"
-#include "ui/display/types/display_constants.h"
-#include "url/url_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/app_id.h"
-#endif
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "url/gurl.h"
 
 namespace apps {
+
+class PreferredAppsListHandle;
 
 namespace {
 

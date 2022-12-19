@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 
-#include "chrome/browser/apps/app_service/launch_utils.h"
+#include <memory>
 
 namespace apps {
 

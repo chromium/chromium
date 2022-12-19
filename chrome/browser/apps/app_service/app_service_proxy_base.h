@@ -5,25 +5,24 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_BASE_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_BASE_H_
 
+#include <stdint.h>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/gtest_prod_util.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
@@ -36,19 +35,28 @@
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/gurl.h"
 
 class Profile;
+class GURL;
+
+namespace base {
+class FilePath;
+}
 
 namespace apps {
 
+class AppPublisher;
+class AppUpdate;
+class BrowserAppLauncher;
+class PreferredAppsListHandle;
 class AppServiceMojomImpl;
-
 struct AppLaunchParams;
 
 struct IntentLaunchInfo {

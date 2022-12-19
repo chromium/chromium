@@ -4,46 +4,53 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension.h"
-#include "storage/browser/file_system/file_system_context.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service_types.mojom-shared.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)

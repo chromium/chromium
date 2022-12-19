@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_LAUNCH_PARAMS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_LAUNCH_PARAMS_H_
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 

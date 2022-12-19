@@ -24,6 +24,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -66,8 +67,8 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/display/screen.h"
-#include "ui/wm/public/activation_change_observer.h"  // nogncheck
-#include "ui/wm/public/activation_client.h"           // nogncheck
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace web_app {
 

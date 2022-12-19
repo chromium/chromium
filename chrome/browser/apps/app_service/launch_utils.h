@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_UTILS_H_
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Browser;

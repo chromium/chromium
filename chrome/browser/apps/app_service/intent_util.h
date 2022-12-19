@@ -12,8 +12,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"

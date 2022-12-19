@@ -9,19 +9,14 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/containers/flat_tree.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -44,17 +39,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
-#include "base/files/safe_base_name.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
