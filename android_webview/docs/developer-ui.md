@@ -149,6 +149,9 @@ following:
 Restart your app, kill it, and restart it a second time. Your app should be
 running with the latest WebView variations seed.
 
+Downloading new seeds requires the device to be charging. To bypass this, enable
+the flag: `finch-seed-no-charging-requirement`
+
 ### Adding your flags and features to the UI
 
 If you're intending to launch a feature in WebView or start a field trial (AKA
