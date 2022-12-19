@@ -6,9 +6,11 @@
 #define GPU_COMMAND_BUFFER_SERVICE_STREAM_TEXTURE_SHARED_IMAGE_INTERFACE_H_
 
 #include <memory>
+
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image.h"
 
 namespace base::android {
 class ScopedHardwareBufferFenceSync;
@@ -20,7 +22,8 @@ class TextureBase;
 
 // This class is a specialized GLImage that lets SharedImageVideo draw video
 // frames.
-class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
+class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
+    : public base::RefCounted<StreamTextureSharedImageInterface> {
  public:
   enum class BindingsMode {
     // Binds image to the texture with service id. Doesn't alter current gl
@@ -72,7 +75,10 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
   GetAHardwareBuffer() = 0;
 
  protected:
-  ~StreamTextureSharedImageInterface() override = default;
+  virtual ~StreamTextureSharedImageInterface() = default;
+
+ private:
+  friend class base::RefCounted<StreamTextureSharedImageInterface>;
 };
 
 }  // namespace gpu

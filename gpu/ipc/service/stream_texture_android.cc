@@ -170,33 +170,6 @@ bool StreamTexture::TextureOwnerBindsTextureOnUpdate() {
   return texture_owner_->binds_texture_on_update();
 }
 
-bool StreamTexture::CopyTexImage(unsigned target) {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  if (target != GL_TEXTURE_EXTERNAL_OES)
-    return false;
-
-  if (!texture_owner_.get())
-    return false;
-
-  GLint texture_id;
-  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
-
-  // CopyTexImage will only be called for TextureOwner's SurfaceTexture
-  // implementation which binds texture to TextureOwner's texture_id on update.
-  // Also ensure that the CopyTexImage() is always called on TextureOwner's
-  // context.
-  DCHECK(texture_owner_->binds_texture_on_update());
-  DCHECK(texture_owner_->GetContext()->IsCurrent(nullptr));
-  if (texture_id > 0 &&
-      static_cast<unsigned>(texture_id) != texture_owner_->GetTextureId())
-    return false;
-
-  // UpdateTexImage happens via OnFrameAvailable callback now. And this code
-  // only runs if |texture_owner| binds texture on update, so there is nothing
-  // else to do here.
-  return true;
-}
-
 void StreamTexture::OnFrameAvailable() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   has_pending_frame_ = true;
@@ -238,19 +211,6 @@ void StreamTexture::OnFrameAvailable() {
   } else {
     client_->OnFrameAvailable();
   }
-}
-
-gfx::Size StreamTexture::GetSize() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return coded_size_;
-}
-
-unsigned StreamTexture::GetInternalFormat() {
-  return GL_RGBA;
-}
-
-unsigned StreamTexture::GetDataType() {
-  return GL_UNSIGNED_BYTE;
 }
 
 void StreamTexture::StartListening(
@@ -303,30 +263,6 @@ void StreamTexture::UpdateRotatedVisibleSize(
   // first so now it's time to send it.
   if (was_empty && has_pending_frame_)
     OnFrameAvailable();
-}
-
-StreamTexture::BindOrCopy StreamTexture::ShouldBindOrCopy() {
-  return COPY;
-}
-
-bool StreamTexture::BindTexImage(unsigned target) {
-  NOTREACHED();
-  return false;
-}
-
-void StreamTexture::ReleaseTexImage(unsigned target) {
-}
-
-bool StreamTexture::CopyTexSubImage(unsigned target,
-                                    const gfx::Point& offset,
-                                    const gfx::Rect& rect) {
-  return false;
-}
-
-void StreamTexture::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                                 uint64_t process_tracing_id,
-                                 const std::string& dump_name) {
-  // TODO(ericrk): Add OnMemoryDump for GLImages. crbug.com/514914
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>

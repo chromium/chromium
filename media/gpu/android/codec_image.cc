@@ -59,92 +59,6 @@ void CodecImage::NotifyUnused() {
   unused_cbs_.clear();
 }
 
-gfx::Size CodecImage::GetSize() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return coded_size_;
-}
-
-unsigned CodecImage::GetInternalFormat() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return GL_RGBA;
-}
-
-unsigned CodecImage::GetDataType() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return GL_UNSIGNED_BYTE;
-}
-
-CodecImage::BindOrCopy CodecImage::ShouldBindOrCopy() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-
-  // If we're using an overlay, then pretend it's bound.  That way, we'll get
-  // calls to ScheduleOverlayPlane.  Otherwise, CopyTexImage needs to be called.
-  return is_texture_owner_backed_ ? COPY : BIND;
-}
-
-bool CodecImage::BindTexImage(unsigned target) {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  DCHECK_EQ(BIND, ShouldBindOrCopy());
-  return true;
-}
-
-void CodecImage::ReleaseTexImage(unsigned target) {}
-
-bool CodecImage::CopyTexImage(unsigned target) {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-
-  // This method is only called for SurfaceTexture implementation which can't be
-  // thread-safe. Hence the lock which ensures thread safety should be null.
-  DCHECK(!GetDrDcLockPtr());
-
-  TRACE_EVENT0("media", "CodecImage::CopyTexImage");
-  DCHECK_EQ(COPY, ShouldBindOrCopy());
-
-  if (target != GL_TEXTURE_EXTERNAL_OES)
-    return false;
-
-  if (!output_buffer_renderer_)
-    return true;
-
-  GLint texture_id = 0;
-  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
-
-  // CopyTexImage will only be called for TextureOwner's SurfaceTexture
-  // implementation which binds texture to TextureOwner's texture_id on update.
-  DCHECK(output_buffer_renderer_->texture_owner()->binds_texture_on_update());
-  if (texture_id > 0 &&
-      static_cast<unsigned>(texture_id) !=
-          output_buffer_renderer_->texture_owner()->GetTextureId()) {
-    return false;
-  }
-
-  // Our hypothesis is that in actuality the rendering to the front buffer and
-  // binding of the image, if possible, have always already occurred by the time
-  // that this method is called. The below DumpWithoutCrashing() call serves to
-  // verify whether this hypothesis is correct. See crbug.com/1310020 for
-  // details.
-  // TODO(crbug.com/1310020): Remove this code as part of removing this entire
-  // function once we have verified that it is indeed no longer needed.
-  if (!output_buffer_renderer_
-           ->render_to_front_buffer_will_be_noop_for_debugging()) {
-    base::debug::DumpWithoutCrashing();
-  }
-
-  // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
-  // glGetIntegerv() parameter. In this case the value of |texture_id| will be
-  // zero and we assume that it is properly bound to TextureOwner's texture id.
-  output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(
-      BindingsMode::kBindImage,
-      output_buffer_renderer_->texture_owner()->GetTextureId());
-  return true;
-}
-
-bool CodecImage::CopyTexSubImage(unsigned target,
-                                 const gfx::Point& offset,
-                                 const gfx::Rect& rect) {
-  return false;
-}
-
 void CodecImage::NotifyOverlayPromotion(bool promotion,
                                         const gfx::Rect& bounds) {
   AssertAcquiredDrDcLock();
@@ -174,10 +88,6 @@ void CodecImage::NotifyOverlayPromotion(bool promotion,
     promotion_hint_cb_.Run(PromotionHintAggregator::Hint(bounds, promotion));
   }
 }
-
-void CodecImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                              uint64_t process_tracing_id,
-                              const std::string& dump_name) {}
 
 void CodecImage::ReleaseResources() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);

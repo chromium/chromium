@@ -18,6 +18,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
+#include "ui/gfx/gpu_fence.h"
 
 namespace gpu {
 

@@ -67,24 +67,6 @@ class MEDIA_GPU_EXPORT CodecImage
   // replace previous callbacks.  Order of callbacks is not guaranteed.
   void AddUnusedCB(UnusedCB unused_cb);
 
-  // gl::GLImage implementation
-  gfx::Size GetSize() override;
-  unsigned GetInternalFormat() override;
-  unsigned GetDataType() override;
-  BindOrCopy ShouldBindOrCopy() override;
-  bool BindTexImage(unsigned target) override;
-  void ReleaseTexImage(unsigned target) override;
-  bool CopyTexImage(unsigned target) override;
-  bool CopyTexSubImage(unsigned target,
-                       const gfx::Point& offset,
-                       const gfx::Rect& rect) override;
-  void SetColorSpace(const gfx::ColorSpace& color_space) override {}
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override;
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBuffer() override;
-
   // Notify us that we're no longer in-use for display, and may be pointed at
   // another output buffer via a call to Initialize.
   void NotifyUnused();
@@ -99,6 +81,8 @@ class MEDIA_GPU_EXPORT CodecImage
   // Renders this image to the overlay. Returns true if the buffer is in the
   // overlay front buffer. Returns false if the buffer was invalidated.
   bool RenderToOverlay() override;
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBuffer() override;
   bool TextureOwnerBindsTextureOnUpdate() override;
 
   // Whether the codec buffer has been rendered to the front buffer.
