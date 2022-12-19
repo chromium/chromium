@@ -94,6 +94,7 @@ mojom("mojom") {
     "test_controller.mojom",
     "timezone.mojom",
     "tts.mojom",
+    "ui_constants.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
     "video_conference.mojom",
@@ -255,6 +256,10 @@ mojom("mojom") {
           mojom = "crosapi.mojom.TabGroup"
           cpp = "::tab_groups::TabGroupInfo"
         },
+        {
+          mojom = "crosapi.mojom.ResourceScaleFactor"
+          cpp = "::ui::ResourceScaleFactor"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
@@ -265,6 +270,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//chromeos/crosapi/mojom/ui_constants_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_launch_util.h",
         "//components/services/app_service/public/cpp/app_types.h",
         "//components/services/app_service/public/cpp/capability_access.h",
@@ -281,6 +287,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/ui_constants_mojom_traits.cc",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
       ]
       traits_public_deps = [
@@ -294,6 +301,7 @@ mojom("mojom") {
         "//components/services/app_service/public/mojom:mojom",
         "//components/tab_groups",
         "//components/webapps/browser:constants",
+        "//ui/base:ui_data_pack",
       ]
     },
   ]

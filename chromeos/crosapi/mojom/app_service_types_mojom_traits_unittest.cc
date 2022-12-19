@@ -774,6 +774,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
 
     input->compressed = {1u, 2u};
     input->is_placeholder_icon = true;
+    input->is_maskable_icon = false;
 
     auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
@@ -796,6 +797,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
     gfx::ImageSkia image = gfx::test::CreateImageSkia(3, 4);
     input->uncompressed = image;
     input->is_placeholder_icon = false;
+    input->is_maskable_icon = true;
 
     auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
@@ -812,9 +814,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
 
     input->compressed = {3u, 4u};
     input->is_placeholder_icon = true;
+    input->is_maskable_icon = true;
 
     auto output = std::make_unique<apps::IconValue>();
-    ;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 

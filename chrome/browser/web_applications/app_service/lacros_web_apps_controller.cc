@@ -169,6 +169,15 @@ void LacrosWebAppsController::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
+void LacrosWebAppsController::GetCompressedIcon(
+    const std::string& app_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  publisher_helper().GetCompressedIconData(app_id, size_in_dip, scale_factor,
+                                           std::move(callback));
+}
+
 void LacrosWebAppsController::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }

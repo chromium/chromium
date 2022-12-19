@@ -277,6 +277,10 @@ struct StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr> {
     return r->is_placeholder_icon;
   }
 
+  static bool is_maskable_icon(const apps::IconValuePtr& r) {
+    return r->is_maskable_icon;
+  }
+
   static bool Read(crosapi::mojom::IconValueDataView, apps::IconValuePtr* out);
 };
 

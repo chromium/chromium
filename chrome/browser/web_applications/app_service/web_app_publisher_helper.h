@@ -216,7 +216,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                 apps::IconEffects icon_effects,
                 apps::LoadIconCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,

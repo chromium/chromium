@@ -69,6 +69,10 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 LoadIconCallback callback) override;
+  void GetCompressedIcon(const std::string& app_id,
+                         int32_t size_in_dip,
+                         ui::ResourceScaleFactor scale_factor,
+                         apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;

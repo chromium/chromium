@@ -574,7 +574,9 @@ void AppIconLoader::LoadArcActivityIcons(
     std::move(arc_activity_icons_callback_).Run(arc_activity_icons_);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
 void AppIconLoader::GetWebAppCompressedIconData(
     const std::string& web_app_id,
     ui::ResourceScaleFactor scale_factor,
@@ -625,7 +627,9 @@ void AppIconLoader::GetChromeAppCompressedIconData(
           base::BindOnce(&AppIconLoader::OnReadChromeAppForCompressedIconData,
                          base::WrapRefCounted(this))));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<arc::IconDecodeRequest>
 AppIconLoader::CreateArcIconDecodeRequest(
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,

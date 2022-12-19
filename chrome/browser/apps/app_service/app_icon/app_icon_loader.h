@@ -112,7 +112,9 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // Loads icons for ARC activities.
   void LoadArcActivityIcons(
       const std::vector<arc::mojom::ActivityIconPtr>& icons);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Requests a compressed icon data with `scale_factor` for an web app
   // identified by `web_app_id`.
   void GetWebAppCompressedIconData(const std::string& web_app_id,
@@ -124,7 +126,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   void GetChromeAppCompressedIconData(const extensions::Extension* extension,
                                       content::BrowserContext* context,
                                       ui::ResourceScaleFactor scale_factor);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   friend class base::RefCounted<AppIconLoader>;

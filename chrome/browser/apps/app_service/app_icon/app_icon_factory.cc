@@ -491,7 +491,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
       web_app_provider->icon_manager(), Profile::FromBrowserContext(context));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void GetWebAppCompressedIconData(content::BrowserContext* context,
                                  const std::string& web_app_id,
                                  int size_in_dip,
@@ -528,7 +528,7 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
           extension_id),
       context, scale_factor);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LoadIconFromFileWithFallback(
     IconType icon_type,

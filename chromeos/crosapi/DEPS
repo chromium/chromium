@@ -17,4 +17,7 @@ specific_include_rules = {
   "desk_template_mojom_traits\.cc" : [
     "+ui/gfx/range/range.h"
   ],
+  "ui_constants_mojom_traits\.h" : [
+    "+ui/base/resource/resource_scale_factor.h"
+  ],
 }

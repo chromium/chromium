@@ -127,6 +127,22 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
                      std::move(callback)));
 }
 
+void StandaloneBrowserExtensionApps::GetCompressedIconData(
+    const std::string& app_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    LoadIconCallback callback) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound()) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
+  controller_->GetCompressedIcon(app_id, size_in_dip, scale_factor,
+                                 std::move(callback));
+}
+
 void StandaloneBrowserExtensionApps::Launch(const std::string& app_id,
                                             int32_t event_flags,
                                             LaunchSource launch_source,

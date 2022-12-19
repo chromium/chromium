@@ -957,7 +957,7 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                      icon_effects, std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void WebAppPublisherHelper::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,

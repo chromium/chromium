@@ -832,6 +832,7 @@ bool StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr>::Read(
   icon_value->uncompressed = std::move(uncompressed);
   icon_value->compressed = std::move(compressed);
   icon_value->is_placeholder_icon = data.is_placeholder_icon();
+  icon_value->is_maskable_icon = data.is_maskable_icon();
   *out = std::move(icon_value);
   return true;
 }

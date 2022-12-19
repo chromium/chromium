@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/app_service_types.mojom";
+import "chromeos/crosapi/mojom/ui_constants.mojom";
 
 // Interacts with the app service. Implemented in ash-chrome.
 // This is a generic app-publisher interface that is used by the implementation
@@ -81,12 +82,23 @@ interface AppController {
   // succeeded, the size of the returning icon is expected to be as close as
   // possible with the |size_hint_in_dip| set in the interface, but may not be
   // exactly the same.
+  // TODO(crbug/1380608): Deprecated this interface when enable the unfified
+  // AppService icon loading flag.
   [MinVersion=5]
   LoadIcon@5(
     string app_id,
     IconKey icon_key,
     IconType icon_type,
     int32 size_hint_in_dip) => (IconValue icon_value);
+
+  // Requests a compressed icon data for an app identified by `app_id` from
+  // lacros-chrome. The icon is identified by `size_in_dip` and `scale_factor`.
+  // Calls `callback` with the result.
+  [MinVersion=20]
+  GetCompressedIcon@20(
+    string app_id,
+    int32 size_in_dip,
+    ResourceScaleFactor scale_factor) => (IconValue icon_value);
 
   // Opens the app platform settings page for the app with |app_id|.
   // e.g. for web app, it opens the Chrome site settings page for the app.
