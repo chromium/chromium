@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
-import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 import android.webkit.JavascriptInterface;
@@ -23,19 +22,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwOriginVerificationScheduler;
 import org.chromium.android_webview.InterceptionType;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
-import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
@@ -47,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -73,11 +67,6 @@ public class AwContentsClientShouldInterceptRequestTest {
     private String addAboutPageToTestServer(TestWebServer webServer) {
         return addPageToTestServer(webServer, "/" + CommonResources.ABOUT_FILENAME,
                 CommonResources.ABOUT_HTML);
-    }
-
-    private String addAssetListToTestServer(TestWebServer webServer, String fingerprint) {
-        return addPageToTestServer(webServer, CommonResources.ASSET_LINKS_PATH,
-                CommonResources.makeAssetFile(fingerprint));
     }
 
     private WebResourceResponseInfo stringWithHeadersToWebResourceResponseInfo(
@@ -1461,109 +1450,5 @@ public class AwContentsClientShouldInterceptRequestTest {
         final WebServer.HTTPRequest fetchRequestToPass = mWebServer.getLastRequest(fetchPathToPass);
         Assert.assertEquals(preflightTriggeringMethod, fetchRequestToPass.getMethod());
         Assert.assertEquals(customScheme, fetchRequestToPass.headerValue("Origin"));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewRestrictThirdPartyContent"})
-    public void testDoCallInterceptRequestIfThridPartyRestrictionIsDisabled() throws Throwable {
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        mActivityTestRule.runOnUiThread(
-                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
-
-        Assert.assertEquals(
-                1, AwOriginVerificationScheduler.getInstance().getPendingOrigins().size());
-
-        int callCount = mShouldInterceptRequestHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
-        mShouldInterceptRequestHelper.waitForCallback(callCount, 1);
-
-        Assert.assertEquals(
-                1, AwOriginVerificationScheduler.getInstance().getPendingOrigins().size());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
-    public void testDoesNotCallInterceptRequestIfThridPartyRestrictionIsEnabledAndNotVerified()
-            throws Throwable {
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        mActivityTestRule.runOnUiThread(
-                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
-
-        Set<Origin> pendingOrigins =
-                AwOriginVerificationScheduler.getInstance().getPendingOrigins();
-
-        Assert.assertEquals(1, pendingOrigins.size());
-        Assert.assertTrue(pendingOrigins.contains(Origin.create("https://example.com")));
-
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
-
-        Assert.assertEquals(0, mShouldInterceptRequestHelper.getCallCount());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
-    public void testDoesCallInterceptRequestIfThridPartyRestrictionIsEnabledAndVerified()
-            throws Throwable {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-
-        List<String> mSignatureFingerprints =
-                PackageUtils.getCertificateSHA256FingerprintForPackage(context.getPackageName());
-
-        final String assetLinksUrl =
-                addAssetListToTestServer(mWebServer, mSignatureFingerprints.get(0));
-        mActivityTestRule.runOnUiThread(
-                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
-
-        // Inject current base url of the test server for verifying the url.
-        AwOriginVerificationScheduler.getInstance().addPendingOriginForTesting(
-                Origin.create(aboutPageUrl));
-
-        Assert.assertEquals(
-                2, AwOriginVerificationScheduler.getInstance().getPendingOrigins().size());
-
-        Assert.assertFalse(AwOriginVerificationScheduler.getInstance()
-                                   .getOriginVerifier()
-                                   .wasPreviouslyVerified(Origin.create(aboutPageUrl)));
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
-
-        Assert.assertEquals(
-                1, AwOriginVerificationScheduler.getInstance().getPendingOrigins().size());
-        Assert.assertTrue(AwOriginVerificationScheduler.getInstance()
-                                  .getOriginVerifier()
-                                  .wasPreviouslyVerified(Origin.create(aboutPageUrl)));
-        Assert.assertEquals(1, mShouldInterceptRequestHelper.getCallCount());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
-    public void testfThridPartyRestrictionInitAndScheduleAll() throws Throwable {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
-        CountDownLatch countVerifiedLatch = new CountDownLatch(1);
-        mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.initAndScheduleAll(
-                                context.getPackageName(), context,
-                                mActivityTestRule.getAwBrowserContext(),
-                                (res) -> { countVerifiedLatch.countDown(); }));
-        countVerifiedLatch.await();
-
-        AwOriginVerificationScheduler scheduler = AwOriginVerificationScheduler.getInstance();
-
-        Set<Origin> pendingOrigins = scheduler.getPendingOrigins();
-        Assert.assertEquals(0, pendingOrigins.size());
     }
 }

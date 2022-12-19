@@ -405,13 +405,6 @@ void InterceptedRequest::Restart() {
                                  request_.referrer.spec());
     }
 
-    if (io_thread_client->ShouldBlockRequest(AwWebResourceRequest(request_))) {
-      // TODO(swestphal): Show alternative UI to inform the user about blocked
-      // third party web content.
-      SendErrorAndCompleteImmediately(net::ERR_ACCESS_DENIED);
-      return;
-    }
-
     base::RepeatingClosure arg_ready_closure;
     // Pointer lifetime is tied to |arg_ready_closure|.
     InterceptResponseReceivedArgs* intercept_response_received_args;

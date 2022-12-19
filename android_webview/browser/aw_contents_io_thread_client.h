@@ -108,9 +108,6 @@ class AwContentsIoThreadClient {
       AwWebResourceRequest request,
       ShouldInterceptRequestResponseCallback callback);
 
-  // Check if the request should be blocked based on web content ownership.
-  bool ShouldBlockRequest(AwWebResourceRequest request);
-
   // Retrieve the AllowContentAccess setting value of this AwContents.
   // This method is called on the IO thread only.
   bool ShouldBlockContentUrls() const;

@@ -10,14 +10,9 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Manages clients and settings for Service Workers.
@@ -122,36 +117,6 @@ public class AwServiceWorkerController {
                         ? mServiceWorkerClient.shouldInterceptRequest(request)
                         : null;
             }
-        }
-        @Override
-        public boolean shouldBlockRequest(String url) {
-            if (!AwFeatureList.isEnabled(AwFeatures.WEBVIEW_RESTRICT_THIRD_PARTY_CONTENT)) {
-                return false;
-            }
-
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            AtomicBoolean verified = new AtomicBoolean(false);
-
-            // Verifications are scheduled when WebView is initialized, so when this is called, the
-            // verification is likely finished here.
-            AwOriginVerificationScheduler scheduler = AwOriginVerificationScheduler.getInstance();
-            if (scheduler != null && scheduler.getOriginVerifier().checkForSavedResult(url)) {
-                return false;
-            }
-
-            AwThreadUtils.postToUiThreadLooper(() -> {
-                AwOriginVerificationScheduler.getInstance().verify(
-                        url, mBrowserContext, (result) -> {
-                            verified.set(result);
-                            countDownLatch.countDown();
-                        });
-            });
-            try {
-                countDownLatch.await(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                return true;
-            }
-            return !verified.get();
         }
     }
 }
