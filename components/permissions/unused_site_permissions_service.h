@@ -74,6 +74,10 @@ class UnusedSitePermissionsService
   // KeyedService implementation.
   void Shutdown() override;
 
+  // If the user clicked "Allow again" for an auto-revoked origin, the
+  // permissions for that site should not be auto-revoked again by the service.
+  void IgnoreOriginForAutoRevocation(const url::Origin& origin);
+
   // Triggers an update of the unused permission map. Automatically registers
   // a delayed task for another update after 24h.
   void StartRepeatedUpdates();

@@ -702,6 +702,15 @@ void HostContentSettingsMap::FlushLossyWebsiteSettings() {
   prefs_->SchedulePendingLossyWrites();
 }
 
+void HostContentSettingsMap::ResetLastVisitedTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType type) {
+  for (auto* provider : user_modifiable_providers_) {
+    provider->ResetLastVisitTime(primary_pattern, secondary_pattern, type);
+  }
+}
+
 void HostContentSettingsMap::UpdateLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

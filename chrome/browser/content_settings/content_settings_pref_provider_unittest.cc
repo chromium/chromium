@@ -1114,6 +1114,14 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
   EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
   EXPECT_LE(metadata.last_visited, clock.Now());
 
+  // Test resetting the last_visited time.
+  provider.ResetLastVisitTime(primary_pattern, primary_pattern,
+                              ContentSettingsType::GEOLOCATION);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                         ContentSettingsType::GEOLOCATION,
+                                         false, &metadata));
+  EXPECT_EQ(metadata.last_visited, base::Time());
   provider.ShutdownOnUIThread();
 }
 

@@ -96,6 +96,10 @@ class MockUserModifiableProvider
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
                     ContentSettingsType content_type));
+  MOCK_METHOD3(ResetLastVisitTime,
+               bool(const ContentSettingsPattern& primary_pattern,
+                    const ContentSettingsPattern& secondary_pattern,
+                    ContentSettingsType content_type));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };

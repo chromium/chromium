@@ -179,6 +179,27 @@ void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
           AsWeakPtr(), std::move(callback)));
 }
 
+void UnusedSitePermissionsService::IgnoreOriginForAutoRevocation(
+    const url::Origin& origin) {
+  auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
+
+  for (const content_settings::ContentSettingsInfo* info : *registry) {
+    ContentSettingsType type = info->website_settings_info()->type();
+
+    ContentSettingsForOneType settings;
+    hcsm_->GetSettingsForOneType(type, &settings);
+    for (const auto& setting : settings) {
+      if (setting.metadata.last_visited != base::Time() &&
+          setting.primary_pattern.MatchesSingleOrigin() &&
+          setting.primary_pattern.Matches(origin.GetURL())) {
+        hcsm_->ResetLastVisitedTime(setting.primary_pattern,
+                                    setting.secondary_pattern, type);
+        break;
+      }
+    }
+  }
+}
+
 // Called by TabHelper when a URL was visited.
 void UnusedSitePermissionsService::OnPageVisited(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -248,12 +248,14 @@ bool PrefProvider::SetWebsiteSetting(
   return true;
 }
 
-bool PrefProvider::UpdateLastVisitTime(
+bool PrefProvider::SetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (!supports_type(content_type))
+    ContentSettingsType content_type,
+    const base::Time time) {
+  if (!supports_type(content_type)) {
     return false;
+  }
 
   auto it = GetRuleIterator(content_type, false);
   Rule rule;
@@ -265,7 +267,7 @@ bool PrefProvider::UpdateLastVisitTime(
       DCHECK(rule.metadata.last_visited != base::Time());
       // Reset iterator to release lock before updating setting.
       it.reset();
-      rule.metadata.last_visited = GetCoarseVisitedTime(clock_->Now());
+      rule.metadata.last_visited = time;
       GetPref(content_type)
           ->SetWebsiteSetting(rule.primary_pattern, rule.secondary_pattern,
                               std::move(rule.value), std::move(rule.metadata));
@@ -273,6 +275,22 @@ bool PrefProvider::UpdateLastVisitTime(
     }
   }
   return false;
+}
+
+bool PrefProvider::ResetLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
+                          base::Time());
+}
+
+bool PrefProvider::UpdateLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
+                          GetCoarseVisitedTime(clock_->Now()));
 }
 
 void PrefProvider::ClearAllContentSettingsRules(

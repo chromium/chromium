@@ -56,6 +56,9 @@ class PrefProvider : public UserModifiableProvider {
                          const ContentSettingConstraints& constraints) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
+  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          ContentSettingsType content_type) override;
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;
@@ -71,6 +74,11 @@ class PrefProvider : public UserModifiableProvider {
   void Notify(const ContentSettingsPattern& primary_pattern,
               const ContentSettingsPattern& secondary_pattern,
               ContentSettingsType content_type);
+
+  bool SetLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                        const ContentSettingsPattern& secondary_pattern,
+                        ContentSettingsType content_type,
+                        const base::Time time);
 
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();

@@ -94,6 +94,14 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
   return false;
 }
 
+bool OneTimeGeolocationPermissionProvider::ResetLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // LastVisit time is not tracked for one-time permissions.
+  return false;
+}
+
 bool OneTimeGeolocationPermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

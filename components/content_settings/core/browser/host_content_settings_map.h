@@ -259,6 +259,10 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
+  // Reset the last visited time to base::Time().
+  void ResetLastVisitedTime(const ContentSettingsPattern& primary_pattern,
+                            const ContentSettingsPattern& secondary_pattern,
+                            ContentSettingsType type);
   // Updates the last visited time to a recent coarse timestamp
   // (week-precision).
   void UpdateLastVisitedTime(const ContentSettingsPattern& primary_pattern,

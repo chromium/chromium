@@ -19,6 +19,12 @@ namespace content_settings {
 class UserModifiableProvider : public ObservableProvider {
  public:
   ~UserModifiableProvider() override {}
+  // Resets the last_visit time for the given setting. Returns true if the
+  // setting was found and updated.
+  virtual bool ResetLastVisitTime(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type) = 0;
   // Updates the last_visit time for the given setting. Returns true if the
   // setting was found and updated.
   virtual bool UpdateLastVisitTime(

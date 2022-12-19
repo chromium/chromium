@@ -99,6 +99,9 @@ class NotificationChannelsProviderAndroid
                              constraints = {}) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
+  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          ContentSettingsType content_type) override;
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;
