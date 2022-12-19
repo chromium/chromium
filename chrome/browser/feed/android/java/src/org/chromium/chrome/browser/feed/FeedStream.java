@@ -1326,16 +1326,6 @@ public class FeedStream implements Stream {
     class RestoreScrollObserver extends RecyclerView.AdapterDataObserver {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            restoreScrollStateIfNeeded();
-        }
-
-        // This is the triggering event when FeedReplaceAll experiment is on.
-        @Override
-        public void onChanged() {
-            restoreScrollStateIfNeeded();
-        }
-
-        private void restoreScrollStateIfNeeded() {
             if (mScrollStateToRestore != null) {
                 if (restoreScrollState(mScrollStateToRestore)) {
                     mScrollStateToRestore = null;

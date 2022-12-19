@@ -132,8 +132,6 @@ extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
 
 // When enabled, no view cache is used.
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
-// When enabled, replace all items.
-BASE_DECLARE_FEATURE(kFeedReplaceAll);
 
 // When enabled, play the feed video via inline playback.
 BASE_DECLARE_FEATURE(kFeedVideoInlinePlayback);
