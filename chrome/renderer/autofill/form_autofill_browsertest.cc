@@ -3592,6 +3592,23 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
       testing::UnorderedElementsAre(base::Bucket(AssignedLabelSource::kId, 2)));
 }
 
+// Tests that when a label is assigned to an input, text behind it is considered
+// as a fallback.
+// The label is assigned to the input without the for-attribute, by declaring it
+// it inside the label.
+TEST_F(FormAutofillTest, LabelTextBehindInput) {
+  ExpectLabels(R"(
+    <form name=TestForm action=http://cnn.com>
+      <label>
+        <input>
+        label
+      </label>
+    </form>
+  )",
+               /*id_attributes=*/{u""}, /*name_attributes=*/{u""},
+               /*labels=*/{u"label"}, /*names=*/{u""}, /*values=*/{u""});
+}
+
 TEST_F(FormAutofillTest, LabelsWithSpans) {
   ExpectJohnSmithLabelsAndIdAttributes(
       "<FORM name='TestForm' action='http://cnn.com' method='post'>"

@@ -1396,12 +1396,33 @@ void MatchLabelsAndFields(
       field_data = iter->first;
     }
 
+    // Skip `label` if we could not find an associated form control.
     if (!field_data)
       continue;
 
     std::u16string label_text = FindChildText(label);
-    if (label_text.empty())
-      continue;
+    if (label_text.empty()) {
+      if (label.HasAttribute(*kFor)) {
+        continue;
+      }
+      DCHECK(!control.IsNull() && control.IsFormControlElement());
+      // An associated form control was found, but the `label` does not have a
+      // for-attribute, so the form control must be a descendant of the `label`.
+      // Since `FindChildText()` stops at autofillable elements, the
+      // `label_text` can be empty if the "text" is declared behind the <input>.
+      // For example:
+      // <label>
+      //  <input>
+      //  text
+      // </label>
+      // Thus, consider text behind the <input> as a fallback.
+      // Since associated labels are counted as `kFor`, the source is ignored.
+      FormFieldData::LabelSource irrelevant_source;
+      if (!InferLabelFromNext(control.To<WebFormControlElement>(), label_text,
+                              irrelevant_source)) {
+        continue;
+      }
+    }
 
     // Concatenate labels because some sites might have multiple label
     // candidates.

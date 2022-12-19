@@ -8,8 +8,8 @@ NAME_FIRST | ctl00$ContentInfo$Name$FName$txtFName | First Name: |  | ctl00$Cust
 NAME_MIDDLE_INITIAL | ctl00$ContentInfo$Name$MName$txtMName | Middle Initial (optional): |  | ctl00$CustomerHeader$ddlCountries_1
 NAME_LAST | ctl00$ContentInfo$Name$LName$txtLName | Last Name: |  | ctl00$CustomerHeader$ddlCountries_1
 UNKNOWN_TYPE | ctl00$ContentInfo$Name$suffix$txtSuffix | Suffix (optional): |  | ctl00$CustomerHeader$ddlCountries_1
-UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for an adult 18 years of age or older. | rdoAdult | ctl00$CustomerHeader$ddlCountries_1
-UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for a minor under the age of 18. | rdoMinor | ctl00$CustomerHeader$ddlCountries_1
+UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for an adult 18 years of age or older. This OnePass account is for an adult 18 years of age or older. | rdoAdult | ctl00$CustomerHeader$ddlCountries_1
+UNKNOWN_TYPE | ctl00$ContentInfo$MemberAge$EnrollmentAge | This OnePass account is for a minor under the age of 18. This OnePass account is for a minor under the age of 18. | rdoMinor | ctl00$CustomerHeader$ddlCountries_1
 UNKNOWN_TYPE | ctl00$ContentInfo$BirthDate$txtDOB | Minorâ€™s Date of Birth: | mm/dd/yyyy | ctl00$CustomerHeader$ddlCountries_1
 UNKNOWN_TYPE | ctl00$ContentInfo$AddressType$AddressType | Home | rdoAddTypeHome | ctl00$CustomerHeader$ddlCountries_1
 UNKNOWN_TYPE | ctl00$ContentInfo$AddressType$AddressType | Business/Other | rdoAddTypeBusiness | ctl00$CustomerHeader$ddlCountries_1

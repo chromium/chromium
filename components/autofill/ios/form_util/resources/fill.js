@@ -729,7 +729,10 @@ function matchLabelsAndFields_(
     if (!('label' in fieldData)) {
       fieldData['label'] = '';
     }
-    const labelText = __gCrWeb.fill.findChildText(label);
+    let labelText = __gCrWeb.fill.findChildText(label);
+    if (labelText.length === 0 && !label.htmlFor) {
+      labelText = __gCrWeb.fill.inferLabelFromNext(fieldElement);
+    }
     // Concatenate labels because some sites might have multiple label
     // candidates.
     if (fieldData['label'].length > 0 && labelText.length > 0) {
