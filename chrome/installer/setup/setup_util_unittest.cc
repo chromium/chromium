@@ -906,6 +906,7 @@ class LegacyCleanupsTest : public ::testing::Test {
 
   const InstallerState& installer_state() const { return *installer_state_; }
 
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   bool HasBinariesVersionKey() const {
     return base::win::RegKey(HKEY_CURRENT_USER, kBinariesClientsKeyPath,
                              KEY_QUERY_VALUE | KEY_WOW64_32KEY)
@@ -917,6 +918,7 @@ class LegacyCleanupsTest : public ::testing::Test {
                              KEY_QUERY_VALUE)
         .Valid();
   }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   bool HasAppLauncherVersionKey() const {
@@ -978,7 +980,8 @@ const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
 const wchar_t LegacyCleanupsTest::kAppLauncherClientsKeyPath[] =
     L"SOFTWARE\\Google\\Update\\Clients\\"
     L"{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}";
-#elif BUILDFLAG(CHROMIUM_BRANDING)
+#elif BUILDFLAG(CHROMIUM_BRANDING) && \
+    !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 const wchar_t LegacyCleanupsTest::kBinariesClientsKeyPath[] =
     L"SOFTWARE\\Chromium Binaries";
 const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
