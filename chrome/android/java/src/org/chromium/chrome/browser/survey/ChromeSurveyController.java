@@ -22,7 +22,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -213,11 +212,6 @@ public class ChromeSurveyController {
      */
     @VisibleForTesting
     void showSurveyPrompt(@NonNull Tab tab, String siteId) {
-        String debugMessage =
-                "Logging invocation of #showSurveyPrompt to investigate crbug.com/1249055.";
-        String callTrace = Log.getStackTraceString(new Throwable(debugMessage));
-        Log.i(TAG, callTrace);
-
         mSurveyPromptTab = tab;
 
         if (mMessageDispatcher == null) {
@@ -227,21 +221,11 @@ public class ChromeSurveyController {
 
         // Return early if the message is already shown once.
         if (sMessageShown) {
-            String logMessage = String.format(
-                    "The survey prompt for survey with ID %s has already been shown.", siteId);
-            Log.w(TAG, logMessage);
-            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
             return;
         }
 
         // Return early without displaying the message prompt if the survey has expired.
         if (SurveyController.getInstance().isSurveyExpired(siteId)) {
-            String logMessage =
-                    String.format("The message prompt will not be shown because the survey "
-                                    + "with ID %s has expired.",
-                            siteId);
-            Log.w(TAG, logMessage);
-            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
             return;
         }
         Resources resources = mActivity.getResources();
@@ -265,26 +249,6 @@ public class ChromeSurveyController {
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
                         .build();
 
-        // Dismiss an enqueued message when the survey has expired so that it does not get shown
-        // subsequently.
-        message.set(MessageBannerProperties.ON_STARTED_SHOWING, () -> {
-            boolean surveyExpired = SurveyController.getInstance().isSurveyExpired(siteId);
-            if (!surveyExpired && isUMAEnabled()) {
-                return true;
-            }
-            if (surveyExpired) {
-                Log.w(TAG,
-                        "The survey message prompt was dismissed because the survey "
-                                + "with ID %s has expired.",
-                        siteId);
-            }
-            new Handler(ThreadUtils.getUiThreadLooper())
-                    .post(()
-                                    -> mMessageDispatcher.dismissMessage(
-                                            message, DismissReason.DISMISSED_BY_FEATURE));
-            return false;
-        });
-
         // Dismiss the message when the original tab in which the message is shown is
         // hidden. This prevents the prompt from being shown if the tab is opened after being
         // hidden for a duration in which the survey expired. See crbug.com/1249055 for details.
@@ -294,6 +258,10 @@ public class ChromeSurveyController {
                 mMessageDispatcher.dismissMessage(message, DismissReason.TAB_SWITCHED);
             }
         };
+
+        // This observer will be added exactly once because of the `sMessageShown` conditional above
+        // that restricts enqueueing the message only once in a session. The observer will be
+        // removed when the enqueued message is dismissed.
         mSurveyPromptTab.addObserver(mTabObserver);
 
         if (mLifecycleDispatcher != null) {
@@ -301,13 +269,6 @@ public class ChromeSurveyController {
                 @Override
                 public void onResumeWithNative() {
                     if (SurveyController.getInstance().isSurveyExpired(siteId)) {
-                        String logMessage = String.format(
-                                "The survey message prompt was dismissed on activity resumption"
-                                        + " because the survey with ID %s has expired.",
-                                siteId);
-                        Log.w(TAG, logMessage);
-                        ChromePureJavaExceptionReporter.reportJavaException(
-                                new Throwable(logMessage));
                         mMessageDispatcher.dismissMessage(
                                 message, DismissReason.DISMISSED_BY_FEATURE);
                     }
