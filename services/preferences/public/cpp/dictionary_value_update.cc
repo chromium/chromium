@@ -140,19 +140,28 @@ bool DictionaryValueUpdate::GetBoolean(base::StringPiece path,
   if (!value.has_value())
     return false;
   if (out_value)
-    *out_value = value.value();
+    *out_value = *value;
   return true;
 }
 
 bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
                                        int* out_value) const {
-  return value_->GetInteger(path, out_value);
+  if (absl::optional<int> value = value_->GetDict().FindIntByDottedPath(path)) {
+    if (out_value) {
+      *out_value = *value;
+    }
+    return true;
+  }
+  return false;
 }
 
 bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
                                       double* out_value) const {
-  if (absl::optional<double> value = value_->FindDoubleKey(path)) {
-    *out_value = *value;
+  if (absl::optional<double> value =
+          value_->GetDict().FindDoubleByDottedPath(path)) {
+    if (out_value) {
+      *out_value = *value;
+    }
     return true;
   }
   return false;
@@ -160,7 +169,13 @@ bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
 
 bool DictionaryValueUpdate::GetString(base::StringPiece path,
                                       std::string* out_value) const {
-  return value_->GetString(path, out_value);
+  if (std::string* value = value_->GetDict().FindStringByDottedPath(path)) {
+    if (out_value) {
+      *out_value = *value;
+    }
+    return true;
+  }
+  return false;
 }
 
 bool DictionaryValueUpdate::GetDictionary(
