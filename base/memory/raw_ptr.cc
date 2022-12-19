@@ -121,7 +121,6 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/compiler_specific.h"
 #include "base/debug/asan_service.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/process/process.h"
 
