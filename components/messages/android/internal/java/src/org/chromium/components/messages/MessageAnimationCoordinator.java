@@ -88,13 +88,14 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
 
                     mAnimatorSet = new AnimatorSet();
                     mAnimatorSet.play(animator);
-                    mAnimatorSet.addListener(
-                            new MessageAnimationListener(mMessageQueueDelegate::onAnimationEnd));
+                    mAnimatorSet.addListener(new MessageAnimationListener(() -> {
+                        mMessageQueueDelegate.onAnimationEnd();
+                        onFinished.run();
+                    }));
                     mMessageQueueDelegate.onAnimationStart();
                     mAnimatorStartCallback.onResult(mAnimatorSet);
                 });
                 mLastShownMessage = mCurrentDisplayedMessage;
-                onFinished.run();
             });
         } else {
             Runnable runnable = () -> {
