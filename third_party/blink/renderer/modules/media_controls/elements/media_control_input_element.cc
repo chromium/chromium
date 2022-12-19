@@ -82,8 +82,10 @@ HTMLElement* MediaControlInputElement::CreateOverflowElement(
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   overflow_menu_container_->ParserAppendChild(overflow_menu_text_);
   overflow_menu_container_->setAttribute(html_names::kAriaHiddenAttr, "true");
-  aria_label_ = button->FastGetAttribute(html_names::kAriaLabelAttr) + " " +
-                button->GetOverflowMenuString();
+  aria_label_ = button->FastGetAttribute(html_names::kAriaLabelAttr);
+  if (aria_label_.empty()) {
+    aria_label_ = button->GetOverflowMenuString();
+  }
 
   // The button label along with the overflow menu string will be part of
   // the aria-label for the overflow label element, so all information is
@@ -157,7 +159,11 @@ void MediaControlInputElement::SetOverflowElementIsWanted(bool wanted) {
 }
 
 void MediaControlInputElement::UpdateOverflowLabelAriaLabel(String subtitle) {
-  String full_aria_label = aria_label_ + " " + subtitle;
+  String full_aria_label = aria_label_;
+  if (!subtitle.empty()) {
+    full_aria_label = full_aria_label + " " + subtitle;
+  }
+
   overflow_label_element_->setAttribute(html_names::kAriaLabelAttr,
                                         WTF::AtomicString(full_aria_label));
 }
