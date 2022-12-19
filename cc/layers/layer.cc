@@ -121,7 +121,7 @@ Layer::Layer()
       bitflags_(0u),
       subtree_property_changed_(false) {
   // https://linear.app/replay/issue/RUN-885
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("Layer", this);
 }
 
 Layer::~Layer() {
