@@ -9,13 +9,9 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 
 namespace prefetch {
-
-BASE_FEATURE(kPreloadingHoldback,
-             "PreloadingHoldback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
@@ -68,7 +64,7 @@ content::PreloadingEligibility IsSomePreloadingEnabled(
   // Override kPreloadingHoldback when DevTools is opened to mitigate the cases
   // in which developers are affected by kPreloadingHoldback.
   if (!(web_contents && content::DevToolsAgentHost::HasFor(web_contents)) &&
-      base::FeatureList::IsEnabled(kPreloadingHoldback)) {
+      base::FeatureList::IsEnabled(features::kPreloadingHoldback)) {
     return content::PreloadingEligibility::kPreloadingDisabled;
   }
   return IsSomePreloadingEnabledIgnoringFinch(prefs);

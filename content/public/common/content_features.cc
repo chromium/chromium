@@ -820,6 +820,16 @@ BASE_FEATURE(kPrerender2Holdback,
              "Prerender2Holdback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Preloading holdback feature disables preloading (e.g., preconnect, prefetch,
+// and prerender) on all predictors. This is useful in comparing the impact of
+// blink::features::kPrerender2 experiment with and without them.
+
+// Please note this feature is only used for experimental purposes, please don't
+// enable this feature by default.
+BASE_FEATURE(kPreloadingHoldback,
+             "PreloadingHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics.
 BASE_FEATURE(kPrivacySandboxAdsAPIsOverride,

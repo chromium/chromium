@@ -16,6 +16,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -79,7 +80,7 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderHoldbackBrowserTest() {
-    feature_list_.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+    feature_list_.InitAndEnableFeature(features::kPreloadingHoldback);
   }
 
  private:

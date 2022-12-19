@@ -432,9 +432,16 @@ Response SystemInfoHandler::GetFeatureState(const String& in_featureState,
                                             bool* featureEnabled) {
   if (in_featureState == "PrerenderHoldback") {
     *featureEnabled =
-        std::move(base::FeatureList::IsEnabled(features::kPrerender2Holdback));
+        base::FeatureList::IsEnabled(features::kPrerender2Holdback);
     return Response::Success();
   }
+
+  if (in_featureState == "PreloadingHoldback") {
+    *featureEnabled =
+        base::FeatureList::IsEnabled(features::kPreloadingHoldback);
+    return Response::Success();
+  }
+
   return Response::InvalidParams("Unknown feature");
 }
 

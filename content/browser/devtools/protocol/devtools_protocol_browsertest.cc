@@ -254,6 +254,17 @@ class PrerenderHoldbackDevToolsProtocolTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class PreloadingHoldbackDevToolsProtocolTest
+    : public PrerenderDevToolsProtocolTest {
+ public:
+  PreloadingHoldbackDevToolsProtocolTest() {
+    feature_list_.InitAndEnableFeature(features::kPreloadingHoldback);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class MultiplePrerendersDevToolsProtocolTest
     : public PrerenderDevToolsProtocolTest {
  public:
@@ -3787,10 +3798,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
                        CheckReportedPrerenderFeatures) {
   AttachToBrowserTarget();
-  base::Value::Dict params;
-  params.Set("featureState", "PrerenderHoldback");
-  const base::Value::Dict* result =
-      SendCommand("SystemInfo.getFeatureState", std::move(params));
+  base::Value::Dict paramsPrerenderHoldback;
+  paramsPrerenderHoldback.Set("featureState", "PrerenderHoldback");
+  const base::Value::Dict* result = SendCommand(
+      "SystemInfo.getFeatureState", std::move(paramsPrerenderHoldback));
+  EXPECT_THAT(result->FindBool("featureEnabled"), false);
+
+  base::Value::Dict paramsPreloadingHolback;
+  paramsPreloadingHolback.Set("featureState", "PreloadingHoldback");
+  result = SendCommand("SystemInfo.getFeatureState",
+                       std::move(paramsPreloadingHolback));
   EXPECT_THAT(result->FindBool("featureEnabled"), false);
 }
 
@@ -3799,6 +3816,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
   AttachToBrowserTarget();
   base::Value::Dict params;
   params.Set("featureState", "PrerenderHoldback");
+  const base::Value::Dict* result =
+      SendCommand("SystemInfo.getFeatureState", std::move(params));
+  EXPECT_THAT(result->FindBool("featureEnabled"), true);
+}
+
+IN_PROC_BROWSER_TEST_F(PreloadingHoldbackDevToolsProtocolTest,
+                       CheckReportedPreloadingFeatures) {
+  AttachToBrowserTarget();
+  base::Value::Dict params;
+  params.Set("featureState", "PreloadingHoldback");
   const base::Value::Dict* result =
       SendCommand("SystemInfo.getFeatureState", std::move(params));
   EXPECT_THAT(result->FindBool("featureEnabled"), true);

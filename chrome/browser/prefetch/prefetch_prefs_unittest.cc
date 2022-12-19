@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PrefetchPrefsTest, GetPreloadPagesState) {
@@ -105,7 +106,7 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled) {
 
 TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+  features.InitAndEnableFeature(features::kPreloadingHoldback);
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -139,7 +140,7 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
 
 TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+  features.InitAndEnableFeature(features::kPreloadingHoldback);
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
