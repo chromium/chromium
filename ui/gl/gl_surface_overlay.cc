@@ -6,7 +6,6 @@
 
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gl_image.h"
 
 namespace gl {
 

@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
-#include "ui/gl/gl_image.h"
 
 namespace gpu {
 namespace {

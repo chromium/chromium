@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {

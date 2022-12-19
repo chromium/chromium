@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_overlay.h"
 #include "ui/gl/presenter.h"
 #include "ui/gl/scoped_binders.h"
