@@ -40,6 +40,7 @@
   <div route-path="default">
     <network-summary default-network="{{defaultNetwork}}"
         device-states="{{deviceStates}}"
+        hotspot-info="{{hotspotInfo}}"
         on-active-networks-updated="attemptDeepLink">
     </network-summary>
     <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
@@ -181,7 +182,8 @@
               localized-string="[[i18nAdvanced('hotspotSubpageSubtitle')]]">
           </localized-link>
         </div>
-      <settings-hotspot-subpage></settings-hotspot-subpage>
+      <settings-hotspot-subpage hotspot-info="[[hotspotInfo]]">
+      </settings-hotspot-subpage>
     </os-settings-subpage>
   </template>
 

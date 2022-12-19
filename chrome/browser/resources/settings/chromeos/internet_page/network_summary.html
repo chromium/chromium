@@ -14,8 +14,8 @@
     </network-summary-item>
   </template>
   <template is="dom-if" if="[[shouldShowHotspotSummary_(
-        isHotspotFeatureEnabled_, hotspotInfo_, hotspotInfo_.allowStatus)]]">
-    <hotspot-summary-item hotspot-info="[[hotspotInfo_]]">
+      isHotspotFeatureEnabled_, hotspotInfo, hotspotInfo.allowStatus)]]">
+    <hotspot-summary-item hotspot-info="[[hotspotInfo]]">
     </hotspot-summary-item>
   </template>
 </div>

@@ -1,5 +1,32 @@
 <style include="settings-shared">
+  .separator-line {
+    border-top: var(--cr-separator-line);
+    padding: 0;
+  }
+
+  #hotspotToggleText {
+    font-weight: 500;
+  }
+
+  #hotspotToggleText[on] {
+    color: var(--cros-text-color-prominent);
+  }
+
+  #hotspotToggleText:not([on]) {
+    color: var(--cros-text-color-secondary);
+  }
 </style>
-<div id="container">
-   <!-- TODO(b/239477916): add implementation -->
+<div class="settings-box first">
+  <div id="hotspotToggleText" class="start" on$="[[isHotspotToggleOn_]]"
+       aria-hidden="true">
+     [[getOnOffString_(isHotspotToggleOn_)]]
+  </div>
+  <cr-toggle id="enableHotspotToggle"
+      checked="{{isHotspotToggleOn_}}"
+      disabled="[[isToggleDisabled_(hotspotInfo.allowStatus,
+          hotspotInfo.state)]]"
+      on-change="announceHotspotToggleChange_"
+      aria-label="$i18n{hotspotToggleA11yLabel}">
+  </cr-toggle>
 </div>
+<div class="separator-line"></div>

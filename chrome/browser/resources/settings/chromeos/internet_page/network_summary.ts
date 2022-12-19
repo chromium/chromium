@@ -70,6 +70,16 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
       },
 
       /**
+       * Hotspot information including state, active connected client count,
+       * allow status and hotspot configuration. Set here to update
+       * internet-page which updates hotspot-subpage.
+       */
+      hotspotInfo: {
+        type: Object,
+        notify: true,
+      },
+
+      /**
        * Array of active network states, one per device type. Initialized to
        * include a default WiFi state (see deviceStates comment).
        */
@@ -94,8 +104,6 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
       globalPolicy_: Object,
 
-      hotspotInfo_: Object,
-
       /**
        * Return true if hotspot feature flag is enabled.
        */
@@ -110,13 +118,13 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
   }
 
   defaultNetwork: OncMojo.NetworkStateProperties|null;
+  hotspotInfo: HotspotInfo|undefined;
   deviceStates: Record<NetworkType, OncMojo.DeviceStateProperties>;
   private activeNetworkIds_: Set<string>|null;
   private activeNetworkStates_: OncMojo.NetworkStateProperties[];
   private crosHotspotConfig_: CrosHotspotConfigInterface;
   private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
   private globalPolicy_: GlobalPolicy|undefined;
-  private hotspotInfo_: HotspotInfo;
   private isHotspotFeatureEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigRemote;
   private networkStateLists_:
@@ -164,7 +172,7 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
 
   async onHotspotInfoChanged(): Promise<void> {
     const response = await this.crosHotspotConfig_.getHotspotInfo();
-    this.hotspotInfo_ = response.hotspotInfo;
+    this.hotspotInfo = response.hotspotInfo;
   }
 
   /**
@@ -372,13 +380,13 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
    * Return whether hotspot row should be shown in network summary.
    */
   private shouldShowHotspotSummary_(): boolean {
-    if (!this.isHotspotFeatureEnabled_ || !this.hotspotInfo_) {
+    if (!this.isHotspotFeatureEnabled_ || !this.hotspotInfo) {
       return false;
     }
     // Hide the hotspot summary row if the device doesn't support hotspot.
-    return this.hotspotInfo_.allowStatus !==
+    return this.hotspotInfo.allowStatus !==
         HotspotAllowStatus.kDisallowedNoCellularUpstream &&
-        this.hotspotInfo_.allowStatus !==
+        this.hotspotInfo.allowStatus !==
         HotspotAllowStatus.kDisallowedNoWiFiDownstream;
   }
 }

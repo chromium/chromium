@@ -173,6 +173,7 @@ js_library("internet_page") {
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:router",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -214,9 +215,11 @@ js_library("internet_subpage") {
 
 js_library("hotspot_subpage") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = []
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
 }
 
 html_to_js("web_components") {
