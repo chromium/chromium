@@ -65,10 +65,6 @@ void SVGStaticStringList::SetAnimatedValue(SVGPropertyBase*) {
   NOTREACHED();
 }
 
-void SVGStaticStringList::AnimationEnded() {
-  NOTREACHED();
-}
-
 SVGStringListTearOff* SVGStaticStringList::TearOff() {
   if (!tear_off_)
     tear_off_ = MakeGarbageCollected<SVGStringListTearOff>(value_, this);

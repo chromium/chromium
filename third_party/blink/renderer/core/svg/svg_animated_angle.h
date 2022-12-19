@@ -55,7 +55,6 @@ class SVGAnimatedAngle final : public ScriptWrappable,
   void SynchronizeAttribute() override;
 
   void SetAnimatedValue(SVGPropertyBase*) override;
-  void AnimationEnded() override;
 
   void Trace(Visitor*) const override;
 

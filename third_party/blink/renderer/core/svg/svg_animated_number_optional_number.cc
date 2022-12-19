@@ -58,12 +58,6 @@ void SVGAnimatedNumberOptionalNumber::SetAnimatedValue(SVGPropertyBase* value) {
   second_number_->SetAnimatedValue(CurrentValue()->SecondNumber());
 }
 
-void SVGAnimatedNumberOptionalNumber::AnimationEnded() {
-  SVGAnimatedPropertyCommon<SVGNumberOptionalNumber>::AnimationEnded();
-  first_number_->AnimationEnded();
-  second_number_->AnimationEnded();
-}
-
 bool SVGAnimatedNumberOptionalNumber::NeedsSynchronizeAttribute() const {
   return first_number_->NeedsSynchronizeAttribute() ||
          second_number_->NeedsSynchronizeAttribute();

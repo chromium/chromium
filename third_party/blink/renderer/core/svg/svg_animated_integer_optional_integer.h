@@ -53,7 +53,6 @@ class SVGAnimatedIntegerOptionalInteger
 
   void SetAnimatedValue(SVGPropertyBase*) override;
   bool NeedsSynchronizeAttribute() const override;
-  void AnimationEnded() override;
 
   SVGAnimatedInteger* FirstInteger() { return first_integer_.Get(); }
   SVGAnimatedInteger* SecondInteger() { return second_integer_.Get(); }

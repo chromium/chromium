@@ -71,12 +71,6 @@ void SVGAnimatedIntegerOptionalInteger::SetAnimatedValue(
   second_integer_->SetAnimatedValue(CurrentValue()->SecondInteger());
 }
 
-void SVGAnimatedIntegerOptionalInteger::AnimationEnded() {
-  SVGAnimatedPropertyCommon<SVGIntegerOptionalInteger>::AnimationEnded();
-  first_integer_->AnimationEnded();
-  second_integer_->AnimationEnded();
-}
-
 bool SVGAnimatedIntegerOptionalInteger::NeedsSynchronizeAttribute() const {
   return first_integer_->NeedsSynchronizeAttribute() ||
          second_integer_->NeedsSynchronizeAttribute();

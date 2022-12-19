@@ -73,9 +73,4 @@ void SVGAnimatedAngle::SetAnimatedValue(SVGPropertyBase* value) {
   orient_type_->SetAnimatedValue(CurrentValue()->OrientType());
 }
 
-void SVGAnimatedAngle::AnimationEnded() {
-  SVGAnimatedProperty<SVGAngle>::AnimationEnded();
-  orient_type_->AnimationEnded();
-}
-
 }  // namespace blink

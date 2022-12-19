@@ -265,7 +265,7 @@ void SVGElement::ClearAnimatedAttribute(const QualifiedName& attribute) {
   ForSelfAndInstances(this, [&params](SVGElement* element) {
     if (SVGAnimatedPropertyBase* animated_property =
             element->PropertyFromAttribute(params.name)) {
-      animated_property->AnimationEnded();
+      animated_property->SetAnimatedValue(nullptr);
       element->SvgAttributeChanged(params);
     }
   });
