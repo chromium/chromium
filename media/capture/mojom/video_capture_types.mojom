@@ -246,6 +246,16 @@ enum VideoCaptureError {
   [MinVersion=4] kScreenCaptureKitFailedStopCapture,
   [MinVersion=4] kScreenCaptureKitStreamError,
   [MinVersion=4] kScreenCaptureKitFailedToFindSCDisplay,
+  [MinVersion=5] kVideoCaptureControllerInvalid,
+  [MinVersion=5] kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed,
+  [MinVersion=5] kVideoCaptureControllerUnsupportedPixelFormat,
+  [MinVersion=5] kVideoCaptureDeviceAlreadyReleased,
+  [MinVersion=5] kVideoCaptureSystemDeviceIdNotFound,
+  [MinVersion=5] kVideoCaptureDeviceFactoryWinUnknownError,
+  [MinVersion=5] kWinMediaFoundationDeviceInitializationFailed,
+  [MinVersion=5] kWinMediaFoundationSourceCreationFailed,
+  [MinVersion=5] kWinDirectShowDeviceFilterCreationFailed,
+  [MinVersion=5] kWinDirectShowDeviceInitializationFailed,
 };
 
 [Stable, Extensible]

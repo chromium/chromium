@@ -775,6 +775,38 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kScreenCaptureKitFailedToFindSCDisplay:
       return media::mojom::VideoCaptureError::
           kScreenCaptureKitFailedToFindSCDisplay;
+    case media::VideoCaptureError::
+        kVideoCaptureControllerUnsupportedPixelFormat:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureControllerUnsupportedPixelFormat;
+    case media::VideoCaptureError::kVideoCaptureControllerInvalid:
+      return media::mojom::VideoCaptureError::kVideoCaptureControllerInvalid;
+    case media::VideoCaptureError::
+        kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed;
+    case media::VideoCaptureError::kVideoCaptureDeviceAlreadyReleased:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureDeviceAlreadyReleased;
+    case media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureSystemDeviceIdNotFound;
+    case media::VideoCaptureError::kVideoCaptureDeviceFactoryWinUnknownError:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureDeviceFactoryWinUnknownError;
+    case media::VideoCaptureError::
+        kWinMediaFoundationDeviceInitializationFailed:
+      return media::mojom::VideoCaptureError::
+          kWinMediaFoundationDeviceInitializationFailed;
+    case media::VideoCaptureError::kWinMediaFoundationSourceCreationFailed:
+      return media::mojom::VideoCaptureError::
+          kWinMediaFoundationSourceCreationFailed;
+    case media::VideoCaptureError::kWinDirectShowDeviceFilterCreationFailed:
+      return media::mojom::VideoCaptureError::
+          kWinDirectShowDeviceFilterCreationFailed;
+    case media::VideoCaptureError::kWinDirectShowDeviceInitializationFailed:
+      return media::mojom::VideoCaptureError::
+          kWinDirectShowDeviceInitializationFailed;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1378,6 +1410,50 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kScreenCaptureKitFailedToFindSCDisplay:
       *output =
           media::VideoCaptureError::kScreenCaptureKitFailedToFindSCDisplay;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kVideoCaptureControllerUnsupportedPixelFormat:
+      *output = media::VideoCaptureError::
+          kVideoCaptureControllerUnsupportedPixelFormat;
+      return true;
+    case media::mojom::VideoCaptureError::kVideoCaptureControllerInvalid:
+      *output = media::VideoCaptureError::kVideoCaptureControllerInvalid;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed:
+      *output = media::VideoCaptureError::
+          kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed;
+      return true;
+    case media::mojom::VideoCaptureError::kVideoCaptureDeviceAlreadyReleased:
+      *output = media::VideoCaptureError::kVideoCaptureDeviceAlreadyReleased;
+      return true;
+    case media::mojom::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound:
+      *output = media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kVideoCaptureDeviceFactoryWinUnknownError:
+      *output =
+          media::VideoCaptureError::kVideoCaptureDeviceFactoryWinUnknownError;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kWinMediaFoundationDeviceInitializationFailed:
+      *output = media::VideoCaptureError::
+          kWinMediaFoundationDeviceInitializationFailed;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kWinMediaFoundationSourceCreationFailed:
+      *output =
+          media::VideoCaptureError::kWinMediaFoundationSourceCreationFailed;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kWinDirectShowDeviceFilterCreationFailed:
+      *output =
+          media::VideoCaptureError::kWinDirectShowDeviceFilterCreationFailed;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kWinDirectShowDeviceInitializationFailed:
+      *output =
+          media::VideoCaptureError::kWinDirectShowDeviceInitializationFailed;
       return true;
   }
   NOTREACHED();

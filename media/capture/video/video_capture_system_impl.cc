@@ -108,8 +108,7 @@ VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
   const VideoCaptureDeviceInfo* device_info = LookupDeviceInfoFromId(device_id);
   if (!device_info) {
     return VideoCaptureErrorOrDevice(
-        VideoCaptureError::
-            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+        VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
   }
   return factory_->CreateDevice(device_info->descriptor);
 }

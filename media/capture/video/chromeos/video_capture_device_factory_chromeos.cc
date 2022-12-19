@@ -44,11 +44,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
   }
   auto device =
       camera_hal_delegate_->CreateDevice(ui_task_runner_, device_descriptor);
-  return device
-             ? VideoCaptureErrorOrDevice(std::move(device))
-             : VideoCaptureErrorOrDevice(
-                   VideoCaptureError::
-                       kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  return device ? VideoCaptureErrorOrDevice(std::move(device))
+                : VideoCaptureErrorOrDevice(
+                      VideoCaptureError::
+                          kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed);
 }
 
 void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(

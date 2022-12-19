@@ -201,7 +201,17 @@ enum class VideoCaptureError {
   kScreenCaptureKitFailedStopCapture = 134,
   kScreenCaptureKitStreamError = 135,
   kScreenCaptureKitFailedToFindSCDisplay = 136,
-  kMaxValue = 136
+  kVideoCaptureControllerUnsupportedPixelFormat = 137,
+  kVideoCaptureControllerInvalid = 138,
+  kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed = 139,
+  kVideoCaptureDeviceAlreadyReleased = 140,
+  kVideoCaptureSystemDeviceIdNotFound = 141,
+  kVideoCaptureDeviceFactoryWinUnknownError = 142,
+  kWinMediaFoundationDeviceInitializationFailed = 143,
+  kWinMediaFoundationSourceCreationFailed = 144,
+  kWinDirectShowDeviceFilterCreationFailed = 145,
+  kWinDirectShowDeviceInitializationFailed = 146,
+  kMaxValue = 146
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for
