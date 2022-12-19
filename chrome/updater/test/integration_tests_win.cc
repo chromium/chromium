@@ -307,7 +307,7 @@ void CheckInstallation(UpdaterScope scope,
 
   if (is_installed) {
     std::unique_ptr<TaskScheduler> task_scheduler =
-        TaskScheduler::CreateInstance();
+        TaskScheduler::CreateInstance(scope);
     const std::wstring task_name =
         task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
     EXPECT_TRUE(!task_name.empty());
@@ -614,7 +614,7 @@ void Clean(UpdaterScope scope) {
   }
 
   std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance();
+      TaskScheduler::CreateInstance(scope);
   const std::wstring task_name =
       task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
   if (!task_name.empty())
