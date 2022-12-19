@@ -9,8 +9,10 @@
 #import "base/containers/circular_deque.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
+#import "components/breadcrumbs/core/features.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -52,6 +54,10 @@ bool EventsEmpty() {
 // Test fixture for BreadcrumbManagerTabHelper class.
 class BreadcrumbManagerTabHelperTest : public PlatformTest {
  protected:
+  BreadcrumbManagerTabHelperTest() {
+    scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
@@ -59,9 +65,6 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
 
     first_web_state_.SetBrowserState(chrome_browser_state_.get());
     second_web_state_.SetBrowserState(chrome_browser_state_.get());
-
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -87,6 +90,9 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
   UIScrollView* scroll_view_ = nil;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the identifier returned for a WebState is unique.

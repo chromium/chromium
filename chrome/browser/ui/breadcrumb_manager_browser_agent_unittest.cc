@@ -31,11 +31,6 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
   }
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(profile());
-  }
-
   void InsertTab(Browser* browser) {
     std::unique_ptr<content::WebContents> contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

@@ -92,8 +92,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   void SetUpOnMainThread() override {
     BreadcrumbManagerTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-        browser()->profile());
     ASSERT_TRUE(https_server_.Start());
   }
 

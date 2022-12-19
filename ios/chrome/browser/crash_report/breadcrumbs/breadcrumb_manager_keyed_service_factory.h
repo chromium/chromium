@@ -20,8 +20,14 @@ class BreadcrumbManagerKeyedServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static BreadcrumbManagerKeyedServiceFactory* GetInstance();
+
+  // Returns the keyed service for `browser_state`. Returns `nullptr` if
+  // breadcrumbs are disabled.
   static breadcrumbs::BreadcrumbManagerKeyedService* GetForBrowserState(
       web::BrowserState* browser_state);
+
+  BreadcrumbManagerKeyedServiceFactory(
+      const BreadcrumbManagerKeyedServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<BreadcrumbManagerKeyedServiceFactory>;
@@ -34,9 +40,7 @@ class BreadcrumbManagerKeyedServiceFactory
       web::BrowserState* browser_state) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* browser_state) const override;
-
-  BreadcrumbManagerKeyedServiceFactory(
-      const BreadcrumbManagerKeyedServiceFactory&) = delete;
+  bool ServiceIsCreatedWithBrowserState() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_FACTORY_H_
