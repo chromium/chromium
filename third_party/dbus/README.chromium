@@ -1,7 +1,7 @@
 Name: DBus
 URL: https://gitlab.freedesktop.org/dbus/dbus
-Version: 1.14.0
-Revision: 6fd1509ba3677ac434176882fbf1ca5d7603651e
+Version: 1.14.4
+Revision: 8501a73dfe923ad273229b7c45925d4abe4cca7e
 License: GPLv2+
 License File: NOT_SHIPPED
 Security Critical: no
