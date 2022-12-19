@@ -21,7 +21,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace base {
-class Time;
 class TimeDelta;
 }  // namespace base
 
@@ -526,22 +525,6 @@ bool IsZeroSuggestPrefetchingEnabled();
 // Returns whether zero-suggest prefetching is enabled in the given context.
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
-
-// Determines the age threshold in days for local zero-prefix suggestions.
-extern const base::FeatureParam<int> kOmniboxLocalZeroSuggestAgeThresholdParam;
-
-// Returns the age threshold since the last visit in order to consider a
-// normalized keyword search term as a zero-prefix suggestion.
-base::Time GetLocalHistoryZeroSuggestAgeThreshold();
-
-// Whether duplicative visits should be ignored for local history zero-suggest.
-// A duplicative visit is a visit to the same search term in an interval smaller
-// than kAutocompleteDuplicateVisitIntervalThreshold.
-extern const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits;
-// Whether duplicative visits should be ignored for local history
-// prefix-suggest. A duplicative visit is a visit to the same search term in an
-// interval smaller than kAutocompleteDuplicateVisitIntervalThreshold.
-extern const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits;
 
 // Short bookmarks.
 // Determine whether bookmarks should look for exact matches only or prefix

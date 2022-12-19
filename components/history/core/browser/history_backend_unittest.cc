@@ -40,6 +40,7 @@
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/history_client_fake_bookmarks.h"
@@ -590,9 +591,13 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
 
   size_t GetNumberOfMatchingSearchTerms(const int keyword_id,
                                         const std::u16string& prefix) {
+    URLDatabase* url_db = mem_backend_->db();
+    auto enumerator =
+        url_db->CreateKeywordSearchTermVisitEnumerator(keyword_id, prefix);
     KeywordSearchTermVisitList matching_terms;
-    mem_backend_->db()->GetMostRecentKeywordSearchTerms(
-        keyword_id, prefix, 1, &matching_terms);
+    GetAutocompleteSearchTermsFromEnumerator(
+        *enumerator, /*ignore_duplicate_visits=*/true,
+        SearchTermRankingPolicy::kRecency, &matching_terms);
     return matching_terms.size();
   }
 

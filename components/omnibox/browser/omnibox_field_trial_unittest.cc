@@ -354,25 +354,6 @@ TEST_F(OmniboxFieldTrialTest, GetValueForRuleInContext) {
   }
 }
 
-TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Verify the default value.
-  const int expected_age_threshold_days = 90;
-  base::Time age_threshold =
-      OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(expected_age_threshold_days,
-            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
-
-  // The default value can be overridden.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.name,
-        "3"}});
-  age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(3, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
-}
-
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {
   {
     std::map<std::string, std::string> params;

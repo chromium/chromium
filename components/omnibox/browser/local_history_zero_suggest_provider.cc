@@ -159,7 +159,7 @@ void LocalHistoryZeroSuggestProvider::DeleteMatch(
   // number of suggestions shown and the async nature of this lookup.
   history::QueryOptions opts;
   opts.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-  opts.begin_time = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
+  opts.begin_time = base::Time::Now() - base::Days(90);  // Full history length.
   history_service->QueryHistory(
       base::ASCIIToUTF16(google_search_url), opts,
       base::BindOnce(&LocalHistoryZeroSuggestProvider::OnHistoryQueryResults,
@@ -208,28 +208,12 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
 
   std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> results;
   const base::TimeTicks db_query_time = base::TimeTicks::Now();
-  if (base::FeatureList::IsEnabled(omnibox::kLocalHistorySuggestRevamp)) {
-    auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
-        template_url_service->GetDefaultSearchProvider()->id(),
-        OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold());
-    if (enumerator) {
-      history::GetAutocompleteSearchTermsFromEnumerator(
-          *enumerator,
-          OmniboxFieldTrial::kZeroSuggestIgnoreDuplicateVisits.Get(),
-          history::SearchTermRankingPolicy::kFrecency, &results);
-    }
-  } else {
-    url_db->GetMostRecentKeywordSearchTerms(
-        template_url_service->GetDefaultSearchProvider()->id(),
-        OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold(), &results);
-    const base::Time now = base::Time::Now();
-    std::sort(results.begin(), results.end(),
-              [&](const auto& a, const auto& b) {
-                return history::GetFrecencyScore(a->visit_count,
-                                                 a->last_visit_time, now) >
-                       history::GetFrecencyScore(b->visit_count,
-                                                 b->last_visit_time, now);
-              });
+  auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
+      template_url_service->GetDefaultSearchProvider()->id());
+  if (enumerator) {
+    history::GetAutocompleteSearchTermsFromEnumerator(
+        *enumerator, /*ignore_duplicate_visits=*/true,
+        history::SearchTermRankingPolicy::kFrecency, &results);
   }
   RecordDBMetrics(db_query_time, results.size());
 

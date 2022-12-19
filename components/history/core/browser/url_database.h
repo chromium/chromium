@@ -217,38 +217,20 @@ class URLDatabase {
   // way of SetKeywordSearchTermsForURL.
   void DeleteAllSearchTermsForKeyword(KeywordID keyword_id);
 
-  // Returns up to max_count of the most recent search terms for the specified
-  // keyword.
-  // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
-  // function below after experimentation.
-  void GetMostRecentKeywordSearchTerms(KeywordID keyword_id,
-                                       const std::u16string& prefix,
-                                       int max_count,
-                                       KeywordSearchTermVisitList* visits);
-
   // Returns an enumerator to enumerate all the KeywordSearchTermVisits starting
-  // with `prefix` for the specified keyword. The visits are ordered first by
+  // with `prefix` for the given keyword. The visits are ordered first by
   // |normalized_term| and then by |last_visit_time| in ascending order, i.e.,
   // from the oldest to the newest.
   std::unique_ptr<KeywordSearchTermVisitEnumerator>
   CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
                                          const std::u16string& prefix);
 
-  // Returns the most recent (no older than `age_threshold`) search terms for
-  // the specified keyword.
-  // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
-  // function below after experimentation.
-  void GetMostRecentKeywordSearchTerms(KeywordID keyword_id,
-                                       base::Time age_threshold,
-                                       KeywordSearchTermVisitList* visits);
-
-  // Returns an enumerator to enumerate all the KeywordSearchTermVisits no older
-  // than `age_threshold` for the given keyword. The visits are ordered first by
-  // |normalized_term| and then by |last_visit_time| in ascending order, i.e.,
-  // from the oldest to the newest.
+  // Returns an enumerator to enumerate all the KeywordSearchTermVisits for the
+  // given keyword. The visits are ordered first by |normalized_term| and then
+  // by |last_visit_time| in ascending order, i.e.,from the oldest to the
+  // newest.
   std::unique_ptr<KeywordSearchTermVisitEnumerator>
-  CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
-                                         base::Time age_threshold);
+  CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id);
 
   // Deletes all searches matching `term`.
   bool DeleteKeywordSearchTerm(const std::u16string& term);

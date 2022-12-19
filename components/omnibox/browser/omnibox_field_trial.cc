@@ -818,26 +818,6 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
   }
 }
 
-// Determines the age threshold in days for local zero-prefix suggestions.
-const base::FeatureParam<int> kOmniboxLocalZeroSuggestAgeThresholdParam(
-    &omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-    "OmniboxLocalZeroSuggestAgeThreshold",
-    90);
-
-base::Time GetLocalHistoryZeroSuggestAgeThreshold() {
-  return (base::Time::Now() -
-          base::Days(kOmniboxLocalZeroSuggestAgeThresholdParam.Get()));
-}
-
-const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
-    &omnibox::kLocalHistorySuggestRevamp,
-    "ZeroSuggestIgnoreDuplicateVisits",
-    true);
-const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
-    &omnibox::kLocalHistorySuggestRevamp,
-    "PrefixSuggestIgnoreDuplicateVisits",
-    true);
-
 // Short bookmarks.
 
 bool IsShortBookmarkSuggestionsEnabled() {

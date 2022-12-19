@@ -196,26 +196,11 @@ BASE_FEATURE(kKeepSecondaryZeroSuggest,
              "KeepSecondaryZeroSuggest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Revamps how local search history is extracted and processed for generating
-// zero-prefix and prefix suggestions.
-BASE_FEATURE(kLocalHistorySuggestRevamp,
-             "LocalHistorySuggestRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
              "LocalHistoryZeroSuggestBeyondNTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Used to adjust the age threshold since the last visit in order to consider a
-// normalized keyword search term as a zero-prefix suggestion. If disabled, the
-// default value of 90 days for Desktop and 60 days for Android and iOS is used.
-// If enabled, the age threshold is determined by this feature's companion
-// parameter, OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
-BASE_FEATURE(kOmniboxLocalZeroSuggestAgeThreshold,
-             "OmniboxLocalZeroSuggestAgeThreshold",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
 // requests with an empty input on Web/SRP on Mobile. Enabled by default on

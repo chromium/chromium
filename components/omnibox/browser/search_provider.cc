@@ -696,20 +696,13 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
   const TemplateURL* default_url = providers_.GetDefaultProviderURL();
   if (default_url) {
     const base::TimeTicks db_query_time = base::TimeTicks::Now();
-    if (base::FeatureList::IsEnabled(omnibox::kLocalHistorySuggestRevamp)) {
-      auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
-          default_url->id(), input_.text());
-      if (enumerator) {
-        history::GetAutocompleteSearchTermsFromEnumerator(
-            *enumerator,
-            OmniboxFieldTrial::kPrefixSuggestIgnoreDuplicateVisits.Get(),
-            history::SearchTermRankingPolicy::kRecency,
-            &raw_default_history_results_);
-      }
-    } else {
-      url_db->GetMostRecentKeywordSearchTerms(default_url->id(), input_.text(),
-                                              num_matches,
-                                              &raw_default_history_results_);
+    auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
+        default_url->id(), input_.text());
+    if (enumerator) {
+      history::GetAutocompleteSearchTermsFromEnumerator(
+          *enumerator, /*ignore_duplicate_visits=*/true,
+          history::SearchTermRankingPolicy::kRecency,
+          &raw_default_history_results_);
     }
     RecordDBMetrics(db_query_time, raw_default_history_results_.size());
     if (raw_default_history_results_.size() > num_matches) {
@@ -719,19 +712,12 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
   if (keyword_url) {
     const base::TimeTicks db_query_time = base::TimeTicks::Now();
-    if (base::FeatureList::IsEnabled(omnibox::kLocalHistorySuggestRevamp)) {
-      auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
-          keyword_url->id(), keyword_input_.text());
-      if (enumerator) {
-        history::GetAutocompleteSearchTermsFromEnumerator(
-            *enumerator,
-            OmniboxFieldTrial::kPrefixSuggestIgnoreDuplicateVisits.Get(),
-            history::SearchTermRankingPolicy::kRecency,
-            &raw_keyword_history_results_);
-      }
-    } else {
-      url_db->GetMostRecentKeywordSearchTerms(
-          keyword_url->id(), keyword_input_.text(), num_matches,
+    auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
+        keyword_url->id(), keyword_input_.text());
+    if (enumerator) {
+      history::GetAutocompleteSearchTermsFromEnumerator(
+          *enumerator, /*ignore_duplicate_visits=*/true,
+          history::SearchTermRankingPolicy::kRecency,
           &raw_keyword_history_results_);
     }
     RecordDBMetrics(db_query_time, raw_keyword_history_results_.size());

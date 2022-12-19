@@ -2503,9 +2503,7 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
 
   base::TimeTicks begin_time = base::TimeTicks::Now();
 
-  const base::Time age_threshold = base::Time::Now() - base::Days(90);
-  auto enumerator =
-      db_->CreateKeywordSearchTermVisitEnumerator(keyword_id, age_threshold);
+  auto enumerator = db_->CreateKeywordSearchTermVisitEnumerator(keyword_id);
   if (!enumerator) {
     return {};
   }
