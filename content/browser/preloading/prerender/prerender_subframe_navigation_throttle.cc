@@ -4,7 +4,6 @@
 
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 
-#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -13,7 +12,6 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {

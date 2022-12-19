@@ -6,13 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
