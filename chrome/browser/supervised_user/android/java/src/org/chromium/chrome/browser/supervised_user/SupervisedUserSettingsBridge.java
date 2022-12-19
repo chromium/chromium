@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.supervised_user.test;
+package org.chromium.chrome.browser.supervised_user;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
  *
  * This should only be used in tests.
  */
-public class SupervisedUserSettingsBridge {
+class SupervisedUserSettingsBridge {
     /** Set the website filtering behaviour for this user. */
     static void setFilteringBehavior(Profile profile, @FilteringBehavior int setting) {
         SupervisedUserSettingsBridgeJni.get().setFilteringBehavior(profile, setting);

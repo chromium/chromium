@@ -86,7 +86,7 @@ class WebsiteParentApproval {
     @CalledByNative
     private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
         // First ask the parent to authenticate.
-        ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
+        ParentAuthDelegate delegate = ParentAuthDelegateProvider.getInstance();
         FaviconHelper faviconHelper = new FaviconHelper();
         delegate.requestLocalAuth(windowAndroid, url,
                 (success) -> { onParentAuthComplete(success, windowAndroid, url, faviconHelper); });
