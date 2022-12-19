@@ -89,7 +89,6 @@ crbug.com/626703 external/wpt/geolocation-API/enabled-by-permission-policy-attri
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-permission-policy-attribute.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-permissions-policy.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
-crbug.com/626703 external/wpt/dom/events/scrolling/scrollend-event-handler-content-attributes.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/media/media-loading-state.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
