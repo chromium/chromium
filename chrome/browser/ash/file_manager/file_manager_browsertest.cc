@@ -1303,9 +1303,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
         TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
         TestCase("saveAsDlpRestrictedMountableDirectory").EnableDlp(),
+        TestCase("saveAsNonDlpRestricted").EnableDlp(),
+        TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp()));
-// TODO(crbug.com/1394305): Re-enable this test
-// TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()

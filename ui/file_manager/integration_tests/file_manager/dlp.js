@@ -252,14 +252,16 @@ testcase.saveAsDlpRestrictedMountableDirectory = async () => {
 };
 
 /**
- * Tests that save dialogs are never opened in a DLP blocked volume/directory,
- * but rather in the default display root.
+ * Tests that save dialogs are opened in a requested volume/directory,
+ * when it's not blocked by DLP.
+ * This test is an addition to the `saveAsDlpRestrictedRedirectsToMyFiles` test
+ * case, which assert that if the directory is blocked, the dialog will not be
+ * opened in the requested path.
  */
-testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
+testcase.saveAsNonDlpRestricted = async () => {
   const cancelButton = '.button-panel button.cancel';
 
-  // Add entries to Downloads and Play files.
-  await addEntries(['local'], [ENTRIES.hello]);
+  // Add entries to Play files.
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
 
   const allowedCloser = async (dialog) => {
@@ -278,6 +280,18 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
       await openAndWaitForClosingDialog(
           {type: 'saveFile'}, 'android_files', BASIC_ANDROID_ENTRY_SET,
           allowedCloser));
+};
+
+/**
+ * Tests that save dialogs are never opened in a DLP blocked volume/directory,
+ * but rather in the default display root.
+ */
+testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
+  const cancelButton = '.button-panel button.cancel';
+
+  // Add entries to Downloads and Play files.
+  await addEntries(['local'], [ENTRIES.hello]);
+  await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
 
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedArc'});
