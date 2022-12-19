@@ -592,6 +592,10 @@ class LocationBarMediator
 
     /* package */ void micButtonClicked(View view) {
         if (!mNativeInitialized) return;
+        // Hide keyboard before launch voice search to avoid keyboard action announcement in
+        // TalkBack to be picked up by voice search.
+        mUrlCoordinator.setKeyboardVisibility(false, false);
+
         RecordUserAction.record("MobileOmniboxVoiceSearch");
         mVoiceRecognitionHandler.startVoiceRecognition(
                 VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
