@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
-#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -60,12 +59,10 @@ void OpenLensSidePanel(Browser* browser,
     LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
         ->RegisterEntryAndShow(url_params);
   } else {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-
-    if (!browser_view->lens_side_panel_controller())
-      browser_view->CreateLensSidePanelController();
-
-    browser_view->lens_side_panel_controller()->OpenWithURL(url_params);
+    // This code path should never be reachable, since Unified Side Panel is
+    // enabled by default with no option to turn it off after M111. However,
+    // until the flag is cleaned up, keep this in for robustness.
+    browser->OpenURL(url_params);
   }
 }
 
@@ -80,18 +77,6 @@ views::Widget* OpenLensRegionSearchInstructions(
   return views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<LensRegionSearchInstructionsView>(
           anchor, std::move(close_callback), std::move(escape_callback)));
-}
-
-void CreateLensSidePanelControllerForTesting(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  browser_view->CreateLensSidePanelController();
-  DCHECK(browser_view->lens_side_panel_controller());
-}
-
-content::WebContents* GetLensSidePanelWebContentsForTesting(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  DCHECK(browser_view->lens_side_panel_controller());
-  return browser_view->lens_side_panel_controller()->web_contents();
 }
 
 void CreateLensUnifiedSidePanelEntryForTesting(Browser* browser) {

@@ -9097,7 +9097,6 @@ test("unit_tests") {
   if (is_chrome_branded && !is_android) {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
-      "../browser/ui/views/lens/lens_side_panel_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_navigation_helper_unittest.cc",
       "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_unittest.cc",
     ]

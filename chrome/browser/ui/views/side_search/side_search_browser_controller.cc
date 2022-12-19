@@ -555,8 +555,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
   if (base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
       !base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering) &&
       will_show_side_panel) {
-    browser_view_->CloseOpenRightAlignedSidePanel(/*exclude_lens=*/false,
-                                                  /*exclude_side_search=*/true);
+    browser_view_->CloseOpenRightAlignedSidePanel(/*exclude_side_search=*/true);
   }
 
   // The side panel contents will be created if it does not already exist.

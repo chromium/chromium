@@ -181,7 +181,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
-#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/performance_manager/public/features.h"
@@ -301,10 +300,6 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
-#endif
 
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -754,11 +749,8 @@ class BrowserView::SidePanelVisibilityController : public views::ViewObserver {
   using Panels = std::vector<PanelStateEntry>;
 
   SidePanelVisibilityController(views::View* side_search_panel,
-                                views::View* lens_panel,
                                 views::View* rhs_panel)
       : side_search_panel_(side_search_panel) {
-    if (lens_panel)
-      global_panels_.push_back({lens_panel, absl::nullopt});
     if (rhs_panel)
       global_panels_.push_back({rhs_panel, absl::nullopt});
 
@@ -958,16 +950,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (lens::features::IsLensSidePanelEnabled()) {
-    lens_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-    // If the separator was not already created, create one.
-    if (!right_aligned_side_panel_separator_)
-      right_aligned_side_panel_separator_ =
-          AddChildView(std::make_unique<ContentsSeparator>());
-  }
-#endif
-
   if (side_search::IsEnabledForBrowser(browser_.get()) &&
       !side_search::ShouldUseUnifiedSidePanel()) {
     bool dse_support =
@@ -1051,12 +1033,6 @@ BrowserView::~BrowserView() {
   // this observer before those children are removed.
   side_panel_button_highlighter_.reset();
   side_panel_visibility_controller_.reset();
-
-// Delete lens side panel controller before deleting the child views.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (lens_side_panel_controller_)
-    lens_side_panel_controller_.reset();
-#endif
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -1851,21 +1827,6 @@ void BrowserView::ExitFullscreen() {
   ProcessFullscreen(false, GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                     display::kInvalidDisplayId);
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void BrowserView::CreateLensSidePanelController() {
-  DCHECK(!lens_side_panel_controller_);
-  lens_side_panel_controller_ = std::make_unique<lens::LensSidePanelController>(
-      base::BindOnce(&BrowserView::DeleteLensSidePanelController,
-                     weak_ptr_factory_.GetWeakPtr()),
-      lens_side_panel_, this);
-}
-
-void BrowserView::DeleteLensSidePanelController() {
-  DCHECK(lens_side_panel_controller_);
-  lens_side_panel_controller_.reset();
-}
-#endif
 
 void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     const GURL& url,
@@ -3661,8 +3622,7 @@ void BrowserView::CloseTabSearchBubble() {
     tab_search_host->CloseTabSearchBubble();
 }
 
-bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
-                                                 bool exclude_side_search) {
+bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_side_search) {
   // Check if any side panels are open before closing side panels.
   if (!side_panel_visibility_controller_ ||
       !side_panel_visibility_controller_->IsManagedSidePanelVisible()) {
@@ -3678,11 +3638,6 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
   }
 
   toolbar()->side_panel_button()->HideSidePanel();
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!exclude_lens && lens_side_panel_controller_)
-    lens_side_panel_controller_->Close();
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return true;
 }
@@ -3756,8 +3711,6 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(download_shelf_->GetView());
   if (unified_side_panel_)
     panes->push_back(unified_side_panel_);
-  if (lens_side_panel_)
-    panes->push_back(lens_side_panel_);
   if (side_search_side_panel_)
     panes->push_back(side_search_side_panel_);
   // TODO(crbug.com/1055150): Implement for mac.
@@ -3938,11 +3891,8 @@ void BrowserView::AddedToWidget() {
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
-  if (toolbar_->side_panel_button() &&
-      (lens_side_panel_ || unified_side_panel_)) {
+  if (toolbar_->side_panel_button() && unified_side_panel_) {
     std::vector<View*> panels;
-    if (lens_side_panel_)
-      panels.push_back(lens_side_panel_);
     if (unified_side_panel_)
       panels.push_back(unified_side_panel_);
     if (base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
@@ -3954,8 +3904,8 @@ void BrowserView::AddedToWidget() {
             toolbar_->side_panel_button(), panels);
 
     side_panel_visibility_controller_ =
-        std::make_unique<SidePanelVisibilityController>(
-            side_search_side_panel_, lens_side_panel_, unified_side_panel_);
+        std::make_unique<SidePanelVisibilityController>(side_search_side_panel_,
+                                                        unified_side_panel_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3985,8 +3935,8 @@ void BrowserView::AddedToWidget() {
       top_container_, tab_strip_region_view_, tabstrip_, toolbar_,
       infobar_container_, contents_container_, side_search_side_panel_,
       left_aligned_side_panel_separator_, unified_side_panel_,
-      right_aligned_side_panel_separator_, lens_side_panel_,
-      immersive_mode_controller_.get(), contents_separator_));
+      right_aligned_side_panel_separator_, immersive_mode_controller_.get(),
+      contents_separator_));
 
   EnsureFocusOrder();
 

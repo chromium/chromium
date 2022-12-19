@@ -90,12 +90,6 @@ class TopControlsSlideControllerTest;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-namespace lens {
-class LensSidePanelController;
-}  // namespace lens
-#endif
-
 class SideSearchBrowserController;
 
 namespace ui {
@@ -206,8 +200,6 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
-  SidePanel* lens_side_panel() { return lens_side_panel_; }
-
   SidePanel* side_search_side_panel_for_testing() {
     return side_search_side_panel_;
   }
@@ -215,16 +207,6 @@ class BrowserView : public BrowserWindow,
   SidePanelCoordinator* side_panel_coordinator() {
     return side_panel_coordinator_.get();
   }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  lens::LensSidePanelController* lens_side_panel_controller() {
-    return lens_side_panel_controller_.get();
-  }
-  // Creates the Lens side panel controller.
-  void CreateLensSidePanelController();
-  // Deletes the Lens side panel controller.
-  void DeleteLensSidePanelController();
-#endif
 
   SideSearchBrowserController* side_search_controller() {
     return side_search_controller_.get();
@@ -784,8 +766,7 @@ class BrowserView : public BrowserWindow,
 
   // Closes an opened right aligned side panel, returns true if there is an open
   // side panel being closed.
-  bool CloseOpenRightAlignedSidePanel(bool exclude_lens = false,
-                                      bool exclude_side_search = false);
+  bool CloseOpenRightAlignedSidePanel(bool exclude_side_search = false);
 
   // Clobbers all right aligned side search side panels if
   // kClobberAllSideSearchSidePanels is enabled.
@@ -1088,9 +1069,6 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::View, DanglingUntriaged> left_aligned_side_panel_separator_ =
       nullptr;
 
-  // The Lens side panel.
-  raw_ptr<SidePanel, DanglingUntriaged> lens_side_panel_ = nullptr;
-
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   // TODO(pbos): Move this functionality into SidePanel when multiple "panels"
@@ -1107,11 +1085,6 @@ class BrowserView : public BrowserWindow,
   // the contextual panel interacts as expected with the global panels.
   std::unique_ptr<SidePanelVisibilityController>
       side_panel_visibility_controller_;
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // A controller that handles content hosted in the Lens side panel.
-  std::unique_ptr<lens::LensSidePanelController> lens_side_panel_controller_;
-#endif
 
   // Controls the browser window's side panel for the Side Search feature.
   std::unique_ptr<SideSearchBrowserController> side_search_controller_;

@@ -25,10 +25,6 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
     : ToolbarButton(base::BindRepeating(&SidePanelToolbarButton::ButtonPressed,
                                         base::Unretained(this))),
