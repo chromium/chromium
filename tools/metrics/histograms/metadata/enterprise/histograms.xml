@@ -1572,7 +1572,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
     expires_after="2023-06-04">
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Whether loading of device policy from file on an enterprise-enrolled
     (checked against install_attributes.pb) Chrome OS device yields an
@@ -1586,7 +1586,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Used for monitoring the health of device policy. -->
 
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Whether loading of device policy from file on an enterprise-enrolled
     (checked against install_attributes.pb) Chrome OS device yields an
@@ -1599,6 +1599,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to device enrollment on new installs of Chrome OS devices.
   </summary>
@@ -1608,6 +1609,7 @@ chromium-metrics-reviews@google.com.
     enum="EnterpriseEnrollmentType" expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to attestation-based enrollment (Zero-Touch) of Chrome OS
     devices.
@@ -1684,6 +1686,7 @@ chromium-metrics-reviews@google.com.
   <owner>dkuzmin@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to attestation-based initial enrollment (Zero-Touch) of
     Chrome OS devices during the first startup of a device.
@@ -1718,6 +1721,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to Chrome OS enterprise enrollment recovery. Note that this
     only covers cases in which prior to recovery, UMA stats are enabled by

@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UpdateEngine.Check.TargetVersion"
     enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-05-14">
   <owner>mpolzer@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the Chrome OS target version set by device policy and sent
     to Omaha. This is a sparse histogram, since the possible valid values are
