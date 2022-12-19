@@ -119,7 +119,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   }
 
   bool IsNegativeNumericLiteral() const;
-  bool IsZero() const { return value_->GetFloatValue() == 0; }
 
   static SVGLengthMode LengthModeForAnimatedLengthAttribute(
       const QualifiedName&);
