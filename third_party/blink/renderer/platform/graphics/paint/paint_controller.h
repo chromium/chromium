@@ -28,8 +28,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 
-class SkTextBlob;
-
 namespace blink {
 
 class PaintUnderInvalidationChecker;
@@ -170,10 +168,11 @@ class PLATFORM_EXPORT PaintController {
   void AssertLastCheckedCachedItem(const DisplayItemClient&, DisplayItem::Type);
 #endif
 
-  // Returns the SkTextBlob in DrawTextBlobOp in
-  // MatchingCachedItemToBeRepainted() if it exists and can be reused for
-  // repainting.
-  sk_sp<SkTextBlob> CachedTextBlob() const;
+  // This can only be called if the previous UseCachedItemIfPossible() returned
+  // false. Returns the cached display item that was matched in the previous
+  // UseCachedItemIfPossible() for an invalidated DisplayItemClient, or nullptr
+  // if there is no matching item.
+  DisplayItem* MatchingCachedItemToBeRepainted();
 
   // Tries to find the cached subsequence corresponding to the given parameters.
   // If found, copies the cache subsequence to the new display list and returns
@@ -337,12 +336,6 @@ class PLATFORM_EXPORT PaintController {
   // Set new item state (cache skipping, etc) for the last new display item.
   void ProcessNewItem(const DisplayItemClient&, DisplayItem&);
 
-  // This can only be called if the previous UseCachedItemIfPossible() returned
-  // false. Returns the cached display item that was matched in the previous
-  // UseCachedItemIfPossible() for an invalidated DisplayItemClient for
-  // non-layout reason, or nullptr if there is no such item.
-  const DisplayItem* MatchingCachedItemToBeRepainted() const;
-
   void CheckNewItem(DisplayItem&);
   void CheckNewChunkId(const PaintChunk::Id&);
   void CheckNewChunk();
@@ -444,8 +437,6 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t next_item_to_index_ = 0;
 
   wtf_size_t last_matching_item_ = kNotFound;
-  PaintInvalidationReason last_matching_client_invalidation_reason_ =
-      PaintInvalidationReason::kNone;
 
 #if DCHECK_IS_ON()
   wtf_size_t num_indexed_items_ = 0;
