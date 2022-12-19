@@ -33,8 +33,7 @@ class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
 
   HttpsUpgradesNavigationThrottle(
       content::NavigationHandle* handle,
-      std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
-      bool http_interstitial_enabled);
+      std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory);
   ~HttpsUpgradesNavigationThrottle() override;
 
   HttpsUpgradesNavigationThrottle(const HttpsUpgradesNavigationThrottle&) =
@@ -55,10 +54,6 @@ class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
 
  private:
   std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
-
-  // Whether the throttle should trigger the interstitial warning before
-  // navigating to the HTTP fallback URL.
-  bool http_interstitial_enabled_;
 };
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_UPGRADES_NAVIGATION_THROTTLE_H_

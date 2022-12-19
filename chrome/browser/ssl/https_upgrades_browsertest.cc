@@ -44,33 +44,14 @@
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::kEventHistogram;
 
-// Many of the following tests have only minor variations for HTTPS-First Mode
-// vs. HTTPS-Upgrades. These get parameterized so the tests run under both
-// versions on their own as well as when both HTTPS Upgrades and HTTPS-First
-// Mode are enabled (to test any interactions between the two upgrade modes).
-enum class HttpsUpgradesTestType {
-  kHttpsFirstModeOnly,
-  kHttpsUpgradesOnly,
-  kBoth
-};
-
 // Tests for the v2 implementation of HTTPS-First Mode.
-class HttpsUpgradesBrowserTest
-    : public testing::WithParamInterface<HttpsUpgradesTestType>,
-      public InProcessBrowserTest {
+class HttpsUpgradesBrowserTest : public InProcessBrowserTest {
  public:
   HttpsUpgradesBrowserTest() = default;
   ~HttpsUpgradesBrowserTest() override = default;
 
   void SetUp() override {
-    if (GetParam() != HttpsUpgradesTestType::kHttpsFirstModeOnly) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kHttpsFirstModeV2,
-                                features::kHttpsUpgrades},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitAndEnableFeature(features::kHttpsFirstModeV2);
-    }
+    feature_list_.InitAndEnableFeature(features::kHttpsFirstModeV2);
     InProcessBrowserTest::SetUp();
   }
 
@@ -100,13 +81,7 @@ class HttpsUpgradesBrowserTest
     HttpsOnlyModeUpgradeInterceptor::SetHttpPortForTesting(
         http_server()->port());
 
-    // For the kHttpsUpgradesOnly test variant, don't enable the HTTPS-First
-    // Mode pref.
-    if (GetParam() == HttpsUpgradesTestType::kHttpsUpgradesOnly) {
-      SetPref(false);
-    } else {
-      SetPref(true);
-    }
+    SetPref(true);
   }
 
   void TearDownOnMainThread() override { SetPref(false); }
@@ -156,13 +131,6 @@ class HttpsUpgradesBrowserTest
     content::NavigateToURLBlockUntilNavigationsComplete(tab, url, 2);
   }
 
-  // Whether the tests should run steps that assume the HTTP interstitial will
-  // trigger (i.e., for fallback HTTP navigations when HTTPS-First Mode is
-  // enabled).
-  bool IsHttpInterstitialEnabled() const {
-    return GetParam() != HttpsUpgradesTestType::kHttpsUpgradesOnly;
-  }
-
   net::EmbeddedTestServer* http_server() { return &http_server_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
   base::HistogramTester* histograms() { return &histograms_; }
@@ -175,28 +143,9 @@ class HttpsUpgradesBrowserTest
   base::HistogramTester histograms_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    HttpsUpgradesBrowserTest,
-    ::testing::Values(HttpsUpgradesTestType::kHttpsFirstModeOnly,
-                      HttpsUpgradesTestType::kHttpsUpgradesOnly,
-                      HttpsUpgradesTestType::kBoth),
-    // Map param to a human-readable string for better test output.
-    [](testing::TestParamInfo<HttpsUpgradesTestType> input_type)
-        -> std::string {
-      switch (input_type.param) {
-        case HttpsUpgradesTestType::kHttpsFirstModeOnly:
-          return "HttpsFirstModeOnly";
-        case HttpsUpgradesTestType::kHttpsUpgradesOnly:
-          return "HttpsUpgradesOnly";
-        case HttpsUpgradesTestType::kBoth:
-          return "BothHttpsFirstModeAndHttpsUpgrades";
-      }
-    });
-
 // If the user navigates to an HTTP URL for a site that supports HTTPS, the
 // navigation should end up on the HTTPS version of the URL.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        UrlWithHttpScheme_ShouldUpgrade) {
   GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.test", "/simple.html");
@@ -220,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
 // If the user navigates to an HTTPS URL for a site that supports HTTPS, the
 // navigation should end up on that exact URL.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        UrlWithHttpsScheme_ShouldLoad) {
   GURL https_url = https_server()->GetURL("foo.test", "/simple.html");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -233,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
 // If the user navigates to a localhost URL, the navigation should end up on
 // that exact URL.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
   GURL localhost_url = http_server()->GetURL("localhost", "/simple.html");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURL(contents, localhost_url));
@@ -245,18 +194,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
 
 // If the user navigates to an HTTPS URL, the navigation should end up on that
 // exact URL, even if the site has an SSL error.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        UrlWithHttpsScheme_BrokenSSL_ShouldNotFallback) {
   GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, https_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
 
   // Verify that navigation event metrics were not recorded as the navigation
   // was not upgraded.
@@ -266,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // If the user navigates to an HTTP URL for a site with broken HTTPS, the
 // navigation should end up on the HTTPS URL and show the HTTPS-Only Mode
 // interstitial.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        UrlWithHttpScheme_BrokenSSL_ShouldInterstitial) {
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
   GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
@@ -275,11 +220,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Verify that navigation event metrics were correctly recorded.
   histograms()->ExpectTotalCount(kEventHistogram, 3);
@@ -290,32 +232,18 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
 // If the user triggers an HTTPS-Only Mode interstitial for a host and then
 // clicks through the interstitial, they should end up on the HTTP URL.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        InterstitialBypassed_HttpFallbackLoaded) {
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-
-    // Proceed through the interstitial, which will add the host to the
-    // allowlist and navigate to the HTTP fallback URL.
-    ProceedThroughInterstitial(contents);
-
-    // Verify that the interstitial metrics were correctly recorded.
-    histograms()->ExpectTotalCount("interstitial.https_first_mode.decision", 2);
-    histograms()->ExpectBucketCount(
-        "interstitial.https_first_mode.decision",
-        security_interstitials::MetricsHelper::Decision::SHOW, 1);
-    histograms()->ExpectBucketCount(
-        "interstitial.https_first_mode.decision",
-        security_interstitials::MetricsHelper::Decision::PROCEED, 1);
-  }
-
+  // Proceed through the interstitial, which will add the host to the allowlist
+  // and navigate to the HTTP fallback URL.
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   // Verify that navigation event metrics were correctly recorded.
@@ -323,11 +251,20 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+
+  // Verify that the interstitial metrics were correctly recorded.
+  histograms()->ExpectTotalCount("interstitial.https_first_mode.decision", 2);
+  histograms()->ExpectBucketCount(
+      "interstitial.https_first_mode.decision",
+      security_interstitials::MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount(
+      "interstitial.https_first_mode.decision",
+      security_interstitials::MetricsHelper::Decision::PROCEED, 1);
 }
 
 // If the upgraded HTTPS URL is not available due to a net error, it should
 // trigger the HTTPS-Only Mode interstitial and offer fallback.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        NetErrorOnUpgrade_ShouldInterstitial) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
@@ -336,11 +273,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Verify that navigation event metrics were correctly recorded.
   histograms()->ExpectTotalCount(kEventHistogram, 3);
@@ -351,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
 // Navigations in subframes should not get upgraded by HTTPS-Only Mode. They
 // should be blocked as mixed content.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        HttpsParentHttpSubframeNavigation_Blocked) {
   const GURL parent_url(
       https_server()->GetURL("foo.test", "/iframe_blank.html"));
@@ -372,7 +306,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // Navigating to an HTTP URL in a subframe of an HTTP page should not upgrade
 // the subframe navigation to HTTPS (even if the subframe navigation is to a
 // different host than the parent frame).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        HttpParentHttpSubframeNavigation_NotUpgraded) {
   // The parent frame will fail to upgrade to HTTPS.
   const GURL parent_url(
@@ -383,14 +317,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, parent_url);
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    // Proceeding through the interstitial will add the hostname to the
-    // allowlist.
-    ProceedThroughInterstitial(contents);
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  // Proceeding through the interstitial will add the hostname to the allowlist.
+  ProceedThroughInterstitial(contents);
 
   // Verify that navigation event metrics were recorded for the main frame.
   histograms()->ExpectTotalCount(kEventHistogram, 3);
@@ -409,38 +339,23 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // Tests that a navigation to the HTTP version of a site with an HTTPS version
 // that is slow to respond gets upgraded to HTTPS but times out and shows the
 // HTTPS-Only Mode interstitial.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, SlowHttps_ShouldInterstitial) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, SlowHttps_ShouldInterstitial) {
   // Set timeout to zero so that HTTPS upgrades immediately timeout.
   HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(0);
 
-  // Set up a custom HTTPS server that times out without sending a response.
-  net::EmbeddedTestServer timeout_server{net::EmbeddedTestServer::TYPE_HTTPS};
-  timeout_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        // Server will hang until destroyed.
-        return std::make_unique<net::test_server::HungResponse>();
-      }));
-  ASSERT_TRUE(timeout_server.Start());
-  HttpsOnlyModeUpgradeInterceptor::SetHttpsPortForTesting(
-      timeout_server.port());
-
-  const GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+  const GURL http_url = http_server()->GetURL("foo.test", "/hung");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 }
 
 // Tests that an HTTP POST form navigation to "bar.test" from an HTTP page on
 // "foo.test" is not upgraded to HTTPS. (HTTP form navigations from HTTPS are
 // blocked by the Mixed Forms warning.)
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
   // Point the HTTP form target to "bar.test".
   base::StringPairs replacement_text;
   replacement_text.emplace_back(make_pair(
@@ -450,19 +365,16 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
   auto replacement_path = net::test_server::GetFilePathWithReplacements(
       "/ssl/page_with_form_targeting_http_url.html", replacement_text);
 
-  // Navigate to the page hosting the form on "foo.test".
+  // Navigate to the page hosting the form on "foo.test". The HTTPS-Only Mode
+  // interstitial should trigger.
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_server()->GetURL("bad-https.test", replacement_path), 2);
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
-  if (IsHttpInterstitialEnabled()) {
-    // The HTTPS-Only Mode interstitial should trigger.
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    // Proceed through the interstitial to add the hostname to the allowlist.
-    ProceedThroughInterstitial(contents);
-  }
+  // Proceed through the interstitial to add the hostname to the allowlist.
+  ProceedThroughInterstitial(contents);
 
   // Verify that navigation event metrics were recorded for the initial page.
   histograms()->ExpectTotalCount(kEventHistogram, 3);
@@ -485,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
 // Tests that if an HTTPS navigation redirects to HTTP on a different host, it
 // should upgrade to HTTPS on that new host. (A downgrade redirect on the same
 // host would imply a redirect loop.)
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        HttpsToHttpRedirect_ShouldUpgrade) {
   GURL target_url = http_server()->GetURL("bar.test", "/title1.html");
   GURL url = https_server()->GetURL("foo.test",
@@ -513,7 +425,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // Tests that navigating to an HTTPS page that downgrades to HTTP on the same
 // host will fail and trigger the HTTPS-Only Mode interstitial (due to the
 // redirect loop hitting the redirect limit).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        RedirectLoop_ShouldInterstitial) {
   // Set up a new test server instance so it can have a custom handler.
   net::EmbeddedTestServer downgrading_server{
@@ -544,12 +456,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL url = downgrading_server.GetURL("foo.test", "/");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, url);
-
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Verify that navigation event metrics were correctly recorded.
   histograms()->ExpectTotalCount(kEventHistogram, 3);
@@ -561,29 +469,25 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // Tests that the security level is WARNING when the HTTPS-Only Mode
 // interstitial is shown for a net error on HTTPS. (Without HTTPS-Only Mode, a
 // net error would be a security level of NONE.)
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        NetErrorOnUpgrade_SecurityLevelWarning) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
-    EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 
-    // Proceed through the interstitial to navigate to the HTTP site.
-    ProceedThroughInterstitial(contents);
-  }
-
-  // The HTTP site results in a net error, which should have security level NONE
-  // (as no connection was made).
+  // Proceed through the interstitial to navigate to the HTTP site. The HTTP
+  // site results in a net error, which should have security level NONE (as no
+  // connection was made).
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
@@ -591,28 +495,24 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // interstitial is shown for a cert error on HTTPS. (Without HTTPS-Only Mode, a
 // a cert error would be a security level of DANGEROUS.) After clicking through
 // the interstitial, the security level should still be WARNING.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        BrokenSSLOnUpgrade_SecurityLevelWarning) {
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
   GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
-    EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
+  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 
-    // Proceed through the interstitial to navigate to the HTTP page.
-    ProceedThroughInterstitial(contents);
-  }
-
-  // The security level should still be WARNING.
+  // Proceed through the interstitial to navigate to the HTTP page. The security
+  // level should still be WARNING.
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
@@ -626,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // be shown and the user should be able to click through the SSL interstitial to
 // visit the HTTPS version of the site (but in a DANGEROUS security level
 // state).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        HttpsUpgradeWithBrokenSSL_ShouldTriggerSSLInterstitial) {
   // Set up a new test server instance so it can have a custom handler that
   // redirects to the HTTPS server.
@@ -654,20 +554,16 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
-  if (IsHttpInterstitialEnabled()) {
-    // The HTTPS-First Mode interstitial should trigger first.
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
+  // The HTTPS-First Mode interstitial should trigger first.
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
-    // Proceeding through the HTTPS-First Mode interstitial will hit the
-    // upgrading server's HTTP->HTTPS redirect. This should result in an SSL
-    // interstitial (not an HTTPS-First Mode interstitial).
-    ProceedThroughInterstitial(contents);
-  }
-
-  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  // Proceeding through the HTTPS-First Mode interstitial will hit the upgrading
+  // server's HTTP->HTTPS redirect. This should result in an SSL interstitial
+  // (not an HTTPS-First Mode interstitial).
+  ProceedThroughInterstitial(contents);
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
 
   // Proceeding through the SSL interstitial should navigate to the HTTPS
@@ -685,25 +581,18 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
 
-  if (IsHttpInterstitialEnabled()) {
-    // Verify that the interstitial metrics were correctly recorded.
-    histograms()->ExpectBucketCount(
-        "interstitial.https_first_mode.decision",
-        security_interstitials::MetricsHelper::Decision::SHOW, 1);
-    histograms()->ExpectBucketCount(
-        "interstitial.https_first_mode.decision",
-        security_interstitials::MetricsHelper::Decision::PROCEED, 1);
-  }
+  // Verify that the interstitial metrics were correctly recorded.
+  histograms()->ExpectBucketCount(
+      "interstitial.https_first_mode.decision",
+      security_interstitials::MetricsHelper::Decision::SHOW, 1);
+  histograms()->ExpectBucketCount(
+      "interstitial.https_first_mode.decision",
+      security_interstitials::MetricsHelper::Decision::PROCEED, 1);
 }
 
 // Tests that clicking the "Learn More" link in the HTTPS-First Mode
 // interstitial opens a new tab for the help center article.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
-  // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpInterstitialEnabled()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
 
@@ -742,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialLearnMoreLink) {
 // later the server fixes their HTTPS support and the user successfully connects
 // over HTTPS, the allowlist entry is cleared (so HFM will kick in again for
 // that site).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL bad_https_url = https_server()->GetURL("foo.test", "/close-socket");
   GURL good_https_url = https_server()->GetURL("foo.test", "/ssl/google.html");
@@ -760,12 +649,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
   NavigateAndWaitForFallback(tab, http_url);
 
-  if (IsHttpInterstitialEnabled()) {
-    ASSERT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
-    ProceedThroughInterstitial(tab);
-  }
-
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
+  ProceedThroughInterstitial(tab);
   EXPECT_TRUE(state->HasAllowException(
       http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
@@ -787,12 +673,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
   NavigateAndWaitForFallback(tab, http_url);
 
-  if (IsHttpInterstitialEnabled()) {
-    ASSERT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
-    ProceedThroughInterstitial(tab);
-  }
-
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
+  ProceedThroughInterstitial(tab);
   EXPECT_TRUE(state->HasAllowException(
       http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
@@ -815,12 +698,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
 
 // Tests that clicking the "Go back" button in the HTTPS-First Mode interstitial
 // navigates back to the previous page (about:blank in this case).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialGoBack) {
-  // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpInterstitialEnabled()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, InterstitialGoBack) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
 
@@ -847,12 +725,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, InterstitialGoBack) {
 
 // Tests that closing the tab of the HTTPS-First Mode interstitial counts as
 // not proceeding through the interstitial for metrics.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, CloseInterstitialTab) {
-  // This test is only relevant to HTTPS-First Mode.
-  if (!IsHttpInterstitialEnabled()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, CloseInterstitialTab) {
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
 
@@ -878,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, CloseInterstitialTab) {
 // Tests that if a user allowlists a host and then does not visit it again for
 // seven days (the expiration period), then the interstitial will be shown again
 // the next time they visit the host.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
@@ -900,14 +773,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
   // through the HTTPS-First Mode interstitial to allowlist the host.
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
   NavigateAndWaitForFallback(contents, http_url);
-
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    ProceedThroughInterstitial(contents);
-  }
-
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
@@ -921,17 +789,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
   EXPECT_FALSE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
   NavigateAndWaitForFallback(contents, http_url);
-
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-  }
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // Tests that re-visiting an allowlisted host bumps the expiration time to a new
 // seven days in the future from now.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
@@ -953,14 +817,9 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   // through the HTTPS-First Mode interstitial to allowlist the host.
   GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
   NavigateAndWaitForFallback(contents, http_url);
-
-  if (IsHttpInterstitialEnabled()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    ProceedThroughInterstitial(contents);
-  }
-
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
@@ -987,7 +846,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
 // Tests that if a hostname has an HSTS entry registered, then HTTPS-First Mode
 // should not try to upgrade it (instead allowing HSTS to handle the upgrade as
 // it is more strict).
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
@@ -1032,13 +891,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
 // entries to dropped.
 // TODO(crbug.com/1394910): Going back from HFM interstitial to an HTTPS page
 // still loses the security indicator of the previous HTTPS page.
-IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesBrowserTest,
                        InterstitialFallbackMaintainsHistory) {
-  // This test only applies to HTTPS-First Mode.
-  if (!IsHttpInterstitialEnabled()) {
-    return;
-  }
-
   GURL good_https_url =
       https_server()->GetURL("site1.test", "/defaultresponse");
 
@@ -1096,8 +950,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 
-  // Simulate clicking the browser "forward" button. The HistoryGoForward()
-  // call returns `false` because it is an error page.
+  // Simulate clicking the browser "forward" button. (The HistoryGoForward()
+  // call returns `false` because it is an error page.)
   EXPECT_FALSE(content::HistoryGoForward(contents));
   EXPECT_EQ(downgrading_http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1113,7 +967,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // Repeat forward one last time. (Previously the user would no longer be able
   // to go back any more as the history entries were lost.)
-  EXPECT_FALSE(content::HistoryGoForward(contents));  // error page -> false
+  // The HistoryGoForward() call returns `false` because it is an error page.
+  EXPECT_FALSE(content::HistoryGoForward(contents));
   EXPECT_EQ(downgrading_http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));

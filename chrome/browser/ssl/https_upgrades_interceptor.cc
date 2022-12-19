@@ -11,7 +11,6 @@
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_url_loader.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -40,8 +39,6 @@ int g_http_port_for_testing = 0;
 // Only serve upgrade redirects for main frame, GET requests to HTTP URLs. This
 // excludes "localhost" (and loopback addresses) as they do not expose traffic
 // over the network.
-// TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
-// beyond just localhost.
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
                         HttpsOnlyModeTabHelper* tab_helper) {
   if (resource_request.is_outermost_main_frame &&
@@ -75,18 +72,9 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // TODO(crbug.com/1394910): Check for HttpsUpgrades and HttpsAllowlist
-  // enterprise policies as well. It might be best to consolidate these checks
-  // into the HttpsUpgradesNavigationThrottle which sees the navigation first.
+  // Don't upgrade if the HTTPS-First Mode setting isn't enabled.
   auto* prefs = profile->GetPrefs();
-  bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades) ||
-      https_first_mode_enabled;
-  if (!https_upgrades_enabled) {
-    // Don't upgrade the request and let the default loader continue.
+  if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     std::move(callback).Run({});
     return;
   }
@@ -115,9 +103,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   }
 
   // Don't upgrade navigation if it is allowlisted.
-  // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
-  // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
-  // downgrade Page Info.
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());

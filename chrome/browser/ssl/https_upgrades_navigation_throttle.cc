@@ -5,18 +5,14 @@
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 
 #include "base/feature_list.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,8 +29,6 @@ namespace {
 base::TimeDelta g_fallback_delay = base::Seconds(3);
 
 // Helper to record an HTTPS-First Mode navigation event.
-// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
-// HTTPS-First Mode and HTTPS Upgrades.
 void RecordHttpsFirstModeNavigation(
     security_interstitials::https_only_mode::Event event) {
   base::UmaHistogramEnumeration(
@@ -58,13 +52,8 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      https_first_mode_enabled ||
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades);
-  if (!https_upgrades_enabled) {
+  if (!base::FeatureList::IsEnabled(features::kHttpsOnlyMode) || !prefs ||
+      !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     return nullptr;
   }
 
@@ -76,28 +65,25 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   HttpsOnlyModeTabHelper::CreateForWebContents(handle->GetWebContents());
 
   return std::make_unique<HttpsUpgradesNavigationThrottle>(
-      handle, std::move(blocking_page_factory), https_first_mode_enabled);
+      handle, std::move(blocking_page_factory));
 }
 
 HttpsUpgradesNavigationThrottle::HttpsUpgradesNavigationThrottle(
     content::NavigationHandle* handle,
-    std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
-    bool http_interstitial_enabled)
+    std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory)
     : content::NavigationThrottle(handle),
-      blocking_page_factory_(std::move(blocking_page_factory)),
-      http_interstitial_enabled_(http_interstitial_enabled) {}
+      blocking_page_factory_(std::move(blocking_page_factory)) {}
 
 HttpsUpgradesNavigationThrottle::~HttpsUpgradesNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 HttpsUpgradesNavigationThrottle::WillStartRequest() {
-  // If the navigation is fallback to HTTP, trigger the HTTP interstitial (if
-  // enabled).
+  // If the navigation is fallback to HTTP, trigger the interstitial.
   auto* handle = navigation_handle();
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
   if (tab_helper->is_navigation_fallback() &&
-      !handle->GetURL().SchemeIsCryptographic() && http_interstitial_enabled_) {
+      !handle->GetURL().SchemeIsCryptographic()) {
     std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
         blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
             contents, handle->GetURL());
@@ -128,7 +114,7 @@ HttpsUpgradesNavigationThrottle::WillFailRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // Only fallback to HTTP if the Interceptor attempted to upgrade the
+  // Only show the interstitial if the Interceptor attempted to upgrade the
   // navigation.
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
@@ -141,25 +127,6 @@ HttpsUpgradesNavigationThrottle::WillFailRequest() {
       RecordHttpsFirstModeNavigation(Event::kUpgradeTimedOut);
     } else {
       RecordHttpsFirstModeNavigation(Event::kUpgradeNetError);
-    }
-
-    // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
-    // add the hostname to the allowlist now before triggering fallback.
-    // HTTPS-First Mode handles this on the user proceeding through the
-    // interstitial only.
-    if (!http_interstitial_enabled_) {
-      Profile* profile =
-          Profile::FromBrowserContext(contents->GetBrowserContext());
-      StatefulSSLHostStateDelegate* state =
-          static_cast<StatefulSSLHostStateDelegate*>(
-              profile->GetSSLHostStateDelegate());
-      // StatefulSSLHostStateDelegate can be null during tests.
-      if (state) {
-        state->AllowHttpForHost(
-            handle->GetURL().host(),
-            contents->GetPrimaryMainFrame()->GetStoragePartition());
-      }
-      tab_helper->set_is_navigation_upgraded(false);
     }
 
     // Mark the navigation as fallback and trigger a new navigation to the
