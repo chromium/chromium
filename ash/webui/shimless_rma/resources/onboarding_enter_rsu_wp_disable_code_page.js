@@ -15,11 +15,6 @@ import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js';
 
-// The size of each tile in pixels.
-const QR_CODE_TILE_SIZE = 5;
-// Styling for filled tiles in the QR code.
-const QR_CODE_FILL_STYLE = '#000000';
-
 // The number of characters in an RSU code.
 const RSU_CODE_EXPECTED_LENGTH = 8;
 
@@ -104,6 +99,12 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       },
 
       /** @protected */
+      qrCodeUrl_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected */
       rsuChallengeLinkText_: {
         type: String,
         value: '',
@@ -158,28 +159,13 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @param {?{qrCode: QrCode}} response
+   * @param {{qrCodeData: !Array<number>}} response
    * @private
    */
   updateQrCode_(response) {
-    if (!response || !response.qrCode) {
-      return;
-    }
-    this.canvasSize_ = response.qrCode.size * QR_CODE_TILE_SIZE;
-    const context = this.getCanvasContext_();
-    context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
-    context.fillStyle = QR_CODE_FILL_STYLE;
-    let index = 0;
-    for (let x = 0; x < response.qrCode.size; x++) {
-      for (let y = 0; y < response.qrCode.size; y++) {
-        if (response.qrCode.data[index]) {
-          context.fillRect(
-              x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
-              QR_CODE_TILE_SIZE);
-        }
-        index++;
-      }
-    }
+    const blob =
+        new Blob([Uint8Array.from(response.qrCodeData)], {'type': 'image/png'});
+    this.qrCodeUrl_ = URL.createObjectURL(blob);
   }
 
   /**
@@ -209,14 +195,6 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     if (event.key === 'Enter') {
       dispatchNextButtonClick(this);
     }
-  }
-
-  /**
-   * @return {!CanvasRenderingContext2D}
-   * @private
-   */
-  getCanvasContext_() {
-    return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */

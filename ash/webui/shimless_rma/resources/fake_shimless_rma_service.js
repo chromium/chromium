@@ -360,7 +360,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{qrCode: QrCode}>}
+   * @return {!Promise<!{qrCodeData: !Array<number>}>}
    */
   getRsuDisableWriteProtectChallengeQrCode() {
     return this.methods_.resolveMethod(
@@ -368,11 +368,11 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @param {!QrCode} qrCode
+   * @param {!Array<number>} qrCodeData
    */
-  setGetRsuDisableWriteProtectChallengeQrCodeResponse(qrCode) {
+  setGetRsuDisableWriteProtectChallengeQrCodeResponse(qrCodeData) {
     this.methods_.setResult(
-        'getRsuDisableWriteProtectChallengeQrCode', {qrCode: qrCode});
+        'getRsuDisableWriteProtectChallengeQrCode', {qrCodeData: qrCodeData});
   }
 
   /**

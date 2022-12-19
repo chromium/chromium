@@ -80,19 +80,12 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   });
 
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
+    const expectedImgUrlPrefix = 'blob:chrome://shimless-rma/';
+
     await initializeEnterRsuWpDisableCodePage('', '');
 
-    const expectedCanvasSize = 20;
-
-
-    assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
-    const canvas = component.shadowRoot.querySelector('#qrCodeCanvas');
-    assertTrue(!!canvas);
-    assertEquals(canvas.width, expectedCanvasSize);
-    assertEquals(canvas.height, expectedCanvasSize);
-
-    const context = canvas.getContext('2d');
-    assertTrue(!!context);
+    const qrCodeimg = component.shadowRoot.querySelector('#qrCodeImg');
+    assertTrue(qrCodeimg.src.startsWith(expectedImgUrlPrefix));
   });
 
   test(

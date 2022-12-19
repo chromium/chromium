@@ -160,11 +160,9 @@ export const fakeChromeVersion = [
 export const fakeRsuChallengeCode =
     'HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6P3DNV4';
 
-/** @type {!QrCode} */
-export const fakeRsuChallengeQrCode = {
-  size: 4,
-  data: [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0],
-};
+/** @type {!Array<number>} */
+export const fakeRsuChallengeQrCode =
+    [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0];
 
 /** @type {!Array<!Component>} */
 export const fakeComponents = [
