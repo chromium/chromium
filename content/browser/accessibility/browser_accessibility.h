@@ -28,7 +28,7 @@
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/child_iterator.h"
 #include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_MAC) && __OBJC__
@@ -110,7 +110,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   virtual BrowserAccessibility* PlatformGetPreviousSibling() const;
 
   // Iterator over platform children.
-  class CONTENT_EXPORT PlatformChildIterator : public ChildIterator {
+  class CONTENT_EXPORT PlatformChildIterator : public ui::ChildIterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = int;
@@ -123,9 +123,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     PlatformChildIterator(const PlatformChildIterator& it);
     ~PlatformChildIterator() override;
     PlatformChildIterator& operator++() override;
-    PlatformChildIterator& operator++(int) override;
+    // Postfix increment/decrement can't be overrides. See comment in
+    // child_iterator.h
+    PlatformChildIterator operator++(int);
     PlatformChildIterator& operator--() override;
-    PlatformChildIterator& operator--(int) override;
+    PlatformChildIterator operator--(int);
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
     BrowserAccessibility* get() const;
     absl::optional<size_t> GetIndexInParent() const override;
@@ -387,8 +389,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetSelectionContainer() const override;
   gfx::NativeViewAccessible GetTableAncestor() const override;
 
-  std::unique_ptr<ChildIterator> ChildrenBegin() override;
-  std::unique_ptr<ChildIterator> ChildrenEnd() override;
+  std::unique_ptr<ui::ChildIterator> ChildrenBegin() override;
+  std::unique_ptr<ui::ChildIterator> ChildrenEnd() override;
 
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   gfx::Rect GetBoundsRect(

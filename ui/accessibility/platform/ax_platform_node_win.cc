@@ -54,6 +54,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textchildprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_relation_win.h"
+#include "ui/accessibility/platform/child_iterator.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/l10n/l10n_util.h"

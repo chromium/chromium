@@ -42,6 +42,9 @@ component("platform") {
     "ax_platform_node.h",
     "ax_platform_node_delegate.cc",
     "ax_platform_node_delegate.h",
+    "child_iterator.h",
+    "child_iterator_base.cc",
+    "child_iterator_base.h",
 
     # Used by browser_accessibility_manager.cc.
     "ax_platform_tree_manager.h",

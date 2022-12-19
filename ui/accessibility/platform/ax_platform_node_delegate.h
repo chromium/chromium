@@ -47,6 +47,7 @@ struct AXActionData;
 struct AXNodeData;
 struct AXTreeData;
 class AXPlatformNode;
+class ChildIterator;
 
 using TextAttribute = std::pair<std::string, std::string>;
 using TextAttributeList = std::vector<TextAttribute>;
@@ -331,28 +332,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // If within a table, returns the node representing the table.
   virtual gfx::NativeViewAccessible GetTableAncestor() const;
 
-  class ChildIterator {
-   public:
-    virtual ~ChildIterator() = default;
-    bool operator==(const ChildIterator& rhs) const {
-      return GetIndexInParent() == rhs.GetIndexInParent();
-    }
-    bool operator!=(const ChildIterator& rhs) const {
-      return GetIndexInParent() != rhs.GetIndexInParent();
-    }
-    virtual ChildIterator& operator++() = 0;
-    virtual ChildIterator& operator++(int) = 0;
-    virtual ChildIterator& operator--() = 0;
-    virtual ChildIterator& operator--(int) = 0;
-    virtual gfx::NativeViewAccessible GetNativeViewAccessible() const = 0;
-    virtual absl::optional<size_t> GetIndexInParent() const = 0;
-    virtual AXPlatformNodeDelegate& operator*() const = 0;
-    virtual AXPlatformNodeDelegate* operator->() const = 0;
-  };
-  virtual std::unique_ptr<AXPlatformNodeDelegate::ChildIterator>
-  ChildrenBegin() = 0;
-  virtual std::unique_ptr<AXPlatformNodeDelegate::ChildIterator>
-  ChildrenEnd() = 0;
+  virtual std::unique_ptr<ChildIterator> ChildrenBegin();
+  virtual std::unique_ptr<ChildIterator> ChildrenEnd();
 
   // Returns the accessible name for this node. This could either be derived
   // from visible text, such as the node's contents or an associated label, or

@@ -38,28 +38,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegateBase
 
   ~AXPlatformNodeDelegateBase() override;
 
-  class ChildIteratorBase : public ChildIterator {
-   public:
-    ChildIteratorBase(AXPlatformNodeDelegateBase* parent, size_t index);
-    ChildIteratorBase(const ChildIteratorBase& it);
-    ~ChildIteratorBase() override = default;
-    ChildIteratorBase& operator++() override;
-    ChildIteratorBase& operator++(int) override;
-    ChildIteratorBase& operator--() override;
-    ChildIteratorBase& operator--(int) override;
-    gfx::NativeViewAccessible GetNativeViewAccessible() const override;
-    absl::optional<size_t> GetIndexInParent() const override;
-    AXPlatformNodeDelegate& operator*() const override;
-    AXPlatformNodeDelegate* operator->() const override;
-
-   private:
-    size_t index_;
-    raw_ptr<AXPlatformNodeDelegateBase> parent_;
-  };
-  std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenBegin()
-      override;
-  std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenEnd() override;
-
   // Get another node from this same tree.
   AXPlatformNode* GetFromNodeID(int32_t id) override;
 

@@ -37,6 +37,7 @@
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
+#include "ui/accessibility/platform/child_iterator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 10, 0)

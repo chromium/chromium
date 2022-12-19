@@ -16,90 +16,13 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/accessibility/platform/child_iterator_base.h"
 
 namespace ui {
 
 AXPlatformNodeDelegateBase::AXPlatformNodeDelegateBase() = default;
 
 AXPlatformNodeDelegateBase::~AXPlatformNodeDelegateBase() = default;
-
-AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
-    AXPlatformNodeDelegateBase* parent,
-    size_t index)
-    : index_(index), parent_(parent) {
-  DCHECK(parent);
-  DCHECK(index <= parent->GetChildCount());
-}
-
-AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
-    const AXPlatformNodeDelegateBase::ChildIteratorBase& it)
-    : index_(it.index_), parent_(it.parent_) {
-  DCHECK(parent_);
-}
-
-AXPlatformNodeDelegateBase::ChildIteratorBase&
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator++() {
-  index_++;
-  return *this;
-}
-
-AXPlatformNodeDelegateBase::ChildIteratorBase&
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator++(int) {
-  index_++;
-  return *this;
-}
-
-AXPlatformNodeDelegateBase::ChildIteratorBase&
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator--() {
-  DCHECK_GT(index_, 0u);
-  index_--;
-  return *this;
-}
-
-AXPlatformNodeDelegateBase::ChildIteratorBase&
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator--(int) {
-  DCHECK_GT(index_, 0u);
-  index_--;
-  return *this;
-}
-
-gfx::NativeViewAccessible
-AXPlatformNodeDelegateBase::ChildIteratorBase::GetNativeViewAccessible() const {
-  if (index_ < parent_->GetChildCount())
-    return parent_->ChildAtIndex(index_);
-
-  return nullptr;
-}
-
-absl::optional<size_t>
-AXPlatformNodeDelegateBase::ChildIteratorBase::GetIndexInParent() const {
-  return index_;
-}
-
-AXPlatformNodeDelegate&
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator*() const {
-  AXPlatformNode* platform_node =
-      AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
-  DCHECK(platform_node && platform_node->GetDelegate());
-  return *(platform_node->GetDelegate());
-}
-
-AXPlatformNodeDelegate*
-AXPlatformNodeDelegateBase::ChildIteratorBase::operator->() const {
-  AXPlatformNode* platform_node =
-      AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
-  return platform_node ? platform_node->GetDelegate() : nullptr;
-}
-
-std::unique_ptr<AXPlatformNodeDelegate::ChildIterator>
-AXPlatformNodeDelegateBase::ChildrenBegin() {
-  return std::make_unique<ChildIteratorBase>(this, 0);
-}
-
-std::unique_ptr<AXPlatformNodeDelegate::ChildIterator>
-AXPlatformNodeDelegateBase::ChildrenEnd() {
-  return std::make_unique<ChildIteratorBase>(this, GetChildCount());
-}
 
 AXPlatformNode* AXPlatformNodeDelegateBase::GetFromNodeID(int32_t id) {
   return nullptr;

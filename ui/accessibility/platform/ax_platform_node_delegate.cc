@@ -10,6 +10,8 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/child_iterator.h"
+#include "ui/accessibility/platform/child_iterator_base.h"
 
 namespace ui {
 
@@ -343,6 +345,14 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetTableAncestor() const {
       return ancestor_delegate->GetNativeViewAccessible();
   }
   return nullptr;
+}
+
+std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenBegin() {
+  return std::make_unique<ChildIteratorBase>(this, 0);
+}
+
+std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenEnd() {
+  return std::make_unique<ChildIteratorBase>(this, GetChildCount());
 }
 
 const std::string& AXPlatformNodeDelegate::GetName() const {

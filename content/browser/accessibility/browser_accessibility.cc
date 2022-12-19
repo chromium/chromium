@@ -1062,10 +1062,11 @@ BrowserAccessibility::PlatformChildIterator::operator++() {
   return *this;
 }
 
-BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator
 BrowserAccessibility::PlatformChildIterator::operator++(int) {
+  BrowserAccessibility::PlatformChildIterator previous_state = *this;
   ++platform_iterator;
-  return *this;
+  return previous_state;
 }
 
 BrowserAccessibility::PlatformChildIterator&
@@ -1074,10 +1075,11 @@ BrowserAccessibility::PlatformChildIterator::operator--() {
   return *this;
 }
 
-BrowserAccessibility::PlatformChildIterator&
+BrowserAccessibility::PlatformChildIterator
 BrowserAccessibility::PlatformChildIterator::operator--(int) {
+  BrowserAccessibility::PlatformChildIterator previous_state = *this;
   --platform_iterator;
-  return *this;
+  return previous_state;
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformChildIterator::get() const {
@@ -1107,13 +1109,11 @@ BrowserAccessibility* BrowserAccessibility::PlatformChildIterator::operator->()
   return platform_iterator.get();
 }
 
-std::unique_ptr<ui::AXPlatformNodeDelegate::ChildIterator>
-BrowserAccessibility::ChildrenBegin() {
+std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenBegin() {
   return std::make_unique<PlatformChildIterator>(PlatformChildrenBegin());
 }
 
-std::unique_ptr<ui::AXPlatformNodeDelegate::ChildIterator>
-BrowserAccessibility::ChildrenEnd() {
+std::unique_ptr<ui::ChildIterator> BrowserAccessibility::ChildrenEnd() {
   return std::make_unique<PlatformChildIterator>(PlatformChildrenEnd());
 }
 
