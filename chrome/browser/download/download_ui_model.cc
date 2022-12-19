@@ -1793,15 +1793,17 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
         ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
                                ui::TimeFormat::LENGTH_SHORT, remaining);
     return l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_STATUS_TIME_REMAINING_ACCESSIBLE_ALERT, remaining_string);
+        IDS_DOWNLOAD_STATUS_TIME_REMAINING_ACCESSIBLE_ALERT,
+        GetFileNameToReportUser().LossyDisplayName(), remaining_string);
   }
 
   // Time remaining is unknown, try to announce percent remaining.
   if (PercentComplete() > 0) {
     DCHECK_LE(PercentComplete(), 100);
-    return l10n_util::GetStringFUTF16Int(
+    return l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_STATUS_PERCENT_COMPLETE_ACCESSIBLE_ALERT,
-        100 - PercentComplete());
+        GetFileNameToReportUser().LossyDisplayName(),
+        base::FormatNumber(100 - PercentComplete()));
   }
 
   // Percent remaining is also unknown, announce bytes to download.
