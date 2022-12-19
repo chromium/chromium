@@ -538,6 +538,7 @@ crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-functio
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-005.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-006.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
+crbug.com/1295445 external/wpt/css/filter-effects/css-filters-animation-combined-001.html [ Failure ]
 crbug.com/903383 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-combined-001.html [ Failure ]
 crbug.com/903383 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-blur.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
@@ -685,6 +686,7 @@ crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-003.htm
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-004.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-001.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-interpolation-002.html [ Failure ]
+crbug.com/1308431 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
@@ -4501,8 +4503,12 @@ crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-
 # specific bugs.
 crbug.com/1043675 [ Linux ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure ]
+crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filters-invert.html [ Failure ]
 crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
+crbug.com/1043675 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filters-brightness.html [ Failure ]
+crbug.com/1043675 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filters-invert.html [ Failure ]
 crbug.com/1043675 [ Win ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
