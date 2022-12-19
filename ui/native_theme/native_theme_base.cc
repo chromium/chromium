@@ -1336,7 +1336,7 @@ SkColor NativeThemeBase::OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const {
   // The following code has been tested to look OK with all of the
   // default GTK themes.
   SkScalar min_diff = base::clamp((hsv1[1] + hsv2[1]) * 1.2f, 0.28f, 0.5f);
-  SkScalar diff = base::clamp(fabs(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
+  SkScalar diff = base::clamp(fabsf(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
 
   if (hsv1[2] + hsv2[2] > 1.0)
     diff = -diff;
