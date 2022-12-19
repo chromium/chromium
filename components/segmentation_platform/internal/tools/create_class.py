@@ -33,8 +33,8 @@ class {clas} {{
   {clas}();
   ~{clas}();
 
-  {clas}({clas}&) = delete;
-  {clas}& operator=({clas}&) = delete;
+  {clas}(const {clas}&) = delete;
+  {clas}& operator=(const {clas}&) = delete;
 
  private:
 }};
