@@ -35,10 +35,9 @@ constexpr char kOsSettingsResultPrefix[] = "os-settings://";
 
 constexpr size_t kNumRequestedResults = 5u;
 
-// Various error states of the OsSettingsProvider. kOk is currently not emitted,
-// but may be used in future. These values persist to logs. Entries should not
-// be renumbered and numeric values should never be reused.
-enum class Error {
+// Various states of the OsSettingsProvider. These values persist to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class Status {
   kOk = 0,
   // No longer used.
   // kAppServiceUnavailable = 1,
@@ -47,11 +46,12 @@ enum class Error {
   kHierarchyEmpty = 4,
   kNoHierarchy = 5,
   kSettingsAppNotReady = 6,
-  kMaxValue = kSettingsAppNotReady,
+  kNoAppServiceProxy = 7,
+  kMaxValue = kNoAppServiceProxy,
 };
 
-void LogError(Error error) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.OsSettingsProvider.Error", error);
+void LogStatus(Status status) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.OsSettingsProvider.Error", status);
 }
 
 bool ContainsBetterAncestor(Subpage subpage,
@@ -126,7 +126,7 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
   // bluetooth), in which case we should leave the details blank.
   const auto& hierarchy = result->settings_page_hierarchy;
   if (hierarchy.empty()) {
-    LogError(Error::kHierarchyEmpty);
+    LogStatus(Status::kHierarchyEmpty);
   } else if (result->type != SettingsResultType::kSection) {
     SetDetails(hierarchy.back());
   }
@@ -168,12 +168,12 @@ OsSettingsProvider::OsSettingsProvider(
   // search chrome flag is disabled. If it is, we should effectively disable the
   // search provider.
   if (!search_handler_) {
-    LogError(Error::kSearchHandlerUnavailable);
+    LogStatus(Status::kSearchHandlerUnavailable);
     return;
   }
 
   if (!hierarchy_) {
-    LogError(Error::kNoHierarchy);
+    LogStatus(Status::kNoHierarchy);
   }
 
   search_handler_->Observe(
@@ -189,6 +189,8 @@ OsSettingsProvider::OsSettingsProvider(
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                        weak_factory_.GetWeakPtr()));
+  } else {
+    LogStatus(Status::kNoAppServiceProxy);
   }
 }
 
@@ -208,7 +210,7 @@ void OsSettingsProvider::Start(const std::u16string& query) {
   if (!search_handler_) {
     return;
   } else if (icon_.isNull()) {
-    LogError(Error::kNoSettingsIcon);
+    LogStatus(Status::kNoSettingsIcon);
     return;
   }
 
@@ -248,6 +250,8 @@ void OsSettingsProvider::OnSearchReturned(
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.OsSettingsProvider.QueryTime",
                       base::TimeTicks::Now() - start_time);
+  // Log the OS setting search has been successfully proceeded.
+  LogStatus(Status::kOk);
   SwapResults(&search_results);
 }
 

@@ -730,8 +730,10 @@ chromium-metrics-reviews@google.com.
   <owner>thanhdng@chromium.org</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
-    Emitted only in the case of an unexpected error, the bucket proportion is
-    not meaningful.
+    Emitted either the case of an unexpected error or an successful non-empty
+    query search. the bucket proportion is not meaningful as overlaps can occur
+    among errors. Instead, the ratio between each error bucket and the
+    successful query search can be used to calculate the accurate error rate.
   </summary>
 </histogram>
 
