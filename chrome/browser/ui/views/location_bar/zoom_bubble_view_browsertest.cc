@@ -257,7 +257,10 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, TabSwitchCloses) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   ShowInActiveTab(browser());
+  views::test::WidgetDestroyedWaiter close_waiter(
+      ZoomBubbleView::GetZoomBubble()->GetWidget());
   chrome::SelectNextTab(browser());
+  close_waiter.Wait();
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 }
 
