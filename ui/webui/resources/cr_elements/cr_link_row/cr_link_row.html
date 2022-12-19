@@ -41,6 +41,12 @@
   #subLabel {
     display: flex;
   }
+
+  #ariaDescription {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
 </style>
 <iron-icon id="startIcon" icon="[[startIcon]]" hidden="[[!startIcon]]"
     aria-hidden="true">
@@ -57,7 +63,11 @@
   </div>
 </div>
 <slot></slot>
+<div id="ariaDescription" aria-hidden="true">
+  [[ariaDescription]]
+</div>
 <cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
-    aria-roledescription$="[[roleDescription]]" part="icon"
+    part="icon" aria-roledescription$="[[roleDescription]]"
+    aria-describedby="ariaDescription"
     aria-labelledby="label subLabel" disabled="[[disabled]]">
 </cr-icon-button>
