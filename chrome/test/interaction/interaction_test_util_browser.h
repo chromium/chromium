@@ -25,8 +25,9 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   static Browser* GetBrowserFromContext(ui::ElementContext context);
 
   // Takes a screenshot based on the contents of `element` and compares with
-  // Skia Gold. On platforms where screenshots are unsupported or flaky, may
-  // trivially return true.
+  // Skia Gold. May return ActionResult::kKnownIncompatible on platforms and
+  // builds where screenshots are not supported or not reliable. This is not
+  // necessarily an error; the remainder of the test may still be valid.
   //
   // The name of the screenshot will be composed as follows:
   //   TestFixture_TestName[_screenshot_name]_baseline
@@ -57,9 +58,10 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   // activation, or occlusion could change the behavior of a test). So if you
   // need to both test complex interaction and take screenshots, prefer putting
   // your test in interactive_ui_tests.
-  static bool CompareScreenshot(ui::TrackedElement* element,
-                                const std::string& screenshot_name,
-                                const std::string& baseline);
+  static ui::test::ActionResult CompareScreenshot(
+      ui::TrackedElement* element,
+      const std::string& screenshot_name,
+      const std::string& baseline);
 };
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_BROWSER_H_

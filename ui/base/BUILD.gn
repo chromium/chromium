@@ -126,6 +126,7 @@ component("base") {
     "interaction/element_identifier.h",
     "interaction/element_tracker.cc",
     "interaction/element_tracker.h",
+    "interaction/framework_specific_implementation.cc",
     "interaction/framework_specific_implementation.h",
     "interaction/interaction_sequence.cc",
     "interaction/interaction_sequence.h",

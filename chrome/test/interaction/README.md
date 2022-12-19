@@ -81,7 +81,8 @@ Verbs fall into a number of different categories:
     - `CheckView()` [Views]
     - `CheckViewProperty()` [Views]
     - `Screenshot` [Browser] - compares the target against Skia Gold in pixel
-      tests
+      tests. See [Handling Incompatibilities](#handling-incompatibilities) for
+      how to handle this in non-pixel tests.
 - **WaitFor** verbs ensure that the given UI event happens or condition becomes
   true before proceeding. Examples:
     - `WaitForShow()`
@@ -118,10 +119,13 @@ Verbs fall into a number of different categories:
     - `SelectTab()`
     - `SelectDropdownItem()`
     - `EnterText()`
-    - `ActivateSurface()`
     - `SendAccelerator()`
     - `Confirm()`
     - `DoDefaultAction()`
+    - `ActivateSurface()`
+      - ActivateSurface is not always reliable on Linux with the Wayland window
+        manager; see [Handling Incompatibilities](#handling-incompatibilities)
+        for how to correctly deal with this.
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:
@@ -160,9 +164,14 @@ Verbs fall into a number of different categories:
    - `ExecuteJsAt()` [Browser]
    - `CheckJsResult()` [Browser]
    - `CheckJsResultAt()` [Browser]
-- Utility verbs modify how the test sequence is executed. Currently there is
-  only `FlushEvents()`, which ensures that the next step happens on a fresh
-  message loop rather than being able to chain successive steps.
+- **Utility** verbs modify how the test sequence is executed.
+   - `FlushEvents()` - ensures that the next step happens on a fresh
+     message loop rather than being able to chain successive steps.
+   - `SetOnIncompatibleAction()` changes what the sequence will do when faced
+     with an action that cannot be executed on the current
+     build, environment, or platform. See
+     [Handling Incompatibilities](#handling-incompatibilities) for more
+     information and best practices.
 
 Example with mouse input:
 ```cpp
@@ -234,6 +243,45 @@ RunTestSequence(
     PressButton(kAppMenuButton),
     WaitForShow(kDownloadsMenuItemElementId))));
 ```
+
+### Handling Incompatibilities
+
+Sometimes a test won't run on a specific build bot or in a specific environment
+due to a known incompatibility (as opposed to something legitimately failing).
+Current known incompatibilities include:
+ - `ActivateSurface()` does not work on the `linux-wayland` buildbot unless the
+   surface is already active, due to vanilla Wayland not supporting programmatic
+   window activation.
+ - `Screenshot()` only works in specific pixel test jobs on the `win-rel`
+   buildbot.
+
+Normally, if you know that the test won't run on an entire platform (i.e. you
+can use `BUILDFLAG()` to differentiate) you should disable or skip the tests in
+the usual way. But if the distinction is finer-grained (as with the above verbs)
+The `SetOnIncompatibleAction()` verb and `OnIncompatibleAction` enumeration are
+provided.
+ - `OnIncompatibleAction::kFailTest` is the default option; if a step fails
+   because of a known incompatibility, the test will fail, and an error message
+   will be printed.
+ - `OnIncompatibleAction::kSkipTest` immediately skips the test as soon as an
+   incompatibility is detected. Use this option when you know the rest of the
+   test will fail and the test results are invalid. A warning will be printed.
+ - `OnIncompatibleAction::kHaltTest` immediately halts the sequence but does not
+   fail or skip the test. Use this option when all of the steps leading up to
+   the incompatible one are valid and you want to preserve any non-fatal errors
+   that may have occurred. A warning will still be printed.
+ - `OnIncompatibleAction::kIgnoreAndContinue` skips the problematic step, prints
+   a warning, and continues the test as if nothing happened. Use this option
+   when the step is incidental to the test, such as taking a screenshot in the
+   middle of a sequence.
+
+***Do not use `SetOnIncompatibleAction()` unless:***
+ 1. You know the test will fail due to a known incompatibility.
+ 2. The test cannot be disabled or skipped using a simple `BUILDFLAG()` check.
+
+Note that you *must* specify a non-empty `reason` when calling
+`SetOnIncompatibleAction()` with any argument except `kFailTest`. This string
+will be printed out as part of the warning that is produced if the step fails.
 
 ### WebContents Instrumentation
 

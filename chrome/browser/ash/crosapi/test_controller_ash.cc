@@ -61,6 +61,7 @@
 #include "ui/events/event_source.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
@@ -137,20 +138,19 @@ void TestControllerAsh::ClickElement(const std::string& element_name,
   }
 
   // Pick the first view that matches the element name.
-  views::View* view = views[0];
+  views::Button* button = views::Button::AsButton(views[0]);
+  if (!button) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
 
   // We directly send mouse events to the view. It's also possible to use
   // EventGenerator to move the mouse and send a click. Unfortunately, that
   // approach has occasional flakiness. This is presumably due to another window
   // appearing on top of the dialog and taking the mouse events but has not been
   // explicitly diagnosed.
-  views::TrackedElementViews* tracked_element =
-      views::ElementTrackerViews::GetInstance()->GetElementForView(
-          view, /*assign_temporary_id=*/false);
-  views::test::InteractionTestUtilSimulatorViews simulator;
-  simulator.PressButton(tracked_element,
-                        ui::test::InteractionTestUtil::InputType::kMouse);
-
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      button, ui::test::InteractionTestUtil::InputType::kMouse);
   std::move(callback).Run(/*success=*/true);
 }
 

@@ -91,8 +91,11 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
 #endif
       });
 
-  auto click_menu_item = base::BindLambdaForTesting(
-      [&](ui::TrackedElement* element) { test_util_.SelectMenuItem(element); });
+  auto click_menu_item =
+      base::BindLambdaForTesting([&](ui::TrackedElement* element) {
+        ASSERT_EQ(ui::test::ActionResult::kSucceeded,
+                  test_util_.SelectMenuItem(element));
+      });
 
   auto sequence =
       ui::InteractionSequence::Builder()

@@ -6,6 +6,7 @@
 #define UI_VIEWS_INTERACTION_ELEMENT_TRACKER_VIEWS_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -33,6 +34,8 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
 
   View* view() { return view_; }
   const View* view() const { return view_; }
+
+  std::string ToString() const override;
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 

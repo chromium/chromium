@@ -16,6 +16,7 @@
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_sequence.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "ui/base/accelerators/accelerator.h"
@@ -52,63 +53,71 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId4);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestEvent1);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestEvent2);
 
+constexpr char kSetOnIncompatibleActionMessage[] =
+    "Explicitly testing incompatibility-handling.";
+
 class TestSimulator : public InteractionTestUtil::Simulator {
  public:
   TestSimulator() = default;
   ~TestSimulator() override = default;
 
-  bool PressButton(TrackedElement* element, InputType input_type) override {
+  void set_result(ActionResult result) { result_ = result; }
+
+  ActionResult PressButton(TrackedElement* element,
+                           InputType input_type) override {
     DoAction(ActionType::kPressButton, element, input_type);
-    return true;
+    return result_;
   }
 
-  bool SelectMenuItem(TrackedElement* element, InputType input_type) override {
+  ActionResult SelectMenuItem(TrackedElement* element,
+                              InputType input_type) override {
     DoAction(ActionType::kSelectMenuItem, element, input_type);
-    return true;
+    return result_;
   }
 
-  bool DoDefaultAction(TrackedElement* element, InputType input_type) override {
+  ActionResult DoDefaultAction(TrackedElement* element,
+                               InputType input_type) override {
     DoAction(ActionType::kDoDefaultAction, element, input_type);
-    return true;
+    return result_;
   }
 
-  bool SelectTab(TrackedElement* tab_collection,
-                 size_t index,
-                 InputType input_type) override {
+  ActionResult SelectTab(TrackedElement* tab_collection,
+                         size_t index,
+                         InputType input_type) override {
     DoAction(ActionType::kSelectTab, tab_collection, input_type);
-    return true;
+    return result_;
   }
 
-  bool SelectDropdownItem(TrackedElement* collection,
-                          size_t item,
-                          InputType input_type) override {
+  ActionResult SelectDropdownItem(TrackedElement* collection,
+                                  size_t item,
+                                  InputType input_type) override {
     DoAction(ActionType::kSelectDropdownItem, collection, input_type);
-    return true;
+    return result_;
   }
 
-  bool EnterText(TrackedElement* element,
-                 const std::u16string& text,
-                 TextEntryMode mode) override {
+  ActionResult EnterText(TrackedElement* element,
+                         std::u16string text,
+                         TextEntryMode mode) override {
     DoAction(ActionType::kEnterText, element, InputType::kKeyboard);
-    return true;
+    return result_;
   }
 
-  bool ActivateSurface(TrackedElement* element) override {
+  ActionResult ActivateSurface(TrackedElement* element) override {
     DoAction(ActionType::kActivateSurface, element, InputType::kMouse);
-    return true;
+    return result_;
   }
 
 #if !BUILDFLAG(IS_IOS)
-  bool SendAccelerator(TrackedElement* element,
-                       const Accelerator& accel) override {
+  ActionResult SendAccelerator(TrackedElement* element,
+                               Accelerator accel) override {
     DoAction(ActionType::kSendAccelerator, element, InputType::kKeyboard);
-    return true;
+    return result_;
   }
 #endif
 
-  bool Confirm(TrackedElement* element) override {
+  ActionResult Confirm(TrackedElement* element) override {
     DoAction(ActionType::kConfirm, element, InputType::kDontCare);
-    return true;
+    return result_;
   }
 
   const std::vector<ActionRecord>& records() const { return records_; }
@@ -122,6 +131,7 @@ class TestSimulator : public InteractionTestUtil::Simulator {
     element->AsA<TestElement>()->Activate();
   }
 
+  ActionResult result_ = ActionResult::kSucceeded;
   std::vector<ActionRecord> records_;
 };
 
@@ -143,9 +153,9 @@ class InteractiveTestTest : public InteractiveTest {
         FROM_HERE, std::move(actions));
   }
 
- private:
   base::raw_ptr<TestSimulator> simulator_ = nullptr;
 
+ private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
@@ -554,6 +564,230 @@ TEST_F(InteractiveTestTest, NamedElement) {
                             seq->NameElement(&e2, kName);
                           })),
           WithElement(kName, cb.Get())));
+}
+
+TEST_F(InteractiveTestTest, SimulatorSucceeds_SkipOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  RunTestSequenceInContext(
+      kTestContext1,
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSetOnIncompatibleActionMessage),
+      PressButton(kTestId1));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorSucceeds_IgnoreOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  RunTestSequenceInContext(
+      kTestContext1,
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSetOnIncompatibleActionMessage),
+      PressButton(kTestId1));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorFailureFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kFailed);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(kTestContext1, PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorFailureFails_SkipOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kFailed);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorFailureFails_IgnoreOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kFailed);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorCannotSimulateFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kNotAttempted);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(kTestContext1, PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorCannotSimulateFails_SkipOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kNotAttempted);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorCannotSimulateFails_IgnoreOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kNotAttempted);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorNotSupportedFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(kTestContext1, PressButton(kTestId1)));
+  EXPECT_FALSE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorNotSupportedSkipsOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1)));
+  EXPECT_TRUE(private_test_impl().sequence_skipped());
+}
+
+TEST_F(InteractiveTestTest, SimulatorNotSupportedContinuesOnUnsupported) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  bool result = false;
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  RunTestSequenceInContext(
+      kTestContext1,
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kSetOnIncompatibleActionMessage),
+      PressButton(kTestId1),
+      Do(base::BindLambdaForTesting([&result]() { result = true; })));
+  EXPECT_TRUE(result);
+}
+
+TEST_F(InteractiveTestTest, CanChangeOnIncompatibleAction) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(
+          kTestContext1,
+          // Based on previous tests, this will fall through to the next step.
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSetOnIncompatibleActionMessage),
+          PressButton(kTestId1),
+          // By changing the incompatible mode, the step after this one should
+          // fail.
+          SetOnIncompatibleAction(OnIncompatibleAction::kFailTest, ""),
+          PressButton(kTestId1)));
+}
+
+TEST_F(InteractiveTestTest, SimulatorNotSupportedHaltAndSucceedOnUnsupported) {
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  bool result = false;
+
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  RunTestSequenceInContext(
+      kTestContext1,
+      SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
+                              kSetOnIncompatibleActionMessage),
+      PressButton(kTestId1),
+      Do(base::BindLambdaForTesting([&result]() { result = true; })));
+  EXPECT_FALSE(result);
+}
+
+TEST_F(InteractiveTestTest, ActuallySkipsTestOnSimulatorFailure) {
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+  simulator_->set_result(ActionResult::kKnownIncompatible);
+  RunTestSequenceInContext(
+      kTestContext1,
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSetOnIncompatibleActionMessage),
+      PressButton(kTestId1));
+
+  // Note: this test will either be marked as skipped or failed, but never
+  // succeeded. The important thing is that it does not fail.
+  if (!testing::Test::IsSkipped()) {
+    GTEST_FAIL();
+  }
 }
 
 }  // namespace ui::test

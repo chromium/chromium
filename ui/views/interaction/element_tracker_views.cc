@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/debug/stack_trace.h"
@@ -32,6 +33,13 @@ TrackedElementViews::TrackedElementViews(View* view,
     : TrackedElement(identifier, context), view_(view) {}
 
 TrackedElementViews::~TrackedElementViews() = default;
+
+std::string TrackedElementViews::ToString() const {
+  auto result = TrackedElement::ToString();
+  result.append(" with view ");
+  result.append(view()->GetClassName());
+  return result;
+}
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementViews)
 

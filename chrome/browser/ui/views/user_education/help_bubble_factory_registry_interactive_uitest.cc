@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
           kAppMenuButtonElementId, context);
   ASSERT_NE(nullptr, app_menu_button);
   InteractionTestUtilBrowser test_util;
-  test_util.PressButton(app_menu_button);
+  ASSERT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.PressButton(app_menu_button));
 
   // Verify that the history menu item is visible.
   ui::TrackedElement* const element =

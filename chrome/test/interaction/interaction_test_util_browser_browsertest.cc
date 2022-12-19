@@ -14,12 +14,14 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 constexpr char kDocumentWithTitle1URL[] = "/title1.html";
+constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 }
 
 class InteractionTestUtilBrowserTest : public InteractiveBrowserTest {
@@ -54,6 +56,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
   RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
       // This adds a callback that calls
       // InteractionTestUtilBrowser::CompareScreenshot().
       Screenshot(kAppMenuButtonElementId, "AppMenuButton", "3924454"));
@@ -69,6 +73,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
   const GURL url = embedded_test_server()->GetURL(kDocumentWithTitle1URL);
 
   RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
                   NavigateWebContents(kWebContentsElementId, url),
                   // This adds a callback that calls
                   // InteractionTestUtilBrowser::CompareScreenshot().
@@ -111,19 +117,25 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest, SelectTab) {
 
   // Select a few different tabs using both the browser and tabstrip as targets.
   InteractionTestUtilBrowser test_util;
-  test_util.SelectTab(browser_el, 2);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 2));
   EXPECT_EQ(2, tab_strip->GetActiveIndex());
-  test_util.SelectTab(tabstrip_el, 1);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 1));
   EXPECT_EQ(1, tab_strip->GetActiveIndex());
-  test_util.SelectTab(tabstrip_el, 0);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 0));
   EXPECT_EQ(0, tab_strip->GetActiveIndex());
-  test_util.SelectTab(browser_el, 3);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 3));
   EXPECT_EQ(3, tab_strip->GetActiveIndex());
 
   // Re-selecting the same tab shouldn't break anything.
-  test_util.SelectTab(tabstrip_el, 3);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 3));
   EXPECT_EQ(3, tab_strip->GetActiveIndex());
-  test_util.SelectTab(browser_el, 3);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 3));
   EXPECT_EQ(3, tab_strip->GetActiveIndex());
 }
 

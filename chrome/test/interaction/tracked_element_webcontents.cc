@@ -5,6 +5,9 @@
 
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/web_contents.h"
+
 TrackedElementWebContents::TrackedElementWebContents(
     ui::ElementIdentifier identifier,
     ui::ElementContext context,
@@ -17,6 +20,13 @@ TrackedElementWebContents::~TrackedElementWebContents() {
 
 void TrackedElementWebContents::Init() {
   ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(this);
+}
+
+std::string TrackedElementWebContents::ToString() const {
+  auto result = TrackedElement::ToString();
+  result.append(" with contents ");
+  result.append(owner_->web_contents()->GetURL().spec());
+  return result;
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementWebContents)

@@ -6,11 +6,9 @@
 
 #include "base/test/bind.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 
 namespace ui::test {
-
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestFrameworkIdentifier);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherFrameworkIdentifier);
 
 TestElementBase::TestElementBase(ElementIdentifier id, ElementContext context)
     : TrackedElement(id, context) {}
@@ -50,25 +48,7 @@ void TestElementBase::SendCustomEvent(CustomElementEventType event_type) {
   ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this, event_type);
 }
 
-// static
-TrackedElement::FrameworkIdentifier TestElement::GetFrameworkIdentifier() {
-  return kTestFrameworkIdentifier;
-}
-
-TrackedElement::FrameworkIdentifier
-TestElement::GetInstanceFrameworkIdentifier() const {
-  return kTestFrameworkIdentifier;
-}
-
-// static
-TrackedElement::FrameworkIdentifier
-TestElementOtherFramework::GetFrameworkIdentifier() {
-  return kOtherFrameworkIdentifier;
-}
-
-TrackedElement::FrameworkIdentifier
-TestElementOtherFramework::GetInstanceFrameworkIdentifier() const {
-  return kOtherFrameworkIdentifier;
-}
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElement)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElementOtherFramework)
 
 }  // namespace ui::test

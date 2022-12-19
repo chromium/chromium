@@ -78,19 +78,22 @@ class DropdownItemSelector {
   // item.
   void SelectItem() {
     CHECK(!run_loop_.running());
-    CHECK(!success_.has_value());
+    CHECK(!result_.has_value());
     run_loop_.Run();
   }
 
   // Returns whether the operation succeeded or failed.
-  bool success() const { return success_.value_or(false); }
+  ui::test::ActionResult result() const {
+    return result_.value_or(ui::test::ActionResult::kFailed);
+  }
 
  private:
   // Responds to a new widget being shown. The assumption is that this widget is
   // the combobox dropdown. If it is not, the follow-up call will fail.
   void OnWidgetShown(Widget* widget) {
-    if (widget_ || success_.has_value())
+    if (widget_ || result_.has_value()) {
       return;
+    }
 
     widget_ = widget;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -101,18 +104,19 @@ class DropdownItemSelector {
   // Detects when a widget is hidden. Fails the operation if this was the drop-
   // down widget and the item has not yet been selected.
   void OnWidgetHidden(Widget* widget) {
-    if (success_.has_value() || widget_ != widget)
+    if (result_.has_value() || widget_ != widget) {
       return;
+    }
 
     LOG(ERROR) << "Widget closed before selection took place.";
-    SetSuccess(false);
+    SetResult(ui::test::ActionResult::kFailed);
   }
 
   // Actually finds and selects the item in the drop-down. If it is not present
   // or cannot be selected, fails the operation.
   void SelectItemImpl() {
     CHECK(widget_);
-    CHECK(!success_.has_value());
+    CHECK(!result_.has_value());
 
     // Because this widget was just shown, it may not be laid out yet.
     widget_->LayoutRootViewIfNecessary();
@@ -124,26 +128,37 @@ class DropdownItemSelector {
       widget_ = nullptr;
 
       // Try to select the item.
-      if (simulator_->SelectMenuItem(
-              ElementTrackerViews::GetInstance()->GetElementForView(menu_item,
-                                                                    true),
-              input_type_)) {
-        SetSuccess(true);
-      } else {
-        LOG(ERROR) << "Unable to select dropdown menu item.";
-        SetSuccess(false);
+      const auto result = simulator_->SelectMenuItem(
+          ElementTrackerViews::GetInstance()->GetElementForView(menu_item,
+                                                                true),
+          input_type_);
+      SetResult(result);
+      switch (result) {
+        case ui::test::ActionResult::kFailed:
+          LOG(ERROR) << "Unable to select dropdown menu item.";
+          break;
+        case ui::test::ActionResult::kNotAttempted:
+          NOTREACHED();
+          break;
+        case ui::test::ActionResult::kKnownIncompatible:
+          LOG(WARNING)
+              << "Select dropdown item not available on this platform with "
+                 "input type "
+              << input_type_;
+          break;
+        case ui::test::ActionResult::kSucceeded:
+          break;
       }
     } else {
       LOG(ERROR) << "Dropdown menu item not found.";
-      SetSuccess(false);
+      SetResult(ui::test::ActionResult::kFailed);
     }
   }
 
-  // Sets the success or failure state and aborts `run_loop_`. Should only ever
-  // be called once.
-  void SetSuccess(bool success) {
-    CHECK(!success_.has_value());
-    success_ = success;
+  // Sets the result and aborts `run_loop_`. Should only ever be called once.
+  void SetResult(ui::test::ActionResult result) {
+    CHECK(!result_.has_value());
+    result_ = result;
     widget_ = nullptr;
     weak_ptr_factory_.InvalidateWeakPtrs();
     run_loop_.Quit();
@@ -172,7 +187,7 @@ class DropdownItemSelector {
   const size_t item_index_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   AnyWidgetObserver observer_{views::test::AnyWidgetTestPasskey()};  // IN-TEST
-  absl::optional<bool> success_;
+  absl::optional<ui::test::ActionResult> result_;
   base::raw_ptr<Widget> widget_ = nullptr;
   base::WeakPtrFactory<DropdownItemSelector> weak_ptr_factory_{this};
 };
@@ -181,10 +196,10 @@ gfx::Point GetCenter(views::View* view) {
   return view->GetLocalBounds().CenterPoint();
 }
 
-void SendDefaultAction(View* target) {
+bool SendDefaultAction(View* target) {
   ui::AXActionData action;
   action.action = ax::mojom::Action::kDoDefault;
-  CHECK(target->HandleAccessibleAction(action));
+  return target->HandleAccessibleAction(action);
 }
 
 // Sends a mouse click to the specified `target`.
@@ -240,28 +255,29 @@ bool SendKeyPress(View* view, ui::KeyboardCode code, int flags = ui::EF_NONE) {
 
 }  // namespace
 
-bool InteractionTestUtilSimulatorViews::PressButton(ui::TrackedElement* element,
-                                                    InputType input_type) {
-  if (!element->IsA<TrackedElementViews>())
-    return false;
-  auto* const button =
-      Button::AsButton(element->AsA<TrackedElementViews>()->view());
-  if (!button)
-    return false;
-
-  PressButton(button, input_type);
-  return true;
-}
-
-bool InteractionTestUtilSimulatorViews::SelectMenuItem(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::PressButton(
     ui::TrackedElement* element,
     InputType input_type) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
+  auto* const button =
+      Button::AsButton(element->AsA<TrackedElementViews>()->view());
+  if (!button)
+    return ui::test::ActionResult::kNotAttempted;
+
+  PressButton(button, input_type);
+  return ui::test::ActionResult::kSucceeded;
+}
+
+ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectMenuItem(
+    ui::TrackedElement* element,
+    InputType input_type) {
+  if (!element->IsA<TrackedElementViews>())
+    return ui::test::ActionResult::kNotAttempted;
   auto* const menu_item =
       AsViewClass<MenuItemView>(element->AsA<TrackedElementViews>()->view());
   if (!menu_item)
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
 
 #if BUILDFLAG(IS_MAC)
   // Keyboard input isn't reliable on Mac for submenus, so unless the test
@@ -296,19 +312,23 @@ bool InteractionTestUtilSimulatorViews::SelectMenuItem(
       break;
     }
   }
-  return true;
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::DoDefaultAction(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::DoDefaultAction(
     ui::TrackedElement* element,
     InputType input_type) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
-  DoDefaultAction(element->AsA<TrackedElementViews>()->view(), input_type);
-  return true;
+    return ui::test::ActionResult::kNotAttempted;
+  if (!DoDefaultAction(element->AsA<TrackedElementViews>()->view(),
+                       input_type)) {
+    LOG(ERROR) << "Failed to send default action to " << *element;
+    return ui::test::ActionResult::kFailed;
+  }
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::SelectTab(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectTab(
     ui::TrackedElement* tab_collection,
     size_t index,
     InputType input_type) {
@@ -317,18 +337,25 @@ bool InteractionTestUtilSimulatorViews::SelectTab(
   // kind of simulator specific to browser code, so if this is not a supported
   // View type, just return false instead of sending an error.
   if (!tab_collection->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
   auto* const pane = views::AsViewClass<TabbedPane>(
       tab_collection->AsA<TrackedElementViews>()->view());
   if (!pane)
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
 
   // Unlike with the element type, an out-of-bounds tab is always an error.
   auto* const tab = pane->GetTabAt(index);
-  CHECK(tab);
+  if (!tab) {
+    LOG(ERROR) << "Tab index " << index << " out of range, there are "
+               << pane->GetTabCount() << " tabs.";
+    return ui::test::ActionResult::kFailed;
+  }
   switch (input_type) {
     case ui::test::InteractionTestUtil::InputType::kDontCare:
-      SendDefaultAction(tab);
+      if (!SendDefaultAction(tab)) {
+        LOG(ERROR) << "Failed to send default action to tab.";
+        return ui::test::ActionResult::kFailed;
+      }
       break;
     case ui::test::InteractionTestUtil::InputType::kMouse:
       SendMouseClick(tab, GetCenter(tab));
@@ -355,28 +382,35 @@ bool InteractionTestUtilSimulatorViews::SelectTab(
           auto* const current_tab = pane->GetTabAt(pane->GetSelectedTabIndex());
           SendKeyPress(current_tab, code);
         }
-        CHECK_EQ(index, pane->GetSelectedTabIndex());
+        if (index != pane->GetSelectedTabIndex()) {
+          LOG(ERROR) << "Unable to cycle through tabs to reach index " << index;
+          return ui::test::ActionResult::kFailed;
+        }
       }
       break;
     }
   }
-  return true;
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::SelectDropdownItem(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectDropdownItem(
     ui::TrackedElement* dropdown,
     size_t index,
     InputType input_type) {
   if (!dropdown->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
   auto* const view = dropdown->AsA<TrackedElementViews>()->view();
   auto* const combobox = views::AsViewClass<Combobox>(view);
   auto* const editable_combobox = views::AsViewClass<EditableCombobox>(view);
   if (!combobox && !editable_combobox)
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
   auto* const model = combobox ? combobox->GetModel()
                                : editable_combobox->combobox_model_.get();
-  CHECK_LT(index, model->GetItemCount());
+  if (index >= model->GetItemCount()) {
+    LOG(ERROR) << "Item index " << index << " is out of range, there are "
+               << model->GetItemCount() << " items.";
+    return ui::test::ActionResult::kFailed;
+  }
 
   // InputType::kDontCare is implemented in a way that is safe across all
   // platforms and most test environments; it does not rely on popping up the
@@ -387,15 +421,15 @@ bool InteractionTestUtilSimulatorViews::SelectDropdownItem(
     } else {
       editable_combobox->SetText(model->GetItemAt(index));
     }
-    return true;
+    return ui::test::ActionResult::kSucceeded;
   }
 
   // For specific input types, the dropdown will be popped out. Because of
   // asynchronous and event-handling issues, this is not yet supported on Mac.
 #if BUILDFLAG(IS_MAC)
-  LOG(ERROR) << "SelectDropdownItem(): "
-                "only InputType::kDontCare is supported on Mac.";
-  return false;
+  LOG(WARNING) << "SelectDropdownItem(): "
+                  "only InputType::kDontCare is supported on Mac.";
+  return ui::test::ActionResult::kKnownIncompatible;
 #else
 
   // This is required in case we want to repeatedly test a combobox; otherwise
@@ -415,8 +449,11 @@ bool InteractionTestUtilSimulatorViews::SelectDropdownItem(
   if (arrow) {
     PressButton(arrow, input_type);
   } else {
-    CHECK(editable_combobox) << "Only EditableCombobox should have the option "
-                                "to completely remove its arrow.";
+    if (!editable_combobox) {
+      LOG(ERROR) << "Only EditableCombobox should have the option to "
+                    "completely remove its arrow.";
+      return ui::test::ActionResult::kFailed;
+    }
     // Editable comboboxes without visible arrows exist, but are weird.
     switch (input_type) {
       case InputType::kDontCare:
@@ -425,22 +462,23 @@ bool InteractionTestUtilSimulatorViews::SelectDropdownItem(
         SendKeyPress(editable_combobox->textfield_, ui::VKEY_DOWN);
         break;
       default:
-        LOG(ERROR) << "Mouse and touch input are not supported for "
-                      "comboboxes without visible arrows.";
-        return false;
+        LOG(WARNING) << "Mouse and touch input are not supported for "
+                        "comboboxes without visible arrows.";
+        return ui::test::ActionResult::kNotAttempted;
     }
   }
 
   selector.SelectItem();
-  return selector.success();
+  return selector.result();
 #endif
 }
 
-bool InteractionTestUtilSimulatorViews::EnterText(ui::TrackedElement* element,
-                                                  const std::u16string& text,
-                                                  TextEntryMode mode) {
+ui::test::ActionResult InteractionTestUtilSimulatorViews::EnterText(
+    ui::TrackedElement* element,
+    std::u16string text,
+    TextEntryMode mode) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
   auto* const view = element->AsA<TrackedElementViews>()->view();
 
   // Currently, Textfields (and derived types like Textareas) are supported, as
@@ -449,74 +487,75 @@ bool InteractionTestUtilSimulatorViews::EnterText(ui::TrackedElement* element,
   if (!textfield && IsViewClass<EditableCombobox>(view))
     textfield = AsViewClass<EditableCombobox>(view)->textfield_;
 
-  if (textfield) {
-    if (textfield->GetReadOnly()) {
-      LOG(ERROR) << "Cannot set text on read-only textfield.";
-      return false;
-    }
-
-    // Textfield does not expose all of the power of RenderText so some care has
-    // to be taken in positioning the input caret using the methods available to
-    // this class.
-    switch (mode) {
-      case TextEntryMode::kAppend: {
-        // Determine the start and end of the selectable range, and position the
-        // caret immediately after the end of the range. This approach does not
-        // make any assumptions about the indexing mode of the text,
-        // multi-codepoint characters, etc.
-        textfield->SelectAll(false);
-        auto range = textfield->GetSelectedRange();
-        range.set_start(range.end());
-        textfield->SetSelectedRange(range);
-        break;
-      }
-      case TextEntryMode::kInsertOrReplace:
-        // No action needed; keep selection and cursor as they are.
-        break;
-      case TextEntryMode::kReplaceAll:
-        textfield->SelectAll(false);
-        break;
-    }
-
-    // This is an IME method that is the closest thing to inserting text from
-    // the user rather than setting it programmatically.
-    textfield->InsertText(
-        text,
-        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-    return true;
+  if (!textfield) {
+    return ui::test::ActionResult::kNotAttempted;
   }
 
-  return false;
+  if (textfield->GetReadOnly()) {
+    LOG(ERROR) << "Cannot set text on read-only textfield.";
+    return ui::test::ActionResult::kFailed;
+  }
+
+  // Textfield does not expose all of the power of RenderText so some care has
+  // to be taken in positioning the input caret using the methods available to
+  // this class.
+  switch (mode) {
+    case TextEntryMode::kAppend: {
+      // Determine the start and end of the selectable range, and position the
+      // caret immediately after the end of the range. This approach does not
+      // make any assumptions about the indexing mode of the text,
+      // multi-codepoint characters, etc.
+      textfield->SelectAll(false);
+      auto range = textfield->GetSelectedRange();
+      range.set_start(range.end());
+      textfield->SetSelectedRange(range);
+      break;
+    }
+    case TextEntryMode::kInsertOrReplace:
+      // No action needed; keep selection and cursor as they are.
+      break;
+    case TextEntryMode::kReplaceAll:
+      textfield->SelectAll(false);
+      break;
+  }
+
+  // This is an IME method that is the closest thing to inserting text from
+  // the user rather than setting it programmatically.
+  textfield->InsertText(
+      text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::ActivateSurface(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
     ui::TrackedElement* element) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
 
   auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
   views::test::WidgetActivationWaiter waiter(widget, true);
   widget->Activate();
   waiter.Wait();
-  return true;
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::SendAccelerator(
+ui::test::ActionResult InteractionTestUtilSimulatorViews::SendAccelerator(
     ui::TrackedElement* element,
-    const ui::Accelerator& accelerator) {
+    ui::Accelerator accelerator) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
 
   element->AsA<TrackedElementViews>()
       ->view()
       ->GetFocusManager()
       ->ProcessAccelerator(accelerator);
-  return true;
+  return ui::test::ActionResult::kSucceeded;
 }
 
-bool InteractionTestUtilSimulatorViews::Confirm(ui::TrackedElement* element) {
+ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
+    ui::TrackedElement* element) {
   if (!element->IsA<TrackedElementViews>())
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
   auto* const view = element->AsA<TrackedElementViews>()->view();
 
   // Currently, only dialogs can be confirmed. Fetch the delegate and call
@@ -529,32 +568,31 @@ bool InteractionTestUtilSimulatorViews::Confirm(ui::TrackedElement* element) {
   }
 
   if (!delegate)
-    return false;
+    return ui::test::ActionResult::kNotAttempted;
 
   if (!delegate->GetOkButton()) {
     LOG(ERROR) << "Confirm(): cannot confirm dialog that has no OK button.";
-    return false;
+    return ui::test::ActionResult::kFailed;
   }
 
   delegate->AcceptDialog();
-  return true;
+  return ui::test::ActionResult::kSucceeded;
 }
 
-void InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,
+bool InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,
                                                         InputType input_type) {
   switch (input_type) {
     case ui::test::InteractionTestUtil::InputType::kDontCare:
-      SendDefaultAction(view);
-      break;
+      return SendDefaultAction(view);
     case ui::test::InteractionTestUtil::InputType::kMouse:
       SendMouseClick(view, GetCenter(view));
-      break;
+      return true;
     case ui::test::InteractionTestUtil::InputType::kTouch:
       SendTapGesture(view, GetCenter(view));
-      break;
+      return true;
     case ui::test::InteractionTestUtil::InputType::kKeyboard:
       SendKeyPress(view, ui::VKEY_SPACE);
-      break;
+      return true;
   }
 }
 
@@ -574,7 +612,5 @@ void InteractionTestUtilSimulatorViews::PressButton(Button* button,
       break;
   }
 }
-
-// static
 
 }  // namespace views::test

@@ -16,6 +16,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
@@ -40,6 +41,9 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
                                    GURL("chrome://downloads")),
       // This adds a callback that calls
       // InteractionTestUtilBrowser::CompareScreenshot().
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(kDownloadsPageElementId, std::string(), "3924454"));
 }
 
@@ -92,7 +96,11 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
           kTabSearchPageElementId, kTabDataDisplayedEvent,
           base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
                                          ui::TrackedElement* element) {
-            EXPECT_TRUE(InteractionTestUtilBrowser::CompareScreenshot(
-                element, std::string(), "3664291"));
+            const auto result = InteractionTestUtilBrowser::CompareScreenshot(
+                element, std::string(), "3664291");
+            EXPECT_THAT(
+                result,
+                testing::AnyOf(ui::test::ActionResult::kSucceeded,
+                               ui::test::ActionResult::kKnownIncompatible));
           })));
 }

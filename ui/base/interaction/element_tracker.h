@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
 
+  // FrameworkSpecificImplementation:
+  std::string ToString() const override;
+
  protected:
   TrackedElement(ElementIdentifier identifier, ElementContext context);
 

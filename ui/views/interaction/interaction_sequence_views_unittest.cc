@@ -538,7 +538,8 @@ TEST_F(InteractionSequenceViewsTest, TransitionToMenuAndActivateMenuItem) {
     ui::test::InteractionTestUtil test_util;
     test_util.AddSimulator(
         std::make_unique<test::InteractionTestUtilSimulatorViews>());
-    test_util.SelectMenuItem(menu_element_.get());
+    EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+              test_util.SelectMenuItem(menu_element_.get()));
   });
 }
 

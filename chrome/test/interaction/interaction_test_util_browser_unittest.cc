@@ -85,9 +85,10 @@ TEST_F(InteractionTestUtilBrowserTest, PressHoverButton) {
   hover_button = contents_->AddChildView(std::make_unique<HoverButton>(
       views::Button::PressedCallback(pressed), u"Button"));
   widget_->LayoutRootViewIfNecessary();
-  test_util_.PressButton(
-      views::ElementTrackerViews::GetInstance()->GetElementForView(hover_button,
-                                                                   true),
-      ui::test::InteractionTestUtil::InputType::kKeyboard);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util_.PressButton(
+                views::ElementTrackerViews::GetInstance()->GetElementForView(
+                    hover_button, true),
+                ui::test::InteractionTestUtil::InputType::kKeyboard));
   EXPECT_EQ(nullptr, hover_button);
 }

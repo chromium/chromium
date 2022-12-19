@@ -21,7 +21,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
-#include "ui/base/interaction/interactive_test_internal.h"
 
 namespace ui::test {
 
@@ -40,6 +39,35 @@ class InteractiveTestPrivate {
  public:
   using MultiStep = std::vector<InteractionSequence::StepBuilder>;
 
+  // Describes what should happen when an action isn't compatible with the
+  // current build, platform, or environment. For example, not all tests are set
+  // up to handle screenshots, and some Linux window managers cannot bring a
+  // background window to the front.
+  //
+  // See chrome/test/interaction/README.md for best practices.
+  enum class OnIncompatibleAction {
+    // The test should fail. This is the default, and should be used in almost
+    // all cases.
+    kFailTest,
+    // The sequence should abort immediately and the test should be skipped.
+    // Use this when the remainder of the test would depend on the result of the
+    // incompatible step. Good for smoke/regression tests that have known
+    // incompatibilities but still need to be run in as many environments as
+    // possible.
+    kSkipTest,
+    // As `kSkipTest`, but instead of marking the test as skipped, just stops
+    // the test sequence. This is useful when the test cannot continue past the
+    // problematic step, but you also want to preserve any non-fatal errors that
+    // may have occurred up to that point (or check any conditions after the
+    // test stops).
+    kHaltTest,
+    // The failure should be ignored and the test should continue.
+    // Use this when the step does not affect the outcome of the test, such as
+    // taking an incidental screenshot in a test job that doesn't support
+    // screenshots.
+    kIgnoreAndContinue,
+  };
+
   explicit InteractiveTestPrivate(
       std::unique_ptr<InteractionTestUtil> test_util);
   virtual ~InteractiveTestPrivate();
@@ -47,6 +75,19 @@ class InteractiveTestPrivate {
   void operator=(const InteractiveTestPrivate&) = delete;
 
   InteractionTestUtil& test_util() { return *test_util_; }
+
+  OnIncompatibleAction on_incompatible_action() const {
+    return on_incompatible_action_;
+  }
+
+  bool sequence_skipped() const { return sequence_skipped_; }
+
+  // Possibly fails or skips a sequence based on the result of an action
+  // simulation.
+  void HandleActionResult(InteractionSequence* seq,
+                          const TrackedElement* el,
+                          const std::string& operation_name,
+                          ActionResult result);
 
   // Gets the pivot element for the specified context, which must exist.
   TrackedElement* GetPivotElement(ElementContext context) const;
@@ -100,6 +141,15 @@ class InteractiveTestPrivate {
 
   // Tracks whether a sequence succeeded or failed.
   bool success_ = false;
+
+  // Specifies how an incompatible action should be handled.
+  OnIncompatibleAction on_incompatible_action_ =
+      OnIncompatibleAction::kFailTest;
+  std::string on_incompatible_action_reason_;
+
+  // Tracks whether a sequence is skipped. Will only be set if
+  // `skip_on_unsupported_operation` is true.
+  bool sequence_skipped_ = false;
 
   // Used to simulate input to UI elements.
   std::unique_ptr<InteractionTestUtil> test_util_;

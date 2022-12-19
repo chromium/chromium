@@ -17,6 +17,37 @@
 
 namespace ui::test {
 
+// Describes the result of a trying to perform a specific action as part of a
+// test. Returned by individual functions and action simulators (see
+// `InteractionTestUtil::Simulator` below).
+enum class [[nodiscard]] ActionResult {
+  // Indicates that the code did not know how to perform the action on the
+  // requested target. In the case of an action simulator, other simulators
+  // should be tried instead. Otherwise, treat as failure.
+  kNotAttempted,
+
+  // Indicates that the action succeeded.
+  kSucceeded,
+
+  // Indicates that the code *does* know how to perform the action on the
+  // requested target, attempted to do so, and failed. No further attempts at
+  // performing the action should be made.
+  kFailed,
+
+  // Indicates that the code *does* know how to perform the action, but
+  // recognized that it would not succeed DUE TO A KNOWN ISSUE OR
+  // INCOMPATIBILITY in the current platform, build, or job environment.
+  //
+  // An action that fails unexpectedly should always return kFailed instead.
+  //
+  // Code that returns this value should log or document the exact circumstances
+  // that lead to the known incompatibility.
+  //
+  // No further attempts at performing the action should be made. Should be
+  // treated as failure by default.
+  kKnownIncompatible
+};
+
 // Platform- and framework-independent utility for delegating specific common
 // actions to framework-specific handlers. Use so you can write your
 // interaction tests without having to worry about framework specifics.
@@ -44,7 +75,11 @@ namespace ui::test {
 //   ...
 //   step.SetStartCallback(base::BindLambdaForTesting([&] (
 //       InteractionSequence* seq, TrackedElement* element) {
-//     test_util_.PressButton(element);
+//     ActionResult result = test_util_.PressButton(element);
+//     if (result == ActionResult::kError)
+//       seq->FailForTesting();
+//     else if (result = ActionResult::kNotSupportedOnThisPlatform)
+//       seq->SkipForTesting();
 //   }))
 //   ...
 // }
@@ -68,7 +103,9 @@ class InteractionTestUtil {
     // Simulate the input explicitly via kayboard events.
     kKeyboard,
     // Simulate the input explicitly via touch events.
-    kTouch
+    kTouch,
+    // If values are added to the enumeration, update this value.
+    kMaxValue = kTouch
   };
 
   // How should text be sent to a text input?
@@ -99,49 +136,49 @@ class InteractionTestUtil {
 
     // Tries to press `element` as if it is a button. Returns false if `element`
     // is an unsupported type or if `input_type` is not supported.
-    [[nodiscard]] virtual bool PressButton(TrackedElement* element,
-                                           InputType input_type);
+    virtual ActionResult PressButton(TrackedElement* element,
+                                     InputType input_type);
 
     // Tries to select `element` as if it is a menu item. Returns false if
     // `element` is an unsupported type or if `input_type` is not supported.
-    [[nodiscard]] virtual bool SelectMenuItem(TrackedElement* element,
-                                              InputType input_type);
+    virtual ActionResult SelectMenuItem(TrackedElement* element,
+                                        InputType input_type);
 
     // Triggers the default action of the target element, which is typically
     // whatever happens when the user clicks/taps it. If `element` is a button
     // or menu item, prefer PressButton() or SelectMenuItem() instead.
-    [[nodiscard]] virtual bool DoDefaultAction(TrackedElement* element,
-                                               InputType input_type);
+    virtual ActionResult DoDefaultAction(TrackedElement* element,
+                                         InputType input_type);
 
     // Tries to select tab `index` in `tab_collection`. The collection could be
     // a tabbed pane, browser/tabstrip, or similar. Note that `index` is
     // zero-indexed.
-    [[nodiscard]] virtual bool SelectTab(TrackedElement* tab_collection,
-                                         size_t index,
-                                         InputType input_type);
+    virtual ActionResult SelectTab(TrackedElement* tab_collection,
+                                   size_t index,
+                                   InputType input_type);
 
     // Tries to select item `index` in `dropdown`. The collection could be
     // a listbox, combobox, or similar. Note that `index` is zero-indexed.
-    [[nodiscard]] virtual bool SelectDropdownItem(TrackedElement* dropdown,
-                                                  size_t index,
-                                                  InputType input_type);
+    virtual ActionResult SelectDropdownItem(TrackedElement* dropdown,
+                                            size_t index,
+                                            InputType input_type);
 
     // Sets or modifies the text of a text box, editable combobox, etc.
-    [[nodiscard]] virtual bool EnterText(TrackedElement* element,
-                                         const std::u16string& text,
-                                         TextEntryMode mode);
+    virtual ActionResult EnterText(TrackedElement* element,
+                                   std::u16string text,
+                                   TextEntryMode mode);
 
     // Activates the surface containing `element`.
-    [[nodiscard]] virtual bool ActivateSurface(TrackedElement* element);
+    virtual ActionResult ActivateSurface(TrackedElement* element);
 
 #if !BUILDFLAG(IS_IOS)
     // Sends the given accelerator to the surface containing the element.
-    [[nodiscard]] virtual bool SendAccelerator(TrackedElement* element,
-                                               const Accelerator& accelerator);
+    virtual ActionResult SendAccelerator(TrackedElement* element,
+                                         Accelerator accelerator);
 #endif
 
     // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
-    [[nodiscard]] virtual bool Confirm(TrackedElement* element);
+    virtual ActionResult Confirm(TrackedElement* element);
   };
 
   InteractionTestUtil();
@@ -159,20 +196,20 @@ class InteractionTestUtil {
 
   // Simulate a button press on `element`. Will fail if `element` is not a
   // button or if `input_type` is not supported.
-  void PressButton(TrackedElement* element,
-                   InputType input_type = InputType::kDontCare);
+  ActionResult PressButton(TrackedElement* element,
+                           InputType input_type = InputType::kDontCare);
 
   // Simulate the menu item `element` being selected by the user. Will fail if
   // `element` is not a menu item or if `input_type` is not supported.
-  void SelectMenuItem(TrackedElement* element,
-                      InputType input_type = InputType::kDontCare);
+  ActionResult SelectMenuItem(TrackedElement* element,
+                              InputType input_type = InputType::kDontCare);
 
   // Simulate selecting the `index`-th tab (zero-indexed) of `tab_collection`.
   // Will fail if the target object is not a supported type, if `index` is out
   // of bounds, or if `input_type` is not supported.
-  void SelectTab(TrackedElement* tab_collection,
-                 size_t index,
-                 InputType input_type = InputType::kDontCare);
+  ActionResult SelectTab(TrackedElement* tab_collection,
+                         size_t index,
+                         InputType input_type = InputType::kDontCare);
 
   // Simulate selecting item `index` in `dropdown`. The collection could be
   // a listbox, combobox, or similar. Will fail if the target object is not a
@@ -185,41 +222,47 @@ class InteractionTestUtil {
   // implementation across platforms and can be a source of flakiness. Options
   // other than kDontCare may not be supported on all platforms for this reason;
   // if they are not, an error message will be printed and the test will fail.
-  void SelectDropdownItem(TrackedElement* dropdown,
-                          size_t index,
-                          InputType input_type = InputType::kDontCare);
+  ActionResult SelectDropdownItem(TrackedElement* dropdown,
+                                  size_t index,
+                                  InputType input_type = InputType::kDontCare);
 
   // Simulate the default action for `element` - typically whatever happens when
   // the user clicks or taps on it. Will fail if `input_type` is not supported.
   // Prefer PressButton() for buttons and SelectMenuItem() for menu items.
-  void DoDefaultAction(TrackedElement* element,
-                       InputType input_type = InputType::kDontCare);
+  ActionResult DoDefaultAction(TrackedElement* element,
+                               InputType input_type = InputType::kDontCare);
 
   // Sets or modifies the text of a text box, editable combobox, etc. `text` is
   // the text to enter, and `mode` specifies how it should be entered. Default
   // is replace existing text.
-  void EnterText(TrackedElement* element,
-                 std::u16string text,
-                 TextEntryMode mode = TextEntryMode::kReplaceAll);
+  ActionResult EnterText(TrackedElement* element,
+                         std::u16string text,
+                         TextEntryMode mode = TextEntryMode::kReplaceAll);
 
   // Activates the surface containing `element`.
-  void ActivateSurface(TrackedElement* element);
+  ActionResult ActivateSurface(TrackedElement* element);
 
 #if !BUILDFLAG(IS_IOS)
   // Sends `accelerator` to the surface containing `element`. May not work if
   // the surface is not active. Prefer to use only in single-process test
   // fixtures like interactive_ui_tests, especially for app/browser
   // accelerators.
-  void SendAccelerator(TrackedElement* element, Accelerator accelerator);
+  ActionResult SendAccelerator(TrackedElement* element,
+                               Accelerator accelerator);
 #endif
 
   // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
-  void Confirm(TrackedElement* element);
+  ActionResult Confirm(TrackedElement* element);
 
  private:
   // The list of known simulators.
   std::vector<std::unique_ptr<Simulator>> simulators_;
 };
+
+void PrintTo(InteractionTestUtil::InputType input_type, std::ostream* os);
+
+std::ostream& operator<<(std::ostream& os,
+                         InteractionTestUtil::InputType input_type);
 
 }  // namespace ui::test
 

@@ -14,29 +14,35 @@ namespace ui::test {
 InteractionTestUtilSimulatorMac::InteractionTestUtilSimulatorMac() = default;
 InteractionTestUtilSimulatorMac::~InteractionTestUtilSimulatorMac() = default;
 
-bool InteractionTestUtilSimulatorMac::SelectMenuItem(
+ActionResult InteractionTestUtilSimulatorMac::SelectMenuItem(
     ui::TrackedElement* element,
     InputType input_type) {
   auto* const mac_element = element->AsA<TrackedElementMac>();
   if (!mac_element)
-    return false;
-
-  // We can't inject specific inputs; so only "don't care" is supported through
-  // direct programmatic simulation of menu engagement.
-  if (input_type != InputType::kDontCare)
-    return false;
+    return ActionResult::kNotAttempted;
 
   NSMenu* menu = ElementTrackerMac::GetInstance()->GetRootMenuForContext(
       mac_element->context());
   if (!menu)
-    return false;
+    return ActionResult::kNotAttempted;
+
+  if (input_type != InputType::kDontCare) {
+    LOG(WARNING) << "SelectMenuItem on Mac does not support specific input "
+                    "types; use InputType::kDontCare";
+    return ActionResult::kKnownIncompatible;
+  }
 
   MenuControllerCocoa* controller =
       base::mac::ObjCCastStrict<MenuControllerCocoa>([menu delegate]);
-  DCHECK(controller);
+  if (!controller) {
+    LOG(ERROR) << "Cannot retrieve MenuControllerCocoa from menu.";
+    return ActionResult::kFailed;
+  }
   ui::MenuModel* const model = [controller model];
-  if (!model)
-    return false;
+  if (!model) {
+    LOG(ERROR) << "Cannot retrieve MenuModel from controller.";
+    return ActionResult::kFailed;
+  }
 
   for (size_t i = 0; i < model->GetItemCount(); ++i) {
     if (model->GetElementIdentifierAt(i) == element->identifier()) {
@@ -45,12 +51,14 @@ bool InteractionTestUtilSimulatorMac::SelectMenuItem(
         DCHECK([item action]);
         [controller performSelector:[item action] withObject:item];
         [controller cancel];
-        return true;
+        return ActionResult::kSucceeded;
       }
     }
   }
 
-  return false;
+  LOG(ERROR) << "Item with id " << element->identifier()
+             << " not found in menu.";
+  return ActionResult::kFailed;
 }
 
 }  // namespace ui::test

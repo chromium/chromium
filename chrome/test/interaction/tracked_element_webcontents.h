@@ -25,6 +25,8 @@ class TrackedElementWebContents : public ui::TrackedElement {
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
+  std::string ToString() const override;
+
   WebContentsInteractionTestUtil* owner() { return owner_; }
 
  private:

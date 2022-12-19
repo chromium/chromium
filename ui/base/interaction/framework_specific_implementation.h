@@ -6,8 +6,11 @@
 #define UI_BASE_INTERACTION_FRAMEWORK_SPECIFIC_IMPLEMENTATION_H_
 
 #include <memory>
+#include <ostream>
+#include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -77,6 +80,12 @@ class COMPONENT_EXPORT(UI_BASE) FrameworkSpecificImplementation {
                : nullptr;
   }
 
+  // Gets the class name of the implementation.
+  virtual const char* GetImplementationName() const = 0;
+
+  // Gets a string representation of this element.
+  virtual std::string ToString() const;
+
  protected:
   // Use DECLARE/DEFINE_FRAMEWORK_SPECIFIC_METADATA() - see below - to
   // implement this method in your framework-specific derived classes.
@@ -86,9 +95,13 @@ class COMPONENT_EXPORT(UI_BASE) FrameworkSpecificImplementation {
 // These macros can be used to help define platform-specific subclasses of
 // base classes derived from FrameworkSpecificImplementation.
 #define DECLARE_FRAMEWORK_SPECIFIC_METADATA()          \
+  const char* GetImplementationName() const override;  \
   static FrameworkIdentifier GetFrameworkIdentifier(); \
   FrameworkIdentifier GetInstanceFrameworkIdentifier() const override;
 #define DEFINE_FRAMEWORK_SPECIFIC_METADATA(ClassName)                \
+  const char* ClassName::GetImplementationName() const {             \
+    return #ClassName;                                               \
+  }                                                                  \
   ui::FrameworkSpecificImplementation::FrameworkIdentifier           \
   ClassName::GetFrameworkIdentifier() {                              \
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(k##ClassName##Identifier); \
@@ -174,6 +187,14 @@ class FrameworkSpecificRegistrationList {
  private:
   ListType instances_;
 };
+
+COMPONENT_EXPORT(UI_BASE)
+extern void PrintTo(const FrameworkSpecificImplementation& impl,
+                    std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE)
+extern std::ostream& operator<<(std::ostream& os,
+                                const FrameworkSpecificImplementation& impl);
 
 }  // namespace ui
 

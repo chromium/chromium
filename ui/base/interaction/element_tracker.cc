@@ -7,6 +7,7 @@
 #include <iterator>
 #include <list>
 #include <map>
+#include <sstream>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -183,6 +184,13 @@ TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
     : identifier_(id), context_(context) {}
 
 TrackedElement::~TrackedElement() = default;
+
+std::string TrackedElement::ToString() const {
+  std::ostringstream oss;
+  oss << GetImplementationName() << "(" << identifier() << ", " << context()
+      << ")";
+  return oss.str();
+}
 
 // static
 ElementTracker* ElementTracker::GetElementTracker() {

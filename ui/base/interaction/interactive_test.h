@@ -58,6 +58,8 @@ class InteractiveTestApi {
   using MultiStep = internal::InteractiveTestPrivate::MultiStep;
   using StepBuilder = InteractionSequence::StepBuilder;
   using TextEntryMode = InteractionTestUtil::TextEntryMode;
+  using OnIncompatibleAction =
+      internal::InteractiveTestPrivate::OnIncompatibleAction;
 
   // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
   template <typename... Args>
@@ -244,6 +246,15 @@ class InteractiveTestApi {
   [[nodiscard]] MultiStep InContext(ElementContext context, MultiStep steps);
   template <typename T>
   [[nodiscard]] StepBuilder InContext(ElementContext context, T&& step);
+
+  // Sets how to handle a case where a test attempts an operation that is not
+  // supported in the current platform/build/environment. Default is to fail
+  // the test. See chrome/test/interaction/README.md for best practices.
+  //
+  // Note that `reason` must always be specified, unless `action` is
+  // `kFailTest`, in which case it may be empty.
+  [[nodiscard]] StepBuilder SetOnIncompatibleAction(OnIncompatibleAction action,
+                                                    const char* reason);
 
   // Used internally by methods in this class; do not call.
   internal::InteractiveTestPrivate& private_test_impl() {

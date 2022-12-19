@@ -3,169 +3,151 @@
 // found in the LICENSE file.
 
 #include "ui/base/interaction/interaction_test_util.h"
+#include <functional>
 
 namespace ui::test {
 
-bool InteractionTestUtil::Simulator::PressButton(TrackedElement*, InputType) {
-  return false;
+namespace {
+
+template <typename... Args>
+ActionResult Simulate(
+    const std::vector<std::unique_ptr<InteractionTestUtil::Simulator>>&
+        simulators,
+    ActionResult (InteractionTestUtil::Simulator::*method)(Args...),
+    Args... args) {
+  for (const auto& simulator : simulators) {
+    const auto result = std::invoke(method, simulator.get(), args...);
+    if (result != ActionResult::kNotAttempted) {
+      return result;
+    }
+  }
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::SelectMenuItem(TrackedElement*,
-                                                    InputType) {
-  return false;
+}  // namespace
+
+ActionResult InteractionTestUtil::Simulator::PressButton(TrackedElement*,
+                                                         InputType) {
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
-                                                     InputType) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::SelectMenuItem(TrackedElement*,
+                                                            InputType) {
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::SelectTab(TrackedElement*,
-                                               size_t,
-                                               InputType) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
+                                                             InputType) {
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::SelectDropdownItem(TrackedElement*,
-                                                        size_t,
-                                                        InputType) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::SelectTab(TrackedElement*,
+                                                       size_t,
+                                                       InputType) {
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::EnterText(TrackedElement* element,
-                                               const std::u16string& text,
-                                               TextEntryMode mode) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::SelectDropdownItem(TrackedElement*,
+                                                                size_t,
+                                                                InputType) {
+  return ActionResult::kNotAttempted;
 }
 
-bool InteractionTestUtil::Simulator::ActivateSurface(TrackedElement* element) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::EnterText(TrackedElement* element,
+                                                       std::u16string text,
+                                                       TextEntryMode mode) {
+  return ActionResult::kNotAttempted;
+}
+
+ActionResult InteractionTestUtil::Simulator::ActivateSurface(
+    TrackedElement* element) {
+  return ActionResult::kNotAttempted;
 }
 
 #if !BUILDFLAG(IS_IOS)
-bool InteractionTestUtil::Simulator::SendAccelerator(
+ActionResult InteractionTestUtil::Simulator::SendAccelerator(
     TrackedElement* element,
-    const Accelerator& accelerator) {
-  return false;
+    Accelerator accelerator) {
+  return ActionResult::kNotAttempted;
 }
 #endif
 
-bool InteractionTestUtil::Simulator::Confirm(TrackedElement* element) {
-  return false;
+ActionResult InteractionTestUtil::Simulator::Confirm(TrackedElement* element) {
+  return ActionResult::kNotAttempted;
 }
 
 InteractionTestUtil::InteractionTestUtil() = default;
 InteractionTestUtil::~InteractionTestUtil() = default;
 
-void InteractionTestUtil::PressButton(TrackedElement* element,
-                                      InputType input_type) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->PressButton(element, input_type))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::PressButton(TrackedElement* element,
+                                              InputType input_type) {
+  return Simulate(simulators_, &Simulator::PressButton, element, input_type);
 }
 
-void InteractionTestUtil::SelectMenuItem(TrackedElement* element,
-                                         InputType input_type) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->SelectMenuItem(element, input_type))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::SelectMenuItem(TrackedElement* element,
+                                                 InputType input_type) {
+  return Simulate(simulators_, &Simulator::SelectMenuItem, element, input_type);
 }
 
-void InteractionTestUtil::DoDefaultAction(TrackedElement* element,
-                                          InputType input_type) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->DoDefaultAction(element, input_type))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::DoDefaultAction(TrackedElement* element,
+                                                  InputType input_type) {
+  return Simulate(simulators_, &Simulator::DoDefaultAction, element,
+                  input_type);
 }
 
-void InteractionTestUtil::SelectTab(TrackedElement* tab_collection,
-                                    size_t index,
-                                    InputType input_type) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->SelectTab(tab_collection, index, input_type))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::SelectTab(TrackedElement* tab_collection,
+                                            size_t index,
+                                            InputType input_type) {
+  return Simulate(simulators_, &Simulator::SelectTab, tab_collection, index,
+                  input_type);
 }
 
-void InteractionTestUtil::SelectDropdownItem(TrackedElement* dropdown,
-                                             size_t index,
-                                             InputType input_type) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->SelectDropdownItem(dropdown, index, input_type))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::SelectDropdownItem(TrackedElement* dropdown,
+                                                     size_t index,
+                                                     InputType input_type) {
+  return Simulate(simulators_, &Simulator::SelectDropdownItem, dropdown, index,
+                  input_type);
 }
 
-void InteractionTestUtil::EnterText(TrackedElement* element,
-                                    std::u16string text,
-                                    TextEntryMode mode) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->EnterText(element, text, mode))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::EnterText(TrackedElement* element,
+                                            std::u16string text,
+                                            TextEntryMode mode) {
+  return Simulate(simulators_, &Simulator::EnterText, element, text, mode);
 }
 
-void InteractionTestUtil::ActivateSurface(TrackedElement* element) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->ActivateSurface(element))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::ActivateSurface(TrackedElement* element) {
+  return Simulate(simulators_, &Simulator::ActivateSurface, element);
 }
 
 #if !BUILDFLAG(IS_IOS)
-void InteractionTestUtil::SendAccelerator(TrackedElement* element,
-                                          Accelerator accelerator) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->SendAccelerator(element, accelerator))
-      return;
-  }
-
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+ActionResult InteractionTestUtil::SendAccelerator(TrackedElement* element,
+                                                  Accelerator accelerator) {
+  return Simulate(simulators_, &Simulator::SendAccelerator, element,
+                  accelerator);
 }
 #endif
 
-void InteractionTestUtil::Confirm(TrackedElement* element) {
-  for (const auto& simulator : simulators_) {
-    if (simulator->Confirm(element))
-      return;
-  }
+ActionResult InteractionTestUtil::Confirm(TrackedElement* element) {
+  return Simulate(simulators_, &Simulator::Confirm, element);
+}
 
-  // If a test has requested an invalid operation on an element, then this is
-  // an error.
-  NOTREACHED();
+void PrintTo(InteractionTestUtil::InputType input_type, std::ostream* os) {
+  const char* const kInputTypeNames[] = {
+      "InputType::kDontCare", "InputType::kMouse", "InputType::kKeyboard",
+      "InputType::kMouse"};
+  constexpr int kCount = sizeof(kInputTypeNames) / sizeof(kInputTypeNames[0]);
+  static_assert(kCount ==
+                static_cast<int>(InteractionTestUtil::InputType::kMaxValue) +
+                    1);
+  const int value = static_cast<int>(input_type);
+  *os << ((value < 0 || value >= kCount) ? "[invalid InputType]"
+                                         : kInputTypeNames[value]);
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         InteractionTestUtil::InputType input_type) {
+  PrintTo(input_type, &os);
+  return os;
 }
 
 }  // namespace ui::test

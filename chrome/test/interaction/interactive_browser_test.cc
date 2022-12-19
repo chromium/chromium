@@ -74,15 +74,14 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
                                             baseline.c_str()));
   ui::test::internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
-      [](std::string screenshot_name, std::string baseline,
-         ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        if (!InteractionTestUtilBrowser::CompareScreenshot(el, screenshot_name,
-                                                           baseline)) {
-          LOG(ERROR) << "Screenshot failed: " << screenshot_name;
-          seq->FailForTesting();
-        }
+      [](InteractiveBrowserTestApi* test, std::string screenshot_name,
+         std::string baseline, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        const auto result = InteractionTestUtilBrowser::CompareScreenshot(
+            el, screenshot_name, baseline);
+        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
       },
-      screenshot_name, baseline));
+      base::Unretained(this), screenshot_name, baseline));
   return builder;
 }
 
