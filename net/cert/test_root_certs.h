@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -77,7 +78,7 @@ class NET_EXPORT TestRootCerts {
   // Marks |certificate| as trusted in the effective trust store
   // used by CertVerifier::Verify(). Returns false if the
   // certificate could not be marked trusted.
-  bool Add(X509Certificate* certificate);
+  bool Add(X509Certificate* certificate, CertificateTrust trust);
 
   // Performs platform-dependent operations.
   void Init();
@@ -105,9 +106,17 @@ class NET_EXPORT ScopedTestRoot {
  public:
   ScopedTestRoot();
   // Creates a ScopedTestRoot that adds |cert| to the TestRootCerts store.
-  explicit ScopedTestRoot(X509Certificate* cert);
+  // |trust| may be specified to change the details of how the trust is
+  // interpreted (applies only to CertVerifyProcBuiltin).
+  explicit ScopedTestRoot(
+      X509Certificate* cert,
+      CertificateTrust trust = CertificateTrust::ForTrustAnchor());
   // Creates a ScopedTestRoot that adds |certs| to the TestRootCerts store.
-  explicit ScopedTestRoot(CertificateList certs);
+  // |trust| may be specified to change the details of how the trust is
+  // interpreted (applies only to CertVerifyProcBuiltin).
+  explicit ScopedTestRoot(
+      CertificateList certs,
+      CertificateTrust trust = CertificateTrust::ForTrustAnchor());
 
   ScopedTestRoot(const ScopedTestRoot&) = delete;
   ScopedTestRoot& operator=(const ScopedTestRoot&) = delete;
@@ -122,7 +131,8 @@ class NET_EXPORT ScopedTestRoot {
   // If |certs_| contains certificates (due to a prior call to Reset or due to
   // certs being passed at construction), the existing TestRootCerts store is
   // cleared.
-  void Reset(CertificateList certs);
+  void Reset(CertificateList certs,
+             CertificateTrust trust = CertificateTrust::ForTrustAnchor());
 
   // Returns true if this ScopedTestRoot has no certs assigned.
   bool IsEmpty() const { return certs_.empty(); }

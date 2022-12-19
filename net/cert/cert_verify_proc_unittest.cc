@@ -374,6 +374,13 @@ class CertVerifyProcInternalTest
                   verify_result, NetLogWithSource());
   }
 
+  int Verify(X509Certificate* cert, const std::string& hostname) {
+    CertVerifyResult verify_result;
+    int flags = 0;
+    return Verify(cert, hostname, flags, CRLSet::BuiltinCRLSet().get(),
+                  CertificateList(), &verify_result);
+  }
+
   CertVerifyProcType verify_proc_type() const { return GetParam(); }
 
   bool SupportsAdditionalTrustAnchors() const {
@@ -561,6 +568,33 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifyProcInternalTest,
                          testing::ValuesIn(kAllCertVerifiers),
                          VerifyProcTypeToName);
+
+TEST_P(CertVerifyProcInternalTest, DistrustedIntermediate) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  constexpr char kHostname[] = "www.example.com";
+
+  // Chain should not verify without any ScopedTestRoots.
+  EXPECT_THAT(Verify(chain.get(), kHostname),
+              IsError(ERR_CERT_AUTHORITY_INVALID));
+
+  // Trusting root should cause chain to verify successfully.
+  ScopedTestRoot trust_root(root->GetX509Certificate().get(),
+                            CertificateTrust::ForTrustAnchor());
+  EXPECT_THAT(Verify(chain.get(), kHostname), IsOk());
+
+  ScopedTestRoot distrust_intermediate(intermediate->GetX509Certificate().get(),
+                                       CertificateTrust::ForDistrusted());
+  if (VerifyProcTypeIsBuiltin()) {
+    // Distrusting intermediate should cause chain to not verify again.
+    EXPECT_THAT(Verify(chain.get(), kHostname),
+                IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    // Specifying trust types for the platform verifiers through ScopedTestRoot
+    // is not supported, so this should still verify successfully.
+    EXPECT_THAT(Verify(chain.get(), kHostname), IsOk());
+  }
+}
 
 // Tests that a certificate is recognized as EV, when the valid EV policy OID
 // for the trust anchor is the second candidate EV oid in the target

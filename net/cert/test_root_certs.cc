@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -32,7 +33,7 @@ bool TestRootCerts::HasInstance() {
   return g_has_instance;
 }
 
-bool TestRootCerts::Add(X509Certificate* certificate) {
+bool TestRootCerts::Add(X509Certificate* certificate, CertificateTrust trust) {
   CertErrors errors;
   std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
       bssl::UpRef(certificate->cert_buffer()),
@@ -41,7 +42,14 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
     return false;
   }
 
-  test_trust_store_.AddTrustAnchor(std::move(parsed));
+  test_trust_store_.AddCertificate(std::move(parsed), trust);
+  if (trust.HasUnspecifiedTrust() || trust.IsDistrusted()) {
+    // TestRootCerts doesn't support passing the specific trust settings into
+    // the OS implementations in any case, but in the case of unspecified trust
+    // or explicit distrust, simply not passing the certs to the OS
+    // implementation is better than nothing.
+    return true;
+  }
   return AddImpl(certificate);
 }
 
@@ -61,12 +69,12 @@ TestRootCerts::TestRootCerts() {
 
 ScopedTestRoot::ScopedTestRoot() = default;
 
-ScopedTestRoot::ScopedTestRoot(X509Certificate* cert) {
-  Reset({cert});
+ScopedTestRoot::ScopedTestRoot(X509Certificate* cert, CertificateTrust trust) {
+  Reset({cert}, trust);
 }
 
-ScopedTestRoot::ScopedTestRoot(CertificateList certs) {
-  Reset(std::move(certs));
+ScopedTestRoot::ScopedTestRoot(CertificateList certs, CertificateTrust trust) {
+  Reset(std::move(certs), trust);
 }
 
 ScopedTestRoot::ScopedTestRoot(ScopedTestRoot&& other) {
@@ -84,11 +92,11 @@ ScopedTestRoot::~ScopedTestRoot() {
   Reset({});
 }
 
-void ScopedTestRoot::Reset(CertificateList certs) {
+void ScopedTestRoot::Reset(CertificateList certs, CertificateTrust trust) {
   if (!certs_.empty())
     TestRootCerts::GetInstance()->Clear();
   for (const auto& cert : certs)
-    TestRootCerts::GetInstance()->Add(cert.get());
+    TestRootCerts::GetInstance()->Add(cert.get(), trust);
   certs_ = certs;
 }
 
