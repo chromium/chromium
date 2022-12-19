@@ -246,8 +246,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     // Use the appropriate method to reset a chooser exception.
     if (this.chooserType !== ChooserType.NONE && this.chooserObject !== null) {
       this.browserProxy.resetChooserExceptionForSite(
-          this.chooserType, this.model.origin, this.model.embeddingOrigin,
-          this.chooserObject);
+          this.chooserType, this.model.origin, this.chooserObject);
       return;
     }
 

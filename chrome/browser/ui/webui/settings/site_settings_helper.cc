@@ -940,28 +940,22 @@ base::Value::Dict CreateChooserExceptionObject(
   std::vector<base::Value::Dict>
       all_provider_sites[HostContentSettingsMap::NUM_PROVIDER_TYPES];
   for (const auto& details : chooser_exception_details) {
-    const GURL& requesting_origin = details.first.first;
-    const std::string& source = details.first.second;
+    const GURL& origin = std::get<0>(details);
+    const std::string& source = std::get<1>(details);
+    const bool incognito = std::get<2>(details);
+
+    std::string site_display_name = origin.spec();
 
     auto& this_provider_sites =
         all_provider_sites[HostContentSettingsMap::GetProviderTypeFromSource(
             source)];
-
-    for (const auto& embedding_origin_incognito_pair : details.second) {
-      const GURL& embedding_origin = embedding_origin_incognito_pair.first;
-      const bool incognito = embedding_origin_incognito_pair.second;
-      base::Value::Dict site;
-
-      site.Set(kOrigin, requesting_origin.spec());
-      site.Set(kDisplayName, requesting_origin.spec());
-      site.Set(kEmbeddingOrigin, embedding_origin.is_empty()
-                                     ? std::string()
-                                     : embedding_origin.spec());
-      site.Set(kSetting, setting_string);
-      site.Set(kSource, source);
-      site.Set(kIncognito, incognito);
-      this_provider_sites.push_back(std::move(site));
-    }
+    base::Value::Dict site;
+    site.Set(kOrigin, origin.spec());
+    site.Set(kDisplayName, site_display_name);
+    site.Set(kSetting, setting_string);
+    site.Set(kSource, source);
+    site.Set(kIncognito, incognito);
+    this_provider_sites.push_back(std::move(site));
   }
 
   base::Value::List sites;
@@ -1024,13 +1018,8 @@ base::Value::List GetChooserExceptionListFromProfile(
     std::string source = GetSourceStringForChooserException(
         profile, content_type, object->source);
 
-    const auto origin_source_pair = std::make_pair(object->origin, source);
-    auto& origin_incognito_pair_set =
-        chooser_exception_details[origin_source_pair];
-
-    const auto origin_incognito_pair =
-        std::make_pair(object->origin, object->incognito);
-    origin_incognito_pair_set.insert(origin_incognito_pair);
+    chooser_exception_details.insert(
+        {object->origin, source, object->incognito});
   }
 
   for (const auto& all_chooser_objects_entry : all_chooser_objects) {

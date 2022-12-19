@@ -2629,7 +2629,6 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   // from the list.
   base::Value::List args;
   args.Append(kUsbChooserGroupName);
-  args.Append("https://unused.com");
   args.Append(kGoogleOriginStr);
   args.Append(UsbChooserContext::DeviceInfoToValue(*persistent_device_info_));
 
@@ -2663,7 +2662,6 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   // be able to be reset.
   args.clear();
   args.Append(kUsbChooserGroupName);
-  args.Append("https://unused.com");
   args.Append(kChromiumOriginStr);
   args.Append(UsbChooserContext::DeviceInfoToValue(*persistent_device_info_));
 
@@ -2715,7 +2713,6 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   // when the exception only has one site exception granted to it..
   args.clear();
   args.Append(kUsbChooserGroupName);
-  args.Append("https://unused.com");
   args.Append(kAndroidOriginStr);
   args.Append(UsbChooserContext::DeviceInfoToValue(*user_granted_device_info_));
 

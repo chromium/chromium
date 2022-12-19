@@ -383,8 +383,7 @@ suite('ChooserExceptionList', function() {
     const args = await browserProxy.whenCalled('resetChooserExceptionForSite');
     assertEquals(ChooserType.USB_DEVICES, args[0]);
     assertEquals('https://foo.com', args[1]);
-    assertEquals('https://foo.com', args[2]);
-    assertDeepEquals({}, args[3]);
+    assertDeepEquals({}, args[2]);
   });
 
   test(

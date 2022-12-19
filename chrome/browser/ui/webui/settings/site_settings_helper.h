@@ -45,13 +45,9 @@ typedef std::map<std::pair<ContentSettingsPattern, std::string>,
                  OnePatternSettings>
     AllPatternsSettings;
 
-// TODO(https://crbug.com/854329): Once the Site Settings WebUI is capable of
-// displaying the new chooser exception object format, remove the typedefs that
-// are currently used for organizing the chooser exceptions.
-// Maps from a primary URL pattern/source pair to a set of secondary URL
-// patterns/incognito status pair.
-using ChooserExceptionDetails =
-    std::map<std::pair<GURL, std::string>, std::set<std::pair<GURL, bool>>>;
+// A set of <origin, source, incognito> tuple for organizing granted permission
+// objects that belong to the same device.
+using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
 
 constexpr char kChooserType[] = "chooserType";
 constexpr char kDisplayName[] = "displayName";

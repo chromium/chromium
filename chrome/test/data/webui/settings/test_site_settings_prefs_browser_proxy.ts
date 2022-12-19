@@ -424,11 +424,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
 
   /** @override */
   resetChooserExceptionForSite(
-      chooserType: ChooserType, origin: string, embeddingOrigin: string,
-      exception: Object) {
+      chooserType: ChooserType, origin: string, exception: Object) {
     this.methodCalled(
-        'resetChooserExceptionForSite',
-        [chooserType, origin, embeddingOrigin, exception]);
+        'resetChooserExceptionForSite', [chooserType, origin, exception]);
   }
 
   /** @override */

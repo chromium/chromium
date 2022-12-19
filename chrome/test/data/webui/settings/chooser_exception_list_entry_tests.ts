@@ -250,11 +250,9 @@ suite('ChooserExceptionListEntry', function() {
         const args =
             await browserProxy.whenCalled('resetChooserExceptionForSite');
 
-        // The args should be the chooserType, origin, embeddingOrigin,
-        // and object.
+        // The args should be the chooserType, origin, and object.
         assertEquals(ChooserType.USB_DEVICES, args[0]);
         assertEquals('https://foo.com', args[1]);
-        assertEquals('https://foo.com', args[2]);
-        assertEquals('object', typeof args[3]);
+        assertEquals('object', typeof args[2]);
       });
 });

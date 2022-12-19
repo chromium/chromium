@@ -1651,7 +1651,7 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(
     const base::Value::List& args) {
-  CHECK_EQ(4U, args.size());
+  CHECK_EQ(3U, args.size());
 
   const std::string& chooser_type_str = args[0].GetString();
   const site_settings::ChooserTypeNameEntry* chooser_type =
@@ -1659,17 +1659,12 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
   CHECK(chooser_type);
 
   const std::string& origin_str = args[1].GetString();
-  GURL requesting_origin(origin_str);
-  CHECK(requesting_origin.is_valid());
-
-  const std::string& embedding_origin_str = args[2].GetString();
-  GURL embedding_origin(embedding_origin_str);
-  CHECK(embedding_origin.is_valid());
+  GURL origin(origin_str);
+  CHECK(origin.is_valid());
 
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
-  chooser_context->RevokeObjectPermission(url::Origin::Create(embedding_origin),
-                                          args[3]);
+  chooser_context->RevokeObjectPermission(url::Origin::Create(origin), args[2]);
 }
 
 void SiteSettingsHandler::HandleIgnoreOriginsForNotificationPermissionReview(
