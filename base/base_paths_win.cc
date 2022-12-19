@@ -146,9 +146,6 @@ bool PathProviderWin(int key, FilePath* result) {
       break;
     }
     case base::DIR_APP_SHORTCUTS: {
-      if (win::GetVersion() < win::Version::WIN8)
-        return false;
-
       base::win::ScopedCoMem<wchar_t> path_buf;
       if (FAILED(SHGetKnownFolderPath(FOLDERID_ApplicationShortcuts, 0, NULL,
                                       &path_buf)))

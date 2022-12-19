@@ -142,14 +142,7 @@ TEST_F(PathServiceTest, Get) {
   }
 #if BUILDFLAG(IS_WIN)
   for (int key = PATH_WIN_START + 1; key < PATH_WIN_END; ++key) {
-    bool valid = true;
-    if (key == DIR_APP_SHORTCUTS)
-      valid = base::win::GetVersion() >= base::win::Version::WIN8;
-
-    if (valid)
-      EXPECT_PRED1(ReturnsValidPath, key);
-    else
-      EXPECT_PRED1(ReturnsInvalidPath, key);
+    EXPECT_PRED1(ReturnsValidPath, key);
   }
 #elif BUILDFLAG(IS_APPLE)
   for (int key = PATH_MAC_START + 1; key < PATH_MAC_END; ++key) {

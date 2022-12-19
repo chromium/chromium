@@ -4,6 +4,7 @@
 
 #include "base/process/process.h"
 
+#include <string>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -35,7 +36,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/base_win_buildflags.h"
-#include "base/win/windows_version.h"
 
 #include <windows.h>
 #endif
@@ -91,7 +91,8 @@ std::string GetProcessCpuCgroup(const base::Process& process) {
   return std::string();
 }
 
-bool AddProcessToCpuCgroup(const base::Process& process, std::string& cgroup) {
+bool AddProcessToCpuCgroup(const base::Process& process,
+                           const std::string& cgroup) {
   base::FilePath path(cgroup);
   path = path.Append("cgroup.procs");
   return base::WriteFile(path, base::NumberToString(process.Pid()));
@@ -411,9 +412,6 @@ TEST_F(ProcessTest, MAYBE_HeapCorruption) {
 #define MAYBE_ControlFlowViolation DISABLED_ControlFlowViolation
 #endif
 TEST_F(ProcessTest, MAYBE_ControlFlowViolation) {
-  // CFG is only supported on Windows 8.1 or greater.
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
   // CFG causes ntdll!RtlFailFast2 to be called resulting in uncatchable
   // 0xC0000409 (STATUS_STACK_BUFFER_OVERRUN) exception.
   EXPECT_EXIT(base::debug::win::TerminateWithControlFlowViolation(),

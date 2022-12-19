@@ -349,15 +349,6 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     startup_info->hStdError = options.stderr_handle;
   }
 
-  if (options.job_handle) {
-    // If this code is run under a debugger, the launched process is
-    // automatically associated with a job object created by the debugger.
-    // The CREATE_BREAKAWAY_FROM_JOB flag is used to prevent this on Windows
-    // releases that do not support nested jobs.
-    if (win::GetVersion() < win::Version::WIN8)
-      flags |= CREATE_BREAKAWAY_FROM_JOB;
-  }
-
   if (options.force_breakaway_from_job_)
     flags |= CREATE_BREAKAWAY_FROM_JOB;
 
