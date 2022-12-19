@@ -54,6 +54,15 @@ void WaylandDataDevice::ResetDragDelegate() {
   drag_delegate_ = nullptr;
 }
 
+void WaylandDataDevice::ResetDragDelegateIfNotDragSource() {
+  // When in an active drag-and-drop session initiated by an external Wayland
+  // client, |drag_delegate_| is set at OnEnter, and must be reset upon
+  // OnLeave/OnDrop in order to avoid potential memory corruption issues.
+  if (drag_delegate_ && !drag_delegate_->IsDragSource()) {
+    ResetDragDelegate();
+  }
+}
+
 void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
                                     const std::string& mime_type,
                                     RequestDataCallback callback) {
@@ -87,14 +96,6 @@ void WaylandDataDevice::ReadDragDataFromFD(base::ScopedFD fd,
   wl::ReadDataFromFD(std::move(fd), &contents);
   std::move(callback).Run(scoped_refptr<base::RefCountedBytes>(
       base::RefCountedBytes::TakeVector(&contents)));
-}
-
-void WaylandDataDevice::ResetDragDelegateIfNeeded() {
-  // When in an active drag-and-drop session initiated by an external Wayland
-  // client, |drag_delegate_| is set at OnEnter, and must be reset upon
-  // OnLeave/OnDrop in order to avoid potential memory corruption issues.
-  if (drag_delegate_ && !drag_delegate_->IsDragSource())
-    ResetDragDelegate();
 }
 
 // static
@@ -170,7 +171,7 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   // here, in Lacros. TODO(crbug.com/1293415): Remove once Exo bug is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   self->drag_delegate_->OnDragLeave();
-  self->ResetDragDelegateIfNeeded();
+  self->ResetDragDelegateIfNotDragSource();
 #endif
 }
 
@@ -180,7 +181,7 @@ void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
     self->drag_delegate_->OnDragLeave();
     self->connection()->Flush();
   }
-  self->ResetDragDelegateIfNeeded();
+  self->ResetDragDelegateIfNotDragSource();
 }
 
 void WaylandDataDevice::OnSelection(void* data,

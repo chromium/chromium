@@ -65,9 +65,13 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
                  wl_surface* icon_surface,
                  DragDelegate* delegate);
 
-  // Reset the drag delegate, assuming there is one set. Any wl_data_device
+  // Resets the drag delegate, assuming there is one set. Any wl_data_device
   // event received after this will be ignored until a new delegate is set.
   void ResetDragDelegate();
+  // Resets the drag delegate, only under certain conditions, eg: if it is set
+  // and running an incoming dnd session.
+  // TODO(crbug.com/1401598): Drop once drag delegate improvements are done.
+  void ResetDragDelegateIfNotDragSource();
 
   // Requests data for an |offer| in a format specified by |mime_type|. The
   // transfer happens asynchronously and |callback| is called when it is done.
@@ -89,7 +93,6 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
 
   void ReadDragDataFromFD(base::ScopedFD fd, RequestDataCallback callback);
-  void ResetDragDelegateIfNeeded();
 
   // wl_data_device_listener callbacks
   static void OnOffer(void* data,
