@@ -1362,17 +1362,26 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_SEE_ALL_SITES_LABEL" translateable="false" desc="Title for the all Fledge sites preference.">
-        Donec non mi
+        All sites
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_HEADING" translateable="false" desc="Title for the blocked Fledge sites preference.">
-        Curabitur a pharetra
+        Blocked sites
       </message>
       <!-- TODO(http://b/254412044): Format links.-->
       <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="">
         Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>et fringilla nunc<ph name="END_LINK_1">&lt;/link1&gt;</ph>. Vivamus sit amet <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cursus quam<ph name="END_LINK_2">&lt;/link2&gt;</ph>. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
       </message>
       <message name="IDS_SETTINGS_FLEDGE_ALL_SITES_SUB_PAGE_TITLE" translateable="false" desc="">
-        Orci varius
+        All sites
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_SUB_PAGE_TITLE" translateable="false" desc="">
+        Blocked sites
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION" translateable="false" desc="">
+        Vivamus ultrices libero purus, quis gravida risus tristique eu. Integer nunc mi, feugiat a pharetra et.
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" translateable="false" desc="">
+        Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
       </message>
 
       <!-- Privacy Sandbox v4 - Ad Measurement Page -->
