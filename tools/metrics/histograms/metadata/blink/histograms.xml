@@ -3193,7 +3193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.File.Features" enum="FeatureObserver"
-    expires_after="2021-01-10">
+    expires_after="2024-01-01">
   <owner>yhirano@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <summary>
@@ -3203,6 +3203,8 @@ chromium-metrics-reviews@google.com.
     (which that histogram does not include).
 
     Refer to &quot;Blink.UseCounter.Features&quot; for more details.
+
+    This counter expired on 2021-01-28 and was re-enabled on 2022-12-19.
   </summary>
 </histogram>
 
