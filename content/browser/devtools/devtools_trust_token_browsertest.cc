@@ -162,6 +162,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
 
   // 3) Request and redeem a token, then use the redeemed token in a Signing
   // request.
+  std::string command = R"(
+  (async () => {
+    await fetch('/issue', {trustToken: {type: 'token-request'}});
+    await fetch('/redeem', {trustToken: {type: 'token-redemption'}});
+    return 'Success'; })(); )";
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ(
+      "Success",
+      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  // 3) Request and redeem a token, then use the redeemed token in a Signing
+  // request.
   auto execute_op_via_iframe = [&](base::StringPiece path,
                                    base::StringPiece trust_token) {
     // It's important to set the trust token arguments before updating src, as
@@ -176,8 +190,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
     load_observer.WaitForNavigationFinished();
   };
 
-  execute_op_via_iframe("/issue", R"({"type": "token-request"})");
-  execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
   execute_op_via_iframe("/sign", JsReplace(
                                      R"({"type": "send-redemption-record",
               "issuers": [$1]})",

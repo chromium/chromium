@@ -7,16 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/strings/escape.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/network_service_instance.h"
@@ -28,17 +23,12 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
-#include "crypto/sha2.h"
-#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
-#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/test/trust_token_request_handler.h"
 #include "services/network/test/trust_token_test_server_handler_registration.h"
 #include "services/network/test/trust_token_test_util.h"
@@ -246,11 +236,22 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  std::string command = R"(
+  (async () => {
+    await fetch("/issue", {trustToken: {type: 'token-request'}});
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    return "Success";
+  })())";
 
   GURL start_url = server_.GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  EXPECT_EQ(
+      "Success",
+      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
 
   auto execute_op_via_iframe = [&](base::StringPiece path,
                                    base::StringPiece trust_token) {
@@ -266,8 +267,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
     load_observer.WaitForNavigationFinished();
   };
 
-  execute_op_via_iframe("/issue", R"({"type": "token-request"})");
-  execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
   execute_op_via_iframe("/sign", JsReplace(
                                      R"({"type": "send-redemption-record",
               "issuers": [$1]})",
@@ -278,6 +277,54 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+}
+
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       IframeCanOnlySendRedemptionRecord) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  GURL start_url = server_.GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  auto fail_to_execute_op_via_iframe = [&](base::StringPiece path,
+                                           base::StringPiece trust_token) {
+    // It's important to set the trust token arguments before updating src, as
+    // the latter triggers a load.
+    EXPECT_TRUE(ExecJs(
+        shell(), JsReplace(
+                     R"( const myFrame = document.getElementById("test_iframe");
+                         myFrame.trustToken = $1;
+                         myFrame.src = $2;)",
+                     trust_token, path)));
+    TestNavigationObserver load_observer(shell()->web_contents());
+    load_observer.WaitForNavigationFinished();
+  };
+
+  fail_to_execute_op_via_iframe("/issue", R"({"type": "token-request"})");
+  std::string command = JsReplace(R"(
+  (async () => {
+    return await document.hasPrivateToken($1, 'private-state-token');
+  })();)",
+                                  IssuanceOriginFromHost("a.test"));
+
+  EXPECT_EQ(false, EvalJs(shell(), command));
+
+  fail_to_execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
+  command = JsReplace(R"(
+  (async () => {
+    return document.hasRedemptionRecord($1, 'private-state-token');
+  })();)",
+                      IssuanceOriginFromHost("a.test"));
+  EXPECT_EQ(false, EvalJs(shell(), command));
+
+  fail_to_execute_op_via_iframe("/bad", R"({"type": "bad-type"})");
+  command = JsReplace(R"(
+  (async () => {
+    return await document.hasPrivateToken($1, 'private-state-token')
+    || document.hasRedemptionRecord($1, 'private-state-token');
+  })();)",
+                      IssuanceOriginFromHost("a.test"));
+  EXPECT_EQ(false, EvalJs(shell(), command));
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {

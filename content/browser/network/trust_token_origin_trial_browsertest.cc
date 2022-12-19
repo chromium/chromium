@@ -305,6 +305,7 @@ INSTANTIATE_TEST_SUITE_P(ExecutingAllOperations,
 IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
                        ProvidesParamsOnlyWhenAllowed) {
   TestDescription test_description = std::get<1>(GetParam());
+  Interface interface = std::get<0>(GetParam());
 
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [this](URLLoaderInterceptor::RequestParams* params) {
@@ -338,12 +339,15 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
               trust_token_params);
 
   std::string command;
-  switch (std::get<0>(GetParam()) /* interface */) {
+  switch (interface) {
     case Interface::kFetch:
       command = JsReplace("fetch($1, {trustToken: ", kTrustTokenUrl) +
                 expected_params_and_serialization.serialized_params + "});";
       break;
     case Interface::kIframe:
+      if (test_description.op != Op::kSigning) {
+        return;
+      }
       command = JsReplace(
           "let iframe = document.createElement('iframe');"
           "iframe.src = $1;"

@@ -107,6 +107,13 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
           network::SerializeTrustTokenParametersAndConstructExpectation(
               GetParam());
 
+  // In the iframe interface to private state tokens, we only accept the
+  // kSigning variant, i.e. the send-redemption-record operation.
+  if (expected_params_and_serialization.params->type !=
+      network::mojom::TrustTokenOperationType::kSigning) {
+    return;
+  }
+
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   GURL trust_token_url(embedded_test_server()->GetURL("/title2.html"));
 

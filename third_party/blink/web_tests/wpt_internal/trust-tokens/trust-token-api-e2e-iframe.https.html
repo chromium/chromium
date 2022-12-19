@@ -9,44 +9,23 @@
     <script>
         'use strict';
 
-        promise_test(() => {
-            const frame = document.createElement('iframe');
-            frame.src = '/wpt_internal/trust-tokens/resources/trust_token_redemption.py';
-            frame.trustToken = JSON.stringify({ type: 'token-redemption' });
-            document.body.appendChild(frame);
+        promise_test(function () {
+            return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
+                trustToken: { type: 'token-request' }
+            }).then(function (response) {
+                assert_equals(response.status, 200);
+                assert_equals(response.headers.get('Sec-Trust-Token'), null);
+            })
+        }, 'Token issuance succeeds.');
 
-            return new Promise(resolve => {
-                    frame.addEventListener("error", resolve("iframe raised an error"));
-                }).then(event => {
-                    assert_equals(event, "iframe raised an error");
-                });
-        }, 'Trust token redemption using iframes fails without prior issuance.');
-
-        promise_test(() => {
-            const frame = document.createElement('iframe');
-            frame.src = '/wpt_internal/trust-tokens/resources/trust_token_issuance.py';
-            frame.trustToken = JSON.stringify({ type: 'token-request' });
-            document.body.appendChild(frame);
-
-            return new Promise(resolve => {
-                frame.addEventListener("load", resolve);
-            }).then(event => {
-                assert_equals(frame.contentWindow.document.body.innerText, 'Trust token issuance succeeded.');
-            });
-        }, 'Trust token issuance succeeds using iframes.');
-
-        promise_test(() => {
-            const frame = document.createElement('iframe');
-            frame.src = '/wpt_internal/trust-tokens/resources/trust_token_redemption.py';
-            frame.trustToken = JSON.stringify({ type: 'token-redemption' });
-            document.body.appendChild(frame);
-
-            return new Promise(resolve => {
-                frame.addEventListener("load", resolve);
-            }).then(event => {
-                assert_equals(frame.contentWindow.document.body.innerText, 'Trust token redemption succeeded.');
-            });
-        }, 'Trust token redemption succeeds using iframes.');
+        promise_test(function () {
+            return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
+                trustToken: { type: 'token-redemption' }
+            }).then(function (response) {
+                assert_equals(response.status, 200);
+                assert_equals(response.headers.get('Sec-Trust-Token'), null);
+            })
+        }, 'Token redemption succeeds.');
 
         promise_test(() => {
             const host_info = get_host_info();
