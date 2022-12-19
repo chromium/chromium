@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <utility>
+
+#include "base/one_shot_event.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -26,28 +31,45 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
   FakeSharesheet& operator=(const FakeSharesheet&) = delete;
   ~FakeSharesheet() override = default;
 
+  void AwaitShow() {
+    base::RunLoop run_loop;
+    show_bubble_called_.Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void AwaitClose() {
+    base::RunLoop run_loop;
+    close_bubble_called_.Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   // crosapi::mojom::Sharesheet:
   void ShowBubble(
       const std::string& window_id,
       sharesheet::LaunchSource source,
       crosapi::mojom::IntentPtr intent,
-      crosapi::mojom::Sharesheet::ShowBubbleCallback callback) override {}
+      crosapi::mojom::Sharesheet::ShowBubbleCallback callback) override {
+    NOTREACHED();
+  }
   void ShowBubbleWithOnClosed(
       const std::string& window_id,
       sharesheet::LaunchSource source,
       crosapi::mojom::IntentPtr intent,
       crosapi::mojom::Sharesheet::ShowBubbleWithOnClosedCallback callback)
       override {
-    show_bubble_called = true;
+    show_bubble_called_.Signal();
+    callback_ = std::move(callback);
   }
   void CloseBubble(const std::string& window_id) override {
-    close_bubble_called = true;
+    close_bubble_called_.Signal();
+    std::move(callback_).Run();
   }
 
  public:
-  bool show_bubble_called = false;
-  bool close_bubble_called = false;
+  base::OneShotEvent show_bubble_called_;
+  base::OneShotEvent close_bubble_called_;
+  crosapi::mojom::Sharesheet::ShowBubbleWithOnClosedCallback callback_;
 };
 
 class SharingHubBubbleControllerChromeOsBrowserTest
@@ -96,16 +118,16 @@ IN_PROC_BROWSER_TEST_F(SharingHubBubbleControllerChromeOsBrowserTest,
       CreateOrGetFromWebContents(web_contents)
           ->ShowBubble(share::ShareAttempt(web_contents));
 
-  // Verify that the sharesheet was opened.
-  EXPECT_TRUE(service_.show_bubble_called);
+  // Verify that the sharesheet is opened.
+  service_.AwaitShow();
 
   // Close the sharesheet using the sharing hub controller.
   sharing_hub::SharingHubBubbleControllerChromeOsImpl::
       CreateOrGetFromWebContents(web_contents)
           ->HideBubble();
 
-  // Verify that the sharesheet was closed.
-  EXPECT_TRUE(service_.close_bubble_called);
+  // Verify that the sharesheet is closed.
+  service_.AwaitClose();
 }
 
 }  // namespace
