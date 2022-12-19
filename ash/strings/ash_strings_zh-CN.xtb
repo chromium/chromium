@@ -120,6 +120,7 @@
 <translation id="15373452373711364">大号鼠标光标</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">请让您的管理员在 Google 管理控制台中设置此设备</translation>
+<translation id="1550406609415860283">有可用设备</translation>
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
@@ -457,6 +458,7 @@
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
+<translation id="3560174576767922131">录制视频</translation>
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3566240529365775567">刚才打开过</translation>
 <translation id="3571734092741541777">设置</translation>
@@ -648,6 +650,7 @@
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
+<translation id="458210817642223147">录制 GIF</translation>
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>
@@ -727,6 +730,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
+<translation id="5004607513195820459">网络处于受管理状态</translation>
 <translation id="5016558321564993266">开启/关闭标记工具。<ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">设备麦克风使用权限已开启</translation>
 <translation id="5030687792513154421">时间到</translation>
@@ -1065,6 +1069,7 @@
 <translation id="6901883536534621389">尝试使用手势导航</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6931576957638141829">保存到</translation>
+<translation id="6942518653766415536">录制格式菜单</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>

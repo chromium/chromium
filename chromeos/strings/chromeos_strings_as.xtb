@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="2597774443162333062">ডিবাগ কৰাৰ বাবে ফাইলসমূহ Googleলৈ পঠিওৱা হ’ব</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হৈছে। ১ খন পৃষ্ঠা স্কেন কৰা হৈছে}one{স্কেনিং সম্পূৰ্ণ হৈছে। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হৈছে}other{স্কেনিং সম্পূৰ্ণ হৈছে। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হৈছে}}</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>

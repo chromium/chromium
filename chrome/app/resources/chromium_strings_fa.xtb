@@ -80,6 +80,7 @@
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="2977506796191543575">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند</translation>
 <translation id="2983934633046890458">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{‏Chromium به دستگاه HID متصل است}one{‏Chromium به دستگاه HID متصل است}other{‏Chromium به دستگاه‌های HID متصل است}}</translation>
 <translation id="3032706164202344641">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="3032787606318309379">‏افزودن به Chromium…</translation>
 <translation id="3038232873781883849">درانتظار نصب…</translation>

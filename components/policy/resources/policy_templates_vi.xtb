@@ -2097,6 +2097,7 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> có t
 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2976429807269247880">Cài đặt hành vi cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ</translation>
+<translation id="2979696534869541158">Buộc sử dụng phương thức triển khai cũ</translation>
 <translation id="2985927503455169394">Sử dụng chế độ mặc định của trải nghiệm làm quen với Trợ lý</translation>
 <translation id="2987155890997901449">Bật ARC</translation>
 <translation id="2987227569419001736">Kiểm soát việc sử dụng API Web Bluetooth</translation>
@@ -2836,6 +2837,7 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
 <translation id="3608206578291537084">Bật quy trình báo cáo đã mã hoá</translation>
 <translation id="3608281460204780443">Hiển thị biểu tượng Cửa hàng Chrome trực tuyến trong trình chạy <ph name="PRODUCT_OS_NAME" /> và trên trang thẻ mới</translation>
 <translation id="3612809274815536412">Cài đặt Vị trí cửa sổ</translation>
+<translation id="3622463490728773174">Cho phép sử dụng phương thức triển khai mới</translation>
 <translation id="3627678165642179114">Bật hoặc tắt dịch vụ web kiểm tra lỗi chính tả</translation>
 <translation id="3628480121685794414">Bật chế độ in một mặt</translation>
 <translation id="3634125384445314047">Cho phép truy cập ảnh và video mới chụp/quay trên điện thoại thông qua Trung tâm điều khiển điện thoại.</translation>
@@ -3352,6 +3354,12 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
       Mọi nhóm mà chính sách cung cấp đều phải là Nhóm bên thứ nhất hợp lệ, nếu không sẽ xảy ra lỗi.
 
       Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với một miền thông qua MCX.</translation>
+<translation id="4135805680586226327">Chính sách này kiểm soát hoạt động tái cấu trúc gần đây của các API Graphics3D trong trình bổ trợ PPAPI.
+
+Quá trình di chuyển chỉ ảnh hưởng đến thông tin triển khai nội bộ và không thay đổi hành vi nào. Tuy nhiên, chính sách này có thể được sử dụng trong trường hợp bất kỳ ứng dụng PPAPI nào không hoạt động như dự kiến.
+
+Khi bạn không đặt chính sách này hoặc đặt thành Bật, trình duyệt sẽ quyết định phương thức triển khai nào được sử dụng.
+Khi bạn đặt chính sách này thành Tắt, trình duyệt sẽ sử dụng phương thức triển khai cũ cho đến khi chính sách này hết hạn.</translation>
 <translation id="4136603825567209889">Bật chính sách báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="4138655880188755661">Giới hạn thời gian</translation>
 <translation id="4140646780789794190">Tắt chính sách chia sẻ dữ liệu chẩn đoán cho PluginVm</translation>
@@ -5977,6 +5985,7 @@ Trong tương lai, chúng tôi sẽ loại bỏ chính sách này khỏi <ph nam
 <translation id="6815483833848348029">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì <ph name="PRODUCT_OS_NAME" /> sẽ hiển thị lời nhắc định cấu hình mạng, trong trường hợp thiết bị không kết nối mạng cũng như đã thiết lập phiên tự động đăng nhập có độ trễ bằng 0 cho tài khoản trên thiết bị.
 
       Nếu bạn đặt chính sách này thành Tắt, một thông báo lỗi sẽ hiện ra.</translation>
+<translation id="6815628711329903153">Cho phép phân bổ vùng đệm hiện đại cho trình bổ trợ PPAPI của API Graphics3D.</translation>
 <translation id="6819838337315703072">Nếu dịch vụ hỗ trợ ứng dụng <ph name="LINUX_OS_NAME" /> đang bật thì việc đặt chính sách này thành Bật sẽ gửi thông tin liên quan đến hoạt động sử dụng các ứng dụng <ph name="LINUX_OS_NAME" /> trở lại cho máy chủ.
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này thì sẽ không có thông tin nào về hoạt động sử dụng được báo cáo.</translation>

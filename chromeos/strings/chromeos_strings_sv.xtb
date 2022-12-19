@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
 <translation id="2597774443162333062">Filerna skickas till Google för felsökning</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
 <translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>

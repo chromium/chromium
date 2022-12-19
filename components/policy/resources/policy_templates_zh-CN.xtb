@@ -587,6 +587,7 @@
 <translation id="1560279917909364275">以许可名单形式指定哪些记事应用可显示在 <ph name="PRODUCT_OS_NAME" /> 的锁定屏幕中</translation>
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
+<translation id="1562846754315919408">检测到 USB 设备时显示通知</translation>
 <translation id="1567718448549957373">如果此政策已启用或未设置，系统将会允许通过不安全的 HTTP 接收<ph name="BASIC_AUTH" />身份验证请求。
 
       如果此政策已停用，不安全的 HTTP 请求将无法使用<ph name="BASIC_AUTH" />身份验证方案，只有安全的 HTTPS 能使用该方案。
@@ -2054,6 +2055,7 @@
       如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="2968177167006045252">允许网站使用 SharedArrayBuffers</translation>
+<translation id="2969489219271682844">检测到 USB 设备时不显示通知</translation>
 <translation id="2969568582351417848">不针对所列网域中的指定文件类型显示基于文件类型扩展名的下载警告</translation>
 <translation id="2969797921412053304">此政策用于配置哪些网址有权在登录屏幕上的 SAML 流程中对设备身份执行远程认证。
 
@@ -3029,6 +3031,7 @@
 
       每个列表条目都包含一个字典，其“extension-id”字段必须包含扩展程序 ID，而其“update-url”字段必须包含更新网址。</translation>
 <translation id="3869180930654347954">对所有受影响客户停用 First-Party Sets 功能</translation>
+<translation id="3869566220234507038">始终加载 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="3870035799352372700">禁止 Google 助理在互动过程中访问屏幕中的内容</translation>
 <translation id="3870059789954671543">在登录屏幕上启用“键盘焦点突出显示”无障碍功能。
 
@@ -3905,6 +3908,21 @@
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否让工具栏自动隐藏。</translation>
 <translation id="4812309945046430049">键盘背光颜色：红色</translation>
+<translation id="4812410063101047442">此设置用于配置要使用哪个 <ph name="LACROS_NAME" /> 浏览器。
+
+如果此政策设为 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />，用户可以决定加载哪个 <ph name="LACROS_NAME" /> 浏览器：来自 <ph name="LACROS_ROOTFS_NAME" /> 或 <ph name="LACROS_STATEFUL_NAME" /> 分区的二进制文件。
+如果用户未设置任何偏好设置，系统会选择具有最新版本的二进制文件。
+
+如果此政策设为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，请始终加载 <ph name="LACROS_NAME" /> 浏览器的 <ph name="LACROS_ROOTFS_NAME" /> 二进制文件。
+
+如果此政策设为 <ph name="LACROS_SELECTION_STATEFUL_VALUE" />，请始终加载 <ph name="LACROS_NAME" /> 浏览器的 <ph name="LACROS_STATEFUL_NAME" /> 二进制文件。
+如果 <ph name="LACROS_STATEFUL_NAME" /> 浏览器版本低于 <ph name="PRODUCT_OS_NAME" /> 版本，使用此值可能会导致意外行为。这种情况不受支持，也无法保证能够正常运作。
+
+如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_ROOTFS_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />”。
+
+请注意，如果在更改此政策的值后，<ph name="LACROS_NAME" /> 浏览器的版本低于当前版本，则可能会导致该浏览器的数据丢失。例如，如果此政策从 <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> 更改为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，并且前者已更新。或者，如果 <ph name="PRODUCT_OS_NAME" /> 是与 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 浏览器一起更新的，且 <ph name="LACROS_STATEFUL_NAME" /> 尚未更新。在此类情况下，无法保证正确迁移数据。
+
+为了安全起见，可以使用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 或 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，也可以从 <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> 切换到 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />。</translation>
 <translation id="4812714598405913256">为 DeviceMinimumVersion 政策配置自动更新期限已过消息</translation>
 <translation id="4815581264328351694">在系统任务栏菜单中显示无障碍选项</translation>
 <translation id="4816674326202173458">允许企业用户以主用户或次要用户的身份登录多个人资料会话（非受管理用户的默认行为）</translation>
@@ -4637,6 +4655,15 @@
 <translation id="5563240289883266691">启用 Linux 应用使用情况报告</translation>
 <translation id="5565178130821694365">必须每两天（48 小时）输入一次密码</translation>
 <translation id="5566210228171064229">允许打印（无论是否有 PIN 码）</translation>
+<translation id="5569504149646180067">为由 Microsoft® Cloud Identity 提供方提供支持的帐号配置自动用户登录。
+
+如果您将此政策设为 1 (<ph name="POLICY_VALUE_ENABLED" />)，使用由 Microsoft® Cloud Identity 提供方（即 <ph name="MS_AAD_NAME" /> 或个人 Microsoft® 帐号身份提供方）提供支持的帐号登录计算机的用户或者向 <ph name="MS_WIN_NAME" /> 添加了工作或学校帐号的用户，可以使用该身份自动登录网站媒体资源。系统会针对每个身份验证事件将与用户的设备和帐号相关的信息传输到该用户的 Cloud Identity 提供方。
+
+如果您未设置此政策或将其设为 0 (<ph name="POLICY_VALUE_DISABLED" />)，系统会停用上述自动登录功能。
+
+此功能适用于 <ph name="WIN_NAME" /> 10 以上的系统。
+
+注意：此政策不适用于无痕模式或访客模式。</translation>
 <translation id="5572971233886879856">指定系统在寻找服务器打印机时，要查询符合哪种条件的打印服务器。此设置仅适用于 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
 
       如果您设置了此政策，用户将只能依照设备政策使用那些符合条件（ID 与此政策中所列的值匹配）的服务器打印机。
@@ -5570,6 +5597,11 @@
       如果此政策未设置、设为“由用户决定”或设为“无”，用户便可使用 chrome://settings 页面中的常规控件来控制“自动检测时区”功能。</translation>
 <translation id="6532769014584932288">允许使用唤醒锁定</translation>
 <translation id="6533881418188970751">下载前询问用户要将文件保存到何处</translation>
+<translation id="653616551212414363">如果启用此设置，当 <ph name="PRODUCT_OS_NAME" /> 上插入 USB 设备时，系统会向用户显示通知。
+
+      如果停用此设置，系统将不会向用户显示任何关于插入的 USB 设备的通知。
+
+      如果此政策未设置，用户会在 USB 设备插入时收到通知。</translation>
 <translation id="6536600139108165863">设备关机后自动重新启动</translation>
 <translation id="6538653424603921690">始终为登录屏幕停用隐私保护屏幕</translation>
 <translation id="6539246272469751178">此政策对 Android 应用没有任何影响。Android 应用始终都会使用默认下载目录，并且无法访问由 <ph name="PRODUCT_OS_NAME" />下载到非默认下载目录中的任何文件。</translation>
@@ -6113,6 +6145,7 @@
 <translation id="7002040773317582266">已为主帧网址启用实时检查功能。</translation>
 <translation id="7003746348783715221">“<ph name="PRODUCT_NAME" />”偏好设置</translation>
 <translation id="7007283257527015835">一个布尔值标记，用于表明是否应将该协议处理程序设为默认处理程序。</translation>
+<translation id="7007403084376547341">选择 <ph name="LACROS_NAME" /> 浏览器二进制文件</translation>
 <translation id="7008308728445338159">启用 DNS 拦截检查功能</translation>
 <translation id="7009043124653876961">禁止在用户输入内容时显示表情符号建议</translation>
 <translation id="7010006999849135962">针对远程访问主机启用无 PIN 码身份验证</translation>
@@ -6318,6 +6351,7 @@
 <translation id="7202925763179776247">允许下载限制</translation>
 <translation id="7207095846245296855">强制启用 Google 安全搜索功能</translation>
 <translation id="7211368186050418507">一律不自动检测时区</translation>
+<translation id="721617466745658461">允许用户选择 <ph name="LACROS_NAME" /> 浏览器二进制文件</translation>
 <translation id="7216442368414164495">允许用户启用安全浏览扩展报告功能</translation>
 <translation id="721970071627370558">停用设备电源状态报告功能</translation>
 <translation id="7221574724100909818">使用锁形图标表示安全连接</translation>
@@ -7828,6 +7862,7 @@
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
+<translation id="8719374569086645837">始终加载 <ph name="LACROS_STATEFUL_NAME" /> <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="8720547069538712402">允许用户启用或停用拼写检查</translation>
 <translation id="8726080977639508431">此政策用于控制 <ph name="PRODUCT_NAME" /> 如何解析“旧版浏览器支持”功能的 sitelist/greylist 政策。它会影响以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
 
@@ -8252,6 +8287,7 @@
 <translation id="913195841488580904">阻止访问网址列表</translation>
 <translation id="9133526448421932754">键盘背光颜色：黄色</translation>
 <translation id="9135033364005346124">启用“<ph name="CLOUD_PRINT_NAME" />”代理</translation>
+<translation id="9135095804754272364">在检测到 USB 设备时显示通知</translation>
 <translation id="9136212796239682721">停用下载气泡界面</translation>
 <translation id="9136399279941091445">发布指定设备政策后的非工作时间的间隔</translation>
 <translation id="9142561920976791097">系统将使用针对已停用的表单控件分派事件的新行为。</translation>

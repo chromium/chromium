@@ -120,6 +120,7 @@
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請與系統管理員聯絡，要求對方在 Google 管理控制台中設定這部裝置</translation>
+<translation id="1550406609415860283">有可用的裝置</translation>
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
@@ -457,6 +458,7 @@
 <translation id="3542066395059568317">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要在建議項目上按一下滑鼠右鍵即可移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554637740840164787">已固定「<ph name="ITEM_TITLE" />」</translation>
+<translation id="3560174576767922131">錄影</translation>
 <translation id="3563775809269155755">啟用無線基地台</translation>
 <translation id="3566240529365775567">剛才開啟過</translation>
 <translation id="3571734092741541777">設定</translation>
@@ -647,6 +649,7 @@
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">已開啟設定選單</translation>
+<translation id="458210817642223147">錄製 GIF</translation>
 <translation id="4585337515783392668">停止透過不明接收器投放</translation>
 <translation id="4596144739579517758">深色主題已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
@@ -726,6 +729,7 @@
         以及<ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
+<translation id="5004607513195820459">這是受管理的網路</translation>
 <translation id="5016558321564993266">切換標記。<ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">裝置的麥克風存取權已開啟</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
@@ -1063,6 +1067,7 @@
 <translation id="6901883536534621389">試試手勢瀏覽功能</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6931576957638141829">儲存至</translation>
+<translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>

@@ -2888,6 +2888,7 @@ Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch aanvulle
 Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch aanvullen zelf beheren. Zo kunnen ze profielen voor Automatisch aanvullen instellen en de functie naar wens aan- of uitzetten.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
+<translation id="3744984310825999317">Toestaan dat <ph name="PEPPER_NAME" /> een nieuwe decoder gebruikt voor videodecodering met hardwareversnelling.</translation>
 <translation id="3749259744154402564">Niet ondersteund</translation>
 <translation id="3749511622128647337">Audio-uitvoer uitzetten</translation>
 <translation id="3750220015372671395">Het genereren van sleutels op deze sites blokkeren</translation>
@@ -3802,6 +3803,7 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
 <translation id="4660356908994631271">De Google Lens-knop tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
 <translation id="4663509616441994711">Samenvoegen van cloudbeleidsregels op gebruikersniveau uitzetten.</translation>
+<translation id="4663588423815449593">Afdwingen dat <ph name="PEPPER_NAME" /> de verouderde videodecoder gebruikt.</translation>
 <translation id="4665897631924472251">Instellingen voor extensiebeheer</translation>
 <translation id="4666930704271463612">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
@@ -4370,6 +4372,7 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 
       Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingeschreven <ph name="PRODUCT_OS_NAME" />, maar wel onder andere omstandigheden.</translation>
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
+<translation id="5293619885162445352">Toestaan dat <ph name="PEPPER_NAME" /> de nieuwe videodecoder gebruikt.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
@@ -5297,6 +5300,12 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Er was aangekondigd dat dit beleid zou worden verwijderd in <ph name="PRODUCT_NAME" /> versie 82, maar dat is versie 84 geworden.</translation>
 <translation id="6276087670023098167">Rapportage van informatie over machine-identificatie uitzetten</translation>
 <translation id="627672037430076089">Verbindingen voor externe support met deze machine voorkomen</translation>
+<translation id="6277043520666738324">Dit beleid bepaalt of <ph name="PEPPER_NAME" />-plug-ins de nieuwe decoder in plaats van de verouderde videodecoder kunnen gebruiken om te communiceren met hardwaredecoders.
+
+De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
+
+Als je het beleid toepast of niet instelt, bepaalt de browser welke implementatie wordt gebruikt.
+Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat dit beleid verloopt.</translation>
 <translation id="6277314550042130537">KDC-beleidsgoedkeuring gebruiken tijdens HTTP-verificatie</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6279722058145292462">Als je het beleid instelt, geef je de frequentie in dagen aan waarmee een client het wachtwoord van een computeraccount moet wijzigen. Het wachtwoord wordt willekeurig gegenereerd door de client en is niet zichtbaar voor de gebruiker. Als je dit beleid niet toepast of als je een lange periode instelt, kan dat negatieve gevolgen hebben voor de veiligheid, omdat potentiële aanvallers langer de tijd hebben om het wachtwoord van het computeraccount te achterhalen en te gebruiken.

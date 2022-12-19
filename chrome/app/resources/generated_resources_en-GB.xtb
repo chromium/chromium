@@ -1316,6 +1316,8 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2165102982098084499">You linked these devices by scanning a QR code.</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />This device (SN: <ph name="SERIAL_NUMBER" />) was locked.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Chrome device management with <ph name="MS_AD_NAME" /> is no longer supported. To sign in, use a different device or contact your device administrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
@@ -7929,7 +7931,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8314381333424235892">Missing or uninstalled extension</translation>
 <translation id="831440797644402910">Can't open this folder</translation>
 <translation id="8314835274931377415">Start Switch Access setup?</translation>
-<translation id="8317582043908962055">Recognise PDF text</translation>
 <translation id="8317671367883557781">Add network connection</translation>
 <translation id="8317965619823678157">copy passwords</translation>
 <translation id="8318266828739827371">Use a split-screen view to see the magnified area of your screen. Use Search + Ctrl + D to turn docked magnifier on and off.</translation>

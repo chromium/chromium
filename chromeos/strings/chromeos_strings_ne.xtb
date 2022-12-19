@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
 <translation id="2597774443162333062">फाइलहरू डिबग प्रक्रियाका लागि Google मा पठाइने छन्</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{स्क्यान गर्ने कार्य पूरा भयो। एउटा पेज स्क्यान गरियो}other{स्क्यान गर्ने कार्य पूरा भयो। {NUMBER_OF_PAGES} वटा पेज स्क्यान गरिए}}</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>

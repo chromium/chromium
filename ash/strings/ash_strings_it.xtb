@@ -120,6 +120,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1546930421365146760">Chiedi all'amministratore di configurare questo dispositivo nella Console di amministrazione Google</translation>
+<translation id="1550406609415860283">Dispositivi disponibili</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
@@ -458,6 +459,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3542066395059568317">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi fare clic con il tasto destro del mouse sui consigli per rimuoverli.</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
+<translation id="3560174576767922131">Registra video</translation>
 <translation id="3563775809269155755">Attiva hotspot</translation>
 <translation id="3566240529365775567">Aperto poco fa</translation>
 <translation id="3571734092741541777">Configura</translation>
@@ -650,6 +652,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4577274620589681794">Tempo scaduto · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostra anteprime</translation>
 <translation id="4578906031062871102">Menu Impostazioni aperto</translation>
+<translation id="458210817642223147">Registra GIF</translation>
 <translation id="4585337515783392668">Interrompi la trasmissione su ricevitore sconosciuto</translation>
 <translation id="4596144739579517758">Tema scuro disattivato</translation>
 <translation id="4611292653554630842">Accedi</translation>
@@ -729,6 +732,7 @@ Collega il dispositivo all'alimentazione.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Scrivania 16</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
+<translation id="5004607513195820459">La rete è gestita</translation>
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Accesso al microfono del dispositivo attivo</translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
@@ -1067,6 +1071,7 @@ Nuova installazione</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6931576957638141829">Salva in</translation>
+<translation id="6942518653766415536">Menu del formato di registrazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>

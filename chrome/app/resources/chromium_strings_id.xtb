@@ -80,6 +80,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="2977506796191543575">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="2983934633046890458">Chromium mencoba mengedit sandi.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium terhubung ke perangkat HID}other{Chromium terhubung ke perangkat HID}}</translation>
 <translation id="3032706164202344641">Chromium tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambahkan Chromium...</translation>
 <translation id="3038232873781883849">Menunggu untuk menginstal...</translation>

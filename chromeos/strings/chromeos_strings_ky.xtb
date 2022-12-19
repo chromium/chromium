@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
 <translation id="2584559707064218956">Тууралоо үчүн Жөндөөлөргө өтүңүз</translation>
 <translation id="2597774443162333062">Файлдар мүчүлүштүктөрдү оңдоо үчүн Google'га жөнөтүлөт</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2638662041295312666">Аккаунтка кирүү сүрөтү</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4793756956024303490">Кысуунун алгоритми</translation>
 <translation id="4794140124556169553">CPU сыноосу иштетилсе, системанын ишине кедергиси тийиши мүмкүн</translation>
+<translation id="4798078634453489142">Жаңы APN'ди кошуу үчүн APN'ди өчүрүңүз</translation>
 <translation id="4800589996161293643">Chromebook коомдоштугу</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>

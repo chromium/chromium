@@ -125,6 +125,7 @@
 <translation id="3140883423282498090">‏دفعه بعد که Google Chrome را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="3149510190863420837">‏برنامه‌های Chrome</translation>
 <translation id="3169523567916669830">‏درطول دوره‌های آزمایشی، می‌توانید موضوعات موردعلاقه را که سایت‌ها برای ارائه آگهی به شما استفاده می‌کنند ببینید یا حذف کنید. Chrome علایق شما را براساس سابقه مرور اخیرتان تخمین می‌زند.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{‏Google Chrome به دستگاه HID متصل است}one{‏Google Chrome به دستگاه HID متصل است}other{‏Google Chrome به دستگاه‌های HID متصل است}}</translation>
 <translation id="3245429137663807393">‏اگر گزارش‌های استفاده از Chrome را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرند.</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>

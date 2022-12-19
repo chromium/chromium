@@ -37,6 +37,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1175572348579024023">Sürüşdürün</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
+<translation id="1182225749592316782">Bu, kamera və mikrofon icazələri olan bütün tətbiq və vebsaytlara giriş icazəsi verir</translation>
 <translation id="1183863904939664422">Bu təklif maraqlı deyil</translation>
 <translation id="118437560755358292">Əlavə təhlükəsizlik üçün parol və ya PIN daxil edin</translation>
 <translation id="118532027333893379">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
@@ -462,6 +463,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3542066395059568317">Qalan yerdən davam edə bilmək üçün tövsiyələri görəcəksiniz. Tövsiyələri silmək üçün sağ düymə ilə klikləyə bilərsiniz.</translation>
 <translation id="3552189655002856821">Wi-Fi deaktiv edilib</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> bərkidildi</translation>
+<translation id="3558768885091059911">Kamera və mikrofon girişi aktiv edilsin?</translation>
 <translation id="3560174576767922131">Video yazın</translation>
 <translation id="3563775809269155755">Hotspotu aktiv edin</translation>
 <translation id="3566240529365775567">İndicə açılıb</translation>
@@ -871,6 +873,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5763928712329149804">Shelf Party rejimi deaktivdir.</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>
 <translation id="5769373120130404283">Məxfilik ekranı</translation>
+<translation id="5773950591113557721">Bu, kamera və mikrofon icazələri olan <ph name="APP_NAME" /> və bütün tətbiq və vebsaytlara giriş icazəsi verir</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
 <translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5788127256798019331">Faylları oxudun</translation>
@@ -1058,6 +1061,7 @@ Yeni quraşdırma</translation>
 <translation id="6787595647772650851">Son sessiyanı bərpa edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6801878137098616817">Bu yaxınlarda redaktə edilib</translation>
+<translation id="6802687695197837794">Bu, kamera və mikrofon icazələri olan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> və bütün tətbiq və vebsaytlara giriş icazəsi verir</translation>
 <translation id="6803622936009808957">Heç bir dəstəklənən həll tapılmadığı üçün displeyləri güzgüləyə bilmədi. Əvəzinə artırılmış desktop daxil edildi.</translation>
 <translation id="6812232930908427253">Masanı yadda saxlamaq mümkün olmadı. Həddindən çox pəncərə və ya tab.</translation>
 <translation id="6818242057446442178">Söz üzrə geri qayıdın</translation>
@@ -1090,6 +1094,7 @@ Yeni quraşdırma</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6981291220124935078">Girişi aktiv edin</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="698231206551913481">İstifadəçi silinən kimi onunla əlaqədar bütün fayl və data həmişəlik silinəcək.</translation>
 <translation id="7005239792648594238">Başlamaq üçün tətbiqi açın</translation>

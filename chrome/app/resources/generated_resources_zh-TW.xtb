@@ -29,6 +29,7 @@
 <translation id="1022489261739821355">顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
+<translation id="1028604629594230522">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入。</translation>
 <translation id="1028700151766901954">原因：LBS 預設保存在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
@@ -638,6 +639,7 @@
 <translation id="1591679663873027990">授權 Parallels Desktop 存取 USB 裝置。Parallels Desktop 不會記住已移除的 USB 裝置。</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統重設 <ph name="DEVICE_TYPE" />。請先備份檔案再重新啟動。</translation>
 <translation id="1592126057537046434">快速解答功能的翻譯</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{系統已將權限從 <ph name="BEGIN_BOLD" />1 個久未造訪的網站<ph name="END_BOLD" />中移除}other{系統已將權限從 <ph name="BEGIN_BOLD" />{NUM_SITES} 個久未造訪的網站<ph name="END_BOLD" />中移除}}</translation>
 <translation id="1593594475886691512">正在格式化...</translation>
 <translation id="159359590073980872">圖片快取</translation>
 <translation id="1593926297800505364">儲存付款方式</translation>
@@ -1050,6 +1052,7 @@
 <translation id="1941995177877935582">顯示機碼對應</translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
+<translation id="1944535645109964458">沒有密碼金鑰</translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓你透過身分識別服務使用你擁有的帳戶登入網站</translation>
 <translation id="1949584741547056205">快速解答</translation>
@@ -1963,6 +1966,7 @@
 <translation id="2766161002040448006">詢問家長</translation>
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
+<translation id="2769174155451290427">已上傳的圖片</translation>
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將你的密碼匯出至其他資料夾</translation>
 <translation id="2770929488047004208">顯示器解析度</translation>
@@ -2243,6 +2247,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">僅限安全的同網站連線</translation>
 <translation id="3012917896646559015">請立即與你的硬體製造商聯絡，將電腦送返維修中心。</translation>
+<translation id="3014717196148502230">Chrome 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入。</translation>
 <translation id="301525898020410885">語言採用貴機構的設定</translation>
 <translation id="3015639418649705390">立即重新啟動</translation>
 <translation id="3016381065346027039">沒有記錄項目</translation>
@@ -2275,6 +2280,7 @@
 <translation id="3037754279345160234">無法對加入網域的設定進行剖析，請與你的管理員聯絡。</translation>
 <translation id="3038612606416062604">手動新增印表機</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
+<translation id="3043016484125065343">登入即可查看書籤</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">來自 <ph name="ORIGIN" /></translation>
 <translation id="304499331062371949">禁止任何擴充功能讀取及變更 <ph name="SITE_NAME" /></translation>
@@ -3755,6 +3761,7 @@
 <translation id="4458535500699390320">當這個分頁處於閒置狀態時，記憶體節省模式會釋出記憶體給其他工作。你隨時可以前往設定進行變更。</translation>
 <translation id="4459169140545916303">上次使用時間：<ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前</translation>
 <translation id="4460014764210899310">取消分組</translation>
+<translation id="4461483878391246134">新增一律不翻譯的語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
 <translation id="4466839823729730432">在此查看回憶集錦</translation>
@@ -3899,6 +3906,7 @@
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">資料庫儲存空間</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
+<translation id="4592525994536856567">瀏覽及搜尋內容時，載入速度更快了。</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" />(&amp;G)</translation>
 <translation id="4594218792629569101">選取「標示為已讀取」即可將頁面移至清單底部</translation>
@@ -4406,6 +4414,7 @@
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5079010647467150187">新增內建的 VPN...</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
+<translation id="5081960376148623587">選擇是否要預先載入網頁</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">正在檢查有無更新</translation>
 <translation id="5086082738160935172">HID</translation>
@@ -4434,6 +4443,7 @@
 <translation id="5109816792918100764">移除<ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111646998522066203">結束無痕模式</translation>
 <translation id="5111692334209731439">書籤管理員(&amp;B)</translation>
+<translation id="5111794652433847656">這部裝置上沒有「<ph name="APP_NAME" />」的任何密碼金鑰</translation>
 <translation id="5112577000029535889">開發人員工具(&amp;D)</translation>
 <translation id="511313294362309725">開啟快速配對</translation>
 <translation id="5113739826273394829">點選這個圖示後，即會人工鎖定這台 <ph name="DEVICE_TYPE" />。這樣一來，下次必須輸入密碼才能解鎖。</translation>
@@ -5283,6 +5293,7 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 目前離線</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5911533659001334206">快速鍵檢視器</translation>
+<translation id="5911545422157959623">在訪客模式下無法使用書籤</translation>
 <translation id="5914724413750400082">模數 (<ph name="MODULUS_NUM_BITS" /> 位元)：
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -5375,6 +5386,7 @@
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
+<translation id="5993508466487156420">{NUM_SITES,plural, =1{已完成 1 個網站的檢查}other{已完成 {NUM_SITES} 個網站的檢查}}</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6001839398155993679">立即開始</translation>
@@ -5558,6 +5570,7 @@
 <translation id="6163363155248589649">一般(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 設定</translation>
 <translation id="6163522313638838258">全部展開...</translation>
+<translation id="6164832038898943453">新增要自動翻譯的語言</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166185671393271715">將密碼匯入 Chrome 中</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
@@ -5975,6 +5988,7 @@
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="65711204837946324">需要下載權限</translation>
 <translation id="6571772921213691236">編輯登入資料</translation>
+<translation id="6572081226337824427">系統已預先載入你要造訪的某些網頁。</translation>
 <translation id="657229725818377235">進一步防範不安全的網站和下載內容</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
@@ -6059,6 +6073,7 @@
 <translation id="6646476869708241165">關閉快速配對</translation>
 <translation id="6647228709620733774">Netscape 憑證授權撤銷網址</translation>
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
+<translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
@@ -6122,11 +6137,13 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
+<translation id="6709802811835274327">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6710394144992407503">在網頁上輸入文字時，檢查是否有拼字錯誤</translation>
 <translation id="6711146141291425900">連結「<ph name="WEB_DRIVE" />」帳戶即可重新轉送下載內容</translation>
 <translation id="6712943853047024245">你已儲存過這個使用者名稱在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6713233729292711163">新增工作資料夾</translation>
+<translation id="6713668088933662563">一律不顯示翻譯以下語言的選項</translation>
 <translation id="6715803357256707211">安裝 Linux 應用程式的過程中發生錯誤。如需詳細資料，請按一下通知。</translation>
 <translation id="671619610707606484">這會清除網站儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="6716798148881908873">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
@@ -7032,6 +7049,7 @@
 <translation id="7573594921350120855">網站通常會使用你的攝影機提供通訊功能 (例如視訊通訊)</translation>
 <translation id="7574650250151586813">如要輸入文字，請更新 Daydream 鍵盤應用程式</translation>
 <translation id="7574676002608048667">傳送密碼</translation>
+<translation id="7575272930307342804">瀏覽控制選項</translation>
 <translation id="7576690715254076113">自動分頁</translation>
 <translation id="7576976045740938453">示範模式的帳戶發生問題。</translation>
 <translation id="7578137152457315135">指紋設定</translation>
@@ -7862,7 +7880,6 @@
 <translation id="8314381333424235892">缺少或未安裝擴充功能</translation>
 <translation id="831440797644402910">無法開啟這個資料夾</translation>
 <translation id="8314835274931377415">要開始設定切換控制功能嗎？</translation>
-<translation id="8317582043908962055">識別 P&amp;DF 文字</translation>
 <translation id="8317671367883557781">新增網路連線</translation>
 <translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割畫面檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉置頂放大鏡。</translation>
@@ -7884,6 +7901,7 @@
 <translation id="833262891116910667">醒目顯示</translation>
 <translation id="8335587457941836791">從檔案櫃中取消固定</translation>
 <translation id="8336407002559723354">這部裝置將在 <ph name="MONTH_AND_YEAR" />停止更新</translation>
+<translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{系統會記住這部裝置，在 1 個小時內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {HOURS} 個小時內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
 <translation id="8337047789441383384">你已註冊過這個安全金鑰，不必再次註冊。</translation>
@@ -8343,6 +8361,7 @@
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
+<translation id="8775329533241312400">相較於標準預先載入，瀏覽及搜尋內容時的載入速度更快了。</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}other{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}}</translation>

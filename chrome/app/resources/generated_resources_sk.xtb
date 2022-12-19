@@ -1306,6 +1306,8 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2165102982098084499">Tieto zariadenia ste prepojili naskenovaním QR kódu.</translation>
 <translation id="2165177462441582039">Zvoľte, ako dlho majú byť zvýraznené jednotlivé položky</translation>
 <translation id="2166369534954157698">Kŕdeľ ďateľov učí koňa žrať kôru</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Toto zariadenie (sériové číslo <ph name="SERIAL_NUMBER" />) bolo uzamknuté.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Správa zariadení Chrome s účtom <ph name="MS_AD_NAME" /> už nie je podporovaná. Prihláste sa pomocou iného zariadenia alebo kontaktujte správcu svojho zariadenia.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Napriek tomu sa prihlásiť</translation>
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2173801458090845390">Pridať do tohto zariadenia ID rekvizície</translation>
@@ -7919,7 +7921,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8314381333424235892">Chýbajúce alebo neplatné rozšírenie</translation>
 <translation id="831440797644402910">Tento priečinok nie je možné otvoriť</translation>
 <translation id="8314835274931377415">Chcete spustiť nastavenie ovládania prepínačmi?</translation>
-<translation id="8317582043908962055">Rozpoznávať text PDF</translation>
 <translation id="8317671367883557781">Pridať sieťové pripojenie</translation>
 <translation id="8317965619823678157">kopírovať heslá</translation>
 <translation id="8318266828739827371">Zväčšenú oblasť obrazovky si môžete zobraziť pomocou rozdelenej obrazovky. Ukotvenú lupu zapnete alebo vypnete klávesovou skratkou Hľadať + Ctrl + D.</translation>

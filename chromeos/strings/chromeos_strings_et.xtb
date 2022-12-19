@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2584559707064218956">Seadistamiseks avage leht Seaded</translation>
 <translation id="2597774443162333062">Failid saadetakse silumiseks Google'ile</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti 1 leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte.}}</translation>
 <translation id="2619761439309613843">Igapäevane värskendamine</translation>
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2638662041295312666">Sisselogimispilt</translation>

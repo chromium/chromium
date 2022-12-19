@@ -187,6 +187,7 @@
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2584559707064218956">如要進行設定，請前往「設定」頁面</translation>
 <translation id="2597774443162333062">檔案將傳送至 Google 執行偵錯</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{完成咗掃瞄。掃瞄咗 1 個頁面}other{完成咗掃瞄。掃瞄咗 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="2619761439309613843">每日重新整理</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2638662041295312666">登入圖片</translation>
@@ -393,6 +394,7 @@
 <translation id="4793710386569335688">如需更多協助，請前往「<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />」。</translation>
 <translation id="4793756956024303490">壓縮演算法</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
+<translation id="4798078634453489142">需要先移除一個 APN，才能新增 APN</translation>
 <translation id="4800589996161293643">Chromebook 社群</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>

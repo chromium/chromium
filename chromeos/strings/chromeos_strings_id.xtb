@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1951012854035635156">Asisten</translation>
+<translation id="1962550982027027473">APN default diperlukan</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
 <translation id="1979103255016296513">Perubahan sandi melewati batas waktu</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Gambar login</translation>
@@ -634,6 +636,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
+<translation id="6838167112108853532">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan aktifkan APN terlampir dinonaktifkan atau dihapus.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>

@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
 <translation id="2597774443162333062">Bydd ffeiliau'n cael eu hanfon at Google i'w dadfygio</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Mae sganio wedi'i gwblhau. Cafodd 1 dudalen ei sganio}zero{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}two{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} dudalen eu sganio}few{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}many{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}other{Mae sganio wedi'i gwblhau. Cafodd {NUMBER_OF_PAGES} tudalen eu sganio}}</translation>
 <translation id="2619761439309613843">Ail-lwytho'n Ddyddiol</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Llun mewngofnodi</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Am ragor o help, ewch i'r <ph name="BEGIN_LINK" />Ganolfan Gymorth<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm cywasgu</translation>
 <translation id="4794140124556169553">Gall cynnal arbrawf CPU effeithio ar berfformiad eich system</translation>
+<translation id="4798078634453489142">Tynnu APN er mwyn ychwanegu APN newydd</translation>
 <translation id="4800589996161293643">Cymuned Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Wedi canslo'r dasg argraffu <ph name="DOCUMENT_TITLE" /></translation>

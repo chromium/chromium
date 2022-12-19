@@ -120,6 +120,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="15373452373711364">Velik miškin kazalec</translation>
 <translation id="1546492247443594934">Namizje 2</translation>
 <translation id="1546930421365146760">Skrbnika prosite, da to napravo nastavi v Googlovi skrbniški konzoli.</translation>
+<translation id="1550406609415860283">Na voljo so naprave</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
@@ -127,6 +128,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
+<translation id="163517899691012366">Obvestila so utišana, ko je vklopljen način Ne moti.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
@@ -373,6 +375,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3047761520276763270">Recite:</translation>
 <translation id="3051189971848907985">Preimenovanje profila. Počakajte nekaj minut.</translation>
 <translation id="3055162170959710888">To napravo si danes uporabljal <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Ni podprto</translation>
 <translation id="3068711042108640621">Polica na levi</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Razširi meni</translation>
@@ -407,6 +410,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> je bilo premaknjeno iz namizja <ph name="ACTIVE_DESK" /> v namizje <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Nastavitev</translation>
 <translation id="3255483164551725916">Kakšne možnosti so na voljo?</translation>
+<translation id="3260969790895726815">Govor se obdeluje lokalno in narek deluje brez povezave, vendar nekateri glasovni ukazi ne bodo delovali.</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289544412142055976">Aplikacije za Linux trenutno niso podprte.</translation>
 <translation id="3289674678944039601">Polnjenje prek napajalnika</translation>
@@ -457,6 +461,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3542066395059568317">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite s klikom desnega gumba.</translation>
 <translation id="3552189655002856821">Povezava Wi-Fi je izklopljena.</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> je bil pripet</translation>
+<translation id="3560174576767922131">Posnemi videoposnetek</translation>
 <translation id="3563775809269155755">Omogočanje dostopne točke</translation>
 <translation id="3566240529365775567">Pravkar odprto</translation>
 <translation id="3571734092741541777">Nastavi</translation>
@@ -648,6 +653,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4577274620589681794">Čas je potekel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaz predogledov</translation>
 <translation id="4578906031062871102">Meni z nastavitvami je odprt</translation>
+<translation id="458210817642223147">Posnemi GIF</translation>
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4611292653554630842">Prijava</translation>
@@ -727,6 +733,7 @@ Priklopite napravo v vir napajanja.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Namizje 16</translation>
 <translation id="5003993274120026347">Naslednji stavek</translation>
+<translation id="5004607513195820459">Omrežje je upravljano</translation>
 <translation id="5016558321564993266">Preklopite označevalnik. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Dostop do mikrofona v napravi je vklopljen.</translation>
 <translation id="5030687792513154421">Dovoljeni čas je potekel</translation>
@@ -786,9 +793,11 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="533282197239610265">Prikaz naprav za predvajanje</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (desna)</translation>
+<translation id="5351427059191534258">Želite izklopiti dostop do kamere?</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
 <translation id="5356963482258194581">Preklopite med temno in svetlo temo. Z desnim gumbom kliknite namizje in izberite Zaslonsko ozadje in slog.</translation>
 <translation id="536019650977002321">Skrbnik ne dovoli zajemanja zvoka. Če želite več informacij, se obrnite na skrbnika.</translation>
+<translation id="5361524080961918551">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so delno prenesene</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
@@ -898,6 +907,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5980301590375426705">Zapusti sejo gosta</translation>
 <translation id="598407983968395253">Uporabi predlogo</translation>
 <translation id="598882571027504733">Če želite prejeti posodobitev, znova zaženite Chromebook s priklopljeno tipkovnico.</translation>
+<translation id="6002179289567220515">Eno kamero ste izklopili s fizičnim stikalom. Prav tako lahko izklopite dostop za vse kamere.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stran od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izhod iz zrcalnega načina</translation>
 <translation id="602001110135236999">Pomik levo</translation>
@@ -938,9 +948,11 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="619279033188484792">Oglejte si nedavne fotografije, predstavnost in obvestila telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Napolni v celoti</translation>
 <translation id="6193431488227440296">Za razvijalce</translation>
+<translation id="6200515304866777730">Aplikacija ne podpira</translation>
 <translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
+<translation id="623116199192908855">Predvajanje zaslona iz Chromebooka</translation>
 <translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno uporablja vašo kamero in mikrofon.</translation>
 <translation id="6237231532760393653">1x</translation>
@@ -982,8 +994,10 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> zahteva, da pred rokom posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="649452524636452238">PIN za pametno kartico</translation>
 <translation id="6495400115277918834">Začela se je slika v sliki, pritisnite Alt + Shift + V za fokus</translation>
+<translation id="6497418457565568043">Funkcija »Ne moti« je vklopljena</translation>
 <translation id="6500896621837555595">Posodobi</translation>
 <translation id="6501401484702599040">Predvajanje zaslona v napravi <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Chromebook mora biti v istem omrežju Wi-Fi kot naprava Chromecast.</translation>
 <translation id="6515727200518652613">Povezava s fotoaparatom je prekinjena, poskusite jo znova vzpostaviti.</translation>
 <translation id="6520517963145875092">Izberite okno za posnetek</translation>
 <translation id="652139407789908527">Zaslon bo imel med to posodobitvijo prazen zaslon dlje kot običajno (največ eno minuto). Med posodabljanjem ne pritisnite gumba za vklop.</translation>
@@ -1065,6 +1079,7 @@ Nova namestitev</translation>
 <translation id="6901883536534621389">Poskusite se premikati s potezami</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="6931576957638141829">Shrani v</translation>
+<translation id="6942518653766415536">Meni oblike zapisa posnetka</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="6961121602502368900">Utišanje telefona ni na voljo v delovnem profilu</translation>

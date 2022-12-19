@@ -584,6 +584,7 @@
 <translation id="1560279917909364275">將允許在 <ph name="PRODUCT_OS_NAME" /> 螢幕鎖定畫面上使用的筆記應用程式加入許可清單</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
+<translation id="1562846754315919408">偵測到 USB 裝置時顯示通知</translation>
 <translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
 
       如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用 <ph name="BASIC_AUTH" /> 驗證機制，只能採用安全的 HTTPS。
@@ -2054,6 +2055,7 @@
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於該使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這位使用者。</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="2968177167006045252">允許網站使用 SharedArrayBuffers</translation>
+<translation id="2969489219271682844">偵測到 USB 裝置時不顯示通知</translation>
 <translation id="2969568582351417848">針對網域上的特定檔案類型，停用檔案類型副檔名下載警告</translation>
 <translation id="2969797921412053304">這項政策會設定哪些網址可在登入畫面的 SAML 流程中，取得使用裝置身分遠端認證機制的存取權。
 
@@ -3012,6 +3014,7 @@
 
       每個清單項目都含有目錄，其中的「extension-id」欄位必須包含擴充功能 ID，且「update-url」欄位必須包含更新網址。</translation>
 <translation id="3869180930654347954">為所有受影響的使用者停用 First-Party Sets 功能</translation>
+<translation id="3869566220234507038">一律載入 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="3870035799352372700">不允許 Google 助理在互動期間存取畫面內容</translation>
 <translation id="3870059789954671543">在登入畫面上啟用鍵盤焦點醒目顯示無障礙功能。
 
@@ -3885,6 +3888,23 @@
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可自行決定是否要自動隱藏檔案櫃。</translation>
 <translation id="4812309945046430049">紅色鍵盤背光顏色</translation>
+<translation id="4812410063101047442">這項設定會指定要使用的 <ph name="LACROS_NAME" /> 瀏覽器。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />，使用者就可以決定要載入的 <ph name="LACROS_NAME" /> 瀏覽器：<ph name="LACROS_ROOTFS_NAME" /> 或 <ph name="LACROS_STATEFUL_NAME" /> 分區的二進位檔。
+如果使用者未指定任何偏好設定，系統將選擇最新版的二進位檔。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，系統一律會載入 <ph name="LACROS_NAME" /> 瀏覽器的 <ph name="LACROS_ROOTFS_NAME" /> 二進位檔。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_STATEFUL_VALUE" />，系統一律會載入 <ph name="LACROS_NAME" /> 瀏覽器的 <ph name="LACROS_STATEFUL_NAME" /> 二進位檔。
+在 <ph name="LACROS_STATEFUL_NAME" /> 瀏覽器的版本低於 <ph name="PRODUCT_OS_NAME" /> 版本的情況下，使用這個值可能會造成非預期行為。
+系統並不支援這種做法，也不保證可正常運作。
+
+如果未設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，其他未受管理使用者的預設值則為 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />。
+
+      請注意，假如 <ph name="LACROS_NAME" /> 瀏覽器版本因政策值變更而變為更舊的版本，可能會導致瀏覽器資料遺失，例如政策值從 <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> 改成 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，而前者已經更新，就可能會造成資料遺失。另外一個可能會造成資料遺失的例子是 <ph name="PRODUCT_OS_NAME" /> 已和 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器一起更新，而 <ph name="LACROS_STATEFUL_NAME" /> 尚未更新。
+在這樣的情況下，系統不保證可正常遷移資料。
+
+為了安全起見，建議使用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 或 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />。此外，從 <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> 改用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 也是安全的做法。</translation>
 <translation id="4812714598405913256">設定 DeviceMinimumVersion 政策的自動更新期限訊息</translation>
 <translation id="4815581264328351694">顯示系統匣選單中的無障礙選項</translation>
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
@@ -4617,6 +4637,15 @@
 <translation id="5563240289883266691">啟用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5565178130821694365">每兩天 (48 小時) 須輸入一次密碼</translation>
 <translation id="5566210228171064229">不論是否使用 PIN 碼，都允許列印</translation>
+<translation id="5569504149646180067">設定讓使用者自動登入 Microsoft® 雲端識別資訊提供者服務支援的帳戶。
+
+如果將這項政策設為 1 (<ph name="POLICY_VALUE_ENABLED" />)，無論是使用者以 Microsoft® 雲端識別資訊提供者服務 (即 <ph name="MS_AAD_NAME" /> 或消費者 Microsoft® 帳戶識別資訊提供者服務) 支援的帳戶登入電腦，還是在 <ph name="MS_WIN_NAME" /> 中新增公司或學校帳戶，都能使用該識別資訊自動登入網站資源。在每次的驗證事件中，系統都會將與使用者裝置和帳戶相關的資訊傳送給使用者的雲端識別資訊提供者服務。
+
+如果將這項政策設為 0 (<ph name="POLICY_VALUE_DISABLED" />) 或未設定，系統就會停用上述的自動登入機制。
+
+這項功能自 <ph name="WIN_NAME" /> 10 起開放使用。
+
+注意：這項政策不適用於無痕或訪客模式。</translation>
 <translation id="5572971233886879856">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。這項設定僅適用於 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
 
       如果使用這項政策，使用者只能透過裝置政策使用 ID 符合本政策值的伺服器印表機。
@@ -5536,6 +5565,11 @@
       如果未設定、設為讓使用者決定或設為 None，使用者將可透過 chrome://settings 中的一般控制項來控制自動偵測時區的功能。</translation>
 <translation id="6532769014584932288">允許使用 Wake Lock</translation>
 <translation id="6533881418188970751">下載檔案前先向使用者詢問儲存位置</translation>
+<translation id="653616551212414363">如果這項設定已啟用，系統就會在 USB 裝置插入 <ph name="PRODUCT_OS_NAME" /> 裝置時顯示通知。
+
+      如果這項設定未啟用，系統就不會在插入 USB 裝置時顯示相關通知。
+
+      如果未設定這項政策，使用者將在 USB 裝置插入時收到相關通知。</translation>
 <translation id="6536600139108165863">裝置關機時自動重新啟動</translation>
 <translation id="6538653424603921690">在登入畫面上一律停用隱私保護功能</translation>
 <translation id="6539246272469751178">這項政策對 Android 應用程式沒有影響。Android 應用程式會一律使用預設的下載目錄，無法存取任何由 <ph name="PRODUCT_OS_NAME" />下載到非預設下載目錄的檔案。</translation>
@@ -6077,6 +6111,7 @@
 <translation id="7002040773317582266">已啟用主頁框網址的即時檢查功能。</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
 <translation id="7007283257527015835">布林值標記，表示是否應將通訊協定處理常式設為預設值。</translation>
+<translation id="7007403084376547341">選取 <ph name="LACROS_NAME" /> 瀏覽器二進位檔</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
 <translation id="7009043124653876961">在使用者輸入內容時不顯示表情符號建議</translation>
 <translation id="7010006999849135962">針對遠端存取主機啟用無 PIN 碼驗證機制</translation>
@@ -6282,6 +6317,7 @@
 <translation id="7202925763179776247">允許下載限制</translation>
 <translation id="7207095846245296855">強制啟用 Google 安全搜尋模式</translation>
 <translation id="7211368186050418507">一律不自動偵測時區</translation>
+<translation id="721617466745658461">允許使用者選取 <ph name="LACROS_NAME" /> 瀏覽器二進位檔</translation>
 <translation id="7216442368414164495">允許使用者採用安全瀏覽模式的進階回報功能</translation>
 <translation id="721970071627370558">停用裝置電源狀態回報功能</translation>
 <translation id="7221574724100909818">使用鎖頭圖示代表安全連線</translation>
@@ -7780,6 +7816,7 @@
 <translation id="8707790573162457301">在登入期間執行自動清理磁碟作業</translation>
 <translation id="8713535263782304771">停用安全瀏覽功能</translation>
 <translation id="8715885991031124968">允許從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
+<translation id="8719374569086645837">一律載入 <ph name="LACROS_STATEFUL_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="8720547069538712402">允許使用者啟用/停用拼字檢查功能</translation>
 <translation id="8726080977639508431">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
 
@@ -8201,6 +8238,7 @@
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9133526448421932754">黃色鍵盤背光顏色</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
+<translation id="9135095804754272364">偵測到 USB 裝置時顯示通知</translation>
 <translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
 <translation id="9142561920976791097">系統將使用在已停用表單控制項上傳送事件的新行為。</translation>

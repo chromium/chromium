@@ -190,6 +190,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2421044535038393232">Continua editant</translation>
 <translation id="2434405374328098816">Ja has desat una contrasenya per a <ph name="USERNAME" /> a <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2451654228769116489">Fixa la pestanya</translation>
 <translation id="2461070143328828326">Configuració de contrasenyes</translation>
 <translation id="2469960372084740698">Vols desactivar Navegació segura?</translation>
 <translation id="2473876017985765807">Ja has desat una contrasenya per a <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6064824697233747382">La teva organització requereix que desactivis la sincronització.</translation>
 <translation id="6066301408025741299">Toca per cancel·lar.</translation>
+<translation id="6071409777669089905">No fixis la pestanya</translation>
 <translation id="60829778314739003">Accepta i continua</translation>
 <translation id="6084848228346514841">Selecciona pestanyes</translation>
 <translation id="6103540626693881831">Encriptació al dispositiu</translation>
@@ -1097,6 +1099,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9219154867334666734">Cerca pestanyes…</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
 <translation id="941747855997058526">Selecciona una contrasenya...</translation>
+<translation id="948048872540558976">Crea una pestanya nova</translation>
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="953008885340860025">S'ha tancat la sessió de Chrome</translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>

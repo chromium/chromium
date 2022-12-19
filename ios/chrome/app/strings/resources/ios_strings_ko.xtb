@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">수정 계속</translation>
 <translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
+<translation id="2451654228769116489">탭 고정</translation>
 <translation id="2461070143328828326">비밀번호 설정</translation>
 <translation id="2469960372084740698">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
@@ -672,6 +673,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
 <translation id="6064824697233747382">조직에서 동기화를 사용 중지할 것을 요구합니다.</translation>
 <translation id="6066301408025741299">취소하려면 탭하세요.</translation>
+<translation id="6071409777669089905">탭 고정 해제</translation>
 <translation id="60829778314739003">동의 및 계속</translation>
 <translation id="6084848228346514841">탭 선택</translation>
 <translation id="6103540626693881831">기기 내 암호화</translation>
@@ -1097,6 +1099,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9219154867334666734">탭 검색…</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
 <translation id="941747855997058526">비밀번호 선택...</translation>
+<translation id="948048872540558976">새 탭 만들기</translation>
 <translation id="952704832371081537">취소</translation>
 <translation id="953008885340860025">Chrome에서 로그아웃됨</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> 채널을 팔로우 중입니다</translation>

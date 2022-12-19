@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2584559707064218956">စနစ်ထည့်သွင်းရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="2597774443162333062">အမှားရှာပြင်ရန် ဖိုင်များကို Google သို့ ပို့ပါမည်</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်ပြီးပြီ။ စာမျက်နှာ ၁ မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2638662041295312666">လက်မှတ်ထိုးဝင်ရန်ပုံ</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">နောက်ထပ်အကူအညီအတွက် <ph name="BEGIN_LINK" />ကူညီရေးဌာန<ph name="END_LINK" /> သို့ သွားနိုင်သည်။</translation>
 <translation id="4793756956024303490">ချုံ့ခြင်း လုပ်နည်းစနစ်</translation>
 <translation id="4794140124556169553">CPU စစ်ဆေးမှု လုပ်ဆောင်ခြင်းက သင့်စနစ်၏ စွမ်းဆောင်ရည်အပေါ် သက်ရောက်မှုရှိနိုင်သည်</translation>
+<translation id="4798078634453489142">APN အသစ်ထည့်ရန် APN တစ်ခုဖယ်ရှားပါ</translation>
 <translation id="4800589996161293643">Chromebook ကွန်မြူနတီ</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ပရင့်ထုတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်။</translation>

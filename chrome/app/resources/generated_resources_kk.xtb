@@ -1290,6 +1290,8 @@
 <translation id="2165102982098084499">Бұл құрылғыларды QR кодын сканерлеу арқылы байланыстырдыңыз.</translation>
 <translation id="2165177462441582039">Әр элемент қанша уақыт ерекшеленіп тұруы керектігін таңдаңыз</translation>
 <translation id="2166369534954157698">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Бұл құрылғы (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) құлыпталды.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Енді <ph name="MS_AD_NAME" /> көмегімен Chrome құрылғысын басқаруға қолдау көрсетілмейді. Кіру үшін басқа құрылғыны пайдаланыңыз немесе құрылғы әкімшісіне хабарласыңыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Бәрібір кіру</translation>
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
 <translation id="2173801458090845390">Осы құрылғыға сұрау идентификаторын енгізу</translation>
@@ -6176,6 +6178,7 @@
 <translation id="6770042910635026163">Қызығушылықтарыңызды анықтайтын сайттар</translation>
 <translation id="6770602306803890733">Интернет пайдаланушылары үшін қауіпсіздікті жақсартады.</translation>
 <translation id="6771503742377376720">Сертификат беретін орган</translation>
+<translation id="6774710250118040929">Жаңа құпия сөз қосу</translation>
 <translation id="6775163072363532304">Қолжетімді құрылғылар осы жерде пайда болады.</translation>
 <translation id="677646486571529447">Ескертпе қосу</translation>
 <translation id="6776729248872343918">Fast Pair функциясын қосу</translation>
@@ -7859,7 +7862,6 @@
 <translation id="8314381333424235892">Жеткіліксіз немесе жойылған кеңейтім</translation>
 <translation id="831440797644402910">Бұл қалта ашылмайды</translation>
 <translation id="8314835274931377415">Switch Access-ті реттеу керек пе?</translation>
-<translation id="8317582043908962055">P&amp;DF мәтінін тану</translation>
 <translation id="8317671367883557781">Желі байланысын енгізу</translation>
 <translation id="8317965619823678157">құпия сөздерді көшіру</translation>
 <translation id="8318266828739827371">Экранның ұлғайтылған аумағын көру үшін оны бөліп көріңіз. Бекітілген ұлғайтқышты қосу және өшіру үшін "Іздеу" + Ctrl + D перне тіркесімін басыңыз.</translation>

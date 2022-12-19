@@ -76,6 +76,7 @@
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
 <translation id="2977506796191543575">‏إذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسِل متصفِّح Chromium أيضًا عناوين URL تتضمّن أجزاءً من محتوى الصفحة إلى خدمة "التصفُّح الآمن".</translation>
 <translation id="2983934633046890458">‏يحاول Chromium تعديل كلمات المرور.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{‏‫Chromium متصل بجهاز HID واحد.}zero{‏‫Chromium متصل بأجهزة HID.}two{‏‫Chromium متصل بجهازَي HID.}few{‏‫Chromium متصل بأجهزة HID.}many{‏‫Chromium متصل بأجهزة HID.}other{‏‫Chromium متصل بأجهزة HID.}}</translation>
 <translation id="3032706164202344641">‏يتعذّر على Chromium التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="3032787606318309379">‏جارٍ الإضافة إلى Chromium...</translation>
 <translation id="3038232873781883849">في انتظار التثبيت...</translation>

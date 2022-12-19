@@ -120,6 +120,7 @@
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請要求管理員在 Google 管理控制台設定此裝置</translation>
+<translation id="1550406609415860283">有可用的裝置</translation>
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
@@ -127,6 +128,7 @@
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
+<translation id="163517899691012366">「請勿騷擾」功能開啟時，系統會忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
@@ -373,6 +375,7 @@
 <translation id="3047761520276763270">請嘗試說：</translation>
 <translation id="3051189971848907985">正在重新命名設定檔。請等候幾分鐘。</translation>
 <translation id="3055162170959710888">您今天的裝置使用時間：<ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">不支援</translation>
 <translation id="3068711042108640621">捷徑列喺螢幕左邊</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">打開選單</translation>
@@ -407,6 +410,7 @@
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
+<translation id="3260969790895726815">語音會在本機處理，而語音聽寫可離線運作，但部分語音指令無法使用。</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
 <translation id="3289674678944039601">正在透過電源適配器充電</translation>
@@ -457,6 +461,7 @@
 <translation id="3542066395059568317">系統會顯示建議，讓您繼續使用上次開啟的內容。只要在建議上按一下右鍵即可移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554637740840164787">已經將<ph name="ITEM_TITLE" />置頂</translation>
+<translation id="3560174576767922131">錄影</translation>
 <translation id="3563775809269155755">啟用熱點</translation>
 <translation id="3566240529365775567">剛才開啟過</translation>
 <translation id="3571734092741541777">設定</translation>
@@ -648,6 +653,7 @@
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">開咗設定選單</translation>
+<translation id="458210817642223147">錄製 GIF</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
@@ -726,6 +732,7 @@
         <ph name="NOTIFICATION_2" />；以及 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
 <translation id="5003993274120026347">下一句</translation>
+<translation id="5004607513195820459">這是受管理的網絡</translation>
 <translation id="5016558321564993266">切換標記。<ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">裝置的麥克風存取權已開啟</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
@@ -785,9 +792,11 @@
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="533282197239610265">顯示投放裝置</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
+<translation id="5351427059191534258">要關閉相機存取權嗎？</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5356963482258194581">在深色和淺色主題背景之間切換。請在桌面上按一下右鍵，並選取「桌布和樣式」。</translation>
 <translation id="536019650977002321">管理員禁止擷取音訊。如需更多資訊，請聯絡管理員。</translation>
+<translation id="5361524080961918551">已下載部分<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此分頁</translation>
 <translation id="5377367976106153749">要允許存取相機嗎？</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
@@ -897,6 +906,7 @@
 <translation id="5980301590375426705">結束訪客工作階段</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
+<translation id="6002179289567220515">您已使用實體開關關閉 1 部相機。您亦可關閉所有相機的存取權。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
@@ -937,9 +947,11 @@
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片、媒體和通知</translation>
 <translation id="619335566042889110">現已完全充滿</translation>
 <translation id="6193431488227440296">開發發佈途徑</translation>
+<translation id="6200515304866777730">應用程式不支援</translation>
 <translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
+<translation id="623116199192908855">透過 Chromebook 投放畫面</translation>
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」目前正在使用您的相機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -981,8 +993,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在期限前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN</translation>
 <translation id="6495400115277918834">畫中畫開始咗，㩒一下 Alt + Shift + V 鍵就可以突顯</translation>
+<translation id="6497418457565568043">「請勿騷擾」模式已開啟</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
+<translation id="6508923215158854599">確定您的 Chromebook 與 Chromecast 裝置位於同一個 Wi-Fi 網絡上。</translation>
 <translation id="6515727200518652613">攝錄機連線中斷，嘗試緊重新連線。</translation>
 <translation id="6520517963145875092">選取要擷取的視窗</translation>
 <translation id="652139407789908527">進行此更新時，螢幕顯示空白畫面的時間可能會比平時更長 (最多一分鐘)。請勿在更新期間按下開關按鈕。</translation>
@@ -1063,6 +1077,7 @@
 <translation id="6901883536534621389">試用手勢瀏覽功能</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="6931576957638141829">儲存至</translation>
+<translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
 <translation id="6961121602502368900">工作設定檔不支援將手機設定為靜音</translation>

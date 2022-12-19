@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">გადაადგილება</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
+<translation id="1182225749592316782">წვდომა მიენიჭება ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="1183863904939664422">ეს შემოთავაზება არ მაინტერესებს</translation>
 <translation id="118437560755358292">დამატებითი უსაფრთხოებისთვის შეიყვანეთ პაროლი ან PIN-კოდი</translation>
 <translation id="118532027333893379">სრული ეკრანის აღსაბეჭდად შეეხეთ ნებისმიერ ადგილს</translation>
@@ -120,6 +121,7 @@
 <translation id="15373452373711364">დიდი მაუსის კურსორი</translation>
 <translation id="1546492247443594934">დესკტოპი 2</translation>
 <translation id="1546930421365146760">სთხოვეთ თქვენს ადმინისტრატორს, დააყენოს ეს მოწყობილობა Google ადმინისტრატორის კონსოლიდან</translation>
+<translation id="1550406609415860283">ხელმისაწვდომი მოწყობილობები</translation>
 <translation id="1550523713251050646">დააწკაპუნეთ დამატებითი ვარიანტების სანახავად</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
@@ -457,9 +459,12 @@
 <translation id="3513798432020909783">ანგარიშს მართავს <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{განაახლეთ მოწყობილობა 1 წუთის განმავლობაში}other{განაახლეთ მოწყობილობა # წუთის განმავლობაში}}</translation>
 <translation id="353086728817903341">დაკავშირებულია <ph name="NUM_DEVICES" /> მოწყობილობასთან</translation>
+<translation id="3533126039236445965">აპები თაროზე</translation>
 <translation id="3542066395059568317">თქვენ იხილავთ რეკომენდაციებს, რომ შეძლოთ იქიდან გაგრძელება, სადაც შეჩერდით. რეკომენდაციების ამოშლა შეგიძლიათ მარჯვენა დაწკაპუნებით.</translation>
 <translation id="3552189655002856821">Wi-Fi გამორთულია</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ჩამაგრებულია</translation>
+<translation id="3558768885091059911">გსურთ, ჩართოთ წვდომა კამერასა და მიკროფონზე?</translation>
+<translation id="3560174576767922131">ვიდეოს ჩაწერა</translation>
 <translation id="3563775809269155755">ჩართეთ უსადენო ქსელი</translation>
 <translation id="3566240529365775567">ამ წამს გახსნილი</translation>
 <translation id="3571734092741541777">დაყენება</translation>
@@ -651,6 +656,7 @@
 <translation id="4577274620589681794">დრო ამოიწურა · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">გადახედვის ჩართვა</translation>
 <translation id="4578906031062871102">პარამეტრების მენიუ გახსნილია</translation>
+<translation id="458210817642223147">GIF-ის ჩაწერა</translation>
 <translation id="4585337515783392668">ტრანსლირების შეწყვეტა უცნობ მიმღებში</translation>
 <translation id="4596144739579517758">მუქი თემა გამორთულია</translation>
 <translation id="4611292653554630842">შესვლა</translation>
@@ -730,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">სამუშაო მაგიდა 16</translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
+<translation id="5004607513195820459">ქსელი მართულია</translation>
 <translation id="5016558321564993266">მარკერის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">მოწყობილობის მიკროფონზე წვდომა ჩართულია</translation>
 <translation id="5030687792513154421">დრო ამოიწურა</translation>
@@ -866,6 +873,7 @@
 <translation id="5763928712329149804">Shelf Party გამორთულია.</translation>
 <translation id="576453121877257266">ღამის განათება ჩართულია.</translation>
 <translation id="5769373120130404283">კონფიდენციალური ეკრანი</translation>
+<translation id="5773950591113557721">წვდომა მიენიჭება <ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="5777841717266010279">შევწყვიტოთ ეკრანის გაზიარება?</translation>
 <translation id="5779721926447984944">ჩამაგრებული ფაილები</translation>
 <translation id="5788127256798019331">Play ფაილები</translation>
@@ -1053,6 +1061,7 @@
 <translation id="6787595647772650851">ბოლო სესიის აღდგენა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6801878137098616817">ახლახან რედაქტირებული</translation>
+<translation id="6802687695197837794">წვდომა მიენიჭება <ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც კამერისა და მიკროფონის გამოყენების ნებართვა აქვს</translation>
 <translation id="6803622936009808957">ეკრანების არეკვლა ვერ მოხერხდა, რადგან მხარდაჭერილი გარჩევადობები ვერ მოიძებნა. შეყვანილია გაშლილი სამუშაო დაფა.</translation>
 <translation id="6812232930908427253">სამუშაო მაგიდის შენახვა ვერ მოხერხდა. გახსნილია ზედმეტად ბევრი ფანჯარა ან ჩანართი.</translation>
 <translation id="6818242057446442178">ერთი სიტყვით უკან</translation>
@@ -1075,6 +1084,7 @@
 <translation id="6901883536534621389">ცადეთ ჟესტები ნავიგაციისთვის</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="6931576957638141829">შენახვა აქ:</translation>
+<translation id="6942518653766415536">ჩანაწერის ფორმატის მენიუ</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6960565108681981554">არ არის გააქტიურებული. დაუკავშირდით თქვენს ოპერატორს.</translation>
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
@@ -1084,6 +1094,7 @@
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">წვდომის ჩართვა</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="698231206551913481">ამ მომხმარებლის ამოშლის შემდეგ, მასთან დაკავშირებული ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება.</translation>
 <translation id="7005239792648594238">დასაწყებად გახსენით აპი</translation>

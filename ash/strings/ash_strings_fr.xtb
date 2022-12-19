@@ -120,6 +120,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="15373452373711364">Grand curseur</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1546930421365146760">Demandez à votre administrateur de configurer cet appareil dans la console d'administration Google</translation>
+<translation id="1550406609415860283">Appareils disponibles</translation>
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
@@ -127,6 +128,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
+<translation id="163517899691012366">Les notifications sont désactivées lorsque le mode Ne pas déranger est activé</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
@@ -373,6 +375,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3047761520276763270">Essayez de dire :</translation>
 <translation id="3051189971848907985">Changement de nom du profil… Attendez quelques minutes.</translation>
 <translation id="3055162170959710888">Vous avez utilisé l'appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
+<translation id="3062298103034426069">Non compatible</translation>
 <translation id="3068711042108640621">Étagère à gauche</translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
@@ -407,6 +410,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a été déplacée du Bureau <ph name="ACTIVE_DESK" /> au Bureau <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configurer</translation>
 <translation id="3255483164551725916">Que sais-tu faire ?</translation>
+<translation id="3260969790895726815">Les paroles sont traitées localement et la dictée fonctionne hors connexion, mais certaines commandes vocales ne sont pas prises en charge.</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289544412142055976">Les applis Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>
@@ -457,6 +461,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3542066395059568317">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez les supprimer en effectuant un clic droit.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
+<translation id="3560174576767922131">Enregistrer une vidéo</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3566240529365775567">Ouvert à l'instant</translation>
 <translation id="3571734092741541777">Configurer</translation>
@@ -647,6 +652,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4577274620589681794">Temps écoulé · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4578906031062871102">Menu "Paramètres" ouvert</translation>
+<translation id="458210817642223147">Enregistrer un GIF</translation>
 <translation id="4585337515783392668">Arrêter la diffusion vers un destinataire inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé.</translation>
 <translation id="4611292653554630842">Connexion</translation>
@@ -726,6 +732,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
+<translation id="5004607513195820459">Le réseau est géré</translation>
 <translation id="5016558321564993266">Activer/Désactiver le repère. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">L'accès au micro de l'appareil est activé</translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
@@ -785,9 +792,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
 <translation id="533282197239610265">Afficher les appareils Cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droit)</translation>
+<translation id="5351427059191534258">Désactiver l'accès à l'appareil photo ?</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Effectuez un clic droit sur le bureau et sélectionnez "Fond d'écran et style".</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Contactez-le pour en savoir plus.</translation>
+<translation id="5361524080961918551">Fichiers vocaux partiellement téléchargés : <ph name="LANGUAGE" /></translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo ?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
@@ -897,6 +906,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
+<translation id="6002179289567220515">Vous avez utilisé le bouton physique pour désactiver une caméra. Vous pouvez également désactiver l'accès pour toutes les caméras.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
@@ -937,9 +947,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="619279033188484792">Afficher les photos, contenus multimédias et notifications récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Recharger complètement</translation>
 <translation id="6193431488227440296">Développement</translation>
+<translation id="6200515304866777730">Non compatible avec l'appli</translation>
 <translation id="6210042900243040400">Associer les <ph name="NAME" /> précédemment enregistrés dans <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
 <translation id="622484624075952240">Bas</translation>
+<translation id="623116199192908855">Caster l'écran de votre Chromebook</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -981,8 +993,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige la mise à jour de votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>
 <translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
+<translation id="6497418457565568043">Mode "Ne pas déranger" activé</translation>
 <translation id="6500896621837555595">Mettre à jour</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6508923215158854599">Assurez-vous que votre Chromebook est connecté au même réseau Wi-Fi que votre Chromecast.</translation>
 <translation id="6515727200518652613">Appareil photo déconnecté, tentative de reconnexion en cours.</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur le bouton Marche/Arrêt tant que la mise à jour n'est pas terminée.</translation>
@@ -1064,6 +1078,7 @@ Nouvelle installation</translation>
 <translation id="6901883536534621389">Essayez les gestes pour la navigation</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
+<translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>

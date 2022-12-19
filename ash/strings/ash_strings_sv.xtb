@@ -127,6 +127,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
+<translation id="163517899691012366">Aviseringar hörs inte när Stör ej är aktiverat</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
@@ -373,6 +374,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
 <translation id="3051189971848907985">Byter namn på profilen. Vänta några minuter.</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
+<translation id="3062298103034426069">Stöds inte</translation>
 <translation id="3068711042108640621">Hyllan till vänster</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
@@ -407,6 +409,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfiguration</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
+<translation id="3260969790895726815">Tal behandlas lokalt och diktering fungerar offline, men vissa röstkommandon fungerar inte.</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
 <translation id="3289674678944039601">Laddas via adapter</translation>
@@ -786,9 +789,11 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="533282197239610265">Visa cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
+<translation id="5351427059191534258">Vill du inaktivera kameraåtkomst?</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5356963482258194581">Byt mellan ljust och mörkt tema. Högerklicka på skrivbordet och välj Bakgrund och stil.</translation>
 <translation id="536019650977002321">Administratören tillåter inte ljudinspelning. Kontakta administratören för mer information.</translation>
+<translation id="5361524080961918551">Filer med tal på <ph name="LANGUAGE" /> har delvis laddats ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Öppna den här fliken</translation>
 <translation id="5377367976106153749">Vill du aktivera kameraåtkomst?</translation>
 <translation id="5379115545237091094">För många försök</translation>
@@ -898,6 +903,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
+<translation id="6002179289567220515">Du inaktiverade en kamera med det fysiska reglaget. Du kan även inaktivera åtkomsten för alla kameror.</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Scrolla åt vänster</translation>
@@ -938,9 +944,11 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="619279033188484792">Visa de senaste bilderna, mediefilerna och aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>
 <translation id="6193431488227440296">Utvecklare</translation>
+<translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
+<translation id="623116199192908855">Casta skärmen på en Chromebook</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +990,10 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> före deadline</translation>
 <translation id="649452524636452238">Pinkod till smartkort</translation>
 <translation id="6495400115277918834">Bild-i-bild har startats, tryck på Alt + Skift + V för att välja fokus</translation>
+<translation id="6497418457565568043">Stör ej är aktiverat</translation>
 <translation id="6500896621837555595">Uppdatera</translation>
 <translation id="6501401484702599040">Skärmen castas till <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Kontrollera att Chromebook är ansluten till samma wifi-nätverk som Chromecast-enheten.</translation>
 <translation id="6515727200518652613">Kameran kopplades från. Försöker återansluta.</translation>
 <translation id="6520517963145875092">Välj ett fönster att ta en bild av</translation>
 <translation id="652139407789908527">Det är tomt på skärmen längre än vanligt (i upp till en minut) under den här uppdateringen. Tryck inte på av/på-knappen medan uppdateringen pågår.</translation>
