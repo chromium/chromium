@@ -94,6 +94,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   ui::AXMode GetAccessibilityMode() { return accessibility_mode_; }
 
   // RenderAccessibility implementation.
+  bool HasActiveDocument() const override;
   int GenerateAXID() override;
   ui::AXTreeID GetTreeIDForPluginHost() const override;
   void SetPluginTreeSource(PluginAXTreeSource* source) override;

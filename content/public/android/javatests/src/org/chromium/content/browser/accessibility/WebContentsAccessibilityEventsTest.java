@@ -612,7 +612,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_cssDisplay() {
-        performTest("css-display.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("css-display.html", "css-display-expected-android.txt");
     }
 
     @Test
@@ -966,6 +966,12 @@ public class WebContentsAccessibilityEventsTest {
     public void test_reportValidityInvalidField() {
         performTest("report-validity-invalid-field.html",
                 "report-validity-invalid-field-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_roleChanged() {
+        performTest("role-changed.html", "role-changed-expected-android.txt");
     }
 
     @Test

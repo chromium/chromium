@@ -1,2 +1,2 @@
 div.accessibilityAttributeNames.has(ChromeAXNodeId)='yes'
-div.accessibilityAttributeValue(ChromeAXNodeId)='4'
+div.accessibilityAttributeValue(ChromeAXNodeId)='7'

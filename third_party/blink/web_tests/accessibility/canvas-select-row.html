@@ -22,6 +22,7 @@ test(function(t) {
     cell.role = "gridcell";
     row.accessibleNode.appendChild(cell);
     var ax = axElementById("row0");
+    assert_equals(ax.role, "AXRole: AXRow");
     var axChild = ax.childAtIndex(0);
     assert_equals(axChild.role, "AXRole: AXCell");
 }, "An ARIA cell without a layout object does not crash");

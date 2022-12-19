@@ -518,8 +518,7 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   DCHECK(!document.IsNull());
 
   auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
-  if (obj.IsDetached())
-    return;
+  DCHECK(!obj.IsDetached());
 
 #if BUILDFLAG(IS_ANDROID)
   // Inline text boxes are needed to support moving by character/word/line.
@@ -539,11 +538,9 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   if (IsImmediateProcessingRequiredForEvent(event))
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
-  if (!obj.IsDetached()) {
-    MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
-                         event.event_from_action, event.event_intents,
-                         event.event_type);
-  }
+  MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
+                       event.event_from_action, event.event_intents,
+                       event.event_type);
 
   ScheduleSendPendingAccessibilityEvents();
 }
@@ -730,6 +727,11 @@ void RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents(
               &RenderAccessibilityImpl::SendPendingAccessibilityEvents,
               weak_factory_for_pending_events_.GetWeakPtr()),
           delay);
+}
+
+bool RenderAccessibilityImpl::HasActiveDocument() const {
+  DCHECK(ax_context_);
+  return ax_context_->HasActiveDocument();
 }
 
 int RenderAccessibilityImpl::GenerateAXID() {

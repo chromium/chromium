@@ -1,7 +1,7 @@
-StructureChanged/ChildAdded on role=button
-StructureChanged/ChildRemoved on role=document
-StructureChanged/ChildrenReordered on role=document
+AriaProperties changed on role=button
+AriaRole changed on role=button
+ToggleToggleState changed on role=button
 === Start Continuation ===
-StructureChanged/ChildAdded on role=button
-StructureChanged/ChildRemoved on role=document
-StructureChanged/ChildrenReordered on role=document
+AriaProperties changed on role=button
+AriaRole changed on role=button
+ToggleToggleState changed on role=button

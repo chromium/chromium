@@ -985,6 +985,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsRoleChanged) {
+  RunEventTest(FILE_PATH_LITERAL("role-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSamePageLinkNavigation) {
 #if BUILDFLAG(IS_WIN)
   if (!BrowserAccessibilityManagerWin::

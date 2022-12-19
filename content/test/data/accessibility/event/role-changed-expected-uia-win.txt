@@ -1,0 +1,2 @@
+AriaRole changed on role=button, name=Role will change
+Name changed on role=button, name=Role will change

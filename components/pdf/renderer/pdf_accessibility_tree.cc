@@ -1661,13 +1661,11 @@ PdfAccessibilityTree::GetRenderAccessibilityIfEnabled() {
   // we shouldn't use it. This can happen if Blink accessibility is disabled
   // after we started generating the accessible PDF.
   base::WeakPtr<PdfAccessibilityTree> weak_this = GetWeakPtr();
-  if (render_accessibility->GenerateAXID() <= 0)
+  if (!render_accessibility->HasActiveDocument()) {
     return nullptr;
+  }
 
-  // GenerateAXID() above can cause self deletion. Returning nullptr will cause
-  // callers to stop doing work.
-  if (!weak_this)
-    return nullptr;
+  DCHECK(weak_this);
 
   return render_accessibility;
 }

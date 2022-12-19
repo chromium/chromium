@@ -151,9 +151,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ImageLoaded(const LayoutObject*) override;
 
   void Remove(AccessibleNode*) override;
-  // Returns false if no associated AXObject exists in the cache.
-  bool Remove(LayoutObject*) override;
-  void Remove(const Node*) override;
+  void Remove(LayoutObject*) override;
+  void Remove(Node*) override;
   void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
@@ -284,7 +283,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   //   simply writing a DCHECK, where a pure get is optimal so as to avoid
   //   changing behavior.
   AXObject* SafeGet(const Node* node,
-                    bool allow_display_locking_invalidation = false);
+                    bool allow_display_locking_invalidation = false,
+                    bool allow_layout_object_relevance_check = false);
 
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.
@@ -519,32 +519,15 @@ class MODULES_EXPORT AXObjectCacheImpl
     return active_event_intents_;
   }
 
-  // Create an AXObject, and do not check if a previous one exists.
-  // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(
-      Node*,
-      AXObject* parent_if_known,
-      AXID use_axid = 0,
-      absl::optional<AXObjectType> ax_object_type = absl::nullopt);
-  AXObject* CreateAndInit(
-      LayoutObject*,
-      AXObject* parent_if_known,
-      AXID use_axid = 0,
-      absl::optional<AXObjectType> ax_object_type = absl::nullopt);
-
   // Mark object as invalid and needing to be refreshed when layout is clean.
   // Will result in a new object with the same AXID, and will also call
   // ChildrenChanged() on the parent of invalidated objects. Automatically
   // de-dupes extra object refreshes and ChildrenChanged() calls.
   void Invalidate(Document&, AXID);
 
-  AXObject* CreateFromRenderer(LayoutObject*);
-  AXObject* CreateFromNode(Node*);
-  AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
   void Remove(AXID);
 
  private:
-
   struct AXDirtyObject : public GarbageCollected<AXDirtyObject> {
     AXDirtyObject(AXObject* obj_arg,
                   ax::mojom::blink::EventFrom event_from_arg,
@@ -571,6 +554,15 @@ class MODULES_EXPORT AXObjectCacheImpl
     std::vector<ui::AXEventIntent> event_intents;
   };
 
+  // Create an AXObject, and do not check if a previous one exists.
+  // Also, initialize the object and add it to maps for later retrieval.
+  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
+  // Helpers for CreateAndInitIfRelevant() methods..
+  AXObject* CreateFromRenderer(LayoutObject*);
+  AXObject* CreateFromNode(Node*);
+
+  AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
+
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   WebLocalFrameClient* GetWebLocalFrameClient() const;
@@ -579,6 +571,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
+
+  // Returns true if the AXID is for a DOM node.
+  // All other AXIDs are generated.
+  bool IsDOMNodeID(AXID axid) { return axid > 0; }
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -658,16 +654,15 @@ class MODULES_EXPORT AXObjectCacheImpl
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;
+  // AXIDs for AXNodeObjects reuse the int ids in dom_node_id, all other AXIDs
+  // are negative in order to avoid a conflict.
   HeapHashMap<AXID, Member<AXObject>> objects_;
   // LayoutObject and AbstractInlineTextBox are not on the Oilpan heap so we
   // do not use HeapHashMap for those mappings.
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
-  HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HashMap<AbstractInlineTextBox*, AXID> inline_text_box_object_mapping_;
   int modification_count_;
-
-  HashSet<AXID> ids_in_use_;
 
   // Used for a mock AXObject representing the message displayed in the
   // validation message bubble.
@@ -771,6 +766,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void TextChangedWithCleanLayout(Node* node);
   void ChildrenChangedWithCleanLayout(Node* node);
+
   // If the presence of document markers changed for the given text node, then
   // call children changed.
   void HandleTextMarkerDataAddedWithCleanLayout(Node*);
@@ -849,11 +845,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
 
   // Help de-dupe processing of repetitive events.
-  HeapHashSet<WeakMember<Node>> nodes_with_pending_children_changed_;
+  HashSet<AXID> nodes_with_pending_children_changed_;
   HashSet<AXID> nodes_with_pending_location_changed_;
 
   // Nodes with document markers that have received accessibility updates.
-  HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
+  HashSet<AXID> nodes_with_spelling_or_grammar_markers_;
 
   // True when layout has changed, and changed locations must be serialized.
   bool need_to_send_location_changes_ = false;
