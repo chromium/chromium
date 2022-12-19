@@ -151,8 +151,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @LargeTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
         // Initially, we have 5 normal tabs (including the one created at activity start) and 5
         // incognito tabs in cta1.
@@ -238,8 +237,7 @@ public class TabSwitcherMultiWindowTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1363248")
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-        ChromeFeatureList.TAB_REPARENTING})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testMoveLastIncognitoTab() {
         // clang-format on
         // Initially, we have 1 normal tab (created in #setup()) and 1 incognito tab in cta1.

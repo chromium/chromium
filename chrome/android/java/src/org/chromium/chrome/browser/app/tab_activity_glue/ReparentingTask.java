@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -127,15 +126,13 @@ public class ReparentingTask implements UserData {
         }
         IntentUtils.addTrustedIntentExtras(intent);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_REPARENTING)) {
-            // Add the tab to AsyncTabParamsManager before removing it from the current model to
-            // ensure the global count of tabs is correct. See https://crbug.com/611806.
-            IntentHandler.setTabId(intent, mTab.getId());
-            AsyncTabParamsManagerSingleton.getInstance().add(
-                    mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
+        // Add the tab to AsyncTabParamsManager before removing it from the current model to
+        // ensure the global count of tabs is correct. See https://crbug.com/611806.
+        IntentHandler.setTabId(intent, mTab.getId());
+        AsyncTabParamsManagerSingleton.getInstance().add(
+                mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
 
-            detach();
-        }
+        detach();
     }
 
     /**
