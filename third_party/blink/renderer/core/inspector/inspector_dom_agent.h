@@ -316,6 +316,9 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response AssertElement(int node_id, Element*&);
   Document* GetDocument() const { return document_.Get(); }
 
+  // [replay-edit] Offer a simple solution to get-or-create nodeId for in-document nodes.
+  int BindDocumentNode(Node*);
+
  private:
   void SetDocument(Document*);
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
