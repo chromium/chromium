@@ -8,7 +8,7 @@
 
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "components/reading_list/features/reading_list_switches.h"
 
 // static

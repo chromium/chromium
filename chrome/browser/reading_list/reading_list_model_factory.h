@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_READ_LATER_READING_LIST_MODEL_FACTORY_H_
-#define CHROME_BROWSER_UI_READ_LATER_READING_LIST_MODEL_FACTORY_H_
+#ifndef CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
+#define CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -43,4 +43,4 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-#endif  // CHROME_BROWSER_UI_READ_LATER_READING_LIST_MODEL_FACTORY_H_
+#endif  // CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_

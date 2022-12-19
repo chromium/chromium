@@ -10,15 +10,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/read_later/read_later_test_utils.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -87,7 +87,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
         page_.BindAndGetRemote(), test_web_ui_.get());
     model_ =
         ReadingListModelFactory::GetForBrowserContext(browser()->profile());
-    test::ReadingListLoadObserver(model_).Wait();
+    ReadingListLoadObserver(model_).Wait();
 
     AddTabWithTitle(browser(), GURL(kTabUrl1), kTabName1);
     AddTabWithTitle(browser(), GURL(kTabUrl2), kTabName2);

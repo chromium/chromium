@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/read_later/read_later_test_utils.h"
+#include "components/reading_list/core/reading_list_test_utils.h"
 
 #include "base/run_loop.h"
 #include "components/reading_list/core/reading_list_model.h"
-
-namespace test {
 
 ReadingListLoadObserver::ReadingListLoadObserver(ReadingListModel* model)
     : model_(model) {
@@ -18,8 +16,9 @@ ReadingListLoadObserver::~ReadingListLoadObserver() {
 }
 
 void ReadingListLoadObserver::Wait() {
-  if (model_->loaded())
+  if (model_->loaded()) {
     return;
+  }
   run_loop_.Run();
 }
 
@@ -27,5 +26,3 @@ void ReadingListLoadObserver::ReadingListModelLoaded(
     const ReadingListModel* model) {
   run_loop_.Quit();
 }
-
-}  // namespace test

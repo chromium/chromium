@@ -42,6 +42,8 @@ static_library("test_support") {
   sources = [
     "fake_reading_list_model_storage.cc",
     "fake_reading_list_model_storage.h",
+    "reading_list_test_utils.cc",
+    "reading_list_test_utils.h",
   ]
   deps = [ "//components/sync/model" ]
   public_deps = [

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_READ_LATER_READ_LATER_TEST_UTILS_H_
-#define CHROME_BROWSER_UI_READ_LATER_READ_LATER_TEST_UTILS_H_
+#ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_TEST_UTILS_H_
+#define COMPONENTS_READING_LIST_CORE_READING_LIST_TEST_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -11,8 +11,6 @@
 
 class GURL;
 class ReadingListModel;
-
-namespace test {
 
 // ReadingListLoadObserver is used to observe the ReadingListModel passed in the
 // constructor for the ReadingListModelLoaded event.
@@ -53,6 +51,4 @@ class ReadingListLoadObserver : public ReadingListModelObserver {
   base::RunLoop run_loop_;
 };
 
-}  // namespace test
-
-#endif  // CHROME_BROWSER_UI_READ_LATER_READ_LATER_TEST_UTILS_H_
+#endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_TEST_UTILS_H_

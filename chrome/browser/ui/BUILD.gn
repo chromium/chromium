@@ -156,8 +156,6 @@ static_library("ui") {
     "profile_chooser_constants.h",
     "profile_error_dialog.cc",
     "profile_error_dialog.h",
-    "read_later/reading_list_model_factory.cc",
-    "read_later/reading_list_model_factory.h",
     "recently_audible_helper.cc",
     "recently_audible_helper.h",
     "screen_capture_notification_ui.h",

@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "components/reading_list/features/reading_list_switches.h"
 
 // static

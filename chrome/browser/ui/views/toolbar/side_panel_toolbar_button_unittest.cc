@@ -7,9 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/read_later/read_later_test_utils.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_test_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -29,7 +29,7 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
     TestWithBrowserView::SetUp();
 
     model_ = ReadingListModelFactory::GetForBrowserContext(profile());
-    test::ReadingListLoadObserver(model_).Wait();
+    ReadingListLoadObserver(model_).Wait();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {

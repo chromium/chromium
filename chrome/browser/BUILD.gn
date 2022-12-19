@@ -1484,6 +1484,8 @@ static_library("browser") {
     "query_tiles/tile_background_task.h",
     "query_tiles/tile_service_factory.cc",
     "query_tiles/tile_service_factory.h",
+    "reading_list/reading_list_model_factory.cc",
+    "reading_list/reading_list_model_factory.h",
     "reduce_accept_language/reduce_accept_language_factory.cc",
     "reduce_accept_language/reduce_accept_language_factory.h",
     "renderer_context_menu/context_menu_content_type_factory.cc",
