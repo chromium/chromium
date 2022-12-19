@@ -64,6 +64,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // Initializes the permission prompt model as well as the permission request
   // manager and observes the prompt bubble.
@@ -94,6 +95,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void UpdateBrowser(Browser* browser) { browser_ = browser; }
 
   views::Widget* GetBubbleWidget();
+
+  PermissionPromptBubbleView* GetPromptBubbleView();
 
   bool should_expand_for_testing();
 
@@ -205,6 +208,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // A timer used to delay showing a prompt if a confirmation chip is being
   // displayed.
   base::OneShotTimer delay_prompt_timer_;
+
+  bool parent_was_visible_when_activation_changed_ = false;
 
   // The model of a permission prompt if one is present.
   std::unique_ptr<PermissionPromptChipModel> permission_prompt_model_;

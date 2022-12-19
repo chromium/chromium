@@ -57,6 +57,16 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
+  // Input protection is triggered upon prompt creation and updated on
+  // visibility changes. Other situations such as top window changes in certain
+  // situations should trigger the input protection manually by calling this
+  // method. Input protection protects against certain kinds of clickjacking.
+  // Essentially it prevents clicks that happen within a user's double click
+  // interval from when the protection is started as well as any following
+  // clicks that happen in shorter succession than the user's double click
+  // interval. Refer to InputEventActivationProtector for more information.
+  void TriggerInputProtection();
+
   void Layout() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(

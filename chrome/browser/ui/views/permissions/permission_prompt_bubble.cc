@@ -40,6 +40,8 @@ void PermissionPromptBubble::ShowBubble() {
       PermissionPromptStyle::kBubbleOnly);
   prompt_bubble_->Show();
   prompt_bubble_->GetWidget()->AddObserver(this);
+  parent_was_visible_when_activation_changed_ =
+      prompt_bubble_->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 }
 
 void PermissionPromptBubble::CleanUpPromptBubble() {
@@ -54,6 +56,19 @@ void PermissionPromptBubble::CleanUpPromptBubble() {
 void PermissionPromptBubble::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
+}
+
+void PermissionPromptBubble::OnWidgetActivationChanged(views::Widget* widget,
+                                                       bool active) {
+  // This logic prevents clickjacking. See https://crbug.com/1160485
+  if (active && !parent_was_visible_when_activation_changed_) {
+    // If the widget is active and the primary window wasn't active the last
+    // time activation changed, we know that the window just came to the
+    // foreground and trigger input protection.
+    prompt_bubble_->AsDialogDelegate()->TriggerInputProtection();
+  }
+  parent_was_visible_when_activation_changed_ =
+      prompt_bubble_->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 }
 
 bool PermissionPromptBubble::UpdateAnchor() {
