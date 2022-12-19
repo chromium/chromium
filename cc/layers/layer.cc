@@ -41,6 +41,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+#include "base/record_replay.h"
+
 namespace cc {
 
 struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
