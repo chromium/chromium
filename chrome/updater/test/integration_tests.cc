@@ -257,16 +257,17 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void RunWake(int exit_code) {
-    EXPECT_TRUE(WaitForUpdaterExit());
+    ASSERT_TRUE(WaitForUpdaterExit());
     test_commands_->RunWake(exit_code);
   }
 
   void RunWakeAll() {
-    EXPECT_TRUE(WaitForUpdaterExit());
+    ASSERT_TRUE(WaitForUpdaterExit());
     test_commands_->RunWakeAll();
   }
 
   void RunWakeActive(int exit_code) {
+    ASSERT_TRUE(WaitForUpdaterExit());
     test_commands_->RunWakeActive(exit_code);
   }
 
