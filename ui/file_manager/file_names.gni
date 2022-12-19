@@ -310,6 +310,7 @@ ts_templates = [
 
 ts_test_files = [
   # Containers
+  "file_manager/containers/breadcrumb_container_unittest.ts",
   "file_manager/containers/nudge_container_unittest.ts",
 
   # Lib:

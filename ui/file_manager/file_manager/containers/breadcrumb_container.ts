@@ -81,7 +81,8 @@ export class BreadcrumbContainer {
       this.container_.appendChild(breadcrumb);
     }
 
-    const path = pathComponents.map(p => p.label).join('/');
+    const path =
+        pathComponents.map(p => p.label.replace(/\//g, '%2F')).join('/');
     breadcrumb!.path = path;
     this.currentFileKey_ = key;
     this.pathKeys_ = pathComponents.map(p => p.key);

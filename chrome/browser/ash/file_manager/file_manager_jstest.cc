@@ -365,3 +365,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfIcon) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfPathDisplay) {
   RunTestURL("widgets/xf_path_display_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BreadcrumbContainer) {
+  RunTestURL("containers/breadcrumb_container_unittest.js");
+}
