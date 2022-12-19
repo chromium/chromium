@@ -15,21 +15,6 @@ class WebContents;
 
 namespace content_settings {
 
-// UMA histogram for the plugins broken puzzle piece. The enum values
-// correspond to histogram entries, so do not remove any existing values.
-enum PluginsAction {
-  PLUGINS_ACTION_TOTAL_NAVIGATIONS = 0,
-  PLUGINS_ACTION_DISPLAYED_BLOCKED_ICON_IN_OMNIBOX,
-  PLUGINS_ACTION_DISPLAYED_BUBBLE,
-  PLUGINS_ACTION_CLICKED_RUN_ALL_PLUGINS_THIS_TIME,
-  PLUGINS_ACTION_CLICKED_ALWAYS_ALLOW_PLUGINS_ON_ORIGIN,
-  PLUGINS_ACTION_CLICKED_MANAGE_PLUGIN_BLOCKING,
-  PLUGINS_ACTION_CLICKED_LEARN_MORE,
-  PLUGINS_ACTION_COUNT
-};
-
-void RecordPluginsAction(PluginsAction action);
-
 // UMA histogram for actions that a user can perform on the pop-up blocked page
 // action in the omnibox. The enum values correspond to histogram entries, so do
 // not remove any existing values.

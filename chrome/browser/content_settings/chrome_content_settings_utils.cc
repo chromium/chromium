@@ -20,11 +20,6 @@
 
 namespace content_settings {
 
-void RecordPluginsAction(PluginsAction action) {
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.Plugins", action,
-                            PLUGINS_ACTION_COUNT);
-}
-
 void RecordPopupsAction(PopupsAction action) {
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups", action,
                             POPUPS_ACTION_COUNT);

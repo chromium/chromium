@@ -18386,16 +18386,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Clicked 'Learn more'"/>
 </enum>
 
-<enum name="ContentSettingPluginsAction">
-  <int value="0" label="Total number of navigations"/>
-  <int value="1" label="Displayed plugin-blocked icon in Omnibox"/>
-  <int value="2" label="Displayed bubble"/>
-  <int value="3" label="Clicked 'Run all plugins this time'"/>
-  <int value="4" label="Clicked 'Always allow plugins on this origin'"/>
-  <int value="5" label="Clicked 'Manage plugin blocking'"/>
-  <int value="6" label="Clicked 'Learn more'"/>
-</enum>
-
 <enum name="ContentSettingPopupAction">
   <int value="0" label="Displayed popup-blocked icon in Omnibox"/>
   <int value="1" label="Displayed bubble"/>

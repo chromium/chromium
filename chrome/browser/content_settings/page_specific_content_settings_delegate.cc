@@ -305,11 +305,6 @@ void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
 void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
     content::Page& page) {
   ClearPendingProtocolHandler();
-
-  if (web_contents()->GetVisibleURL().SchemeIsHTTPOrHTTPS()) {
-    content_settings::RecordPluginsAction(
-        content_settings::PLUGINS_ACTION_TOTAL_NAVIGATIONS);
-  }
 }
 
 }  // namespace chrome

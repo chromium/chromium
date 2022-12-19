@@ -303,15 +303,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.Plugins" enum="ContentSettingPluginsAction"
-    expires_after="M77">
-  <owner>tommycli@chromium.org</owner>
-  <summary>
-    Tracks whether the plugin content blocked puzzle piece was shown in the
-    Omnibox, and how the user interacted with it.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.Popups" enum="ContentSettingPopupAction"
     expires_after="2023-06-04">
   <owner>charleszhao@chromium.org</owner>
