@@ -10,18 +10,7 @@ You will need:
 Then run:
 
 ```
-tools/binary_size/supersize console M97.size M98.size clang_roll.sizediff
-...
-  size_info1: Loaded from 97.size
-  size_info2: Loaded from 98.size
-  size_info3: Loaded from clang_roll.sizediff
-  size_info4: Loaded from clang_roll.sizediff
-
->>> d = Diff(size_info1, size_info2)
->>> d2 = Diff(size_info4, size_info3)  # Note reversed order.
->>> d.raw_symbols += d2.raw_symbols
->>> SaveDeltaSizeInfo(d, 'm97_m98_normalized.sizediff')
-Saved locally to m97_m98_normalized.sizediff. To share, run:
-> gsutil.py cp m97_m98_normalized.sizediff gs://chrome-supersize/private-oneoffs
-  Then view it at https://chrome-supersize.firebaseapp.com/viewer.html?load_url=https://storage.googleapis.com/chrome-supersize/private-oneoffs/m97_m98_normalized.sizediff
+tools/binary_size/create_patched_supersize_diff.py before_size.size load_size.size *.sizediff --output m97_m98_normalized.sizediff
 ```
+
+And then run the `gsutil.py` command that it prints out.
