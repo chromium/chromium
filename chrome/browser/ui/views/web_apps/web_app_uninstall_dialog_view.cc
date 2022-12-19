@@ -66,7 +66,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
-  app_start_url_ = provider->registrar().GetAppStartUrl(app_id_);
+  app_start_url_ = provider->registrar_unsafe().GetAppStartUrl(app_id_);
   DCHECK(!app_start_url_.is_empty());
   DCHECK(app_start_url_.is_valid());
 
@@ -84,7 +84,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   SetShowIcon(true);
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
-      base::UTF8ToUTF16(provider->registrar().GetAppShortName(app_id_))));
+      base::UTF8ToUTF16(
+          provider->registrar_unsafe().GetAppShortName(app_id_))));
 
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -111,7 +112,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   // For IWAs checkbox will not be displayed, removal of
   // storage is automatically enforced.
-  if (!provider->registrar().IsIsolated(app_id_)) {
+  if (!provider->registrar_unsafe().IsIsolated(app_id_)) {
     std::u16string checkbox_label = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
         url_formatter::FormatUrlForSecurityDisplay(
@@ -136,7 +137,7 @@ void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
-  bool is_isolated_web_app = provider->registrar().IsIsolated(app_id_);
+  bool is_isolated_web_app = provider->registrar_unsafe().IsIsolated(app_id_);
 
   HistogramCloseAction action =
       is_isolated_web_app || (checkbox_ && checkbox_->GetChecked())
@@ -251,7 +252,7 @@ void WebAppUninstallDialogViews::ConfirmUninstall(
 
   provider->icon_manager().ReadIcons(
       app_id, IconPurpose::ANY,
-      provider->registrar().GetAppDownloadedIconSizesAny(app_id),
+      provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id),
       base::BindOnce(&WebAppUninstallDialogViews::OnIconsRead,
                      weak_ptr_factory_.GetWeakPtr(), uninstall_source));
 }

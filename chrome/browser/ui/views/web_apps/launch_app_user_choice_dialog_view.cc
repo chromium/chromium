@@ -119,7 +119,7 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
   {
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(profile_);
-    web_app::WebAppRegistrar& registrar = provider->registrar();
+    web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
     auto app_info_view = std::make_unique<views::View>();
     int icon_label_spacing = layout_provider->GetDistanceMetric(
         views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
@@ -129,7 +129,7 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
 
     provider->icon_manager().ReadIcons(
         app_id_, IconPurpose::ANY,
-        provider->registrar().GetAppDownloadedIconSizesAny(app_id_),
+        provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id_),
         base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconsRead,
                        weak_ptr_factory_.GetWeakPtr()));
     icon_image_view_ =

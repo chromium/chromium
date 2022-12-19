@@ -113,7 +113,7 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
 
   const WebApp* GetApp() {
     return WebAppProvider::GetForTest(browser()->profile())
-        ->registrar()
+        ->registrar_unsafe()
         .GetAppById(app_id_);
   }
 
