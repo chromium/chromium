@@ -3832,11 +3832,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "force-major-version-to-minor",
-    "owners": [ "brgoldstein", "potassium-katabolism@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir" ],
     "expiry_milestone": 111

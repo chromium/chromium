@@ -8440,12 +8440,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
 
-    {"force-major-version-to-minor",
-     flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentName,
-     flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kForceMajorVersionInMinorPositionInUserAgent)},
     {"autofill-enable-offer-notification-for-promo-codes",
      flag_descriptions::kAutofillEnableOfferNotificationForPromoCodesName,
      flag_descriptions::

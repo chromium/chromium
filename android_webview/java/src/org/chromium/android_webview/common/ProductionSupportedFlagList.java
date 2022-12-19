@@ -217,9 +217,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
                     "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                             + " directly."),
-            Flag.baseFeature(BlinkFeatures.FORCE_MAJOR_VERSION_IN_MINOR_POSITION_IN_USER_AGENT,
-                    "Force the Chrome major version number to 99 and put the major version"
-                            + " number in the minor version position in the User-Agent string."),
             Flag.baseFeature(NetFeatures.OPTIMIZE_NETWORK_BUFFERS,
                     "Optimizes buffer size for reading from the network or InputStream."),
             Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,

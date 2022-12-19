@@ -3307,14 +3307,6 @@ const char kExtensionWorkflowJustificationDescription[] =
     "Enables users to justify their extension requests by causing a text field "
     "to appear on the extension request dialog.";
 
-const char kForceMajorVersionInMinorPositionInUserAgentName[] =
-    "Put major version in minor version position in User-Agent";
-const char kForceMajorVersionInMinorPositionInUserAgentDescription[] =
-    "Lock the Chrome major version in the User-Agent string to 99, and "
-    "force the major version number to the minor version position. This "
-    "flag is a backup plan for unexpected site-compatibility breakage with "
-    "a three digit major version.";
-
 const char kDurableClientHintsCacheName[] = "Persistent client hints";
 const char kDurableClientHintsCacheDescription[] =
     "Persist the client hints cache beyond browser restarts.";
