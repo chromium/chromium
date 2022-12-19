@@ -256,13 +256,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void GetAuthenticationTypeForVirtualCard(bool fido_auth_enabled);
   void GetAuthenticationTypeForMaskedServerCard(bool fido_auth_enabled);
 
-  // Function invoked when the flow type of the authentication is decided. Also
-  // logs authentication type.
-  void OnDidGetAuthenticationType(UnmaskAuthFlowType unmask_auth_flow_type);
-
   // Starts the authentication process and delegates the task to authenticators
-  // based on the |unmask_auth_flow_type_|.
-  void Authenticate();
+  // based on the `unmask_auth_flow_type`. Also logs authentication type if
+  // FIDO auth was suggested.
+  void Authenticate(UnmaskAuthFlowType unmask_auth_flow_type);
 
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuth() const override;

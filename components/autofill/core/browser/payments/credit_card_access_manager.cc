@@ -352,7 +352,7 @@ void CreditCardAccessManager::GetAuthenticationType(bool fido_auth_enabled) {
 #if BUILDFLAG(IS_IOS)
   // There is no FIDO auth available on iOS and there are no virtual cards on
   // iOS either, so offer CVC auth immediately.
-  OnDidGetAuthenticationType(UnmaskAuthFlowType::kCvc);
+  Authenticate(UnmaskAuthFlowType::kCvc);
 #else
   if (card_->record_type() == CreditCard::VIRTUAL_CARD)
     GetAuthenticationTypeForVirtualCard(fido_auth_enabled);
@@ -370,7 +370,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     ShowVerifyPendingDialog();
 #endif
-    OnDidGetAuthenticationType(UnmaskAuthFlowType::kFido);
+    Authenticate(UnmaskAuthFlowType::kFido);
     return;
   }
 
@@ -398,7 +398,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
   if (challenge_options.size() == 1 &&
       challenge_options[0].type == CardUnmaskChallengeOptionType::kCvc) {
     selected_challenge_option_ = &challenge_options[0];
-    OnDidGetAuthenticationType(UnmaskAuthFlowType::kCvc);
+    Authenticate(UnmaskAuthFlowType::kCvc);
     return;
   }
 
@@ -433,38 +433,13 @@ void CreditCardAccessManager::GetAuthenticationTypeForMaskedServerCard(
   }
 #endif
 
-  OnDidGetAuthenticationType(flow_type);
+  Authenticate(flow_type);
 }
 
-void CreditCardAccessManager::OnDidGetAuthenticationType(
+void CreditCardAccessManager::Authenticate(
     UnmaskAuthFlowType unmask_auth_flow_type) {
   unmask_auth_flow_type_ = unmask_auth_flow_type;
 
-  // If FIDO auth was suggested, log which authentication method was
-  // actually used.
-  switch (unmask_auth_flow_type_) {
-    case UnmaskAuthFlowType::kFido:
-      AutofillMetrics::LogCardUnmaskTypeDecision(
-          AutofillMetrics::CardUnmaskTypeDecisionMetric::kFidoOnly);
-      break;
-    case UnmaskAuthFlowType::kCvcThenFido:
-      AutofillMetrics::LogCardUnmaskTypeDecision(
-          AutofillMetrics::CardUnmaskTypeDecisionMetric::kCvcThenFido);
-      break;
-    case UnmaskAuthFlowType::kCvc:
-    case UnmaskAuthFlowType::kOtp:
-    case UnmaskAuthFlowType::kOtpFallbackFromFido:
-      break;
-    case UnmaskAuthFlowType::kNone:
-    case UnmaskAuthFlowType::kCvcFallbackFromFido:
-      NOTREACHED();
-      break;
-  }
-
-  Authenticate();
-}
-
-void CreditCardAccessManager::Authenticate() {
   // Reset now that we have started authentication.
   ready_to_start_authentication_.Reset();
   unmask_details_request_in_progress_ = false;
@@ -472,8 +447,12 @@ void CreditCardAccessManager::Authenticate() {
   form_event_logger_->LogCardUnmaskAuthenticationPromptShown(
       unmask_auth_flow_type_);
 
+  // If FIDO auth was suggested, log which authentication method was
+  // actually used.
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kFido: {
+      AutofillMetrics::LogCardUnmaskTypeDecision(
+          AutofillMetrics::CardUnmaskTypeDecisionMetric::kFidoOnly);
 #if BUILDFLAG(IS_IOS)
       NOTREACHED();
 #else
@@ -506,6 +485,9 @@ void CreditCardAccessManager::Authenticate() {
       break;
     }
     case UnmaskAuthFlowType::kCvcThenFido:
+      AutofillMetrics::LogCardUnmaskTypeDecision(
+          AutofillMetrics::CardUnmaskTypeDecisionMetric::kCvcThenFido);
+      ABSL_FALLTHROUGH_INTENDED;
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido: {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -702,8 +684,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
       GetAuthenticationTypeForVirtualCard(/*fido_auth_enabled=*/false);
     } else {
-      unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
-      Authenticate();
+      Authenticate(UnmaskAuthFlowType::kCvcFallbackFromFido);
     }
   }
 }
@@ -1172,7 +1153,7 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
       NOTREACHED();
       break;
   }
-  OnDidGetAuthenticationType(selected_authentication_type);
+  Authenticate(selected_authentication_type);
 }
 
 void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
