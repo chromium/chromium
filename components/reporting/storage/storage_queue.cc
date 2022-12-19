@@ -203,7 +203,6 @@ StorageQueue::StorageQueue(
       encryption_module_(encryption_module),
       compression_module_(compression_module) {
   DETACH_FROM_SEQUENCE(storage_queue_sequence_checker_);
-  DCHECK(write_contexts_queue_.empty());
 }
 
 StorageQueue::~StorageQueue() {
@@ -2133,9 +2132,7 @@ void StorageQueue::RegisterCompletionCallback(base::OnceClosure callback) {
 }
 
 void StorageQueue::TestInjectErrorsForOperation(
-    base::RepeatingCallback<
-        Status(test::StorageQueueOperationKind operation_kind, int64_t)>
-        handler) {
+    test::ErrorInjectionHandlerType handler) {
   test_injection_handler_ = handler;
 }
 

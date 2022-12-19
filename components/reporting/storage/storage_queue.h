@@ -52,6 +52,9 @@ enum class StorageQueueOperationKind {
   kWriteLowDiskSpace,
 };
 
+using ErrorInjectionHandlerType =
+    base::RepeatingCallback<Status(test::StorageQueueOperationKind, int64_t)>;
+
 }  // namespace test
 
 // Storage queue represents single queue of data to be collected and stored
@@ -142,8 +145,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // can be returned as a resulting operation status too.
   // If `handler` is null, error injections is disabled.
   void TestInjectErrorsForOperation(
-      base::RepeatingCallback<Status(test::StorageQueueOperationKind, int64_t)>
-          handler = decltype(handler)());
+      test::ErrorInjectionHandlerType handler = base::NullCallback());
 
   // Access queue options.
   const QueueOptions& options() const { return options_; }
@@ -492,8 +494,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Test only: records callback to be invoked. It will be called with operation
   // kind and seq id, and will return Status (non-OK status indicates the
   // failure to be injected). In production code must be null.
-  base::RepeatingCallback<Status(test::StorageQueueOperationKind, int64_t)>
-      test_injection_handler_;
+  test::ErrorInjectionHandlerType test_injection_handler_{base::NullCallback()};
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<StorageQueue> weakptr_factory_{this};
