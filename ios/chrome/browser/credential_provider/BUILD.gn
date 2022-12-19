@@ -79,6 +79,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/common",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/variations:test_support",
       "//ios/chrome/browser/browser_state:test_support",
       "//ios/chrome/browser/favicon",
       "//ios/chrome/browser/history",

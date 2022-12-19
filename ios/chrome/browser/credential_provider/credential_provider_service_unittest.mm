@@ -17,6 +17,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -135,6 +136,8 @@ class CredentialProviderServiceTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   scoped_refptr<PasswordStore> password_store_;
   id<CredentialStore> credential_store_;
