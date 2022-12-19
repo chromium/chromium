@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
-import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -510,7 +509,6 @@ public class FeedSurfaceCoordinator
         // Destroy mediator after all other related controller/processors are destroyed.
         mMediator.destroy();
 
-        maybeClearImageMemoryCache();
         FeedSurfaceTracker.getInstance().untrackSurface(this);
         if (mHybridListRenderer != null) {
             mHybridListRenderer.unbind();
@@ -1086,19 +1084,6 @@ public class FeedSurfaceCoordinator
 
     public boolean isLoadingFeed() {
         return mMediator.isLoadingFeed();
-    }
-
-    // Clear the memory cache if the FEED_CLEAR_IMAGE_MEMORY_CACHE flag is enabled.
-    private void maybeClearImageMemoryCache() {
-        ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
-        if (processScope != null) {
-            ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
-            if (imageCacheHelper != null
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.FEED_CLEAR_IMAGE_MEMORY_CACHE)) {
-                imageCacheHelper.clearMemoryCache();
-            }
-        }
     }
 
     private int getLateralPaddingsPx() {

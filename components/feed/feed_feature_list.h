@@ -76,10 +76,6 @@ extern const base::FeatureParam<bool>
 // percentage of the maximum size calculated for the device.
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-// Feature that enables clearing the image memory cache when the feed is
-// destroyed.
-BASE_DECLARE_FEATURE(kFeedClearImageMemoryCache);
-
 // Feature that enables showing a callout to help users return to the top of the
 // feeds quickly.
 BASE_DECLARE_FEATURE(kFeedBackToTop);

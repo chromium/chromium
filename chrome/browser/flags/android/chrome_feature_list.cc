@@ -140,7 +140,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_guide::features::kSkipCheckForLowEngagedUsers,
     &feed::kClientGoodVisits,
     &feed::kFeedBackToTop,
-    &feed::kFeedClearImageMemoryCache,
     &feed::kFeedHeaderStickToTop,
     &feed::kFeedImageMemoryCacheSizePercentage,
     &feed::kFeedInteractiveRefresh,
