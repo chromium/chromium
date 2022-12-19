@@ -593,26 +593,20 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   return view;
 }
 
-// TODO(crbug/307350): Revise this later to show a specific message for each
+// TODO(crbug/301568): Revise this later to show a specific message for each
 // error.
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewError() {
-  auto translate_options_button =
-      std::make_unique<views::MdTextButtonWithDownArrow>(
-          views::Button::PressedCallback(),
-          l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
-  translate_options_button->SetCallback(base::BindRepeating(
-      &PartialTranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
-      base::Unretained(translate_options_button.get())));
-  std::u16string translate_options_button_label(
-      l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
-  translate_options_button->SetAccessibleName(translate_options_button_label);
-  translate_options_button->SetTooltipText(translate_options_button_label);
-  translate_options_button->SetRequestFocusOnPress(true);
-  return CreateViewErrorNoTitle(std::move(translate_options_button));
+  auto full_page_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&PartialTranslateBubbleView::TranslateFullPage,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_PARTIAL_TRANSLATE_BUBBLE_TRANSLATE_FULL_PAGE));
+  full_page_button->SetID(BUTTON_ID_FULL_PAGE_TRANSLATE);
+  return CreateViewErrorNoTitle(std::move(full_page_button));
 }
 
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
-    std::unique_ptr<views::Button> advanced_button) {
+    std::unique_ptr<views::Button> button) {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto view = std::make_unique<views::View>();
   views::BoxLayout* layout =
@@ -661,7 +655,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
       l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_TRY_AGAIN));
   try_again_button->SetID(BUTTON_ID_TRY_AGAIN);
   button_row->AddChildView(std::move(try_again_button));
-  button_row->AddChildView(std::move(advanced_button));
+  button_row->AddChildView(std::move(button));
   view->AddChildView(std::move(button_row));
 
   return view;

@@ -152,7 +152,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Creates the 'error' view skeleton UI with no title.
   std::unique_ptr<views::View> CreateViewErrorNoTitle(
-      std::unique_ptr<views::Button> advanced_button);
+      std::unique_ptr<views::Button> button);
 
   // Creates the 'waiting' view that shows an empty bubble with a throbber.
   std::unique_ptr<views::View> CreateViewWaiting();
