@@ -244,8 +244,30 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLsWithRelativeTo) {
   // Document base URL.
   execution_context()->SetURL(KURL("https://document.com/foo/"));
 
-  // "relative_to" only affects relative URLs: "bar" and "/baz".
+  // "relative_to": "ruleset" is an allowed value and results in default
+  // behaviour.
   auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": [
+            "bar",
+            "/baz",
+            "//example.org/",
+            "http://example.net/"
+          ],
+          "relative_to": "ruleset"
+        }]
+      })",
+      KURL("https://example.com/foo/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs(
+                  "https://example.com/foo/bar", "https://example.com/baz",
+                  "https://example.org/", "http://example.net/")));
+
+  // "relative_to": "document" only affects relative URLs: "bar" and "/baz".
+  rule_set = CreateRuleSet(
       R"({
         "prefetch": [{
           "source": "list",
@@ -1263,6 +1285,13 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
   EXPECT_THAT(nested_relative_to,
               Or({Href({URLPattern("http://bar.com/hello")}),
                   Neg(Href({URLPattern("http://foo.com/world")}))}));
+
+  auto* relative_to_ruleset = CreatePredicate(R"(
+        "href_matches": {"pathname": "/hello"},
+        "relative_to": "ruleset"
+      )",
+                                              KURL("http://foo.com"));
+  EXPECT_THAT(relative_to_ruleset, Href({URLPattern("http://foo.com/hello")}));
 }
 
 TEST_F(DocumentRulesTest, DropInvalidRules) {

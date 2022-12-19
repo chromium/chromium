@@ -89,17 +89,21 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
     // For now, use the given base URL to construct the list rules.
     KURL base_url_to_parse = base_url;
-    // If "relative_to" is present:
+    //  If input["relative_to"] exists:
     if (JSONValue* relative_to = input->Get("relative_to")) {
-      // If the value of "relative_to" is not a string, or the string value is
-      // not "document", the ruleset is invalid.
-      if (String value; !relative_to_enabled ||
-                        !relative_to->AsString(&value) || value != "document") {
+      const char* const kKnownRelativeToValues[] = {"ruleset", "document"};
+      String value;
+      // If relativeTo is neither the string "ruleset" nor the string
+      // "document", then return null.
+      if (!relative_to_enabled || !relative_to->AsString(&value) ||
+          !base::Contains(kKnownRelativeToValues, value)) {
         return nullptr;
       }
-      // If "relative_to": "document" is present, use the document's base URL to
-      // construct the list rules.
-      base_url_to_parse = context->BaseURL();
+      // If relativeTo is "document", then set baseURL to the document's
+      // document base URL.
+      if (value == "document") {
+        base_url_to_parse = context->BaseURL();
+      }
     }
 
     // Let urls be an empty list.

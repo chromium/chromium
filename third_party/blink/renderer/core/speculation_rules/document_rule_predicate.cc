@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -362,16 +363,20 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       if (key == "href_matches") {
         // This is always expected.
       } else if (key == "relative_to") {
-        // If "relative_to" is present, its value must be "document".
+        const char* const kKnownRelativeToValues[] = {"ruleset", "document"};
         String relative_to;
+        // If relativeTo is neither the string "ruleset" nor the string
+        // "document", then return null.
         if (!relative_to_enabled ||
             !input->GetString("relative_to", &relative_to) ||
-            relative_to != "document") {
+            !base::Contains(kKnownRelativeToValues, relative_to)) {
           return nullptr;
         }
-        // If "relative_to" is present and its value is "document", use the
-        // document's base url as the base url for prefetch rules.
-        base_url = execution_context->BaseURL();
+        // If relativeTo is "document", set baseURL to the document's
+        // document base URL.
+        if (relative_to == "document") {
+          base_url = execution_context->BaseURL();
+        }
       } else {
         // Otherwise, this is an unrecognized key. The predicate is invalid.
         return nullptr;
