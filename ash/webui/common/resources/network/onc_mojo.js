@@ -383,6 +383,8 @@ export class OncMojo {
         return 'L2TP-IPsec';
       case VpnType.kOpenVPN:
         return 'OpenVPN';
+      case VpnType.kWireGuard:
+        return 'WireGuardVPN';
       case VpnType.kExtension:
         return 'ThirdPartyVPN';
       case VpnType.kArc:

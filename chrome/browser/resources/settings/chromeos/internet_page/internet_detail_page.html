@@ -450,11 +450,11 @@
           <!-- IP Config, Nameservers -->
           <template is="dom-if"
               if="[[isRememberedOrConnected_(managedProperties_)]]">
-            <network-ip-config on-ip-change="onIPConfigChange_"
+            <network-ip-config on-ip-change="onIpConfigChange_"
                 managed-properties="[[managedProperties_]]"
                 disabled="[[disabled_]]">
             </network-ip-config>
-            <network-nameservers on-nameservers-change="onIPConfigChange_"
+            <network-nameservers on-nameservers-change="onIpConfigChange_"
                 managed-properties="[[managedProperties_]]"
                 disabled="[[disabled_]]">
             </network-nameservers>

@@ -14,10 +14,6 @@ js_type_check("closure_compile_module") {
     ":apn_subpage",
     ":hotspot_subpage",
     ":hotspot_summary_item",
-    ":internet_config",
-    ":internet_detail_menu",
-    ":internet_detail_page",
-    ":internet_known_networks_page",
     ":internet_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
@@ -53,110 +49,8 @@ js_library("hotspot_summary_item") {
   externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
 }
 
-js_library("internet_config") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:util",
-    "//ash/webui/common/resources/network:network_config",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("internet_detail_menu") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//ash/webui/common/resources/cellular_setup:esim_manager_listener_behavior",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
-  ]
-}
-
-js_library("internet_detail_page") {
-  deps = [
-    ":internet_page_browser_proxy",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources/network:cr_policy_network_indicator_mojo",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_apnlist",
-    "//ash/webui/common/resources/network:network_choose_mobile",
-    "//ash/webui/common/resources/network:network_config_toggle",
-    "//ash/webui/common/resources/network:network_icon",
-    "//ash/webui/common/resources/network:network_ip_config",
-    "//ash/webui/common/resources/network:network_listener_behavior",
-    "//ash/webui/common/resources/network:network_nameservers",
-    "//ash/webui/common/resources/network:network_property_list_mojo",
-    "//ash/webui/common/resources/network:network_siminfo",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//ash/webui/common/resources/network_health:network_health_container",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "../settings_controls_types.js",
-    "$externs_path/settings_private.js",
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-    "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
-}
-
-js_library("internet_known_networks_page") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_listener_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
-  ]
-}
-
 js_library("internet_page") {
   deps = [
-    ":internet_config",
-    ":internet_detail_page",
-    ":internet_known_networks_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
     "//ash/webui/common/resources:i18n_behavior",
@@ -180,12 +74,14 @@ js_library("internet_page") {
   ]
   externs_list = [
     "../settings_controls_types.js",
+    "$externs_path/settings_private.js",
     "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js",
     "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
   ]
 }
 
 js_library("internet_page_browser_proxy") {
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("internet_subpage") {
@@ -227,10 +123,6 @@ html_to_js("web_components") {
     "apn_subpage.js",
     "hotspot_subpage.js",
     "hotspot_summary_item.js",
-    "internet_config.js",
-    "internet_detail_menu.js",
-    "internet_detail_page.js",
-    "internet_known_networks_page.js",
     "internet_page.js",
     "internet_subpage.js",
   ]

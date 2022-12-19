@@ -12,37 +12,41 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './internet_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {HTMLEscape} from 'chrome://resources/ash/common/util.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const InternetConfigElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {getTemplate} from './internet_config.html.js';
 
-/** @polymer */
+export interface InternetConfigElement {
+  $: {
+    dialog: CrDialogElement,
+    networkConfig: NetworkConfigElement,
+  };
+}
+
+const InternetConfigElementBase = I18nMixin(PolymerElement);
+
 export class InternetConfigElement extends InternetConfigElementBase {
   static get is() {
-    return 'internet-config';
+    return 'internet-config' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       shareAllowEnable_: {
         type: Boolean,
         value() {
@@ -50,7 +54,6 @@ export class InternetConfigElement extends InternetConfigElementBase {
         },
       },
 
-      /** @private */
       shareDefault_: {
         type: Boolean,
         value() {
@@ -84,15 +87,12 @@ export class InternetConfigElement extends InternetConfigElementBase {
        */
       showConnect: Boolean,
 
-      /** @private */
       enableConnect_: Boolean,
 
-      /** @private */
       enableSave_: Boolean,
 
       /**
        * Set by network-config when a configuration error occurs.
-       * @private
        */
       error_: {
         type: String,
@@ -101,8 +101,18 @@ export class InternetConfigElement extends InternetConfigElementBase {
     };
   }
 
-  open() {
-    const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
+  guid: string;
+  name: string;
+  showConnect: boolean;
+  type: string;
+  private enableConnect_: boolean;
+  private enableSave_: boolean;
+  private error_: string;
+  private shareAllowEnable_: boolean;
+  private shareDefault_: boolean;
+
+  open(): void {
+    const dialog = this.$.dialog;
     if (!dialog.open) {
       dialog.showModal();
     }
@@ -110,26 +120,18 @@ export class InternetConfigElement extends InternetConfigElementBase {
     this.$.networkConfig.init();
   }
 
-  close() {
-    const dialog = /** @type {!CrDialogElement} */ (this.$.dialog);
+  close(): void {
+    const dialog = this.$.dialog;
     if (dialog.open) {
       dialog.close();
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onClose_(event) {
+  private onClose_(): void {
     this.close();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDialogTitle_() {
+  private getDialogTitle_(): string {
     if (this.name && !this.showConnect) {
       return this.i18n('internetConfigName', HTMLEscape(this.name));
     }
@@ -137,51 +139,51 @@ export class InternetConfigElement extends InternetConfigElementBase {
     return this.i18n('internetJoinType', type);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getError_() {
+  private getError_(): string {
     if (this.i18nExists(this.error_)) {
       return this.i18n(this.error_);
     }
     return this.i18n('networkErrorUnknown');
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_(): void {
     this.close();
   }
 
   /**
    * Note that onSaveTap_ will only be called if the user explicitly clicks
    * on the 'Save' button.
-   * @private
    */
-  onSaveTap_() {
-    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).save();
+  private onSaveTap_(): void {
+    this.$.networkConfig.save();
   }
 
   /**
    * Note that onConnectTap_ will only be called if the user explicitly clicks
    * on the 'Connect' button.
-   * @private
    */
-  onConnectTap_() {
-    /** @type {!NetworkConfigElement} */ (this.$.networkConfig).connect();
+  private onConnectTap_(): void {
+    this.$.networkConfig.connect();
   }
 
   /**
    * A connect or save may be initiated within the NetworkConfigElement instead
    * of onConnectTap_() or onSaveTap_() (e.g on an enter event).
-   * @private
    */
-  onPropertiesSet_() {
+  private onPropertiesSet_(): void {
     if (this.type === OncMojo.getNetworkTypeString(NetworkType.kWiFi)) {
-      recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
+      recordSettingChange(
+          Setting.kWifiAddNetwork,
+          {stringValue: this.guid} as SettingChangeValue);
     } else {
       recordSettingChange();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [InternetConfigElement.is]: InternetConfigElement;
   }
 }
 

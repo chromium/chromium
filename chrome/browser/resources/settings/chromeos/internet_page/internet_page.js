@@ -23,6 +23,7 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../os_settings_icons.css.js';
 import './cellular_setup_dialog.js';
+import './internet_config.js';
 import './internet_detail_menu.js';
 import './internet_detail_page.js';
 import './internet_known_networks_page.js';
@@ -54,7 +55,6 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 import {Route, Router} from '../router.js';
 
 import {ApnSubpageElement} from './apn_subpage';
-import {InternetConfigElement} from './internet_config.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
 // TODO(crbug/1315757) The following type definitions are only needed for
@@ -77,6 +77,21 @@ function NetworkSummaryElement() {}
  * @return {?NetworkSummaryItemElement}
  */
 NetworkSummaryElement.prototype.getNetworkRow = function(networkType) {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function InternetConfigElement() {}
+/** @type {string} */
+InternetConfigElement.prototype.guid;
+/** @type {string} */
+InternetConfigElement.prototype.name;
+/** @type {boolean} */
+InternetConfigElement.prototype.showConnect;
+/** @type {string} */
+InternetConfigElement.prototype.type;
+InternetConfigElement.prototype.open = function() {};
 
 /** @type {number} */
 const ESIM_PROFILE_LIMIT = 5;
