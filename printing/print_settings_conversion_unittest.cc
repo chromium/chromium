@@ -95,15 +95,13 @@ const char kPrinterSettingsWithImageableArea[] = R"({
 }  // namespace
 
 TEST(PrintSettingsConversionTest, InvalidSettings) {
-  base::Value value = base::test::ParseJson("{}");
-  ASSERT_TRUE(value.is_dict());
-  EXPECT_FALSE(PrintSettingsFromJobSettings(value.GetDict()));
+  base::Value::Dict dict = base::test::ParseJsonDict("{}");
+  ASSERT_TRUE(dict.empty());
+  EXPECT_FALSE(PrintSettingsFromJobSettings(dict));
 }
 
 TEST(PrintSettingsConversionTest, Conversion) {
-  base::Value value = base::test::ParseJson(kPrinterSettings);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -148,9 +146,8 @@ TEST(PrintSettingsConversionTest, WithValidImageableArea) {
   static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 2126, 3496};
 #endif
 
-  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->dpi_horizontal(), 300);
@@ -169,9 +166,8 @@ TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
   static constexpr gfx::Rect kExpectedPrintableArea{0, 354, 3496, 2126};
 #endif
 
-  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   dict.Set("landscape", true);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -181,9 +177,8 @@ TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
 }
 
 TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
-  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   auto* media_size_dict = dict.FindDict("mediaSize");
   ASSERT_TRUE(media_size_dict);
   media_size_dict->Set("imageable_area_left_microns", -500);
@@ -194,9 +189,8 @@ TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
 }
 
 TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
-  base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   auto* media_size_dict = dict.FindDict("mediaSize");
   ASSERT_TRUE(media_size_dict);
   media_size_dict->Remove("imageable_area_left_microns");
@@ -207,18 +201,14 @@ TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
 }
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {
-  base::Value value = base::test::ParseJson(kPrinterSettings);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
-  dict.Remove("deviceName");
+  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
+  EXPECT_TRUE(dict.Remove("deviceName"));
   EXPECT_FALSE(PrintSettingsFromJobSettings(dict));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintSettingsConversionTest, DontSendUsername) {
-  base::Value value = base::test::ParseJson(kPrinterSettings);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
   dict.Set(kSettingSendUserInfo, false);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -229,9 +219,7 @@ TEST(PrintSettingsConversionTest, DontSendUsername) {
 
 #if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS))
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
-  base::Value value = base::test::ParseJson(kPrinterSettings);
-  ASSERT_TRUE(value.is_dict());
-  auto& dict = value.GetDict();
+  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
 
   {
     base::Value::Dict advanced_attributes;
