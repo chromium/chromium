@@ -331,6 +331,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
   def __init__(self, *args, **kwargs):
     super(ChromeDriverBaseTest, self).__init__(*args, **kwargs)
     self._drivers = []
+    self.maxDiff = None
 
   def tearDown(self):
     for driver in self._drivers:
