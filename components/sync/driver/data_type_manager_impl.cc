@@ -623,8 +623,15 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   configurer_->DisconnectDataType(type);
   configured_proxy_types_.Remove(type);
 
+  // If the type is newly-failed (i.e. has not already failed before), then
+  // reconfigure.
+  bool should_reconfigure =
+      error.IsSet() && !data_type_status_table_.GetFailedTypes().Has(type);
   if (error.IsSet()) {
+    // Update the status table with the new error either way.
     data_type_status_table_.UpdateFailedDataType(type, error);
+  }
+  if (should_reconfigure) {
     needs_reconfigure_ = true;
     last_requested_context_.reason =
         GetReasonForProgrammaticReconfigure(last_requested_context_.reason);

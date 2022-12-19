@@ -28,7 +28,8 @@ class ModelLoadManagerDelegate {
 
   // Called when the ModelLoadManager has decided it must stop |type|, likely
   // because it is no longer a desired data type, sync is shutting down, or some
-  // error occurred during loading.
+  // error occurred during loading. Can be called for types that are not
+  // connected or have already failed.
   virtual void OnSingleDataTypeWillStop(ModelType type,
                                         const SyncError& error) = 0;
 

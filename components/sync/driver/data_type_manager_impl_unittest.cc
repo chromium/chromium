@@ -1638,4 +1638,28 @@ TEST_F(SyncDataTypeManagerImplTest, ProvideDebugInfo) {
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 
+TEST_F(SyncDataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
+  // Bring the type to FAILED state.
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "test error"));
+
+  // Bookmarks is never started due to hitting a model load error.
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(
+      DataTypeManager::OK,
+      BuildStatusTable(ModelTypeSet(),
+                       /*datatype_errors=*/ModelTypeSet(BOOKMARKS),
+                       ModelTypeSet()));
+  Configure(ModelTypeSet(BOOKMARKS));
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // No need to finish the download of BOOKMARKS since it was never started.
+  ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
+
+  dtm_->OnSingleDataTypeWillStop(
+      BOOKMARKS,
+      SyncError(FROM_HERE, SyncError::DATATYPE_ERROR, "Test error", BOOKMARKS));
+  EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
+}
+
 }  // namespace syncer
