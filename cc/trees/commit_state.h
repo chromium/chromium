@@ -150,7 +150,7 @@ struct CC_EXPORT CommitState {
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
   PropertyTreesChangeState property_trees_change_state;
-  base::flat_set<Layer*> layers_that_should_push_properties;
+  base::flat_set<Layer*, CompareLayersById> layers_that_should_push_properties;
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {

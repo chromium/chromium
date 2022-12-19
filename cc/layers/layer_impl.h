@@ -592,6 +592,16 @@ class CC_EXPORT LayerImpl {
   bool has_transform_node_ : 1;
 };
 
+// stl comparator that compares LayerImpl by ID. Used when recording/replaying
+// to get a deterministic sort order.
+struct CompareLayerImplsById {
+  bool operator()(const LayerImpl* a, const LayerImpl* b) const {
+    return a->id() < b->id();
+  }
+};
+
+typedef base::flat_set<LayerImpl*, CompareLayerImplsById> LayerImplSet;
+
 }  // namespace cc
 
 #endif  // CC_LAYERS_LAYER_IMPL_H_
