@@ -892,7 +892,7 @@ class TestNativeWidgetAura : public NativeWidgetAura {
 // crash.
 class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
  public:
-  NativeWidgetAuraWithNoDelegateTest() : widget(std::make_unique<Widget>()) {}
+  NativeWidgetAuraWithNoDelegateTest() = default;
 
   NativeWidgetAuraWithNoDelegateTest(
       const NativeWidgetAuraWithNoDelegateTest&) = delete;
@@ -904,138 +904,140 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
   // testing::Test overrides:
   void SetUp() override {
     NativeWidgetAuraTest::SetUp();
-    native_widget = new TestNativeWidgetAura(widget.get());
+    Widget widget;
+    native_widget_ = new TestNativeWidgetAura(&widget);
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
-    params.native_widget = native_widget;
-    widget->Init(std::move(params));
-    widget->Show();
+    params.native_widget = native_widget_;
+    widget.Init(std::move(params));
+    widget.Show();
+    // Notify all widget observers that the widget is destroying so they can
+    // unregister properly and clear the pointer to the widget.
+    widget.OnNativeWidgetDestroying();
     // Widget will create a DefaultWidgetDelegate if no delegates are provided.
     // Call Widget::OnNativeWidgetDestroyed() to destroy
     // the WidgetDelegate properly.
-    widget->OnNativeWidgetDestroyed();
-    widget.reset();
+    widget.OnNativeWidgetDestroyed();
   }
 
   void TearDown() override {
-    native_widget->CloseNow();
+    native_widget_->CloseNow();
     ViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<Widget> widget;
-  raw_ptr<TestNativeWidgetAura> native_widget;
+  raw_ptr<TestNativeWidgetAura> native_widget_;
 };
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {
   SkPath mask;
-  native_widget->GetHitTestMask(&mask);
+  native_widget_->GetHitTestMask(&mask);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetMaximumSizeTest) {
-  native_widget->GetMaximumSize();
+  native_widget_->GetMaximumSize();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetMinimumSizeTest) {
-  native_widget->GetMinimumSize();
+  native_widget_->GetMinimumSize();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetNonClientComponentTest) {
-  native_widget->GetNonClientComponent(gfx::Point());
+  native_widget_->GetNonClientComponent(gfx::Point());
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetWidgetTest) {
-  native_widget->GetWidget();
+  native_widget_->GetWidget();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, HasHitTestMaskTest) {
-  native_widget->HasHitTestMask();
+  native_widget_->HasHitTestMask();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnBoundsChangedTest) {
-  native_widget->OnCaptureLost();
+  native_widget_->OnCaptureLost();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
-  native_widget->OnBoundsChanged(gfx::Rect(), gfx::Rect());
+  native_widget_->OnBoundsChanged(gfx::Rect(), gfx::Rect());
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
   ui::GestureEvent gesture(0, 0, 0, ui::EventTimeForNow(),
                            ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
-  native_widget->OnGestureEvent(&gesture);
+  native_widget_->OnGestureEvent(&gesture);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
   ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
-  native_widget->OnKeyEvent(&key);
+  native_widget_->OnKeyEvent(&key);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnMouseEventTest) {
   ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
-  native_widget->OnMouseEvent(&move);
+  native_widget_->OnMouseEvent(&move);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnPaintTest) {
-  native_widget->OnPaint(ui::PaintContext(nullptr, 0, gfx::Rect(), false));
+  native_widget_->OnPaint(ui::PaintContext(nullptr, 0, gfx::Rect(), false));
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnResizeLoopEndedTest) {
-  native_widget->OnResizeLoopEnded(nullptr);
+  native_widget_->OnResizeLoopEnded(nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnResizeLoopStartedTest) {
-  native_widget->OnResizeLoopStarted(nullptr);
+  native_widget_->OnResizeLoopStarted(nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnScrollEventTest) {
   ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), ui::EventTimeForNow(), 0,
                          0, 0, 0, 0, 0);
-  native_widget->OnScrollEvent(&scroll);
+  native_widget_->OnScrollEvent(&scroll);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnTransientParentChangedTest) {
-  native_widget->OnTransientParentChanged(nullptr);
+  native_widget_->OnTransientParentChanged(nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnWindowAddedToRootWindowTest) {
-  native_widget->OnWindowAddedToRootWindow(nullptr);
+  native_widget_->OnWindowAddedToRootWindow(nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnWindowPropertyChangedTest) {
-  native_widget->OnWindowPropertyChanged(nullptr, nullptr, 0);
+  native_widget_->OnWindowPropertyChanged(nullptr, nullptr, 0);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnWindowRemovingFromRootWindowTest) {
-  native_widget->OnWindowRemovingFromRootWindow(nullptr, nullptr);
+  native_widget_->OnWindowRemovingFromRootWindow(nullptr, nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest,
        OnWindowTargetVisibilityChangedTest) {
-  native_widget->OnWindowTargetVisibilityChanged(false);
+  native_widget_->OnWindowTargetVisibilityChanged(false);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnWindowActivatedTest) {
-  native_widget->OnWindowActivated(
+  native_widget_->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      native_widget->GetNativeView(), nullptr);
+      native_widget_->GetNativeView(), nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, OnWindowFocusedTest) {
-  native_widget->OnWindowFocused(nullptr, nullptr);
+  native_widget_->OnWindowFocused(nullptr, nullptr);
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, ShouldActivateTest) {
-  native_widget->ShouldActivate();
+  native_widget_->ShouldActivate();
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest,
        ShouldDescendIntoChildForEventHandlingTest) {
-  native_widget->ShouldDescendIntoChildForEventHandling(nullptr, gfx::Point());
+  native_widget_->ShouldDescendIntoChildForEventHandling(nullptr, gfx::Point());
 }
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, UpdateVisualStateTest) {
-  native_widget->UpdateVisualState();
+  native_widget_->UpdateVisualState();
 }
 
 }  // namespace
