@@ -180,10 +180,6 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   download.by_ext_id = by_ext_id;
   download.by_ext_name = by_ext_name;
   download.download_slice_info = history::GetHistoryDownloadSliceInfos(*item);
-  auto& reroute_info = item->GetRerouteInfo();
-  if (reroute_info.IsInitialized()) {
-    download.reroute_info_serialized = reroute_info.SerializeAsString();
-  }
   TruncatedDataUrlAtTheEndIfNeeded(&download.url_chain);
   return download;
 }
@@ -205,9 +201,9 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
   // rename it. If Chrome is killed before committing the history here,
   // that temporary file will still get permanently left.
   // See http://crbug.com/664677.
-  if (previous == nullptr || previous->current_path != current.current_path ||
-      previous->reroute_info_serialized != current.reroute_info_serialized)
+  if (previous == nullptr || previous->current_path != current.current_path) {
     return ShouldUpdateHistoryResult::UPDATE_IMMEDIATELY;
+  }
 
   // Ignore url_chain, referrer, site_url, http_method, mime_type,
   // original_mime_type, start_time, id, and guid. These fields don't change.

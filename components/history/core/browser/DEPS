@@ -9,6 +9,5 @@ include_rules = [
   "+components/optimization_guide",
   "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
-  "+components/variations",
-  "+components/enterprise/common/download_item_reroute_info.h"
+  "+components/variations"
 ]

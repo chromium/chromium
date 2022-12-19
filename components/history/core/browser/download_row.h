@@ -130,11 +130,6 @@ struct DownloadRow {
   // Data slices that have been downloaded so far. The slices must be ordered
   // by their offset.
   std::vector<DownloadSliceInfo> download_slice_info;
-
-  // The serialized string of the download's |reroute_info| proto.
-  // TODO(b/234867373): delete reroute_info_serialized once FileSystem Connector
-  // code is removed.
-  std::string reroute_info_serialized;
 };
 
 }  // namespace history

@@ -33,8 +33,7 @@ bool DownloadRow::operator==(const DownloadRow& rhs) const {
          last_access_time == rhs.last_access_time &&
          transient == rhs.transient && by_ext_id == rhs.by_ext_id &&
          by_ext_name == rhs.by_ext_name &&
-         download_slice_info == rhs.download_slice_info &&
-         reroute_info_serialized == rhs.reroute_info_serialized;
+         download_slice_info == rhs.download_slice_info;
 }
 
 }  // namespace history
