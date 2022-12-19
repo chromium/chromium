@@ -491,18 +491,13 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
 
   // Signin.
-  if (base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)) {
-    if (auto* signin_manager = SigninManagerFactory::GetForProfile(profile_)) {
-      // `signin_manager` is null in tests.
-      account_change_blocker_ =
-          signin_manager->CreateAccountSelectionInProgressHandle();
-    }
-    primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                               signin::ConsentLevel::kSignin);
-  } else {
-    primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                               signin::ConsentLevel::kSync);
+  if (auto* signin_manager = SigninManagerFactory::GetForProfile(profile_)) {
+    // `signin_manager` is null in tests.
+    account_change_blocker_ =
+        signin_manager->CreateAccountSelectionInProgressHandle();
   }
+  primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
+                                             signin::ConsentLevel::kSignin);
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
   signin_metrics::LogSigninReason(signin_reason_);
@@ -661,19 +656,15 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
 
   switch (result) {
     case LoginUIService::CONFIGURE_SYNC_FIRST:
-      if (base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)) {
-        primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                                   signin::ConsentLevel::kSync);
-      }
+      primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
+                                                 signin::ConsentLevel::kSync);
       if (consent_service)
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       delegate_->ShowSyncSettings();
       break;
-    case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS: {
-      if (base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)) {
-        primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                                   signin::ConsentLevel::kSync);
-      }
+    case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
+      primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
+                                                 signin::ConsentLevel::kSync);
       if (auto* sync_service = GetSyncService()) {
         sync_service->GetUserSettings()->SetFirstSetupComplete(
             syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
@@ -681,27 +672,14 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       if (consent_service)
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       break;
-    }
-    case LoginUIService::ABORT_SYNC: {
-      if (!base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)) {
-        primary_account_mutator->RevokeSyncConsent(
-            signin_metrics::ABORT_SIGNIN,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
-      }
+    case LoginUIService::ABORT_SYNC:
       AbortAndDelete();
       return;
-    }
-    // No explicit action when the ui gets closed. No final callback is sent.
-    case LoginUIService::UI_CLOSED: {
-      // We need to reset sync, to not leave it in a partially setup state.
-      if (!base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)) {
-        primary_account_mutator->RevokeSyncConsent(
-            signin_metrics::ABORT_SIGNIN,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
-      }
+
+    case LoginUIService::UI_CLOSED:
+      // No explicit action when the ui gets closed. No final callback is sent.
       scoped_callback_runner_.ReplaceClosure(base::OnceClosure());
       break;
-    }
   }
   delete this;
 }

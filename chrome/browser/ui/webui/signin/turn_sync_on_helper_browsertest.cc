@@ -12,7 +12,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -178,30 +177,9 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
 };
 
-enum class SyncTiming { kEager, kDelayed };
-
 }  // namespace
 
-class TurnSyncOnHelperBrowserTest
-    : public SigninBrowserTestBase,
-      public ::testing::WithParamInterface<SyncTiming> {
- public:
-  TurnSyncOnHelperBrowserTest() {
-    if (GetParam() == SyncTiming::kEager) {
-      scoped_feature_list_.InitAndDisableFeature(kDelayConsentLevelUpgrade);
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(kDelayConsentLevelUpgrade);
-    }
-  }
-
-  signin::ConsentLevel GetExpectedConsentLevelBeforeSyncConfirm() const {
-    return GetParam() == SyncTiming::kEager ? signin::ConsentLevel::kSync
-                                            : signin::ConsentLevel::kSignin;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {};
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(https://crbug.com/1344165): Support resetting the primary account.
@@ -213,7 +191,7 @@ class TurnSyncOnHelperBrowserTest
 #endif
 // Tests that aborting a Sync opt-in flow started with a secondary account
 // reverts the primary account to the initial one.
-IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest,
                        MAYBE_PrimaryAccountResetAfterSyncOptInFlowAborted) {
   Profile* profile = browser()->profile();
   auto accounts_info =
@@ -240,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTest,
   delegate->WaitUntilBlock();
   EXPECT_EQ(Delegate::BlockingStep::kSyncConfirmation,
             delegate->blocking_step());
-  EXPECT_EQ(GetExpectedConsentLevelBeforeSyncConfirm(),
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_EQ(secondary_account_id, identity_manager()->GetPrimaryAccountId(
                                       signin::ConsentLevel::kSignin));
@@ -261,12 +239,3 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTest,
   EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
                                     signin::ConsentLevel::kSignin));
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         TurnSyncOnHelperBrowserTest,
-                         ::testing::Values(SyncTiming::kEager,
-                                           SyncTiming::kDelayed),
-                         [](const ::testing::TestParamInfo<SyncTiming>& info) {
-                           return info.param == SyncTiming::kEager ? "Eager"
-                                                                   : "Delayed";
-                         });

@@ -11,8 +11,6 @@
 BASE_DECLARE_FEATURE(kForYouFre);
 #endif
 
-BASE_DECLARE_FEATURE(kDelayConsentLevelUpgrade);
-
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
 
 BASE_DECLARE_FEATURE(kSyncPromoAfterSigninIntercept);

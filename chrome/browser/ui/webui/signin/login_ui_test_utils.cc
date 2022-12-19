@@ -87,10 +87,7 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(
-            base::FeatureList::IsEnabled(kDelayConsentLevelUpgrade)
-                ? signin::ConsentLevel::kSignin
-                : signin::ConsentLevel::kSync) !=
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
