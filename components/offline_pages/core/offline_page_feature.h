@@ -18,7 +18,6 @@ BASE_DECLARE_FEATURE(kOfflinePagesCTV2Feature);
 BASE_DECLARE_FEATURE(kOfflinePagesDescriptivePendingStatusFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesDescriptiveFailStatusFeature);
-BASE_DECLARE_FEATURE(kOfflineIndicatorFeature);
 BASE_DECLARE_FEATURE(kOnTheFlyMhtmlHashComputationFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown);
 
@@ -59,9 +58,6 @@ bool ShouldOfflinePagesInDownloadHomeOpenInCct();
 // Server. The server will use this this optional tag to decide how to process
 // the request.
 std::string GetPrefetchingOfflinePagesExperimentTag();
-
-// Returns true if offline indicator UI is shown when the user is offline.
-bool IsOfflineIndicatorFeatureEnabled();
 
 // Returns true if we are saving MHTML files to the target location and
 // calculating their content digests in one step.

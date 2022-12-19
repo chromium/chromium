@@ -44,10 +44,6 @@ BASE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature,
              "OfflinePagesInDownloadHomeOpenInCct",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOfflineIndicatorFeature,
-             "OfflineIndicator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown,
              "OfflinePagesNetworkStateLikelyUnknown",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -90,10 +86,6 @@ std::string GetPrefetchingOfflinePagesExperimentTag() {
   return base::GetFieldTrialParamValueByFeature(
       kPrefetchingOfflinePagesFeature,
       kPrefetchingOfflinePagesExperimentsOption);
-}
-
-bool IsOfflineIndicatorFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kOfflineIndicatorFeature);
 }
 
 bool IsOnTheFlyMhtmlHashComputationEnabled() {

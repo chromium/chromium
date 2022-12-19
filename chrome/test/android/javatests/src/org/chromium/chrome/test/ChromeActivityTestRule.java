@@ -30,7 +30,6 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -104,9 +103,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 // https://crbug.com/577185
                 Calendar.getInstance();
 
-                // Disable offline indicator UI to prevent it from popping up to obstruct other UI
-                // views that may make tests flaky.
-                Features.getInstance().disable(ChromeFeatureList.OFFLINE_INDICATOR);
                 // Tests are run on bots that are offline by default. This might cause offline UI
                 // to show and cause flakiness or failures in tests. Using this switch will prevent
                 // that.

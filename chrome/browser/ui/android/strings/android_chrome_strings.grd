@@ -2539,11 +2539,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Loading…
       </message>
 
-      <!-- InfoBar -->
-      <message name="IDS_TOP_BAR_SCREEN_POSITION" desc="Accessibility label to inform users about the InfoBar location">
-        Options available near top of the screen
-      </message>
-
       <!-- DuplicateDownloadInfoBar -->
       <message name="IDS_DUPLICATE_DOWNLOAD_INFOBAR_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when there already exists a file with the same name">
         Do you want to download <ph name="FILE_NAME">^1<ex>specialfile.pdf</ex></ph> again?
@@ -4103,15 +4098,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_OFFLINE_PAGES_AUTO_FETCH_READY_NOTIFICATION_TEXT" desc="Text inside a notification explaining that the page has been fetched and is ready to view. This is the subtext of the notification and appars below the web page title. When the notification is tapped, the page is opened in Chrome.">
         Page is ready to view
-      </message>
-
-      <!-- Offline indicator -->
-      <message name="IDS_OFFLINE_INDICATOR_OFFLINE_TITLE" desc="Text to be displayed in the snackbar that lets the users know they are offline.">
-        No connection
-      </message>
-
-      <message name="IDS_OFFLINE_INDICATOR_VIEW_OFFLINE_CONTENT" desc="A text label on the snackbar widget to bring up the list of offline content.">
-        See downloads
       </message>
 
       <!-- Offline indicator v2 -->
