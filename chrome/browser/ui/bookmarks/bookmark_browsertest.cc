@@ -72,8 +72,7 @@ bool IsShowingInterstitial(content::WebContents* tab) {
 
 class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
  public:
-  explicit TestBookmarkTabHelperObserver(BookmarkTabHelper* helper)
-      : starred_(false) {
+  explicit TestBookmarkTabHelperObserver(BookmarkTabHelper* helper) {
     observation_.Observe(helper);
   }
 
@@ -81,7 +80,7 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
   TestBookmarkTabHelperObserver& operator=(
       const TestBookmarkTabHelperObserver&) = delete;
 
-  ~TestBookmarkTabHelperObserver() override {}
+  ~TestBookmarkTabHelperObserver() override = default;
 
   void URLStarredChanged(content::WebContents*, bool starred) override {
     starred_ = starred;
@@ -92,7 +91,7 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
   base::ScopedObservation<BookmarkTabHelper, BookmarkTabHelperObserver>
       observation_{this};
 
-  bool starred_;
+  bool starred_ = false;
 };
 
 class BookmarkBrowsertest : public InProcessBrowserTest {
@@ -488,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
-        // API.
+        // API. https://crbug.com/893388
         EXPECT_FALSE(drag_data->provider().GetDragImage().isNull());
 #endif
         EXPECT_EQ(expected_point, point);
@@ -526,16 +525,36 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
                                   gfx::NativeView native_view,
                                   ui::mojom::DragEventSource source,
                                   gfx::Point point, int operation) {
-#if !BUILDFLAG(IS_MAC)  // https://crbug.com/893432
         GURL url;
         std::u16string title;
+        // The platform difference here is due to platform capabilities. On the
+        // Mac, the clipboard can hold multiple items, each with different
+        // representations. Therefore, in `bookmark_node_data_mac.mm`'s version
+        // of `BookmarkNodeData::Read`/`Write`, a full-fledged array of objects
+        // and types are written to the clipboard, providing rich
+        // interoperability with the rest of the OS and other apps. Then, when
+        // `GetURLAndTitle` is called, it looks at the clipboard, sees URL and
+        // title data, and returns true. On the other hand, in
+        // `bookmark_node_data_views.cc`'s version used on other platforms,
+        // because other platforms don't have the concept of multiple items on
+        // the clipboard, single URLs are added as a URL, but multiple URLs are
+        // added as a data blob opaque to the outside world. Then, when
+        // `GetURLAndTitle` is called, it's unable to extract any single URL,
+        // and returns false. This is a core difference in the capabilities of
+        // the platform. Because interoperability and a good user experience
+        // outweigh strict platform consistency, expect different behaviors on
+        // different platforms.
+#if BUILDFLAG(IS_MAC)
+        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
+            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
+#else
         EXPECT_FALSE(drag_data->provider().GetURLAndTitle(
             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
 #endif
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
-        // API.
+        // API. https://crbug.com/893388
         EXPECT_FALSE(drag_data->provider().GetDragImage().isNull());
 #endif
         EXPECT_EQ(expected_point, point);
@@ -611,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
           "Bookmarks.Count.OnProfileLoad.DuplicateUrlAndTitleAndParent3"),
       testing::ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 
-  // The remaining histograms are the result of substracting the number of
+  // The remaining histograms are the result of subtracting the number of
   // duplicates from the total, which is 7 despite the bucket for the first
   // histogram above suggesting 6.
   EXPECT_THAT(histogram_tester()->GetAllSamples(
