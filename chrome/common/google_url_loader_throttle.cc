@@ -15,10 +15,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/base/device_form_factor.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
 #endif
@@ -27,7 +23,6 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 const char kCCTClientDataHeader[] = "X-CCT-Client-Data";
-const char kRequestDesktopDataHeader[] = "X-Eligible-Tablet";
 #endif
 
 }  // namespace
@@ -47,13 +42,11 @@ void GoogleURLLoaderThrottle::UpdateCorsExemptHeader(
 GoogleURLLoaderThrottle::GoogleURLLoaderThrottle(
 #if BUILDFLAG(IS_ANDROID)
     const std::string& client_data_header,
-    bool is_tab_large_enough,
 #endif
     chrome::mojom::DynamicParams dynamic_params)
     :
 #if BUILDFLAG(IS_ANDROID)
       client_data_header_(client_data_header),
-      is_tab_large_enough_(is_tab_large_enough),
 #endif
       dynamic_params_(std::move(dynamic_params)) {
 }
@@ -96,19 +89,6 @@ void GoogleURLLoaderThrottle::WillStartRequest(
       google_util::IsGoogleAssociatedDomainUrl(request->url)) {
     request->cors_exempt_headers.SetHeader(kCCTClientDataHeader,
                                            client_data_header_);
-  }
-
-  bool is_google_homepage_or_search =
-      google_util::IsGoogleHomePageUrl(request->url) ||
-      google_util::IsGoogleSearchUrl(request->url);
-  if (is_google_homepage_or_search) {
-    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteForTablets) &&
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      request->headers.SetHeader(kRequestDesktopDataHeader,
-                                 is_tab_large_enough_ ? "1" : "0");
-      base::UmaHistogramBoolean("Android.RequestDesktopSite.TabletEligible",
-                                is_tab_large_enough_);
-    }
   }
 #endif
 }

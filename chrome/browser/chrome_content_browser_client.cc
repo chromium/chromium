@@ -5362,7 +5362,6 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 
 #if BUILDFLAG(IS_ANDROID)
   std::string client_data_header;
-  bool is_tab_large_enough = false;
   bool is_custom_tab = false;
   if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     auto* web_contents = WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -5380,7 +5379,6 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
                     web_contents->GetDelegate())
               : nullptr;
       if (delegate) {
-        is_tab_large_enough = delegate->IsTabLargeEnoughForDesktopSite();
         is_custom_tab = delegate->IsCustomTab();
       }
     }
@@ -5393,7 +5391,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       profile->GetPrefs()->GetString(prefs::kAllowedDomainsForApps)};
   result.push_back(std::make_unique<GoogleURLLoaderThrottle>(
 #if BUILDFLAG(IS_ANDROID)
-      client_data_header, is_tab_large_enough,
+      client_data_header,
 #endif
       std::move(dynamic_params)));
 

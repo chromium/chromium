@@ -3909,13 +3909,6 @@ const char kRequestDesktopSiteExceptionsDescription[] =
     "An option in `Site settings` to request the desktop version of websites "
     "based on site level settings.";
 
-const char kRequestDesktopSiteForTabletsName[] =
-    "Request desktop site for tablets on Android";
-const char kRequestDesktopSiteForTabletsDescription[] =
-    "Requests a desktop site, if the screen size is large enough on Android."
-    " On tablets with small screens a mobile site will be requested by "
-    "default.";
-
 const char kRequestDesktopSiteZoomName[] =
     "Default zoom for request desktop site on Android.";
 const char kRequestDesktopSiteZoomDescription[] =

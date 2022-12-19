@@ -966,12 +966,6 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kRequestDesktopSiteForTablets,
-             "RequestDesktopSiteForTablets",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,

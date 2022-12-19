@@ -5690,7 +5690,6 @@ test("unit_tests") {
     "../common/chrome_content_client_unittest.cc",
     "../common/chrome_paths_unittest.cc",
     "../common/crash_keys_unittest.cc",
-    "../common/google_url_loader_throttle_unittest.cc",
     "../common/ini_parser_unittest.cc",
     "../common/net/safe_search_util_unittest.cc",
     "../common/pref_names_util_unittest.cc",

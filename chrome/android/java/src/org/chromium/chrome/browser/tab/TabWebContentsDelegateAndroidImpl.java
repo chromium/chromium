@@ -314,11 +314,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.canShowAppBanners();
     }
 
-    @CalledByNative
-    private boolean isTabLargeEnoughForDesktopSite() {
-        return TabUtils.isTabLargeEnoughForDesktopSite(mTab);
-    }
-
     /**
      * @return the WebAPK manifest scope. This gives frames within the scope increased privileges
      * such as autoplaying media unmuted.

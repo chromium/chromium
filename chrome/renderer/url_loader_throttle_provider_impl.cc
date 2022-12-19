@@ -184,7 +184,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   throttles.emplace_back(std::make_unique<GoogleURLLoaderThrottle>(
 #if BUILDFLAG(IS_ANDROID)
       client_data_header,
-      /* is_tab_large_enough= */ false,
 #endif
       ChromeRenderThreadObserver::GetDynamicParams()));
 

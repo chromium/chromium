@@ -3117,6 +3117,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.RequestDesktopSite.TabletEligible" enum="Boolean"
     expires_after="2022-04-17">
+  <obsolete>
+    Deprecated in December 2022. This is no longer recorded as we cleanup
+    feature flag RequestDesktopSiteForTablets.
+  </obsolete>
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>

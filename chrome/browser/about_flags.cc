@@ -2489,44 +2489,6 @@ const FeatureEntry::FeatureVariation
          kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails,
          std::size(kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails),
          nullptr}};
-
-// Request Desktop Site on Tablet by default variations.
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets100[] = {
-    {"screen_width_dp", "100"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets600[] = {
-    {"screen_width_dp", "600"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets768[] = {
-    {"screen_width_dp", "768"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets960[] = {
-    {"screen_width_dp", "960"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets1024[] = {
-    {"screen_width_dp", "1024"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets1280[] = {
-    {"screen_width_dp", "1280"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets1920[] = {
-    {"screen_width_dp", "1920"},
-    {"enabled", "true"}};
-const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
-    {{"for 100dp+ screens", kRequestDesktopSiteForTablets100,
-      std::size(kRequestDesktopSiteForTablets100), nullptr},
-     {"for 600dp+ screens", kRequestDesktopSiteForTablets600,
-      std::size(kRequestDesktopSiteForTablets600), nullptr},
-     {"for 768dp+ screens", kRequestDesktopSiteForTablets768,
-      std::size(kRequestDesktopSiteForTablets768), nullptr},
-     {"for 960dp+ screens", kRequestDesktopSiteForTablets960,
-      std::size(kRequestDesktopSiteForTablets960), nullptr},
-     {"for 1024dp+ screens", kRequestDesktopSiteForTablets1024,
-      std::size(kRequestDesktopSiteForTablets1024), nullptr},
-     {"for 1280dp+ screens", kRequestDesktopSiteForTablets1280,
-      std::size(kRequestDesktopSiteForTablets1280), nullptr},
-     {"for 1920dp+ screens", kRequestDesktopSiteForTablets1920,
-      std::size(kRequestDesktopSiteForTablets1920), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
@@ -5399,12 +5361,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-for-tablets",
-     flag_descriptions::kRequestDesktopSiteForTabletsName,
-     flag_descriptions::kRequestDesktopSiteForTabletsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRequestDesktopSiteForTablets,
-                                    kRequestDesktopSiteForTabletsVariations,
-                                    "RequestDesktopSiteForTablets")},
     {"revoke-notifications-permission-if-disabled-on-app-level",
      flag_descriptions::kRevokeNotificationsPermissionIfDisabledOnAppLevelName,
      flag_descriptions::

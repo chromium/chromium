@@ -20,7 +20,6 @@ class GoogleURLLoaderThrottle
  public:
 #if BUILDFLAG(IS_ANDROID)
   GoogleURLLoaderThrottle(const std::string& client_data_header,
-                          bool is_tab_large_enough,
                           chrome::mojom::DynamicParams dynamic_params);
 #else
   explicit GoogleURLLoaderThrottle(chrome::mojom::DynamicParams dynamic_params);
@@ -51,7 +50,6 @@ class GoogleURLLoaderThrottle
  private:
 #if BUILDFLAG(IS_ANDROID)
   std::string client_data_header_;
-  bool is_tab_large_enough_;
 #endif
   const chrome::mojom::DynamicParams dynamic_params_;
 };

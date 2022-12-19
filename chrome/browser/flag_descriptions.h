@@ -2239,9 +2239,6 @@ extern const char kRequestDesktopSiteExceptionsDescription[];
 extern const char kRequestDesktopSiteExceptionsDowngradeName[];
 extern const char kRequestDesktopSiteExceptionsDowngradeDescription[];
 
-extern const char kRequestDesktopSiteForTabletsName[];
-extern const char kRequestDesktopSiteForTabletsDescription[];
-
 extern const char kRequestDesktopSiteZoomName[];
 extern const char kRequestDesktopSiteZoomDescription[];
 

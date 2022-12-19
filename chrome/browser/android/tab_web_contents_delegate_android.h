@@ -130,7 +130,6 @@ class TabWebContentsDelegateAndroid
   bool IsNightModeEnabled() const;
   bool IsForceDarkWebContentEnabled() const;
   bool CanShowAppBanners() const;
-  bool IsTabLargeEnoughForDesktopSite() const;
 
   // Returns true if this tab is currently presented in the context of custom
   // tabs. Tabs can be moved between different activities so the returned value
