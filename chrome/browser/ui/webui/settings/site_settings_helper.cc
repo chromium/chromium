@@ -925,7 +925,8 @@ base::Value::Dict CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
-    const ChooserExceptionDetails& chooser_exception_details) {
+    const ChooserExceptionDetails& chooser_exception_details,
+    Profile* profile) {
   base::Value::Dict exception;
 
   std::string setting_string =
@@ -945,6 +946,22 @@ base::Value::Dict CreateChooserExceptionObject(
     const bool incognito = std::get<2>(details);
 
     std::string site_display_name = origin.spec();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // Set the |site_display_name| to the extension's name which is more clear
+    // to the user if the |origin| is for an extension and the extension name
+    // can be found in the |profile|.
+    if (origin.SchemeIs(extensions::kExtensionScheme)) {
+      DCHECK(profile);
+      const auto* extension_registry =
+          extensions::ExtensionRegistry::Get(profile);
+      const extensions::Extension* extension =
+          extension_registry->GetExtensionById(
+              origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+      if (extension) {
+        site_display_name = extension->name();
+      }
+    }
+#endif
 
     auto& this_provider_sites =
         all_provider_sites[HostContentSettingsMap::GetProviderTypeFromSource(
@@ -1028,7 +1045,7 @@ base::Value::List GetChooserExceptionListFromProfile(
     const ChooserExceptionDetails& chooser_exception_details =
         all_chooser_objects_entry.second;
     exceptions.Append(CreateChooserExceptionObject(
-        name, object, chooser_type.name, chooser_exception_details));
+        name, object, chooser_type.name, chooser_exception_details, profile));
   }
 
   return exceptions;

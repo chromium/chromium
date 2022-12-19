@@ -3820,6 +3820,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_BLOCK" desc="The label that is used to show the Bluetooth scanning setting is set to block in site settings.">
     Do not allow any site to discover nearby Bluetooth devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_EXTENSION_ID_DESCRIPTION" desc="Description for an extension using its extension id.">
+    ID: <ph name="EXTENSION_ID">$1<ex>mhabknllooicelmdboebjilbohdbihln</ex></ph>
+  </message>
 
   <message name="IDS_SETTINGS_NO_BLUETOOTH_DEVICES_FOUND" desc="Explanation for not showing Bluetooth devices in site settings.">
     No Bluetooth devices found

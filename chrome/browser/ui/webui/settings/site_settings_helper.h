@@ -201,7 +201,8 @@ base::Value::Dict CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
-    const ChooserExceptionDetails& chooser_exception_details);
+    const ChooserExceptionDetails& chooser_exception_details,
+    Profile* profile);
 
 // Returns an array of chooser exception objects.
 base::Value::List GetChooserExceptionListFromProfile(

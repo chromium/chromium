@@ -3126,6 +3126,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
     {"siteSettingsIdleDetectionBlock",
      IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK},
+    {"siteSettingsExtensionIdDescription",
+     IDS_SETTINGS_SITE_SETTINGS_EXTENSION_ID_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

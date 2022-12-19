@@ -38,6 +38,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/test/test_extension_dir.h"
+#endif
+
 namespace site_settings {
 
 namespace {
@@ -581,7 +590,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
 
   // Create a chooser object for testing.
   base::Value::Dict chooser_object;
-  chooser_object.Set("name", base::Value(kObjectName));
+  chooser_object.Set("name", kObjectName);
 
   // Add a user permission for an origin of |kGoogleUrl|.
   const GURL kGoogleUrl("https://google.com");
@@ -592,7 +601,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*display_name=*/kObjectName,
         /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
-        /*chooser_exception_details=*/exception_details);
+        /*chooser_exception_details=*/exception_details,
+        /*profile=*/nullptr);
     ExpectValidChooserExceptionObject(
         exception, /*chooser_type=*/kUsbChooserGroupName,
         /*display_name=*/kObjectName, chooser_object);
@@ -617,7 +627,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*display_name=*/kObjectName,
         /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
-        /*chooser_exception_details=*/exception_details);
+        /*chooser_exception_details=*/exception_details,
+        /*profile=*/nullptr);
     ExpectValidChooserExceptionObject(
         exception,
         /*expected_chooser_type=*/kUsbChooserGroupName,
@@ -648,7 +659,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*display_name=*/kObjectName,
         /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
-        /*chooser_exception_details=*/exception_details);
+        /*chooser_exception_details=*/exception_details,
+        /*profile=*/nullptr);
     ExpectValidChooserExceptionObject(exception,
                                       /*chooser_type=*/kUsbChooserGroupName,
                                       /*display_name=*/kObjectName,
@@ -934,5 +946,112 @@ TEST_F(PersistentPermissionsSiteSettingsHelperTest,
             "/foo/bar");
   ASSERT_EQ(exceptions[1].GetDict().Find("source")->GetString(), "default");
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class SiteSettingsHelperExtensionTest
+    : public extensions::ExtensionServiceTestBase {
+ public:
+  SiteSettingsHelperExtensionTest()
+      : extensions::ExtensionServiceTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>()) {}
+
+  void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
+    // The test profile is initialized in InitializeEmptyExtensionService().
+    InitializeEmptyExtensionService();
+  }
+
+  scoped_refptr<const extensions::Extension> LoadExtension(
+      const std::string& extension_name) {
+    extensions::TestExtensionDir extension_directory;
+    constexpr char kManifestTemplate[] = R"({
+          "name": "%s",
+          "version": "1",
+          "manifest_version": 3
+        })";
+    extension_directory.WriteManifest(
+        base::StringPrintf(kManifestTemplate, extension_name.c_str()));
+    extensions::ChromeTestExtensionLoader loader(profile());
+    return loader.LoadExtension(extension_directory.UnpackedPath());
+  }
+
+  void UnloadExtension(std::string extension_id) {
+    auto* extension_service =
+        extensions::ExtensionSystem::Get(profile())->extension_service();
+    ASSERT_TRUE(extension_service);
+    extension_service->UnloadExtension(
+        extension_id, extensions::UnloadedExtensionReason::DISABLE);
+  }
+};
+
+TEST_F(SiteSettingsHelperExtensionTest, CreateChooserExceptionObject) {
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
+  const std::string& kPreferenceSource =
+      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  const std::u16string& kObjectName = u"Gadget";
+  ChooserExceptionDetails exception_details;
+  const std::string extension_name = "Test Extension";
+
+  // Load the extension with name as |extension_name|.
+  auto extension = LoadExtension(extension_name);
+
+  // Create a chooser object for testing.
+  base::Value::Dict chooser_object;
+  chooser_object.Set("name", kObjectName);
+
+  // Add a user permissions for an extension.
+  auto extension_origin = extension->origin();
+  exception_details.insert(
+      {extension_origin.GetURL(), kPreferenceSource, /*incognito=*/false});
+
+  // When the extension is loaded, the display name is extension's name.
+  {
+    auto exception = CreateChooserExceptionObject(
+        /*display_name=*/kObjectName,
+        /*object=*/base::Value(chooser_object.Clone()),
+        /*chooser_type=*/kUsbChooserGroupName,
+        /*chooser_exception_details=*/exception_details, profile());
+    ExpectValidChooserExceptionObject(
+        exception,
+        /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
+
+    const auto& sites_list = exception.Find(kSites)->GetList();
+    ASSERT_EQ(sites_list.size(), 1u);
+    ExpectValidSiteExceptionObject(
+        /*actual_site_object=*/sites_list[0],
+        /*display_name=*/extension_name,
+        /*origin=*/extension_origin.GetURL(),
+        /*source=*/kPreferenceSource,
+        /*incognito=*/false);
+  }
+
+  // When the extension is unloaded, the display name is extension's origin as
+  // the extension isn't available for the profile.
+  UnloadExtension(extension->id());
+  {
+    auto exception = CreateChooserExceptionObject(
+        /*display_name=*/kObjectName,
+        /*object=*/base::Value(chooser_object.Clone()),
+        /*chooser_type=*/kUsbChooserGroupName,
+        /*chooser_exception_details=*/exception_details, profile());
+    ExpectValidChooserExceptionObject(
+        exception,
+        /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
+
+    const auto& sites_list = exception.Find(kSites)->GetList();
+    ASSERT_EQ(sites_list.size(), 1u);
+    ExpectValidSiteExceptionObject(
+        /*actual_site_object=*/sites_list[0],
+        /*display_name=*/
+        extension_origin.GetURL().DeprecatedGetOriginAsURL().spec(),
+        /*origin=*/extension_origin.GetURL(),
+        /*source=*/kPreferenceSource,
+        /*incognito=*/false);
+  }
+}
+#endif  // #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace site_settings

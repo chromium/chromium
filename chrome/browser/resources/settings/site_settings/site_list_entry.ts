@@ -233,7 +233,15 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     }
     // </if>
 
-    return description;
+    try {
+      const url = new URL(this.model.origin);
+      if (url.protocol === 'chrome-extension:') {
+        description = loadTimeData.getStringF(
+            'siteSettingsExtensionIdDescription', url.hostname);
+      }
+    } finally {
+      return description;
+    }
   }
 
   private computeShowPolicyPrefIndicator_(): boolean {
