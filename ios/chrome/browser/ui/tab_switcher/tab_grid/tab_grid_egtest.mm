@@ -451,7 +451,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that Clear Browsing Data can be successfully done from tab grid.
-- (void)testClearBrowsingData {
+- (void)FLAKY_testClearBrowsingData {
   // Load history
   [self loadTestURLs];
 
