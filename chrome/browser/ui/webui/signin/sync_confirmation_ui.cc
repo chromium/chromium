@@ -230,8 +230,14 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         "images/tangible_sync_window_left_illustration.svg",
         IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
     source->AddResourcePath(
+        "images/tangible_sync_window_left_illustration_dark.svg",
+        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_DARK_SVG);
+    source->AddResourcePath(
         "images/tangible_sync_window_right_illustration.svg",
         IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
+    source->AddResourcePath(
+        "images/tangible_sync_window_right_illustration_dark.svg",
+        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
   }
 
   // Registering and resolving the strings with placeholders
