@@ -441,8 +441,8 @@ bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
 // static
 std::map<const base::Feature*, size_t>&
 TrackerImpl::GetAllowedTestFeatureMap() {
-  static base::NoDestructor<std::map<const base::Feature*, size_t>> instance(
-      {std::make_pair(nullptr, 0)});
+  static base::NoDestructor<std::map<const base::Feature*, size_t>> instance{
+      {std::make_pair(nullptr, 0)}};
   return *instance;
 }
 
