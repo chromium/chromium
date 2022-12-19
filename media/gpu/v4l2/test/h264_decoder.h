@@ -4,6 +4,8 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 
+#include <set>
+
 #include "base/files/memory_mapped_file.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
@@ -50,6 +52,12 @@ class H264Decoder : public VideoDecoder {
   // device.  Additionally sends Decode Parameters and Decode Mode
   // via IOCTL Ext Ctrls.
   VideoDecoder::Result SubmitSlice(H264SliceHeader curr_slice, int frame_num);
+
+  // Returns all CAPTURE buffer indexes that can be reused for a
+  // VIDIOC_QBUF ioctl call.
+  std::set<uint32_t> GetReusableReferenceSlots(
+      const MmapedBuffer& buffer,
+      std::set<uint32_t> queued_buffer_indexes);
 
   const std::unique_ptr<H264Parser> parser_;
 
