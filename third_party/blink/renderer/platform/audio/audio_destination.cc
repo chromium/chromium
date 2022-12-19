@@ -49,6 +49,8 @@
 
 namespace blink {
 
+namespace {
+
 // FIFO Size.
 //
 // TODO(hongchan): This was estimated based on the largest callback buffer size
@@ -56,8 +58,6 @@ namespace blink {
 // fact, probably too small. There are Android devices out there with a size of
 // 8000 or so.  We might need to make this larger. See: crbug.com/670747
 const uint32_t kFIFOSize = 96 * 128;
-
-namespace {
 
 const char* DeviceStateToString(AudioDestination::DeviceState state) {
   switch (state) {
@@ -85,6 +85,180 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
                            render_quantum_frames));
 }
 
+AudioDestination::~AudioDestination() {
+  Stop();
+}
+
+void AudioDestination::Render(const WebVector<float*>& destination_data,
+                              uint32_t number_of_frames,
+                              double delay,
+                              double delay_timestamp) {
+  TRACE_EVENT_BEGIN1("webaudio", "AudioDestination::Render",
+                     "callback_buffer_size", number_of_frames);
+  CHECK_EQ(destination_data.size(), number_of_output_channels_);
+  CHECK_EQ(number_of_frames, callback_buffer_size_);
+
+  if (!is_latency_metric_collected_ && delay != 0.0) {
+    // With the advanced distribution profile for a Bluetooth device
+    // (potentially devices with the largest latency), the known latency is
+    // around 100 ~ 150ms. Using a "linear" histogram where all buckets are
+    // exactly the same size (2ms).
+    base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+        "WebAudio.AudioDestination.HardwareOutputLatency", 0, 200, 100,
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(static_cast<int32_t>(delay * 1000));
+    is_latency_metric_collected_ = true;
+  }
+
+  // Note that this method is called by AudioDeviceThread. If FIFO is not ready,
+  // or the requested render size is greater than FIFO size return here.
+  // (crbug.com/692423)
+  if (!fifo_ || fifo_->length() < number_of_frames) {
+    TRACE_EVENT_INSTANT1(
+        "webaudio",
+        "AudioDestination::Render - FIFO not ready or the size is too small",
+        TRACE_EVENT_SCOPE_THREAD, "fifo length", fifo_ ? fifo_->length() : 0);
+    TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
+                     delay_timestamp, "delay (s)", delay);
+    return;
+  }
+
+  // Associate the destination data array with the output bus then fill the
+  // FIFO.
+  for (unsigned i = 0; i < number_of_output_channels_; ++i) {
+    output_bus_->SetChannelMemory(i, destination_data[i], number_of_frames);
+  }
+
+  if (worklet_task_runner_) {
+    // Use the dual-thread rendering if the AudioWorklet is activated.
+    size_t frames_to_render =
+        fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
+    PostCrossThreadTask(
+        *worklet_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&AudioDestination::RequestRender,
+                            WrapRefCounted(this), number_of_frames,
+                            frames_to_render, delay, delay_timestamp));
+  } else {
+    // Otherwise use the single-thread rendering.
+    size_t frames_to_render = fifo_->Pull(output_bus_.get(), number_of_frames);
+    RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp);
+  }
+  TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
+                   delay_timestamp, "delay (s)", delay);
+}
+
+void AudioDestination::Start() {
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioDestination::Start");
+  SendLogMessage(String::Format("%s", __func__));
+
+  if (device_state_ != DeviceState::kStopped) {
+    return;
+  }
+  web_audio_device_->Start();
+  SetDeviceState(DeviceState::kRunning);
+}
+
+void AudioDestination::Stop() {
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioDestination::Stop");
+  SendLogMessage(String::Format("%s", __func__));
+
+  if (device_state_ == DeviceState::kStopped) {
+    return;
+  }
+  web_audio_device_->Stop();
+
+  // Resetting |worklet_task_runner_| here is safe because
+  // AudioDestination::Render() won't be called after WebAudioDevice::Stop()
+  // call above.
+  worklet_task_runner_ = nullptr;
+
+  SetDeviceState(DeviceState::kStopped);
+}
+
+void AudioDestination::Pause() {
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioDestination::Pause");
+  SendLogMessage(String::Format("%s", __func__));
+
+  if (device_state_ != DeviceState::kRunning) {
+    return;
+  }
+  web_audio_device_->Pause();
+  SetDeviceState(DeviceState::kPaused);
+}
+
+void AudioDestination::Resume() {
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioDestination::Resume");
+  SendLogMessage(String::Format("%s", __func__));
+
+  if (device_state_ != DeviceState::kPaused) {
+    return;
+  }
+  web_audio_device_->Resume();
+  SetDeviceState(DeviceState::kRunning);
+}
+
+void AudioDestination::StartWithWorkletTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(worklet_task_runner_, nullptr);
+  TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
+  SendLogMessage(String::Format("%s", __func__));
+
+  if (device_state_ != DeviceState::kStopped) {
+    return;
+  }
+
+  // The dual-thread rendering kicks off, so updates the earmark frames
+  // accordingly.
+  fifo_->SetEarmarkFrames(callback_buffer_size_);
+
+  worklet_task_runner_ = std::move(worklet_task_runner);
+  web_audio_device_->Start();
+  SetDeviceState(DeviceState::kRunning);
+}
+
+bool AudioDestination::IsPlaying() {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(state_change_lock_);
+  return device_state_ == DeviceState::kRunning;
+}
+
+uint32_t AudioDestination::CallbackBufferSize() const {
+  DCHECK(IsMainThread());
+  return callback_buffer_size_;
+}
+
+int AudioDestination::FramesPerBuffer() const {
+  DCHECK(IsMainThread());
+  return web_audio_device_->FramesPerBuffer();
+}
+
+size_t AudioDestination::HardwareBufferSize() {
+  return Platform::Current()->AudioHardwareBufferSize();
+}
+
+float AudioDestination::HardwareSampleRate() {
+  return static_cast<float>(Platform::Current()->AudioHardwareSampleRate());
+}
+
+uint32_t AudioDestination::MaxChannelCount() {
+  return Platform::Current()->AudioHardwareOutputChannels();
+}
+
+void AudioDestination::SetDetectSilence(bool detect_silence) {
+  DCHECK(IsMainThread());
+  TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
+               "detect_silence", detect_silence);
+  SendLogMessage(
+      String::Format("%s({detect_silence=%d})", __func__, detect_silence));
+
+  web_audio_device_->SetDetectSilence(detect_silence);
+}
+
 AudioDestination::AudioDestination(
     AudioIOCallback& callback,
     const WebAudioSinkDescriptor& sink_descriptor,
@@ -92,8 +266,8 @@ AudioDestination::AudioDestination(
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> context_sample_rate,
     unsigned render_quantum_frames)
-    : render_quantum_frames_(render_quantum_frames),
-      number_of_output_channels_(number_of_output_channels),
+    : number_of_output_channels_(number_of_output_channels),
+      render_quantum_frames_(render_quantum_frames),
       fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
                                            kFIFOSize,
                                            render_quantum_frames)),
@@ -189,66 +363,11 @@ AudioDestination::AudioDestination(
   }
 }
 
-AudioDestination::~AudioDestination() {
-  Stop();
-}
+void AudioDestination::SetDeviceState(DeviceState state) {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(state_change_lock_);
 
-void AudioDestination::Render(const WebVector<float*>& destination_data,
-                              uint32_t number_of_frames,
-                              double delay,
-                              double delay_timestamp) {
-  TRACE_EVENT_BEGIN1("webaudio", "AudioDestination::Render",
-                     "callback_buffer_size", number_of_frames);
-  CHECK_EQ(destination_data.size(), number_of_output_channels_);
-  CHECK_EQ(number_of_frames, callback_buffer_size_);
-
-  if (!is_latency_metric_collected_ && delay != 0.0) {
-    // With the advanced distribution profile for a Bluetooth device
-    // (potentially devices with the largest latency), the known latency is
-    // around 100 ~ 150ms. Using a "linear" histogram where all buckets are
-    // exactly the same size (2ms).
-    base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-        "WebAudio.AudioDestination.HardwareOutputLatency",
-        0, 200, 100, base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(static_cast<int32_t>(delay * 1000));
-    is_latency_metric_collected_ = true;
-  }
-
-  // Note that this method is called by AudioDeviceThread. If FIFO is not ready,
-  // or the requested render size is greater than FIFO size return here.
-  // (crbug.com/692423)
-  if (!fifo_ || fifo_->length() < number_of_frames) {
-    TRACE_EVENT_INSTANT1(
-        "webaudio",
-        "AudioDestination::Render - FIFO not ready or the size is too small",
-        TRACE_EVENT_SCOPE_THREAD, "fifo length", fifo_ ? fifo_->length() : 0);
-    TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                     delay_timestamp, "delay (s)", delay);
-    return;
-  }
-
-  // Associate the destination data array with the output bus then fill the
-  // FIFO.
-  for (unsigned i = 0; i < number_of_output_channels_; ++i) {
-    output_bus_->SetChannelMemory(i, destination_data[i], number_of_frames);
-  }
-
-  if (worklet_task_runner_) {
-    // Use the dual-thread rendering if the AudioWorklet is activated.
-    size_t frames_to_render =
-        fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
-    PostCrossThreadTask(
-        *worklet_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&AudioDestination::RequestRender,
-                            WrapRefCounted(this), number_of_frames,
-                            frames_to_render, delay, delay_timestamp));
-  } else {
-    // Otherwise use the single-thread rendering.
-    size_t frames_to_render = fifo_->Pull(output_bus_.get(), number_of_frames);
-    RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp);
-  }
-  TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                   delay_timestamp, "delay (s)", delay);
+  device_state_ = state;
 }
 
 void AudioDestination::RequestRender(size_t frames_requested,
@@ -317,106 +436,10 @@ void AudioDestination::RequestRender(size_t frames_requested,
   metric_reporter_.EndTrace();
 }
 
-void AudioDestination::Start() {
-  DCHECK(IsMainThread());
-  TRACE_EVENT0("webaudio", "AudioDestination::Start");
-  SendLogMessage(String::Format("%s", __func__));
-
-  if (device_state_ != DeviceState::kStopped) {
-    return;
-  }
-  web_audio_device_->Start();
-  SetDeviceState(DeviceState::kRunning);
-}
-
-void AudioDestination::StartWithWorkletTaskRunner(
-    scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner) {
-  DCHECK(IsMainThread());
-  DCHECK_EQ(worklet_task_runner_, nullptr);
-  TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
-  SendLogMessage(String::Format("%s", __func__));
-
-  if (device_state_ != DeviceState::kStopped) {
-    return;
-  }
-
-  // The dual-thread rendering kicks off, so updates the earmark frames
-  // accordingly.
-  fifo_->SetEarmarkFrames(callback_buffer_size_);
-
-  worklet_task_runner_ = std::move(worklet_task_runner);
-  web_audio_device_->Start();
-  SetDeviceState(DeviceState::kRunning);
-}
-
-void AudioDestination::Stop() {
-  DCHECK(IsMainThread());
-  TRACE_EVENT0("webaudio", "AudioDestination::Stop");
-  SendLogMessage(String::Format("%s", __func__));
-
-  if (device_state_ == DeviceState::kStopped) {
-    return;
-  }
-  web_audio_device_->Stop();
-
-  // Resetting |worklet_task_runner_| here is safe because
-  // AudioDestination::Render() won't be called after WebAudioDevice::Stop()
-  // call above.
-  worklet_task_runner_ = nullptr;
-
-  SetDeviceState(DeviceState::kStopped);
-}
-
-void AudioDestination::Pause() {
-  DCHECK(IsMainThread());
-  TRACE_EVENT0("webaudio", "AudioDestination::Pause");
-  SendLogMessage(String::Format("%s", __func__));
-
-  if (device_state_ != DeviceState::kRunning) {
-    return;
-  }
-  web_audio_device_->Pause();
-  SetDeviceState(DeviceState::kPaused);
-}
-
-void AudioDestination::Resume() {
-  DCHECK(IsMainThread());
-  TRACE_EVENT0("webaudio", "AudioDestination::Resume");
-  SendLogMessage(String::Format("%s", __func__));
-
-  if (device_state_ != DeviceState::kPaused) {
-    return;
-  }
-  web_audio_device_->Resume();
-  SetDeviceState(DeviceState::kRunning);
-}
-
-bool AudioDestination::IsPlaying() {
-  DCHECK(IsMainThread());
-  base::AutoLock locker(state_change_lock_);
-  return device_state_ == DeviceState::kRunning;
-}
-
-uint32_t AudioDestination::CallbackBufferSize() const {
-  DCHECK(IsMainThread());
-  return callback_buffer_size_;
-}
-
-int AudioDestination::FramesPerBuffer() const {
-  DCHECK(IsMainThread());
-  return web_audio_device_->FramesPerBuffer();
-}
-
-size_t AudioDestination::HardwareBufferSize() {
-  return Platform::Current()->AudioHardwareBufferSize();
-}
-
-float AudioDestination::HardwareSampleRate() {
-  return static_cast<float>(Platform::Current()->AudioHardwareSampleRate());
-}
-
-uint32_t AudioDestination::MaxChannelCount() {
-  return Platform::Current()->AudioHardwareOutputChannels();
+void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
+                                             AudioBus* dest) {
+  callback_.Render(dest, RenderQuantumFrames(), output_position_,
+                   metric_reporter_.GetMetric());
 }
 
 bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
@@ -436,29 +459,6 @@ bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
       callback_buffer_size_ + render_quantum_frames <= kFIFOSize;
   DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
   return is_buffer_size_valid;
-}
-
-void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
-                                             AudioBus* dest) {
-  callback_.Render(dest, RenderQuantumFrames(), output_position_,
-                   metric_reporter_.GetMetric());
-}
-
-void AudioDestination::SetDeviceState(DeviceState state) {
-  DCHECK(IsMainThread());
-  base::AutoLock locker(state_change_lock_);
-
-  device_state_ = state;
-}
-
-void AudioDestination::SetDetectSilence(bool detect_silence) {
-  DCHECK(IsMainThread());
-  TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
-               "detect_silence", detect_silence);
-  SendLogMessage(
-      String::Format("%s({detect_silence=%d})", __func__, detect_silence));
-
-  web_audio_device_->SetDetectSilence(detect_silence);
 }
 
 void AudioDestination::SendLogMessage(const String& message) {
