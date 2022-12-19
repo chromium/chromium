@@ -25,13 +25,13 @@ export function search(state: State, action: SearchAction): State {
   // as store customers are free to cache it and check for changes. If we modify
   // the original object the check for changes incorrectly return false.
   const search: SearchData = {...currentSearch};
-  if (payload.query) {
+  if (payload.query !== undefined) {
     search.query = payload.query;
   }
-  if (payload.status) {
+  if (payload.status !== undefined) {
     search.status = payload.status;
   }
-  if (payload.options) {
+  if (payload.options !== undefined) {
     search.options = payload.options;
   }
   return {...state, search};

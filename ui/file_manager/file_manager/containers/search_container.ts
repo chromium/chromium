@@ -152,7 +152,7 @@ export class SearchContainer extends EventTarget {
     const value = this.inputElement_.value;
     if (value !== '') {
       this.inputElement_.value = '';
-      this.postQueryChangedEvent();
+      this.onQueryChanged_();
       requestAnimationFrame(() => {
         this.closeSearch();
       });
@@ -488,7 +488,7 @@ export class SearchContainer extends EventTarget {
       }
     });
     this.inputElement_.addEventListener('input', () => {
-      this.postQueryChangedEvent();
+      this.onQueryChanged_();
     });
     this.inputElement_.addEventListener('keydown', (event: KeyboardEvent) => {
       if (!this.inputElement_.value) {
@@ -582,13 +582,19 @@ export class SearchContainer extends EventTarget {
    * Generates a custom event with the current value of the input element as the
    * search query.
    */
-  private postQueryChangedEvent() {
+  private onQueryChanged_() {
+    const query = this.inputElement_.value.trimStart();
     this.dispatchEvent(new CustomEvent(SEARCH_QUERY_CHANGED, {
       bubbles: true,
       composed: true,
       detail: {
-        query: this.inputElement_.value,
+        query: query,
       },
+    }));
+    this.store_.dispatch(updateSearch({
+      query: query,
+      status: undefined,   // do not change
+      options: undefined,  // do not change
     }));
   }
 

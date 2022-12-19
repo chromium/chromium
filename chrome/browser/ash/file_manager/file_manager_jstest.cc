@@ -326,6 +326,14 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerSearch) {
   RunTestURL("state/reducers/search_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
+  RunTestURL("containers/nudge_container_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SearchContainer) {
+  RunTestURL("containers/search_container_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfConflictDialog) {
   RunTestURL("widgets/xf_conflict_dialog_unittest.js");
 }
@@ -344,10 +352,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfSelect) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfSplitter) {
   RunTestURL("widgets/xf_splitter_unittest.js");
-}
-
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
-  RunTestURL("containers/nudge_container_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfTree) {
