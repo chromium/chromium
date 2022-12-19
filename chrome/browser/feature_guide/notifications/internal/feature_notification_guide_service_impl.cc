@@ -22,7 +22,6 @@
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"

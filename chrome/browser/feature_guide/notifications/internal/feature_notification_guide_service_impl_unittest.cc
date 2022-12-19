@@ -12,15 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/feature_guide/notifications/config.h"
 #include "chrome/browser/feature_guide/notifications/internal/utils.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "components/feature_engagement/test/mock_tracker.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,41 +87,13 @@ class TestScheduler
       queued_params_;
 };
 
-class TestSegmentationPlatformService
-    : public segmentation_platform::SegmentationPlatformService {
- public:
-  void GetSelectedSegment(const std::string& segmentation_key,
-                          segmentation_platform::SegmentationPlatformService::
-                              SegmentSelectionCallback callback) override {
-    segmentation_platform::SegmentSelectionResult result;
-    result.is_ready = true;
-    result.segment = segmentation_platform::proto::SegmentId::
-        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
-    std::move(callback).Run(result);
-  }
-  segmentation_platform::SegmentSelectionResult GetCachedSegmentResult(
-      const std::string& segmentation_key) override {
-    segmentation_platform::SegmentSelectionResult result;
-    result.is_ready = true;
-    result.segment = segmentation_platform::proto::SegmentId::
-        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
-    return result;
-  }
-  void GetSelectedSegmentOnDemand(
-      const std::string& segmentation_key,
-      scoped_refptr<segmentation_platform::InputContext> input_context,
-      SegmentSelectionCallback callback) override {}
-  void GetClassificationResult(
-      const std::string& segmentation_key,
-      const segmentation_platform::PredictionOptions& prediction_options,
-      scoped_refptr<segmentation_platform::InputContext> input_context,
-      segmentation_platform::ClassificationResultCallback callback) override {}
-  void EnableMetrics(bool signal_collection_allowed) override {}
-  segmentation_platform::ServiceProxy* GetServiceProxy() override {
-    return nullptr;
-  }
-  bool IsPlatformInitialized() override { return true; }
-};
+segmentation_platform::SegmentSelectionResult GetSegmentResult() {
+  segmentation_platform::SegmentSelectionResult result;
+  result.is_ready = true;
+  result.segment = segmentation_platform::proto::SegmentId::
+      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+  return result;
+}
 
 class FeatureNotificationGuideServiceImplTest : public testing::Test {
  public:
@@ -148,7 +117,8 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestScheduler notifcation_scheduler_;
   feature_engagement::test::MockTracker tracker_;
-  TestSegmentationPlatformService segmentation_platform_service_;
+  segmentation_platform::MockSegmentationPlatformService
+      segmentation_platform_service_;
   Config config_;
   base::SimpleTestClock test_clock_;
   base::test::ScopedFeatureList feature_list_;
@@ -156,10 +126,13 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
 };
 
 TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
+  EXPECT_CALL(segmentation_platform_service_, GetCachedSegmentResult(_))
+      .WillRepeatedly(Return(GetSegmentResult()));
+
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   service_->OnSchedulerInitialized(std::set<std::string>());
   auto queued_params = notifcation_scheduler_.GetQueuedParamsAndClear();
-  EXPECT_EQ(2u, queued_params.size());
+  ASSERT_EQ(2u, queued_params.size());
   EXPECT_EQ(notifications::SchedulerClientType::kFeatureGuide,
             queued_params[0]->type);
 
@@ -185,6 +158,8 @@ TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
 }
 
 TEST_F(FeatureNotificationGuideServiceImplTest, SkipAlreadyScheduledFeatures) {
+  EXPECT_CALL(segmentation_platform_service_, GetCachedSegmentResult(_))
+      .WillRepeatedly(Return(GetSegmentResult()));
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   std::set<std::string> scheduled_guids;
   scheduled_guids.insert("guid_incognito_tab");

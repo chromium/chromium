@@ -6068,6 +6068,7 @@ test("unit_tests") {
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/internal:internal",
     "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
     "//components/send_tab_to_self",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",

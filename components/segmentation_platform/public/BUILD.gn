@@ -67,6 +67,19 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "testing/mock_segmentation_platform_service.h" ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 if (is_android) {
   android_library("public_java") {
     sources = [

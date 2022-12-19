@@ -7,12 +7,12 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/observer_list_types.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -23,7 +23,6 @@
 class PrefRegistrySimple;
 
 namespace segmentation_platform {
-struct InputContext;
 class ServiceProxy;
 struct SegmentSelectionResult;
 

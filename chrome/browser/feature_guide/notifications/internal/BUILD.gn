@@ -21,7 +21,6 @@ source_set("internal") {
     "//base",
     "//chrome/browser/feature_guide/notifications:public",
     "//components/feature_engagement/public",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/segmentation_platform/public",
     "//skia",
   ]
@@ -43,8 +42,8 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

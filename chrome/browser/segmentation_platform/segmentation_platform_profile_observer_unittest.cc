@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,32 +24,6 @@ constexpr char kProfile1[] = "profile-1";
 constexpr char kProfile2[] = "profile-2";
 
 }  // namespace
-
-class MockSegmentationPlatformService : public SegmentationPlatformService {
- public:
-  MockSegmentationPlatformService() = default;
-  ~MockSegmentationPlatformService() override = default;
-  MOCK_METHOD(void,
-              GetSelectedSegment,
-              (const std::string&, SegmentSelectionCallback));
-  MOCK_METHOD(SegmentSelectionResult,
-              GetCachedSegmentResult,
-              (const std::string&));
-  MOCK_METHOD(void,
-              GetSelectedSegmentOnDemand,
-              (const std::string&,
-               scoped_refptr<InputContext>,
-               SegmentSelectionCallback));
-  MOCK_METHOD(void,
-              GetClassificationResult,
-              (const std::string&,
-               const PredictionOptions&,
-               scoped_refptr<InputContext>,
-               ClassificationResultCallback));
-  MOCK_METHOD(void, EnableMetrics, (bool));
-  MOCK_METHOD(void, GetServiceStatus, ());
-  MOCK_METHOD(bool, IsPlatformInitialized, ());
-};
 
 class SegmentationPlatformProfileObserverTest : public testing::Test {
  public:
