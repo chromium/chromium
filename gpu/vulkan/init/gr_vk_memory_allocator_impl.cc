@@ -145,7 +145,7 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     if (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT & mem_flags) {
       flags |= GrVkAlloc::kMappable_Flag;
     }
-    if (!SkToBool(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT & mem_flags)) {
+    if (!(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT & mem_flags)) {
       flags |= GrVkAlloc::kNoncoherent_Flag;
     }
     if (VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT & mem_flags) {
