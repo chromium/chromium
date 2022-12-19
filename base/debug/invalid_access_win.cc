@@ -9,7 +9,6 @@
 #include <windows.h>
 
 #include "base/check.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -42,21 +41,10 @@ void IndirectCall(FuncType* func) {
   (*func)();
 }
 
-void CreateSyntheticHeapCorruption() {
-  EXCEPTION_RECORD record = {};
-  record.ExceptionCode = STATUS_HEAP_CORRUPTION;
-  RaiseFailFastException(&record, nullptr,
-                         FAIL_FAST_GENERATE_EXCEPTION_ADDRESS);
-}
-
 }  // namespace
 
 void TerminateWithHeapCorruption() {
   __try {
-    // Pre-Windows 10, it's hard to trigger a heap corruption fast fail, so
-    // artificially create one instead.
-    if (base::win::GetVersion() < base::win::Version::WIN10)
-      CreateSyntheticHeapCorruption();
     HANDLE heap = ::HeapCreate(0, 0, 0);
     CHECK(heap);
     CHECK(HeapSetInformation(heap, HeapEnableTerminationOnCorruption, nullptr,

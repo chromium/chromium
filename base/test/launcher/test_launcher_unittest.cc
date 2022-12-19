@@ -34,10 +34,6 @@
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace base {
 namespace {
 
@@ -1145,13 +1141,6 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if BUILDFLAG(IS_WIN)
-  // In Windows versions prior to Windows 8, nested job objects are
-  // not allowed and cause this test to fail.
-  if (win::GetVersion() < win::Version::WIN8) {
-    command_line.AppendSwitch(kDontUseJobObjectFlag);
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   GetAppOutputAndError(command_line, &output);
@@ -1260,13 +1249,6 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if BUILDFLAG(IS_WIN)
-  // In Windows versions prior to Windows 8, nested job objects are
-  // not allowed and cause this test to fail.
-  if (win::GetVersion() < win::Version::WIN8) {
-    command_line.AppendSwitch(kDontUseJobObjectFlag);
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   int exit_code = 0;

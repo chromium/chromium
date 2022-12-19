@@ -77,7 +77,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
-#include "base/win/windows_version.h"
 
 #include <windows.h>
 
@@ -97,7 +96,8 @@
 
 namespace base {
 
-// See https://groups.google.com/a/chromium.org/d/msg/chromium-dev/nkdTP7sstSc/uT3FaE_sgkAJ .
+// See
+// https://groups.google.com/a/chromium.org/d/msg/chromium-dev/nkdTP7sstSc/uT3FaE_sgkAJ
 using ::operator<<;
 
 // The environment variable name for the total number of test shards.
@@ -420,13 +420,6 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     }
 
     DWORD job_flags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-
-    // Allow break-away from job since sandbox and few other places rely on it
-    // on Windows versions prior to Windows 8 (which supports nested jobs).
-    if (win::GetVersion() < win::Version::WIN8 &&
-        flags & TestLauncher::ALLOW_BREAKAWAY_FROM_JOB) {
-      job_flags |= JOB_OBJECT_LIMIT_BREAKAWAY_OK;
-    }
 
     if (!SetJobObjectLimitFlags(job_handle.get(), job_flags)) {
       LOG(ERROR) << "Could not SetJobObjectLimitFlags.";
