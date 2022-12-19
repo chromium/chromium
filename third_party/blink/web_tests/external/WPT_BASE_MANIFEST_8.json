@@ -256524,6 +256524,19 @@
         {}
        ]
       ],
+      "transform-dynamic-change-root.html": [
+       "dd8a22d05db1f0149a74287766be05c63d319b6e",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/transform-dynamic-change-root-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "transform-dynamic-change.html": [
        "57b5551061945931b39f35394e2974b2306e2762",
        [
@@ -259972,16 +259985,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "ab8852111d484d1f958f741941cb1ab9c3395c75",
-     []
-    ],
-    "mtime.json": [
-     "83394b2a24d14ea800185a80aa09fdfd348b611d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -337735,6 +337738,10 @@
       ]
      },
      "body": {
+      "cloned-any.js": [
+       "2bca96c7043db34b9cd4a60156019b7f870100a2",
+       []
+      ],
       "formdata.any-expected.txt": [
        "ecd514be687ea819305f110860de33a661714793",
        []
@@ -382819,6 +382826,10 @@
       ],
       "transform-dynamic-change-ref.html": [
        "df8afcebc18e912d3c4a66be7e069f1a827e1e88",
+       []
+      ],
+      "transform-dynamic-change-root-ref.html": [
+       "179cbb128dd6cf953f67f85a97b4a703779d6fad",
        []
       ],
       "tspan-opacity-mixed-direction-ref.svg": [
