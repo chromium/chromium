@@ -355,8 +355,11 @@ enum ServerFieldType {
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  // Please update enum `AutofillServerFieldType` in
-  // `tools/metrics/histogram/enums.xml` for metrics tracking.
+  // Please update the following enums in `tools/metrics/histogram/enums.xml`
+  // for metrics tracking.
+  // - `AutofillServerFieldType`
+  // - `AutofilledFieldUserEditingStatusByFieldType` (16 * type + x)
+  // - `AutofillPredictionsComparisonResult` (6 * type + x)
   MAX_VALID_FIELD_TYPE = 129,
 };
 

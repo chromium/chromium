@@ -6647,6 +6647,16 @@ others/histograms.xml -->
       label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: edited"/>
   <int value="1953"
       label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: accepted"/>
+  <int value="1968" label="PHONE_HOME_NUMBER_PREFIX: edited"/>
+  <int value="1969" label="PHONE_HOME_NUMBER_PREFIX: accepted"/>
+  <int value="1984" label="PHONE_HOME_NUMBER_SUFFIX: edited"/>
+  <int value="1985" label="PHONE_HOME_NUMBER_SUFFIX: accepted"/>
+  <int value="2000" label="IBAN_VALUE: edited"/>
+  <int value="2001" label="IBAN_VALUE: accepted"/>
+  <int value="2016" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: edited"/>
+  <int value="2017" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: accepted"/>
+  <int value="2032" label="NUMERIC_QUANTITY: edited"/>
+  <int value="2033" label="NUMERIC_QUANTITY: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
