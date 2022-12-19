@@ -6018,10 +6018,6 @@ crbug.com/1318929 http/tests/devtools/console/console-uncaught-promise.js [ Fail
 crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.html [ Failure Pass ]
 crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4109729
-crbug.com/1400253 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
-crbug.com/1400253 http/tests/devtools/console/console-proxy.js [ Failure Pass ]
-
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 

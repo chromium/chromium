@@ -1,10 +1,10 @@
 Tests that console logging dumps proxy properly.
 
-console-proxy.js:25 Proxy {boo: 42, foo: 43}
-console-proxy.js:27 Proxy {boo: 42, foo: 43}
+console-proxy.js:25 Proxy(Object) {boo: 42, foo: 43}
+console-proxy.js:27 Proxy(Object) {boo: 42, foo: 43}
 window.accessedGet = false
 info-note display: inline-block
-console-proxy.js:25 Proxy {boo: 42, foo: 43}[[Handler]]: Object[[Target]]: Object[[IsRevoked]]: false
-console-proxy.js:27 Proxy {boo: 42, foo: 43}[[Handler]]: Object[[Target]]: Proxy[[IsRevoked]]: false
+console-proxy.js:25 Proxy(Object) {boo: 42, foo: 43}[[Handler]]: Object[[Target]]: Object[[IsRevoked]]: false
+console-proxy.js:27 Proxy(Object) {boo: 42, foo: 43}[[Handler]]: Object[[Target]]: Proxy(Object)[[IsRevoked]]: false
 window.accessedGet = false
 
