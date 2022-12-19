@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -490,12 +491,20 @@ installer::InstallStatus RepeatDeleteOldVersions(
       return installer::SETUP_SINGLETON_RELEASED;
     }
 
-    const bool priority_was_changed_to_background =
-        base::Process::Current().SetProcessBackgrounded(true);
+    // Note that Windows 11 22H2 has a bug whereby process priorities are not
+    // altered by PROCESS_MODE_BACKGROUND_BEGIN, but I/O and memory priorities
+    // still are. See https://crbug.com/1396155 for details.
+    base::ScopedClosureRunner restore_priority;
+    if (::SetPriorityClass(::GetCurrentProcess(),
+                           PROCESS_MODE_BACKGROUND_BEGIN) != 0) {
+      // Be aware that a process restoring itself to normal priority from
+      // background priority is inherently somewhat of a priority inversion.
+      restore_priority.ReplaceClosure(base::BindOnce([]() {
+        ::SetPriorityClass(::GetCurrentProcess(), PROCESS_MODE_BACKGROUND_END);
+      }));
+    }
     const bool delete_old_versions_success =
         installer::DeleteOldVersions(install_dir);
-    if (priority_was_changed_to_background)
-      base::Process::Current().SetProcessBackgrounded(false);
     ++num_attempts;
 
     if (delete_old_versions_success) {
