@@ -148,6 +148,10 @@ class FakeGaia {
   // to the associated redirect endpoint.
   void RegisterSamlUser(const std::string& account_id, const GURL& saml_idp);
 
+  // Remove association between given user and their SAML IdP. This simulates a
+  // switch from SAML to GAIA.
+  void RemoveSamlIdpForUser(const std::string& account_id);
+
   // Associates a SAML `sso_profile` with a SAML IdP redirect endpoint. When a
   // /samlredirect request comes in for this SSO Profile, it will be redirected
   // to this endpoint.

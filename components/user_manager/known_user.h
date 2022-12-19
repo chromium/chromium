@@ -237,6 +237,10 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   const std::string* GetPasswordSyncToken(const AccountId& account_id) const;
 
+  // Removes password sync token associated with the user. Can be relevant e.g.
+  // if user switches from SAML to GAIA.
+  void ClearPasswordSyncToken(const AccountId& account_id);
+
   // Saves the current major version as the version in which the user completed
   // the onboarding flow.
   void SetOnboardingCompletedVersion(

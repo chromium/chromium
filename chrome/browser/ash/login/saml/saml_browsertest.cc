@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
@@ -588,11 +589,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, CredentialPassingAPI) {
                     FakeCryptohomeMiscClient::GetStubSystemSalt()));
   EXPECT_EQ(key.GetSecret(), cryptohome_client_->salted_hashed_secret());
 
-  EXPECT_TRUE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_TRUE(user_manager::KnownUser(g_browser_process->local_state())
+                  .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                      saml_test_users::kFirstUserCorpExampleComEmail,
+                      kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
@@ -637,11 +637,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
                     FakeCryptohomeMiscClient::GetStubSystemSalt()));
   EXPECT_EQ(key.GetSecret(), cryptohome_client_->salted_hashed_secret());
 
-  EXPECT_TRUE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_TRUE(user_manager::KnownUser(g_browser_process->local_state())
+                  .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                      saml_test_users::kFirstUserCorpExampleComEmail,
+                      kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 1, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Provider", 1, 1);
@@ -688,11 +687,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
 
   test::WaitForPrimaryUserSessionStart();
 
-  EXPECT_FALSE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
+                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                       saml_test_users::kFirstUserCorpExampleComEmail,
+                       kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
@@ -733,11 +731,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedDynamic) {
   SigninFrameJS().TapOn("Submit");
   test::WaitForPrimaryUserSessionStart();
 
-  EXPECT_FALSE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
+                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                       saml_test_users::kFirstUserCorpExampleComEmail,
+                       kFirstSAMLUserGaiaId)));
 }
 
 // Tests the multiple password scraped flow.
@@ -763,11 +760,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   SendConfirmPassword("password1");
   test::WaitForPrimaryUserSessionStart();
 
-  EXPECT_FALSE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
+                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                       saml_test_users::kFirstUserCorpExampleComEmail,
+                       kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
@@ -800,11 +796,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithImprovedScraping, ScrapedMultiple) {
 
   test::WaitForPrimaryUserSessionStart();
 
-  EXPECT_FALSE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
+                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                       saml_test_users::kFirstUserCorpExampleComEmail,
+                       kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
@@ -845,11 +840,10 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
   SetManualPasswords("Test1", "Test1");
   test::WaitForPrimaryUserSessionStart();
 
-  EXPECT_FALSE(
-      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
-          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-              saml_test_users::kFirstUserCorpExampleComEmail,
-              kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
+                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+                       saml_test_users::kFirstUserCorpExampleComEmail,
+                       kFirstSAMLUserGaiaId)));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
@@ -1599,6 +1593,45 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLClosaAndReopen) {
   // Scraping one password should finish login.
   SigninFrameJS().TapOn("Submit");
   test::WaitForPrimaryUserSessionStart();
+}
+
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SamlToGaiaChange) {
+  ShowGAIALoginForm();
+  LogInWithSAML(saml_test_users::kFirstUserCorpExampleComEmail,
+                kTestAuthSIDCookie1, kTestAuthLSIDCookie1);
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_TRUE(known_user.IsUsingSAML(AccountId::FromUserEmailGaiaId(
+      saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId)));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  ASSERT_TRUE(user);
+  EXPECT_TRUE(user->using_saml());
+}
+
+// Verifies that when SAML user changes IdP to GAIA we detect it correctly and
+// update corresponding flags in the local state and in user session.
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlToGaiaChange) {
+  // Change user IdP to GAIA.
+  fake_gaia_.fake_gaia()->RemoveSamlIdpForUser(
+      saml_test_users::kFirstUserCorpExampleComEmail);
+
+  // Log in without SAML.
+  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  LoginDisplayHost::default_host()
+      ->GetOobeUI()
+      ->GetView<GaiaScreenHandler>()
+      ->ShowSigninScreenForTest(saml_test_users::kFirstUserCorpExampleComEmail,
+                                "password", "[]");
+  test::WaitForPrimaryUserSessionStart();
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_FALSE(known_user.IsUsingSAML(AccountId::FromUserEmailGaiaId(
+      saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId)));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  ASSERT_TRUE(user);
+  EXPECT_FALSE(user->using_saml());
 }
 
 // Ensure that the permission status of getUserMedia requests from SAML login

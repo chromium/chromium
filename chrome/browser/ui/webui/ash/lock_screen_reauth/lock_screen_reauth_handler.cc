@@ -53,6 +53,10 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
+  // TODO(b/259675128): we shouldn't rely on `user->using_saml()` when deciding
+  // which IdP page to show because this flag can be outdated. Admin could have
+  // changed the IdP to GAIA since last authentication and we wouldn't know
+  // about it.
   return user && user->using_saml();
 }
 

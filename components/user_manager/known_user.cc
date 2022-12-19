@@ -723,6 +723,10 @@ const std::string* KnownUser::GetPasswordSyncToken(
   return FindStringPath(account_id, kPasswordSyncToken);
 }
 
+void KnownUser::ClearPasswordSyncToken(const AccountId& account_id) {
+  SetPath(account_id, kPasswordSyncToken, absl::nullopt);
+}
+
 void KnownUser::SetOnboardingCompletedVersion(
     const AccountId& account_id,
     const absl::optional<base::Version> version) {

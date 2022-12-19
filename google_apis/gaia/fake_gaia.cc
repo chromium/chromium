@@ -431,6 +431,10 @@ void FakeGaia::RegisterSamlUser(const std::string& account_id,
   saml_account_idp_map_[account_id] = saml_idp;
 }
 
+void FakeGaia::RemoveSamlIdpForUser(const std::string& account_id) {
+  saml_account_idp_map_.erase(account_id);
+}
+
 void FakeGaia::RegisterSamlDomainRedirectUrl(const std::string& domain,
                                              const GURL& saml_redirect_url) {
   saml_domain_url_map_[domain] = saml_redirect_url;
