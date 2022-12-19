@@ -747,9 +747,16 @@ void VolumeManager::Initialize() {
   // Subscribe to ARC DocumentsProvider events about roots.
   documents_provider_root_manager_->AddObserver(this);
 
-  // Subscribe to FileSystemProviderService.
+  // Subscribe to FileSystemProviderService and register currently mounted
+  // volumes for the profile.
   if (file_system_provider_service_) {
     file_system_provider_service_->AddObserver(this);
+
+    auto restore_provided_file_systems =
+        base::BindOnce(&VolumeManager::RestoreProvidedFileSystems,
+                       weak_ptr_factory_.GetWeakPtr());
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(restore_provided_file_systems));
   }
 
   // Subscribe to Profile Preference change.
@@ -1265,6 +1272,19 @@ void VolumeManager::OnRenameEvent(
   }
 
   NOTREACHED() << "Unexpected RenameEvent " << event;
+}
+
+void VolumeManager::RestoreProvidedFileSystems() {
+  DCHECK(file_system_provider_service_);
+
+  std::vector<ash::file_system_provider::ProvidedFileSystemInfo>
+      file_system_info_list =
+          file_system_provider_service_->GetProvidedFileSystemInfoList();
+  for (const auto& file_system_info : file_system_info_list) {
+    OnProvidedFileSystemMount(file_system_info,
+                              ash::file_system_provider::MOUNT_CONTEXT_RESTORE,
+                              base::File::FILE_OK);
+  }
 }
 
 void VolumeManager::OnProvidedFileSystemMount(

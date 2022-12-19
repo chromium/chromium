@@ -570,6 +570,7 @@ class VolumeManager : public KeyedService,
   // Set of Volume objects indexed by volume ID.
   using Volumes = std::set<std::unique_ptr<Volume>, SortByVolumeId>;
 
+  void RestoreProvidedFileSystems();
   void OnDiskMountManagerRefreshed(bool success);
   void OnStorageMonitorInitialized();
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
