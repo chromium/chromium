@@ -20,9 +20,9 @@
 #include <lib/zx/process.h>
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #include "base/feature_list.h"
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/process/port_provider_mac.h"
@@ -40,6 +40,10 @@ BASE_DECLARE_FEATURE(kMacAllowBackgroundingProcesses);
 // of all threads in the process when deciding on the next thread to schedule.
 // It will help guarantee fairness between renderers.
 BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseEcoQoSForBackgroundProcess);
 #endif
 
 // Provides a move-only encapsulation of a process.

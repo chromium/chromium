@@ -243,6 +243,12 @@ class ChildProcessLauncherHelper
   std::unique_ptr<SandboxedProcessLauncherDelegate> delegate_;
   base::WeakPtr<ChildProcessLauncher> child_process_launcher_;
 
+#if BUILDFLAG(IS_WIN)
+  // Whether the child process is backgrounded, the state is stored to avoid
+  // setting the process priority repeatedly.
+  bool is_process_backgrounded_ = false;
+#endif
+
   // The PlatformChannel that will be used to transmit an invitation to the
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from

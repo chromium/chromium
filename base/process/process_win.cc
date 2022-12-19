@@ -11,6 +11,7 @@
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/win/windows_version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <windows.h>
@@ -27,6 +28,15 @@ DWORD kBasicProcessAccess =
 } // namespace
 
 namespace base {
+
+// Sets Eco QoS (Quality of Service) level for background process which would
+// select efficient CPU frequency and schedule the process to efficient cores
+// (available on hybrid CPUs).
+// QoS is a scheduling Win API which indicates the desired performance and power
+// efficiency of a process/thread. EcoQoS is introduced since Windows 11.
+BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
+             "UseEcoQoSForBackgroundProcess",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
@@ -265,6 +275,30 @@ bool Process::SetProcessBackgrounded(bool value) {
   // https://crbug.com/1396155 for details.
   DCHECK(!is_current());
   const DWORD priority = value ? IDLE_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS;
+
+  if (base::win::OSInfo::GetInstance()->version() >=
+          base::win::Version::WIN11 &&
+      FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) {
+    PROCESS_POWER_THROTTLING_STATE power_throttling;
+    RtlZeroMemory(&power_throttling, sizeof(power_throttling));
+    power_throttling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+
+    if (value) {
+      // Sets Eco QoS level.
+      power_throttling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+      power_throttling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+    } else {
+      // Uses system default.
+      power_throttling.ControlMask = 0;
+      power_throttling.StateMask = 0;
+    }
+    bool ret =
+        ::SetProcessInformation(Handle(), ProcessPowerThrottling,
+                                &power_throttling, sizeof(power_throttling));
+    if (ret == 0) {
+      DPLOG(ERROR) << "Setting process QoS policy fails";
+    }
+  }
 
   return (::SetPriorityClass(Handle(), priority) != 0);
 }

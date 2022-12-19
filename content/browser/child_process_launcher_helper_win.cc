@@ -118,8 +118,11 @@ void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
     base::Process process,
     bool is_background) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (process.CanBackgroundProcesses())
-    process.SetProcessBackgrounded(is_background);
+  if (process.CanBackgroundProcesses() &&
+      is_process_backgrounded_ != is_background) {
+    is_process_backgrounded_ = is_background;
+    process.SetProcessBackgrounded(is_process_backgrounded_);
+  }
 }
 
 }  // namespace internal
