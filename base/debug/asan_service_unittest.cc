@@ -31,7 +31,19 @@ bool ExitedCleanly(int exit_status) {
   return exit_status == 0;
 }
 
-TEST_F(AsanServiceTest, ErrorCallback) {
+// TODO(crbug.com/1402267): ASAN death test is not picking up the failure
+// in the emulator logs. Disabling to keep ASAN queue clear.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ErrorCallback DISABLED_ErrorCallback
+#define MAYBE_CrashInErrorCallback DISABLED_CrashInErrorCallback
+#define MAYBE_ShouldExitCleanly DISABLED_ShouldExitCleanly
+#else
+#define MAYBE_ErrorCallback ErrorCallback
+#define MAYBE_CrashInErrorCallback CrashInErrorCallback
+#define MAYBE_ShouldExitCleanly ShouldExitCleanly
+#endif
+
+TEST_F(AsanServiceTest, MAYBE_ErrorCallback) {
   // Register an error callback, and check that the output is added.
   AsanService::GetInstance()->AddErrorCallback([](const char*, bool*) {
     AsanService::GetInstance()->Log("\nErrorCallback1");
@@ -47,7 +59,7 @@ TEST_F(AsanServiceTest, ErrorCallback) {
   EXPECT_DEATH(AsanHeapUseAfterFree(), "ErrorCallback2");
 }
 
-TEST_F(AsanServiceTest, CrashInErrorCallback) {
+TEST_F(AsanServiceTest, MAYBE_CrashInErrorCallback) {
   // If a nested fault happens, we don't expect to get our custom log messages
   // displayed, but we should still get some part of the ASan report. This
   // matches current ASan recursive fault handling - make sure we don't end up
@@ -60,7 +72,7 @@ TEST_F(AsanServiceTest, CrashInErrorCallback) {
                "AddressSanitizer: nested bug in the same thread");
 }
 
-TEST_F(AsanServiceTest, ShouldExitCleanly) {
+TEST_F(AsanServiceTest, MAYBE_ShouldExitCleanly) {
   // Register an error callback, and check that the output is added.
   AsanService::GetInstance()->AddErrorCallback([](const char*, bool*) {
     AsanService::GetInstance()->Log("\nErrorCallback1");
