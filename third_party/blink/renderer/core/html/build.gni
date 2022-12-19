@@ -270,6 +270,7 @@ blink_core_sources_html = [
   "html_area_element.h",
   "html_base_element.cc",
   "html_base_element.h",
+  "html_bdi_element.cc",
   "html_bdi_element.h",
   "html_body_element.cc",
   "html_body_element.h",

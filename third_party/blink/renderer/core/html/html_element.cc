@@ -2028,11 +2028,6 @@ static inline bool ElementAffectsDirectionality(const Node* node) {
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
-  if (HasDirectionAuto()) {
-    SetSelfOrAncestorHasDirAutoAttribute();
-    GetDocument().SetDirAttributeDirty();
-  }
-
   if (GetDocument().IsDirAttributeDirty()) {
     AdjustDirectionalityIfNeededAfterChildrenChanged(change);
 
