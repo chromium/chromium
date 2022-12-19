@@ -45,11 +45,11 @@ class TestChunkerDisplayItem : public DrawingDisplayItem {
       : DrawingDisplayItem(client_id,
                            type,
                            visual_rect,
-                           nullptr,
+                           PaintRecord(),
                            RasterEffectOutset::kNone) {}
 };
 
-sk_sp<const PaintRecord> OpaquePaintRecord(const gfx::Rect& visual_rect) {
+PaintRecord OpaquePaintRecord(const gfx::Rect& visual_rect) {
   PaintRecorder recorder;
   auto* canvas = recorder.beginRecording();
   cc::PaintFlags flags;

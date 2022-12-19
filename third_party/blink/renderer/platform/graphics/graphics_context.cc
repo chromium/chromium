@@ -317,27 +317,27 @@ void GraphicsContext::BeginRecording() {
     canvas_->SetPaintPreviewTracker(paint_preview_tracker_);
 }
 
-sk_sp<PaintRecord> GraphicsContext::EndRecording() {
-  sk_sp<PaintRecord> record = paint_recorder_.finishRecordingAsPicture();
+PaintRecord GraphicsContext::EndRecording() {
   canvas_ = nullptr;
-  DCHECK(record);
-  return record;
+  return paint_recorder_.finishRecordingAsPicture();
 }
 
-void GraphicsContext::DrawRecord(sk_sp<const PaintRecord> record) {
-  if (!record || !record->size())
+void GraphicsContext::DrawRecord(PaintRecord record) {
+  if (record.empty()) {
     return;
+  }
 
   DCHECK(canvas_);
   canvas_->drawPicture(std::move(record));
 }
 
-void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
+void GraphicsContext::CompositeRecord(PaintRecord record,
                                       const gfx::RectF& dest,
                                       const gfx::RectF& src,
                                       SkBlendMode op) {
-  if (!record)
+  if (record.empty()) {
     return;
+  }
   DCHECK(canvas_);
 
   cc::PaintFlags flags;
@@ -348,12 +348,13 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
   canvas_->save();
   canvas_->concat(
       SkM44::RectToRect(gfx::RectFToSkRect(src), gfx::RectFToSkRect(dest)));
-  canvas_->drawImage(PaintImageBuilder::WithDefault()
-                         .set_paint_record(record, gfx::ToRoundedRect(src),
-                                           PaintImage::GetNextContentId())
-                         .set_id(PaintImage::GetNextId())
-                         .TakePaintImage(),
-                     0, 0, sampling, &flags);
+  canvas_->drawImage(
+      PaintImageBuilder::WithDefault()
+          .set_paint_record(std::move(record), gfx::ToRoundedRect(src),
+                            PaintImage::GetNextContentId())
+          .set_id(PaintImage::GetNextId())
+          .TakePaintImage(),
+      0, 0, sampling, &flags);
   canvas_->restore();
 }
 

@@ -149,7 +149,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                     NodeId node_id,
                     const PaintFlags& flags) override;
 
-  void drawPicture(sk_sp<const PaintRecord> record) override;
+  void drawPicture(PaintRecord record) override;
 
   bool isClipEmpty() const override;
   SkM44 getLocalToDevice() const override;
@@ -173,7 +173,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   // Same as the above drawPicture() except using the given custom data
   // raster callback.
   void drawPicture(
-      sk_sp<const PaintRecord> record,
+      PaintRecord record,
       PlaybackParams::CustomDataRasterCallback custom_raster_callback);
 
  private:

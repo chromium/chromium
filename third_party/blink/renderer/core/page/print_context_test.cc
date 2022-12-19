@@ -152,7 +152,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
           DisplayItem::kPrintedContentDestinationLocations);
       GetPrintContext().OutputLinkedDestinations(context, page_rect);
     }
-    builder->EndRecording()->Playback(&canvas);
+    builder->EndRecording().Playback(&canvas);
     GetPrintContext().EndPrintMode();
     return page_rect;
   }

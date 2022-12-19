@@ -30,7 +30,7 @@ class MODULES_EXPORT BoxShadowPaintDefinition final
   static Animation* GetAnimationIfCompositable(const Element* element);
 
   // PaintDefinition override
-  sk_sp<PaintRecord> Paint(
+  PaintRecord Paint(
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 

@@ -218,12 +218,13 @@ bool CheckIfRRectClipCoversCanvas(const SkCanvas& canvas,
 }  // namespace
 
 absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
-    const PaintOpBuffer* buffer,
+    const PaintOpBuffer& buffer,
     const gfx::Rect& rect,
     int max_ops_to_analyze,
     const std::vector<size_t>* offsets) {
-  if (buffer->size() == 0 || (offsets && offsets->empty()))
+  if (buffer.size() == 0 || (offsets && offsets->empty())) {
     return SkColors::kTransparent;
+  }
 
   bool is_solid = true;
   bool is_transparent = true;
@@ -267,9 +268,9 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
     switch (op.GetType()) {
       case PaintOpType::DrawRecord: {
         const auto& record_op = static_cast<const DrawRecordOp&>(op);
-        stack.emplace_back(
-            PaintOpBuffer::CompositeIterator(record_op.record.get(), nullptr),
-            canvas.getLocalToDevice(), canvas.getSaveCount());
+        stack.emplace_back(PaintOpBuffer::CompositeIterator(
+                               record_op.record.buffer(), nullptr),
+                           canvas.getLocalToDevice(), canvas.getSaveCount());
         continue;
       }
 

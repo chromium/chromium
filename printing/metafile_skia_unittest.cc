@@ -37,18 +37,18 @@ TEST(MetafileSkiaTest, TestFrameContent) {
 
   // Create the page with nested content which is the placeholder and will be
   // replaced later.
-  sk_sp<cc::PaintRecord> record = sk_make_sp<cc::PaintRecord>();
+  cc::PaintOpBuffer buffer;
   cc::PaintFlags flags;
   flags.setColor(SK_ColorWHITE);
   const SkRect page_rect = SkRect::MakeXYWH(0, 0, kPageSideLen, kPageSideLen);
-  record->push<cc::DrawRectOp>(page_rect, flags);
+  buffer.push<cc::DrawRectOp>(page_rect, flags);
   const uint32_t content_id = pic_holder->uniqueID();
-  record->push<cc::CustomDataOp>(content_id);
+  buffer.push<cc::CustomDataOp>(content_id);
   SkSize page_size = SkSize::Make(kPageSideLen, kPageSideLen);
 
   // Finish creating the entire metafile.
   MetafileSkia metafile(mojom::SkiaDocumentType::kMSKP, 1);
-  metafile.AppendPage(page_size, std::move(record));
+  metafile.AppendPage(page_size, buffer.ReleaseAsRecord());
   metafile.AppendSubframeInfo(content_id, base::UnguessableToken::Create(),
                               std::move(pic_holder));
   metafile.FinishFrameContent();
@@ -148,28 +148,28 @@ TEST(MetafileSkiaTest, TestMultiPictureDocumentTypefaces) {
         SkRect::MakeXYWH(0, 0, kPictureSideLen, kPictureSideLen));
 
     // Create the page for the text content.
-    sk_sp<cc::PaintRecord> record = sk_make_sp<cc::PaintRecord>();
-    record->push<cc::DrawRectOp>(page_rect, flags);
+    cc::PaintOpBuffer buffer;
+    buffer.push<cc::DrawRectOp>(page_rect, flags);
     const uint32_t content_id = pic_holder->uniqueID();
-    record->push<cc::CustomDataOp>(content_id);
+    buffer.push<cc::CustomDataOp>(content_id);
 
     // Mark the page with some text using multiple fonts.
     // Use the first font.
     sk_sp<SkTextBlob> text_blob1 = SkTextBlob::MakeFromString("foo", font1);
-    record->push<cc::DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, ++node_id,
-                                     flags_text);
+    buffer.push<cc::DrawTextBlobOp>(text_blob1, 0.0f, 0.0f, ++node_id,
+                                    flags_text);
 
     // Use the second font.
     sk_sp<SkTextBlob> text_blob2 = SkTextBlob::MakeFromString("bar", font2);
-    record->push<cc::DrawTextBlobOp>(text_blob2, 0.0f, 0.0f, ++node_id,
-                                     flags_text);
+    buffer.push<cc::DrawTextBlobOp>(text_blob2, 0.0f, 0.0f, ++node_id,
+                                    flags_text);
 
     // Reuse the first font again on same page.
     sk_sp<SkTextBlob> text_blob3 = SkTextBlob::MakeFromString("bar", font2);
-    record->push<cc::DrawTextBlobOp>(text_blob3, 0.0f, 0.0f, ++node_id,
-                                     flags_text);
+    buffer.push<cc::DrawTextBlobOp>(text_blob3, 0.0f, 0.0f, ++node_id,
+                                    flags_text);
 
-    metafile.AppendPage(page_size, std::move(record));
+    metafile.AppendPage(page_size, buffer.ReleaseAsRecord());
     metafile.AppendSubframeInfo(content_id, base::UnguessableToken::Create(),
                                 std::move(pic_holder));
     metafile.FinishFrameContent();

@@ -31,7 +31,7 @@ class MODULES_EXPORT ClipPathPaintDefinition final
   ClipPathPaintDefinition& operator=(const ClipPathPaintDefinition&) = delete;
 
   // PaintDefinition override
-  sk_sp<PaintRecord> Paint(
+  PaintRecord Paint(
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 

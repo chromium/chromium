@@ -499,7 +499,7 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
   using ScalingBehavior = PaintShader::ScalingBehavior;
 
   RecordPaintFilter(
-      sk_sp<PaintRecord> record,
+      PaintRecord record,
       const SkRect& record_bounds,
       const gfx::SizeF& raster_scale = {1.f, 1.f},
       ScalingBehavior scaling_behavior = ScalingBehavior::kRasterAtScale);
@@ -512,7 +512,7 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
   sk_sp<RecordPaintFilter> CreateScaledPaintRecord(const SkMatrix& ctm,
                                                    int max_texture_size) const;
 
-  const sk_sp<PaintRecord>& record() const { return record_; }
+  const PaintRecord& record() const { return record_; }
   SkRect record_bounds() const { return record_bounds_; }
   gfx::SizeF raster_scale() const { return raster_scale_; }
   ScalingBehavior scaling_behavior() const { return scaling_behavior_; }
@@ -525,13 +525,13 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
       ImageProvider* image_provider) const override;
 
  private:
-  RecordPaintFilter(sk_sp<PaintRecord> record,
+  RecordPaintFilter(PaintRecord record,
                     const SkRect& record_bounds,
                     const gfx::SizeF& raster_scale,
                     ScalingBehavior scaling_behavior,
                     ImageProvider* image_provider);
 
-  sk_sp<PaintRecord> record_;
+  PaintRecord record_;
   SkRect record_bounds_;
   gfx::SizeF raster_scale_;  // ignored if scaling_behavior is kRasterAtScale
   ScalingBehavior scaling_behavior_;

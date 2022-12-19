@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkMatrix;
 
@@ -54,7 +53,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
   static scoped_refptr<Pattern> CreateImagePattern(scoped_refptr<Image>,
                                                    RepeatMode = kRepeatModeXY);
   static scoped_refptr<Pattern> CreatePaintRecordPattern(
-      sk_sp<PaintRecord>,
+      PaintRecord,
       const gfx::RectF& record_bounds,
       RepeatMode = kRepeatModeXY);
   Pattern(const Pattern&) = delete;

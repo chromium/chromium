@@ -129,7 +129,7 @@ PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
 }
 
 void PaintRenderingContext2D::WillOverwriteCanvas() {
-  previous_frame_.reset();
+  previous_frame_ = absl::nullopt;
   if (did_record_draw_commands_in_paint_recorder_) {
     // Discard previous draw commands
     paint_recorder_.finishRecordingAsPicture();
@@ -163,15 +163,15 @@ void PaintRenderingContext2D::resetTransform() {
                                     0);
 }
 
-sk_sp<PaintRecord> PaintRenderingContext2D::GetRecord() {
+PaintRecord PaintRenderingContext2D::GetRecord() {
   if (!did_record_draw_commands_in_paint_recorder_ && !!previous_frame_) {
-    return previous_frame_;  // Reuse the previous frame
+    return *previous_frame_;  // Reuse the previous frame
   }
 
   DCHECK(paint_recorder_.getRecordingCanvas());
   previous_frame_ = paint_recorder_.finishRecordingAsPicture();
   InitializePaintRecorder();
-  return previous_frame_;
+  return *previous_frame_;
 }
 
 }  // namespace blink

@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, TestMultiPictureDocumentTypefaces);
 
   // The following three functions are used for tests only.
-  void AppendPage(const SkSize& page_size, sk_sp<cc::PaintRecord> record);
+  void AppendPage(const SkSize& page_size, cc::PaintRecord record);
   void AppendSubframeInfo(uint32_t content_id,
                           const base::UnguessableToken& proxy_token,
                           sk_sp<SkPicture> subframe_pic_holder);

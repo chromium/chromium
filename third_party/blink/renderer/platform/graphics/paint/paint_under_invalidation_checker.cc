@@ -197,14 +197,12 @@ void PaintUnderInvalidationChecker::ShowItemError(
   LOG(ERROR) << "See http://crbug.com/619103.";
 
   if (auto* new_drawing = DynamicTo<DrawingDisplayItem>(new_item)) {
-    auto* new_record = new_drawing->GetPaintRecord().get();
     LOG(INFO) << "new record:\n"
-              << (new_record ? RecordAsDebugString(*new_record).Utf8() : "{}");
+              << RecordAsDebugString(new_drawing->GetPaintRecord()).Utf8();
   }
   if (auto* old_drawing = DynamicTo<DrawingDisplayItem>(old_item)) {
-    auto* old_record = old_drawing->GetPaintRecord().get();
     LOG(INFO) << "old record:\n"
-              << (old_record ? RecordAsDebugString(*old_record).Utf8() : "{}");
+              << RecordAsDebugString(old_drawing->GetPaintRecord()).Utf8();
   }
 
   paint_controller_.ShowDebugData();

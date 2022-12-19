@@ -726,7 +726,7 @@ bool ImagePaintFilter::operator==(const ImagePaintFilter& other) const {
          filter_quality_ == other.filter_quality_;
 }
 
-RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
+RecordPaintFilter::RecordPaintFilter(PaintRecord record,
                                      const SkRect& record_bounds,
                                      const gfx::SizeF& raster_scale,
                                      ScalingBehavior scaling_behavior)
@@ -736,12 +736,12 @@ RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
                         scaling_behavior,
                         nullptr) {}
 
-RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
+RecordPaintFilter::RecordPaintFilter(PaintRecord record,
                                      const SkRect& record_bounds,
                                      const gfx::SizeF& raster_scale,
                                      ScalingBehavior scaling_behavior,
                                      ImageProvider* image_provider)
-    : PaintFilter(kType, nullptr, record->HasDiscardableImages()),
+    : PaintFilter(kType, nullptr, record.HasDiscardableImages()),
       record_(std::move(record)),
       record_bounds_(record_bounds),
       raster_scale_(raster_scale),
@@ -751,7 +751,7 @@ RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
          (raster_scale_.width() == 1.f && raster_scale_.height() == 1.f));
 
   sk_sp<SkPicture> picture =
-      ToSkPicture(record_, record_bounds_, image_provider);
+      record_.ToSkPicture(record_bounds_, image_provider);
 
   if (scaling_behavior == ScalingBehavior::kRasterAtScale ||
       record_bounds_.isEmpty()) {
@@ -816,7 +816,7 @@ size_t RecordPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
       BaseSerializedSize() + sizeof(record_bounds_) + sizeof(raster_scale_) +
       sizeof(scaling_behavior_) + sizeof(bool);
-  total_size += PaintOpWriter::GetRecordSize(record_.get());
+  total_size += PaintOpWriter::GetRecordSize(&record_);
   return total_size.ValueOrDefault(0u);
 }
 
@@ -828,7 +828,7 @@ sk_sp<PaintFilter> RecordPaintFilter::SnapshotWithImagesInternal(
 }
 
 bool RecordPaintFilter::operator==(const RecordPaintFilter& other) const {
-  return !!record_ == !!other.record_ &&
+  return record_.empty() == other.record_.empty() &&
          scaling_behavior_ == other.scaling_behavior_ &&
          raster_scale_ == other.raster_scale_ &&
          PaintOp::AreSkRectsEqual(record_bounds_, other.record_bounds_);

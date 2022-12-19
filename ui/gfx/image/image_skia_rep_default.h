@@ -43,7 +43,7 @@ class GFX_EXPORT ImageSkiaRep {
   // is used when the image representation is sourced from a drawable such as
   // CanvasImageSource. The `size` must not be empty; in that case the default
   // constructor should be used instead.
-  ImageSkiaRep(sk_sp<cc::PaintRecord> paint_record,
+  ImageSkiaRep(cc::PaintRecord paint_record,
                const gfx::Size& size,
                float scale);
 
@@ -75,7 +75,7 @@ class GFX_EXPORT ImageSkiaRep {
 
   // Returns the backing drawable as a PaintRecord. Use this when the type of
   // ImageRep is |kImageTypeDrawable|.
-  sk_sp<cc::PaintRecord> GetPaintRecord() const;
+  cc::PaintRecord GetPaintRecord() const;
 
   const cc::PaintImage& paint_image() const { return paint_image_; }
   bool has_paint_image() const { return !!paint_image_; }
@@ -89,7 +89,7 @@ class GFX_EXPORT ImageSkiaRep {
 
   // TODO(malaykeshav): Remove when migration is complete and it is safe.
   cc::PaintImage paint_image_;
-  mutable sk_sp<cc::PaintRecord> paint_record_;
+  mutable absl::optional<cc::PaintRecord> paint_record_;
   ImageRepType type_;
 
   Size pixel_size_;

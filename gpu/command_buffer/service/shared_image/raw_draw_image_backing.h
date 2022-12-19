@@ -8,16 +8,14 @@
 #include "base/callback.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 
 class SkPromiseImageTexture;
-
-namespace cc {
-class PaintOpBuffer;
-}
 
 namespace gpu {
 
@@ -70,7 +68,7 @@ class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
   SkSurfaceProps surface_props_ GUARDED_BY_CONTEXT(thread_checker_){};
   absl::optional<SkColor4f> clear_color_ GUARDED_BY(lock_);
   bool visible_ GUARDED_BY(lock_) = false;
-  sk_sp<cc::PaintOpBuffer> paint_op_buffer_ GUARDED_BY(lock_);
+  absl::optional<cc::PaintOpBuffer> paint_op_buffer_ GUARDED_BY(lock_);
   base::OnceClosure paint_op_release_callback_
       GUARDED_BY_CONTEXT(thread_checker_);
   scoped_refptr<SharedContextState> context_state_

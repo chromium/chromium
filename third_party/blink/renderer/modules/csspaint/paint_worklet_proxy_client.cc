@@ -173,7 +173,7 @@ void PaintWorkletProxyClient::Trace(Visitor* visitor) const {
   PaintWorkletPainter::Trace(visitor);
 }
 
-sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
+PaintRecord PaintWorkletProxyClient::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
@@ -187,7 +187,7 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
   }
   // TODO: Can this happen? We don't register till all are here.
   if (global_scopes_.empty())
-    return sk_make_sp<PaintRecord>();
+    return PaintRecord();
 
   // PaintWorklets are stateless by spec. There are two ways script might try to
   // inject state:

@@ -65,18 +65,9 @@ bool WriteAssetToBuffer(const SkStreamAsset* asset, void* buffer, size_t size) {
 namespace printing {
 
 struct Page {
-  Page(const SkSize& s, sk_sp<cc::PaintRecord> c)
-      : size(s), content(std::move(c)) {}
-  Page(Page&& that) : size(that.size), content(std::move(that.content)) {}
-  Page(const Page&) = default;
-  Page& operator=(const Page&) = default;
-  Page& operator=(Page&& that) {
-    size = that.size;
-    content = std::move(that.content);
-    return *this;
-  }
+  Page(const SkSize& s, cc::PaintRecord c) : size(s), content(std::move(c)) {}
   SkSize size;
-  sk_sp<cc::PaintRecord> content;
+  cc::PaintRecord content;
 };
 
 struct MetafileSkiaData {
@@ -187,12 +178,12 @@ bool MetafileSkia::FinishPage() {
   if (!data_->recorder.getRecordingCanvas())
     return false;
 
-  sk_sp<cc::PaintRecord> pic = data_->recorder.finishRecordingAsPicture();
+  cc::PaintRecord pic = data_->recorder.finishRecordingAsPicture();
   if (data_->scale_factor != 1.0f) {
     cc::PaintRecorder recorder;
     cc::PaintCanvas* canvas = recorder.beginRecording();
     canvas->scale(data_->scale_factor, data_->scale_factor);
-    canvas->drawPicture(pic);
+    canvas->drawPicture(std::move(pic));
     pic = recorder.finishRecordingAsPicture();
   }
   data_->pages.emplace_back(data_->size, std::move(pic));
@@ -249,9 +240,8 @@ void MetafileSkia::FinishFrameContent() {
   cc::PlaybackParams::CustomDataRasterCallback custom_callback =
       base::BindRepeating(&MetafileSkia::CustomDataToSkPictureCallback,
                           base::Unretained(this));
-  sk_sp<SkPicture> pic = ToSkPicture(data_->pages[0].content,
-                                     SkRect::MakeSize(data_->pages[0].size),
-                                     nullptr, custom_callback);
+  sk_sp<SkPicture> pic = data_->pages[0].content.ToSkPicture(
+      SkRect::MakeSize(data_->pages[0].size), nullptr, custom_callback);
   SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
                                            data_->typeface_content_info);
   SkDynamicMemoryWStream stream;
@@ -432,8 +422,7 @@ const ContentToProxyTokenMap& MetafileSkia::GetSubframeContentInfo() const {
   return data_->subframe_content_info;
 }
 
-void MetafileSkia::AppendPage(const SkSize& page_size,
-                              sk_sp<cc::PaintRecord> record) {
+void MetafileSkia::AppendPage(const SkSize& page_size, cc::PaintRecord record) {
   data_->pages.emplace_back(page_size, std::move(record));
 }
 

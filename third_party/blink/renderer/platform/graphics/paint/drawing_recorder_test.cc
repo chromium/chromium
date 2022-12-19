@@ -31,9 +31,10 @@ TEST_F(DrawingRecorderTest, Nothing) {
   }
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(client.Id(), kForegroundType)));
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
-          .GetPaintRecord());
+          .GetPaintRecord()
+          .empty());
 }
 
 TEST_F(DrawingRecorderTest, Rect) {

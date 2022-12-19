@@ -31,14 +31,14 @@ class DrawingDisplayItemTest : public testing::Test {
       MakeGarbageCollected<FakeDisplayItemClient>();
 };
 
-static sk_sp<PaintRecord> CreateRectRecord(const gfx::RectF& record_bounds) {
+static PaintRecord CreateRectRecord(const gfx::RectF& record_bounds) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
   return recorder.finishRecordingAsPicture();
 }
 
-static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
+static PaintRecord CreateRectRecordWithTranslate(
     const gfx::RectF& record_bounds,
     float dx,
     float dy) {
@@ -61,16 +61,9 @@ TEST_F(DrawingDisplayItemTest, DrawsContent) {
   EXPECT_TRUE(item.DrawsContent());
 }
 
-TEST_F(DrawingDisplayItemTest, NullPaintRecord) {
-  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          gfx::Rect(), nullptr,
-                          client_->VisualRectOutsetForRasterEffects());
-  EXPECT_FALSE(item.DrawsContent());
-}
-
 TEST_F(DrawingDisplayItemTest, EmptyPaintRecord) {
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
-                          gfx::Rect(), sk_make_sp<PaintRecord>(),
+                          gfx::Rect(), PaintRecord(),
                           RasterEffectOutset::kNone);
   EXPECT_FALSE(item.DrawsContent());
 }
@@ -99,7 +92,7 @@ TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
                            client_->VisualRectOutsetForRasterEffects());
 
   DrawingDisplayItem empty_item(client_->Id(), DisplayItem::kDocumentBackground,
-                                gfx::Rect(), nullptr,
+                                gfx::Rect(), PaintRecord(),
                                 client_->VisualRectOutsetForRasterEffects());
 
   EXPECT_TRUE(item1.EqualsForUnderInvalidation(item1));
@@ -235,7 +228,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectNonUniform) {
 
 TEST_F(DrawingDisplayItemTest, DrawEmptyImage) {
   auto image = cc::PaintImageBuilder::WithDefault()
-                   .set_paint_record(sk_make_sp<PaintRecord>(), gfx::Rect(), 0)
+                   .set_paint_record(PaintRecord(), gfx::Rect(), 0)
                    .set_id(1)
                    .TakePaintImage();
   PaintRecorder recorder;

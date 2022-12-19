@@ -122,7 +122,7 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_.Clear();
-  cached_paint_record_.reset();
+  cached_paint_record_ = absl::nullopt;
   local_clip_bounds_ = gfx::RectF();
   MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
@@ -178,11 +178,11 @@ absl::optional<Path> LayoutSVGResourceClipper::AsPath() {
   return absl::optional<Path>(clip_content_path_);
 }
 
-sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
+PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {
   NOT_DESTROYED();
   DCHECK(GetFrame());
   if (cached_paint_record_)
-    return cached_paint_record_;
+    return *cached_paint_record_;
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   // Switch to a paint behavior where all children of this <clipPath> will be
@@ -206,7 +206,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
   }
 
   cached_paint_record_ = builder->EndRecording();
-  return cached_paint_record_;
+  return *cached_paint_record_;
 }
 
 void LayoutSVGResourceClipper::CalculateLocalClipBounds() {

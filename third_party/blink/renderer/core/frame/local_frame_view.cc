@@ -4100,7 +4100,7 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
       .UpdateForTesting(CullRect::Infinite());
 }
 
-sk_sp<PaintRecord> LocalFrameView::GetPaintRecord() const {
+PaintRecord LocalFrameView::GetPaintRecord() const {
   DCHECK_EQ(DocumentLifecycle::kPaintClean, Lifecycle().GetState());
   DCHECK(frame_->IsLocalRoot());
   DCHECK(paint_controller_);

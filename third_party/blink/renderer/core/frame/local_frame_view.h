@@ -61,16 +61,12 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/rect.h"
 
-template <typename T>
-class sk_sp;
-
 namespace cc {
 class AnimationHost;
 class AnimationTimeline;
 class Layer;
-class PaintOpBuffer;
+class PaintRecord;
 enum class PaintHoldingCommitTrigger;
-using PaintRecord = PaintOpBuffer;
 struct PaintBenchmarkResult;
 }
 
@@ -577,7 +573,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Get the PaintRecord based on the cached paint artifact generated during
   // the last paint in lifecycle update.
-  sk_sp<cc::PaintRecord> GetPaintRecord() const;
+  cc::PaintRecord GetPaintRecord() const;
 
   void Show() override;
   void Hide() override;

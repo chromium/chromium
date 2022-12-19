@@ -58,10 +58,9 @@ class MockPaintWorkletPainter
   ~MockPaintWorkletPainter() override = default;
 
   MOCK_CONST_METHOD0(GetWorkletId, int());
-  MOCK_METHOD2(
-      Paint,
-      sk_sp<PaintRecord>(const cc::PaintWorkletInput*,
-                         const cc::PaintWorkletJob::AnimatedPropertyValues&));
+  MOCK_METHOD2(Paint,
+               PaintRecord(const cc::PaintWorkletInput*,
+                           const cc::PaintWorkletJob::AnimatedPropertyValues&));
 };
 
 class MockPaintWorkletInput : public cc::PaintWorkletInput {

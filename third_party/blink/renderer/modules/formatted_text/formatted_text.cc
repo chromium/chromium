@@ -174,15 +174,14 @@ FormattedText* FormattedText::FormatImpl(
   return formatted_text;
 }
 
-sk_sp<PaintRecord> FormattedText::PaintFormattedText(
-    Document& document,
-    const FontDescription& font,
-    double x,
-    double y,
-    gfx::RectF& bounds,
-    ExceptionState& exception_state) {
+PaintRecord FormattedText::PaintFormattedText(Document& document,
+                                              const FontDescription& font,
+                                              double x,
+                                              double y,
+                                              gfx::RectF& bounds,
+                                              ExceptionState& exception_state) {
   if (!CheckViewExists(&exception_state))
-    return nullptr;
+    return PaintRecord();
 
   UpdateComputedStylesIfNeeded(document, font);
   NGBlockNode block_node(block_);

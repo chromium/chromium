@@ -146,7 +146,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                              sk_sp<SkImage>,
                                              const ImageOrientationEnum);
   static void RasterizeImageOnBackgroundThread(
-      sk_sp<PaintRecord>,
+      PaintRecord,
       const gfx::Rect&,
       scoped_refptr<base::SequencedTaskRunner>,
       WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>,

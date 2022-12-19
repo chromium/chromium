@@ -12,14 +12,14 @@
 namespace blink {
 
 scoped_refptr<PaintRecordPattern> PaintRecordPattern::Create(
-    sk_sp<PaintRecord> record,
+    PaintRecord record,
     const gfx::RectF& record_bounds,
     RepeatMode repeat_mode) {
   return base::AdoptRef(
       new PaintRecordPattern(std::move(record), record_bounds, repeat_mode));
 }
 
-PaintRecordPattern::PaintRecordPattern(sk_sp<PaintRecord> record,
+PaintRecordPattern::PaintRecordPattern(PaintRecord record,
                                        const gfx::RectF& record_bounds,
                                        RepeatMode mode)
     : Pattern(mode),

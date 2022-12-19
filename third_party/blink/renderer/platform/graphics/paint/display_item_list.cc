@@ -38,8 +38,8 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
 
       if (flags & kShowPaintRecords) {
         if (const auto* drawing_item = DynamicTo<DrawingDisplayItem>(item)) {
-          if (const auto* record = drawing_item->GetPaintRecord().get())
-            json->SetArray("record", RecordAsJSON(*record));
+          json->SetArray("record",
+                         RecordAsJSON(drawing_item->GetPaintRecord()));
         }
       }
 

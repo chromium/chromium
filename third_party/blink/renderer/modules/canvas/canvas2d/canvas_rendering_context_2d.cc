@@ -960,14 +960,14 @@ void CanvasRenderingContext2D::drawFormattedText(
     setFont(font());
 
   gfx::RectF bounds;
-  sk_sp<PaintRecord> recording = formatted_text->PaintFormattedText(
+  PaintRecord recording = formatted_text->PaintFormattedText(
       canvas()->GetDocument(), GetState().GetFontDescription(), x, y, bounds,
       exception_state);
-  if (recording) {
+  if (recording.size()) {
     Draw<OverdrawOp::kNone>(
-        [recording](cc::PaintCanvas* c,
-                    const cc::PaintFlags* flags)  // draw lambda
-        { c->drawPicture(recording); },
+        [&recording](cc::PaintCanvas* c,
+                     const cc::PaintFlags* flags)  // draw lambda
+        { c->drawPicture(std::move(recording)); },
         [](const SkIRect& rect) { return false; }, gfx::RectFToSkRect(bounds),
         CanvasRenderingContext2DState::PaintType::kFillPaintType,
         CanvasRenderingContext2DState::kNoImage,

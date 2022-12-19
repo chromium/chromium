@@ -62,7 +62,7 @@ class MockImageProvider : public ImageProvider {
 TEST(PaintShaderTest, RasterizationRectForRecordShaders) {
   SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
-      sk_make_sp<PaintOpBuffer>(), SkRect::MakeWH(100, 100), SkTileMode::kClamp,
+      PaintRecord(), SkRect::MakeWH(100, 100), SkTileMode::kClamp,
       SkTileMode::kClamp, &local_matrix);
 
   SkRect tile_rect;
@@ -72,8 +72,6 @@ TEST(PaintShaderTest, RasterizationRectForRecordShaders) {
 }
 
 TEST(PaintShaderTest, DecodePaintRecord) {
-  auto record = sk_make_sp<PaintOpBuffer>();
-
   // Use a strict mock for the generator. It should never be used when
   // rasterizing this shader, since the decode should be done by the
   // ImageProvider.
@@ -84,11 +82,12 @@ TEST(PaintShaderTest, DecodePaintRecord) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  record->push<DrawImageOp>(paint_image, 0.f, 0.f);
+  PaintOpBuffer shader_buffer;
+  shader_buffer.push<DrawImageOp>(paint_image, 0.f, 0.f);
   SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
-      record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,
-      &local_matrix);
+      shader_buffer.ReleaseAsRecord(), SkRect::MakeWH(100, 100),
+      SkTileMode::kClamp, SkTileMode::kClamp, &local_matrix);
   record_shader->set_has_animated_images(true);
 
   PaintOpBuffer buffer;

@@ -16,7 +16,7 @@ class MODULES_EXPORT PaintDefinition : public GarbageCollectedMixin {
  public:
   virtual ~PaintDefinition() = default;
 
-  virtual sk_sp<PaintRecord> Paint(
+  virtual PaintRecord Paint(
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) = 0;
 

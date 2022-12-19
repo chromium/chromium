@@ -13530,10 +13530,10 @@ struct TextRunDOMNodeIdInfo {
 // the (nested) paint ops, and populate |text_runs| with the number of glyphs
 // and the DOMNodeId of each text run.
 void RecursiveCollectTextRunDOMNodeIds(
-    sk_sp<const PaintRecord> paint_record,
+    const PaintRecord& paint_record,
     DOMNodeId dom_node_id,
     std::vector<TextRunDOMNodeIdInfo>* text_runs) {
-  for (const cc::PaintOp& op : *paint_record) {
+  for (const cc::PaintOp& op : paint_record) {
     if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const auto& draw_record_op = static_cast<const cc::DrawRecordOp&>(op);
       RecursiveCollectTextRunDOMNodeIds(draw_record_op.record, dom_node_id,
@@ -13568,7 +13568,7 @@ std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
                               pages);
   frame->PrintEnd();
 
-  sk_sp<cc::PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+  cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();
   std::vector<TextRunDOMNodeIdInfo> text_runs;
   RecursiveCollectTextRunDOMNodeIds(paint_record, 0, &text_runs);
 

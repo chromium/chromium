@@ -56,7 +56,7 @@ PaintOpBufferSerializer::PaintOpBufferSerializer(
 
 PaintOpBufferSerializer::~PaintOpBufferSerializer() = default;
 
-void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
+void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
                                         const std::vector<size_t>* offsets,
                                         const Preamble& preamble) {
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
@@ -74,12 +74,12 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
   RestoreToCount(canvas.get(), saveCount, params);
 }
 
-void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer) {
+void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer) {
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
   SerializeBuffer(canvas.get(), buffer, nullptr);
 }
 
-void PaintOpBufferSerializer::Serialize(const PaintOpBuffer* buffer,
+void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
                                         const gfx::Rect& playback_rect,
                                         const gfx::SizeF& post_scale) {
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
@@ -200,8 +200,8 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
   if (op.GetType() == PaintOpType::DrawRecord) {
     int save_count = canvas->getSaveCount();
     Save(canvas, params);
-    SerializeBuffer(canvas, static_cast<const DrawRecordOp&>(op).record.get(),
-                    nullptr);
+    SerializeBuffer(
+        canvas, static_cast<const DrawRecordOp&>(op).record.buffer(), nullptr);
     RestoreToCount(canvas, save_count, params);
     return true;
   }
@@ -239,7 +239,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     if (!success)
       return false;
 
-    SerializeBuffer(canvas, result.paint_record(), nullptr);
+    SerializeBuffer(canvas, result.paint_record()->buffer(), nullptr);
     RestoreToCount(canvas, save_count, params);
     return true;
   } else {
@@ -254,9 +254,8 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
 
 void PaintOpBufferSerializer::SerializeBuffer(
     SkCanvas* canvas,
-    const PaintOpBuffer* buffer,
+    const PaintOpBuffer& buffer,
     const std::vector<size_t>* offsets) {
-  DCHECK(buffer);
   // This updates the original_ctm to reflect the canvas transformation at
   // start of this call to SerializeBuffer.
   PlaybackParams params = MakeParams(canvas);

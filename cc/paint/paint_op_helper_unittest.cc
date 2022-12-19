@@ -177,9 +177,9 @@ TEST(PaintOpHelper, DrawPathToString) {
 }
 
 TEST(PaintOpHelper, DrawRecordToString) {
-  DrawRecordOp op(nullptr);
+  DrawRecordOp op((PaintRecord()));
   std::string str = PaintOpHelper::ToString(&op);
-  EXPECT_EQ(str, "DrawRecordOp(record=(nil))");
+  EXPECT_EQ(str, "DrawRecordOp(record=(empty))");
 }
 
 TEST(PaintOpHelper, DrawRectToString) {

@@ -187,8 +187,9 @@ class DiscardableImageGenerator {
                    frame_data.quality);
         }
       } else if (op_type == PaintOpType::DrawRecord) {
-        GatherDiscardableImages(*static_cast<const DrawRecordOp&>(op).record,
-                                top_level_op_rect, canvas);
+        GatherDiscardableImages(
+            static_cast<const DrawRecordOp&>(op).record.buffer(),
+            top_level_op_rect, canvas);
       }
     }
   }
@@ -237,7 +238,8 @@ class DiscardableImageGenerator {
       canvas.setMatrix(SkMatrix::RectToRect(shader->tile(), scaled_tile_rect));
       base::AutoReset<bool> auto_reset(&only_gather_animated_images_, true);
       size_t prev_image_set_size = image_set_.size();
-      GatherDiscardableImages(*shader->paint_record(), &op_rect, &canvas);
+      GatherDiscardableImages(shader->paint_record()->buffer(), &op_rect,
+                              &canvas);
 
       // We only track animated images for PaintShaders. If we added any entry
       // to the |image_set_|, this shader any has animated images.
@@ -359,15 +361,16 @@ class DiscardableImageGenerator {
 DiscardableImageMap::DiscardableImageMap() = default;
 DiscardableImageMap::~DiscardableImageMap() = default;
 
-void DiscardableImageMap::Generate(const PaintOpBuffer* paint_op_buffer,
+void DiscardableImageMap::Generate(const PaintOpBuffer& paint_op_buffer,
                                    const gfx::Rect& bounds) {
   TRACE_EVENT0("cc", "DiscardableImageMap::Generate");
 
-  if (!paint_op_buffer->HasDiscardableImages())
+  if (!paint_op_buffer.HasDiscardableImages()) {
     return;
+  }
 
   DiscardableImageGenerator generator(bounds.right(), bounds.bottom(),
-                                      *paint_op_buffer);
+                                      paint_op_buffer);
   image_id_to_rects_ = generator.TakeImageIdToRectsMap();
   animated_images_metadata_ = generator.TakeAnimatedImagesMetadata();
   paint_worklet_inputs_ = generator.TakePaintWorkletInputs();

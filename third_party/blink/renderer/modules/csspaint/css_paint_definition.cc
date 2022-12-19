@@ -59,7 +59,7 @@ CSSPaintDefinition::CSSPaintDefinition(
 CSSPaintDefinition::~CSSPaintDefinition() = default;
 
 // PaintDefinition override
-sk_sp<PaintRecord> CSSPaintDefinition::Paint(
+PaintRecord CSSPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
@@ -74,16 +74,11 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
 
-  sk_sp<PaintRecord> result = Paint(input->GetSize(), input->EffectiveZoom(),
-                                    style_map, &paint_arguments);
-
-  // Return empty record if paint fails.
-  if (!result)
-    result = sk_make_sp<PaintRecord>();
-  return result;
+  return Paint(input->GetSize(), input->EffectiveZoom(), style_map,
+               &paint_arguments);
 }
 
-sk_sp<PaintRecord> CSSPaintDefinition::Paint(
+PaintRecord CSSPaintDefinition::Paint(
     const gfx::SizeF& container_size,
     float zoom,
     StylePropertyMapReadOnly* style_map,
@@ -95,7 +90,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
   // We may have failed to create an instance, in which case produce an
   // invalid image.
   if (instance_.IsEmpty())
-    return nullptr;
+    return PaintRecord();
 
   v8::Isolate* isolate = script_state_->GetIsolate();
 
@@ -119,7 +114,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
           ->Invoke(instance_.Get(isolate), rendering_context, paint_size,
                    style_map, *paint_arguments)
           .IsNothing()) {
-    return nullptr;
+    return PaintRecord();
   }
 
   return rendering_context->GetRecord();

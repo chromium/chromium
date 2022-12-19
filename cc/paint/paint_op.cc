@@ -1697,9 +1697,7 @@ void DrawRecordOp::Raster(const DrawRecordOp* op,
                           SkCanvas* canvas,
                           const PlaybackParams& params) {
   // Don't use drawPicture here, as it adds an implicit clip.
-  // TODO(enne): Temporary CHECK debugging for http://crbug.com/823835
-  CHECK(op->record);
-  op->record->Playback(canvas, params);
+  op->record.Playback(canvas, params);
 }
 
 void DrawRectOp::RasterWithFlags(const DrawRectOp* op,
@@ -2180,11 +2178,7 @@ bool DrawRecordOp::AreEqual(const PaintOp* base_left,
   auto* right = static_cast<const DrawRecordOp*>(base_right);
   DCHECK(left->IsValid());
   DCHECK(right->IsValid());
-  if (!left->record != !right->record)
-    return false;
-  if (*left->record != *right->record)
-    return false;
-  return true;
+  return left->record == right->record;
 }
 
 bool DrawRectOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
@@ -2702,27 +2696,27 @@ int DrawPathOp::CountSlowPaths() const {
 }
 
 int DrawRecordOp::CountSlowPaths() const {
-  return record->num_slow_paths_up_to_min_for_MSAA();
+  return record.num_slow_paths_up_to_min_for_MSAA();
 }
 
 bool DrawRecordOp::HasNonAAPaint() const {
-  return record->HasNonAAPaint();
+  return record.HasNonAAPaint();
 }
 
 bool DrawRecordOp::HasDrawTextOps() const {
-  return record->has_draw_text_ops();
+  return record.has_draw_text_ops();
 }
 
 bool DrawRecordOp::HasSaveLayerOps() const {
-  return record->has_save_layer_ops();
+  return record.has_save_layer_ops();
 }
 
 bool DrawRecordOp::HasSaveLayerAlphaOps() const {
-  return record->has_save_layer_alpha_ops();
+  return record.has_save_layer_alpha_ops();
 }
 
 bool DrawRecordOp::HasEffectsPreventingLCDTextForSaveLayerAlpha() const {
-  return record->has_effects_preventing_lcd_text_for_save_layer_alpha();
+  return record.has_effects_preventing_lcd_text_for_save_layer_alpha();
 }
 
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}
@@ -2795,7 +2789,7 @@ bool DrawImageRectOp::HasDiscardableImages() const {
 
 DrawImageRectOp::~DrawImageRectOp() = default;
 
-DrawRecordOp::DrawRecordOp(sk_sp<const PaintRecord> record)
+DrawRecordOp::DrawRecordOp(PaintRecord record)
     : PaintOp(kType), record(std::move(record)) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
@@ -2803,11 +2797,11 @@ DrawRecordOp::DrawRecordOp(const DrawRecordOp&) = default;
 DrawRecordOp& DrawRecordOp::operator=(const DrawRecordOp&) = default;
 
 size_t DrawRecordOp::AdditionalBytesUsed() const {
-  return record->bytes_used();
+  return record.bytes_used();
 }
 
 size_t DrawRecordOp::AdditionalOpCount() const {
-  return record->total_op_count();
+  return record.total_op_count();
 }
 
 DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
@@ -2835,7 +2829,7 @@ bool DrawSkottieOp::HasDiscardableImages() const {
 }
 
 bool DrawRecordOp::HasDiscardableImages() const {
-  return record->HasDiscardableImages();
+  return record.HasDiscardableImages();
 }
 
 DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlags(kType) {}

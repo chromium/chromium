@@ -330,8 +330,8 @@ class PLATFORM_EXPORT GraphicsContext {
                   float line_width,
                   const AutoDarkMode& auto_dark_mode);
 
-  void DrawRecord(sk_sp<const PaintRecord>);
-  void CompositeRecord(sk_sp<PaintRecord>,
+  void DrawRecord(PaintRecord);
+  void CompositeRecord(PaintRecord,
                        const gfx::RectF& dest,
                        const gfx::RectF& src,
                        SkBlendMode);
@@ -477,7 +477,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // Returns a record with any recorded draw commands since the prerequisite
   // call to beginRecording().  The record is guaranteed to be non-null (but
   // not necessarily non-empty), even when the context is disabled.
-  sk_sp<PaintRecord> EndRecording();
+  PaintRecord EndRecording();
 
   void SetDrawLooper(sk_sp<SkDrawLooper>);
 

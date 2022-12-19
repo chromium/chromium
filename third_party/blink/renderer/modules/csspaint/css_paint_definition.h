@@ -49,7 +49,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   ~CSSPaintDefinition() override;
 
   // PaintDefinition override
-  sk_sp<PaintRecord> Paint(
+  PaintRecord Paint(
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
@@ -57,14 +57,14 @@ class MODULES_EXPORT CSSPaintDefinition final
   // class. The size given will be the size of the PaintRenderingContext2D
   // given to the callback.
   //
-  // This may return a nullptr (representing an invalid image) if javascript
-  // throws an error.
+  // This may return an empty PaintRecord (representing an invalid image) if
+  // javascript throws an error.
   //
   // The |container_size| is without subpixel snapping.
-  sk_sp<PaintRecord> Paint(const gfx::SizeF& container_size,
-                           float zoom,
-                           StylePropertyMapReadOnly*,
-                           const CSSStyleValueVector*);
+  PaintRecord Paint(const gfx::SizeF& container_size,
+                    float zoom,
+                    StylePropertyMapReadOnly*,
+                    const CSSStyleValueVector*);
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const {
     return native_invalidation_properties_;
   }

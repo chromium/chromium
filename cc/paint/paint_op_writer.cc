@@ -539,7 +539,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
     const gfx::Rect playback_rect(
         gfx::ToEnclosingRect(gfx::SkRectToRectF(shader->tile())));
 
-    Write(shader->record_.get(), playback_rect, paint_record_post_scale);
+    Write(*shader->record_, playback_rect, paint_record_post_scale);
   } else {
     DCHECK_EQ(shader->id_, PaintShader::kInvalidRecordShaderId);
     Write(false);
@@ -819,8 +819,7 @@ void PaintOpWriter::Write(const RecordPaintFilter& filter,
   WriteSimple(scaled_filter->raster_scale());
   WriteSimple(scaled_filter->scaling_behavior());
 
-  Write(scaled_filter->record().get(), gfx::Rect(),
-        scaled_filter->raster_scale());
+  Write(scaled_filter->record(), gfx::Rect(), scaled_filter->raster_scale());
 }
 
 void PaintOpWriter::Write(const MergePaintFilter& filter,
@@ -916,7 +915,7 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
   Write(filter.input().get(), current_ctm);
 }
 
-void PaintOpWriter::Write(const PaintRecord* record,
+void PaintOpWriter::Write(const PaintRecord& record,
                           const gfx::Rect& playback_rect,
                           const gfx::SizeF& post_scale) {
   AlignMemory(PaintOpBuffer::kPaintOpAlign);
@@ -946,7 +945,7 @@ void PaintOpWriter::Write(const PaintRecord* record,
   lcd_disabled_options.can_use_lcd_text = false;
   SimpleBufferSerializer serializer(memory_, remaining_bytes_,
                                     lcd_disabled_options);
-  serializer.Serialize(record, playback_rect, post_scale);
+  serializer.Serialize(record.buffer(), playback_rect, post_scale);
 
   if (!serializer.valid()) {
     valid_ = false;

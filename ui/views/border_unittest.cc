@@ -172,10 +172,10 @@ class BorderTest : public ViewsTestBase {
   }
 
   std::unique_ptr<MockCanvas> DrawIntoMockCanvas() {
-    sk_sp<cc::PaintRecord> record = recorder_->finishRecordingAsPicture();
+    cc::PaintRecord record = recorder_->finishRecordingAsPicture();
     std::unique_ptr<MockCanvas> mock(
         new MockCanvas(kCanvasWidth, kCanvasHeight));
-    record->Playback(mock.get());
+    record.Playback(mock.get());
     return mock;
   }
 

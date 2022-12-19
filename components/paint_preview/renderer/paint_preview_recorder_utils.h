@@ -28,10 +28,9 @@ class PaintPreviewTracker;
 // 2. Tracks geometry changes for frames and saves them to `tracker`.
 // 3. Unaccelerates GPU accelerated PaintImages.
 // Returns `nullptr` if the resulting picture failed or zero sized.
-sk_sp<const SkPicture> PaintRecordToSkPicture(
-    sk_sp<const cc::PaintRecord> recording,
-    PaintPreviewTracker* tracker,
-    const gfx::Rect& bounds);
+sk_sp<const SkPicture> PaintRecordToSkPicture(const cc::PaintRecord& recording,
+                                              PaintPreviewTracker* tracker,
+                                              const gfx::Rect& bounds);
 
 // NOTE: |tracker| is effectively const here despite being passed by pointer.
 void BuildResponse(PaintPreviewTracker* tracker,

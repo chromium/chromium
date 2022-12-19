@@ -144,7 +144,7 @@ class CORE_EXPORT TextDecorationInfo {
   gfx::RectF Bounds() const;
 
   // Returns tile record and coordinates for wavy decorations.
-  sk_sp<cc::PaintRecord> WavyTileRecord() const;
+  cc::PaintRecord WavyTileRecord() const;
   gfx::RectF WavyPaintRect() const;
   gfx::RectF WavyTileRect() const;
 
@@ -161,7 +161,7 @@ class CORE_EXPORT TextDecorationInfo {
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style) const;
   void ComputeWavyLineData(gfx::RectF& pattern_rect,
-                           sk_sp<cc::PaintRecord>& tile_record) const;
+                           cc::PaintRecord& tile_record) const;
 
   gfx::RectF BoundsForDottedOrDashed() const;
   gfx::RectF BoundsForWavy() const;
@@ -243,7 +243,7 @@ class CORE_EXPORT TextDecorationInfo {
     // Only used for kWavy lines.
     int wavy_offset_factor;
     gfx::RectF wavy_pattern_rect;
-    sk_sp<cc::PaintRecord> wavy_tile_record;
+    cc::PaintRecord wavy_tile_record;
   };
   LineData line_data_;
   absl::optional<Color> highlight_override_;

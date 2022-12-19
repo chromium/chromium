@@ -11,6 +11,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/types/optional_util.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_image_generator.h"
 #include "cc/paint/paint_record.h"
@@ -185,7 +186,7 @@ void PaintImage::CreateSkImage() {
     cached_sk_image_ = sk_image_;
   } else if (paint_record_) {
     cached_sk_image_ = SkImage::MakeFromPicture(
-        ToSkPicture(paint_record_, gfx::RectToSkRect(paint_record_rect_)),
+        paint_record_->ToSkPicture(gfx::RectToSkRect(paint_record_rect_)),
         SkISize::Make(paint_record_rect_.width(), paint_record_rect_.height()),
         nullptr, nullptr, SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
   } else if (paint_image_generator_) {
@@ -392,7 +393,8 @@ sk_sp<SkImage> PaintImage::GetSkImageForFrame(
 
 std::string PaintImage::ToString() const {
   std::ostringstream str;
-  str << "sk_image_: " << sk_image_ << " paint_record_: " << paint_record_
+  str << "sk_image_: " << sk_image_
+      << " paint_record_: " << base::OptionalToPtr(paint_record_)
       << " paint_record_rect_: " << paint_record_rect_.ToString()
       << " paint_image_generator_: " << paint_image_generator_
       << " id_: " << id_

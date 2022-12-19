@@ -117,7 +117,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags));
 
-  MOCK_METHOD1(drawPicture, void(sk_sp<const PaintRecord> record));
+  MOCK_METHOD1(drawPicture, void(PaintRecord record));
   MOCK_CONST_METHOD0(isClipEmpty, bool());
   MOCK_CONST_METHOD0(isClipRect, bool());
   MOCK_CONST_METHOD0(getTotalMatrix, SkMatrix());

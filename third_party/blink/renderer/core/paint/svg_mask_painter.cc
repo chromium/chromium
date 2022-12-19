@@ -65,7 +65,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     content_transformation.Scale(style.EffectiveZoom());
   }
 
-  sk_sp<const PaintRecord> record =
+  PaintRecord record =
       masker->CreatePaintRecord(content_transformation, context);
 
   context.Save();

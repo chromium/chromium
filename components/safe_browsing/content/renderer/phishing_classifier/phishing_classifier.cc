@@ -51,7 +51,7 @@ namespace safe_browsing {
 namespace {
 
 std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
-    sk_sp<cc::PaintRecord> paint_record,
+    cc::PaintRecord paint_record,
     gfx::Rect bounds) {
   // Use the Rec. 2020 color space, in case the user input is wide-gamut.
   std::unique_ptr<SkBitmap> bitmap = std::make_unique<SkBitmap>();
@@ -65,7 +65,7 @@ std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
     return nullptr;
 
   SkCanvas sk_canvas(*bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
-  paint_record->Playback(&sk_canvas);
+  paint_record.Playback(&sk_canvas);
   return bitmap;
 }
 
@@ -216,7 +216,7 @@ void PhishingClassifier::ExtractVisualFeatures() {
     VisualExtractionFinished(/*success=*/false);
   }
 
-  sk_sp<cc::PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+  cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();
 
   base::UmaHistogramTimes("SBClientPhishing.VisualFeatureTime",
                           base::TimeTicks::Now() - start_time);

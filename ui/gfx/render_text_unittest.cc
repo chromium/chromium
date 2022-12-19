@@ -456,10 +456,10 @@ class RenderTextTest : public testing::Test {
     cc::PaintRecorder recorder;
     Canvas canvas(recorder.beginRecording(), 1.0f);
     test_api_->Draw(&canvas, select_all);
-    sk_sp<cc::PaintRecord> record = recorder.finishRecordingAsPicture();
+    cc::PaintRecord record = recorder.finishRecordingAsPicture();
 
     TestRenderTextCanvas test_canvas(kCanvasWidth, kCanvasHeight);
-    record->Playback(&test_canvas);
+    record.Playback(&test_canvas);
 
     test_canvas.GetTextLogAndReset(&text_log_);
   }

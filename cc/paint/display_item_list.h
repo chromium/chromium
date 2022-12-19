@@ -124,7 +124,7 @@ class CC_PAINT_EXPORT DisplayItemList
 
   // Calls Finalize(), and returns a PaintRecord from this DisplayItemList,
   // leaving |this| in an empty state.
-  sk_sp<PaintRecord> FinalizeAndReleaseAsRecord();
+  PaintRecord FinalizeAndReleaseAsRecord();
 
   struct DirectlyCompositedImageResult {
     // See PictureLayerImpl::direct_composited_image_default_raster_scale_.

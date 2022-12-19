@@ -227,8 +227,8 @@ void RunPaintTestOnWorklet(WorkerThread* thread,
       base::MakeRefCounted<CSSPaintWorkletInput>(
           "foo", gfx::SizeF(100, 100), 1.0f, 1, std::move(data),
           std::move(input_arguments), std::move(property_keys));
-  sk_sp<PaintRecord> record = proxy_client->Paint(input.get(), {});
-  EXPECT_NE(record, nullptr);
+  PaintRecord record = proxy_client->Paint(input.get(), {});
+  EXPECT_FALSE(record.empty());
 
   waitable_event->Signal();
 }

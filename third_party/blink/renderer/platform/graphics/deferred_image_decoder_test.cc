@@ -167,10 +167,10 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
   PaintRecorder recorder;
   cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
-  sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
+  PaintRecord record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);
 
-  canvas_->drawPicture(record);
+  canvas_->drawPicture(std::move(record));
   EXPECT_EQ(0, decode_request_count_);
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), bitmap_.getColor(0, 0));
 }
@@ -245,8 +245,8 @@ TEST_F(DeferredImageDecoderTest, notAllDataReceivedPriorToDecode) {
       image.GetImageHeaderMetadata()->all_data_received_prior_to_decode);
 }
 
-static void RasterizeMain(cc::PaintCanvas* canvas, sk_sp<PaintRecord> record) {
-  canvas->drawPicture(record);
+static void RasterizeMain(cc::PaintCanvas* canvas, PaintRecord record) {
+  canvas->drawPicture(std::move(record));
 }
 
 // Flaky on Mac. crbug.com/792540.
@@ -265,7 +265,7 @@ TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
   PaintRecorder recorder;
   cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
-  sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
+  PaintRecord record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);
 
   // Create a thread to rasterize PaintRecord.
@@ -355,9 +355,9 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
   PaintRecorder recorder;
   cc::PaintCanvas* temp_canvas = recorder.beginRecording();
   temp_canvas->drawImage(image, 0, 0);
-  sk_sp<PaintRecord> record = recorder.finishRecordingAsPicture();
+  PaintRecord record = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, decode_request_count_);
-  canvas_->drawPicture(record);
+  canvas_->drawPicture(std::move(record));
   EXPECT_EQ(1, decode_request_count_);
 }
 

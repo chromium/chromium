@@ -19,7 +19,7 @@ class CC_PAINT_EXPORT PaintRecorder {
   // the current clip and the CTM during recording.
   PaintCanvas* beginRecording();
 
-  sk_sp<PaintRecord> finishRecordingAsPicture();
+  PaintRecord finishRecordingAsPicture();
 
   // Only valid while recording.
   PaintCanvas* getRecordingCanvas() {
@@ -42,7 +42,7 @@ class CC_PAINT_EXPORT InspectablePaintRecorder {
   // but it determines the top-level device clip.
   PaintCanvas* beginRecording(const gfx::Size& size);
 
-  sk_sp<PaintRecord> finishRecordingAsPicture();
+  PaintRecord finishRecordingAsPicture();
 
   // Only valid while recording.
   PaintCanvas* getRecordingCanvas() const {

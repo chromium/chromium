@@ -17558,7 +17558,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   int worklet_id = input->WorkletId();
 
   PaintWorkletJob painted_job(worklet_id, input, {});
-  sk_sp<PaintRecord> record = sk_make_sp<PaintRecord>();
+  PaintRecord record;
   painted_job.SetOutput(record);
 
   auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
@@ -17569,7 +17569,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   // Finally, 'paint' the content. This should unlock tile preparation and
   // update the PictureLayerImpl's map.
   std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
-  EXPECT_EQ(root->GetPaintWorkletRecordMap().find(input)->second.second,
+  EXPECT_EQ(*root->GetPaintWorkletRecordMap().find(input)->second.second,
             record);
   EXPECT_TRUE(did_prepare_tiles_);
 }
@@ -17596,7 +17596,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   // Pretend that our worklets were already painted.
   ASSERT_EQ(root->GetPaintWorkletRecordMap().size(), 1u);
   root->SetPaintWorkletRecord(root->GetPaintWorkletRecordMap().begin()->first,
-                              sk_make_sp<PaintRecord>());
+                              PaintRecord());
 
   // Since there are no dirty PaintWorklets, the commit should immediately
   // prepare tiles.
@@ -17654,7 +17654,7 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   int worklet_id = input->WorkletId();
 
   PaintWorkletJob painted_job(worklet_id, input, {});
-  sk_sp<PaintRecord> record = sk_make_sp<PaintRecord>();
+  PaintRecord record;
   painted_job.SetOutput(record);
 
   auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();

@@ -277,17 +277,17 @@ TEST_P(BoxPainterTest, ScrollerUnderInlineTransform3DSceneLeafCrash) {
   // This should not crash.
 }
 
-size_t CountDrawImagesWithConstraint(const cc::PaintOpBuffer& buffer,
+size_t CountDrawImagesWithConstraint(const cc::PaintRecord& record,
                                      SkCanvas::SrcRectConstraint constraint) {
   size_t count = 0;
-  for (const cc::PaintOp& op : buffer) {
+  for (const cc::PaintOp& op : record) {
     if (op.GetType() == cc::PaintOpType::DrawImageRect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       if (image_op.constraint == constraint)
         ++count;
     } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
-      count += CountDrawImagesWithConstraint(*record_op.record, constraint);
+      count += CountDrawImagesWithConstraint(record_op.record, constraint);
     }
   }
   return count;
@@ -308,9 +308,9 @@ TEST_P(BoxPainterTest, ImageClampingMode) {
     <div id="test"></div>
   )HTML");
 
-  sk_sp<PaintRecord> record = GetDocument().View()->GetPaintRecord();
+  PaintRecord record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(1U, CountDrawImagesWithConstraint(
-                    *record, SkCanvas::kFast_SrcRectConstraint));
+                    record, SkCanvas::kFast_SrcRectConstraint));
 }
 
 }  // namespace blink

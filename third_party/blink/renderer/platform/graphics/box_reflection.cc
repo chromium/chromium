@@ -14,11 +14,11 @@
 namespace blink {
 
 BoxReflection::BoxReflection(ReflectionDirection direction, float offset)
-    : BoxReflection(direction, offset, nullptr, gfx::RectF()) {}
+    : BoxReflection(direction, offset, PaintRecord(), gfx::RectF()) {}
 
 BoxReflection::BoxReflection(ReflectionDirection direction,
                              float offset,
-                             sk_sp<PaintRecord> mask,
+                             PaintRecord mask,
                              const gfx::RectF& mask_bounds)
     : direction_(direction),
       offset_(offset),

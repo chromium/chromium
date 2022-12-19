@@ -9,6 +9,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -177,7 +178,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and do not preserve recordings.
   void FlushCanvas();
   // FlushCanvas and preserve recordings.
-  sk_sp<cc::PaintRecord> FlushCanvasAndMaybePreserveRecording(bool printing);
+  absl::optional<cc::PaintRecord> FlushCanvasAndMaybePreserveRecording(
+      bool printing);
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   gfx::ColorSpace GetColorSpace() const;
@@ -304,7 +306,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(const ImageOrientation&);
   scoped_refptr<CanvasResource> GetImportedResource() const;
-  sk_sp<cc::PaintRecord> FlushCanvasInternal(bool preserve_recording);
+  absl::optional<cc::PaintRecord> FlushCanvasInternal(bool preserve_recording);
 
   CanvasResourceProvider(const ResourceProviderType&,
                          const SkImageInfo&,
@@ -319,8 +321,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // decodes/uploads in the cache is invalidated only when the canvas contents
   // change.
   cc::PaintImage MakeImageSnapshot();
-  virtual void RasterRecord(sk_sp<cc::PaintRecord>);
-  void RasterRecordOOP(sk_sp<cc::PaintRecord> last_recording,
+  virtual void RasterRecord(cc::PaintRecord);
+  void RasterRecordOOP(cc::PaintRecord last_recording,
                        bool needs_clear,
                        gpu::Mailbox mailbox);
 

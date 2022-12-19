@@ -37,6 +37,7 @@ namespace cc {
 class ClientPaintCache;
 class ImageProvider;
 class PaintOp;
+class PaintRecord;
 class ServicePaintCache;
 class SkottieSerializationHistory;
 class TransferCacheDeserializeHelper;
@@ -201,6 +202,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // Returns the size of the paint op buffer. That is, the number of ops
   // contained in it.
   size_t size() const { return op_count_; }
+  bool empty() const { return !size(); }
+
   // Returns the number of bytes used by the paint op buffer.
   size_t bytes_used() const {
     return sizeof(*this) + reserved_ + subrecord_bytes_used_;
@@ -230,10 +233,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // Resize the PaintOpBuffer to exactly fit the current amount of used space.
   void ShrinkToFit();
 
-  // Takes the contents of this. The result is shrunk to fit. If the
-  // shrinking-to-fit allocates a new data buffer, this PaintOpBuffer retains
-  // the original data buffer for future use.
-  sk_sp<PaintOpBuffer> MoveRetainingBufferIfPossible();
+  // Takes the contents of this as a PaintRecord. The result is shrunk to fit.
+  // If the shrinking-to-fit allocates a new data buffer, this PaintOpBuffer
+  // retains the original data buffer for future use.
+  PaintRecord ReleaseAsRecord();
 
   bool operator==(const PaintOpBuffer& other) const;
   bool operator!=(const PaintOpBuffer& other) const {
@@ -241,11 +244,13 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   }
 
   const PaintOp& GetFirstOp() const {
+    DCHECK(!empty());
     return reinterpret_cast<const PaintOp&>(*data_);
   }
 
   template <typename T, typename... Args>
   const T& push(Args&&... args) {
+    DCHECK(is_mutable());
     static_assert(std::is_base_of<PaintOp, T>::value, "T not a PaintOp.");
     static_assert(alignof(T) <= kPaintOpAlign, "");
     static_assert(sizeof(T) < std::numeric_limits<uint16_t>::max(),
@@ -266,6 +271,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   void AnalyzeAddedOp(const T* op) {
     static_assert(!std::is_same<T, PaintOp>::value,
                   "AnalyzeAddedOp needs a subtype of PaintOp");
+    DCHECK(is_mutable());
 
     if (num_slow_paths_up_to_min_for_MSAA_ < kMinNumberOfSlowPathsForMSAA) {
       num_slow_paths_up_to_min_for_MSAA_ += op->CountSlowPathsFromFlags();
@@ -302,6 +308,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     return result;
   }
 
+  const char* DataBufferForTesting() const { return data_.get(); }
+
   class Iterator;
   class OffsetIterator;
   class CompositeIterator;
@@ -319,6 +327,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   friend class PaintOpBufferOffsetsTest;
   friend class SolidColorAnalyzer;
   using BufferDataPtr = std::unique_ptr<char, base::AlignedFreeDeleter>;
+
+  bool is_mutable() const { return unique(); }
 
   void DestroyOps();
 

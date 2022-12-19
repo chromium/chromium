@@ -7,13 +7,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
  public:
-  static scoped_refptr<PaintGeneratedImage> Create(sk_sp<PaintRecord> record,
+  static scoped_refptr<PaintGeneratedImage> Create(PaintRecord record,
                                                    const gfx::SizeF& size) {
     return base::AdoptRef(new PaintGeneratedImage(std::move(record), size));
   }
@@ -29,10 +28,10 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
                 const gfx::RectF&,
                 const ImageDrawOptions&) final;
 
-  PaintGeneratedImage(sk_sp<PaintRecord> record, const gfx::SizeF& size)
+  PaintGeneratedImage(PaintRecord record, const gfx::SizeF& size)
       : GeneratedImage(size), record_(std::move(record)) {}
 
-  sk_sp<PaintRecord> record_;
+  PaintRecord record_;
 };
 
 }  // namespace blink

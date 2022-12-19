@@ -27,8 +27,8 @@ void ScopedRasterFlags::DecodeImageShader(const SkMatrix& ctm) {
       const PaintShader* shader = flags()->getShader();
       SkMatrix local_matrix = shader->GetLocalMatrix();
       auto decoded_shader = PaintShader::MakePaintRecord(
-          sk_ref_sp<PaintRecord>(result.paint_record()), shader->tile(),
-          shader->tx(), shader->tx(), &local_matrix);
+          *result.paint_record(), shader->tile(), shader->tx(), shader->tx(),
+          &local_matrix);
       MutableFlags()->setShader(decoded_shader);
     } else {
       decode_failed_ = true;

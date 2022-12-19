@@ -39,7 +39,7 @@ ImageSkiaRep::ImageSkiaRep(const SkBitmap& src, float scale)
   paint_image_ = cc::PaintImage::CreateFromBitmap(src);
 }
 
-ImageSkiaRep::ImageSkiaRep(sk_sp<cc::PaintRecord> paint_record,
+ImageSkiaRep::ImageSkiaRep(cc::PaintRecord paint_record,
                            const gfx::Size& pixel_size,
                            float scale)
     : paint_record_(std::move(paint_record)),
@@ -67,12 +67,12 @@ int ImageSkiaRep::GetHeight() const {
   return static_cast<int>(pixel_height() / scale());
 }
 
-sk_sp<cc::PaintRecord> ImageSkiaRep::GetPaintRecord() const {
+cc::PaintRecord ImageSkiaRep::GetPaintRecord() const {
   DCHECK(type_ == ImageRepType::kImageTypeBitmap || !is_null());
   // If this image rep is of |kImageTypeDrawable| then it must have a paint
   // record.
   if (type_ == ImageRepType::kImageTypeDrawable || paint_record_)
-    return paint_record_;
+    return *paint_record_;
 
   // If this ImageRep was generated using a bitmap then it may not have a
   // paint record generated for it yet. We would have to generate it now.

@@ -2058,7 +2058,7 @@ PictureLayerImpl::InvalidateRegionForImages(
 
 void PictureLayerImpl::SetPaintWorkletRecord(
     scoped_refptr<const PaintWorkletInput> input,
-    sk_sp<PaintRecord> record) {
+    PaintRecord record) {
   DCHECK(paint_worklet_records_.find(input) != paint_worklet_records_.end());
   paint_worklet_records_[input].second = std::move(record);
 }
@@ -2138,7 +2138,7 @@ void PictureLayerImpl::InvalidatePaintWorklets(
     // the animation system, then invalidate its associated PaintRecord so that
     // we can repaint the PaintWorklet during impl side invalidation.
     if (base::Contains(prop_ids, key))
-      entry.second.second = nullptr;
+      entry.second.second = absl::nullopt;
   }
 }
 

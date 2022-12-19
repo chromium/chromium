@@ -21,7 +21,7 @@
 
 namespace blink {
 
-static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
+static SkBitmap RecordToBitmap(const PaintRecord& record,
                                const gfx::Rect& bounds) {
   SkBitmap bitmap;
   if (!bitmap.tryAllocPixels(
@@ -31,12 +31,12 @@ static SkBitmap RecordToBitmap(sk_sp<const PaintRecord> record,
   SkiaPaintCanvas canvas(bitmap);
   canvas.clear(SkColors::kTransparent);
   canvas.translate(-bounds.x(), -bounds.y());
-  canvas.drawPicture(std::move(record));
+  canvas.drawPicture(record);
   return bitmap;
 }
 
-static bool BitmapsEqual(sk_sp<const PaintRecord> record1,
-                         sk_sp<const PaintRecord> record2,
+static bool BitmapsEqual(const PaintRecord& record1,
+                         const PaintRecord& record2,
                          const gfx::Rect& bounds) {
   SkBitmap bitmap1 = RecordToBitmap(record1, bounds);
   SkBitmap bitmap2 = RecordToBitmap(record2, bounds);
@@ -66,24 +66,20 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
     const DrawingDisplayItem& other) const {
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
 
-  const auto& record = GetPaintRecord();
-  const auto& other_record = other.GetPaintRecord();
-  if (!record && !other_record)
-    return true;
-  if (!record || !other_record)
-    return false;
-
   auto bounds = VisualRect();
   const auto& other_bounds = other.VisualRect();
   if (bounds != other_bounds)
     return false;
 
-  if (*record == *other_record)
+  const auto& record = GetPaintRecord();
+  const auto& other_record = other.GetPaintRecord();
+  if (record == other_record) {
     return true;
+  }
 
   // Sometimes the client may produce different records for the same visual
   // result, which should be treated as equal.
-  return BitmapsEqual(std::move(record), std::move(other_record), bounds);
+  return BitmapsEqual(record, other_record, bounds);
 }
 
 SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
@@ -96,10 +92,11 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
       GetType() != DisplayItem::kScrollCorner)
     return SK_ColorTRANSPARENT;
 
-  if (!record_)
+  if (record_.empty()) {
     return SK_ColorTRANSPARENT;
+  }
 
-  for (const cc::PaintOp& op : *record_) {
+  for (const cc::PaintOp& op : record_) {
     if (!op.IsPaintOpWithFlags())
       continue;
     const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
@@ -129,7 +126,7 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
 }
 
 gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
-  gfx::Rect rect = CalculateRectKnownToBeOpaqueForRecord(record_.get());
+  gfx::Rect rect = CalculateRectKnownToBeOpaqueForRecord(record_);
   if (rect.IsEmpty()) {
     SetOpaqueness(Opaqueness::kNone);
   } else if (rect == VisualRect()) {
@@ -145,9 +142,10 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
 // detection algorithm (which might be more complex and slower), but works well
 // and fast for most blink painted results.
 gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
-    const PaintRecord* record) const {
-  if (!record)
+    const PaintRecord& record) const {
+  if (record.empty()) {
     return gfx::Rect();
+  }
 
   // This limit keeps the algorithm fast, while allowing check of enough paint
   // operations for most blink painted results.
@@ -155,7 +153,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
   gfx::Rect opaque_rect;
   wtf_size_t op_count = 0;
   gfx::Rect clip_rect = VisualRect();
-  for (const cc::PaintOp& op : *record) {
+  for (const cc::PaintOp& op : record) {
     if (++op_count > kOpCountLimit)
       break;
 
@@ -175,7 +173,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
     gfx::Rect op_opaque_rect;
     if (op.GetType() == cc::PaintOpType::DrawRecord) {
       op_opaque_rect = CalculateRectKnownToBeOpaqueForRecord(
-          static_cast<const cc::DrawRecordOp&>(op).record.get());
+          static_cast<const cc::DrawRecordOp&>(op).record);
     } else {
       if (!op.IsPaintOpWithFlags())
         continue;
@@ -255,12 +253,11 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
   return opaque_rect;
 }
 
-gfx::Rect DrawingDisplayItem::TightenVisualRect(
-    const gfx::Rect& visual_rect,
-    sk_sp<const PaintRecord>& record) {
+gfx::Rect DrawingDisplayItem::TightenVisualRect(const gfx::Rect& visual_rect,
+                                                const PaintRecord& record) {
   DCHECK(ShouldTightenVisualRect(record));
 
-  const cc::PaintOp& op = record->GetFirstOp();
+  const cc::PaintOp& op = record.GetFirstOp();
   if (!op.IsPaintOpWithFlags())
     return visual_rect;
 
@@ -301,15 +298,13 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(
 }
 
 bool DrawingDisplayItem::IsSolidColor() const {
-  if (!record_)
-    return false;
-
   // TODO(pdr): We could use SolidColorAnalyzer::DetermineIfSolidColor instead
   // of special-casing just single-op drawrect solid colors.
-  if (record_->size() != 1)
+  if (record_.size() != 1) {
     return false;
+  }
 
-  const cc::PaintOp& op = record_->GetFirstOp();
+  const cc::PaintOp& op = record_.GetFirstOp();
   if (!op.IsPaintOpWithFlags())
     return false;
 

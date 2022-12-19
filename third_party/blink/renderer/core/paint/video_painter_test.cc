@@ -21,9 +21,9 @@
 namespace blink {
 namespace {
 
-void ExtractLinks(const cc::PaintOpBuffer& buffer,
+void ExtractLinks(const PaintRecord& record,
                   std::vector<std::pair<GURL, SkRect>>* links) {
-  for (const cc::PaintOp& op : buffer) {
+  for (const cc::PaintOp& op : record) {
     if (op.GetType() == cc::PaintOpType::Annotate) {
       const auto& annotate_op = static_cast<const cc::AnnotateOp&>(op);
       links->push_back(std::make_pair(
@@ -33,15 +33,14 @@ void ExtractLinks(const cc::PaintOpBuffer& buffer,
           annotate_op.rect));
     } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
-      ExtractLinks(*record_op.record, links);
+      ExtractLinks(record_op.record, links);
     }
   }
 }
 
-size_t CountImagesOfType(const cc::PaintOpBuffer& buffer,
-                         cc::ImageType image_type) {
+size_t CountImagesOfType(const PaintRecord& record, cc::ImageType image_type) {
   size_t count = 0;
-  for (const cc::PaintOp& op : buffer) {
+  for (const cc::PaintOp& op : record) {
     if (op.GetType() == cc::PaintOpType::DrawImage) {
       const auto& image_op = static_cast<const cc::DrawImageOp&>(op);
       if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
@@ -54,7 +53,7 @@ size_t CountImagesOfType(const cc::PaintOpBuffer& buffer,
       }
     } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
-      count += CountImagesOfType(*record_op.record, image_type);
+      count += CountImagesOfType(record_op.record, image_type);
     }
   }
   return count;
@@ -210,7 +209,7 @@ class VideoPaintPreviewTest : public testing::Test,
     return !play_result.has_value();
   }
 
-  sk_sp<cc::PaintRecord> CapturePaintPreview(bool skip_accelerated_content) {
+  cc::PaintRecord CapturePaintPreview(bool skip_accelerated_content) {
     auto token = base::UnguessableToken::Create();
     const base::UnguessableToken embedding_token =
         base::UnguessableToken::Create();
@@ -258,13 +257,13 @@ TEST_P(VideoPaintPreviewTest, URLIsRecordedWhenPaintingPreview) {
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/false);
 
   std::vector<std::pair<GURL, SkRect>> links;
-  ExtractLinks(*record, &links);
+  ExtractLinks(record, &links);
   ASSERT_EQ(1lu, links.size());
   EXPECT_EQ("http://test.com/", links[0].first);
 
   // The captured record will contain a poster image (GIF) even through the flag
   // is not set since the video is not playing.
-  EXPECT_EQ(1U, CountImagesOfType(*record, cc::ImageType::kGIF));
+  EXPECT_EQ(1U, CountImagesOfType(record, cc::ImageType::kGIF));
 }
 
 TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
@@ -293,27 +292,27 @@ TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
 
   std::vector<std::pair<GURL, SkRect>> links;
-  ExtractLinks(*record, &links);
+  ExtractLinks(record, &links);
   ASSERT_EQ(1lu, links.size());
   EXPECT_EQ("http://test.com/", links[0].first);
 
   // The captured record will contain a poster image (GIF) even though the video
   // is playing.
-  EXPECT_EQ(1U, CountImagesOfType(*record, cc::ImageType::kGIF));
+  EXPECT_EQ(1U, CountImagesOfType(record, cc::ImageType::kGIF));
 
   // Capture using video frame.
   EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_));
   record = CapturePaintPreview(/*skip_accelerated_content=*/false);
 
   links.clear();
-  ExtractLinks(*record, &links);
+  ExtractLinks(record, &links);
   ASSERT_EQ(1lu, links.size());
   EXPECT_EQ("http://test.com/", links[0].first);
 
   // A video frame is recorded rather than the poster image (GIF) as the video
   // is "playing". Note: this is actually just empty since we are using a
   // MockWebMediaPlayer.
-  EXPECT_EQ(0U, CountImagesOfType(*record, cc::ImageType::kGIF));
+  EXPECT_EQ(0U, CountImagesOfType(record, cc::ImageType::kGIF));
 }
 
 TEST_P(VideoPaintPreviewTest, PosterFlagToggleNoPosterFrameCapture) {
@@ -339,7 +338,7 @@ TEST_P(VideoPaintPreviewTest, PosterFlagToggleNoPosterFrameCapture) {
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
 
   std::vector<std::pair<GURL, SkRect>> links;
-  ExtractLinks(*record, &links);
+  ExtractLinks(record, &links);
   ASSERT_EQ(1lu, links.size());
   EXPECT_EQ("http://test.com/", links[0].first);
 }

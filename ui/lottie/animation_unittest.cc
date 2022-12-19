@@ -1333,10 +1333,10 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
-  sk_sp<cc::PaintRecord> paint_record = record_canvas_.ReleaseAsRecord();
-  ASSERT_THAT(paint_record->size(), Eq(1u));
+  cc::PaintRecord paint_record = record_canvas_.ReleaseAsRecord();
+  ASSERT_THAT(paint_record.size(), Eq(1u));
   const cc::DrawSkottieOp* op =
-      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+      paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
   EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
                               cc::HashSkottieResourceId("image_0"), frame_0)));
@@ -1346,8 +1346,8 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   paint_record = record_canvas_.ReleaseAsRecord();
-  ASSERT_THAT(paint_record->size(), Eq(1u));
-  op = paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+  ASSERT_THAT(paint_record.size(), Eq(1u));
+  op = paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
   EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
                               cc::HashSkottieResourceId("image_1"), frame_1)));
@@ -1360,10 +1360,10 @@ TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
       Animation::Style::kLoop, *animation_));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
-  sk_sp<cc::PaintRecord> paint_record = record_canvas_.ReleaseAsRecord();
-  ASSERT_THAT(paint_record->size(), Eq(1u));
+  cc::PaintRecord paint_record = record_canvas_.ReleaseAsRecord();
+  ASSERT_THAT(paint_record.size(), Eq(1u));
   const cc::DrawSkottieOp* op =
-      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+      paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
   EXPECT_THAT(op->images,
               UnorderedElementsAre(Pair(cc::HashSkottieResourceId("image_0"),

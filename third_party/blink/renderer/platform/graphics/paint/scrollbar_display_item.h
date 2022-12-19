@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
 class ScrollbarLayerBase;
@@ -51,7 +50,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   // Paints the scrollbar into the internal paint record, for non-composited
   // scrollbar.
-  sk_sp<const PaintRecord> Paint() const;
+  PaintRecord Paint() const;
 
   // Create or reuse the cc scrollbar layer, for composited scrollbar.
   scoped_refptr<cc::ScrollbarLayerBase> CreateOrReuseLayer(
@@ -82,7 +81,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
     const TransformPaintPropertyNode* scroll_translation_;
     CompositorElementId element_id_;
     // This is lazily created for non-composited scrollbar.
-    mutable sk_sp<const PaintRecord> record_;
+    mutable PaintRecord record_;
 
     USING_FAST_MALLOC(Data);
   };

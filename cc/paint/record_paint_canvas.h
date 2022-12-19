@@ -30,7 +30,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
 
-  virtual sk_sp<PaintRecord> ReleaseAsRecord();
+  virtual PaintRecord ReleaseAsRecord();
 
   bool HasRecordedDrawOps() const { return buffer_.has_draw_ops(); }
   size_t TotalOpCount() const { return buffer_.total_op_count(); }
@@ -121,7 +121,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                     SkScalar y,
                     NodeId node_id,
                     const PaintFlags& flags) override;
-  void drawPicture(sk_sp<const PaintRecord> record) override;
+  void drawPicture(PaintRecord record) override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,

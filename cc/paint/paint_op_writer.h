@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
+#include "base/bits.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "cc/paint/paint_canvas.h"
@@ -171,7 +172,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const LightingPointPaintFilter& filter, const SkM44& current_ctm);
   void Write(const LightingSpotPaintFilter& filter, const SkM44& current_ctm);
 
-  void Write(const PaintRecord* record,
+  void Write(const PaintRecord& record,
              const gfx::Rect& playback_rect,
              const gfx::SizeF& post_scale);
   void Write(const SkRegion& region);

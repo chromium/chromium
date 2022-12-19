@@ -56,7 +56,7 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.content_id_ = content_id;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_paint_record(sk_sp<PaintRecord> paint_record,
+  PaintImageBuilder&& set_paint_record(PaintRecord paint_record,
                                        const gfx::Rect& rect,
                                        PaintImage::ContentId content_id) {
     DCHECK_NE(content_id, PaintImage::kInvalidContentId);

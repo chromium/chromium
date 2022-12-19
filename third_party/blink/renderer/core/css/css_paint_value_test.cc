@@ -95,7 +95,8 @@ TEST_P(CSSPaintValueTest, ReportingCompositedUMA) {
   // OffMainThreadCSSPaint is enabled.
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
   ON_CALL(*mock_generator, Paint(_, _, _))
-      .WillByDefault(Return(PaintGeneratedImage::Create(nullptr, target_size)));
+      .WillByDefault(
+          Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
   ASSERT_TRUE(
       paint_value->GetImage(*target, GetDocument(), style, target_size));
   if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
@@ -146,7 +147,7 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
   EXPECT_CALL(*mock_generator, Paint(_, _, _))
       .WillRepeatedly(
-          Return(PaintGeneratedImage::Create(nullptr, target_size)));
+          Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
   // The paint worklet is not composited, and falls back to the main thread
   // paint.
   ASSERT_TRUE(
@@ -205,7 +206,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
     EXPECT_CALL(*mock_generator, Paint(_, _, _))
         .WillRepeatedly(
-            Return(PaintGeneratedImage::Create(nullptr, target_size)));
+            Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
   }
 
   EXPECT_TRUE(
@@ -288,7 +289,8 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
   // the case where we are printing.
   EXPECT_CALL(*mock_generator, Paint(_, _, _))
       .Times(1)
-      .WillOnce(Return(PaintGeneratedImage::Create(nullptr, target_size)));
+      .WillOnce(
+          Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
 
   ASSERT_TRUE(
       paint_value->GetImage(*target, GetDocument(), style, target_size));

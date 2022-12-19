@@ -361,7 +361,7 @@ void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
     SkPDF::SetNodeId(canvas_, 0);
 }
 
-void SkiaPaintCanvas::drawPicture(sk_sp<const PaintRecord> record) {
+void SkiaPaintCanvas::drawPicture(PaintRecord record) {
   drawPicture(record, PlaybackParams::CustomDataRasterCallback());
 }
 
@@ -396,7 +396,7 @@ void SkiaPaintCanvas::setNodeId(int node_id) {
 }
 
 void SkiaPaintCanvas::drawPicture(
-    sk_sp<const PaintRecord> record,
+    PaintRecord record,
     PlaybackParams::CustomDataRasterCallback custom_raster_callback) {
   auto did_draw_op_cb =
       context_flushes_.enable
@@ -405,7 +405,7 @@ void SkiaPaintCanvas::drawPicture(
           : PlaybackParams::DidDrawOpCallback();
   PlaybackParams params(image_provider_, canvas_->getLocalToDevice(),
                         custom_raster_callback, did_draw_op_cb);
-  record->Playback(canvas_, params);
+  record.Playback(canvas_, params);
 }
 
 void SkiaPaintCanvas::FlushAfterDrawIfNeeded() {

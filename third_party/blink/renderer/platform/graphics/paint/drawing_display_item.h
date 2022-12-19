@@ -25,12 +25,12 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
   DrawingDisplayItem(DisplayItemClientId client_id,
                      Type type,
                      const gfx::Rect& visual_rect,
-                     sk_sp<const PaintRecord> record,
+                     PaintRecord record,
                      RasterEffectOutset raster_effect_outset,
                      PaintInvalidationReason paint_invalidation_reason =
                          PaintInvalidationReason::kJustCreated);
 
-  const sk_sp<const PaintRecord>& GetPaintRecord() const {
+  const PaintRecord& GetPaintRecord() const {
     DCHECK(!IsTombstone());
     return record_;
   }
@@ -57,19 +57,19 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
     DCHECK_EQ(GetOpaqueness(), opaqueness);
   }
   gfx::Rect CalculateRectKnownToBeOpaque() const;
-  gfx::Rect CalculateRectKnownToBeOpaqueForRecord(const PaintRecord*) const;
+  gfx::Rect CalculateRectKnownToBeOpaqueForRecord(const PaintRecord&) const;
 
   // Improve the visual rect using the paint record. This can improve solid
   // color analysis in cases when the painted content was snapped but the
   // visual rect was not. Check |ShouldTightenVisualRect| before calling.
   static gfx::Rect TightenVisualRect(const gfx::Rect& visual_rect,
-                                     sk_sp<const PaintRecord>& record);
-  static bool ShouldTightenVisualRect(sk_sp<const PaintRecord>& record) {
+                                     const PaintRecord& record);
+  static bool ShouldTightenVisualRect(const PaintRecord& record) {
     // We only have an optimization to tighten the visual rect for a single op.
-    return record && record->size() == 1;
+    return record.size() == 1;
   }
 
-  sk_sp<const PaintRecord> record_;
+  const PaintRecord record_;
 };
 
 // TODO(dcheng): Move this ctor back inline once the clang plugin is fixed.
@@ -78,7 +78,7 @@ inline DrawingDisplayItem::DrawingDisplayItem(
     DisplayItemClientId client_id,
     Type type,
     const gfx::Rect& visual_rect,
-    sk_sp<const PaintRecord> record,
+    PaintRecord record,
     RasterEffectOutset raster_effect_outset,
     PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client_id,
@@ -88,8 +88,8 @@ inline DrawingDisplayItem::DrawingDisplayItem(
                       : visual_rect,
                   raster_effect_outset,
                   paint_invalidation_reason,
-                  /* draws_content*/ record && record->size()),
-      record_(DrawsContent() ? std::move(record) : nullptr) {
+                  /* draws_content*/ !record.empty()),
+      record_(std::move(record)) {
   DCHECK(IsDrawing());
   DCHECK_EQ(GetOpaqueness(), Opaqueness::kOther);
 }

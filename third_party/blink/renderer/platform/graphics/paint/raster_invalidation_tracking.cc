@@ -157,13 +157,13 @@ static bool PixelsDiffer(SkColor p1, SkColor p2) {
 
 void RasterInvalidationTracking::CheckUnderInvalidations(
     const String& layer_debug_name,
-    sk_sp<PaintRecord> new_record,
+    PaintRecord new_record,
     const gfx::Rect& new_interest_rect) {
   auto old_interest_rect = last_interest_rect_;
   cc::Region invalidation_region;
   if (!g_simulate_raster_under_invalidations)
     invalidation_region = invalidation_region_since_last_paint_;
-  auto old_record = std::move(last_painted_record_);
+  absl::optional<PaintRecord> old_record = std::move(last_painted_record_);
 
   last_painted_record_ = new_record;
   last_interest_rect_ = new_interest_rect;
@@ -184,7 +184,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     SkiaPaintCanvas canvas(old_bitmap);
     canvas.clear(SkColors::kTransparent);
     canvas.translate(-rect.x(), -rect.y());
-    canvas.drawPicture(std::move(old_record));
+    canvas.drawPicture(std::move(*old_record));
   }
 
   SkBitmap new_bitmap;
@@ -243,8 +243,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
   PaintRecorder recorder;
   recorder.beginRecording();
   auto* canvas = recorder.getRecordingCanvas();
-  if (under_invalidation_record_)
-    canvas->drawPicture(std::move(under_invalidation_record_));
+  canvas->drawPicture(std::move(under_invalidation_record_));
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(new_bitmap)),
                     rect.x(), rect.y());
   under_invalidation_record_ = recorder.finishRecordingAsPicture();

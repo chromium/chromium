@@ -863,7 +863,7 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
 }
 
 void ImageBitmap::RasterizeImageOnBackgroundThread(
-    sk_sp<PaintRecord> paint_record,
+    PaintRecord paint_record,
     const gfx::Rect& dst_rect,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>,
@@ -875,7 +875,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
   sk_sp<SkImage> skia_image;
   if (surface) {
-    paint_record->Playback(surface->getCanvas());
+    paint_record.Playback(surface->getCanvas());
     skia_image = surface->makeImageSnapshot();
   }
   PostCrossThreadTask(
@@ -938,7 +938,7 @@ ScriptPromise ImageBitmap::CreateAsync(
                                preferred_color_scheme)
       ->Draw(canvas, cc::PaintFlags(), gfx::RectF(draw_dst_rect),
              gfx::RectF(draw_src_rect), ImageDrawOptions());
-  sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+  PaintRecord paint_record = recorder.finishRecordingAsPicture();
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =
       std::make_unique<ParsedOptions>(parsed_options);

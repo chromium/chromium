@@ -14,7 +14,7 @@ PaintCanvas* PaintRecorder::beginRecording() {
   return &canvas_;
 }
 
-sk_sp<PaintRecord> PaintRecorder::finishRecordingAsPicture() {
+PaintRecord PaintRecorder::finishRecordingAsPicture() {
   DCHECK(is_recording_);
   is_recording_ = false;
   return canvas_.ReleaseAsRecord();
@@ -34,7 +34,7 @@ PaintCanvas* InspectablePaintRecorder::beginRecording(const gfx::Size& size) {
   return canvas_.get();
 }
 
-sk_sp<PaintRecord> InspectablePaintRecorder::finishRecordingAsPicture() {
+PaintRecord InspectablePaintRecorder::finishRecordingAsPicture() {
   DCHECK(canvas_);
   DCHECK(is_recording_);
   is_recording_ = false;

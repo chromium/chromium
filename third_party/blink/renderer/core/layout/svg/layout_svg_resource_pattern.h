@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/svg/pattern_attributes.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
@@ -68,8 +67,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   bool FindCycleFromSelf() const override;
   std::unique_ptr<PatternData> BuildPatternData(
       const gfx::RectF& object_bounding_box);
-  sk_sp<PaintRecord> AsPaintRecord(const gfx::SizeF&,
-                                   const AffineTransform&) const;
+  PaintRecord AsPaintRecord(const gfx::SizeF&, const AffineTransform&) const;
 
   mutable bool should_collect_pattern_attributes_ : 1;
   Member<PatternAttributesWrapper> attributes_wrapper_;

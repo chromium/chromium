@@ -90,7 +90,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
 
   // Lazily initialized.
   absl::optional<float> cached_text_width_;
-  sk_sp<PaintRecord> paint_record_for_current_frame_;
+  absl::optional<PaintRecord> paint_record_for_current_frame_;
   PaintImage::ContentId paint_record_content_id_;
 };
 

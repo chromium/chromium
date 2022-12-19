@@ -201,7 +201,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
   return true;
 }
 
-sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
+PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
     const gfx::SizeF& size,
     const AffineTransform& tile_transform) const {
   NOT_DESTROYED();

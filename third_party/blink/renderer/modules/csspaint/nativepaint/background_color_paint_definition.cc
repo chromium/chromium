@@ -220,7 +220,7 @@ BackgroundColorPaintDefinition::BackgroundColorPaintDefinition(
           &local_root,
           PaintWorkletInput::PaintWorkletInputType::kBackgroundColor) {}
 
-sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
+PaintRecord BackgroundColorPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
@@ -228,7 +228,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
                worker_backing_thread_->BackingThread().GetTaskRunner());
 }
 
-sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
+PaintRecord BackgroundColorPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values,
@@ -334,7 +334,7 @@ bool BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
                                               progress, compositable_animation);
 }
 
-sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
+PaintRecord BackgroundColorPaintDefinition::PaintForTest(
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&

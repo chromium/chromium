@@ -13,6 +13,7 @@
 #include "cc/paint/frame_metadata.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/paint_record.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -35,10 +36,8 @@ class VideoFrame;
 namespace cc {
 
 class PaintImageGenerator;
-class PaintOpBuffer;
 class PaintWorkletInput;
 class TextureBacking;
-using PaintRecord = PaintOpBuffer;
 
 enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
 
@@ -365,7 +364,7 @@ class CC_PAINT_EXPORT PaintImage {
   const sk_sp<SkImage>& GetSkImage() const;
 
   sk_sp<SkImage> sk_image_;
-  sk_sp<PaintRecord> paint_record_;
+  absl::optional<PaintRecord> paint_record_;
   gfx::Rect paint_record_rect_;
 
   ContentId content_id_ = kInvalidContentId;

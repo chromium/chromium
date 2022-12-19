@@ -264,7 +264,7 @@ ClipPathPaintDefinition::ClipPathPaintDefinition(LocalFrame& local_root)
           &local_root,
           PaintWorkletInput::PaintWorkletInputType::kClipPath) {}
 
-sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
+PaintRecord ClipPathPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {

@@ -40,10 +40,10 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
   auto image_filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
       PaintFlags::FilterQuality::kNone);
-  auto record = sk_make_sp<PaintOpBuffer>();
-  record->push<DrawImageOp>(image, 0.f, 0.f);
-  auto record_filter =
-      sk_make_sp<RecordPaintFilter>(record, SkRect::MakeWH(100.f, 100.f));
+  PaintOpBuffer buffer;
+  buffer.push<DrawImageOp>(image, 0.f, 0.f);
+  auto record_filter = sk_make_sp<RecordPaintFilter>(
+      buffer.ReleaseAsRecord(), SkRect::MakeWH(100.f, 100.f));
 
   PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
 

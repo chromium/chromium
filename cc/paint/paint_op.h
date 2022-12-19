@@ -691,7 +691,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawRecord;
   static constexpr bool kIsDrawOp = true;
-  explicit DrawRecordOp(sk_sp<const PaintRecord> record);
+  explicit DrawRecordOp(PaintRecord record);
   ~DrawRecordOp();
   DrawRecordOp(const DrawRecordOp&);
   DrawRecordOp& operator=(const DrawRecordOp&);
@@ -711,7 +711,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
-  sk_sp<const PaintRecord> record;
+  PaintRecord record;
 };
 
 class CC_PAINT_EXPORT DrawRectOp final : public PaintOpWithFlags {

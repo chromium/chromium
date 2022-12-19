@@ -244,7 +244,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   const gfx::Rect dest_rect(size_);
   if (paint_record_for_current_frame_) {
     return builder
-        .set_paint_record(paint_record_for_current_frame_, dest_rect,
+        .set_paint_record(*paint_record_for_current_frame_, dest_rect,
                           paint_record_content_id_)
         .TakePaintImage();
   }
@@ -256,7 +256,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
   return builder
-      .set_paint_record(paint_record_for_current_frame_, dest_rect,
+      .set_paint_record(*paint_record_for_current_frame_, dest_rect,
                         paint_record_content_id_)
       .TakePaintImage();
 }
@@ -267,7 +267,7 @@ void PlaceholderImage::SetIconAndTextScaleFactor(
     return;
   icon_and_text_scale_factor_ = icon_and_text_scale_factor;
   cached_text_width_.reset();
-  paint_record_for_current_frame_.reset();
+  paint_record_for_current_frame_ = absl::nullopt;
 }
 
 void PlaceholderImage::Draw(cc::PaintCanvas* canvas,

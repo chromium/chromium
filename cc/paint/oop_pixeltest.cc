@@ -407,13 +407,13 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   // quarter of the output.
   PaintFlags internal_flags;
   internal_flags.setColor(SkColors::kGreen);
-  sk_sp<PaintOpBuffer> filter_buffer(new PaintOpBuffer);
-  filter_buffer->push<DrawRectOp>(
+  PaintOpBuffer filter_buffer;
+  filter_buffer.push<DrawRectOp>(
       SkRect::MakeLTRB(output_size.width() / 2.f, 0.f, output_size.width(),
                        output_size.height()),
       internal_flags);
   sk_sp<RecordPaintFilter> record_filter = sk_make_sp<RecordPaintFilter>(
-      filter_buffer,
+      filter_buffer.ReleaseAsRecord(),
       SkRect::MakeLTRB(output_size.width() / 2.f, output_size.height() / 2.f,
                        output_size.width(), output_size.height()));
 
@@ -518,13 +518,13 @@ TEST_F(OopPixelTest, DrawRecordShaderWithImageScaled) {
   auto builder = PaintImageBuilder::WithDefault().set_image(image, 0).set_id(
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
-  auto paint_record = sk_make_sp<PaintOpBuffer>();
+  PaintOpBuffer paint_buffer;
   SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
-  paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, nullptr);
+  paint_buffer.push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, nullptr);
   auto paint_record_shader = PaintShader::MakePaintRecord(
-      paint_record, gfx::RectToSkRect(rect), SkTileMode::kRepeat,
-      SkTileMode::kRepeat, nullptr);
+      paint_buffer.ReleaseAsRecord(), gfx::RectToSkRect(rect),
+      SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -541,8 +541,6 @@ TEST_F(OopPixelTest, DrawRecordShaderWithImageScaled) {
 }
 
 TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
-  auto paint_record = sk_make_sp<PaintOpBuffer>();
-
   // Arbitrary offsets.  The DrawRectOp inside the PaintShader draws
   // with this offset, but the tile rect also has this offset, so they
   // should cancel out, and it should be as if the DrawRectOp was at the
@@ -556,14 +554,15 @@ TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
   // below cuts off part of that, leaving two green i's.
   PaintFlags internal_flags;
   internal_flags.setColor(SkColors::kGreen);
-  sk_sp<PaintOpBuffer> shader_buffer(new PaintOpBuffer);
-  shader_buffer->push<DrawRectOp>(SkRect::MakeXYWH(x_offset, y_offset, 1, 2),
-                                  internal_flags);
+  PaintOpBuffer shader_buffer;
+  shader_buffer.push<DrawRectOp>(SkRect::MakeXYWH(x_offset, y_offset, 1, 2),
+                                 internal_flags);
 
   SkRect tile_rect = SkRect::MakeXYWH(x_offset, y_offset, 2, 3);
   sk_sp<PaintShader> paint_record_shader = PaintShader::MakePaintRecord(
-      shader_buffer, tile_rect, SkTileMode::kRepeat, SkTileMode::kRepeat,
-      nullptr, PaintShader::ScalingBehavior::kRasterAtScale);
+      shader_buffer.ReleaseAsRecord(), tile_rect, SkTileMode::kRepeat,
+      SkTileMode::kRepeat, nullptr,
+      PaintShader::ScalingBehavior::kRasterAtScale);
   // Force paint_flags to convert this to kFixedScale, so we can safely compare
   // pixels between direct and oop-r modes (since oop will convert to
   // kFixedScale no matter what.
@@ -1911,19 +1910,19 @@ class OopTextBlobPixelTest
     }
 
     // All remaining strategies add the DrawTextBlobOp to an inner paint record.
-    auto paint_record = sk_make_sp<PaintOpBuffer>();
-    paint_record->push<DrawTextBlobOp>(std::move(text_blob), 0.0f, kTextBlobY,
-                                       text_flags);
+    PaintOpBuffer paint_buffer;
+    paint_buffer.push<DrawTextBlobOp>(std::move(text_blob), 0.0f, kTextBlobY,
+                                      text_flags);
     if (strategy == TextBlobStrategy::kDrawRecord) {
-      display_list->push<DrawRecordOp>(std::move(paint_record));
+      display_list->push<DrawRecordOp>(paint_buffer.ReleaseAsRecord());
       return;
     }
 
     PaintFlags record_flags;
     if (strategy == TextBlobStrategy::kRecordShader) {
       auto paint_record_shader = PaintShader::MakePaintRecord(
-          paint_record, SkRect::MakeWH(25, 25), SkTileMode::kRepeat,
-          SkTileMode::kRepeat, nullptr,
+          paint_buffer.ReleaseAsRecord(), SkRect::MakeWH(25, 25),
+          SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr,
           PaintShader::ScalingBehavior::kRasterAtScale);
       // Force paint_flags to convert this to kFixedScale, so we can safely
       // compare pixels between direct and oop-r modes (since oop will convert
@@ -1935,8 +1934,8 @@ class OopTextBlobPixelTest
     } else {
       DCHECK(strategy == TextBlobStrategy::kRecordFilter);
 
-      sk_sp<PaintFilter> paint_record_filter =
-          sk_make_sp<RecordPaintFilter>(paint_record, SkRect::MakeWH(100, 100));
+      sk_sp<PaintFilter> paint_record_filter = sk_make_sp<RecordPaintFilter>(
+          paint_buffer.ReleaseAsRecord(), SkRect::MakeWH(100, 100));
       // If there's an additional filter, we have to compose it with the
       // paint record filter.
       if (filter) {
@@ -2468,14 +2467,15 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
       raster_context_provider_->ContextCapabilities().max_texture_size;
   const SkRect rect = SkRect::MakeWH(max_texture_size + 10, 10);
 
-  auto shader_record = sk_make_sp<PaintRecord>();
-  shader_record->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
+  PaintOpBuffer shader_buffer;
+  shader_buffer.push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SkColors::kGreen);
-  shader_record->push<DrawRectOp>(rect, flags);
-  auto shader = PaintShader::MakePaintRecord(
-      shader_record, rect, SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);
+  shader_buffer.push<DrawRectOp>(rect, flags);
+  auto shader = PaintShader::MakePaintRecord(shader_buffer.ReleaseAsRecord(),
+                                             rect, SkTileMode::kRepeat,
+                                             SkTileMode::kRepeat, nullptr);
 
   RasterOptions options;
   options.resource_size = gfx::Size(100, 100);

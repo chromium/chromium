@@ -105,7 +105,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame_overlay->Paint(builder->Context());
-  builder->EndRecording()->Playback(&canvas);
+  builder->EndRecording().Playback(&canvas);
   frame_overlay->Destroy();
 }
 

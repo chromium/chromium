@@ -32,10 +32,12 @@ PaintControllerTestBase::DrawResult PaintControllerTestBase::Draw(
   auto& paint_controller = context.GetPaintController();
   auto* matching_cached_item =
       paint_controller.MatchingCachedItemToBeRepainted();
+  PaintRecord old_record;
   if (matching_cached_item) {
     EXPECT_EQ(
         matching_cached_item->GetId(),
         DisplayItem::Id(client.Id(), type, paint_controller.CurrentFragment()));
+    old_record = To<DrawingDisplayItem>(matching_cached_item)->GetPaintRecord();
   }
 
   bool would_be_cached =
@@ -47,7 +49,19 @@ PaintControllerTestBase::DrawResult PaintControllerTestBase::Draw(
     DCHECK(!matching_cached_item);
     return kCached;
   }
-  return matching_cached_item ? kRepaintedCachedItem : kPaintedNew;
+
+  if (matching_cached_item) {
+    // We should reused the cached paint record and paint into it.
+    PaintRecord new_record =
+        To<DrawingDisplayItem>(paint_controller.GetNewPaintArtifactShared()
+                                   ->GetDisplayItemList()
+                                   .back())
+            .GetPaintRecord();
+    EXPECT_NE(&old_record.GetFirstOp(), &new_record.GetFirstOp());
+    EXPECT_EQ(old_record.bytes_used(), new_record.bytes_used());
+    return kRepaintedCachedItem;
+  }
+  return kPaintedNew;
 }
 
 // Tests using this class will be tested with under-invalidation-checking
@@ -532,12 +546,6 @@ TEST_P(PaintControllerTest, CachedDisplayItems) {
                           IsSameId(second.Id(), kBackgroundType)));
   EXPECT_TRUE(ClientCacheIsValid(first));
   EXPECT_TRUE(ClientCacheIsValid(second));
-  sk_sp<const PaintRecord> first_paint_record =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
-          .GetPaintRecord();
-  sk_sp<const PaintRecord> second_paint_record =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-          .GetPaintRecord();
 
   first.Invalidate();
   EXPECT_FALSE(ClientCacheIsValid(first));
@@ -555,17 +563,6 @@ TEST_P(PaintControllerTest, CachedDisplayItems) {
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(first.Id(), kBackgroundType),
                           IsSameId(second.Id(), kBackgroundType)));
-  // The first display item should be updated.
-  EXPECT_NE(first_paint_record,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
-                .GetPaintRecord());
-  // The second display item should be cached.
-  if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-    EXPECT_EQ(
-        second_paint_record,
-        To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-            .GetPaintRecord());
-  }
   EXPECT_TRUE(ClientCacheIsValid(first));
   EXPECT_TRUE(ClientCacheIsValid(second));
 
@@ -1713,13 +1710,6 @@ TEST_P(PaintControllerTest, SkipCache) {
               ElementsAre(IsSameId(multicol.Id(), kBackgroundType),
                           IsSameId(content.Id(), kForegroundType),
                           IsSameId(content.Id(), kForegroundType)));
-  sk_sp<const PaintRecord> record1 =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-          .GetPaintRecord();
-  sk_sp<const PaintRecord> record2 =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[2])
-          .GetPaintRecord();
-  EXPECT_NE(record1, record2);
   EXPECT_DEFAULT_ROOT_CHUNK(3);
 
   {
@@ -1748,12 +1738,6 @@ TEST_P(PaintControllerTest, SkipCache) {
               ElementsAre(IsSameId(multicol.Id(), kBackgroundType),
                           IsSameId(content.Id(), kForegroundType),
                           IsSameId(content.Id(), kForegroundType)));
-  EXPECT_NE(record1,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-                .GetPaintRecord());
-  EXPECT_NE(record2,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[2])
-                .GetPaintRecord());
   EXPECT_DEFAULT_ROOT_CHUNK(3);
 
   {
@@ -1778,10 +1762,6 @@ TEST_P(PaintControllerTest, SkipCache) {
                             IsSameId(content.Id(), kForegroundType),
                             IsSameId(content.Id(), kForegroundType),
                             IsSameId(content.Id(), kForegroundType)));
-    EXPECT_NE(record1,
-              To<DrawingDisplayItem>(display_item_list[1]).GetPaintRecord());
-    EXPECT_NE(record2,
-              To<DrawingDisplayItem>(display_item_list[2]).GetPaintRecord());
   }
   EXPECT_DEFAULT_ROOT_CHUNK(4);
 }
@@ -1809,16 +1789,6 @@ TEST_P(PaintControllerTest, PartialSkipCache) {
               ElementsAre(IsSameId(content.Id(), kBackgroundType),
                           IsSameId(content.Id(), kForegroundType),
                           IsSameId(content.Id(), kForegroundType)));
-  sk_sp<const PaintRecord> record0 =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
-          .GetPaintRecord();
-  sk_sp<const PaintRecord> record1 =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-          .GetPaintRecord();
-  sk_sp<const PaintRecord> record2 =
-      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[2])
-          .GetPaintRecord();
-  EXPECT_NE(record1, record2);
 
   // Content's cache is invalid because it has display items skipped cache.
   EXPECT_FALSE(ClientCacheIsValid(content));
@@ -1848,15 +1818,6 @@ TEST_P(PaintControllerTest, PartialSkipCache) {
               ElementsAre(IsSameId(content.Id(), kBackgroundType),
                           IsSameId(content.Id(), kForegroundType),
                           IsSameId(content.Id(), kForegroundType)));
-  EXPECT_NE(record0,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
-                .GetPaintRecord());
-  EXPECT_NE(record1,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[1])
-                .GetPaintRecord());
-  EXPECT_NE(record2,
-            To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[2])
-                .GetPaintRecord());
 }
 
 TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {

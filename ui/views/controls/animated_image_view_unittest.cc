@@ -28,15 +28,15 @@ using ::testing::FloatEq;
 using ::testing::NotNull;
 
 template <typename T>
-const T* FindPaintOp(const cc::PaintOpBuffer& paint_op_buffer,
+const T* FindPaintOp(const cc::PaintRecord& paint_record,
                      cc::PaintOpType paint_op_type) {
-  for (const cc::PaintOp& op : paint_op_buffer) {
+  for (const cc::PaintOp& op : paint_record) {
     if (op.GetType() == paint_op_type)
       return static_cast<const T*>(&op);
 
     if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const T* record_op_result = FindPaintOp<T>(
-          *static_cast<const cc::DrawRecordOp&>(op).record, paint_op_type);
+          static_cast<const cc::DrawRecordOp&>(op).record, paint_op_type);
       if (record_op_result)
         return static_cast<const T*>(record_op_result);
     }
@@ -76,7 +76,7 @@ class AnimatedImageViewTest : public ViewsTestBase {
         cc::CreateSkottie(size, /*duration_secs=*/1));
   }
 
-  sk_sp<cc::PaintRecord> Paint(const gfx::Rect& invalidation_rect) {
+  cc::PaintRecord Paint(const gfx::Rect& invalidation_rect) {
     auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
     ui::PaintContext paint_context(display_list.get(),
                                    /*device_scale_factor=*/1.f,
@@ -102,41 +102,41 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
       (kDefaultWidthAndHeight - 80) / 2;
 
   // Default should be no extra translation.
-  sk_sp<cc::PaintRecord> paint_op_buffer = Paint(view_->bounds());
-  const cc::TranslateOp* translate_op = FindPaintOp<cc::TranslateOp>(
-      *paint_op_buffer, cc::PaintOpType::Translate);
+  cc::PaintRecord paint_record = Paint(view_->bounds());
+  const cc::TranslateOp* translate_op =
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin));
 
   view_->SetAdditionalTranslation(gfx::Vector2d(5, 5));
-  paint_op_buffer = Paint(view_->bounds());
-  translate_op = FindPaintOp<cc::TranslateOp>(*paint_op_buffer,
-                                              cc::PaintOpType::Translate);
+  paint_record = Paint(view_->bounds());
+  translate_op =
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
 
   view_->SetAdditionalTranslation(gfx::Vector2d(5, -5));
-  paint_op_buffer = Paint(view_->bounds());
-  translate_op = FindPaintOp<cc::TranslateOp>(*paint_op_buffer,
-                                              cc::PaintOpType::Translate);
+  paint_record = Paint(view_->bounds());
+  translate_op =
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));
 
   view_->SetAdditionalTranslation(gfx::Vector2d(-5, 5));
-  paint_op_buffer = Paint(view_->bounds());
-  translate_op = FindPaintOp<cc::TranslateOp>(*paint_op_buffer,
-                                              cc::PaintOpType::Translate);
+  paint_record = Paint(view_->bounds());
+  translate_op =
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin - 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
 
   view_->SetAdditionalTranslation(gfx::Vector2d(-5, -5));
-  paint_op_buffer = Paint(view_->bounds());
-  translate_op = FindPaintOp<cc::TranslateOp>(*paint_op_buffer,
-                                              cc::PaintOpType::Translate);
+  paint_record = Paint(view_->bounds());
+  translate_op =
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin - 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));

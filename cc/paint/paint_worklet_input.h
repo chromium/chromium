@@ -21,8 +21,7 @@
 
 namespace cc {
 
-class PaintOpBuffer;
-using PaintRecord = PaintOpBuffer;
+class PaintRecord;
 
 class CC_PAINT_EXPORT PaintWorkletInput
     : public base::RefCountedThreadSafe<PaintWorkletInput> {
@@ -105,7 +104,7 @@ class CC_PAINT_EXPORT PaintWorkletInput
 // the PaintWorklet to enable efficient invalidation of dirty PaintWorklets.
 using PaintWorkletRecordMap =
     base::flat_map<scoped_refptr<const PaintWorkletInput>,
-                   std::pair<PaintImage::Id, sk_sp<PaintRecord>>>;
+                   std::pair<PaintImage::Id, absl::optional<PaintRecord>>>;
 
 }  // namespace cc
 

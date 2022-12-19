@@ -50,7 +50,7 @@ class PaintOpPerfTest : public testing::Test {
       SimpleBufferSerializer serializer(
           serialized_data_.get(), kMaxSerializedBufferBytes,
           test_options_provider.serialize_options());
-      serializer.Serialize(&buffer, nullptr, preamble);
+      serializer.Serialize(buffer, nullptr, preamble);
       bytes_written = serializer.written();
 
       // Force client paint cache entries to be written every time.

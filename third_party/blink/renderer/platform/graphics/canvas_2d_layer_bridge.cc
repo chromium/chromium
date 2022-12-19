@@ -90,8 +90,7 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
       opacity_mode_(opacity_mode),
       size_(size),
       snapshot_state_(kInitialSnapshotState),
-      resource_host_(nullptr),
-      last_recording_(nullptr) {
+      resource_host_(nullptr) {
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
   TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
                        TRACE_EVENT_SCOPE_GLOBAL);

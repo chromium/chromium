@@ -21,7 +21,7 @@ namespace cc {
 namespace {
 base::AtomicSequenceNumber g_next_shader_id;
 
-sk_sp<SkPicture> ToSkPicture(sk_sp<PaintRecord> record,
+sk_sp<SkPicture> ToSkPicture(const PaintRecord& record,
                              const SkRect& bounds,
                              const gfx::SizeF* raster_scale,
                              ImageProvider* image_provider) {
@@ -31,7 +31,7 @@ sk_sp<SkPicture> ToSkPicture(sk_sp<PaintRecord> record,
   canvas->translate(-bounds.fLeft, -bounds.fTop);
   if (raster_scale)
     canvas->scale(raster_scale->width(), raster_scale->height());
-  record->Playback(canvas, PlaybackParams(image_provider));
+  record.Playback(canvas, PlaybackParams(image_provider));
   return recorder.finishRecordingAsPicture();
 }
 
@@ -197,7 +197,7 @@ sk_sp<PaintShader> PaintShader::MakeImage(const PaintImage& image,
 }
 
 sk_sp<PaintShader> PaintShader::MakePaintRecord(
-    sk_sp<PaintRecord> record,
+    PaintRecord record,
     const SkRect& tile,
     SkTileMode tx,
     SkTileMode ty,
@@ -232,7 +232,7 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
          PaintOpWriter::GetImageSize(shader->image_) +
          PaintOpWriter::GetImageSize(shader->image_) + bool_size +
          sizeof(shader->id_) +
-         PaintOpWriter::GetRecordSize(shader->record_.get()) +
+         PaintOpWriter::GetRecordSize(shader->paint_record()) +
          sizeof(shader->colors_.size()) +
          shader->colors_.size() * sizeof(SkColor4f) +
          sizeof(shader->positions_.size()) +
@@ -328,9 +328,8 @@ sk_sp<PaintShader> PaintShader::CreatePaintWorkletRecord(
   if (!result || !result.paint_record())
     return nullptr;
   SkMatrix local_matrix = GetLocalMatrix();
-  return PaintShader::MakePaintRecord(
-      sk_ref_sp<PaintRecord>(result.paint_record()), tile_, tx_, ty_,
-      &local_matrix);
+  return PaintShader::MakePaintRecord(*result.paint_record(), tile_, tx_, ty_,
+                                      &local_matrix);
 }
 
 sk_sp<PaintShader> PaintShader::CreateDecodedImage(
@@ -482,7 +481,7 @@ void PaintShader::ResolveSkObjects(const gfx::SizeF* raster_scale,
       // Create a recording at the desired scale if this record has images
       // which have been decoded before raster.
       sk_cached_picture_ =
-          ToSkPicture(record_, tile_, raster_scale, image_provider);
+          ToSkPicture(*record_, tile_, raster_scale, image_provider);
       break;
     }
     default:

@@ -59,9 +59,9 @@ PaintRecorder::~PaintRecorder() {
   if (context_->is_pixel_canvas())
     canvas()->Restore();
 
-  sk_sp<cc::PaintRecord> record = record_canvas_.ReleaseAsRecord();
+  cc::PaintRecord record = record_canvas_.ReleaseAsRecord();
   if (cache_) {
-    cache_->SetPaintOpBuffer(record, context_->device_scale_factor());
+    cache_->SetPaintRecord(record, context_->device_scale_factor());
   }
 
   DCHECK(context_->list_);

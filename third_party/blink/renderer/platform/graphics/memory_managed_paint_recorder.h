@@ -37,7 +37,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   ~MemoryManagedPaintRecorder();
 
   cc::PaintCanvas* beginRecording(const gfx::Size& size);
-  sk_sp<cc::PaintRecord> finishRecordingAsPicture();
+  cc::PaintRecord finishRecordingAsPicture();
 
   bool HasRecordedDrawOps() const {
     DCHECK(canvas_);

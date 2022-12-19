@@ -17,7 +17,7 @@ static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
     return nullptr;
   while (op->GetType() == PaintOpType::DrawRecord) {
     auto* draw_record_op = static_cast<const DrawRecordOp*>(op);
-    if (draw_record_op->record->size() > 1) {
+    if (draw_record_op->record.size() > 1) {
       // If there's more than one op, then we need to keep the
       // SaveLayer.
       return nullptr;
@@ -25,7 +25,7 @@ static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
 
     // Recurse into the single-op DrawRecordOp and make sure it's a
     // drawing op.
-    op = &draw_record_op->record->GetFirstOp();
+    op = &draw_record_op->record.GetFirstOp();
     if (!op->IsDrawOp())
       return nullptr;
   }
@@ -36,7 +36,7 @@ static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
 }  // anonymous namespace
 
 PaintOpBuffer::CompositeIterator::CompositeIterator(
-    const PaintOpBuffer* buffer,
+    const PaintOpBuffer& buffer,
     const std::vector<size_t>* offsets)
     : iter_(offsets == nullptr ? absl::variant<Iterator, OffsetIterator>(
                                      absl::in_place_type<Iterator>,
@@ -44,7 +44,7 @@ PaintOpBuffer::CompositeIterator::CompositeIterator(
                                : absl::variant<Iterator, OffsetIterator>(
                                      absl::in_place_type<OffsetIterator>,
                                      buffer,
-                                     offsets)) {}
+                                     *offsets)) {}
 
 PaintOpBuffer::CompositeIterator::CompositeIterator(
     const CompositeIterator& other) = default;
@@ -52,7 +52,7 @@ PaintOpBuffer::CompositeIterator::CompositeIterator(CompositeIterator&& other) =
     default;
 
 PaintOpBuffer::PlaybackFoldingIterator::PlaybackFoldingIterator(
-    const PaintOpBuffer* buffer,
+    const PaintOpBuffer& buffer,
     const std::vector<size_t>* offsets)
     : iter_(buffer, offsets),
       folded_draw_color_(SkColors::kTransparent, SkBlendMode::kSrcOver) {

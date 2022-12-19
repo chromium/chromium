@@ -6211,7 +6211,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
   EXPECT_TRUE(pending_layer()->GetPaintWorkletRecordMap().contains(input2));
 
   // Specify a record for one of the inputs.
-  sk_sp<PaintRecord> record1 = sk_make_sp<PaintOpBuffer>();
+  PaintRecord record1;
   pending_layer()->SetPaintWorkletRecord(input1, record1);
 
   // Now activate and make sure the active layer is registered as well, with the

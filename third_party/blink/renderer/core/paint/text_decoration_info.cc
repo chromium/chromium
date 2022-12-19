@@ -242,9 +242,9 @@ Path PrepareWavyStrokePath(const WavyParams& params) {
   return result;
 }
 
-sk_sp<cc::PaintRecord> PrepareWavyTileRecord(const WavyParams& params,
-                                             const Path& stroke_path,
-                                             const gfx::RectF& pattern_rect) {
+cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
+                                      const Path& stroke_path,
+                                      const gfx::RectF& pattern_rect) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(params.color.Rgb());
@@ -439,7 +439,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
       line_data_.stroke_path = PrepareDottedOrDashedStrokePath();
-      line_data_.wavy_tile_record.reset();
+      line_data_.wavy_tile_record = cc::PaintRecord();
       break;
     case ETextDecorationStyle::kWavy:
       line_data_.stroke_path.reset();
@@ -448,7 +448,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       break;
     default:
       line_data_.stroke_path.reset();
-      line_data_.wavy_tile_record.reset();
+      line_data_.wavy_tile_record = cc::PaintRecord();
   }
 }
 
@@ -628,11 +628,11 @@ float TextDecorationInfo::ComputeUnderlineThickness(
 
 void TextDecorationInfo::ComputeWavyLineData(
     gfx::RectF& pattern_rect,
-    sk_sp<cc::PaintRecord>& tile_record) const {
+    cc::PaintRecord& tile_record) const {
   struct WavyCache {
     WavyParams key;
     gfx::RectF pattern_rect;
-    sk_sp<cc::PaintRecord> tile_record;
+    cc::PaintRecord tile_record;
     DISALLOW_NEW();
   };
 
@@ -722,7 +722,7 @@ gfx::RectF TextDecorationInfo::WavyTileRect() const {
   return result;
 }
 
-sk_sp<cc::PaintRecord> TextDecorationInfo::WavyTileRecord() const {
+cc::PaintRecord TextDecorationInfo::WavyTileRecord() const {
   return line_data_.wavy_tile_record;
 }
 

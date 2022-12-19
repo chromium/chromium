@@ -56,11 +56,11 @@ struct PositionScaleDrawImage {
   SkSize scale;
 };
 
-sk_sp<PaintOpBuffer> CreateRecording(const PaintImage& discardable_image,
-                                     const gfx::Rect& visible_rect) {
-  auto buffer = sk_make_sp<PaintOpBuffer>();
-  buffer->push<DrawImageOp>(discardable_image, 0.f, 0.f);
-  return buffer;
+PaintRecord CreateRecording(const PaintImage& discardable_image,
+                            const gfx::Rect& visible_rect) {
+  PaintOpBuffer buffer;
+  buffer.push<DrawImageOp>(discardable_image, 0.f, 0.f);
+  return buffer.ReleaseAsRecord();
 }
 
 }  // namespace
@@ -364,7 +364,7 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
   content_layer_client.set_bounds(visible_rect.size());
 
   PaintImage discardable_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
-  sk_sp<PaintRecord> record = CreateRecording(discardable_image, visible_rect);
+  PaintRecord record = CreateRecording(discardable_image, visible_rect);
 
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
   PaintFlags paint;
@@ -450,7 +450,7 @@ TEST_F(DiscardableImageMapTest, NullPaintOnSaveLayer) {
   content_layer_client.set_bounds(visible_rect.size());
 
   PaintImage discardable_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
-  sk_sp<PaintRecord> record = CreateRecording(discardable_image, visible_rect);
+  PaintRecord record = CreateRecording(discardable_image, visible_rect);
 
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
   display_list->StartPaint();
@@ -673,7 +673,7 @@ TEST_F(DiscardableImageMapTest, ClipsImageRects) {
 
   PaintImage discardable_image =
       CreateDiscardablePaintImage(gfx::Size(500, 500));
-  sk_sp<PaintRecord> record = CreateRecording(discardable_image, visible_rect);
+  PaintRecord record = CreateRecording(discardable_image, visible_rect);
 
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
 
@@ -698,24 +698,24 @@ TEST_F(DiscardableImageMapTest, ClipsImageRects) {
 TEST_F(DiscardableImageMapTest, GathersDiscardableImagesFromNestedOps) {
   // This |discardable_image| is in a PaintOpBuffer that gets added to
   // the root buffer.
-  auto internal_record = sk_make_sp<PaintOpBuffer>();
+  PaintOpBuffer internal_buffer;
   PaintImage discardable_image =
       CreateDiscardablePaintImage(gfx::Size(100, 100));
-  internal_record->push<DrawImageOp>(discardable_image, 0.f, 0.f);
+  internal_buffer.push<DrawImageOp>(discardable_image, 0.f, 0.f);
 
   // This |discardable_image2| is in a DisplayItemList that gets added
   // to the root buffer.
   PaintImage discardable_image2 =
       CreateDiscardablePaintImage(gfx::Size(100, 100));
 
-  sk_sp<PaintRecord> record2 = sk_make_sp<PaintRecord>();
-  record2->push<DrawImageOp>(discardable_image2, 100.f, 100.f);
+  PaintOpBuffer buffer2;
+  buffer2.push<DrawImageOp>(discardable_image2, 100.f, 100.f);
 
   PaintOpBuffer root_buffer;
-  root_buffer.push<DrawRecordOp>(internal_record);
-  root_buffer.push<DrawRecordOp>(record2);
+  root_buffer.push<DrawRecordOp>(internal_buffer.ReleaseAsRecord());
+  root_buffer.push<DrawRecordOp>(buffer2.ReleaseAsRecord());
   DiscardableImageMap image_map;
-  image_map.Generate(&root_buffer, gfx::Rect(200, 200));
+  image_map.Generate(root_buffer, gfx::Rect(200, 200));
 
   std::vector<const DrawImage*> images;
   image_map.GetDiscardableImagesInRect(gfx::Rect(0, 0, 5, 95), &images);
@@ -810,17 +810,17 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
 
 TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
   // Create the record to use in the shader.
-  auto shader_record = sk_make_sp<PaintOpBuffer>();
-  shader_record->push<ScaleOp>(2.0f, 2.0f);
+  PaintOpBuffer shader_buffer;
+  shader_buffer.push<ScaleOp>(2.0f, 2.0f);
 
   PaintImage static_image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  shader_record->push<DrawImageOp>(static_image, 0.f, 0.f);
+  shader_buffer.push<DrawImageOp>(static_image, 0.f, 0.f);
 
   std::vector<FrameMetadata> frames = {
       FrameMetadata(true, base::Milliseconds(1)),
       FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
-  shader_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
+  shader_buffer.push<DrawImageOp>(animated_image, 0.f, 0.f);
 
   gfx::Rect visible_rect(500, 500);
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList();
@@ -828,8 +828,9 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
   display_list->push<ScaleOp>(2.0f, 2.0f);
   PaintFlags flags;
   SkRect tile = SkRect::MakeWH(100, 100);
-  flags.setShader(PaintShader::MakePaintRecord(
-      shader_record, tile, SkTileMode::kClamp, SkTileMode::kClamp, nullptr));
+  flags.setShader(PaintShader::MakePaintRecord(shader_buffer.ReleaseAsRecord(),
+                                               tile, SkTileMode::kClamp,
+                                               SkTileMode::kClamp, nullptr));
   display_list->push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
@@ -858,23 +859,23 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
 
 TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
   // Create the record to use in the filter.
-  auto filter_record = sk_make_sp<PaintOpBuffer>();
+  PaintOpBuffer filter_buffer;
 
   PaintImage static_image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  filter_record->push<DrawImageOp>(static_image, 0.f, 0.f);
+  filter_buffer.push<DrawImageOp>(static_image, 0.f, 0.f);
 
   std::vector<FrameMetadata> frames = {
       FrameMetadata(true, base::Milliseconds(1)),
       FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
-  filter_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
+  filter_buffer.push<DrawImageOp>(animated_image, 0.f, 0.f);
 
   gfx::Rect visible_rect(500, 500);
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList();
   display_list->StartPaint();
   PaintFlags flags;
   flags.setImageFilter(sk_make_sp<RecordPaintFilter>(
-      filter_record, SkRect::MakeWH(150.f, 150.f)));
+      filter_buffer.ReleaseAsRecord(), SkRect::MakeWH(150.f, 150.f)));
   display_list->push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
@@ -929,23 +930,24 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
 TEST_F(DiscardableImageMapTest, EmbeddedShaderWithAnimatedImages) {
   // Create the record with animated image to use in the shader.
   SkRect tile = SkRect::MakeWH(100, 100);
-  auto shader_record = sk_make_sp<PaintOpBuffer>();
+  PaintOpBuffer shader_buffer;
   std::vector<FrameMetadata> frames = {
       FrameMetadata(true, base::Milliseconds(1)),
       FrameMetadata(true, base::Milliseconds(1))};
   PaintImage animated_image = CreateAnimatedImage(gfx::Size(100, 100), frames);
-  shader_record->push<DrawImageOp>(animated_image, 0.f, 0.f);
+  shader_buffer.push<DrawImageOp>(animated_image, 0.f, 0.f);
   auto shader_with_image = PaintShader::MakePaintRecord(
-      shader_record, tile, SkTileMode::kClamp, SkTileMode::kClamp, nullptr);
+      shader_buffer.ReleaseAsRecord(), tile, SkTileMode::kClamp,
+      SkTileMode::kClamp, nullptr);
 
   // Create a second shader which uses the shader above.
-  auto second_shader_record = sk_make_sp<PaintOpBuffer>();
+  PaintOpBuffer second_shader_buffer;
   PaintFlags flags;
   flags.setShader(shader_with_image);
-  second_shader_record->push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
+  second_shader_buffer.push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
   auto shader_with_shader_with_image = PaintShader::MakePaintRecord(
-      second_shader_record, tile, SkTileMode::kClamp, SkTileMode::kClamp,
-      nullptr);
+      second_shader_buffer.ReleaseAsRecord(), tile, SkTileMode::kClamp,
+      SkTileMode::kClamp, nullptr);
 
   gfx::Rect visible_rect(500, 500);
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList();

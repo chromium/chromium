@@ -155,7 +155,7 @@ class CC_EXPORT PictureLayerImpl
 
   // Set the paint result (PaintRecord) for a given PaintWorkletInput.
   void SetPaintWorkletRecord(scoped_refptr<const PaintWorkletInput>,
-                             sk_sp<PaintRecord>);
+                             PaintRecord);
 
   // Retrieve the map of PaintWorkletInputs to their painted results
   // (PaintRecords). If a PaintWorkletInput has not been painted yet, it will

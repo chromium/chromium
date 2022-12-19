@@ -153,7 +153,7 @@ void SerializeMemoryBufferRecording(
 
 // Finishes the recording process by converting the `recording` to an SkPicture.
 // Serialization is then delegated based on the type of `persistence`.
-void FinishRecordingOnUIThread(sk_sp<const cc::PaintRecord> recording,
+void FinishRecordingOnUIThread(cc::PaintRecord recording,
                                const gfx::Rect& bounds,
                                std::unique_ptr<PaintPreviewTracker> tracker,
                                RecordingPersistence persistence,

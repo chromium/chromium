@@ -28,7 +28,7 @@ namespace {
 static const float kMarkerWidth = 4;
 static const float kMarkerHeight = 2;
 
-sk_sp<PaintRecord> RecordMarker(Color blink_color) {
+PaintRecord RecordMarker(Color blink_color) {
   const SkColor color = blink_color.Rgb();
 
   // Record the path equivalent to this legacy pattern:
@@ -69,7 +69,7 @@ static const float kMarkerHeight = 3;
 // Spacing between two dots.
 static const float kMarkerSpacing = 1;
 
-sk_sp<PaintRecord> RecordMarker(Color blink_color) {
+PaintRecord RecordMarker(Color blink_color) {
   const SkColor color = blink_color.Rgb();
 
   // Match the artwork used by the Mac.
@@ -91,7 +91,7 @@ void DrawDocumentMarker(GraphicsContext& context,
                         const gfx::PointF& pt,
                         float width,
                         float zoom,
-                        PaintRecord* const marker) {
+                        PaintRecord marker) {
   // Position already includes zoom and device scale factor.
   SkScalar origin_x = WebCoreFloatToSkScalar(pt.x());
   SkScalar origin_y = WebCoreFloatToSkScalar(pt.y());
@@ -108,8 +108,8 @@ void DrawDocumentMarker(GraphicsContext& context,
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
-      sk_ref_sp(marker), SkRect::MakeWH(kMarkerWidth, kMarkerHeight),
-      SkTileMode::kRepeat, SkTileMode::kClamp, &local_matrix));
+      marker, SkRect::MakeWH(kMarkerWidth, kMarkerHeight), SkTileMode::kRepeat,
+      SkTileMode::kClamp, &local_matrix));
 
   // Apply the origin translation as a global transform.  This ensures that the
   // shader local matrix depends solely on zoom => Skia can reuse the same
@@ -206,13 +206,13 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     // spelling/grammar squiggles format. Only applicable for composition
     // markers for now.
     if (marker.GetType() == DocumentMarker::kComposition) {
-      sk_sp<PaintRecord> composition_marker = (RecordMarker(marker_color));
+      PaintRecord composition_marker = RecordMarker(marker_color);
       DrawDocumentMarker(
           context,
           gfx::PointF((box_origin.left + start).ToFloat(),
                       (box_origin.top + logical_height.ToInt() - line_thickness)
                           .ToFloat()),
-          width, line_thickness, composition_marker.get());
+          width, line_thickness, std::move(composition_marker));
     }
   }
 }
@@ -252,25 +252,18 @@ void DocumentMarkerPainter::PaintDocumentMarker(
   }
 
   DEFINE_STATIC_LOCAL(
-      PaintRecord*, spelling_marker,
+      PaintRecord, spelling_marker,
       (RecordMarker(
-           LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor())
-           .release()));
+          LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor())));
   DEFINE_STATIC_LOCAL(
-      PaintRecord*, grammar_marker,
+      PaintRecord, grammar_marker,
       (RecordMarker(
-           LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor())
-           .release()));
+          LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor())));
 
-  sk_sp<PaintRecord> custom_paint_record;
-  if (custom_marker_color)
-    custom_paint_record = RecordMarker(*custom_marker_color);
-
-  auto* const marker = custom_marker_color
-                           ? custom_paint_record.get()
-                           : marker_type == DocumentMarker::kSpelling
-                                 ? spelling_marker
-                                 : grammar_marker;
+  PaintRecord marker = custom_marker_color ? RecordMarker(*custom_marker_color)
+                       : marker_type == DocumentMarker::kSpelling
+                           ? spelling_marker
+                           : grammar_marker;
 
   DrawDocumentMarker(paint_info.context,
                      gfx::PointF((box_origin.left + local_rect.X()).ToFloat(),

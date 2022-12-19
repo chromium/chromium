@@ -62,9 +62,9 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
                           cc::DisplayItemList&);
 
   // Similar to ConvertInto(), but returns a PaintRecord.
-  static sk_sp<PaintRecord> Convert(const PaintChunkSubset&,
-                                    const PropertyTreeState& layer_state,
-                                    const gfx::Vector2dF& layer_offset);
+  static PaintRecord Convert(const PaintChunkSubset&,
+                             const PropertyTreeState& layer_state,
+                             const gfx::Vector2dF& layer_offset);
 
   // Returns true if any selection was painted in the provided PaintChunkSubset.
   static bool UpdateLayerSelection(cc::Layer& layer,

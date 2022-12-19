@@ -130,11 +130,12 @@ scoped_refptr<Image> PaintWorklet::Paint(const String& name,
   // run during the lifecycle update without concern for it causing
   // invalidations to the lifecycle.
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
-  sk_sp<PaintRecord> paint_record =
+  PaintRecord paint_record =
       paint_definition->Paint(container_size, zoom, style_map, data);
-  if (!paint_record)
+  if (paint_record.empty()) {
     return nullptr;
-  return PaintGeneratedImage::Create(paint_record, container_size);
+  }
+  return PaintGeneratedImage::Create(std::move(paint_record), container_size);
 }
 
 // static

@@ -12,7 +12,6 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_worklet_input.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
 
@@ -40,9 +39,9 @@ class CC_PAINT_EXPORT PaintWorkletJob {
   const AnimatedPropertyValues& GetAnimatedPropertyValues() const {
     return animated_property_values_;
   }
-  const sk_sp<PaintRecord>& output() const { return output_; }
+  PaintRecord output() const { return output_; }
 
-  void SetOutput(sk_sp<PaintRecord> output);
+  void SetOutput(PaintRecord output);
 
  private:
   // The id for the layer that the PaintWorkletInput is associated with.
@@ -61,7 +60,7 @@ class CC_PAINT_EXPORT PaintWorkletJob {
 
   // The output for a PaintWorkletJob is a series of paint ops for the painted
   // content, that can be passed to raster.
-  sk_sp<PaintRecord> output_;
+  PaintRecord output_;
 };
 
 // The PaintWorklet dispatcher logic passes the PaintWorkletJobVector to the

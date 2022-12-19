@@ -62,12 +62,12 @@ class MODULES_EXPORT FormattedText final : public ScriptWrappable,
   FormattedTextRunInternal* AppendRun(FormattedTextRunInternal* run,
                                       ExceptionState& exception_state);
 
-  sk_sp<PaintRecord> PaintFormattedText(Document& document,
-                                        const FontDescription& font,
-                                        double x,
-                                        double y,
-                                        gfx::RectF& bounds,
-                                        ExceptionState& exception_state);
+  PaintRecord PaintFormattedText(Document& document,
+                                 const FontDescription& font,
+                                 double x,
+                                 double y,
+                                 gfx::RectF& bounds,
+                                 ExceptionState& exception_state);
 
   void Dispose();
 

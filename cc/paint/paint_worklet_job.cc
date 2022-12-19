@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_worklet_job.h"
 
+#include <utility>
+
 namespace cc {
 
 PaintWorkletJob::PaintWorkletJob(
@@ -18,8 +20,8 @@ PaintWorkletJob::PaintWorkletJob(const PaintWorkletJob& other) = default;
 PaintWorkletJob::PaintWorkletJob(PaintWorkletJob&& other) = default;
 PaintWorkletJob::~PaintWorkletJob() = default;
 
-void PaintWorkletJob::SetOutput(sk_sp<PaintRecord> output) {
-  DCHECK(!output_);
+void PaintWorkletJob::SetOutput(PaintRecord output) {
+  DCHECK(output_.empty());
   output_ = std::move(output);
 }
 

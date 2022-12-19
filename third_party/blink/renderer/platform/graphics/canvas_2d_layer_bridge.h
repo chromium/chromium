@@ -34,6 +34,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -153,8 +154,10 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   CanvasResourceProvider* ResourceProvider() const;
   void FlushRecording(bool printing = false);
 
-  sk_sp<cc::PaintRecord> getLastRecord() {
-    return last_record_tainted_by_write_pixels_ ? nullptr : last_recording_;
+  cc::PaintRecord* getLastRecord() {
+    return last_record_tainted_by_write_pixels_
+               ? nullptr
+               : base::OptionalToPtr(last_recording_);
   }
 
   bool HasRateLimiterForTesting();
@@ -222,7 +225,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   base::MetricsSubSampler metrics_subsampler_;
   Deque<RasterTimer> pending_raster_timers_;
 
-  sk_sp<cc::PaintRecord> last_recording_;
+  absl::optional<cc::PaintRecord> last_recording_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };

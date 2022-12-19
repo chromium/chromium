@@ -21,7 +21,7 @@ class CC_PAINT_EXPORT SolidColorAnalyzer {
   SolidColorAnalyzer() = delete;
 
   static absl::optional<SkColor4f> DetermineIfSolidColor(
-      const PaintOpBuffer* buffer,
+      const PaintOpBuffer& buffer,
       const gfx::Rect& rect,
       int max_ops_to_analyze,
       const std::vector<size_t>* offsets = nullptr);

@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/types/optional_util.h"
 #include "cc/paint/image_analysis_state.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/paint_record.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -27,8 +29,6 @@ struct Mailbox;
 
 namespace cc {
 class ImageProvider;
-class PaintOpBuffer;
-using PaintRecord = PaintOpBuffer;
 
 class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
  public:
@@ -116,7 +116,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
                                       const SkRect* tile_rect = nullptr);
 
   static sk_sp<PaintShader> MakePaintRecord(
-      sk_sp<PaintRecord> record,
+      PaintRecord record,
       const SkRect& tile,
       SkTileMode tx,
       SkTileMode ty,
@@ -150,7 +150,9 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     return image_;
   }
 
-  const sk_sp<PaintRecord>& paint_record() const { return record_; }
+  const PaintRecord* paint_record() const {
+    return base::OptionalToPtr(record_);
+  }
   bool GetRasterizationTileRect(const SkMatrix& ctm, SkRect* tile_rect) const {
     return GetClampedRasterizationTileRect(ctm, /*max_texture_size=*/0,
                                            tile_rect);
@@ -266,7 +268,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   SkScalar end_degrees_ = 0;
 
   PaintImage image_;
-  sk_sp<PaintRecord> record_;
+  absl::optional<PaintRecord> record_;
   RecordShaderId id_ = kInvalidRecordShaderId;
 
   // For decoded PaintRecord shaders, specifies the scale at which the record

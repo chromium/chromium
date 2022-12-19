@@ -8664,11 +8664,11 @@ MULTI_THREAD_TEST_F(LayerTreeHostTestImageAnimationDrawImageShader);
 class LayerTreeHostTestImageAnimationDrawRecordShader
     : public LayerTreeHostTestImageAnimation {
   void AddImageOp(const PaintImage& image) override {
-    auto record = sk_make_sp<PaintOpBuffer>();
-    record->push<DrawImageOp>(image, 0.f, 0.f);
+    PaintOpBuffer buffer;
+    buffer.push<DrawImageOp>(image, 0.f, 0.f);
     PaintFlags flags;
     flags.setShader(PaintShader::MakePaintRecord(
-        record, SkRect::MakeWH(500, 500), SkTileMode::kClamp,
+        buffer.ReleaseAsRecord(), SkRect::MakeWH(500, 500), SkTileMode::kClamp,
         SkTileMode::kClamp, nullptr));
     content_layer_client_.add_draw_rect(gfx::Rect(500, 500), flags);
   }
@@ -8679,11 +8679,11 @@ MULTI_THREAD_TEST_F(LayerTreeHostTestImageAnimationDrawRecordShader);
 class LayerTreeHostTestImageAnimationPaintFilter
     : public LayerTreeHostTestImageAnimation {
   void AddImageOp(const PaintImage& image) override {
-    auto record = sk_make_sp<PaintOpBuffer>();
-    record->push<DrawImageOp>(image, 0.f, 0.f);
+    PaintOpBuffer buffer;
+    buffer.push<DrawImageOp>(image, 0.f, 0.f);
     PaintFlags flags;
-    flags.setImageFilter(
-        sk_make_sp<RecordPaintFilter>(record, SkRect::MakeWH(500, 500)));
+    flags.setImageFilter(sk_make_sp<RecordPaintFilter>(
+        buffer.ReleaseAsRecord(), SkRect::MakeWH(500, 500)));
     content_layer_client_.add_draw_rect(gfx::Rect(500, 500), flags);
   }
 };

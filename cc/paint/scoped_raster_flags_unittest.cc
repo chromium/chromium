@@ -60,8 +60,7 @@ class MockPaintWorkletImageProvider : public ImageProvider {
   ~MockPaintWorkletImageProvider() override = default;
 
   ScopedResult GetRasterContent(const DrawImage& draw_image) override {
-    auto record = sk_make_sp<PaintOpBuffer>();
-    return ScopedResult(std::move(record));
+    return ScopedResult(PaintRecord());
   }
 };
 }  // namespace
@@ -88,16 +87,16 @@ TEST(ScopedRasterFlagsTest, DecodePaintWorkletImageShader) {
 }
 
 TEST(ScopedRasterFlagsTest, KeepsDecodesAlive) {
-  auto record = sk_make_sp<PaintOpBuffer>();
-  record->push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
-                            0.f);
-  record->push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
-                            0.f);
-  record->push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
-                            0.f);
+  PaintOpBuffer buffer;
+  buffer.push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
+                           0.f);
+  buffer.push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
+                           0.f);
+  buffer.push<DrawImageOp>(CreateDiscardablePaintImage(gfx::Size(10, 10)), 0.f,
+                           0.f);
   auto record_shader = PaintShader::MakePaintRecord(
-      record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,
-      &SkMatrix::I());
+      buffer.ReleaseAsRecord(), SkRect::MakeWH(100, 100), SkTileMode::kClamp,
+      SkTileMode::kClamp, &SkMatrix::I());
   record_shader->set_has_animated_images(true);
 
   MockImageProvider provider;

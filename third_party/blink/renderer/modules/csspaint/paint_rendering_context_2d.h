@@ -98,7 +98,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   void FlushCanvas() final {}
 
-  sk_sp<PaintRecord> GetRecord();
+  PaintRecord GetRecord();
   cc::PaintCanvas* GetDrawingPaintCanvas();
 
   ExecutionContext* GetTopExecutionContext() const override {
@@ -114,7 +114,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   void InitializePaintRecorder();
 
   cc::InspectablePaintRecorder paint_recorder_;
-  sk_sp<PaintRecord> previous_frame_;
+  absl::optional<PaintRecord> previous_frame_;
   gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
   bool did_record_draw_commands_in_paint_recorder_;

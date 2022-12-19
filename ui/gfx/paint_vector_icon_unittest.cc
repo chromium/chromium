@@ -56,10 +56,10 @@ TEST(VectorIconTest, RelativeMoveToAfterClose) {
   const VectorIcon icon(rep_list, 1u, nullptr);
 
   PaintVectorIcon(&canvas, icon, 100, SK_ColorMAGENTA);
-  sk_sp<cc::PaintRecord> record = recorder.finishRecordingAsPicture();
+  cc::PaintRecord record = recorder.finishRecordingAsPicture();
 
   MockCanvas mock(100, 100);
-  record->Playback(&mock);
+  record.Playback(&mock);
 
   ASSERT_EQ(1U, mock.paths().size());
   SkPoint last_point;

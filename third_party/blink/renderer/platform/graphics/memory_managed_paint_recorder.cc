@@ -47,7 +47,7 @@ cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
   return canvas_.get();
 }
 
-sk_sp<cc::PaintRecord> MemoryManagedPaintRecorder::finishRecordingAsPicture() {
+cc::PaintRecord MemoryManagedPaintRecorder::finishRecordingAsPicture() {
   DCHECK(canvas_);
   DCHECK(is_recording_);
   is_recording_ = false;
