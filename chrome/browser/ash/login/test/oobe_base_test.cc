@@ -205,7 +205,7 @@ void OobeBaseTest::WaitForSigninScreen() {
 }
 
 void OobeBaseTest::CheckJsExceptionErrors(int number) {
-  test::OobeJS().ExpectEQ("cr.ErrorStore.getInstance().length", number);
+  test::OobeJS().ExpectEQ("OobeErrorStore.length", number);
 }
 
 test::JSChecker OobeBaseTest::SigninFrameJS() {

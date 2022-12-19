@@ -12,7 +12,11 @@
   <link rel="stylesheet" href="oobe_popup_overlay.css">
   <link rel="stylesheet" href="oobe_screen.css">
 
-  <script type="module" src="oobe.js"></script>
+  <!-- Install a global error listener on window -->
+  <script type="module" src="./install_oobe_error_store.js"></script>
+
+  <!-- OOBE Start Script -->
+  <script type="module" src="./oobe.js"></script>
 </head>
 
 <custom-style>

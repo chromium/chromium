@@ -6,8 +6,6 @@ import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-import("../oobe_auto_imports.gni")
 
 group("closure_compile") {
   deps = [
@@ -26,7 +24,7 @@ group("closure_compile") {
     ":hd_iron_icon",
     ":keyboard_utils_for_injection",
     ":keyboard_utils_for_injection.m",
-    ":long_touch_detector.m",
+    ":long_touch_detector",
     ":network_select_login",
     ":notification_card",
     ":oobe_a11y_option",
@@ -42,7 +40,6 @@ group("closure_compile") {
     ":oobe_types",
     ":progress_list_item",
     ":security_token_pin",
-    ":test_util.m",
     ":throbber_notice",
     ":web_view_helper",
     ":web_view_loader",
@@ -55,7 +52,7 @@ group("polymer3_elements") {
                   ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
-                ] + [ ":modulize" ]
+                ]
 }
 
 ###############################
@@ -123,10 +120,10 @@ js_library("keyboard_utils_for_injection.m") {
 js_library("keyboard_utils_for_injection") {
 }
 
-js_library("long_touch_detector.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.m.js" ]
+js_library("long_touch_detector") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.js" ]
   deps = []
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":copy_js" ]
 }
 
 js_library("network_select_login") {
@@ -253,12 +250,6 @@ js_library("throbber_notice") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("test_util.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/test_util.m.js" ]
-  deps = []
-  extra_deps = [ ":modulize" ]
-}
-
 js_library("web_view_helper") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_helper.js" ]
   deps = []
@@ -283,18 +274,11 @@ polymer_modulizer("oobe_network_icons") {
   html_type = "iron-iconset"
 }
 
-js_modulizer("modulize") {
-  input_files = [
-    "long_touch_detector.js",
-    "test_util.js",
-  ]
-  namespace_rewrites = []
-}
-
 # Copy existing files to output directory for closure compilation.
 copy("copy_js") {
   sources = [
     "display_manager_types.js",
+    "long_touch_detector.js",
     "oobe_select.js",
     "oobe_types.js",
     "web_view_helper.js",

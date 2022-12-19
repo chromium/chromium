@@ -4,7 +4,7 @@
 
 const LONG_TOUCH_TIME_MS = 1000;
 
-/* #export */ class LongTouchDetector {
+export class LongTouchDetector {
   constructor(element, callback) {
     this.callback_ = callback;
     /**
