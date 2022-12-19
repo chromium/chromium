@@ -254,10 +254,8 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   mojom::MarginType margin_type = static_cast<mojom::MarginType>(
       job_settings.FindInt(kSettingMarginsType)
           .value_or(static_cast<int>(mojom::MarginType::kDefaultMargins)));
-  if (margin_type != mojom::MarginType::kDefaultMargins &&
-      margin_type != mojom::MarginType::kNoMargins &&
-      margin_type != mojom::MarginType::kCustomMargins &&
-      margin_type != mojom::MarginType::kPrintableAreaMargins) {
+  if (margin_type < mojom::MarginType::kMinValue ||
+      margin_type > mojom::MarginType::kMaxValue) {
     margin_type = mojom::MarginType::kDefaultMargins;
   }
   settings->set_margin_type(margin_type);
