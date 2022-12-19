@@ -10,23 +10,23 @@
 ] interface XRFrame {
   [SameObject] readonly attribute XRSession session;
 
-  [RuntimeEnabled=WebXRAnchors]
+  [RuntimeEnabled=WebXR]
   readonly attribute XRAnchorSet trackedAnchors;
-  [RuntimeEnabled=WebXRAnchors, CallWith=ScriptState, RaisesException, MeasureAs=XRFrameCreateAnchor]
+  [RuntimeEnabled=WebXR, CallWith=ScriptState, RaisesException, MeasureAs=XRFrameCreateAnchor]
   Promise<XRAnchor> createAnchor(XRRigidTransform initial_pose, XRSpace space);
 
   [RaisesException] XRViewerPose? getViewerPose(XRReferenceSpace referenceSpace);
   [RaisesException] XRPose? getPose(XRSpace space, XRSpace relativeTo);
 
-  [RuntimeEnabled=WebXRHitTest, RaisesException]
+  [RuntimeEnabled=WebXR, RaisesException]
   FrozenArray<XRHitTestResult> getHitTestResults(XRHitTestSource hitTestSource);
-  [RuntimeEnabled=WebXRHitTest, RaisesException]
+  [RuntimeEnabled=WebXR, RaisesException]
   FrozenArray<XRTransientInputHitTestResult> getHitTestResultsForTransientInput(XRTransientInputHitTestSource hitTestSource);
 
-  [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRFrameGetLightEstimate]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRFrameGetLightEstimate]
   XRLightEstimate? getLightEstimate(XRLightProbe lightProbe);
 
-  [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRFrameGetDepthInformation]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRFrameGetDepthInformation]
   XRCPUDepthInformation? getDepthInformation(XRView view);
 
   [RuntimeEnabled=WebXRImageTracking, RaisesException, MeasureAs=XRFrameGetImageTrackingResults]

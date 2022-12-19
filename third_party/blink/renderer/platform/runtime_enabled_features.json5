@@ -3255,50 +3255,20 @@
       status: "stable",
     },
     {
-      name: "WebXRAnchors",
-      depends_on: ["WebXRARModule", "WebXRHitTest"],
-      status: "stable"
-    },
-    {
-      name: "WebXRARModule",
-      depends_on: ["WebXR"],
-      public: true,
-      status: "stable",
-    },
-    {
-      name: "WebXRCameraAccess",
-      depends_on: ["WebXRARModule"],
-      public: true,
-      status: "stable",
-    },
-    {
-      name: "WebXRDepth",
-      origin_trial_feature_name: "WebXRDepth",
-      depends_on: ["WebXRARModule"],
-      public: true,
-      status: "stable",
-    },
-    {
       name: "WebXRHandInput",
-      depends_on: ["WebXRARModule"],
+      depends_on: ["WebXR"],
       public: true,
       status: "experimental"
     },
     {
-      name: "WebXRHitTest",
-      depends_on: ["WebXRARModule"],
-      public: true,
-      status: "stable",
-    },
-    {
       name: "WebXRHitTestEntityTypes",
-      depends_on: ["WebXRHitTest"],
+      depends_on: ["WebXR"],
       status: "experimental"
     },
     {
       name: "WebXRImageTracking",
+      depends_on: ["WebXR"],
       origin_trial_feature_name: "WebXRImageTracking",
-      depends_on: ["WebXRARModule"],
       public: true,
       status: "experimental",
     },
@@ -3309,23 +3279,11 @@
       status: "experimental"
     },
     {
-      name: "WebXRLightEstimation",
-      depends_on: ["WebXRARModule"],
-      public: true,
-      status: "stable",
-    },
-    {
       name: "WebXRPlaneDetection",
+      depends_on: ["WebXR"],
       origin_trial_feature_name: "WebXRPlaneDetection",
-      depends_on: ["WebXRARModule"],
       public: true,
       status: "experimental",
-    },
-    {
-      name: "WebXRViewportScale",
-      depends_on: ["WebXRARModule"],
-      public: true,
-      status: "stable",
     },
     {
       name: "WGIGamepadTriggerRumble",

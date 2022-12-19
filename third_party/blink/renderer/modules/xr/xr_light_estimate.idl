@@ -5,10 +5,9 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRLightEstimation
+    RuntimeEnabled=WebXR
 ] interface XRLightEstimate {
   [SameObject] readonly attribute Float32Array sphericalHarmonicsCoefficients;
   [SameObject] readonly attribute DOMPointReadOnly primaryLightDirection;
   [SameObject] readonly attribute DOMPointReadOnly primaryLightIntensity;
 };
-

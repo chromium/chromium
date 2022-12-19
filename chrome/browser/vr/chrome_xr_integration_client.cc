@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "build/build_config.h"
@@ -17,7 +16,6 @@
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/xr_install_helper.h"
-#include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
@@ -115,16 +113,13 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 #if BUILDFLAG(IS_ANDROID)
   providers.push_back(std::make_unique<device::GvrDeviceProvider>());
 #if BUILDFLAG(ENABLE_ARCORE)
-  if (base::FeatureList::IsEnabled(features::kWebXrArModule)) {
-    base::android::ScopedJavaLocalRef<jobject>
-        j_ar_compositor_delegate_provider =
-            vr::Java_ArCompositorDelegateProviderImpl_Constructor(
-                base::android::AttachCurrentThread());
+  base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =
+      vr::Java_ArCompositorDelegateProviderImpl_Constructor(
+          base::android::AttachCurrentThread());
 
-    providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
-        webxr::ArCompositorDelegateProvider(
-            std::move(j_ar_compositor_delegate_provider))));
-  }
+  providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
+      webxr::ArCompositorDelegateProvider(
+          std::move(j_ar_compositor_delegate_provider))));
 #endif  // BUILDFLAG(ENABLE_ARCORE)
 #endif  // BUILDFLAG(IS_ANDROID)
 

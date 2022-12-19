@@ -5,9 +5,8 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRDepth
+    RuntimeEnabled=WebXR
 ] interface XRWebGLDepthInformation : XRDepthInformation {
   [RaisesException, SameObject, MeasureAs=XRWebGLDepthInformationTextureAttribute]
   readonly attribute WebGLTexture texture;
 };
-

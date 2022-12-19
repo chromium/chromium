@@ -6,7 +6,7 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRHitTest
+    RuntimeEnabled=WebXR
 ] interface XRRay {
   [RaisesException] constructor(optional DOMPointInit origin = {}, optional XRRayDirectionInit direction = {});
   [RaisesException] constructor(XRRigidTransform transform);

@@ -1730,14 +1730,10 @@ void XRSystem::TryEnsureService() {
 bool XRSystem::IsImmersiveArAllowed() {
   const bool ar_allowed_in_settings =
       IsImmersiveArAllowedBySettings(DomWindow());
-  const bool ar_enabled =
-      ar_allowed_in_settings &&
-      RuntimeEnabledFeatures::WebXRARModuleEnabled(GetExecutionContext());
 
-  DVLOG(2) << __func__ << ": ar_allowed_in_settings=" << ar_allowed_in_settings
-           << ", ar_enabled=" << ar_enabled;
+  DVLOG(2) << __func__ << ": ar_allowed_in_settings=" << ar_allowed_in_settings;
 
-  return ar_enabled;
+  return ar_allowed_in_settings;
 }
 
 void XRSystem::Trace(Visitor* visitor) const {

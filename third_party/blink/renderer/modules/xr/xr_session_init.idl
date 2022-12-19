@@ -8,5 +8,5 @@ dictionary XRSessionInit {
   sequence<any> optionalFeatures;
   XRDOMOverlayInit domOverlay;
   [RuntimeEnabled=WebXRImageTracking] sequence<XRTrackedImageInit> trackedImages;
-  [RuntimeEnabled=WebXRDepth] XRDepthStateInit depthSensing;
+  XRDepthStateInit depthSensing;
 };

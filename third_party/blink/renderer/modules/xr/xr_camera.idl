@@ -5,7 +5,7 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRCameraAccess
+    RuntimeEnabled=WebXR
 ] interface XRCamera {
   readonly attribute long width;
   readonly attribute long height;

@@ -272,10 +272,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // TODO(https://crbug.com/1012899): WebXR is not yet supported on WebView.
     features.DisableIfNotSet(::features::kWebXr);
 
-    features.DisableIfNotSet(::features::kWebXrArModule);
-
-    features.DisableIfNotSet(device::features::kWebXrHitTest);
-
     // TODO(https://crbug.com/1312827): Digital Goods API is not yet supported
     // on WebView.
     features.DisableIfNotSet(::features::kDigitalGoodsApi);

@@ -5,7 +5,7 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRDepth
+    RuntimeEnabled=WebXR
 ] interface XRDepthInformation {
   readonly attribute unsigned long width;
   readonly attribute unsigned long height;

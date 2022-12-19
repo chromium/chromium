@@ -191,25 +191,20 @@ absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR;
   } else if (feature_string == "unbounded") {
     return device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED;
-  } else if (RuntimeEnabledFeatures::WebXRHitTestEnabled(context) &&
-             feature_string == "hit-test") {
+  } else if (feature_string == "hit-test") {
     return device::mojom::XRSessionFeature::HIT_TEST;
-  } else if (RuntimeEnabledFeatures::WebXRAnchorsEnabled(context) &&
-             feature_string == "anchors") {
+  } else if (feature_string == "anchors") {
     return device::mojom::XRSessionFeature::ANCHORS;
   } else if (feature_string == "dom-overlay") {
     return device::mojom::XRSessionFeature::DOM_OVERLAY;
-  } else if (RuntimeEnabledFeatures::WebXRLightEstimationEnabled(context) &&
-             feature_string == "light-estimation") {
+  } else if (feature_string == "light-estimation") {
     return device::mojom::XRSessionFeature::LIGHT_ESTIMATION;
-  } else if (RuntimeEnabledFeatures::WebXRCameraAccessEnabled(context) &&
-             feature_string == "camera-access") {
+  } else if (feature_string == "camera-access") {
     return device::mojom::XRSessionFeature::CAMERA_ACCESS;
   } else if (RuntimeEnabledFeatures::WebXRPlaneDetectionEnabled(context) &&
              feature_string == "plane-detection") {
     return device::mojom::XRSessionFeature::PLANE_DETECTION;
-  } else if (RuntimeEnabledFeatures::WebXRDepthEnabled(context) &&
-             feature_string == "depth-sensing") {
+  } else if (feature_string == "depth-sensing") {
     return device::mojom::XRSessionFeature::DEPTH;
   } else if (RuntimeEnabledFeatures::WebXRImageTrackingEnabled(context) &&
              feature_string == "image-tracking") {

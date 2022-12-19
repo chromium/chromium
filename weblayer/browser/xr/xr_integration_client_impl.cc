@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "components/webxr/android/arcore_device_provider.h"
 #include "content/public/browser/xr_install_helper.h"
-#include "content/public/common/content_features.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "weblayer/browser/java/jni/ArCompositorDelegateProviderImpl_jni.h"
@@ -59,16 +57,13 @@ XrIntegrationClientImpl::GetInstallHelper(device::mojom::XRDeviceId device_id) {
 content::XRProviderList XrIntegrationClientImpl::GetAdditionalProviders() {
   content::XRProviderList providers;
 
-  if (base::FeatureList::IsEnabled(features::kWebXrArModule)) {
-    base::android::ScopedJavaLocalRef<jobject>
-        j_ar_compositor_delegate_provider =
-            Java_ArCompositorDelegateProviderImpl_Constructor(
-                base::android::AttachCurrentThread());
+  base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =
+      Java_ArCompositorDelegateProviderImpl_Constructor(
+          base::android::AttachCurrentThread());
 
-    providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
-        webxr::ArCompositorDelegateProvider(
-            std::move(j_ar_compositor_delegate_provider))));
-  }
+  providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
+      webxr::ArCompositorDelegateProvider(
+          std::move(j_ar_compositor_delegate_provider))));
 
   return providers;
 }

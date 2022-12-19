@@ -5,7 +5,7 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRDepth
+    RuntimeEnabled=WebXR
 ] interface XRCPUDepthInformation : XRDepthInformation {
   [
     RaisesException,
@@ -17,4 +17,3 @@
   [RaisesException, MeasureAs=XRCPUDepthInformationGetDepth]
   float getDepthInMeters(float x, float y);
 };
-

@@ -66,9 +66,6 @@ BASE_FEATURE(kWebXrHandInput,
              "WebXRHandInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables access to raycasting against estimated XR scene geometry.
-BASE_FEATURE(kWebXrHitTest, "WebXRHitTest", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables access to experimental WebXR features.
 BASE_FEATURE(kWebXrIncubations,
              "WebXRIncubations",

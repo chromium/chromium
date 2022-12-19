@@ -34,13 +34,12 @@ dictionary XRProjectionLayerInit {
   [RuntimeEnabled=WebXRLayers, RaisesException]
   XRWebGLSubImage getViewSubImage(XRProjectionLayer layer, XRView view);
 
-  // Lighting Estimation API
-  [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
 
-  [RuntimeEnabled=WebXRCameraAccess, RaisesException, MeasureAs=XRWebGLBindingGetCameraImage]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRWebGLBindingGetCameraImage]
   WebGLTexture? getCameraImage(XRCamera camera);
 
-  [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRWebGLBindingGetDepthInformation]
+  [RuntimeEnabled=WebXR, RaisesException, MeasureAs=XRWebGLBindingGetDepthInformation]
   XRWebGLDepthInformation? getDepthInformation(XRView view);
 };

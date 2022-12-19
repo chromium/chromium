@@ -1393,9 +1393,6 @@ BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the WebXR Device API is enabled.
 BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables access to AR features via the WebXR API.
-BASE_FEATURE(kWebXrArModule, "WebXRARModule", base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Allows the experimental approach of proactively generating an accessibility
 // tree asynchronously off the main thread, before the framework requests it.
