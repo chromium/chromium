@@ -78,10 +78,6 @@ iron-list[risk-selection] {
   margin-inline-start: 8px;
 }
 
-span ~ a {
-  margin-inline-start: var(--cr-subsequent-anchors-of-span-margin, 4px);
-}
-
 a[href] {
   color: var(--cr-link-color);
 }
