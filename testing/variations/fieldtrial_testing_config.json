@@ -5482,6 +5482,21 @@
             ]
         }
     ],
+    "IOSEnableFullscreenAPI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFullscreenAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpKitAppleCalendar": [
         {
             "platforms": [
