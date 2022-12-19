@@ -171,6 +171,11 @@ class ConnectivityCheckerImpl
   const base::TimeDelta disconnected_probe_period_;
   // How often connectivity checks are performed while connected.
   const base::TimeDelta connected_probe_period_;
+  // Keeps track of whether this is the first time checking network
+  // connectivity due to a network change. To prevent unnecessary delays in Cast
+  // receiver initialization, kNetworkChangedDelay should only be applied on
+  // network changes after the first one.
+  bool first_connection_ = true;
 
   base::WeakPtr<ConnectivityCheckerImpl> weak_this_;
   base::WeakPtrFactory<ConnectivityCheckerImpl> weak_factory_;

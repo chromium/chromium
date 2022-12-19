@@ -6,28 +6,20 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/net/net_switches.h"
 #include "chromecast/net/time_sync_tracker.h"
 #include "net/base/request_priority.h"
-#include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
-#include "net/http/http_transaction_factory.h"
-#include "net/socket/ssl_client_socket.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace chromecast {
@@ -35,12 +27,10 @@ namespace chromecast {
 namespace {
 
 // How often connectivity checks are performed while not connected.
-constexpr base::TimeDelta kDisconnectedProbePeriod =
-    base::Seconds(1);
+constexpr base::TimeDelta kDisconnectedProbePeriod = base::Seconds(1);
 
 // How often connectivity checks are performed while connected.
-constexpr base::TimeDelta kConnectedProbePeriod =
-    base::Seconds(60);
+constexpr base::TimeDelta kConnectedProbePeriod = base::Seconds(60);
 
 // Number of consecutive connectivity check errors before status is changed
 // to offline.
@@ -93,7 +83,8 @@ ConnectivityCheckerImpl::ConnectivityCheckerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     network::NetworkConnectionTracker* network_connection_tracker,
     base::TimeDelta disconnected_probe_period,
-    base::TimeDelta connected_probe_period, TimeSyncTracker* time_sync_tracker)
+    base::TimeDelta connected_probe_period,
+    TimeSyncTracker* time_sync_tracker)
     : ConnectivityChecker(task_runner),
       task_runner_(std::move(task_runner)),
       network_connection_tracker_(network_connection_tracker),
@@ -259,8 +250,13 @@ void ConnectivityCheckerImpl::OnConnectionChanged(
   DVLOG(2) << "OnConnectionChanged " << type;
   connection_type_ = type;
 
-  if (network_changed_pending_)
+  if (network_changed_pending_) {
     return;
+  }
+  if (std::exchange(first_connection_, false)) {
+    OnConnectionChangedInternal();
+    return;
+  }
   network_changed_pending_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -371,8 +367,9 @@ void ConnectivityCheckerImpl::OnUrlRequestTimeout() {
 
 void ConnectivityCheckerImpl::Cancel() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!url_loader_)
+  if (!url_loader_) {
     return;
+  }
   VLOG(2) << "Cancel connectivity check in progress";
   url_loader_ = nullptr;
   timeout_.Cancel();

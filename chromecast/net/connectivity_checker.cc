@@ -20,7 +20,7 @@ ConnectivityChecker::ConnectivityChecker(
           base::MakeRefCounted<base::ObserverListThreadSafe<
               ConnectivityCheckFailureObserver>>()) {}
 
-ConnectivityChecker::~ConnectivityChecker() {}
+ConnectivityChecker::~ConnectivityChecker() = default;
 
 void ConnectivityChecker::AddConnectivityObserver(
     ConnectivityObserver* observer) {

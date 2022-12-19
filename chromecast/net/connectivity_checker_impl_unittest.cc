@@ -13,12 +13,11 @@
 #include "chromecast/base/metrics/mock_cast_metrics_helper.h"
 #include "chromecast/net/fake_shared_url_loader_factory.h"
 #include "net/http/http_status_code.h"
-#include "net/test/test_with_task_environment.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +38,11 @@ constexpr const char* kDefaultConnectivityCheckUrls[] = {
 // to offline.
 const unsigned int kNumErrorsToNotifyOffline = 3;
 
+// Most tests use the TestNetworkConnectionChecker from
+// services/network/test/test_network_connection_tracker.h, but some tests
+// require testing how many times GetConnectionType() is called by
+// ConnectivityCheckerImpl. For these tests, we use a fake that records the
+// number of invocations and otherwise has the default behavior.
 class FakeNetworkConnectionTracker : public network::NetworkConnectionTracker {
  public:
   // Spoof a valid connection type.
@@ -85,33 +89,37 @@ class ConnectivityCheckPeriods {
 const ConnectivityCheckPeriods ConnectivityCheckPeriods::empty_ =
     ConnectivityCheckPeriods(base::TimeDelta::Min(), base::TimeDelta::Min());
 
-class ConnectivityCheckerImplTest : public ::testing::Test {
- public:
-  ConnectivityCheckerImplTest(ConnectivityCheckPeriods check_periods =
-                                  ConnectivityCheckPeriods::Empty())
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        network_connection_tracker_(
-            std::make_unique<FakeNetworkConnectionTracker>()) {
-    // Create the PendingSharedURLLoaderFactory first to grab a reference to its
-    // underlying SharedURLLoaderFactory.
-    auto pending_factory =
-        std::make_unique<FakePendingSharedURLLoaderFactory>();
-    fake_shared_url_loader_factory_ =
-        pending_factory->fake_shared_url_loader_factory();
+std::ostream& operator<<(std::ostream& out, const ConnectivityCheckPeriods& x) {
+  return out << "{disconnected_check_period: " << x.disconnected_check_period_
+             << ", connected_check_period: " << x.connected_check_period_
+             << "}";
+}
 
-    if (check_periods.IsEmpty()) {
-      checker_ = ConnectivityCheckerImpl::Create(
-          task_environment_.GetMainThreadTaskRunner(),
-          std::move(pending_factory), network_connection_tracker_.get(),
-          /*time_sync_tracker=*/nullptr);
-    } else {
-      checker_ = ConnectivityCheckerImpl::Create(
-          task_environment_.GetMainThreadTaskRunner(),
-          std::move(pending_factory), network_connection_tracker_.get(),
-          check_periods.disconnected_check_period_,
-          check_periods.connected_check_period_,
-          /*time_sync_tracker=*/nullptr);
-    }
+template <typename NetworkConnectivityCheckerT>
+class ConnectivityCheckerImplBaseTest : public ::testing::Test {
+ public:
+  explicit ConnectivityCheckerImplBaseTest(
+      std::unique_ptr<NetworkConnectivityCheckerT> tracker,
+      ConnectivityCheckPeriods check_periods =
+          ConnectivityCheckPeriods::Empty(),
+      std::unique_ptr<FakePendingSharedURLLoaderFactory> pending_factory =
+          std::make_unique<FakePendingSharedURLLoaderFactory>())
+      : tracker_(std::move(tracker)),
+        fake_shared_url_loader_factory_(
+            pending_factory->fake_shared_url_loader_factory()),
+        checker_(check_periods.IsEmpty()
+                     ? ConnectivityCheckerImpl::Create(
+                           task_environment_.GetMainThreadTaskRunner(),
+                           std::move(pending_factory),
+                           tracker_.get(),
+                           /* time_sync_tracker */ nullptr)
+                     : ConnectivityCheckerImpl::Create(
+                           task_environment_.GetMainThreadTaskRunner(),
+                           std::move(pending_factory),
+                           tracker_.get(),
+                           check_periods.disconnected_check_period_,
+                           check_periods.connected_check_period_,
+                           /* time_sync_tracker */ nullptr)) {
     checker_->SetCastMetricsHelperForTesting(&cast_metrics_helper_);
   }
 
@@ -159,37 +167,42 @@ class ConnectivityCheckerImplTest : public ::testing::Test {
     return fake_shared_url_loader_factory_->test_url_loader_factory();
   }
 
-  const ConnectivityCheckerImpl& checker() const { return *checker_; }
-
-  FakeNetworkConnectionTracker& tracker() const {
-    return *network_connection_tracker_;
-  }
-
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  const std::unique_ptr<FakeNetworkConnectionTracker>
-      network_connection_tracker_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+  };
+  std::unique_ptr<NetworkConnectivityCheckerT> tracker_;
   scoped_refptr<FakeSharedURLLoaderFactory> fake_shared_url_loader_factory_;
   NiceMock<metrics::MockCastMetricsHelper> cast_metrics_helper_;
   scoped_refptr<ConnectivityCheckerImpl> checker_;
 };
 
+class ConnectivityCheckerImplTest : public ConnectivityCheckerImplBaseTest<
+                                        network::TestNetworkConnectionTracker> {
+ public:
+  ConnectivityCheckerImplTest()
+      : ConnectivityCheckerImplBaseTest<network::TestNetworkConnectionTracker>(
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
+};
+
+TEST_F(ConnectivityCheckerImplTest, StartsDisconnected) {
+  EXPECT_FALSE(checker_->Connected());
+}
+
+TEST_F(ConnectivityCheckerImplTest, DetectsConnected) {
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  ConnectAndCheck();
+  EXPECT_TRUE(checker_->Connected());
+}
+
 class ConnectivityCheckerImplTestParameterized
     : public ConnectivityCheckerImplTest,
       public ::testing::WithParamInterface<net::HttpStatusCode> {};
 
-TEST_F(ConnectivityCheckerImplTest, StartsDisconnected) {
-  EXPECT_FALSE(checker().Connected());
-}
-
-TEST_F(ConnectivityCheckerImplTest, DetectsConnected) {
-  ConnectAndCheck();
-  EXPECT_TRUE(checker().Connected());
-}
-
 TEST_P(ConnectivityCheckerImplTestParameterized,
        RecordsDisconnectDueToBadHttpStatus) {
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
   SetResponsesWithStatusCode(GetParam());
   CheckAndExpectRecordedError(
@@ -204,18 +217,23 @@ INSTANTIATE_TEST_SUITE_P(ConnectivityCheckerImplTestBadHttpStatus,
                                            net::HTTP_INTERNAL_SERVER_ERROR));
 
 class ConnectivityCheckerImplTestPeriodParameterized
-    : public ConnectivityCheckerImplTest,
+    : public ConnectivityCheckerImplBaseTest<
+          network::TestNetworkConnectionTracker>,
       // disconnected probe period
       public ::testing::WithParamInterface<ConnectivityCheckPeriods> {
  public:
   ConnectivityCheckerImplTestPeriodParameterized()
-      : ConnectivityCheckerImplTest(GetParam()) {}
+      : ConnectivityCheckerImplBaseTest<network::TestNetworkConnectionTracker>(
+            network::TestNetworkConnectionTracker::CreateInstance(),
+            GetParam()) {}
 };
 
 TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
        CheckWithCustomizedPeriodsConnected) {
   const ConnectivityCheckPeriods periods = GetParam();
   const base::TimeDelta margin = base::Milliseconds(100);
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: disconnected. First Check.
   // Next check is scheduled in disconnected_check_period_.
@@ -223,19 +241,21 @@ TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
   // Connect.
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
 
-  // Jump to right before the next Check. Result is still connected.
+  // Jump to right before the next Check. Result is still not connected.
   task_environment_.FastForwardBy(periods.disconnected_check_period_ - margin);
-  EXPECT_FALSE(checker().Connected());
+  EXPECT_FALSE(checker_->Connected());
   // After the Check --> connected.
   // Next check is scheduled in connected_check_period_.
   task_environment_.FastForwardBy(margin * 2);
-  EXPECT_TRUE(checker().Connected());
+  EXPECT_TRUE(checker_->Connected());
 }
 
 TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
        CheckWithCustomizedPeriodsDisconnected) {
   const ConnectivityCheckPeriods periods = GetParam();
   const base::TimeDelta margin = base::Milliseconds(100);
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: connected. First Check.
   // Next check is scheduled in disconnected_check_period_.
@@ -245,19 +265,19 @@ TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
 
   // Jump to right before the next Check. Result is still connected.
   task_environment_.FastForwardBy(periods.connected_check_period_ - margin);
-  EXPECT_TRUE(checker().Connected());
+  EXPECT_TRUE(checker_->Connected());
 
   // After the Check, still connected.
   // It retries kNumErrorsToNotifyOffline times to switch to disconnected.
   task_environment_.FastForwardBy(margin * 2);
   // Fast forward by kNumErrorsToNotifyOffline * connected_check_period_.
   for (unsigned int i = 0; i < kNumErrorsToNotifyOffline; i++) {
-    EXPECT_TRUE(checker().Connected());
+    EXPECT_TRUE(checker_->Connected());
     // Check again.
     task_environment_.FastForwardBy(periods.disconnected_check_period_);
   }
   // After retries, the result becomes disconnected.
-  EXPECT_FALSE(checker().Connected());
+  EXPECT_FALSE(checker_->Connected());
 }
 
 // Test various connected/disconnected check periods
@@ -272,6 +292,8 @@ INSTANTIATE_TEST_SUITE_P(
         ConnectivityCheckPeriods(base::Seconds(50), base::Seconds(200))));
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
 
   // Don't send a response for the request.
@@ -281,6 +303,8 @@ TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
 }
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToNetError) {
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
 
   // Set up a generic failure
@@ -299,13 +323,65 @@ TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToNetError) {
   CheckAndExpectRecordedError(ConnectivityCheckerImpl::ErrorType::NET_ERROR);
 }
 
+TEST_F(ConnectivityCheckerImplTest, InitialCheckIsNotDelayed) {
+  // Do not set an initial connection type. This causes the first check to be
+  // delayed.
+  EXPECT_FALSE(checker_->Connected());
+  // Notify that a network connection is established after the checker is
+  // constructed. A check should be automatically started when the connection
+  // is established.
+  SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  // Poke the task runner, but don't fast forward the clock, to prove that the
+  // check is not a delayed task. We don't want the first check to be delayed
+  // after the network is initially connected because a lot of initialization of
+  // the Cast shell is bottlenecked on establishing network connectivity, and
+  // any delay of the initial check shows up as a user-visible delay in the
+  // Cast receiver becoming discoverable after boot.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(checker_->Connected());
+}
+
+TEST_F(ConnectivityCheckerImplTest, InitialCheck_NoNetwork) {
+  // Do not set an initial connection type. This causes the first check to be
+  // delayed.
+  EXPECT_FALSE(checker_->Connected());
+  // Initialize the network tracker to indicate that there is no connection at
+  // first.
+  SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
+  tracker_->SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  // Network connection still isn't established after flushing tasks.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(checker_->Connected());
+  // Establish a connection.
+  SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
+  tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  // Subsequent network checks are delayed due to rate limiting, so the
+  // connectivity status doesn't update until delay elapses.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(checker_->Connected());
+  task_environment_.FastForwardBy(kNetworkChangedDelay);
+  EXPECT_TRUE(checker_->Connected());
+}
+
 class ConnectivityCheckerImplTestPeriodicCheck
-    : public ConnectivityCheckerImplTestPeriodParameterized {};
+    : public ConnectivityCheckerImplBaseTest<FakeNetworkConnectionTracker>,
+      public ::testing::WithParamInterface<ConnectivityCheckPeriods> {
+ public:
+  ConnectivityCheckerImplTestPeriodicCheck()
+      : ConnectivityCheckerImplBaseTest<FakeNetworkConnectionTracker>(
+            std::make_unique<FakeNetworkConnectionTracker>(),
+            GetParam()) {}
+};
 
 TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
   const ConnectivityCheckPeriods periods = GetParam();
   constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
   constexpr unsigned int kRounds = 10;
+  tracker_->NotifyNetworkTypeChanged(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: connected. First Check.
   // A check is scheduled in connected_check_period_.
@@ -315,7 +391,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
   // duplicate url loader request
   task_environment_.FastForwardBy(kCheckRequestDelay);
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
-  tracker().NotifyNetworkTypeChanged(
+  tracker_->NotifyNetworkTypeChanged(
       network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Wait for the internal network change delay.
@@ -324,17 +400,19 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
   task_environment_.FastForwardBy(kNetworkChangedDelay);
 
   // Fast forward and count the times of check()
-  unsigned int counter_start = tracker().check_counter();
+  unsigned int counter_start = tracker_->check_counter();
   task_environment_.FastForwardBy(periods.connected_check_period_ * kRounds);
 
   // The check_counter should increase by kRounds.
-  EXPECT_EQ(tracker().check_counter() - counter_start, kRounds);
+  EXPECT_EQ(tracker_->check_counter() - counter_start, kRounds);
 }
 
 TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
   const ConnectivityCheckPeriods periods = GetParam();
   constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
   constexpr unsigned int kRounds = 10;
+  tracker_->NotifyNetworkTypeChanged(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: disconnected. First Check.
   // A check is scheduled in disconnected_check_period_.
@@ -344,7 +422,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
   // duplicate url loader request
   task_environment_.FastForwardBy(kCheckRequestDelay);
   SetResponsesWithStatusCode(net::HTTP_INTERNAL_SERVER_ERROR);
-  tracker().NotifyNetworkTypeChanged(
+  tracker_->NotifyNetworkTypeChanged(
       network::mojom::ConnectionType::CONNECTION_WIFI);
 
   // Wait for the internal network change delay.
@@ -353,11 +431,11 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
   task_environment_.FastForwardBy(kNetworkChangedDelay);
 
   // Fast forward and count the times of check()
-  unsigned int counter_start = tracker().check_counter();
+  unsigned int counter_start = tracker_->check_counter();
   task_environment_.FastForwardBy(periods.disconnected_check_period_ * kRounds);
 
   // The check_counter should increase by kRounds.
-  EXPECT_EQ(tracker().check_counter() - counter_start, kRounds);
+  EXPECT_EQ(tracker_->check_counter() - counter_start, kRounds);
 }
 
 INSTANTIATE_TEST_SUITE_P(
