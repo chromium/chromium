@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "logging:unit_tests",
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/dbus/constants:constants",
     "//components/account_id:account_id",

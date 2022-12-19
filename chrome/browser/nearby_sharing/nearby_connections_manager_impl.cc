@@ -489,6 +489,11 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
           endpoint_id));
 }
 
+base::WeakPtr<NearbyConnectionsManager>
+NearbyConnectionsManagerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void NearbyConnectionsManagerImpl::OnNearbyProcessStopped(
     ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   NS_LOG(VERBOSE) << __func__;

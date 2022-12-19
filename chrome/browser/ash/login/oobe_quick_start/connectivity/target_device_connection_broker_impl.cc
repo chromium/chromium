@@ -100,8 +100,10 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
-    RandomSessionId session_id)
-    : random_session_id_(session_id) {
+    RandomSessionId session_id,
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager)
+    : random_session_id_(session_id),
+      nearby_connections_manager_(nearby_connections_manager) {
   GetBluetoothAdapter();
 }
 
@@ -181,6 +183,7 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
       base::SplitOnceCallback(std::move(on_start_advertising_callback));
 
   fast_pair_advertiser_->StartAdvertising(
+      // TODO(b/234655072): on success, start Nearby Connections advertising.
       base::BindOnce(std::move(success_callback), /*success=*/true),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,

@@ -146,6 +146,8 @@ class NearbyConnectionsManager {
 
   // Initiates bandwidth upgrade for |endpoint_id|.
   virtual void UpgradeBandwidth(const std::string& endpoint_id) = 0;
+
+  virtual base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() = 0;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_

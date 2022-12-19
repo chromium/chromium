@@ -7,6 +7,7 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
+#include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -57,7 +58,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         &connection_broker_factory_);
 
-    bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>();
+    bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>(
+        fake_nearby_connections_manager_.GetWeakPtr());
     fake_observer_ = std::make_unique<FakeObserver>();
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
@@ -69,6 +71,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
  protected:
   FakeTargetDeviceConnectionBroker::Factory connection_broker_factory_;
+  FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
 };

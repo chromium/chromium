@@ -96,7 +96,6 @@ NearbyDependenciesProvider::NearbyDependenciesProvider(
     signin::IdentityManager* identity_manager)
     : profile_(profile), identity_manager_(identity_manager) {
   DCHECK(profile_);
-  DCHECK(identity_manager_);
   bluetooth_manager_ = std::make_unique<BluetoothAdapterManager>();
 }
 

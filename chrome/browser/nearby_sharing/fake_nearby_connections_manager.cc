@@ -188,6 +188,11 @@ void FakeNearbyConnectionsManager::UpgradeBandwidth(
   upgrade_bandwidth_endpoint_ids_.insert(endpoint_id);
 }
 
+base::WeakPtr<NearbyConnectionsManager>
+FakeNearbyConnectionsManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeNearbyConnectionsManager::OnEndpointFound(
     const std::string& endpoint_id,
     location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info) {

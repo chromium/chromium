@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -45,6 +46,18 @@ KeyedService* NearbyDependenciesProviderFactory::BuildServiceInstanceFor(
 bool NearbyDependenciesProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
+}
+
+// This needs to be overridden because the default implementation returns
+// nullptr for OTR profiles, which would prevent using this with Quick Start.
+content::BrowserContext*
+NearbyDependenciesProviderFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  if (features::IsOobeQuickStartEnabled()) {
+    return context;
+  } else {
+    return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
+  }
 }
 
 }  // namespace ash::nearby

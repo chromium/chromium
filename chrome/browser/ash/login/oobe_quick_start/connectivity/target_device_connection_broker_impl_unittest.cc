@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -218,7 +219,8 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   void CreateConnectionBroker() {
     RandomSessionId session_id(kRandomSessionId);
     connection_broker_ =
-        TargetDeviceConnectionBrokerFactory::Create(session_id);
+        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
+            fake_nearby_connections_manager_.GetWeakPtr(), session_id);
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -268,6 +270,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   bool start_advertising_callback_success_ = false;
   bool stop_advertising_callback_called_ = false;
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
+  FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
   std::unique_ptr<FakeFastPairAdvertiserFactory> fast_pair_advertiser_factory_;
   DeferredBluetoothAdapterFactoryWrapper bluetooth_adapter_factory_wrapper_;

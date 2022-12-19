@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
@@ -11,18 +12,17 @@ namespace ash::quick_start {
 
 // static
 std::unique_ptr<TargetDeviceConnectionBroker>
-TargetDeviceConnectionBrokerFactory::Create() {
-  return Create(RandomSessionId());
-}
+TargetDeviceConnectionBrokerFactory::Create(
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+    absl::optional<RandomSessionId> session_id) {
+  RandomSessionId id = session_id ? *session_id : RandomSessionId();
 
-// static
-std::unique_ptr<TargetDeviceConnectionBroker>
-TargetDeviceConnectionBrokerFactory::Create(RandomSessionId session_id) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(session_id);
+    return test_factory_->CreateInstance(id);
   }
 
-  return std::make_unique<TargetDeviceConnectionBrokerImpl>(session_id);
+  return std::make_unique<TargetDeviceConnectionBrokerImpl>(
+      id, nearby_connections_manager);
 }
 
 // static

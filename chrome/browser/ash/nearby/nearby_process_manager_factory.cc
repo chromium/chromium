@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -28,14 +29,24 @@ NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
 
 // static
 bool NearbyProcessManagerFactory::CanBeLaunchedForProfile(Profile* profile) {
-  // Guest/incognito profiles cannot use Phone Hub.
-  if (profile->IsOffTheRecord())
+  // We allow NearbyProcessManager to be used with the signin profile since it
+  // is required for OOBE Quick Start.
+  if (ProfileHelper::IsSigninProfile(profile) &&
+      features::IsOobeQuickStartEnabled()) {
+    return true;
+  }
+
+  // Guest/incognito profiles cannot use Nearby Connections.
+  if (profile->IsOffTheRecord()) {
     return false;
+  }
 
   // Likewise, kiosk users are ineligible.
-  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp())
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return false;
+  }
 
+  // Nearby Connections is not supported for secondary profiles.
   return ProfileHelper::IsPrimaryProfile(profile);
 }
 
@@ -52,7 +63,8 @@ void NearbyProcessManagerFactory::SetBypassPrimaryUserCheckForTesting(
 }
 
 NearbyProcessManagerFactory::NearbyProcessManagerFactory()
-    : ProfileKeyedServiceFactory("NearbyProcessManager") {
+    : ProfileKeyedServiceFactory("NearbyProcessManager",
+                                 ProfileSelections::BuildForAllProfiles()) {
   DependsOn(NearbyDependenciesProviderFactory::GetInstance());
 }
 

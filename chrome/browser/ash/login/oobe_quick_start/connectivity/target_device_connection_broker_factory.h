@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class NearbyConnectionsManager;
 
 namespace ash::quick_start {
 
@@ -17,11 +20,10 @@ class RandomSessionId;
 // Calling code should use the static Create() method.
 class TargetDeviceConnectionBrokerFactory {
  public:
-  static std::unique_ptr<TargetDeviceConnectionBroker> Create();
-
   // A RandomSessionId may be provided in order to resume a connection.
   static std::unique_ptr<TargetDeviceConnectionBroker> Create(
-      RandomSessionId session_id);
+      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+      absl::optional<RandomSessionId> session_id);
 
   static void SetFactoryForTesting(
       TargetDeviceConnectionBrokerFactory* test_factory);

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "components/qr_code_generator/qr_code_generator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
@@ -33,9 +34,11 @@ TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
 
 }  // namespace
 
-TargetDeviceBootstrapController::TargetDeviceBootstrapController() {
-  connection_broker_ = TargetDeviceConnectionBrokerFactory::Create();
-}
+TargetDeviceBootstrapController::TargetDeviceBootstrapController(
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager)
+    : connection_broker_(TargetDeviceConnectionBrokerFactory::Create(
+          nearby_connections_manager,
+          /*session_id=*/absl::nullopt)) {}
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 

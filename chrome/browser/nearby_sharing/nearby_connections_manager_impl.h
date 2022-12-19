@@ -7,6 +7,8 @@
 
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -68,6 +70,7 @@ class NearbyConnectionsManagerImpl
   absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
+  base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
 
  private:
   using AdvertisingOptions =

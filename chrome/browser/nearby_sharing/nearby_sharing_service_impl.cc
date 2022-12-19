@@ -358,7 +358,10 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
   // Make sure the service has been shut down properly before.
   DCHECK(!nearby_notification_manager_);
-  DCHECK(!bluetooth_adapter_ || !bluetooth_adapter_->HasObserver(this));
+
+  if (bluetooth_adapter_) {
+    DCHECK(!bluetooth_adapter_->HasObserver(this));
+  }
 }
 
 void NearbySharingServiceImpl::Shutdown() {
@@ -390,8 +393,10 @@ void NearbySharingServiceImpl::Shutdown() {
   // updated API referenced in the bug which allows setting a per-advertisement
   // interval.
 
-  if (bluetooth_adapter_)
+  if (bluetooth_adapter_) {
     bluetooth_adapter_->RemoveObserver(this);
+    bluetooth_adapter_.reset();
+  }
 
   auto* session_controller = ash::SessionController::Get();
   if (session_controller)

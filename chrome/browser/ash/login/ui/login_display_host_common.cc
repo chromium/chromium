@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
@@ -687,8 +688,17 @@ base::WeakPtr<quick_start::TargetDeviceBootstrapController>
 LoginDisplayHostCommon::GetQuickStartBootstrapController() {
   DCHECK(features::IsOobeQuickStartEnabled());
   if (!bootstrap_controller_) {
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    DCHECK(profile);
+
+    quick_start::QuickStartConnectivityService* service =
+        quick_start::QuickStartConnectivityServiceFactory::GetForProfile(
+            profile);
+    DCHECK(service);
+
     bootstrap_controller_ =
-        std::make_unique<ash::quick_start::TargetDeviceBootstrapController>();
+        std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
+            service->GetNearbyConnectionsManager());
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }

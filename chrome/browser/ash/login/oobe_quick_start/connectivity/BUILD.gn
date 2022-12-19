@@ -11,6 +11,8 @@ source_set("connectivity") {
     ":decoder",
     "//base",
     "//chrome/browser/nearby_sharing/public/cpp",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/services/nearby/public/cpp",
     "//components/cbor",
     "//crypto",
     "//device/bluetooth",

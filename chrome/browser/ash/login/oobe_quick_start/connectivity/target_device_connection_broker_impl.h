@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash::quick_start {
@@ -40,7 +41,8 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
         bluetooth_adapter_factory_wrapper_for_testing_;
   };
 
-  explicit TargetDeviceConnectionBrokerImpl(RandomSessionId session_id);
+  TargetDeviceConnectionBrokerImpl(RandomSessionId session_id,
+                                   base::WeakPtr<NearbyConnectionsManager>);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
       TargetDeviceConnectionBrokerImpl&) = delete;
@@ -53,6 +55,8 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
  private:
+  // Used to access the |random_session_id_| in tests, and to allow testing
+  // |GenerateEndpointInfo()| directly.
   friend class TargetDeviceConnectionBrokerImplTest;
 
   void GetBluetoothAdapter();
@@ -69,6 +73,8 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
 
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   RandomSessionId random_session_id_;
+
+  base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};
