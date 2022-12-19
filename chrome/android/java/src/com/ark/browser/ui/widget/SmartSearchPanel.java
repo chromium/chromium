@@ -706,17 +706,19 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(newTab,
-                loadUrlParams, newTab.getPageSize(),TabLaunchType.FROM_CHROME_UI);
-        IPage newPage = new PageImpl(tab.getPageInfo());
+        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getTabId(), newTab.getPageSize(),
+                newTab.getTabInfo().isIncognito());
+        IPage newPage = new PageImpl(pageInfo);
         newTab.getPageGroup().addPage(newPage);
 //        tab.loadUrl(loadUrlParams);
 
+        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(newTab,
+                loadUrlParams, TabLaunchType.FROM_CHROME_UI);
 
         mFloatTabList.getTabInfoList().add(newTab);
 
         for (TabInfoObserver obs : mFloatTabList.getObservers()) {
-            obs.didAddTab(newPage, TabSelectionType.FROM_USER);
+            obs.didAddTab(newTab, TabSelectionType.FROM_USER);
         }
 
         newTab.selectPage(0);
@@ -738,15 +740,14 @@ public class SmartSearchPanel extends FrameLayout {
         }
 
         @Override
-        public void didAddTab(IPage page, int type) {
+        public void didAddTab(ITab page, int type) {
             Tab tab = PageCacheManager.getInstance().findPage(page.getId());
             mViewHolder.setTab(tab);
         }
 
         @Override
-        public void didSelectTab(IPage page, int type, int lastId) {
-            Tab tab = PageCacheManager.getInstance().findPage(page.getId());
-            mViewHolder.setTab(tab);
+        public void didSelectTab(ITab tab, int type, int lastId) {
+            mViewHolder.setTab(PageCacheManager.getInstance().findPage(tab.getId()));
         }
 
         public void onDestroy() {

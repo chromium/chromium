@@ -295,7 +295,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             if (pageInfo != null) {
                 cardView.setCardBackgroundColor(pageInfo.getThemeColor());
                 tvTitle.setText(pageInfo.getTitle());
-                TabSnapshotManager.getInstance().loadTabSnapshot(ivThumbnail, pageInfo);
+                TabSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
             } else {
                 cardView.setCardBackgroundColor(Color.WHITE);
                 tvTitle.setText(null);

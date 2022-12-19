@@ -5,6 +5,7 @@
 package com.ark.browser.tab;
 
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,7 +24,7 @@ public interface TabInfoObserver {
      * @param lastId The ID of the last selected tab, or {@link Tab#INVALID_PAGE_ID} if no tab was
      *               selected.
      */
-    void didSelectTab(IPage page, @TabSelectionType int type, int lastId);
+    void didSelectTab(ITab tab, @TabSelectionType int type, int lastId);
 
     /**
      * Called right after {@code tab} has been destroyed.
@@ -39,6 +40,6 @@ public interface TabInfoObserver {
      * @param pageInfo The newly added page.
      * @param type The type of tab launch.
      */
-    void didAddTab(IPage pageInfo, @TabSelectionType int type);
+    void didAddTab(ITab tab, @TabSelectionType int type);
 
 }

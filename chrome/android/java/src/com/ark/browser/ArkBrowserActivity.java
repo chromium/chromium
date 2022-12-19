@@ -20,8 +20,10 @@ import androidx.core.view.ViewCompat;
 
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
+import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;
@@ -225,11 +227,11 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 //    }
 
     public Tab getActivityTab() {
-        IPage page = TabListManager.getInstance().getCurrentPage();
-        if (page != null) {
-            return page.getNativePage();
+        ITab tab = TabListManager.getInstance().getCurrentTab();
+        if (tab == null) {
+            return null;
         }
-        return null;
+        return PageCacheManager.getInstance().findPage(tab.getId());
     }
 
 

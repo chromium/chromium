@@ -181,6 +181,7 @@ public class ArkSwipeRefreshHandler
     @SuppressLint("NewApi")
     @Override
     public void cleanupWebContents(WebContents webContents) {
+        webContents.setOverscrollRefreshHandler(null);
         detachSwipeRefreshLayoutIfNecessary();
         mContainerView = null;
         setEnabled(false);

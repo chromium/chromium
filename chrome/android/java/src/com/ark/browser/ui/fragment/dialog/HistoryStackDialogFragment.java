@@ -62,12 +62,12 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
     public static HistoryStackDialogFragment newInstance(PageInfo pageInfo) {
         ITab tab = TabListManager.getInstance().getTabInfo(pageInfo);
-        return newInstance(tab == null ? null : tab.getId());
+        return newInstance(tab == null ? Tab.INVALID_TAB_ID : tab.getId());
     }
 
-    public static HistoryStackDialogFragment newInstance(long tabInfoId) {
+    public static HistoryStackDialogFragment newInstance(int tabInfoId) {
         Bundle args = new Bundle();
-        args.putLong(KEY_ID, tabInfoId);
+        args.putInt(KEY_ID, tabInfoId);
         HistoryStackDialogFragment fragment = new HistoryStackDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -76,7 +76,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
     public static HistoryStackDialogFragment newInstance(Tab page) {
         ITab tab = TabListManager.getInstance().getTabInfo(page);
         Bundle args = new Bundle();
-        args.putLong(KEY_ID, tab.getId());
+        args.putInt(KEY_ID, tab.getId());
         HistoryStackDialogFragment fragment = new HistoryStackDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -110,15 +110,15 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        long id = 0L;
+        int id = 0;
         if (savedInstanceState == null) {
             if (getArguments() != null) {
-                id = getArguments().getLong(KEY_ID);
+                id = getArguments().getInt(KEY_ID);
             }
         } else {
-            id = savedInstanceState.getLong(KEY_ID);
+            id = savedInstanceState.getInt(KEY_ID);
         }
-        mTab = TabListManager.getInstance().getTabInfoById(id);
+        mTab = TabListManager.getInstance().getTabById(id);
         if (mTab == null) {
             popThis();
         } else {
@@ -202,7 +202,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
         params.width = mThumbnailWidth;
         params.height = mThumbnailHeight;
         ivThumbnail.setLayoutParams(params);
-        TabSnapshotManager.getInstance().loadTabSnapshot(ivThumbnail, pageInfo);
+        TabSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
 
         holder.setText(R.id.tv_title, pageInfo.getTitle());
         holder.setText(R.id.tv_url, pageInfo.getUrl());
@@ -226,7 +226,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                 .setOnLongClickListener((v, x, y) -> {
 //                    PageActionDialog.start(tab, x, y);
 
-                    PageActionDialog popup = PageActionDialog.newInstance(pageInfo.getPageId());
+                    PageActionDialog popup = PageActionDialog.newInstance(pageInfo.getId());
                     popup.setOnSelectListener((fragment, position1, text) -> {
                         switch(position1){
                             case 0:
@@ -299,7 +299,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                 View.MeasureSpec.makeMeasureSpec(startRect.height(), View.MeasureSpec.EXACTLY));
         cardView.layout(startRect.left, startRect.top, startRect.right, startRect.bottom);
 
-        TabSnapshotManager.getInstance().loadTabSnapshot(mIvPlaceholder, pageInfo.getPageId());
+        TabSnapshotManager.getInstance().loadSnapshot(mIvPlaceholder, pageInfo);
 
         setDismissAnimDuration(300);
         mAnimator = ValueAnimator.ofFloat(0f, 1f);

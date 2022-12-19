@@ -1,7 +1,5 @@
 package com.ark.browser.tab.core;
 
-import androidx.core.util.AtomicFile;
-
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageCacheManager;
@@ -20,11 +18,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +65,7 @@ public class TabGroupImpl implements ITabGroup {
 //            os.writeBoolean(incognito);
 //            os.writeInt(mTabList.size());
 //            for (ITab tab : mTabList) {
-//                os.writeLong(tab.getId());
+//                os.writeInt(tab.getId());
 //            }
 //            os.close();
 //
@@ -113,7 +108,7 @@ public class TabGroupImpl implements ITabGroup {
 ////            os.writeBoolean(incognito);
 ////            os.writeInt(mTabList.size());
 ////            for (ITab tab : mTabList) {
-////                os.writeLong(tab.getId());
+////                os.writeInt(tab.getId());
 ////            }
 ////            os.flush();
 ////        } catch (IOException e) {
@@ -121,7 +116,7 @@ public class TabGroupImpl implements ITabGroup {
 ////        }
 //    }
 
-    public long[] readGroupFile(DataInputStream stream) {
+    public int[] readGroupFile(DataInputStream stream) {
         try {
             final int version = stream.readInt();
 
@@ -130,9 +125,9 @@ public class TabGroupImpl implements ITabGroup {
 
             final int count = stream.readInt();
 
-            long[] tabIds = new long[count];
+            int[] tabIds = new int[count];
             for (int i = 0; i < count; i++) {
-                long tabId = stream.readLong();
+                int tabId = stream.readInt();
                 tabIds[i] = tabId;
 //            if (tabIds != null) tabIds.append(tabId, true);
             }
@@ -140,7 +135,7 @@ public class TabGroupImpl implements ITabGroup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new long[0];
+        return new int[0];
 
     }
 
@@ -154,15 +149,15 @@ public class TabGroupImpl implements ITabGroup {
 
         if (mPrefetchTabGroupTask != null) {
             try (DataInputStream stream = mPrefetchTabGroupTask.get()) {
-                long[] tabIds = readGroupFile(stream);
+                int[] tabIds = readGroupFile(stream);
 
-                for (long id : tabIds) {
+                for (int id : tabIds) {
                     File tabFile = ArkTabDao.getTabFile(id);
                     List<Integer> pageIds = new ArrayList<>();
                     TabInfo tabInfo = TabInfo.from(tabFile, pageIds);
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo + " pageIds=" + pageIds);
 
-                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getTabInfoId());
+                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getTabId());
                     List<IPage> pageList = new ArrayList<>();
                     for (int pageId : pageIds) {
                         File file = new File(pagesDir, String.valueOf(pageId));
@@ -320,13 +315,21 @@ public class TabGroupImpl implements ITabGroup {
         loadUrlParams.setUrl(UrlFormatter.fixupUrl(loadUrlParams.getUrl()).getValidSpecOrEmpty());
 //        loadUrlParams.setTransitionType(type);
 
-        ArkTabImpl page = PageCacheManager.getInstance().createLivePageByType(
-                newTab, loadUrlParams, newTab.getPageSize(), type);
-        IPage newPage = new PageImpl(page.getPageInfo());
+
+
+        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getTabId(),
+                newTab.getPageSize(),
+                newTab.getTabInfo().isIncognito());
+        IPage newPage = new PageImpl(pageInfo);
         newTab.getPageGroup().getPageInfoList().add(newPage);
 
+
+        ArkTabImpl nativeTab = PageCacheManager.getInstance().createLivePageByType(
+                newTab, loadUrlParams, type);
+//        nativeTab.loadInNewPage();
+
         for (TabInfoObserver obs : getObservers()) {
-            obs.didAddTab(newPage, type);
+            obs.didAddTab(newTab, type);
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
 //        page.loadUrl(loadUrlParams);
@@ -337,7 +340,7 @@ public class TabGroupImpl implements ITabGroup {
         if (pageInfo == null) {
             return null;
         }
-        return getTabInfoById(pageInfo.getTabInfoId());
+        return getTabById(pageInfo.getTabId());
     }
 
     public boolean isClosurePending(int pageId) {
@@ -406,7 +409,7 @@ public class TabGroupImpl implements ITabGroup {
         }
 
         for (TabInfoObserver obs : mObservers) {
-            obs.didAddTab(page, TabSelectionType.FROM_NEW);
+            obs.didAddTab(iTab, TabSelectionType.FROM_NEW);
         }
 
         return selectTab(iTab, page);
@@ -437,11 +440,11 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public boolean moveToNewTab(IPage page) {
         ArkLogger.d(TAG, "moveToNewTab");
-        ITab tabInfo = getTabInfoById(page.getId());
+        ITab tabInfo = getTabById(page.getPageInfo().getTabId());
         if (tabInfo != null && tabInfo.removePage(page)) {
             TabInfo newTabInfo = TabInfo.create();
             ITab newTab = new TabImpl(newTabInfo);
-            page.getPageInfo().setTabInfoId(newTabInfo.getTabInfoId());
+            page.getPageInfo().setTabId(newTabInfo.getTabId());
             newTab.getPageGroup().addPage(page);
 
             int index = indexOf(tabInfo) + 1;

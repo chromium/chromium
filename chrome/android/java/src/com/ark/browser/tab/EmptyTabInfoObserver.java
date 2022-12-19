@@ -5,6 +5,7 @@
 package com.ark.browser.tab;
 
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
@@ -13,12 +14,12 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  */
 public class EmptyTabInfoObserver implements TabInfoObserver {
     @Override
-    public void didSelectTab(IPage page, @TabSelectionType int type, int lastId) {}
+    public void didSelectTab(ITab tab, @TabSelectionType int type, int lastId) {}
 
     @Override
     public void didCloseTab(int tabId, boolean incognito) {}
 
     @Override
-    public void didAddTab(IPage page, @TabSelectionType int type) {}
+    public void didAddTab(ITab tab, @TabSelectionType int type) {}
 
 }

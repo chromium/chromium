@@ -5,19 +5,15 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
-import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.utils.ArkLogger;
 
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
 
 public class PageCacheManager {
 
@@ -37,10 +33,6 @@ public class PageCacheManager {
 
     }
 
-    public void init(WindowAndroid nativeWindow, TabContentManager contentManager) {
-        destroy();
-    }
-
     public Tab findPageById(int id) {
         return tabCache.get(id);
     }
@@ -49,11 +41,11 @@ public class PageCacheManager {
         return tabCache.get(id);
     }
 
-    public Tab findPage(PageInfo pageInfo) {
-        if (pageInfo == null) {
+    public Tab findPage(TabInfo tabInfo) {
+        if (tabInfo == null) {
             return null;
         }
-        return findPage(pageInfo.getPageId());
+        return findPage(tabInfo.getTabId());
     }
 
 //    public PageInfo findPageInfo(int id) {
@@ -116,20 +108,20 @@ public class PageCacheManager {
 
     @UiThread
     @NonNull
-    public ArkTabImpl createLivePageByType(@NonNull ITab tabInfo, LoadUrlParams params, int index, @TabLaunchType int type) {
+    public ArkTabImpl createLivePageByType(@NonNull ITab iTab, LoadUrlParams params, @TabLaunchType int type) {
         long start = System.currentTimeMillis();
 
-        PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
-                Tab.INVALID_PAGE_ID, tabInfo.getId(),
-                index, tabInfo.getTabInfo().isIncognito());
+//        PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
+//                Tab.INVALID_PAGE_ID, iTab.getId(),
+//                index, iTab.getTabInfo().isIncognito());
 
-        ArkTabImpl tab = ArkTabBuilder.createLiveTab(pageInfo, false)
+        ArkTabImpl tab = ArkTabBuilder.createLiveTab(iTab, false)
                 .setLaunchType(type)
-//                .setLoadUrlParams(params)
+                .setLoadUrlParams(params)
                 .build();
         putPage(tab);
 
-        tab.loadUrl(params);
+//        tab.loadUrl(params);
 
         ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
@@ -137,16 +129,18 @@ public class PageCacheManager {
 
     @UiThread
     @NonNull
-    public Tab createLivePage(@NonNull PageInfo pageInfo) {
+    public Tab createLivePage(@NonNull ITab iTab, IPage page) {
         long start = System.currentTimeMillis();
 
-        ArkLogger.e(this, "createLivePage pageInfo=" + pageInfo);
+        ArkLogger.e(this, "createLivePage tabInfo=" + iTab.getTabInfo());
 
-        Tab tab = ArkTabBuilder.createLiveTab(pageInfo, false)
-                .build();
-        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
+        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
         params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
-        tab.loadUrl(params);
+//        tab.loadUrl(params);
+        Tab tab = ArkTabBuilder.createLiveTab(iTab, false)
+                .setLoadUrlParams(params)
+                .build();
+
         putPage(tab);
         ArkLogger.d(TAG, "createLivePage create tab deltaTime="
                 + (System.currentTimeMillis() - start));
@@ -155,10 +149,10 @@ public class PageCacheManager {
 
     @UiThread
     @NonNull
-    public Tab createFrozenPageFromState(@NonNull PageInfo pageInfo,
+    public Tab createFrozenPageFromState(@NonNull ITab iTab,
                                          @NonNull TabState state) {
         long start = System.currentTimeMillis();
-        Tab tab = ArkTabBuilder.createFromFrozenState(pageInfo)
+        Tab tab = ArkTabBuilder.createFromFrozenState(iTab)
                 .setTabState(state)
                 .build();
         putPage(tab);
@@ -172,7 +166,7 @@ public class PageCacheManager {
     }
 
     public void removePage(PageInfo pageInfo) {
-        removePage(pageInfo.getPageId());
+        removePage(pageInfo.getId());
     }
 
     public void removePage(IPage page) {

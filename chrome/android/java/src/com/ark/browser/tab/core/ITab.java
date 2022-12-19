@@ -2,22 +2,16 @@ package com.ark.browser.tab.core;
 
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.ArkWindowAndroid;
-import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
-import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,7 +24,7 @@ public interface ITab {
 
     int INVALID_TAB_INDEX = -1;
 
-    long getId();
+    int getId();
 
     TabInfo getTabInfo();
 
@@ -111,7 +105,7 @@ public interface ITab {
         if (pageInfo == null) {
             return Tab.INVALID_PAGE_ID;
         } else {
-            return pageInfo.getPageId();
+            return pageInfo.getId();
         }
     }
 
@@ -127,7 +121,7 @@ public interface ITab {
         if (pageInfo == null) {
             return INVALID_TAB_INDEX;
         }
-        return indexOfPage(pageInfo.getPageId());
+        return indexOfPage(pageInfo.getId());
     }
 
     default int indexOfPage(int pageId) {
@@ -137,7 +131,7 @@ public interface ITab {
             return getTabInfo().getPageIndex();
         }
         for (int j = 0; j < getPageSize(); j++) {
-            if (getPageInfoAt(j).getPageId() == pageId) {
+            if (getPageInfoAt(j).getId() == pageId) {
                 return j;
             }
         }
@@ -225,8 +219,11 @@ public interface ITab {
         }
 
         int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(this, params, pageIndex, type);
-        IPage page = new PageImpl(tab.getPageInfo());
+//        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(this, params, type);
+
+        PageInfo pageInfo = PageInfo.from(getTabInfo().getTabId(), pageIndex,
+                getTabInfo().isIncognito());
+        IPage page = new PageImpl(pageInfo);
         IPageGroup pageInfoList = getPageGroup();
 
         pageInfoList.getPageInfoList().add(++index, page);
@@ -279,11 +276,10 @@ public interface ITab {
         PageInfo next = getPageInfoAt(i + 1);
         // 移除当前page，优先显示前一个page
         if (pre != null) {
-            getTabInfo().setCurrentTabId(pre.getPageId());
+            getTabInfo().setCurrentTabId(pre.getId());
             getTabInfo().setPageIndex(getTabInfo().getPageIndex() - 1);
         } else if (next != null) {
-            next.setParentId(page.getPageInfo().getParentId());
-            getTabInfo().setCurrentTabId(next.getPageId());
+            getTabInfo().setCurrentTabId(next.getId());
         } else {
             return false;
         }
@@ -319,7 +315,7 @@ public interface ITab {
             DataOutputStream os = new DataOutputStream(stream);
             int version = 1;
             os.writeInt(version);
-            os.writeLong(getTabInfo().getTabInfoId());
+            os.writeInt(getTabInfo().getTabId());
             os.writeLong(getTabInfo().getCreateTime());
             os.writeBoolean(getTabInfo().isIncognito());
             os.writeBoolean(getTabInfo().isLocked());
@@ -344,7 +340,7 @@ public interface ITab {
                 @Override
                 public void run() {
                     long time = System.currentTimeMillis();
-                    File tabFile = ArkTabDao.getTabFile(getTabInfo().getTabInfoId());
+                    File tabFile = ArkTabDao.getTabFile(getTabInfo().getTabId());
                     AtomicFile file = new AtomicFile(tabFile);
                     FileOutputStream fos = null;
                     try {
@@ -371,7 +367,7 @@ public interface ITab {
 //                    new BufferedOutputStream(new FileOutputStream(tabFile)))) {
 //                int version = 1;
 //                os.writeInt(version);
-//                os.writeLong(getTabInfo().getTabInfoId());
+//                os.writeInt(getTabInfo().getTabInfoId());
 //                os.writeLong(getTabInfo().getCreateTime());
 //                os.writeBoolean(getTabInfo().isIncognito());
 //                os.writeBoolean(getTabInfo().isLocked());

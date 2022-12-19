@@ -68,7 +68,7 @@ public class ArkTabDao {
         return groupsDir;
     }
 
-    public static File getTabFile(long id) {
+    public static File getTabFile(int id) {
         File tabsDir = new File(StateDirHolder.sDirectory, DIR_TABS);
         if (!tabsDir.exists()) {
             tabsDir.mkdirs();
@@ -76,7 +76,7 @@ public class ArkTabDao {
         return new File(tabsDir, "tab" + id);
     }
 
-    public static File getPagesDir(long tabInfoId) {
+    public static File getPagesDir(int tabInfoId) {
         File tabsDir = new File(StateDirHolder.sDirectory, DIR_PAGES);
         File dir = new File(tabsDir, String.valueOf(tabInfoId));
         if (!dir.exists()) {

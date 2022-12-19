@@ -54,7 +54,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mPageInfo != null) {
-            outState.putInt(KEY_ID, mPageInfo.getPageId());
+            outState.putInt(KEY_ID, mPageInfo.getId());
         }
     }
 

@@ -9,7 +9,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.ark.browser.tab.core.IPage;
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -61,23 +62,25 @@ public class TabSnapshotManager {
         return Holder.MANAGER;
     }
 
-    public void cacheCurrentTab() {
-        IPage page = TabListManager.getInstance().getCurrentPage();
-        Tab currentTab = page == null ? null : page.getNativePage();
-        cacheTab(currentTab);
-    }
-
-    public void cacheTab(Tab tab) {
+    public void cacheCurrentPage() {
+        ITab tab = TabListManager.getInstance().getCurrentTab();
         if (tab == null) {
             return;
         }
-        ArkLogger.d("TabThumbnailManager", "cacheTab tab=" + tab.getId());
+        cachePage(tab.getCurrentPageInfo());
+    }
+
+    public void cachePage(PageInfo pageInfo) {
+        if (pageInfo == null) {
+            return;
+        }
+        ArkLogger.d("TabThumbnailManager", "cacheTab page=" + pageInfo.getId());
         synchronized (snapshotTasks) {
-            int tabId = tab.getId();
-            SnapshotTask task = snapshotTasks.get(tabId);
+            int pageId = pageInfo.getId();
+            SnapshotTask task = snapshotTasks.get(pageId);
             if (task == null) {
-                task = new SnapshotTask(tabId, null);
-                snapshotTasks.put(tabId, task);
+                task = new SnapshotTask(pageId, null);
+                snapshotTasks.put(pageId, task);
             } else {
                 task.cancel();
             }
@@ -97,15 +100,15 @@ public class TabSnapshotManager {
         });
     }
 
-    public void loadTabSnapshot(int tabId, @NonNull Callback<Bitmap> callback) {
-        if (tabId != Tab.INVALID_PAGE_ID) {
+    public void loadSnapshot(int pageId, @NonNull Callback<Bitmap> callback) {
+        if (pageId != Tab.INVALID_PAGE_ID) {
             synchronized (snapshotTasks) {
-                SnapshotTask task = snapshotTasks.get(tabId);
+                SnapshotTask task = snapshotTasks.get(pageId);
                 if (task == null) {
                     synchronized (mBitmapCache) {
-                        Bitmap bitmap = mBitmapCache.get(tabId);
+                        Bitmap bitmap = mBitmapCache.get(pageId);
                         if (bitmap == null) {
-                            File file = new File(PathHolder.path, tabId + ".thumbnail");
+                            File file = new File(PathHolder.path, pageId + ".thumbnail");
                             if (file.exists()) {
                                 ThreadPool.executeIO(() -> {
                                     Bitmap bitmap1 = BitmapFactory.decodeFile(file.getPath());
@@ -114,8 +117,8 @@ public class TabSnapshotManager {
                                 return;
                             }
 
-                            task = new SnapshotTask(tabId, callback);
-                            snapshotTasks.put(tabId, task);
+                            task = new SnapshotTask(pageId, callback);
+                            snapshotTasks.put(pageId, task);
                             task.start();
                         } else {
                             callback.onResult(bitmap);
@@ -132,8 +135,8 @@ public class TabSnapshotManager {
         }
     }
 
-    public void loadTabSnapshot(ImageView ivThumbnail, int tabId) {
-        loadTabSnapshot(tabId, value -> {
+    public void loadSnapshot(ImageView ivThumbnail, int pageId) {
+        loadSnapshot(pageId, value -> {
             if (value == null) {
 //                    ivThumbnail.setImageResource(R.drawable.qianxun_home_wallpaper);
                 ivThumbnail.setImageBitmap(null);
@@ -143,20 +146,20 @@ public class TabSnapshotManager {
         });
     }
 
-    public void loadTabSnapshot(ImageView ivThumbnail, Tab tab) {
-        loadTabSnapshot(ivThumbnail, tab == null ? Tab.INVALID_PAGE_ID : tab.getId());
+//    public void loadSnapshot(ImageView ivThumbnail, Tab tab) {
+//        loadSnapshot(ivThumbnail, tab == null ? Tab.INVALID_PAGE_ID : tab.getId());
+//    }
+
+    public void loadSnapshot(ImageView ivThumbnail, PageInfo pageInfo) {
+        loadSnapshot(ivThumbnail, pageInfo.getId());
     }
 
-    public void loadTabSnapshot(ImageView ivThumbnail, PageInfo pageInfo) {
-        loadTabSnapshot(ivThumbnail, pageInfo.getPageId());
+    public void loadSnapshot(FitWidthImageView ivThumbnail, PageInfo pageInfo) {
+        loadSnapshot(ivThumbnail, pageInfo.getId());
     }
 
-    public void loadTabSnapshot(FitWidthImageView ivThumbnail, PageInfo pageInfo) {
-        loadTabSnapshot(ivThumbnail, pageInfo.getPageId());
-    }
-
-    public void loadTabSnapshot(FitWidthImageView ivThumbnail, int tabId) {
-        loadTabSnapshot(tabId, value -> {
+    public void loadSnapshot(FitWidthImageView ivThumbnail, int pageId) {
+        loadSnapshot(pageId, value -> {
             if (value == null) {
 //                    ivThumbnail.setImageResource(R.drawable.qianxun_home_wallpaper);
                 ivThumbnail.setImageBitmap(null);
@@ -188,13 +191,12 @@ public class TabSnapshotManager {
 
         public void start() {
             mStart.set(true);
-            Tab tab = PageCacheManager.getInstance().findPage(mPageId);
-            if (tab != null && tab.getWebContents() != null) {
 
-                RenderWidgetHostView renderWidgetHostView = tab.getWebContents().getRenderWidgetHostView();
+            ArkWebContents arkWeb = ArkWebContents.get(mPageId);
+            if (arkWeb != null && !arkWeb.isDestroyed()) {
+                RenderWidgetHostView renderWidgetHostView = arkWeb.getWebContents().getRenderWidgetHostView();
                 if (renderWidgetHostView == null) {
                     onFinished(null);
-                    return;
                 } else {
                     File target = new File(PathHolder.path, mPageId + ".thumbnail");
                     renderWidgetHostView.saveContentBitmapToDiskAsync(0, 0, target.getAbsolutePath(), new Callback<String>() {
@@ -204,12 +206,6 @@ public class TabSnapshotManager {
                             ThreadPool.executeIO(() -> {
                                 File file = new File(result);
                                 if (file.exists()) {
-//                                    File target = new File(PathHolder.path, mPageId + ".thumbnail");
-//                                    if (target.exists()) {
-//                                        target.delete();
-//                                    }
-//                                    boolean r = file.renameTo(target);
-//                                    ArkLogger.e(SnapshotTask.class, "onResult renameTo=" + r);
                                     try (FileInputStream fis = new FileInputStream(file)) {
                                         Bitmap bitmap = BitmapFactory.decodeStream(fis);
                                         ThreadPool.runOnUIThread(() -> onFinished(bitmap));
@@ -226,53 +222,6 @@ public class TabSnapshotManager {
                         }
                     });
                 }
-
-
-
-//                tab.getWebContents().getContentBitmapAsync(0, 0, (bitmap, response) -> {
-//                    if (mStart.get()) {
-//                        Log.d("TabThumbnailManager.Task", "onFinishGetBitmap size=" + getInstance().mBitmapCache.size() + " maxSize=" + getInstance().mBitmapCache.maxSize());
-//                        Log.d("TabThumbnailManager.Task", "onFinishGetBitmap bitmap=" + bitmap + " tab=" + mPageId);
-////                            int themeColor;
-//                        if (bitmap != null) {
-//
-////                                themeColor = bitmap.getPixel(1, 1);
-//
-//                            synchronized (getInstance().mBitmapCache) {
-//                                getInstance().mBitmapCache.put(mPageId, bitmap);
-//                            }
-//                            ThreadPool.executeIO(() -> {
-//                                long start = System.currentTimeMillis();
-//                                File file = new File(getInstance().path, mPageId + ".thumbnail");
-//
-////                                Matrix matrix = new Matrix();
-////                                matrix.postScale(0.8f, 0.8f);
-////                                Bitmap newbm = Bitmap.createBitmap(bitmap, 0, 0,
-////                                        bitmap.getWidth(), bitmap.getHeight(),
-////                                        matrix, true);
-//
-//                                try {
-//                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80,
-//                                            new BufferedOutputStream(new FileOutputStream(file)));
-////                                    synchronized (getInstance().mBitmapCache) {
-////                                        getInstance().mBitmapCache.put(mPageId, newbm);
-////                                    }
-//                                } catch (FileNotFoundException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                Log.d("TabThumbnailManager.Task",
-//                                        "onFinishGetBitmap saveBitmap deltaTime="
-//                                                + (System.currentTimeMillis() - start));
-//                            });
-//                        } else {
-////                                themeColor = mTab.getThemeColor() == 0 ? Color.WHITE : mTab.getThemeColor();
-//                        }
-////                            mTab.setThemeColor(themeColor);
-////                            EventBus.postWebColorChangeEvent(mTab, themeColor);
-//                        onFinished(bitmap);
-//                    }
-//                });
-//                onFinished(null);
             } else {
                 onFinished(null);
             }

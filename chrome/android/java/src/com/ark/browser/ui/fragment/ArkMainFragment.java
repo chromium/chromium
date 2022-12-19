@@ -14,9 +14,11 @@ import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
+import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.widget.BottomController;
@@ -401,11 +403,11 @@ public class ArkMainFragment extends BaseFragment implements
     }
 
     public Tab getActivityTab() {
-        IPage page = TabListManager.getInstance().getCurrentPage();
-        if (page != null) {
-            return page.getNativePage();
+        ITab tab = TabListManager.getInstance().getCurrentTab();
+        if (tab == null) {
+            return null;
         }
-        return null;
+        return PageCacheManager.getInstance().findPage(tab.getId());
     }
 
 

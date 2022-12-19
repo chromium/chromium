@@ -2,7 +2,6 @@ package com.ark.browser.tab.core;
 
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
-import com.ark.browser.tab.TabSnapshotManager;
 
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -16,7 +15,7 @@ public class PageImpl implements IPage {
 
     @Override
     public int getId() {
-        return pageInfo.getPageId();
+        return pageInfo.getId();
     }
 
     @Override

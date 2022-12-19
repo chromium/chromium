@@ -10,8 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.core.utils.TabPrinter;
+import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.toast.ZToast;
@@ -62,8 +65,7 @@ public class ShareDialog extends OverDragBottomDialogFragment<ShareDialog> imple
 
     @Override
     public void onClick(View v) {
-        IPage page = TabListManager.getInstance().getCurrentPage();
-        Tab tab = page == null ? null : page.getNativePage();
+        ArkTabImpl tab = (ArkTabImpl) TabListManager.getInstance().getCurrentNativeTab();
         if (tab == null) {
             return;
         }
@@ -95,7 +97,7 @@ public class ShareDialog extends OverDragBottomDialogFragment<ShareDialog> imple
                 return;
             }
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(page.getPageInfo().getUrl()));
+            intent.setData(Uri.parse(tab.getPageInfo().getUrl()));
             Intent chooser = Intent.createChooser(intent, "其它应用打开链接");
             context.startActivity(chooser);
         }

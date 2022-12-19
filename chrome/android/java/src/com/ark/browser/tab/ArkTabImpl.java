@@ -4,7 +4,6 @@
 
 package com.ark.browser.tab;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +19,10 @@ import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
-import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -35,7 +35,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -49,13 +48,11 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabContextMenuPopulator;
 import org.chromium.chrome.browser.tab.TabContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabImportanceManager;
 import org.chromium.chrome.browser.tab.TabJni;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -71,7 +68,6 @@ import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroidImpl;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -88,12 +84,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
-
-import java.io.File;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
@@ -102,7 +94,9 @@ import java.io.File;
 public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     private static final long INVALID_TIMESTAMP = -1;
 
-    /** Used for logging. */
+    /**
+     * Used for logging.
+     */
     private static final String TAG = "ArkTab";
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
@@ -117,16 +111,16 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 //    /** Whether or not this tab is an incognito tab. */
 //    private final boolean mIncognito;
 
-    /** Gives {@link Tab} a way to interact with the Android window. */
+    /**
+     * Gives {@link Tab} a way to interact with the Android window.
+     */
     private ArkWindowAndroid mWindowAndroid;
 
-    /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
-    private WebContents mWebContents;
+    private ArkWebContents mArkWeb;
 
-    /** The parent view of the ContentView and the InfoBarContainer. */
-    private ContentView mContentView;
-
-    /** The view provided by {@link TabViewManager} to be shown on top of Content view. */
+    /**
+     * The view provided by {@link TabViewManager} to be shown on top of Content view.
+     */
     private View mCustomView;
 
     /**
@@ -135,8 +129,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      */
     private final ArkTabViewManagerImpl mTabViewManager;
 
-    /** A list of Tab observers.  These are used to broadcast Tab events to listeners. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /**
+     * A list of Tab observers.  These are used to broadcast Tab events to listeners.
+     */
+    @VisibleForTesting()
     protected final ObserverList<TabObserver> mObservers = new ObserverList<>();
 
     /**
@@ -155,10 +151,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * standard tab however should be kept open and the entire activity should
      * be moved to the background.
      */
-    private final @NonNull @TabLaunchType
+    private final @NonNull
+    @TabLaunchType
     Integer mLaunchType;
 
-    private @Nullable @TabCreationState
+    private @Nullable
+    @TabCreationState
     Integer mCreationState;
 
     /**
@@ -186,20 +184,29 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * |mIsHidden| is that a tab is hidden when the application is hidden, but the importance is
      * not affected by this signal.
      */
-    private @ChildProcessImportance int mImportance = ChildProcessImportance.NORMAL;
+    private @ChildProcessImportance
+    int mImportance = ChildProcessImportance.NORMAL;
 
-    /** Whether the renderer is currently unresponsive. */
+    /**
+     * Whether the renderer is currently unresponsive.
+     */
     private boolean mIsRendererUnresponsive;
 
 //    private TabDelegateFactory mDelegateFactory;
 
-    /** Listens for views related to the tab to be attached or detached. */
-    private OnAttachStateChangeListener mAttachStateChangeListener;
+    /**
+     * Listens for views related to the tab to be attached or detached.
+     */
+    public final OnAttachStateChangeListener mAttachStateChangeListener;
 
-    /** Whether the tab can currently be interacted with. */
+    /**
+     * Whether the tab can currently be interacted with.
+     */
     private boolean mInteractableState;
 
-    /** Whether or not the tab's active view is attached to the window. */
+    /**
+     * Whether or not the tab's active view is attached to the window.
+     */
     private boolean mIsViewAttachedToWindow;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
@@ -213,52 +220,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final TabWebContentsDelegateAndroidImpl mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, null);
 
-    private final PageInfo mPageInfo;
+    private final ITab mTab;
+    private final TabInfo mTabInfo;
 
-//    /**
-//     * Creates an instance of a {@link ArkTabImpl}.
-//     *
-//     * This constructor can be called before the native library has been loaded, so any additions
-//     * must be vetted for library calls.
-//     *
-//     * Package-private. Use {@link TabBuilder} to create an instance.
-//     *
-//     * @param id The id this tab should be identified with.
-//     * @param incognito Whether or not this tab is incognito.
-//     * @param launchType Type indicating how this tab was launched.
-//     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
-//     */
-//    @SuppressLint("HandlerLeak")
-//    public ArkTabImpl(int id, boolean incognito, @NonNull @TabLaunchType Integer launchType) {
-//        mIsTabSaveEnabledSupplier.set(false);
-//        mId = TabIdManager.getInstance().generateValidId(id);
-//        mIncognito = incognito;
-//
-//
-//        mLaunchType = launchType;
-//
-//        mAttachStateChangeListener = new OnAttachStateChangeListener() {
-//            @Override
-//            public void onViewAttachedToWindow(View view) {
-//                mIsViewAttachedToWindow = true;
-//                updateInteractableState();
-//            }
-//
-//            @Override
-//            public void onViewDetachedFromWindow(View view) {
-//                mIsViewAttachedToWindow = false;
-//                updateInteractableState();
-//            }
-//        };
-//        mTabViewManager = new ArkTabViewManagerImpl(this);
-//        mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
-//        mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
-//    }
-
-    public ArkTabImpl(PageInfo pageInfo, @NonNull @TabLaunchType Integer launchType) {
+    public ArkTabImpl(ITab tab, @NonNull @TabLaunchType Integer launchType) {
         mIsTabSaveEnabledSupplier.set(false);
 
-        mPageInfo = pageInfo;
+        mTab = tab;
+        mTabInfo = tab.getTabInfo();
 
         mLaunchType = launchType;
 
@@ -280,9 +249,178 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
     }
 
+    /**
+     * Initializes {@link Tab} with {@code webContents}.  If {@code webContents} is {@code null}
+     * a new {@link WebContents} will be created for this {@link Tab}.
+     *
+     * @param parent          The tab that caused this tab to be opened.
+     * @param creationState   State in which the tab is created.
+     * @param loadUrlParams   Parameters used for a lazily loaded Tab.
+     * @param webContents     A {@link WebContents} object or {@code null} if one should be created.
+     * @param delegateFactory The {@link TabDelegateFactory} to be used for delegate creation.
+     * @param initiallyHidden Only used if {@code webContents} is {@code null}.  Determines
+     *                        whether or not the newly created {@link WebContents} will be hidden or not.
+     * @param tabState        State containing information about this Tab, if it was persisted.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
+                           LoadUrlParams loadUrlParams, WebContents webContents, boolean initiallyHidden,
+                           TabState tabState) {
+        ArkLogger.e(TAG, "initialize this=" + this);
+        if (isInitialized()) {
+            return;
+        }
+        try {
+            TraceEvent.begin("Tab.initialize");
+
+            if (parent != null) {
+                mTabInfo.setParentId(parent.getId());
+                CriticalPersistedTabData.from(this).setParentId(parent.getId());
+                mSourceTabId = parent.isIncognito() == mTabInfo.isIncognito() ? parent.getId() : INVALID_TAB_ID;
+            }
+
+            CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(mLaunchType);
+            mCreationState = creationState;
+            mPendingLoadParams = loadUrlParams;
+            if (loadUrlParams != null) {
+                CriticalPersistedTabData.from(this).setUrl(new GURL(loadUrlParams.getUrl()));
+            }
+
+//            // TODO 去掉mDelegateFactory有没有问题？
+//            // The {@link mDelegateFactory} needs to be set before calling
+//            // {@link TabHelpers.initTabHelpers()}. This is because it creates a
+//            // TabBrowserControlsConstraintsHelper, and
+//            // {@link TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
+//            // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
+//            // See https://crbug.com/1179419.
+//            mDelegateFactory = delegateFactory;
+
+            ArkTabHelpers.initTabHelpers(this, parent);
+
+            if (tabState != null) {
+                restoreFieldsFromState(tabState);
+            }
+
+            initializeNative();
+
+            // If there is a frozen WebContents state or a pending lazy load, don't create a new
+            // WebContents. Restoring will be done when showing the tab in the foreground.
+            if (CriticalPersistedTabData.from(this).getWebContentsState() != null
+                    || getPendingLoadParams() != null) {
+                return;
+            }
+
+
+            if (webContents != null) {
+                ArkWebContents arkWeb = new ArkWebContents(getPageInfo(), webContents);
+                initWebContents(arkWeb, mWindowAndroid);
+                // Avoid an empty title by updating the title here. This could happen if restoring from
+                // a WebContents that has no renderer and didn't force a reload. This happens on
+                // background tab creation from Recent Tabs (TabRestoreService).
+                updateTitle();
+
+                if (webContents.shouldShowLoadingUI()) {
+                    didStartPageLoad(webContents.getVisibleUrl());
+                }
+            }
+//            else if (loadUrlParams != null) {
+//                PageInfo pageInfo = PageInfo.from(mTabInfo.getParentId(), getId(),
+//                        mTabInfo.getIndex() + 1, isIncognito());
+//                ArkWebContents arkWeb = new ArkWebContents.Builder(pageInfo)
+//                        .setLoadUrlParams(loadUrlParams)
+//                        .setInitiallyHidden(isHidden())
+//                        .build();
+//                initWebContents(arkWeb, mWindowAndroid);
+//
+//                loadUrl(loadUrlParams);
+//
+//                updateTitle();
+//
+//                if (webContents.shouldShowLoadingUI()) {
+//                    didStartPageLoad(webContents.getVisibleUrl());
+//                }
+//            }
+
+
+
+
+//            boolean creatingWebContents = webContents == null;
+//            ArkWebContents arkWeb;
+//            if (creatingWebContents) {
+//
+//                arkWeb = new ArkWebContents.Builder(mPageInfo)
+//                        .setInitiallyHidden(isHidden())
+//                        .build();
+//
+////                webContents = WarmupManager.getInstance().takeSpareWebContents(
+////                        isIncognito(), initiallyHidden, isCustomTab());
+////                if (webContents == null) {
+////                    Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
+////                            mWindowAndroid, isIncognito());
+////                    webContents = WebContentsFactory.createWebContents(profile, initiallyHidden);
+////                }
+//            } else {
+//                arkWeb = new ArkWebContents(webContents);
+//            }
+//
+//            initWebContents(arkWeb, mWindowAndroid);
+//            // Avoid an empty title by updating the title here. This could happen if restoring from
+//            // a WebContents that has no renderer and didn't force a reload. This happens on
+//            // background tab creation from Recent Tabs (TabRestoreService).
+//            updateTitle();
+//
+//            if (!creatingWebContents && webContents.shouldShowLoadingUI()) {
+//                didStartPageLoad(webContents.getVisibleUrl());
+//            }
+
+        } finally {
+            if (CriticalPersistedTabData.from(this).getTimestampMillis() == INVALID_TIMESTAMP) {
+                CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
+            }
+            registerTabSaving();
+            String appId = null;
+            Boolean hasThemeColor = null;
+            int themeColor = 0;
+            if (tabState != null) {
+                appId = tabState.openerAppId;
+                themeColor = tabState.getThemeColor();
+                hasThemeColor = tabState.hasThemeColor();
+            }
+            if (hasThemeColor != null) {
+                updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
+            }
+
+            for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
+            TraceEvent.end("Tab.initialize");
+        }
+    }
 
     public PageInfo getPageInfo() {
-        return mPageInfo;
+        return mTab.getCurrentPageInfo();
+    }
+
+    public TabInfo getTabInfo() {
+        return mTabInfo;
+    }
+
+    public void loadInNewPage(LoadUrlParams params) {
+        WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
+                isIncognito(), isHidden(), isCustomTab());
+        if (webContents == null) {
+            Profile profile =
+                    IncognitoUtils.getProfileFromWindowAndroid(getWindowAndroid(), isIncognito());
+            webContents = WebContentsFactory.createWebContents(profile, isHidden());
+        }
+
+        GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
+        params.setUrl(fixedUrl.getSpec());
+        ContentUtils.setUserAgentOverride(webContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
+
+        PageInfo pageInfo = PageInfo.from(getId(), mTabInfo.getIndex() + 1, isIncognito());
+        ArkWebContents arkWeb = new ArkWebContents(pageInfo, webContents);
+
+        webContents.getNavigationController().loadUrl(params);
+        swapWebContents(arkWeb, true, false);
     }
 
     @Override
@@ -311,7 +449,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public WebContents getWebContents() {
-        return mWebContents;
+        return mArkWeb == null ? null : mArkWeb.getWebContents();
     }
 
     @Override
@@ -352,7 +490,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 //            updateWindowAndroid((ArkWindowAndroid) window);
 //            if (tabDelegateFactory != null) setDelegateFactory(tabDelegateFactory);
 //        }
-
 
 
         WebContents webContents = getWebContents();
@@ -401,14 +538,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public ContentView getContentView() {
-        return mContentView;
+        return mArkWeb == null ? null : mArkWeb.getContentView();
     }
 
     @Override
     public View getView() {
         if (mCustomView != null) return mCustomView;
 
-        return mContentView;
+        return getContentView();
     }
 
     @Override
@@ -418,7 +555,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public int getId() {
-        return mPageInfo.pageId;
+        return mTabInfo.getTabId();
     }
 
     @Override
@@ -432,7 +569,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         // If we have a ContentView, or the url is not empty, we have a WebContents
         // so cache the WebContent's url. If not use the cached version.
         if (getWebContents() != null || !url.getSpec().isEmpty()) {
-            mPageInfo.setUrl(url.getSpec());
             CriticalPersistedTabData.from(this).setUrl(url);
         }
 
@@ -473,7 +609,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
-    public @TabLaunchType int getLaunchType() {
+    public @TabLaunchType
+    int getLaunchType() {
         return mLaunchType;
     }
 
@@ -487,7 +624,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         // Do not apply the theme color if there are any security issues on the page.
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(getWebContents());
         boolean hasSecurityIssue = securityLevel == ConnectionSecurityLevel.DANGEROUS
-            || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
+                || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
         // If chrome is showing an error page, allow theming so the system UI can match the page.
         // This is considered acceptable since chrome is in control of the error page. Otherwise, if
         // the page has a security issue, disable theming.
@@ -496,7 +633,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public boolean isIncognito() {
-        return mPageInfo.isIncognito;
+        return mTabInfo.isIncognito();
     }
 
     @Override
@@ -510,7 +647,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      */
     @Override
     public boolean isFrozen() {
-        return getWebContents() == null;
+        return mArkWeb == null;
     }
 
     @Override
@@ -542,8 +679,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             // Request desktop sites for large screen tablets if necessary.
             params.setOverrideUserAgent(calculateUserAgentOverrideOption());
 
-            @TabLoadStatus
-            int result = loadUrlInternal(params);
+            @TabLoadStatus int result;
+            if (mArkWeb == null) {
+                result = TabLoadStatus.PAGE_LOAD_FAILED;
+            } else {
+                result = mArkWeb.loadUrlInternal(params);
+            }
 
             for (TabObserver observer : mObservers) {
                 observer.onLoadUrl(this, params, result);
@@ -554,33 +695,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    private @TabLoadStatus int loadUrlInternal(LoadUrlParams params) {
-        if (mWebContents == null) return TabLoadStatus.PAGE_LOAD_FAILED;
-
-        // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
-        // FixupURL explicitly says not to use it on URLs coming from untrustworthy
-        // sources, like other apps. Once migrations of Java code to GURL are complete
-        // and incoming URLs are converted to GURLs at their source, we can make
-        // decisions of whether or not to fix up GURLs on a case-by-case basis based
-        // on trustworthiness of the incoming URL.
-        GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
-        if (!fixedUrl.isValid()) return TabLoadStatus.PAGE_LOAD_FAILED;
-
-        if (TabJni.get().handleNonNavigationAboutURL(fixedUrl)) {
-            return TabLoadStatus.DEFAULT_PAGE_LOAD;
-        }
-
-        params.setUrl(fixedUrl.getSpec());
-//        params.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
-//        mWebContents.setUserAgentOverride("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29");
-
-//        mWebContents.setUserAgentOverride(UserAgentManager.getUserAgentByUrl(fixedUrl));
-        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
-
-        mWebContents.getNavigationController().loadUrl(params);
-        return TabLoadStatus.DEFAULT_PAGE_LOAD;
-    }
-
     @Override
     public boolean loadIfNeeded() {
         ArkLogger.e(TAG, "loadIfNeeded");
@@ -589,18 +703,42 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return false;
         }
 
+
+//        if (mArkWeb == null) {
+//            ArkLogger.e(TAG, "Tab couldn't be loaded because WebContents was null.");
+//            return false;
+//        }
+
+//        return mArkWeb.loadIfNeeded(this);
+
+
+//        LoadUrlParams pendingLoadParams = mArkWeb.getPendingLoadParams();
+//        if (pendingLoadParams != null) {
+//            mArkWeb.setPendingLoadParams(null);
+//            loadUrl(mPendingLoadParams);
+//            return true;
+//        }
+
         if (mPendingLoadParams != null) {
             assert isFrozen();
-            WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
-                    isIncognito(), isHidden(), isCustomTab());
-            if (webContents == null) {
-                Profile profile =
-                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden());
-            }
-            initWebContents(webContents, mWindowAndroid);
-            loadUrl(mPendingLoadParams);
+//            WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
+//                    isIncognito(), isHidden(), isCustomTab());
+//            if (webContents == null) {
+//                Profile profile =
+//                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
+//                webContents = WebContentsFactory.createWebContents(profile, isHidden());
+//            }
+
+            LoadUrlParams params = mPendingLoadParams;
             mPendingLoadParams = null;
+            ArkWebContents arkWeb = new ArkWebContents.Builder(getPageInfo())
+                    .setLoadUrlParams(params)
+                    .setInitiallyHidden(isHidden())
+                    .build();
+
+            initWebContents(arkWeb, mWindowAndroid);
+            loadUrl(params);
+
             return true;
         }
 
@@ -648,7 +786,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public boolean needsReload() {
-        return getWebContents() != null && getWebContents().getNavigationController().needsReload();
+        return mArkWeb != null && mArkWeb.needsReload();
     }
 
     @Override
@@ -663,11 +801,20 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public float getProgress() {
-        return !isLoading() ? 1 : (int) mWebContents.getLoadProgress();
+        if (isLoading()) {
+            if (mArkWeb == null) {
+                return 0;
+            }
+            return mArkWeb.getWebContents().getLoadProgress();
+        }
+        return 1;
     }
 
     @Override
     public boolean canGoBack() {
+        if (mTestWebContents != null) {
+            return true;
+        }
         return getWebContents() != null && getWebContents().getNavigationController().canGoBack();
     }
 
@@ -679,6 +826,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void goBack() {
+        if (mTestWebContents != null) {
+            swapWebContents(mTestWebContents, true, true);
+            mTestWebContents = null;
+            return;
+        }
         if (getWebContents() != null) getWebContents().getNavigationController().goBack();
     }
 
@@ -830,15 +982,17 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * WARNING: This method is deprecated. Consider other ways such as passing the dependencies
-     *          to the constructor, rather than accessing ChromeActivity from Tab and using getters.
+     * to the constructor, rather than accessing ChromeActivity from Tab and using getters.
+     *
      * @return {@link AsyncInitializationActivity} that currently contains this {@link Tab} in its
-     *         {@link TabModel}.
+     * {@link TabModel}.
      */
     @Deprecated
     AsyncInitializationActivity getActivity() {
         if (mWindowAndroid == null) return null;
         Activity activity = ContextUtils.activityFromContext(mWindowAndroid.getContext().get());
-        if (activity instanceof AsyncInitializationActivity) return (AsyncInitializationActivity) activity;
+        if (activity instanceof AsyncInitializationActivity)
+            return (AsyncInitializationActivity) activity;
         return null;
     }
 
@@ -893,110 +1047,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    /**
-     * Initializes {@link Tab} with {@code webContents}.  If {@code webContents} is {@code null}
-     * a new {@link WebContents} will be created for this {@link Tab}.
-     * @param parent The tab that caused this tab to be opened.
-     * @param creationState State in which the tab is created.
-     * @param loadUrlParams Parameters used for a lazily loaded Tab.
-     * @param webContents A {@link WebContents} object or {@code null} if one should be created.
-     * @param delegateFactory The {@link TabDelegateFactory} to be used for delegate creation.
-     * @param initiallyHidden Only used if {@code webContents} is {@code null}.  Determines
-     *        whether or not the newly created {@link WebContents} will be hidden or not.
-     * @param tabState State containing information about this Tab, if it was persisted.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
-            LoadUrlParams loadUrlParams, WebContents webContents, boolean initiallyHidden,
-            TabState tabState) {
-        ArkLogger.e(TAG, "initialize this=" + this);
-        if (isInitialized()) {
-            return;
-        }
-        try {
-            TraceEvent.begin("Tab.initialize");
-
-            if (parent != null) {
-                mPageInfo.setPageId(parent.getId());
-                CriticalPersistedTabData.from(this).setParentId(parent.getId());
-                mSourceTabId = parent.isIncognito() == mPageInfo.isIncognito ? parent.getId() : INVALID_TAB_ID;
-            }
-
-            CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(mLaunchType);
-            mCreationState = creationState;
-            mPendingLoadParams = loadUrlParams;
-            if (loadUrlParams != null) {
-                mPageInfo.setUrl(loadUrlParams.getUrl());
-                CriticalPersistedTabData.from(this).setUrl(new GURL(loadUrlParams.getUrl()));
-            }
-
-//            // TODO 去掉mDelegateFactory有没有问题？
-//            // The {@link mDelegateFactory} needs to be set before calling
-//            // {@link TabHelpers.initTabHelpers()}. This is because it creates a
-//            // TabBrowserControlsConstraintsHelper, and
-//            // {@link TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
-//            // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
-//            // See https://crbug.com/1179419.
-//            mDelegateFactory = delegateFactory;
-
-            ArkTabHelpers.initTabHelpers(this, parent);
-
-            if (tabState != null) {
-                restoreFieldsFromState(tabState);
-            }
-
-            initializeNative();
-
-            // If there is a frozen WebContents state or a pending lazy load, don't create a new
-            // WebContents. Restoring will be done when showing the tab in the foreground.
-            if (CriticalPersistedTabData.from(this).getWebContentsState() != null
-                    || getPendingLoadParams() != null) {
-                return;
-            }
-
-            boolean creatingWebContents = webContents == null;
-            if (creatingWebContents) {
-                webContents = WarmupManager.getInstance().takeSpareWebContents(
-                        isIncognito(), initiallyHidden, isCustomTab());
-                if (webContents == null) {
-                    Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
-                            mWindowAndroid, isIncognito());
-                    webContents = WebContentsFactory.createWebContents(profile, initiallyHidden);
-                }
-            }
-
-            initWebContents(webContents, mWindowAndroid);
-            // Avoid an empty title by updating the title here. This could happen if restoring from
-            // a WebContents that has no renderer and didn't force a reload. This happens on
-            // background tab creation from Recent Tabs (TabRestoreService).
-            updateTitle();
-
-            if (!creatingWebContents && webContents.shouldShowLoadingUI()) {
-                didStartPageLoad(webContents.getVisibleUrl());
-            }
-
-        } finally {
-            if (CriticalPersistedTabData.from(this).getTimestampMillis() == INVALID_TIMESTAMP) {
-                CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
-            }
-            registerTabSaving();
-            String appId = null;
-            Boolean hasThemeColor = null;
-            int themeColor = 0;
-            if (tabState != null) {
-                appId = tabState.openerAppId;
-                themeColor = tabState.getThemeColor();
-                hasThemeColor = tabState.hasThemeColor();
-            }
-            if (hasThemeColor != null) {
-                updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
-            }
-
-            for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
-            TraceEvent.end("Tab.initialize");
-        }
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void registerTabSaving() {
         CriticalPersistedTabData.from(this).registerIsTabSaveEnabledSupplier(
@@ -1015,6 +1065,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Restores member fields from the given TabState.
+     *
      * @param state TabState containing information about this Tab.
      */
     void restoreFieldsFromState(TabState state) {
@@ -1022,21 +1073,20 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
         CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
         String url = state.contentsState.getVirtualUrlFromState();
-        mPageInfo.setUrl(url);
         CriticalPersistedTabData.from(this).setUrl(new GURL(url));
         CriticalPersistedTabData.from(this).setTitle(
                 state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         CriticalPersistedTabData.from(this).setRootId(
-                state.rootId == Tab.INVALID_TAB_ID ? mPageInfo.pageId : state.rootId);
+                state.rootId == Tab.INVALID_TAB_ID ? mTabInfo.getTabId() : state.rootId);
         CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
     }
 
     /**
      * @return An {@link RewindableIterator} instance that points to all of
-     *         the current {@link TabObserver}s on this class.  Note that calling
-     *         {@link java.util.Iterator#remove()} will throw an
-     *         {@link UnsupportedOperationException}.
+     * the current {@link TabObserver}s on this class.  Note that calling
+     * {@link java.util.Iterator#remove()} will throw an
+     * {@link UnsupportedOperationException}.
      */
     @Override
     public RewindableIterator<TabObserver> getTabObservers() {
@@ -1047,9 +1097,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     public final void setImportance(@ChildProcessImportance int importance) {
         if (mImportance == importance) return;
         mImportance = importance;
-        WebContents webContents = getWebContents();
-        if (webContents == null) return;
-        webContents.setImportance(mImportance);
+        if (mArkWeb != null) {
+            mArkWeb.setImportance(importance);
+        }
     }
 
     /**
@@ -1083,8 +1133,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Called when a navigation begins and no navigation was in progress
+     *
      * @param toDifferentDocument Whether this navigation will transition between
-     * documents (i.e., not a fragment navigation or JS History API call).
+     *                            documents (i.e., not a fragment navigation or JS History API call).
      */
     void onLoadStarted(boolean toDifferentDocument) {
         if (toDifferentDocument) mIsLoading = true;
@@ -1113,6 +1164,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Called when a page has started loading.
+     *
      * @param validatedUrl URL being loaded.
      */
     void didStartPageLoad(GURL validatedUrl) {
@@ -1125,6 +1177,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Called when a page has finished loading.
+     *
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
@@ -1136,6 +1189,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Called when a page has failed loading.
+     *
      * @param errorCode The error code causing the page to fail loading.
      */
     void didFailPageLoad(int errorCode) {
@@ -1147,7 +1201,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Update internal Tab state when provisional load gets committed.
-     * @param url The URL that was loaded.
+     *
+     * @param url            The URL that was loaded.
      * @param transitionType The transition type to the current URL.
      */
     void handleDidFinishNavigation(GURL url, int transitionType) {
@@ -1156,6 +1211,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Notify the observers that the load progress has changed.
+     *
      * @param progress The current percentage of progress.
      */
     void notifyLoadProgress(float progress) {
@@ -1206,7 +1262,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Sets whether the tab is showing an error page.  This is reset whenever the tab finishes a
      * navigation.
      * Note: This is kept here to keep the build green. Remove from interface as soon as
-     *       the downstream patch lands.
+     * the downstream patch lands.
+     *
      * @param isShowingErrorPage Whether the tab shows an error page.
      */
     void setIsShowingErrorPage(boolean isShowingErrorPage) {
@@ -1241,18 +1298,22 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Cache the title for the current page.
-     *
+     * <p>
      * {@link ContentViewClient#onUpdateTitle} is unreliable, particularly for navigating backwards
      * and forwards in the history stack, so pull the correct title whenever the page changes.
      * onUpdateTitle is only called when the title of a navigation entry changes. When the user goes
      * back a page the navigation entry exists with the correct title, thus the title is not
      * actually changed, and no notification is sent.
+     *
      * @param title Title of the page.
      */
     void updateTitle(String title) {
-        if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
-            mPageInfo.setTitle(title);
+        if (TextUtils.isEmpty(title)) {
+            title = getUrl().getSpec();
         }
+//        if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
+//            mPageInfo.setTitle(title);
+//        }
 
         if (TextUtils.equals(CriticalPersistedTabData.from(this).getTitle(), title)) return;
 
@@ -1278,45 +1339,57 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Called when the background color for the content changes.
+     *
      * @param color The current for the background.
      */
     void onBackgroundColorChanged(int color) {
         for (TabObserver observer : mObservers) observer.onBackgroundColorChanged(this, color);
     }
 
+    private ArkWebContents mTestWebContents;
+
     /**
-     *  This is currently called when committing a pre-rendered page or activating a portal.
+     * This is currently called when committing a pre-rendered page or activating a portal.
      */
     @Override
     public void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
+        ArkWebContents arkWeb = new ArkWebContents(getPageInfo(), webContents);
+        swapWebContents(arkWeb, didStartLoad, didFinishLoad);
+        ArkWebContents.put(getPageInfo().pageId, arkWeb);
+    }
+
+    public void swapWebContents(ArkWebContents arkWeb, boolean didStartLoad, boolean didFinishLoad) {
         // TODO swapWebContents
         ArkLogger.e(TAG, "swapWebContents");
-        boolean hasWebContents = mContentView != null && mWebContents != null;
+        boolean hasWebContents = mArkWeb != null && mArkWeb.getContentView() != null;
         Rect original = hasWebContents
-                ? new Rect(0, 0, mContentView.getWidth(), mContentView.getHeight())
+                ? new Rect(0, 0, mArkWeb.getContentView().getWidth(), mArkWeb.getContentView().getHeight())
                 : new Rect();
-        for (TabObserver observer : mObservers) observer.webContentsWillSwap(this);
-        if (hasWebContents) mWebContents.onHide();
+        for (TabObserver observer : mObservers) {
+            observer.webContentsWillSwap(this);
+        }
+        if (hasWebContents) mArkWeb.getWebContents().onHide();
         Context appContext = ContextUtils.getApplicationContext();
         Rect bounds = original.isEmpty() ? TabUtils.estimateContentSize(appContext) : null;
         if (bounds != null) original.set(bounds);
 
-        mWebContents.setFocus(false);
+        mArkWeb.getWebContents().setFocus(false);
+        mTestWebContents = mArkWeb;
         destroyWebContents(false /* do not delete native web contents */);
         hideNativePage(false, () -> {
             // Size of the new content is zero at this point. Set the view size in advance
             // so that next onShow() call won't send a resize message with zero size
             // to the renderer process. This prevents the size fluttering that may confuse
             // Blink and break rendered result (see http://crbug.com/340987).
-            webContents.setSize(original.width(), original.height());
+            arkWeb.getWebContents().setSize(original.width(), original.height());
 
             if (bounds != null) {
                 assert mNativeTabAndroid != 0;
                 TabJni.get().onPhysicalBackingSizeChanged(
-                        mNativeTabAndroid, webContents, bounds.right, bounds.bottom);
+                        mNativeTabAndroid, arkWeb.getWebContents(), bounds.right, bounds.bottom);
             }
-            initWebContents(webContents, mWindowAndroid);
-            webContents.onShow();
+            initWebContents(arkWeb, mWindowAndroid);
+            arkWeb.getWebContents().onShow();
         });
 
         if (didStartLoad) {
@@ -1361,73 +1434,41 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         mNativeTabAndroid = nativePtr;
     }
 
-//    public static long[] getAllNativePtrs(Tab[] tabsArray) {
-//        if (tabsArray == null) return null;
-//
-//        long[] tabsPtrArray = new long[tabsArray.length];
-//        for (int i = 0; i < tabsArray.length; i++) {
-//            tabsPtrArray[i] = ((TabImpl) tabsArray[i]).getNativePtr();
-//        }
-//        return tabsPtrArray;
-//    }
-
     /**
      * Initializes the {@link WebContents}. Completes the browser content components initialization
      * around a native WebContents pointer.
      * <p>
      * {@link #getNativePage()} will still return the {@link NativePage} if there is one.
      * All initialization that needs to reoccur after a web contents swap should be added here.
-     * <p />
+     * <p/>
      * NOTE: If you attempt to pass a native WebContents that does not have the same incognito
      * state as this tab this call will fail.
      *
      * @param webContents The WebContents object that will initialize all the browser components.
      */
-    private void initWebContents(WebContents webContents, ArkWindowAndroid windowAndroid) {
+    private void initWebContents(@NonNull ArkWebContents webContents, ArkWindowAndroid windowAndroid) {
         try {
             ArkLogger.e(TAG, "initWebContents webContents=" + webContents);
             TraceEvent.begin("ChromeTab.initWebContents");
-            WebContents oldWebContents = mWebContents;
-            mWebContents = webContents;
+            ArkWebContents oldWebContents = mArkWeb;
+            mArkWeb = webContents;
 
-            ContentView cv = ContentView.createContentView(
-                    ContextUtils.getApplicationContext(), null /* eventOffsetHandler */, webContents);
-            cv.setContentDescription(ContextUtils.getApplicationContext().getResources().getString(
-                    R.string.accessibility_content_view));
-            mContentView = cv;
-            webContents.initialize(PRODUCT_VERSION, new ArkTabViewAndroidDelegate(this, cv), cv,
-                    windowAndroid, WebContents.createDefaultInternalsHolder());
-            hideNativePage(false, null);
+            mArkWeb.attach(this, windowAndroid);
 
             if (oldWebContents != null) {
-                oldWebContents.setImportance(ChildProcessImportance.NORMAL);
-                getWebContentsAccessibility(oldWebContents).setObscuredByAnotherView(false);
+                oldWebContents.detach(this);
             }
 
-            mWebContents.setImportance(mImportance);
-
-//            mWebContents.setUserAgentOverride(UserAgentManager.getUserAgentByUrl(getUrl()));
-            ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
-
-//            ContentUtils.setUserAgentOverride(mWebContents,
-//                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);
-
-            mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
             updateInteractableState();
 
-//            mWebContentsDelegate = createWebContentsDelegate();
-
             assert mNativeTabAndroid != 0;
+            TabJni.get().initWebContents(mNativeTabAndroid, mTabInfo.isIncognito(), isDetached(this),
+                    mArkWeb.getWebContents(), mSourceTabId, mWebContentsDelegate,
+                    new ArkTabContextMenuPopulatorFactory(this));
 
-//            TabJni.get().initWebContents(mNativeTabAndroid, mIncognito, isDetached(this),
-//                    webContents, mSourceTabId, mWebContentsDelegate,
-//                    new TabContextMenuPopulatorFactory(
-//                            mDelegateFactory.createContextMenuPopulatorFactory(this), this));
-
-            TabJni.get().initWebContents(mNativeTabAndroid, mPageInfo.isIncognito, isDetached(this),
-                    webContents, mSourceTabId, mWebContentsDelegate, new ArkTabContextMenuPopulatorFactory(this));
-
-            mWebContents.notifyRendererPreferenceUpdate();
+            if (oldWebContents == null) {
+                mArkWeb.notifyRendererPreferenceUpdate();
+            }
             ArkTabHelpers.initWebContentsHelpers(this);
             notifyContentChanged();
         } finally {
@@ -1441,8 +1482,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         /**
          * Constructs an instance of {@link org.chromium.chrome.browser.tab.TabContextMenuPopulatorFactory}.
+         *
          * @param populatorFactory The {@link ContextMenuPopulatorFactory} to delegate the calls to.
-         * @param tab The {@link Tab} that is using the populated context menus.
+         * @param tab              The {@link Tab} that is using the populated context menus.
          */
         public ArkTabContextMenuPopulatorFactory(Tab tab) {
             super(null, tab);
@@ -1476,29 +1518,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         return new TabWebContentsDelegateAndroidImpl(this, delegate);
     }
 
-//    /**
-//     * Shows the given {@code nativePage} if it's not already showing.
-//     * @param nativePage The {@link NativePage} to show.
-//     */
-//    private void showNativePage(NativePage nativePage) {
-//        assert nativePage != null;
-//        if (mNativePage == nativePage) return;
-//        hideNativePage(true, () -> {
-//            mNativePage = nativePage;
-//            if (!mNativePage.isFrozen()) {
-//                mNativePage.getView().addOnAttachStateChangeListener(mAttachStateChangeListener);
-//            }
-//            pushNativePageStateToNavigationEntry();
-//
-//            updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
-//        });
-//    }
-
     /**
      * Hide and destroy the native page if it was being shown.
-     * @param notify {@code true} to trigger {@link #onContentChanged} event.
+     *
+     * @param notify       {@code true} to trigger {@link #onContentChanged} event.
      * @param postHideTask {@link Runnable} task to run before actually destroying the
-     *        native page. This is necessary to keep the tasks to perform in order.
+     *                     native page. This is necessary to keep the tasks to perform in order.
      */
     private void hideNativePage(boolean notify, Runnable postHideTask) {
         if (postHideTask != null) postHideTask.run();
@@ -1507,6 +1532,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Set {@link TabDelegateFactory} instance and updates the references.
+     *
      * @param factory TabDelegateFactory instance.
      */
     private void setDelegateFactory(TabDelegateFactory factory) {
@@ -1559,19 +1585,21 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private final void restoreIfNeeded(ArkWindowAndroid windowAndroid) {
+    private void restoreIfNeeded(ArkWindowAndroid windowAndroid) {
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
             if ((isFrozen() && CriticalPersistedTabData.from(this).getWebContentsState() != null
-                        && !unfreezeContents(windowAndroid))
+                    && !unfreezeContents(windowAndroid))
                     || !needsReload()) {
                 return;
             }
 
-            if (mWebContents != null) mWebContents.getNavigationController().loadIfNecessary();
+            if (mArkWeb != null) {
+                mArkWeb.loadIfNecessary();
+            }
             mIsBeingRestored = true;
             for (TabObserver observer : mObservers) observer.onRestoreStarted(this);
         } finally {
@@ -1582,6 +1610,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     /**
      * Restores the WebContents from its saved state.  This should only be called if the tab is
      * frozen with a saved TabState, and NOT if it was frozen for a lazy load.
+     *
      * @return Whether or not the restoration was successful.
      */
     private boolean unfreezeContents(ArkWindowAndroid windowAndroid) {
@@ -1592,27 +1621,37 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                     CriticalPersistedTabData.from(this).getWebContentsState();
             assert webContentsState != null;
 
+
             WebContents webContents = WebContentsStateBridge.restoreContentsFromByteBuffer(
                     webContentsState, isHidden());
+            ArkWebContents arkWeb;
             if (webContents == null) {
+
+                arkWeb = new ArkWebContents.Builder(getPageInfo())
+                        .build();
+
+
                 // State restore failed, just create a new empty web contents as that is the best
                 // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
                 // an error page instead of a blank page in that case (and the last loaded URL).
-                Profile profile =
-                        IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden());
+//                Profile profile =
+//                        IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito());
+//                webContents = WebContentsFactory.createWebContents(profile, isHidden());
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
+            } else {
+                arkWeb = new ArkWebContents(getPageInfo(), webContents);
+                ArkWebContents.put(getPageInfo().pageId, arkWeb);
             }
 
             View compositorView = windowAndroid.getCompositorViewHolder();
             if (compositorView != null) {
-                webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
+                arkWeb.getWebContents().setSize(compositorView.getWidth(), compositorView.getHeight());
             }
 
 
             CriticalPersistedTabData.from(this).setWebContentsState(null);
-            initWebContents(webContents, windowAndroid);
+            initWebContents(arkWeb, windowAndroid);
 
             if (!restored) {
                 String url = CriticalPersistedTabData.from(this).getUrl().getSpec().isEmpty()
@@ -1640,6 +1679,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Delete navigation entries from frozen state matching the predicate.
+     *
      * @param predicate Handle for a deletion predicate interpreted by native code.
      *                  Only valid during this call frame.
      */
@@ -1662,21 +1702,22 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     /**
      * Destroys the current {@link WebContents}.
+     *
      * @param deleteNativeWebContents Whether or not to delete the native WebContents pointer.
      */
-    private final void destroyWebContents(boolean deleteNativeWebContents) {
-        if (mWebContents == null) return;
+    private void destroyWebContents(boolean deleteNativeWebContents) {
+        if (mArkWeb == null) return;
 
-        mContentView.removeOnAttachStateChangeListener(mAttachStateChangeListener);
-        mContentView = null;
+        mArkWeb.detach(this);
+
         updateInteractableState();
 
-        WebContents contentsToDestroy = mWebContents;
+        ArkWebContents contentsToDestroy = mArkWeb;
         if (contentsToDestroy.getViewAndroidDelegate() != null
                 && contentsToDestroy.getViewAndroidDelegate() instanceof TabViewAndroidDelegate) {
-            ((TabViewAndroidDelegate) contentsToDestroy.getViewAndroidDelegate()).destroy();
+            contentsToDestroy.getViewAndroidDelegate().destroy();
         }
-        mWebContents = null;
+        mArkWeb = null;
 
         assert mNativeTabAndroid != 0;
         if (deleteNativeWebContents) {
@@ -1693,15 +1734,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             TabJni.get().releaseWebContents(mNativeTabAndroid);
             // This call is just a workaround, Chrome should clean up the WebContentsObservers
             // itself.
-            contentsToDestroy.clearJavaWebContentsObservers();
-            contentsToDestroy.initialize(PRODUCT_VERSION,
-                    ViewAndroidDelegate.createBasicDelegate(/* containerView */ null),
-                    /* accessDelegate */ null, /* windowAndroid */ null,
-                    WebContents.createDefaultInternalsHolder());
+            contentsToDestroy.reset();
         }
     }
 
-    private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
+    private @UserAgentOverrideOption
+    int calculateUserAgentOverrideOption() {
         return UserAgentOverrideOption.TRUE;
 //        WebContents webContents = getWebContents();
 //        boolean currentRequestDesktopSite = webContents != null && webContents.getNavigationController().getUseDesktopUserAgent();
@@ -1757,10 +1795,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private void switchUserAgentIfNeeded() {
-        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
-                || getWebContents() == null) {
-            return;
-        }
+//        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
+//                || getWebContents() == null) {
+//            return;
+//        }
 //        boolean usingDesktopUserAgent =
 //                getWebContents().getNavigationController().getUseDesktopUserAgent();
 //        TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
@@ -1792,7 +1830,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 //            return;
 //        }
 //        mWindowAndroid.getTabContentManager().cacheTabThumbnail(this);
-        TabSnapshotManager.getInstance().cacheTab(this);
+        TabSnapshotManager.getInstance().cachePage(getPageInfo());
     }
 
 }

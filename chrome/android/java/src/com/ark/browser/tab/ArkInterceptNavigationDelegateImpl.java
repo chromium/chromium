@@ -2,8 +2,10 @@ package com.ark.browser.tab;
 
 import android.text.TextUtils;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
@@ -13,6 +15,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabJni;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
@@ -219,7 +222,73 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
 
             Log.e(TAG, "shouldIgnoreNavigation params=" + params);
 
-            ((ArkTabImpl) mTab).openNewPage(params);
+            ((ArkTabImpl) mTab).loadInNewPage(params);
+
+//            WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
+//                    mTab.isIncognito(), mTab.isHidden(), mTab.isCustomTab());
+//            if (webContents == null) {
+//                Profile profile =
+//                        IncognitoUtils.getProfileFromWindowAndroid(mTab.getWindowAndroid(), mTab.isIncognito());
+//                webContents = WebContentsFactory.createWebContents(profile, mTab.isHidden());
+//            }
+//
+//            GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
+//            params.setUrl(fixedUrl.getSpec());
+//            ContentUtils.setUserAgentOverride(webContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
+//
+//            webContents.getNavigationController().loadUrl(params);
+
+//            webContents.addObserver(new WebContentsObserver() {
+//
+//                private static final String TAG = "NewPage_WebContentsObserver";
+//
+//                private boolean mDidStartLoading = true;
+//                private boolean mDidFinishLoad = false;
+//
+//                @Override
+//                public void didStartLoading(GURL url) {
+//                    ArkLogger.e(TAG, "didStartLoading url=" + url.getSpec());
+//                    mDidStartLoading = true;
+//                }
+//
+//                @Override
+//                public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url,
+//                                          boolean isKnownValid, boolean isInPrimaryMainFrame,
+//                                          int rfhLifecycleState) {
+//                    ArkLogger.e(TAG, "didFinishLoad url=" + url.getSpec());
+//                    mDidFinishLoad = true;
+//                }
+//
+//                @Override
+//                public void didStopLoading(GURL url, boolean isKnownValid) {
+//                    ArkLogger.e(TAG, "didStopLoading url=" + url.getSpec());
+//                }
+//
+//                @Override
+//                public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode,
+//                                        GURL failingUrl, int rfhLifecycleState) {
+//                    ArkLogger.e(TAG, "didFailLoad errorCode=" + errorCode
+//                            + " failingUrl=" + failingUrl.getSpec());
+//                }
+//
+//                @Override
+//                public void primaryMainDocumentElementAvailable() {
+//                    ArkLogger.e(TAG, "primaryMainDocumentElementAvailable");
+//                }
+//
+//                @Override
+//                public void didFirstVisuallyNonEmptyPaint() {
+//                    ArkLogger.e(TAG, "didFirstVisuallyNonEmptyPaint");
+//                    mTab.swapWebContents(mWebContents.get(), mDidStartLoading, mDidFinishLoad);
+//                }
+//            });
+
+//            ITab iTab = ((ArkTabImpl) mTab).getTab();
+//            PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
+//                    Tab.INVALID_PAGE_ID, iTab.getId(),
+//                    iTab.getTabInfo().getIndex() + 1, iTab.getTabInfo().isIncognito());
+//            ArkWebContents arkWeb = new ArkWebContents(pageInfo, webContents);
+//            ((ArkTabImpl) mTab).swapWebContents(arkWeb, true, false);
             return true;
         }
 

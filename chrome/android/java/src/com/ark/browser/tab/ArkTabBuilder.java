@@ -7,6 +7,7 @@ package com.ark.browser.tab;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.tab.core.ITab;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,10 +40,10 @@ public class ArkTabBuilder {
     private TabState mTabState;
     private Callback<Tab> mPreInitializeAction;
 
-    private final PageInfo mPageInfo;
+    private final ITab mTab;
 
-    public ArkTabBuilder(PageInfo pageInfo) {
-        mPageInfo = pageInfo;
+    public ArkTabBuilder(ITab tab) {
+        mTab = tab;
     }
 
     /**
@@ -134,7 +135,7 @@ public class ArkTabBuilder {
             mLaunchType = TabLaunchType.FROM_CHROME_UI;
         }
         ArkTabImpl tab =
-                new ArkTabImpl(mPageInfo, mLaunchType);
+                new ArkTabImpl(mTab, mLaunchType);
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;
@@ -181,8 +182,8 @@ public class ArkTabBuilder {
      * background tabs restored on cold start that should be loaded when switched to. initialize()
      * needs to be called afterwards to complete the second level initialization.
      */
-    public static ArkTabBuilder createFromFrozenState(PageInfo pageInfo) {
-        return new ArkTabBuilder(pageInfo)
+    public static ArkTabBuilder createFromFrozenState(ITab tab) {
+        return new ArkTabBuilder(tab)
                 .setLaunchType(TabLaunchType.FROM_RESTORE)
                 .setCreationType(TabCreationState.FROZEN_ON_RESTORE)
                 .setFromFrozenState(true);
@@ -205,8 +206,8 @@ public class ArkTabBuilder {
      * complete the second level initialization.
      * @param initiallyHidden true iff the tab being created is initially in background
      */
-    public static ArkTabBuilder createLiveTab(PageInfo pageInfo, boolean initiallyHidden) {
-        return new ArkTabBuilder(pageInfo)
+    public static ArkTabBuilder createLiveTab(ITab tab, boolean initiallyHidden) {
+        return new ArkTabBuilder(tab)
                 .setCreationType(initiallyHidden
                         ? TabCreationState.LIVE_IN_BACKGROUND
                         : TabCreationState.LIVE_IN_FOREGROUND);

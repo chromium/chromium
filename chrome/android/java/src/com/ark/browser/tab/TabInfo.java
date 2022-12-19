@@ -1,25 +1,15 @@
 package com.ark.browser.tab;
 
 import androidx.annotation.Keep;
-import androidx.core.util.AtomicFile;
 
-import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.ITab;
+import com.ark.browser.core.utils.ArkIdManager;
 import com.ark.browser.tab.dao.ArkTabDao;
-import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Keep
@@ -31,7 +21,7 @@ public class TabInfo {
 //    protected transient final List<PageInfo> mPageInfoList = new ArrayList<>();
 
 //    @PrimaryKey()
-    protected long tabInfoId;
+    protected int tabId;
 
 //    @Column
     protected long createTime;
@@ -40,7 +30,7 @@ public class TabInfo {
     protected int pageIndex = 0;
 
 //    @Column
-    protected int currentTabId = Tab.INVALID_PAGE_ID;
+    protected int currentPageId = Tab.INVALID_PAGE_ID;
 
 //    @Column
     protected int position = 0;
@@ -54,8 +44,10 @@ public class TabInfo {
 //    @Column
     protected long accessTime;
 
-    public void setTabInfoId(long tabInfoId) {
-        this.tabInfoId = tabInfoId;
+    protected int parentId;
+
+    public void setTabId(int tabId) {
+        this.tabId = tabId;
     }
 
     public void setCreateTime(long createTime) {
@@ -71,15 +63,15 @@ public class TabInfo {
     }
 
     public int getCurrentTabId() {
-        return currentTabId;
+        return currentPageId;
     }
 
     public TabInfo cloneTabInfo() {
         TabInfo newTabInfo = TabInfo.create();
-        newTabInfo.tabInfoId = tabInfoId;
+//        newTabInfo.tabId = tabId;
         newTabInfo.createTime = createTime;
         newTabInfo.pageIndex = pageIndex;
-        newTabInfo.currentTabId = currentTabId;
+        newTabInfo.currentPageId = currentPageId;
         newTabInfo.position = position;
         newTabInfo.isLocked = isLocked;
         newTabInfo.incognito = incognito;
@@ -110,12 +102,12 @@ public class TabInfo {
 //        save();
     }
 
-    public void setCurrentTabId(int currentTabId) {
-        this.currentTabId = currentTabId;
+    public void setCurrentTabId(int currentPageId) {
+        this.currentPageId = currentPageId;
     }
 
-    public long getTabInfoId() {
-        return tabInfoId;
+    public int getTabId() {
+        return tabId;
     }
 
     public void setPosition(int position) {
@@ -142,7 +134,15 @@ public class TabInfo {
         this.accessTime = accessTime;
     }
 
-//    public List<PageInfo> getPageInfoList() {
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    //    public List<PageInfo> getPageInfoList() {
 //        return mPageInfoList;
 //    }
 
@@ -153,21 +153,21 @@ public class TabInfo {
     public static TabInfo create(long createTime) {
         TabInfo manager = new TabInfo();
         manager.createTime = createTime;
-        manager.tabInfoId = manager.createTime;
+        manager.tabId = ArkIdManager.generateTabId();
         return manager;
     }
 
-    public static TabInfo from(TabInfo tabInfo) {
-        TabInfo newTabInfo = TabInfo.create();
-        newTabInfo.setTabInfoId(tabInfo.getTabInfoId());
-        newTabInfo.setCreateTime(tabInfo.getCreateTime());
-        newTabInfo.setPageIndex(tabInfo.getPageIndex());
-        newTabInfo.setCurrentTabId(tabInfo.getCurrentTabId());
-        newTabInfo.setPosition(tabInfo.getPosition());
-        newTabInfo.setLocked(tabInfo.isLocked());
-        newTabInfo.setIncognito(tabInfo.isIncognito());
-        return newTabInfo;
-    }
+//    public static TabInfo from(TabInfo tabInfo) {
+//        TabInfo newTabInfo = TabInfo.create();
+//        newTabInfo.setTabId(tabInfo.getTabId());
+//        newTabInfo.setCreateTime(tabInfo.getCreateTime());
+//        newTabInfo.setPageIndex(tabInfo.getPageIndex());
+//        newTabInfo.setCurrentTabId(tabInfo.getCurrentTabId());
+//        newTabInfo.setPosition(tabInfo.getPosition());
+//        newTabInfo.setLocked(tabInfo.isLocked());
+//        newTabInfo.setIncognito(tabInfo.isIncognito());
+//        return newTabInfo;
+//    }
 
     public static TabInfo from(File tabFile, List<Integer> pageIds) throws IOException {
         try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
@@ -179,9 +179,9 @@ public class TabInfo {
     }
 
     public static TabInfo from(DataInputStream is, List<Integer> pageIds) throws IOException {
-        TabInfo newTabInfo = TabInfo.create();
+        TabInfo newTabInfo = new TabInfo();
         int version = is.readInt();
-        newTabInfo.setTabInfoId(is.readLong());
+        newTabInfo.setTabId(is.readInt());
         newTabInfo.setCreateTime(is.readLong());
         newTabInfo.setIncognito(is.readBoolean());
         newTabInfo.setLocked(is.readBoolean());
@@ -209,7 +209,7 @@ public class TabInfo {
 //                    new BufferedOutputStream(new FileOutputStream(tabFile)))) {
 //                int version = 1;
 //                os.writeInt(version);
-//                os.writeLong(tabInfoId);
+//                os.writeInt(tabInfoId);
 //                os.writeLong(createTime);
 //                os.writeBoolean(incognito);
 //                os.writeBoolean(isLocked);
@@ -237,10 +237,10 @@ public class TabInfo {
     @Override
     public String toString() {
         return "TabInfo{" +
-                ", tabInfoId='" + tabInfoId + '\'' +
+                ", tabId=" + tabId +
                 ", createTime=" + createTime +
                 ", pageIndex=" + pageIndex +
-                ", currentTabId=" + currentTabId +
+                ", currentPageId=" + currentPageId +
                 ", position=" + position +
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
@@ -254,7 +254,7 @@ public class TabInfo {
 //            DataOutputStream os = new DataOutputStream(stream);
 //            int version = 1;
 //            os.writeInt(version);
-//            os.writeLong(getTabInfoId());
+//            os.writeInt(getTabInfoId());
 //            os.writeLong(getCreateTime());
 //            os.writeBoolean(isIncognito());
 //            os.writeBoolean(isLocked());

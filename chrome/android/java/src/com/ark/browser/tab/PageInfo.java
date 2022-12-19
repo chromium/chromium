@@ -5,13 +5,11 @@ import android.text.TextUtils;
 import androidx.annotation.Keep;
 import androidx.core.util.AtomicFile;
 
+import com.ark.browser.core.utils.ArkIdManager;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
-import org.chromium.chrome.browser.tab.Tab;
-
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,11 +24,8 @@ public class PageInfo {
 //    @PrimaryKey()
     public int pageId;
 
-//    @Column(defaultValue = "-1")
-    public int parentId;
-
 //    @Column
-    public long tabInfoId;
+    public int tabId;
 //    @Column
     public int originalIndex;
 //    @Column
@@ -51,80 +46,22 @@ public class PageInfo {
 
     }
 
-//    @Override
-//    public void save() {
-//        ThreadPool.executeIO(() -> {
-//            File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
-//            File file = new File(pagesDir, String.valueOf(pageId));
-//            try (DataOutputStream os = new DataOutputStream(
-//                    new BufferedOutputStream(new FileOutputStream(file)))) {
-//                int version = 1;
-//                os.writeInt(version);
-//                os.writeInt(pageId);
-//                os.writeLong(tabInfoId);
-//                os.writeBoolean(isIncognito);
-//                os.writeBoolean(fromMerge);
-//                os.writeInt(themeColor);
-//                os.writeInt(originalIndex);
-//                os.writeUTF(url);
-//                os.writeUTF(title);
-//                os.flush();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void deleteSync() {
-//        File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
-//        File file = new File(pagesDir, String.valueOf(pageId));
-//        file.delete();
-//    }
-
-    public static PageInfo from(int pageId, int parentId, long tabInfoId, int index, boolean isIncognito) {
+    public static PageInfo from(int tabId, int index, boolean isIncognito) {
         PageInfo info = new PageInfo();
-        info.pageId = pageId;
-        info.parentId = parentId;
+        info.pageId = ArkIdManager.generatePageId();
         info.originalIndex = index;
-        info.tabInfoId = tabInfoId;
+        info.tabId = tabId;
         info.isIncognito = isIncognito;
         info.fromMerge = false;
         info.save();
         return info;
     }
 
-//    public static PageInfo from(Tab tab, String tabInfoId, int index) {
-//        PageInfo info = new PageInfo();
-//        info.pageId = tab.getId();
-//        info.originalIndex = index;
-//        info.tabInfoId = tabInfoId;
-//        info.isIncognito = tab.isIncognito();
-//        info.fromMerge = false;
-//        info.themeColor = tab.getThemeColor();
-//        info.url = tab.getUrl();
-//        info.title = tab.getTitle();
-//        return info;
-//    }
-
-//    public static PageInfo from(String tabInfoId, PageInfo pageInfo) {
-//        PageInfo info = new PageInfo();
-//        info.pageId = pageInfo.pageId;
-//        info.originalIndex = pageInfo.originalIndex;
-//        info.tabInfoId = tabInfoId;
-//        info.isIncognito = pageInfo.isIncognito;
-//        info.fromMerge = pageInfo.fromMerge;
-//        info.themeColor = pageInfo.themeColor;
-//        info.url = pageInfo.url;
-//        info.title = pageInfo.title;
-//        return info;
-//    }
-
     public static PageInfo from(PageInfo pageInfo) {
         PageInfo info = new PageInfo();
         info.pageId = pageInfo.pageId;
         info.originalIndex = pageInfo.originalIndex;
-        info.tabInfoId = pageInfo.tabInfoId;
+        info.tabId = pageInfo.tabId;
         info.isIncognito = pageInfo.isIncognito;
         info.fromMerge = pageInfo.fromMerge;
         info.themeColor = pageInfo.themeColor;
@@ -153,7 +90,7 @@ public class PageInfo {
         PageInfo info = new PageInfo();
         int version = is.readInt();
         info.pageId = is.readInt();
-        info.tabInfoId = is.readLong();
+        info.tabId = is.readInt();
         info.isIncognito = is.readBoolean();
         info.fromMerge = is.readBoolean();
         info.themeColor = is.readInt();
@@ -163,28 +100,20 @@ public class PageInfo {
         return info;
     }
 
-    public int getPageId() {
+    public int getId() {
         return pageId;
     }
 
-    public void setPageId(int pageId) {
+    public void setId(int pageId) {
         this.pageId = pageId;
     }
 
-    public int getParentId() {
-        return parentId;
+    public int getTabId() {
+        return tabId;
     }
 
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
-    }
-
-    public long getTabInfoId() {
-        return tabInfoId;
-    }
-
-    public void setTabInfoId(long tabInfoId) {
-        this.tabInfoId = tabInfoId;
+    public void setTabId(int tabId) {
+        this.tabId = tabId;
     }
 
     public int getOriginalIndex() {
@@ -247,8 +176,7 @@ public class PageInfo {
     public String toString() {
         return "PageInfo{" +
                 "pageId=" + pageId +
-                ", parentId=" + parentId +
-                ", tabInfoId='" + tabInfoId + '\'' +
+                ", tabInfoId='" + tabId + '\'' +
                 ", originalIndex=" + originalIndex +
                 ", isIncognito=" + isIncognito +
                 ", fromMerge=" + fromMerge +
@@ -267,7 +195,7 @@ public class PageInfo {
             int version = 1;
             os.writeInt(version);
             os.writeInt(pageId);
-            os.writeLong(tabInfoId);
+            os.writeInt(tabId);
             os.writeBoolean(isIncognito);
             os.writeBoolean(fromMerge);
             os.writeInt(themeColor);
@@ -281,7 +209,7 @@ public class PageInfo {
             ThreadPool.executeIO(new Runnable() {
                 @Override
                 public void run() {
-                    File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
+                    File pagesDir = ArkTabDao.getPagesDir(tabId);
                     AtomicFile file = new AtomicFile(new File(pagesDir, String.valueOf(pageId)));
                     FileOutputStream fos = null;
                     try {
@@ -310,7 +238,7 @@ public class PageInfo {
 //                int version = 1;
 //                os.writeInt(version);
 //                os.writeInt(pageInfo.pageId);
-//                os.writeLong(pageInfo.tabInfoId);
+//                os.writeInt(pageInfo.tabInfoId);
 //                os.writeBoolean(pageInfo.isIncognito);
 //                os.writeBoolean(pageInfo.fromMerge);
 //                os.writeInt(pageInfo.getThemeColor());

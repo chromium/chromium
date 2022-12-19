@@ -14,6 +14,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ArkTabWebContentsDelegateAndroid.java",
   "java/src/com/ark/browser/ArkWindowAndroid.java",
 
+  "java/src/com/ark/browser/core/ArkWebContents.java",
   "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",
   "java/src/com/ark/browser/core/ChromeInterfaceRegistrar.java",
   "java/src/com/ark/browser/core/CookieControlsServiceBridge.java",
@@ -23,6 +24,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/core/bookmark/BookmarkModel.java",
   "java/src/com/ark/browser/core/net/NetworkQualityObserver.java",
   "java/src/com/ark/browser/core/net/NetworkQualityProvider.java",
+  "java/src/com/ark/browser/core/utils/ArkIdManager.java",
   "java/src/com/ark/browser/core/utils/ChromeHttpAuthHandler.java",
   "java/src/com/ark/browser/core/utils/ContentUtils.java",
   "java/src/com/ark/browser/core/utils/DataSaverOSSetting.java",

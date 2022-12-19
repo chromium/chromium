@@ -9,10 +9,8 @@ import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,7 +41,7 @@ public interface IPage {
 //    }
 
     default void deletePageInfo() {
-        File pagesDir = ArkTabDao.getPagesDir(getPageInfo().getTabInfoId());
+        File pagesDir = ArkTabDao.getPagesDir(getPageInfo().getTabId());
         File file = new File(pagesDir, String.valueOf(getId()));
         file.delete();
     }
@@ -58,7 +56,7 @@ public interface IPage {
             int version = 1;
             os.writeInt(version);
             os.writeInt(pageInfo.pageId);
-            os.writeLong(pageInfo.tabInfoId);
+            os.writeInt(pageInfo.tabId);
             os.writeBoolean(pageInfo.isIncognito);
             os.writeBoolean(pageInfo.fromMerge);
             os.writeInt(pageInfo.getThemeColor());
@@ -72,7 +70,7 @@ public interface IPage {
             ThreadPool.executeIO(new Runnable() {
                 @Override
                 public void run() {
-                    File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabInfoId);
+                    File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabId);
                     AtomicFile file = new AtomicFile(new File(pagesDir, String.valueOf(pageInfo.pageId)));
                     FileOutputStream fos = null;
                     try {
@@ -101,7 +99,7 @@ public interface IPage {
 //                int version = 1;
 //                os.writeInt(version);
 //                os.writeInt(pageInfo.pageId);
-//                os.writeLong(pageInfo.tabInfoId);
+//                os.writeInt(pageInfo.tabInfoId);
 //                os.writeBoolean(pageInfo.isIncognito);
 //                os.writeBoolean(pageInfo.fromMerge);
 //                os.writeInt(pageInfo.getThemeColor());
