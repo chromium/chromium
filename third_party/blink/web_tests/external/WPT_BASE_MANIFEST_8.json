@@ -557184,7 +557184,7 @@
       ],
       "writing-mode": {
        "force-horizontal-tb.html": [
-        "f867cffa2284293d95d0261eb344691bd417bb98",
+        "e239cdca5ab1761de3b916d49a119da882b5403f",
         [
          null,
          {}
@@ -569390,6 +569390,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "midi-permission.html": [
+     "1d75e1c883191761b0b678500c1a647cc2136d73",
+     [
+      null,
+      {}
      ]
     ],
     "non-fully-active.https.html": [
