@@ -31,9 +31,7 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
-#include "gpu/ipc/gl_in_process_context.h"
 
 using gpu::gles2::GLES2Interface;
 
@@ -358,75 +356,6 @@ void LayerTreePixelTest::SetupTree() {
   SetInitialRootBounds(content_root_->bounds());
   LayerTreeTest::SetupTree();
   layer_tree_host()->root_layer()->AddChild(content_root_);
-}
-
-SkBitmap LayerTreePixelTest::CopyMailboxToBitmap(
-    const gfx::Size& size,
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    const gfx::ColorSpace& color_space) {
-  SkBitmap bitmap;
-  std::unique_ptr<gpu::GLInProcessContext> context =
-      viz::CreateTestInProcessContext();
-  GLES2Interface* gl = context->GetImplementation();
-
-  if (sync_token.HasData())
-    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-
-  GLuint texture_id =
-      gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-
-  GLuint fbo = 0;
-  gl->GenFramebuffers(1, &fbo);
-  gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
-  gl->FramebufferTexture2D(
-      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
-  EXPECT_EQ(static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE),
-            gl->CheckFramebufferStatus(GL_FRAMEBUFFER));
-
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size.GetArea() * 4]);
-  gl->ReadPixels(0,
-                 0,
-                 size.width(),
-                 size.height(),
-                 GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 pixels.get());
-
-  gl->DeleteFramebuffers(1, &fbo);
-  gl->EndSharedImageAccessDirectCHROMIUM(texture_id);
-  gl->DeleteTextures(1, &texture_id);
-
-  EXPECT_TRUE(color_space.IsValid());
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(size.width(), size.height(),
-                                                color_space.ToSkColorSpace()));
-
-  uint8_t* out_pixels = static_cast<uint8_t*>(bitmap.getPixels());
-
-  size_t row_bytes = size.width() * 4;
-  size_t total_bytes = size.height() * row_bytes;
-  for (size_t dest_y = 0; dest_y < total_bytes; dest_y += row_bytes) {
-    // Flip Y axis.
-    size_t src_y = total_bytes - dest_y - row_bytes;
-    // Swizzle OpenGL -> Skia byte order.
-    for (size_t x = 0; x < row_bytes; x += 4) {
-      out_pixels[dest_y + x + SK_R32_SHIFT/8] = pixels.get()[src_y + x + 0];
-      out_pixels[dest_y + x + SK_G32_SHIFT/8] = pixels.get()[src_y + x + 1];
-      out_pixels[dest_y + x + SK_B32_SHIFT/8] = pixels.get()[src_y + x + 2];
-      out_pixels[dest_y + x + SK_A32_SHIFT/8] = pixels.get()[src_y + x + 3];
-    }
-  }
-
-  return bitmap;
-}
-
-void LayerTreePixelTest::Finish() {
-  std::unique_ptr<gpu::GLInProcessContext> context =
-      viz::CreateTestInProcessContext();
-  GLES2Interface* gl = context->GetImplementation();
-  gl->Finish();
 }
 
 }  // namespace cc

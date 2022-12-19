@@ -134,7 +134,6 @@ class LayerTreeHostTilesTestPartialInvalidation
         // layer should only re-raster the stuff in the rect. If it doesn't do
         // partial raster it would re-raster the whole thing instead.
         client_.set_blue_top(false);
-        Finish();
         picture_layer_->SetNeedsDisplayRect(gfx::Rect(50, 50, 100, 100));
 
         // Add a copy request to see what happened!
@@ -209,7 +208,6 @@ class LayerTreeHostTilesTestRasterColorSpace
 
   void DidCommitAndDrawFrame() override {
     if (layer_tree_host()->SourceFrameNumber() == 1) {
-      Finish();
       DoReadback();
     }
   }

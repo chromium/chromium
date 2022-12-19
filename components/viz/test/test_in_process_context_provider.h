@@ -35,8 +35,6 @@ class GrContextForGLES2Interface;
 
 namespace viz {
 
-std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
-
 enum TestContextType {
   kGLES2,           // Provides GLES2Interface.
   kSoftwareRaster,  // Provides RasterInterface for software raster.

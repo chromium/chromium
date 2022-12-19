@@ -26,46 +26,6 @@
 
 namespace viz {
 
-namespace {
-
-gpu::ContextCreationAttribs GetAttributes(bool enable_gles2,
-                                          bool enable_raster,
-                                          bool enable_oopr) {
-  gpu::ContextCreationAttribs attribs;
-  attribs.alpha_size = 8;
-  attribs.blue_size = 8;
-  attribs.green_size = 8;
-  attribs.red_size = 8;
-  attribs.depth_size = 0;
-  attribs.stencil_size = 8;
-  attribs.samples = 0;
-  attribs.sample_buffers = 0;
-  attribs.bind_generates_resource = false;
-  attribs.enable_gles2_interface = enable_gles2;
-  attribs.enable_raster_interface = enable_raster;
-  attribs.enable_oop_rasterization = enable_oopr;
-  return attribs;
-}
-
-std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext() {
-  gpu::ContextCreationAttribs attribs = GetAttributes(
-      /*enable_gles2=*/true, /*enable_raster=*/false, /*enable_oopr=*/false);
-
-  auto context = std::make_unique<gpu::GLInProcessContext>();
-  auto result =
-      context->Initialize(TestGpuServiceHolder::GetInstance()->task_executor(),
-                          attribs, gpu::SharedMemoryLimits());
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-
-  return context;
-}
-
-}  // namespace
-
-std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
-  return CreateGLInProcessContext();
-}
-
 TestInProcessContextProvider::TestInProcessContextProvider(
     TestContextType type,
     bool support_locking,
@@ -98,15 +58,35 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
 
   auto* holder = TestGpuServiceHolder::GetInstance();
 
+  gpu::ContextCreationAttribs attribs;
+  attribs.alpha_size = 8;
+  attribs.blue_size = 8;
+  attribs.green_size = 8;
+  attribs.red_size = 8;
+  attribs.depth_size = 0;
+  attribs.stencil_size = 8;
+  attribs.samples = 0;
+  attribs.sample_buffers = 0;
+  attribs.bind_generates_resource = false;
+
   if (type_ == TestContextType::kGLES2) {
-    gles2_context_ = CreateGLInProcessContext();
+    attribs.enable_gles2_interface = true;
+    attribs.enable_raster_interface = false;
+    attribs.enable_oop_rasterization = false;
+
+    gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
+    auto result = gles2_context_->Initialize(
+        TestGpuServiceHolder::GetInstance()->task_executor(), attribs,
+        gpu::SharedMemoryLimits());
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = gles2_context_->GetCapabilities();
   } else {
     bool is_gpu_raster = type_ == TestContextType::kGpuRaster;
 
-    gpu::ContextCreationAttribs attribs = GetAttributes(
-        /*enable_gles2=*/false, /*enable_raster=*/true, is_gpu_raster);
+    attribs.enable_gles2_interface = false;
+    attribs.enable_raster_interface = true;
+    attribs.enable_oop_rasterization = is_gpu_raster;
 
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = raster_context_->Initialize(

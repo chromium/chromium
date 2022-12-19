@@ -27,10 +27,6 @@ class ScopedFeatureList;
 }
 }  // namespace base
 
-namespace gfx {
-class ColorSpace;
-}
-
 namespace viz {
 class CopyOutputRequest;
 class CopyOutputResult;
@@ -102,13 +98,6 @@ class LayerTreePixelTest : public LayerTreeTest {
   void RunPixelTestWithReadbackTarget(scoped_refptr<Layer> content_root,
                                       Layer* target,
                                       base::FilePath file_name);
-
-  SkBitmap CopyMailboxToBitmap(const gfx::Size& size,
-                               const gpu::Mailbox& mailbox,
-                               const gpu::SyncToken& sync_token,
-                               const gfx::ColorSpace& color_space);
-
-  void Finish();
 
   // Allow tests to enlarge the backing texture for a non-root render pass, to
   // simulate reusing a larger texture from a previous frame for a new
