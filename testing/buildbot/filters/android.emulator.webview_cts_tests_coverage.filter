@@ -1,0 +1,2 @@
+# crbug.com/1401476 Test doesn't work with code coverage.
+-android.webkit.cts.WebViewStartupTest.testStrictModeNotViolatedOnStartup

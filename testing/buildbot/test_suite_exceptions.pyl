@@ -3982,8 +3982,8 @@
     'modifications': {
       'android-nougat-x86-rel': {
         'args': [
-          # crbug.com/1343008
-          '--gtest_filter=-android.assist.cts.WebViewTest#testWebView',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests_coverage.filter',
         ],
       },
       'android-pie-arm64-rel': {
