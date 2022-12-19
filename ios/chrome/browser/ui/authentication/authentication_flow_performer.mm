@@ -103,23 +103,18 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                forIdentity:(id<SystemIdentity>)identity {
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  NSString* hostedDomain =
-      identityService->GetCachedHostedDomainForIdentity(identity);
-  if (hostedDomain) {
+  if (NSString* hostedDomain =
+          identityService->GetCachedHostedDomainForIdentity(identity)) {
     [_delegate didFetchManagedStatus:hostedDomain];
     return;
   }
 
   [self startWatchdogTimerForManagedStatus];
   __weak AuthenticationFlowPerformer* weakSelf = self;
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->GetHostedDomainForIdentity(
-          identity, ^(NSString* hosted_domain, NSError* error) {
-            [weakSelf handleGetHostedDomain:hosted_domain
-                                      error:error
-                               browserState:browserState];
-          });
+  identityService->GetHostedDomainForIdentity(
+      identity, ^(NSString* hostedDomain, NSError* error) {
+        [weakSelf handleGetHostedDomain:hostedDomain error:error];
+      });
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity
@@ -497,9 +492,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                           true);
 }
 
-- (void)handleGetHostedDomain:(NSString*)hostedDomain
-                        error:(NSError*)error
-                 browserState:(ChromeBrowserState*)browserState {
+- (void)handleGetHostedDomain:(NSString*)hostedDomain error:(NSError*)error {
   if (![self stopWatchdogTimer]) {
     // Watchdog timer has already fired, don't notify the delegate.
     return;
