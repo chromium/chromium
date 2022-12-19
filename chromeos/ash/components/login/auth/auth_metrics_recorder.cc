@@ -101,7 +101,7 @@ void AuthMetricsRecorder::OnGuestLoignSuccess() {
   base::RecordAction(base::UserMetricsAction("Login_GuestLoginSuccess"));
 }
 
-void AuthMetricsRecorder::OnUserCount(bool user_count) {
+void AuthMetricsRecorder::OnUserCount(int user_count) {
   user_count_ = user_count;
   MaybeReportFlowMetrics();
 }

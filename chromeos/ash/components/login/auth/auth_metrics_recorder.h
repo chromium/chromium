@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   void OnGuestLoignSuccess();
 
   // Set the total number of regular users on the lock screen.
-  void OnUserCount(bool user_count);
+  void OnUserCount(int user_count);
 
   // Set the policy setting whether to show users on sign in or not.
   void OnShowUsersOnSignin(bool show_users_on_signin);

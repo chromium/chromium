@@ -153,6 +153,7 @@ source_set("unit_tests") {
     "//third_party/icu",
   ]
   sources = [
+    "auth_metrics_recorder_unittest.cc",
     "auth_performer_unittest.cc",
     "auth_session_authenticator_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",
