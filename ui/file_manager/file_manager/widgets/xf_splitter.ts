@@ -161,6 +161,9 @@ export class XfSplitter extends XfBase {
 function getCSS() {
   return css`
     :host {
+      --xf-splitter-cursor: col-resize;
+      --xf-splitter-hover-color: var(--cros-sys-hover_on_subtle);
+      --xf-splitter-tracker-offset: 0px;
       display: flex;
       flex: none;
       justify-content: center;
@@ -170,12 +173,11 @@ function getCSS() {
     }
 
     #splitter:hover #tracker {
-      background-color: var(--xf-splitter-hover-color,
-                            var(--cros-sys-hover_on_subtle));
+      background-color: var(--xf-splitter-hover-color);
     }
 
     #splitter {
-      cursor: var(--xf-splitter-cursor, col-resize);
+      cursor: var(--xf-splitter-cursor);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -187,7 +189,7 @@ function getCSS() {
       border: none;
       border-radius: 8px;
       height: 64px;
-      left: var(--xf-splitter-tracker-offset, 0px);
+      left: var(--xf-splitter-tracker-offset);
       min-width: 16px;
       padding: 0;
       position: relative;
@@ -195,12 +197,11 @@ function getCSS() {
     }
 
     :host-context(html[dir=rtl]) #tracker {
-      right: var(--xf-splitter-tracker-offset, 0px);
+      right: var(--xf-splitter-tracker-offset);
     }
 
     #tracker:hover {
-      background-color: var(--xf-splitter-hover-color,
-                            var(--cros-sys-hover_on_subtle));
+      background-color: var(--xf-splitter-hover-color);
       cursor: var(--xf-splitter-cursor, col-resize);
     }
   `;
