@@ -40,6 +40,12 @@ GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
   return GURL(app_proto_.web_extras().manifest_url());
 }
 
+GURL PreloadAppDefinition::GetWebAppOriginalManifestUrl() const {
+  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+
+  return GURL(app_proto_.web_extras().original_manifest_url());
+}
+
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << std::boolalpha;
   os << "- Name: " << app.GetName() << std::endl;
@@ -49,6 +55,9 @@ std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   if (app.GetPlatform() == AppType::kWeb) {
     os << "- Web Extras:" << std::endl;
     os << "  - Manifest ID: " << app.GetWebAppManifestId() << std::endl;
+    os << "  - Manifest URL: " << app.GetWebAppManifestUrl() << std::endl;
+    os << "  - Original Manifest URL: " << app.GetWebAppOriginalManifestUrl()
+       << std::endl;
   }
 
   os << std::noboolalpha;

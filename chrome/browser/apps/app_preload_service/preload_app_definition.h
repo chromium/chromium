@@ -43,6 +43,11 @@ class PreloadAppDefinition {
   // `GetPlatform()` returns `AppType::kWeb`.
   GURL GetWebAppManifestUrl() const;
 
+  // Returns the original Web App manifest URL for the app. This is the URL
+  // where the manifest was originally hosted. Does not attempt to validate the
+  // GURL. Must only be called if `GetPlatform()` returns `AppType::kWeb`.
+  GURL GetWebAppOriginalManifestUrl() const;
+
  private:
   proto::AppProvisioningListAppsResponse_App app_proto_;
 };

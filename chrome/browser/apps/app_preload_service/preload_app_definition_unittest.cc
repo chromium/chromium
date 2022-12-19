@@ -22,9 +22,6 @@ proto::AppProvisioningListAppsResponse_App CreateTestWebApp() {
   proto::AppProvisioningListAppsResponse_App app;
   app.set_name("Test app");
   app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_manifest_id("https://www.example.com/home");
-  web_extras->set_manifest_url("https://www.example.com/home/manifest.json");
   return app;
 }
 }  // namespace
@@ -105,8 +102,7 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
 }
 
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdNotSpecified) {
-  proto::AppProvisioningListAppsResponse_App app;
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
 
   PreloadAppDefinition app_def(app);
 
@@ -151,12 +147,41 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlInvalidUrl) {
 }
 
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlNotSpecified) {
-  proto::AppProvisioningListAppsResponse_App app;
-  app.set_platform(proto::AppProvisioningListAppsResponse::PLATFORM_WEB);
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
 
   PreloadAppDefinition app_def(app);
 
   ASSERT_TRUE(app_def.GetWebAppManifestUrl().is_empty());
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppOriginalManifestUrl) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_original_manifest_url(
+      "https://www.example.com/app/manifest.json");
+
+  PreloadAppDefinition app_def(app);
+
+  GURL manifest_url = app_def.GetWebAppOriginalManifestUrl();
+
+  ASSERT_TRUE(manifest_url.is_valid());
+  ASSERT_EQ(manifest_url.spec(), "https://www.example.com/app/manifest.json");
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppOriginalManifestUrlInvalidUrl) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_original_manifest_url("invalid url");
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_FALSE(app_def.GetWebAppOriginalManifestUrl().is_valid());
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppOriginalManifestUrlNotSpecified) {
+  proto::AppProvisioningListAppsResponse_App app = CreateTestWebApp();
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_TRUE(app_def.GetWebAppOriginalManifestUrl().is_empty());
 }
 
 }  // namespace apps
