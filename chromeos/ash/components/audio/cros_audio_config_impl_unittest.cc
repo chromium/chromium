@@ -20,18 +20,18 @@
 
 namespace ash::audio_config {
 
-const uint8_t kTestOutputVolumePercent = 80u;
-const uint8_t kTestUnderMuteThreshholdVolumePercent = 0u;
-const uint8_t kTestOverMaxOutputVolumePercent = 105u;
-const int8_t kTestUnderMinOutputVolumePercent = -5;
+constexpr uint8_t kTestOutputVolumePercent = 80u;
+constexpr uint8_t kTestUnderMuteThreshholdVolumePercent = 0u;
+constexpr uint8_t kTestOverMaxOutputVolumePercent = 105u;
+constexpr int8_t kTestUnderMinOutputVolumePercent = -5;
 
-const int8_t kDefaultOutputVolumePercent =
+constexpr int8_t kDefaultOutputVolumePercent =
     AudioDevicesPrefHandler::kDefaultOutputVolumePercent;
 
-const uint64_t kInternalSpeakerId = 10001;
-const uint64_t kMicJackId = 10010;
-const uint64_t kHDMIOutputId = 10020;
-const uint64_t kUsbMicId = 10030;
+constexpr uint64_t kInternalSpeakerId = 10001;
+constexpr uint64_t kMicJackId = 10010;
+constexpr uint64_t kHDMIOutputId = 10020;
+constexpr uint64_t kUsbMicId = 10030;
 
 struct AudioNodeInfo {
   bool is_input;
@@ -42,22 +42,22 @@ struct AudioNodeInfo {
   const uint32_t audio_effect;
 };
 
-const uint32_t kInputMaxSupportedChannels = 1;
-const uint32_t kOutputMaxSupportedChannels = 2;
+constexpr uint32_t kInputMaxSupportedChannels = 1;
+constexpr uint32_t kOutputMaxSupportedChannels = 2;
 
-const int32_t kInputNumberOfVolumeSteps = 0;
-const int32_t kOutputNumberOfVolumeSteps = 25;
+constexpr int32_t kInputNumberOfVolumeSteps = 0;
+constexpr int32_t kOutputNumberOfVolumeSteps = 25;
 
-const AudioNodeInfo kInternalSpeaker[] = {
+constexpr AudioNodeInfo kInternalSpeaker[] = {
     {false, kInternalSpeakerId, "Fake Speaker", "INTERNAL_SPEAKER", "Speaker"}};
 
-const AudioNodeInfo kMicJack[] = {
+constexpr AudioNodeInfo kMicJack[] = {
     {true, kMicJackId, "Fake Mic Jack", "MIC", "Mic Jack"}};
 
-const AudioNodeInfo kHDMIOutput[] = {
+constexpr AudioNodeInfo kHDMIOutput[] = {
     {false, kHDMIOutputId, "HDMI output", "HDMI", "HDMI output"}};
 
-const AudioNodeInfo kUsbMic[] = {
+constexpr AudioNodeInfo kUsbMic[] = {
     {true, kUsbMicId, "Fake USB Mic", "USB", "USB Mic"}};
 
 class FakeAudioSystemPropertiesObserver
