@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -97,9 +98,16 @@ void AnnotationAgentImpl::Remove() {
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
-    // TODO(bokan): Base marker type on `type_`.
-    document->Markers().RemoveMarkersInRange(
-        dom_range, DocumentMarker::MarkerTypes::TextFragment());
+    if (LocalFrame* frame = document->GetFrame()) {
+      // Markers require that layout is up to date if we're making any
+      // modifications.
+      frame->GetDocument()->UpdateStyleAndLayout(
+          DocumentUpdateReason::kFindInPage);
+
+      // TODO(bokan): Base marker type on `type_`.
+      document->Markers().RemoveMarkersInRange(
+          dom_range, DocumentMarker::MarkerTypes::TextFragment());
+    }
 
     attached_range_.Clear();
   }
