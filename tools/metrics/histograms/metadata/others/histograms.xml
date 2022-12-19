@@ -7016,16 +7016,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HostedAppFrame.WrenchMenu.MenuAction" enum="WrenchMenuAction"
-    expires_after="M90">
-  <owner>calamity@chromium.org</owner>
-  <owner>alancutter@chromium.org</owner>
-  <summary>
-    Number of times that each menu item is clicked from the hosted app window
-    menu button.
-  </summary>
-</histogram>
-
 <histogram name="Hwsec.Attestation.PrepareDuration" units="ms"
     expires_after="2023-04-23">
   <owner>chingkang@chromium.org</owner>

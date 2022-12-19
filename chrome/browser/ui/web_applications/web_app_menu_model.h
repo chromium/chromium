@@ -31,7 +31,6 @@ class WebAppMenuModel : public AppMenuModel {
  protected:
   // AppMenuModel:
   void Build() override;
-  void LogMenuAction(AppMenuAction action_id) override;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)

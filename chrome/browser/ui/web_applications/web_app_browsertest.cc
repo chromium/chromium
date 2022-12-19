@@ -976,8 +976,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_UninstallMenuOption) {
   base::HistogramTester tester;
   app_menu_model->ExecuteCommand(WebAppMenuModel::kUninstallAppCommandId,
                                  /*event_flags=*/0);
-  tester.ExpectUniqueSample("HostedAppFrame.WrenchMenu.MenuAction",
-                            MENU_ACTION_UNINSTALL_APP, 1);
   tester.ExpectUniqueSample("WrenchMenu.MenuAction", MENU_ACTION_UNINSTALL_APP,
                             1);
 #endif  // BUILDFLAG(IS_CHROMEOS)
