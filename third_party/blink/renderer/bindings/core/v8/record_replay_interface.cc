@@ -261,7 +261,7 @@ const CommandCallbacks = {
   "DOM.getEventListeners": DOM_getEventListeners,
   "DOM.querySelector": DOM_querySelector,
   "CSS.getComputedStyle": CSS_getComputedStyle,
-  "CSS.getAppliedRules": CSS_getAppliedRules,
+  // "CSS.getAppliedRules": CSS_getAppliedRules,
 };
 
 
@@ -428,11 +428,6 @@ function buildRrpObjectResult({ result, exceptionDetails }) {
 
 
 function Pause_evaluateInFrame({ frameId, expression }) {
-  const result = window.DevOnly?.tryEvalDev(expression, frameId);
-  if (result) {
-    return result;
-  }
-
   const frames = getStackFrames();
   const index = +frameId;
   assert(index < frames.length);
@@ -458,10 +453,6 @@ function Pause_evaluateInFrame({ frameId, expression }) {
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  const result = window.DevOnly?.tryEvalDev(expression, frameId);
-  if (result) {
-    return result;
-  }
   const rv = sendMessage("Runtime.evaluate", { expression });
   return buildRrpObjectResult(rv);
 }
@@ -1086,7 +1077,7 @@ function previewBlinkNode(node) {
       attributes.push({ name, value });
     }
     // TODO: We cannot access pseudo elements using the JS DOM API.
-    // Issue: https://linear.app/replay/issue/RUN-953/dom-feature-add-pseudo-elements
+    //   Issue: https://linear.app/replay/issue/RUN-953/dom-feature-add-pseudo-elements
     // pseudoType = node.localName;
   }
 
@@ -1100,7 +1091,8 @@ function previewBlinkNode(node) {
   let parentNode;
   if (node.parentNode) {
     parentNode = registerPlainObject(node.parentNode);
-  } else if (node.defaultView && node.defaultView.parent != node.defaultView) {
+  } else if (node.defaultView && node.defaultView.parent != node.defaultView && node.defaultView.parent.document) {
+    // TODO: properly handle `iframe`s and the case where `node.defaultView.parent.document` is missing
     /**
      * Nested documents use the parent element instead of null.
      * 
@@ -1706,6 +1698,15 @@ class CssRule {
   style;
 }
 
+/**
+ * 
+ * @see https://static.replay.io/protocol/tot/CSS/#type-Rule
+ */
+function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
+  
+  return ruleRrpId;
+}
+
 
 /**
  * NOTE1: RRP's `CSS.Rule` is entirely based on how gecko does things.
@@ -1713,19 +1714,27 @@ class CssRule {
  *    But in chromium, we have to query and convert the data in multiple steps.
  * 
  * 
+ * @see https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getMatchedStylesForNode
+ * 
  * @see https://linear.app/replay/issue/RUN-981/enhance-pausegetobjectpreview-css-previews
  * @see https://github.com/replayio/gecko-dev/blob/628cc55f22785f3a66a8c767cdc86f31feb9a050/layout/inspector/InspectorUtils.cpp#L155
  */
 function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
+  const appliedRules = [];
 
-  // TODO: fix this!
+  for (const cdpRule of cdpRules) {
+    // TODO: add pseudoElement support
+    //   Issue: https://linear.app/replay/issue/RUN-953
+    const pseudoElement = undefined;
+    const ruleRrpId = registerCdpAsRrpCssRule(nodeObj, cdpRule);
+    const appliedRule = {
+      rule: ruleRrpId,
+      pseudoElement
+    };
+    appliedRules.push(appliedRule);
+  }
 
-  // TODO: create + register rule objects
-
-  // TODO: allow previewing rule + style objects etc.
-
-  const rules = cdpMatchedStyles;
-  return rules;
+  return { rules: appliedRules, data: {} };
 }
 
 function CSS_getAppliedRules({ node: nodeRrpId }) {
@@ -1736,7 +1745,7 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
   if (!rules && nodeObj instanceof Element) {
     const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
 
-    // NOTE: CSS domain commands are not accessible, so we have to take extra steps
+    // NOTE: CSS domain commands are not accessible, so we have to get the data indirectly
     // const cdpMatchedStyles = sendMessage('CSS.getMatchedStylesForNode', { nodeId });
     const cdpMatchedStyles = fromJsGetMatchedStylesForNode(nodeId);
 
@@ -1745,53 +1754,6 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
 
   return { rules, data };
 }
-
-
-
-
-
-
-
-
-window.DevOnly = {
-  // TODO: need a safe & configurable way of dealing with this
-  tryEvalDev(expression, frameId = 0) {
-    // log(`[CHROMDEBUG] eval - expression: "${expression}"`);
-
-    // NOTE: expression sometimes gets wrapped in parentheses, and its value must be a string
-    const prefixes = ['("dev:', '"dev:'];
-    const prefix = prefixes.find(p => expression.startsWith(p));
-    if (prefix) {
-      // hackfix: evaluate straight-up in our dev context
-      // TODO: unsafe. Must be behind DEV-ONLY flag.
-
-      let cmd = expression;
-      if (cmd.startsWith('(')) {
-        // strip '()'
-        cmd = cmd.substring(1, expression.length - 1);
-      }
-      if (cmd.endsWith(';')) {
-        // strip trailing ';'
-        cmd = cmd.substring(0, expression.length - 1);
-      }
-
-      // parse JSON (used for serialization)
-      cmd = JSON_parse(cmd);
-
-      // strip "dev:" and wrap in ()
-      cmd = `(${cmd.substring(4)})`;
-
-      // run
-      const res = eval(cmd);
-      const resJson = JSON_stringify(res);
-
-      const t = res !== undefined ? ` (type: ${typeof res})` : '';
-      // log(`[CHROMDEBUG] eval (dev) - cmd: "${cmd}", res:${t} "${resJson}"`);
-
-      return { result: { data: {}, returned: { value: resJson } } };
-    }
-  }
-};
 
 
 
@@ -2755,7 +2717,10 @@ v8::MaybeLocal<v8::Value> convertCborToJSTempl(v8::Isolate* isolate,
               .ToLocalChecked();
       // see https://stackoverflow.com/a/23688325
       auto context = isolate->GetCurrentContext();
-      return v8::JSON::Parse(context, jsonStr);
+      auto jsonObj = v8::JSON::Parse(context, jsonStr);
+      if (!jsonObj.IsEmpty()) {
+        return jsonObj.ToLocalChecked();
+      }
     } else {
       recordreplay::Print("[RuntimeError] Failed to deserialize: %s",
                           errorMessage.c_str());
@@ -2800,6 +2765,26 @@ v8::MaybeLocal<v8::Value> convertCborToJS(
 }
 
 template <typename T>
+v8::Local<v8::Array> convertCborToJS(v8::Isolate* isolate,
+                                     std::vector<std::unique_ptr<T>>* arr) {
+  v8::Local<v8::Array> result = v8::Array::New(isolate);
+  auto context = isolate->GetCurrentContext();
+  for (uint32_t i = 0; i < arr->size(); ++i) {
+    auto* entry = (crdtp::Serializable*)(*arr)[i].get();
+    auto item =
+        convertCborToJSTempl<crdtp::Serializable, ConvertCborToJsonDefault>(
+            isolate, entry);
+    if (!item.IsEmpty()) {
+      result->Set(context, i, item.ToLocalChecked()).Check();
+    }
+    else {
+      result->Set(context, i, Null(isolate)).Check();
+    }
+  }
+  return result;
+}
+
+template <typename T>
 v8::MaybeLocal<v8::Value> convertCborToJSMaybe(v8::Isolate* isolate,
                                                crdtp::Maybe<T> value) {
   static_assert(
@@ -2814,6 +2799,7 @@ v8::MaybeLocal<v8::Value> convertCborToJSMaybe(v8::Isolate* isolate,
   v8::MaybeLocal<v8::Value> defaultVal;
   return defaultVal;
 }
+
 
 /** ###########################################################################
  * More Debugger interfaces (Inspectors)
@@ -3397,6 +3383,8 @@ static void fromJsGetBoxModel(
         nodeId, response.Code(), response.Message().c_str());
   } else {
     auto result = convertCborToJS(isolate, boxModel.get());
+    P("DDBG boxModel getContent()->size=%d not-empty=%d",
+      boxModel.get()->getContent()->size(), !result.IsEmpty());
     if (!result.IsEmpty()) {
       args.GetReturnValue().Set(result.ToLocalChecked());
       return;
@@ -3419,41 +3407,56 @@ static void fromJsGetMatchedStylesForNode(
 
   Maybe<protocol::CSS::CSSStyle> inlineStyle;
   Maybe<protocol::CSS::CSSStyle> attributesStyle;
-  Maybe<protocol::Array<protocol::CSS::RuleMatch>> matchedCssRules;
+  Maybe<protocol::Array<protocol::CSS::RuleMatch>> matchedRules;
   Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>> pseudoIdMatches;
   Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>> inheritedEntries;
-  Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>> cssKeyframesRules;
+  Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>> keyframesRules;
 
   auto response = cssAgent->getMatchedStylesForNode(
-      nodeId, &inlineStyle, &attributesStyle, &matchedCssRules,
-      &pseudoIdMatches, &inheritedEntries, &cssKeyframesRules);
+      nodeId, &inlineStyle, &attributesStyle, &matchedRules,
+      &pseudoIdMatches, &inheritedEntries, &keyframesRules);
 
   // WIP: will fix everything up and clean up when done w/ RUN-981
-
-  // TODO: only care about these two for now:
-  //    matchedCssRules
-  //    inheritedEntries
 
   if (!response.IsSuccess()) {
     recordreplay::Print(
         "[RuntimeError] CSS.getMatchedStylesForNode failed (nodeId: %d, Code: "
         "%d): %s",
         nodeId, response.Code(), response.Message().c_str());
+    args.GetReturnValue().SetNull();
   } else {
-    if (matchedCssRules.isJust()) {
-      protocol::CSS::RuleMatch* firstRule =
-          matchedCssRules.fromJust()->at(0).get();
-      blink::protocol::String defaultCssText("(no css text)");
-      auto firstRuleCssText =
-          firstRule->getRule()->getStyle()->getCssText(defaultCssText);
-      auto result = convertCborToJS(isolate, firstRule);
-      if (!result.IsEmpty()) {
-        // args.GetReturnValue().Set(result.ToLocalChecked());
-        return;
+    v8::Local<v8::Object> result = v8::Object::New(isolate);
+    if (inlineStyle.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, inlineStyle.fromJust());
+      if (!rulesJs.IsEmpty()) {
+        SetDataProperty(isolate, result, "inlineStyle", rulesJs.ToLocalChecked());
       }
     }
+    if (attributesStyle.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, attributesStyle.fromJust());
+      if (!rulesJs.IsEmpty()) {
+        SetDataProperty(isolate, result, "attributesStyle",
+                        rulesJs.ToLocalChecked());
+      }
+    }
+    if (matchedRules.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, matchedRules.fromJust());
+      SetDataProperty(isolate, result, "matchedRules", rulesJs);
+    }
+    if (pseudoIdMatches.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, pseudoIdMatches.fromJust());
+      SetDataProperty(isolate, result, "pseudoIdMatches", rulesJs);
+    }
+    if (inheritedEntries.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, inheritedEntries.fromJust());
+      SetDataProperty(isolate, result, "inheritedRules", rulesJs);
+    }
+    if (keyframesRules.isJust()) {
+      auto rulesJs = convertCborToJS(isolate, keyframesRules.fromJust());
+      SetDataProperty(isolate, result, "keyframesRules", rulesJs);
+    }
+    args.GetReturnValue().Set(result);
   }
-  args.GetReturnValue().SetNull();
 }
 
 /** ###########################################################################
