@@ -3246,7 +3246,7 @@ bool AXObject::ComputeIsDescendantOfDisabledNode() const {
     return disabled;
 
   if (AXObject* parent = ParentObject()) {
-    return parent->IsDisabled() || parent->IsDescendantOfDisabledNode();
+    return parent->IsDescendantOfDisabledNode() || parent->IsDisabled();
   }
 
   return false;
@@ -4516,16 +4516,22 @@ bool AXObject::IsDisabled() const {
     auto* html_frame_owner_element = To<HTMLFrameOwnerElement>(GetElement());
     return !html_frame_owner_element->ContentFrame();
   }
-  // Check for HTML form control with the disabled attribute.
-  if (GetElement() && GetElement()->IsDisabledFormControl())
-    return true;
-  Node* node = GetNode();
-  // This is for complex pickers, such as a date picker.
-  if ((node && node->OwnerShadowHost()) && AXObject::IsControl() &&
-      node->OwnerShadowHost()->FastHasAttribute(html_names::kDisabledAttr)) {
-    return true;
-  }
 
+  Node* node = GetNode();
+  if (node) {
+    // Check for HTML form control with the disabled attribute.
+    if (GetElement() && GetElement()->IsDisabledFormControl()) {
+      return true;
+    }
+    // This is for complex pickers, such as a date picker.
+    if (AXObject::IsControl()) {
+      Element* owner_shadow_host = node->OwnerShadowHost();
+      if (owner_shadow_host &&
+          owner_shadow_host->FastHasAttribute(html_names::kDisabledAttr)) {
+        return true;
+      }
+    }
+  }
   // Check aria-disabled. According to ARIA in HTML section 3.1, aria-disabled
   // attribute does NOT override the native HTML disabled attribute.
   // https://www.w3.org/TR/html-aria/
@@ -4533,7 +4539,7 @@ bool AXObject::IsDisabled() const {
     return true;
 
   // A focusable object with a disabled container.
-  return CanSetFocusAttribute() && cached_is_descendant_of_disabled_node_;
+  return cached_is_descendant_of_disabled_node_ && CanSetFocusAttribute();
 }
 
 AXRestriction AXObject::Restriction() const {

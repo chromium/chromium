@@ -437,6 +437,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // * aria-disabled
   // * disabled form control
   // * a focusable descendant of a disabled container
+  // * a descendant of a disabled complex control such as a date picker
   bool IsDisabled() const;
   virtual AccessibilityExpanded IsExpanded() const;
   virtual bool IsFocused() const;
