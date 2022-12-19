@@ -173,7 +173,10 @@ void AppUpdate::Merge(App* state, const App* delta) {
 
   if ((delta->app_type != state->app_type) ||
       (delta->app_id != state->app_id)) {
-    NOTREACHED();
+    LOG(ERROR) << "inconsistent (app_type, app_id): ("
+               << EnumToString(delta->app_type) << ", " << delta->app_id
+               << ") vs (" << EnumToString(state->app_type) << ", "
+               << state->app_id << ") ";
     return;
   }
 
