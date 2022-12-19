@@ -82,7 +82,8 @@ QuietPermissionPromptModelAndroid GetQuietNotificationPermissionPromptModel(
   }
 
   if (reason == QuietUiReason::kTriggeredDueToAbusiveRequests ||
-      reason == QuietUiReason::kTriggeredDueToAbusiveContent) {
+      reason == QuietUiReason::kTriggeredDueToAbusiveContent ||
+      reason == QuietUiReason::kTriggeredDueToDisruptiveBehavior) {
     model.learn_more_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
   }
 
