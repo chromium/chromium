@@ -18,7 +18,7 @@ class ProductIconManifestTest : public ManifestTest {
   ProductIconManifestTest& operator=(const ProductIconManifestTest&) = delete;
 
  protected:
-  base::Value CreateManifest(const std::string& extra_icons) {
+  base::Value::Dict CreateManifest(const std::string& extra_icons) {
     constexpr const char kManifest[] = R"({
       "name": "test",
       "version": "0.1",
@@ -32,29 +32,29 @@ class ProductIconManifestTest : public ManifestTest {
     base::Value manifest = base::test::ParseJson(
         base::StringPrintf(kManifest, extra_icons.c_str()));
     EXPECT_TRUE(manifest.is_dict());
-    return manifest;
+    return std::move(manifest).TakeDict();
   }
 };
 
 TEST_F(ProductIconManifestTest, Sizes) {
   // Too big.
   {
-    ManifestData manifest(CreateManifest(R"("100000": "icon3.png",)"), "test");
+    ManifestData manifest(CreateManifest(R"("100000": "icon3.png",)"));
     LoadAndExpectError(manifest, "Invalid key in icons: \"100000\".");
   }
   // Too small.
   {
-    ManifestData manifest(CreateManifest(R"("0": "icon3.png",)"), "test");
+    ManifestData manifest(CreateManifest(R"("0": "icon3.png",)"));
     LoadAndExpectError(manifest, "Invalid key in icons: \"0\".");
   }
   // NaN.
   {
-    ManifestData manifest(CreateManifest(R"("sixteen": "icon3.png",)"), "test");
+    ManifestData manifest(CreateManifest(R"("sixteen": "icon3.png",)"));
     LoadAndExpectError(manifest, "Invalid key in icons: \"sixteen\".");
   }
   // Just right.
   {
-    ManifestData manifest(CreateManifest(R"("512": "icon3.png",)"), "test");
+    ManifestData manifest(CreateManifest(R"("512": "icon3.png",)"));
     scoped_refptr<extensions::Extension> extension =
         LoadAndExpectSuccess(manifest);
   }

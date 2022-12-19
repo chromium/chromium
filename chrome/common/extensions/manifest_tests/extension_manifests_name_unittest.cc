@@ -22,7 +22,7 @@ class NameManifestTest : public ChromeManifestTest {
     base::Value manifest_value = base::test::ParseJson(
         base::StringPrintf(kManifestStub, name, manifest_version));
     CHECK(manifest_value.is_dict());
-    return ManifestData(std::move(manifest_value), "test");
+    return ManifestData(std::move(manifest_value).TakeDict());
   }
 };
 

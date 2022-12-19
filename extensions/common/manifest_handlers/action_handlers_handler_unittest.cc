@@ -33,7 +33,7 @@ class ActionHandlersManifestTest : public ManifestTest {
                                     "manifest_version": 2,
                                     "action_handlers": )json" +
                                                  action_handlers + "}");
-    return ManifestData(std::move(manifest), "test");
+    return ManifestData(std::move(manifest).TakeDict());
   }
 
   // Returns all action handlers associated with |extension|.

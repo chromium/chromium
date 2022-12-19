@@ -53,7 +53,8 @@ TEST_F(DeclarativeManifestTest, ConditionMissingType) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "'type' is required and must be a string");
 }
 
@@ -74,7 +75,8 @@ TEST_F(DeclarativeManifestTest, ConditionNotDictionary) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "expected dictionary, got boolean");
 }
 
@@ -96,7 +98,8 @@ TEST_F(DeclarativeManifestTest, ActionMissingType) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "'type' is required and must be a string");
 }
 
@@ -118,7 +121,8 @@ TEST_F(DeclarativeManifestTest, ActionNotDictionary) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "expected dictionary, got list");
 }
 
@@ -131,7 +135,8 @@ TEST_F(DeclarativeManifestTest, EventRulesNotList) {
       "  \"manifest_version\": 2,"
       "  \"event_rules\": {}"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "'event_rules' expected list, got dictionary");
 }
 
@@ -144,7 +149,8 @@ TEST_F(DeclarativeManifestTest, EventRuleNotDictionary) {
       "  \"manifest_version\": 2,"
       "  \"event_rules\": [0,1,2]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "expected dictionary, got integer");
 }
 
@@ -167,7 +173,8 @@ TEST_F(DeclarativeManifestTest, EventMissingFromRule) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "'event' is required");
 }
 
@@ -184,7 +191,8 @@ TEST_F(DeclarativeManifestTest, RuleFailedToPopulate) {
       "    }"
       "  ]"
       "}");
-  ManifestData manifest(std::move(manifest_data), "test");
+  ASSERT_TRUE(manifest_data.is_dict());
+  ManifestData manifest(std::move(manifest_data).TakeDict());
   LoadAndExpectError(manifest, "rule failed to populate");
 }
 

@@ -16,6 +16,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -39,23 +40,20 @@ class ManifestTest : public testing::Test {
   class ManifestData {
    public:
     explicit ManifestData(base::StringPiece name);
-    // This is deprecated. Use the constructor that accepts base::Value::Dict.
-    explicit ManifestData(base::Value manifest);
     explicit ManifestData(base::Value::Dict manifest);
-    // This is deprecated. Use the constructor that accepts base::Value::Dict.
-    ManifestData(base::Value manifest, base::StringPiece name);
     ManifestData(base::Value::Dict manifest, base::StringPiece name);
     ManifestData(ManifestData&& other);
     ~ManifestData();
 
     const std::string& name() const { return name_; }
 
-    const base::Value& GetManifest(const base::FilePath& manifest_path,
-                                   std::string* error) const;
+    const absl::optional<base::Value::Dict>& GetManifest(
+        const base::FilePath& manifest_path,
+        std::string* error) const;
 
    private:
     const std::string name_;
-    mutable base::Value manifest_;
+    mutable absl::optional<base::Value::Dict> manifest_;
   };
 
   // Allows the test implementation to override a loaded test manifest's
@@ -66,7 +64,8 @@ class ManifestTest : public testing::Test {
   // extensions/test/data/manifest_tests.
   virtual base::FilePath GetTestDataDir();
 
-  base::Value LoadManifest(char const* manifest_name, std::string* error);
+  absl::optional<base::Value::Dict> LoadManifest(char const* manifest_name,
+                                                 std::string* error);
 
   scoped_refptr<extensions::Extension> LoadExtension(
       const ManifestData& manifest,

@@ -106,7 +106,7 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {
   base::Value manifest_value = base::test::ParseJson(kManifest);
   ASSERT_TRUE(manifest_value.is_dict());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(ManifestData(std::move(manifest_value), "test"));
+      LoadAndExpectSuccess(ManifestData(std::move(manifest_value).TakeDict()));
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
@@ -125,7 +125,7 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV3) {
   base::Value manifest_value = base::test::ParseJson(kManifest);
   ASSERT_TRUE(manifest_value.is_dict());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(ManifestData(std::move(manifest_value), "test"));
+      LoadAndExpectSuccess(ManifestData(std::move(manifest_value).TakeDict()));
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
@@ -165,8 +165,7 @@ class ExtensionActionManifestTest
     base::Value manifest_value = base::test::ParseJson(
         base::StringPrintf(kManifestStub, action_key, action_spec));
     EXPECT_TRUE(manifest_value.is_dict());
-    EXPECT_FALSE(manifest_value.is_none());
-    return ManifestData(std::move(manifest_value), "test");
+    return ManifestData(std::move(manifest_value).TakeDict());
   }
 
   scoped_refptr<Extension> LoadExtensionWithDefaultPopup(

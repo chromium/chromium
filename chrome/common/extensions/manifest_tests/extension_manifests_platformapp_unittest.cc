@@ -109,9 +109,9 @@ TEST_F(PlatformAppsManifestTest, PlatformAppContentSecurityPolicy) {
 TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // Put APIs here that should be restricted to platform apps, but that haven't
   // yet graduated from experimental.
-  const char* const kPlatformAppExperimentalApis[] = {
-    "dns",
-    "serial",
+  static constexpr const char* kPlatformAppExperimentalApis[] = {
+      "dns",
+      "serial",
   };
   // TODO(miket): When the first platform-app API leaves experimental, write
   // similar code that tests without the experimental flag.
@@ -120,23 +120,23 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // testing. The requirements are that (1) it be a valid platform app, and (2)
   // it contain no permissions dictionary.
   std::string error;
-  base::Value platform_app_manifest =
+  absl::optional<base::Value::Dict> platform_app_manifest =
       LoadManifest("init_valid_platform_app.json", &error);
+  ASSERT_TRUE(platform_app_manifest);
 
-  std::vector<std::unique_ptr<ManifestData>> manifests;
+  std::vector<ManifestData> manifests;
   // Create each manifest.
   for (const char* api_name : kPlatformAppExperimentalApis) {
-    base::Value permissions(base::Value::Type::LIST);
-    permissions.Append(base::Value("experimental"));
-    permissions.Append(base::Value(api_name));
-    platform_app_manifest.SetKey("permissions", std::move(permissions));
-    manifests.push_back(
-        std::make_unique<ManifestData>(platform_app_manifest.Clone(), ""));
+    base::Value::List permissions;
+    permissions.Append("experimental");
+    permissions.Append(api_name);
+    platform_app_manifest->Set("permissions", std::move(permissions));
+    manifests.emplace_back(platform_app_manifest->Clone());
   }
   // First try to load without any flags. This should warn for every API.
-  for (const std::unique_ptr<ManifestData>& manifest : manifests) {
+  for (const auto& manifest : manifests) {
     LoadAndExpectWarning(
-        *manifest,
+        manifest,
         "'experimental' requires the 'experimental-extension-apis' "
         "command line switch to be enabled.");
   }
@@ -144,8 +144,9 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // Now try again with the experimental flag set.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalExtensionApis);
-  for (const std::unique_ptr<ManifestData>& manifest : manifests)
-    LoadAndExpectSuccess(*manifest);
+  for (const auto& manifest : manifests) {
+    LoadAndExpectSuccess(manifest);
+  }
 }
 
 }  // namespace extensions

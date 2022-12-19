@@ -20,6 +20,7 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::ManifestLocation;
@@ -27,16 +28,15 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 namespace {
 
-std::string GetNameFromManifest(const base::Value& manifest) {
-  if (!manifest.is_dict())
-    return std::string();
-  const std::string* name = manifest.FindStringKey(manifest_keys::kName);
+std::string GetNameFromManifest(const base::Value::Dict& manifest) {
+  const std::string* name = manifest.FindString(manifest_keys::kName);
   return name ? *name : std::string();
 }
 
 // |manifest_path| is an absolute path to a manifest file.
-base::Value LoadManifestFile(const base::FilePath& manifest_path,
-                             std::string* error) {
+absl::optional<base::Value::Dict> LoadManifestFile(
+    const base::FilePath& manifest_path,
+    std::string* error) {
   base::FilePath extension_path = manifest_path.DirName();
 
   EXPECT_TRUE(base::PathExists(manifest_path)) <<
@@ -46,8 +46,9 @@ base::Value LoadManifestFile(const base::FilePath& manifest_path,
   std::unique_ptr<base::Value> manifest =
       deserializer.Deserialize(nullptr, error);
 
-  if (!manifest || !manifest->is_dict())
-    return base::Value();
+  if (!manifest || !manifest->is_dict()) {
+    return absl::nullopt;
+  }
 
   // Most unit tests don't need localization, and they'll fail if we try to
   // localize them, since their manifests don't have a default_locale key.
@@ -60,7 +61,7 @@ base::Value LoadManifestFile(const base::FilePath& manifest_path,
         extension_l10n_util::GzippedMessagesPermission::kDisallow, error);
   }
 
-  return base::Value(std::move(*manifest));
+  return std::move(*manifest).TakeDict();
 }
 
 }  // namespace
@@ -76,32 +77,20 @@ ManifestTest::~ManifestTest() = default;
 ManifestTest::ManifestData::ManifestData(base::StringPiece name)
     : name_(name) {}
 
-ManifestTest::ManifestData::ManifestData(base::Value manifest,
-                                         base::StringPiece name)
-    : name_(name), manifest_(std::move(manifest)) {
-  CHECK(manifest_.is_dict()) << "Manifest must be a dictionary. " << name_;
-}
-
 ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest,
                                          base::StringPiece name)
-    : ManifestData(base::Value(std::move(manifest)), std::move(name)) {}
+    : name_(name), manifest_(std::move(manifest)) {}
 
 ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest)
-    : ManifestData(base::Value(std::move(manifest))) {}
-
-ManifestTest::ManifestData::ManifestData(base::Value manifest)
-    : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {
-  CHECK(manifest_.is_dict()) << "Manifest must be a dictionary.";
-  CHECK(!name_.empty()) << R"("name" must be specified in the manifest.)";
-}
+    : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {}
 
 ManifestTest::ManifestData::ManifestData(ManifestData&& other) = default;
 ManifestTest::ManifestData::~ManifestData() = default;
 
-const base::Value& ManifestTest::ManifestData::GetManifest(
-    const base::FilePath& test_data_dir,
-    std::string* error) const {
-  if (manifest_.is_none()) {
+const absl::optional<base::Value::Dict>&
+ManifestTest::ManifestData::GetManifest(const base::FilePath& test_data_dir,
+                                        std::string* error) const {
+  if (!manifest_) {
     base::FilePath manifest_path = test_data_dir.AppendASCII(name_);
     manifest_ = LoadManifestFile(manifest_path, error);
   }
@@ -118,8 +107,9 @@ base::FilePath ManifestTest::GetTestDataDir() {
   return path.AppendASCII("manifest_tests");
 }
 
-base::Value ManifestTest::LoadManifest(char const* manifest_name,
-                                       std::string* error) {
+absl::optional<base::Value::Dict> ManifestTest::LoadManifest(
+    char const* manifest_name,
+    std::string* error) {
   base::FilePath manifest_path = GetTestDataDir().AppendASCII(manifest_name);
   return LoadManifestFile(manifest_path, error);
 }
@@ -130,11 +120,13 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
     ManifestLocation location,
     int flags) {
   base::FilePath test_data_dir = GetTestDataDir();
-  const base::Value& value = manifest.GetManifest(test_data_dir, error);
-  if (value.is_none())
+  const absl::optional<base::Value::Dict>& dict =
+      manifest.GetManifest(test_data_dir, error);
+  if (!dict) {
     return nullptr;
-  return Extension::Create(test_data_dir.DirName(), location, value.GetDict(),
-                           flags, GetTestExtensionID(), error);
+  }
+  return Extension::Create(test_data_dir.DirName(), location, *dict, flags,
+                           GetTestExtensionID(), error);
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(

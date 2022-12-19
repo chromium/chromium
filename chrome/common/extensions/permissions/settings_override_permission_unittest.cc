@@ -70,7 +70,7 @@ class SettingsOverridePermissionTest : public ChromeManifestTest {
     ext_manifest.Set(manifest_keys::kSettingsOverride,
                      std::move(settings_override));
 
-    ManifestData manifest(std::move(ext_manifest), "test");
+    ManifestData manifest(std::move(ext_manifest));
     return LoadAndExpectSuccess(manifest);
   }
 

@@ -26,8 +26,8 @@ class SidePanelManifestTest : public ChromeManifestTest {
       })";
     base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
         kManifestStub, manifest_version, side_panel.c_str()));
-    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
-    return ManifestData(std::move(manifest_value), "test");
+    EXPECT_TRUE(manifest_value.is_dict());
+    return ManifestData(std::move(manifest_value).TakeDict());
   }
 };
 

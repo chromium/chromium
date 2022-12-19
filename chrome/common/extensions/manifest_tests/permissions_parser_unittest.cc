@@ -225,8 +225,8 @@ TEST_F(PermissionsParserTest, ChromeFavicon) {
                                       : manifest_keys::kPermissions;
     base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
         kManifestStub, manifest_version, permissions_key, permission));
-    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
-    return ManifestData(std::move(manifest_value), permission);
+    EXPECT_TRUE(manifest_value.is_dict());
+    return ManifestData(std::move(manifest_value).TakeDict(), permission);
   };
 
   static constexpr char kFaviconPattern[] = "chrome://favicon/*";

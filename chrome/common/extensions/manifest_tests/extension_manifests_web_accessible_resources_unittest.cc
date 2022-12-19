@@ -26,8 +26,8 @@ class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
         })";
     base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
         kManifestStub, manifest_version, web_accessible_resources.c_str()));
-    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
-    return ManifestData(std::move(manifest_value), "test");
+    EXPECT_TRUE(manifest_value.is_dict());
+    return ManifestData(std::move(manifest_value).TakeDict());
   }
 };
 
@@ -324,8 +324,8 @@ TEST_F(WebAccessibleResourcesManifestTest,
           })";
     base::Value manifest_value = base::test::ParseJson(
         base::StringPrintf(kManifestStub, extension_id.c_str()));
-    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
-    return ManifestData(std::move(manifest_value), "test");
+    EXPECT_TRUE(manifest_value.is_dict());
+    return ManifestData(std::move(manifest_value).TakeDict());
   };
   scoped_refptr<const Extension> extension_callee =
       LoadAndExpectSuccess(get_manifest_data());
@@ -479,8 +479,8 @@ TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
         "manifest_version": 3
     })";
   base::Value manifest_value = base::test::ParseJson(kManifestStub);
-  EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
-  auto manifest_data = ManifestData(std::move(manifest_value), "test");
+  ASSERT_TRUE(manifest_value.is_dict());
+  ManifestData manifest_data(std::move(manifest_value).TakeDict());
   scoped_refptr<Extension> extension(LoadAndExpectSuccess(manifest_data));
   EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
                        extension.get(), "resource.html"));
