@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/allocator/allocator_extension.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -72,7 +73,6 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/main_frame_counter.h"
-#include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_constants.h"
@@ -1759,13 +1759,13 @@ bool RenderThreadImpl::RendererIsBackgrounded() const {
 void RenderThreadImpl::OnRendererBackgrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(true);
   discardable_memory_allocator_->OnBackgrounded();
-  internal::PartitionAllocSupport::Get()->OnBackgrounded();
+  base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
 }
 
 void RenderThreadImpl::OnRendererForegrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(false);
   discardable_memory_allocator_->OnForegrounded();
-  internal::PartitionAllocSupport::Get()->OnForegrounded(
+  base::allocator::PartitionAllocSupport::Get()->OnForegrounded(
       MainFrameCounter::has_main_frame());
   process_foregrounded_count_++;
 }

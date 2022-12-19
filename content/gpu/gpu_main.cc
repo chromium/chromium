@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -35,7 +36,6 @@
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
 #include "content/public/common/content_client.h"
@@ -389,7 +389,7 @@ int GpuMain(MainFunctionParams parameters) {
       nullptr);
 #endif
 
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       switches::kGpuProcess);
 
   base::HighResolutionTimerManager hi_res_timer_manager;

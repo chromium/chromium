@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -69,7 +70,6 @@
 #include "content/common/android/cpu_time_metrics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/mojo_core_library_support.h"
-#include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/common/url_schemes.h"
 #include "content/gpu/in_process_gpu_thread.h"
@@ -648,7 +648,7 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterZygoteFork(
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterZygoteFork(
       process_type);
 
   CreateChildThreadPool(process_type);
@@ -669,8 +669,8 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   delegate->PostEarlyInitialization(
       ContentMainDelegate::InvokedInChildProcess());
 
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
-      process_type);
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit(process_type);
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
@@ -859,7 +859,8 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
-  internal::PartitionAllocSupport::Get()->ReconfigureEarlyish(process_type);
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish(
+      process_type);
 
 #if BUILDFLAG(IS_WIN)
   if (command_line.HasSwitch(switches::kDeviceScaleFactor)) {
@@ -1064,8 +1065,8 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       delegate_->PostEarlyInitialization(
           ContentMainDelegate::InvokedInChildProcess());
 
-      internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
-          process_type);
+      base::allocator::PartitionAllocSupport::Get()
+          ->ReconfigureAfterFeatureListInit(process_type);
     }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1237,8 +1238,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   }
 
   // No specified process type means this is the Browser process.
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit("");
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit("");
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit("");
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      "");
 
   if (start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";

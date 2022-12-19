@@ -621,9 +621,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
 
 // Configures whether we set a lower limit for renderers that do not have a main
 // frame, similar to the limit that is already done for backgrounded renderers.
-BASE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers,
-             "LowerPAMemoryLimitForNonMainRenderers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLowerV8MemoryLimitForNonMainRenderers,
              "LowerV8MemoryLimitForNonMainRenderers",
              base::FEATURE_DISABLED_BY_DEFAULT);

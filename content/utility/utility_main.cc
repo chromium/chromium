@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
@@ -16,7 +17,6 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/partition_alloc_support.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -299,7 +299,7 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 #endif
 
-  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       switches::kUtilityProcess);
 
   run_loop.Run();

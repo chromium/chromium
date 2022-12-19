@@ -157,6 +157,12 @@ const base::FeatureParam<AlternateBucketDistributionMode>
         AlternateBucketDistributionMode::kDefault,
         &kPartitionAllocAlternateDistributionOption};
 
+// Configures whether we set a lower limit for renderers that do not have a main
+// frame, similar to the limit that is already done for backgrounded renderers.
+BASE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers,
+             "LowerPAMemoryLimitForNonMainRenderers",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
 // affect whether PCScan is enabled itself.
 BASE_FEATURE(kPartitionAllocPCScanMUAwareScheduler,

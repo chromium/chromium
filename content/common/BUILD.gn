@@ -149,8 +149,6 @@ source_set("common") {
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
-    "partition_alloc_support.cc",
-    "partition_alloc_support.h",
     "private_aggregation_features.cc",
     "private_aggregation_features.h",
     "process_type.cc",

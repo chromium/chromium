@@ -29,5 +29,3 @@ per-file *font_config_ipc_linux*=file://ipc/SECURITY_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-per-file partition_alloc_support.*=file://base/allocator/partition_allocator/OWNERS
