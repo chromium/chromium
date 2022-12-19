@@ -770,12 +770,11 @@ bool DriveIntegrationService::IsMounted() const {
 }
 
 base::FilePath DriveIntegrationService::GetMountPointPath() const {
-  return drivefs_holder_->drivefs_host()->GetMountPath();
+  return GetDriveFsHost()->GetMountPath();
 }
 
 base::FilePath DriveIntegrationService::GetDriveFsLogPath() const {
-  return drivefs_holder_->drivefs_host()->GetDataPath().Append(
-      "Logs/drivefs.txt");
+  return GetDriveFsHost()->GetDataPath().Append("Logs/drivefs.txt");
 }
 
 bool DriveIntegrationService::GetRelativeDrivePath(
@@ -866,7 +865,7 @@ DriveIntegrationService::GetDriveFsPinManager() {
 }
 
 drivefs::mojom::DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
-  return drivefs_holder_->drivefs_host()->GetDriveFsInterface();
+  return GetDriveFsHost()->GetDriveFsInterface();
 }
 
 void DriveIntegrationService::AddBackDriveMountPoint(
@@ -894,7 +893,7 @@ void DriveIntegrationService::AddDriveMountPoint() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (!drivefs_holder_->drivefs_host()->IsMounted()) {
+  if (!GetDriveFsHost()->IsMounted()) {
     PrefService* prefs = profile_->GetPrefs();
     bool was_ever_mounted =
         prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
@@ -903,8 +902,7 @@ void DriveIntegrationService::AddDriveMountPoint() {
     }
     blocking_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&EnsureDirectoryExists,
-                       drivefs_holder_->drivefs_host()->GetDataPath()),
+        base::BindOnce(&EnsureDirectoryExists, GetDriveFsHost()->GetDataPath()),
         base::BindOnce(&DriveIntegrationService::MaybeMountDrive,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -916,7 +914,7 @@ void DriveIntegrationService::MaybeMountDrive(bool data_directory_exists) {
   if (!data_directory_exists) {
     LOG(ERROR) << "Could not create DriveFS data directory";
   } else {
-    drivefs_holder_->drivefs_host()->Mount();
+    GetDriveFsHost()->Mount();
   }
 }
 
@@ -965,11 +963,11 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
       logger_->Log(logging::LOG_INFO, "Drive mount point is removed");
     }
   }
-  drivefs_holder_->drivefs_host()->Unmount();
+  GetDriveFsHost()->Unmount();
 
   if (ash::features::IsDriveFsBulkPinningEnabled() && pin_manager_) {
     pin_manager_->Stop();
-    drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
+    GetDriveFsHost()->RemoveObserver(pin_manager_.get());
     pin_manager_.reset();
   }
 }
@@ -1050,7 +1048,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
         profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
         profile_->GetPath(), GetDriveFsInterface());
-    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
+    GetDriveFsHost()->AddObserver(pin_manager_.get());
   }
 }
 
@@ -1145,8 +1143,9 @@ void DriveIntegrationService::MigratePinnedFiles() {
 
 void DriveIntegrationService::PinFiles(
     const std::vector<base::FilePath>& files_to_pin) {
-  if (!drivefs_holder_->drivefs_host()->IsMounted())
+  if (!GetDriveFsHost()->IsMounted()) {
     return;
+  }
 
   for (const auto& path : files_to_pin) {
     GetDriveFsInterface()->SetPinned(path, true, base::DoNothing());
@@ -1444,7 +1443,7 @@ void DriveIntegrationService::GetSyncingPaths(
 
 drivefs::SyncStatusAndProgress DriveIntegrationService::GetSyncStatusForPath(
     const base::FilePath& drive_path) {
-  return drivefs_holder_->drivefs_host()->GetSyncStatusForPath(drive_path);
+  return GetDriveFsHost()->GetSyncStatusForPath(drive_path);
 }
 
 void DriveIntegrationService::PollHostedFilePinStates() {
