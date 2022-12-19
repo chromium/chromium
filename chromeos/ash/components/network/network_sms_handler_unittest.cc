@@ -141,21 +141,21 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
 
   // Receive two more messages. We shouldn't attempt to delete messages until
   // after we've finished receiving all messages.
-  const std::string sms_path_2 = "/SMS/1";
+  const std::string sms_path_1 = "/SMS/1";
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1),
+      dbus::ObjectPath(sms_path_1));
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+  const std::string sms_path_2 = "/SMS/2";
   modem_messaging_test_->ReceiveSms(
       dbus::ObjectPath(kCellularDeviceObjectPath1),
       dbus::ObjectPath(sms_path_2));
-  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
-  const std::string sms_path_3 = "/SMS/2";
-  modem_messaging_test_->ReceiveSms(
-      dbus::ObjectPath(kCellularDeviceObjectPath1),
-      dbus::ObjectPath(sms_path_3));
   EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
 
   // Simulate no more messages being received. The last SMS added should be the
   // first one attempted to be deleted.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(sms_path_3,
+  EXPECT_EQ(sms_path_2,
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
@@ -164,26 +164,26 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
   // Complete the deletion, another delete request should occur.
   modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(sms_path_2,
+  EXPECT_EQ(sms_path_1,
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
 
   // Receive another message before completing the delete request.
-  const std::string sms_path_4 = "/SMS/3";
+  const std::string sms_path_3 = "/SMS/3";
   modem_messaging_test_->ReceiveSms(
       dbus::ObjectPath(kCellularDeviceObjectPath1),
-      dbus::ObjectPath(sms_path_4));
-  EXPECT_EQ(sms_path_2,
+      dbus::ObjectPath(sms_path_3));
+  EXPECT_EQ(sms_path_1,
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 4);
 
   // Complete the deletion, the last delete request should occur.
-  EXPECT_EQ(sms_path_2,
+  EXPECT_EQ(sms_path_1,
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
   modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(sms_path_4,
+  EXPECT_EQ(sms_path_3,
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
 
   // Complete the last delete request.
@@ -193,6 +193,102 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDbusStub) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 4);
+}
+
+TEST_F(NetworkSmsHandlerTest, SmsHandlerDeleteFailure) {
+  EXPECT_EQ(test_observer_->message_count(), 0);
+
+  // Test that no messages have been received yet
+  const std::set<std::string>& messages(test_observer_->messages());
+  // Note: The following string corresponds to values in
+  // ModemMessagingClientStubImpl and SmsClientStubImpl.
+  const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
+  EXPECT_EQ(messages.find(kMessage1), messages.end());
+
+  // Test for messages delivered by signals.
+  test_observer_->ClearMessages();
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1), dbus::ObjectPath(kSmsPath));
+  base::RunLoop().RunUntilIdle();
+
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(test_observer_->message_count(), 1);
+  EXPECT_NE(messages.find(kMessage1), messages.end());
+
+  // There should be a request to delete the message after the message has been
+  // received.
+  EXPECT_EQ(kSmsPath, modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+
+  // Simulate the deletion failing. The delete request should be placed back in
+  // the queue, but not invoked.
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+
+  // Receive two more messages. We shouldn't attempt to delete messages until
+  // after we've finished receiving all messages.
+  const std::string sms_path_1 = "/SMS/1";
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1),
+      dbus::ObjectPath(sms_path_1));
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+  const std::string sms_path_2 = "/SMS/2";
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1),
+      dbus::ObjectPath(sms_path_2));
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+
+  // Simulate no more messages being received. The last SMS added should be the
+  // first one attempted to be deleted.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(sms_path_2,
+            modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(test_observer_->message_count(), 3);
+
+  // Simulate the deletion failing, the SMS should be placed back in the queue,
+  // but no deletion invoked.
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
+
+  // Receive another message, it should be the first message attempted to be
+  // deleted.
+  const std::string sms_path_3 = "/SMS/3";
+  modem_messaging_test_->ReceiveSms(
+      dbus::ObjectPath(kCellularDeviceObjectPath1),
+      dbus::ObjectPath(sms_path_3));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(sms_path_3,
+            modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+  network_sms_handler_->RequestUpdate();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(test_observer_->message_count(), 4);
+
+  // Simulate the deletion succeeding, the second SMS should be attempted to be
+  // deleted.
+  EXPECT_EQ(sms_path_3,
+            modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(sms_path_1,
+            modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+
+  // Simulate the deletion succeeding, the first SMS should be attempted to be
+  // deleted.
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSmsPath, modem_messaging_test_->GetPendingDeleteRequestSmsPath());
+
+  // Simulate the deletion succeeding, the third SMS should be attempted to be
+  // deleted.
+  modem_messaging_test_->CompletePendingDeleteRequest(/*success=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(sms_path_2,
+            modem_messaging_test_->GetPendingDeleteRequestSmsPath());
 }
 
 TEST_F(NetworkSmsHandlerTest, SmsHandlerEmptyDbusObjectPath) {

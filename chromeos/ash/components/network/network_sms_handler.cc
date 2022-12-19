@@ -60,9 +60,10 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
  private:
   void ListCallback(absl::optional<std::vector<dbus::ObjectPath>> paths);
   void SmsReceivedCallback(const dbus::ObjectPath& path, bool complete);
-  void GetCallback(const base::Value& dictionary);
+  void GetCallback(const dbus::ObjectPath& sms_path,
+                   const base::Value& dictionary);
   void DeleteMessages();
-  void DeleteCallback(bool success);
+  void DeleteCallback(const dbus::ObjectPath& sms_path, bool success);
   void GetMessages();
   void MessageReceived(const base::Value& dictionary);
 
@@ -117,6 +118,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
   if (!paths.has_value())
     return;
 
+  NET_LOG(EVENT) << "Bulk fetched [" << paths->size() << "] message(s)";
   retrieval_queue_.reserve(paths->size());
   retrieval_queue_.assign(std::make_move_iterator(paths->begin()),
                           std::make_move_iterator(paths->end()));
@@ -135,17 +137,34 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::DeleteMessages() {
   deleting_messages_ = true;
   dbus::ObjectPath sms_path = std::move(delete_queue_.back());
   delete_queue_.pop_back();
+  NET_LOG(EVENT) << "Deleting " << sms_path.value() << ", ["
+                 << delete_queue_.size()
+                 << "] message(s) left in the deletion queue";
   ModemMessagingClient::Get()->Delete(
       service_name_, object_path_, sms_path,
       base::BindOnce(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
                          DeleteCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), sms_path));
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::DeleteCallback(
+    const dbus::ObjectPath& sms_path,
     bool success) {
-  if (!success)
+  if (!success) {
+    // Add the SMS to the queue so that it can eventually get retried.
+    delete_queue_.insert(delete_queue_.begin(), sms_path);
+    NET_LOG(ERROR) << "Delete failed for " << sms_path.value()
+                   << ", inserted message back into the deletion queue, ["
+                   << delete_queue_.size()
+                   << "] message(s) left in the deletion queue";
+
+    // Set the flag back to false so that new deletion attempts can occur the
+    // next time a message is received.
+    deleting_messages_ = false;
     return;
+  }
+
+  NET_LOG(EVENT) << "Delete succeeded for " << sms_path.value();
   DeleteMessages();
 }
 
@@ -161,16 +180,20 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetMessages() {
   retrieving_messages_ = true;
   dbus::ObjectPath sms_path = retrieval_queue_.front();
   retrieval_queue_.pop_front();
+  NET_LOG(EVENT) << "Fetching details for " << sms_path.value() << ", ["
+                 << retrieval_queue_.size()
+                 << "] message(s) left in the retrieval queue";
   SMSClient::Get()->GetAll(
       service_name_, sms_path,
       base::BindOnce(
           &NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetCallback,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), sms_path));
   delete_queue_.push_back(sms_path);
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
     SmsReceivedCallback(const dbus::ObjectPath& sms_path, bool complete) {
+  NET_LOG(EVENT) << "Message received: " << sms_path.value();
   // Only handle complete messages.
   if (!complete)
     return;
@@ -180,7 +203,9 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetCallback(
+    const dbus::ObjectPath& sms_path,
     const base::Value& dictionary) {
+  NET_LOG(EVENT) << "Message details fetched for: " << sms_path.value();
   MessageReceived(dictionary);
   GetMessages();
 }
