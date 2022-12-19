@@ -1,7 +1,7 @@
-diff --git a/third_party/protobuf/src/google/protobuf/wire_format_lite.h b/third_party/protobuf/src/google/protobuf/wire_format_lite.h
+diff --git a/src/google/protobuf/wire_format_lite.h b/src/google/protobuf/wire_format_lite.h
 index 32fe0c7711bc4..5f1a11e4e2cab 100644
---- a/third_party/protobuf/src/google/protobuf/wire_format_lite.h
-+++ b/third_party/protobuf/src/google/protobuf/wire_format_lite.h
+--- a/src/google/protobuf/wire_format_lite.h
++++ b/src/google/protobuf/wire_format_lite.h
 @@ -101,7 +101,11 @@ class PROTOBUF_EXPORT WireFormatLite {
    // identifies the encoding of this data, it is possible to skip
    // unrecognized fields for forwards compatibility.

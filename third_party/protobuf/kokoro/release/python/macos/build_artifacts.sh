@@ -2,6 +2,9 @@
 
 set -ex
 
+# Remove any pre-existing protobuf installation.
+brew uninstall protobuf
+
 # change to repo root
 pushd $(dirname $0)/../../../..
 
@@ -58,7 +61,6 @@ build_artifact_version() {
 }
 
 export MB_PYTHON_OSX_VER=10.9
-build_artifact_version 3.6
 build_artifact_version 3.7
 build_artifact_version 3.8
 build_artifact_version 3.9

@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD
 License File: LICENSE
-Version: 3.20.0
-CPEPrefix: cpe:/a:google:protobuf:3.20.0
-Revision: bc799d78f81115940eec953e2937245c70e3e6e4
+Version: 3.20.3
+CPEPrefix: cpe:/a:google:protobuf:3.20.3
+Revision: fe271ab76f2ad2b2b28c10443865d2af21e27e0e
 Security Critical: yes
 
 Steps used to create the current version:

@@ -1,3 +1,38 @@
+2022-09-29 version 3.20.3 (C++/Java/Python/PHP/Objective-C/C#/Ruby)
+
+
+2022-09-27 version 3.20.3 (C++/Java/Python/PHP/Objective-C/C#/Ruby)
+  Java
+  * Refactoring java full runtime to reuse sub-message builders and prepare to
+    migrate parsing logic from parse constructor to builder.
+  * Move proto wireformat parsing functionality from the private "parsing
+    constructor" to the Builder class.
+  * Change the Lite runtime to prefer merging from the wireformat into mutable
+    messages rather than building up a new immutable object before merging. This
+    way results in fewer allocations and copy operations.
+  * Make message-type extensions merge from wire-format instead of building up
+    instances and merging afterwards. This has much better performance.
+  * Fix TextFormat parser to build up recurring (but supposedly not repeated)
+    sub-messages directly from text rather than building a new sub-message and
+    merging the fully formed message into the existing field.
+
+2022-09-13 version 3.20.2 (C++/Java/Python/PHP/Objective-C/C#/Ruby)
+
+C++
+* Reduce memory consumption of MessageSet parsing
+
+2022-04-05 version 3.20.1 (C++/Java/Python/PHP/Objective-C/C#/Ruby/JavaScript)
+
+  PHP
+  * Fix building packaged PHP extension (#9727)
+  * Fixed composer.json to only advertise compatibility with PHP 7.0+.  (#9819)
+
+  Ruby
+  * Disable the aarch64 build on macOS until it can be fixed. (#9816)
+
+  Other
+  * Fix versioning issues in 3.20.0
+
 2022-03-04 version 3.20.0 (C++/Java/Python/PHP/Objective-C/C#/Ruby/JavaScript)
 
   Ruby
@@ -65,6 +100,8 @@
     JSON serializations with UTF-8 or other non-ASCII encodings.
   * Added experimental support for directly assigning numpy scalars and array.
   * Improve the calculation of public_dependencies in DescriptorPool.
+  * [Breaking Change] Disallow setting fields to numpy singleton arrays or repeated fields to numpy
+    multi-dimensional arrays. Numpy arrays should be indexed or flattened explicitly before assignment.
 
   Compiler
   * Migrate IsDefault(const std::string*) and UnsafeSetDefault(const std::string*)

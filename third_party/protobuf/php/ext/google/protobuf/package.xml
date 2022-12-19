@@ -5,20 +5,20 @@
  <summary>Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.</summary>
  <description>https://developers.google.com/protocol-buffers/</description>
  <lead>
-  <name>Bo Yang</name>
-  <user>stanleycheung</user>
-  <email>protobuf-opensource@google.com</email>
+  <name>Protobuf Team</name>
+  <user>protobufpackages</user>
+  <email>protobuf-packages@google.com</email>
   <active>yes</active>
  </lead>
- <date>2022-03-18</date>
- <time>11:10:15</time>
+ <date>2022-09-29</date>
+ <time>10:24:47</time>
  <version>
-  <release>3.20.0RC2</release>
-  <api>3.20.0</api>
+  <release>3.20.3</release>
+  <api>3.20.3</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
  <notes>
@@ -1234,6 +1234,81 @@ G  A release.
    </stability>
    <date>2022-03-15</date>
    <time>21:10:15</time>
+   <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
+   <notes>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>3.20.0</release>
+    <api>3.20.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2022-03-25</date>
+   <time>19:17:44</time>
+   <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
+   <notes>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>3.20.1RC1</release>
+    <api>3.20.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2022-04-05</date>
+   <time>17:06:47</time>
+   <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
+   <notes>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>3.20.1</release>
+    <api>3.20.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2022-04-20</date>
+   <time>22:01:25</time>
+   <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
+   <notes>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>3.20.2</release>
+    <api>3.20.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2022-09-13</date>
+   <time>11:17:32</time>
+   <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
+   <notes>
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>3.20.3</release>
+    <api>3.20.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2022-09-29</date>
+   <time>10:24:47</time>
    <license uri="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</license>
    <notes>
    </notes>

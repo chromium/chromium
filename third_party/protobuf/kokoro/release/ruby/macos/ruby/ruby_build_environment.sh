@@ -2,6 +2,10 @@
 
 set -ex
 
+# Fix permissions
+sudo chown -R $(whoami) $HOME/.rvm/
+sudo chown -R $(whoami) /Library/Ruby/
+
 set +ex  # rvm script is very verbose and exits with errorcode
 
 curl -sSL https://rvm.io/mpapis.asc | gpg --import -
@@ -91,7 +95,8 @@ ruby --version | grep 'ruby 3.1.0'
 for v in 3.1.0 ; do
   ccache -c
   rake -f "$CROSS_RUBY31" cross-ruby VERSION="$v" HOST=x86_64-darwin MAKE="$MAKE"
-  rake -f "$CROSS_RUBY31" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
+  # Disabled until it can be fixed: https://github.com/protocolbuffers/protobuf/issues/9804
+  # rake -f "$CROSS_RUBY31" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
 done
 
 set +x # rvm commands are very verbose
@@ -101,7 +106,8 @@ ruby --version | grep 'ruby 2.7.0'
 for v in 3.0.0 2.7.0 ; do
   ccache -c
   rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=x86_64-darwin MAKE="$MAKE"
-  rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
+  # Disabled until it can be fixed: https://github.com/protocolbuffers/protobuf/issues/9804
+  # rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
 done
 set +x
 rvm use 2.5.0
@@ -110,7 +116,8 @@ ruby --version | grep 'ruby 2.5.0'
 for v in 2.6.0 2.5.1; do
   ccache -c
   rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=x86_64-darwin MAKE="$MAKE"
-  rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
+  # Disabled until it can be fixed: https://github.com/protocolbuffers/protobuf/issues/9804
+  # rake -f "$CROSS_RUBY" cross-ruby VERSION="$v" HOST=aarch64-darwin MAKE="$MAKE"
 done
 set +x
 rvm use 2.7.0
