@@ -72,9 +72,7 @@ const CGFloat kPopupBottomPaddingTablet = 80;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    if (!IsSwiftUIPopupEnabled()) {
-      _popupContainerView.backgroundColor = [configuration backgroundColor];
-    }
+    _popupContainerView.backgroundColor = [configuration backgroundColor];
 
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -106,28 +104,25 @@ const CGFloat kPopupBottomPaddingTablet = 80;
       AddSameConstraints(viewController.view, _popupContainerView);
     }
 
-    if (!IsSwiftUIPopupEnabled()) {
-      // Add bottom separator. This will only be visible on iPad where
-      // the omnibox doesn't fill the whole screen.
-      _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-      _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-      _bottomSeparator.backgroundColor =
-          [UIColor colorNamed:kToolbarShadowColor];
+    // Add bottom separator. This will only be visible on iPad where
+    // the omnibox doesn't fill the whole screen.
+    _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
+    _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomSeparator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
 
-      [_popupContainerView addSubview:self.bottomSeparator];
-      CGFloat separatorHeight =
-          ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-      [NSLayoutConstraint activateConstraints:@[
-        [self.bottomSeparator.heightAnchor
-            constraintEqualToConstant:separatorHeight],
-        [self.bottomSeparator.leadingAnchor
-            constraintEqualToAnchor:_popupContainerView.leadingAnchor],
-        [self.bottomSeparator.trailingAnchor
-            constraintEqualToAnchor:_popupContainerView.trailingAnchor],
-        [self.bottomSeparator.topAnchor
-            constraintEqualToAnchor:_popupContainerView.bottomAnchor],
-      ]];
-    }
+    [_popupContainerView addSubview:self.bottomSeparator];
+    CGFloat separatorHeight =
+        ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.bottomSeparator.heightAnchor
+          constraintEqualToConstant:separatorHeight],
+      [self.bottomSeparator.leadingAnchor
+          constraintEqualToAnchor:_popupContainerView.leadingAnchor],
+      [self.bottomSeparator.trailingAnchor
+          constraintEqualToAnchor:_popupContainerView.trailingAnchor],
+      [self.bottomSeparator.topAnchor
+          constraintEqualToAnchor:_popupContainerView.bottomAnchor],
+    ]];
   }
   return self;
 }

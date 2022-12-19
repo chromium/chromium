@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
-#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -61,8 +60,6 @@
 
 @property(nonatomic, strong) OmniboxPopupViewController* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
-@property(nonatomic, strong) PopupModel* model;
-@property(nonatomic, strong) PopupUIConfiguration* uiConfiguration;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
 // Owned by OmniboxEditModel.
@@ -124,32 +121,27 @@
       initWithBrowser:self.browser
              scenario:MenuScenarioHistogram::kOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
+  self.popupViewController.imageRetriever = self.mediator;
+  self.popupViewController.faviconRetriever = self.mediator;
+  self.popupViewController.delegate = self.mediator;
+  self.popupViewController.dataSource = self.mediator;
+  self.popupViewController.incognito = isIncognito;
+  favicon::LargeIconService* largeIconService =
+      IOSChromeLargeIconServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+  self.popupViewController.largeIconService = largeIconService;
+  self.popupViewController.largeIconCache = cache;
+  self.popupViewController.carouselMenuProvider = self.mediator;
 
-  if (IsSwiftUIPopupEnabled()) {
-    NOTREACHED() << "Swift version not supported anymore.";
-  } else {
-    self.popupViewController.imageRetriever = self.mediator;
-    self.popupViewController.faviconRetriever = self.mediator;
-    self.popupViewController.delegate = self.mediator;
-    self.popupViewController.dataSource = self.mediator;
-    self.popupViewController.incognito = isIncognito;
-    favicon::LargeIconService* largeIconService =
-        IOSChromeLargeIconServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-        self.browser->GetBrowserState());
-    self.popupViewController.largeIconService = largeIconService;
-    self.popupViewController.largeIconCache = cache;
-    self.popupViewController.carouselMenuProvider = self.mediator;
-
-    self.mediator.consumer = self.popupViewController;
-    self.popupViewController.matchPreviewDelegate =
-        self.popupMatchPreviewDelegate;
-    self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
-    self.mediator.carouselItemConsumer = self.popupViewController;
-    self.mediator.allowIncognitoActions =
-        IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
-  }
+  self.mediator.consumer = self.popupViewController;
+  self.popupViewController.matchPreviewDelegate =
+      self.popupMatchPreviewDelegate;
+  self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
+  self.mediator.carouselItemConsumer = self.popupViewController;
+  self.mediator.allowIncognitoActions =
+      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
   if (IsOmniboxActionsEnabled()) {
     OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];

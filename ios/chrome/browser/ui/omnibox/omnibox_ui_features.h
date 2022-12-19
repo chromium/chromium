@@ -39,8 +39,6 @@ bool IsOmniboxActionsEnabled();
 bool IsOmniboxActionsVisualTreatment1();
 // Same as above, but for "version 2".
 bool IsOmniboxActionsVisualTreatment2();
-// Returns false, swift version not supported anymore.
-bool IsSwiftUIPopupEnabled();
 // Returns if kEnablePopoutOmniboxIpad feature is enabled.
 bool IsIpadPopoutOmniboxEnabled();
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

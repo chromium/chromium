@@ -6,28 +6,7 @@ import("//build/config/ios/swift_source_set.gni")
 
 swift_source_set("popup_swift") {
   bridge_header = "popup_swift_bridge.h"
-  sources = [
-    "omnibox_popup_view_provider.swift",
-    "shared/blurred_background.swift",
-    "shared/fake_omnibox_icon.swift",
-    "shared/gradient_text_view.swift",
-    "shared/omnibox_pedal.swift",
-    "shared/omnibox_text.swift",
-    "shared/popup_empty_space_view.swift",
-    "shared/popup_image.swift",
-    "shared/popup_match.swift",
-    "shared/popup_match_image_view.swift",
-    "shared/popup_match_row_action_button.swift",
-    "shared/popup_match_row_view.swift",
-    "shared/popup_match_trailing_button.swift",
-    "shared/popup_model.swift",
-    "shared/popup_ui_configuration.swift",
-    "shared/popup_ui_variation.swift",
-    "shared/popup_view.swift",
-    "shared/popup_visible_suggestion_count.swift",
-    "shared/pressed_preference_key_button_style.swift",
-    "shared/self_sizing_list.swift",
-  ]
+  sources = [ "shared/omnibox_pedal.swift" ]
 
   deps = [
     ":popup_ui_protocols",

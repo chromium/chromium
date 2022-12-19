@@ -44,10 +44,6 @@ bool IsOmniboxActionsVisualTreatment2() {
   return false;
 }
 
-bool IsSwiftUIPopupEnabled() {
-  return false;
-}
-
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

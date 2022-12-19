@@ -22,6 +22,7 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -36,7 +37,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -165,8 +165,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
-
-  [self loadModelImages];
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
@@ -255,32 +253,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 #pragma mark AutocompleteResultConsumerDelegate Private
-
-- (void)loadModelImages {
-  for (PopupMatchSection* section in self.model.sections) {
-    for (PopupMatch* match in section.matches) {
-      PopupImage* popupImage = match.image;
-      switch (popupImage.icon.iconType) {
-        case OmniboxIconTypeSuggestionIcon:
-          break;
-        case OmniboxIconTypeImage: {
-          [self fetchImage:popupImage.icon.imageURL.gurl
-                completion:^(UIImage* image) {
-                  popupImage.iconUIImageFromURL = image;
-                }];
-          break;
-        }
-        case OmniboxIconTypeFavicon: {
-          [self fetchFavicon:popupImage.icon.imageURL.gurl
-                  completion:^(UIImage* image) {
-                    popupImage.iconUIImageFromURL = image;
-                  }];
-          break;
-        }
-      }
-    }
-  }
-}
 
 /// Logs selected tile index and type.
 - (void)logSelectedAutocompleteTile:(const AutocompleteMatch&)match {

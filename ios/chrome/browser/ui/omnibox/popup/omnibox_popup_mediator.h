@@ -27,7 +27,6 @@ class FaviconLoader;
 @class OmniboxPedalAnnotator;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
-@class PopupModel;
 @protocol SnackbarCommands;
 class WebStateList;
 class AutocompleteController;
@@ -102,8 +101,6 @@ class OmniboxPopupMediatorDelegate {
 /// Whether the default search engine is Google impacts which icon is used in
 /// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
-/// The model for this mediator, if one exists.
-@property(nonatomic, weak) PopupModel* model;
 /// The annotator to create pedals for ths mediator.
 @property(nonatomic) OmniboxPedalAnnotator* pedalAnnotator;
 /// Flag that marks that incognito actions are available. Those can be disabled
