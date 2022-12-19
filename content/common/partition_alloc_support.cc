@@ -275,6 +275,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  // TODO(keishi): BRP experiment temporarily disabled on Mac releases during
+  // Finch freeze.
+#if !BUILDFLAG(IS_MAC) || !defined(OFFICIAL_BUILD)
   if (process_affected_by_brp_flag) {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
       case base::features::BackupRefPtrMode::kDisabled:
@@ -318,6 +321,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
+#endif  // !BUILDFLAG(IS_MAC) || !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
