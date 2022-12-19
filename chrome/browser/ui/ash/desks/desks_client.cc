@@ -32,6 +32,8 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -68,6 +70,8 @@ constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
 constexpr char kTimeToLoadTemplateHistogramName[] =
     "Ash.DeskTemplate.TimeToLoadTemplate";
 
+constexpr char kCrxAppPrefix[] = "_crx_";
+
 // Launch data is cleared after this time.
 constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
 
@@ -101,6 +105,48 @@ void RecordTimeToLoadTemplateHistogram(const base::Time time_started) {
 }
 
 }  // namespace
+
+// Listens to `BrowserAppInstanceRegistry` events. Its job is to store app ids
+// for lacros windows so that when a lacros window is part of a saved desk, we
+// can figure out the app id (if any).
+class LacrosAppWindowObserver : public apps::BrowserAppInstanceObserver {
+ public:
+  explicit LacrosAppWindowObserver(
+      apps::BrowserAppInstanceRegistry& browser_app_instance_registry) {
+    browser_app_instance_registry_observation_.Observe(
+        &browser_app_instance_registry);
+  }
+
+  LacrosAppWindowObserver(const LacrosAppWindowObserver&) = delete;
+  LacrosAppWindowObserver& operator=(const LacrosAppWindowObserver&) = delete;
+  ~LacrosAppWindowObserver() override = default;
+
+  // BrowserAppInstanceObserver:
+  void OnBrowserAppAdded(const apps::BrowserAppInstance& instance) override {
+    if (!instance.app_id.empty()) {
+      app_ids_by_window_[instance.window] = instance.app_id;
+    }
+  }
+
+  void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override {
+    app_ids_by_window_.erase(instance.window);
+  }
+
+  absl::optional<std::string> GetAppIdForWindow(aura::Window* window) const {
+    auto it = app_ids_by_window_.find(window);
+    if (it == app_ids_by_window_.end()) {
+      return absl::nullopt;
+    }
+    return kCrxAppPrefix + it->second;
+  }
+
+ private:
+  base::flat_map<aura::Window*, std::string> app_ids_by_window_;
+
+  base::ScopedObservation<apps::BrowserAppInstanceRegistry,
+                          apps::BrowserAppInstanceObserver>
+      browser_app_instance_registry_observation_{this};
+};
 
 // Tracks a set of WindowIDs through the launching process, records a
 // launch performance metric when the set of window_ids have all been
@@ -195,6 +241,14 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile == active_profile_ || !IsSupportedProfile(profile))
     return;
+
+  // Start lacros app window observer.
+  if (auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile)) {
+    if (auto* registry = proxy->BrowserAppInstanceRegistry()) {
+      lacros_app_window_observer_ =
+          std::make_unique<LacrosAppWindowObserver>(*registry);
+    }
+  }
 
   active_profile_ = profile;
   DCHECK(active_profile_);
@@ -531,6 +585,13 @@ absl::optional<DesksClient::DeskActionError> DesksClient::SwitchDesk(
 
   desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApiSwitch);
   return absl::nullopt;
+}
+
+absl::optional<std::string> DesksClient::GetAppIdForLacrosWindow(
+    aura::Window* window) const {
+  return lacros_app_window_observer_
+             ? lacros_app_window_observer_->GetAppIdForWindow(window)
+             : absl::nullopt;
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(

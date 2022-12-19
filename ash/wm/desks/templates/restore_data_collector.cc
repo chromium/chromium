@@ -75,10 +75,10 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     }
     has_supported_apps = true;
 
-    const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     std::unique_ptr<app_restore::WindowInfo> window_info =
         BuildWindowInfo(window, /*activation_index=*/absl::nullopt,
                         /*for_saved_desks=*/true, mru_windows);
+
     // Clear the desk ID in the WindowInfo that is to be stored in the template.
     // It will be set to the ID of a newly created desk when launching.
     window_info->desk_id.reset();
@@ -87,7 +87,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     delegate->GetAppLaunchDataForDeskTemplate(
         window, base::BindOnce(&RestoreDataCollector::OnAppLaunchDataReceived,
                                base::Unretained(this), current_serial, app_id,
-                               window_id, std::move(window_info)));
+                               std::move(window_info)));
   }
 
   // Do not create a saved desk if the desk is empty or only contains
@@ -111,8 +111,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
 
 void RestoreDataCollector::OnAppLaunchDataReceived(
     uint32_t serial,
-    const std::string app_id,
-    const int32_t window_id,
+    const std::string& app_id,
     std::unique_ptr<app_restore::WindowInfo> window_info,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -128,6 +127,7 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
 
   // nullptr means that this app does not have any data to save.
   if (app_launch_info) {
+    const int32_t window_id = *app_launch_info->window_id;
     call.data->AddAppLaunchInfo(std::move(app_launch_info));
     call.data->ModifyWindowInfo(app_id, window_id, *window_info);
   }

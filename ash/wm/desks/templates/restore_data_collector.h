@@ -74,8 +74,7 @@ class RestoreDataCollector {
   // is collected, invokes the `SendDeskTemplate()` method.
   void OnAppLaunchDataReceived(
       uint32_t serial,
-      const std::string app_id,
-      const int32_t window_id,
+      const std::string& app_id,
       std::unique_ptr<app_restore::WindowInfo> window_info,
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
 

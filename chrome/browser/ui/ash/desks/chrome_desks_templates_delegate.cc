@@ -251,10 +251,10 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
-  const std::string* app_name =
-      window->GetProperty(app_restore::kBrowserAppNameKey);
-  if (app_name)
+  if (const std::string* app_name =
+          window->GetProperty(app_restore::kBrowserAppNameKey)) {
     app_launch_info->app_name = *app_name;
+  }
 
   // Read all other relevant app launching information from `app_restore_data`
   // to `app_launch_info`.
@@ -269,6 +269,13 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     if (app_restore_data->intent) {
       app_launch_info->intent = app_restore_data->intent->Clone();
     }
+  }
+
+  // Use app id from lacros if available. This will only be set for lacros
+  // app windows.
+  if (auto app_name = DesksClient::Get()->GetAppIdForLacrosWindow(window)) {
+    app_launch_info->app_name = *app_name;
+    app_launch_info->app_type_browser = true;
   }
 
   if (app_id != app_constants::kChromeAppId &&
