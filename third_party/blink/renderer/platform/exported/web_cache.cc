@@ -57,20 +57,6 @@ void WebCache::Clear() {
     cache->EvictResources();
 }
 
-void WebCache::GetUsageStats(UsageStats* result) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(features::kNoCentralWebCacheLimitControl));
-  DCHECK(result);
-
-  MemoryCache* cache = MemoryCache::Get();
-  if (cache) {
-    result->capacity = cache->Capacity();
-    result->size = cache->size();
-  } else {
-    memset(result, 0, sizeof(UsageStats));
-  }
-}
-
 void WebCache::GetResourceTypeStats(WebCacheResourceTypeStats* result) {
   MemoryCache* cache = MemoryCache::Get();
   if (cache) {
