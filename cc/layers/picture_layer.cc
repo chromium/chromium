@@ -279,6 +279,10 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
 
 void PictureLayer::DropRecordingSourceContentIfInvalid(
     int source_frame_number) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("PictureLayer::DropRecordingSourceContentIfInvalid %d %d",
+                       recordreplay::PointerId(this), source_frame_number);
+
   gfx::Size recording_source_bounds = recording_source_.Read(*this)->GetSize();
 
   gfx::Size layer_bounds = bounds();

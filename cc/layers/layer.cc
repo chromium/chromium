@@ -117,9 +117,14 @@ Layer::Layer()
       property_tree_sequence_number_(-1),
       ignore_set_needs_commit_for_test_(false),
       bitflags_(0u),
-      subtree_property_changed_(false) {}
+      subtree_property_changed_(false) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::RegisterPointer(this);
+}
 
 Layer::~Layer() {
+  recordreplay::UnregisterPointer(this);
+
   // Our parent should be holding a reference to us so there should be no
   // way for us to be destroyed while we still have a parent.
   DCHECK(!parent());
