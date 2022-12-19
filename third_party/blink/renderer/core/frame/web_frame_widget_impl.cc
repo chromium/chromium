@@ -2377,13 +2377,15 @@ void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
     cc::ActiveFrameSequenceTrackers trackers) {
   if (!LocalRootImpl())
     return;
-
+  Document* document = LocalRootImpl()->GetFrame()->GetDocument();
+  DCHECK(document);
   LocalRootImpl()
       ->GetFrame()
       ->View()
       ->GetUkmAggregator()
       ->RecordEndOfFrameMetrics(frame_begin_time, base::TimeTicks::Now(),
-                                trackers);
+                                trackers, document->UkmSourceID(),
+                                document->UkmRecorder());
 }
 
 void WebFrameWidgetImpl::WillHandleGestureEvent(const WebGestureEvent& event,

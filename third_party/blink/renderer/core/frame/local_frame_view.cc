@@ -502,7 +502,16 @@ void LocalFrameView::Dispose() {
   if (owner_element && owner_element->OwnedEmbeddedContentView() == this)
     owner_element->SetEmbeddedContentView(nullptr);
 
-  ukm_aggregator_.reset();
+  if (ukm_aggregator_) {
+    LocalFrame& root_frame = GetFrame().LocalFrameRoot();
+    Document* root_document = root_frame.GetDocument();
+    if (root_document) {
+      ukm_aggregator_->TransmitFinalSample(root_document->UkmSourceID(),
+                                           root_document->UkmRecorder(),
+                                           root_frame.IsMainFrame());
+    }
+    ukm_aggregator_.reset();
+  }
   layout_shift_tracker_->Dispose();
 
 #if DCHECK_IS_ON()
@@ -4727,10 +4736,7 @@ LocalFrameUkmAggregator* LocalFrameView::GetUkmAggregator() {
   if (!local_root->ukm_aggregator_) {
     if (!local_root->frame_->GetChromeClient().IsSVGImageChromeClient()) {
       local_root->ukm_aggregator_ =
-          base::MakeRefCounted<LocalFrameUkmAggregator>(
-              local_root->frame_->GetDocument()->UkmSourceID(),
-              local_root->frame_->GetDocument()->UkmRecorder(),
-              local_root->frame_->IsMainFrame());
+          base::MakeRefCounted<LocalFrameUkmAggregator>();
     }
   }
   return local_root->ukm_aggregator_.get();
