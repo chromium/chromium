@@ -140,6 +140,8 @@ static_library("protocol") {
     "negotiating_host_authenticator.cc",
     "negotiating_host_authenticator.h",
     "network_settings.h",
+    "observing_input_filter.cc",
+    "observing_input_filter.h",
     "p2p_datagram_socket.h",
     "p2p_stream_socket.h",
     "pairing_authenticator_base.cc",

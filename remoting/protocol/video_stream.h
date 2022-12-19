@@ -50,6 +50,12 @@ class VideoStream {
 
   // Selects the current desktop display (if multiple displays).
   virtual void SelectSource(webrtc::ScreenId id) = 0;
+
+  // Allows the owner of the stream to request a different |capture_interval|
+  // (usually a higher frequency) for the specified |boost_duration|. After
+  // |boost_duration| has elapsed, the capture rate will return to normal.
+  virtual void BoostFramerate(base::TimeDelta capture_interval,
+                              base::TimeDelta boost_duration) {}
 };
 
 }  // namespace remoting::protocol

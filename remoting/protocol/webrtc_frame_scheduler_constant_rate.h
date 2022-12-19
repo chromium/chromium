@@ -33,6 +33,11 @@ class WebrtcFrameSchedulerConstantRate : public WebrtcFrameScheduler {
   void OnFrameCaptured(const webrtc::DesktopFrame* frame) override;
   void SetMaxFramerateFps(int max_framerate_fps) override;
 
+  // Temporarily adjusts the capture rate to |capture_interval| for the next
+  // |duration|.
+  void BoostCaptureRate(base::TimeDelta capture_interval,
+                        base::TimeDelta duration);
+
  private:
   void ScheduleNextFrame();
   void CaptureNextFrame();
@@ -51,6 +56,9 @@ class WebrtcFrameSchedulerConstantRate : public WebrtcFrameScheduler {
   // Framerate for scheduling frames. Initially 0 to prevent scheduling before
   // the output sink has been added.
   int max_framerate_fps_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  base::TimeDelta boost_capture_interval_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeTicks boost_window_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

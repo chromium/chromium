@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -63,6 +64,9 @@ namespace {
 constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
 constexpr char kStreamName[] = "screen_stream";
 
+constexpr base::TimeDelta kDefaultBoostCaptureInterval = base::Milliseconds(5);
+constexpr base::TimeDelta kDefaultBoostDuration = base::Milliseconds(50);
+
 std::string StreamNameForId(webrtc::ScreenId id) {
   return std::string(kStreamName) + "_" + base::NumberToString(id);
 }
@@ -87,7 +91,8 @@ ClientSession::ClientSession(
       input_tracker_(&host_input_filter_),
       remote_input_filter_(&input_tracker_),
       mouse_clamping_filter_(&remote_input_filter_),
-      desktop_and_cursor_composer_notifier_(&mouse_clamping_filter_, this),
+      observing_input_filter_(&mouse_clamping_filter_),
+      desktop_and_cursor_composer_notifier_(&observing_input_filter_, this),
       disable_input_filter_(&desktop_and_cursor_composer_notifier_),
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
@@ -163,6 +168,37 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     pause_video_ = !video_control.enable();
     for (const auto& [_, video_stream] : video_streams_) {
       video_stream->Pause(pause_video_);
+    }
+  }
+
+  if (video_control.has_framerate_boost()) {
+    auto framerate_boost = video_control.framerate_boost();
+    DCHECK(framerate_boost.has_enabled());
+
+    if (!framerate_boost.enabled()) {
+      LOG(INFO) << "FramerateBoost disabled.";
+      observing_input_filter_.ClearInputEventCallback();
+    } else {
+      base::TimeDelta capture_interval =
+          framerate_boost.has_capture_interval_ms()
+              ? base::clamp(
+                    base::Milliseconds(framerate_boost.capture_interval_ms()),
+                    base::Milliseconds(1), base::Milliseconds(1000))
+              : kDefaultBoostCaptureInterval;
+      base::TimeDelta boost_duration =
+          framerate_boost.has_boost_duration_ms()
+              ? base::clamp(
+                    base::Milliseconds(framerate_boost.boost_duration_ms()),
+                    base::Milliseconds(1), base::Milliseconds(1000))
+              : kDefaultBoostDuration;
+      LOG(INFO) << "FramerateBoost enabled (interval: "
+                << capture_interval.InMilliseconds()
+                << "ms, duration: " << boost_duration.InMilliseconds() << "ms)";
+
+      // Unretained is sound as this instance owns |observing_input_filter_|.
+      observing_input_filter_.SetInputEventCallback(base::BindRepeating(
+          &ClientSession::BoostFramerateOnInput, base::Unretained(this),
+          capture_interval, boost_duration, base::OwnedRef(false)));
     }
   }
 }
@@ -1170,6 +1206,38 @@ void ClientSession::CreateRemoteWebAuthnMessageHandler(
 bool ClientSession::IsValidDisplayIndex(webrtc::ScreenId index) const {
   return index == webrtc::kFullDesktopScreenId ||
          desktop_display_info_.GetDisplayInfo(index) != nullptr;
+}
+
+void ClientSession::BoostFramerateOnInput(
+    base::TimeDelta capture_interval,
+    base::TimeDelta boost_duration,
+    bool& mouse_button_down,
+    protocol::ObservingInputFilter::Event event) {
+  // Boost the framerate when we see input which is likely to trigger a change
+  // on the screen. This includes key, text, and touch events as well as mouse
+  // scroll or mouse moves when a button is down.
+  auto* mouse_event_ptr =
+      absl::get_if<std::reference_wrapper<const protocol::MouseEvent>>(&event);
+  if (mouse_event_ptr) {
+    const protocol::MouseEvent& mouse_event = mouse_event_ptr->get();
+    if (!mouse_button_down && !mouse_event.has_button() &&
+        !mouse_event.has_wheel_delta_x() && !mouse_event.has_wheel_delta_y()) {
+      return;
+    }
+
+    if (mouse_event.has_button()) {
+      // The |button| field is only set when the state changes so we must store
+      // the current value so we know whether to boost the framerate when we see
+      // a mouse move event.
+      mouse_button_down = mouse_event.button_down();
+    }
+  }
+
+  for (const auto& [_, video_stream] : video_streams_) {
+    // TODO(joedow): Consider boosting the capture rate for the active desktop
+    // instead of all desktops in multi-stream mode.
+    video_stream->BoostFramerate(capture_interval, boost_duration);
+  }
 }
 
 }  // namespace remoting
