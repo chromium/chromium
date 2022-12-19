@@ -45,12 +45,7 @@ found in the LICENSE file.
                shortcut="Enter|Ctrl">
       <command id="move-to-trash" shortcut="Backspace|Alt Delete" label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}">
       <command id="restore-from-trash" shortcut="Backspace|Alt Delete" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
-      <!-- TODO(crbug.com/953310): Remove 'Backspace|Alt' and 'Delete' from
-           'delete' once trash is permanently enabled. For now, these shortcuts
-           are left for backward-compatibility for when trash is not enabled,
-           but 'restore-from-trash' intentionally shadows these shortcuts when
-           trash is enabled -->
-      <command id="delete" shortcut="Backspace|Alt Delete Backspace|Alt|Shift Delete|Shift">
+      <command id="delete" shortcut="Backspace|Alt|Shift Delete|Shift Backspace|Alt Delete ">
       <command id="empty-trash" shortcut="Backspace|Alt|Ctrl|Shift Delete|Ctrl|Shift" shortcut="" label="$i18n{EMPTY_TRASH_BUTTON_LABEL}">
       <command id="refresh" label="$i18n{REFRESH_BUTTON_LABEL}"
                shortcut="b|Ctrl" hidden>
