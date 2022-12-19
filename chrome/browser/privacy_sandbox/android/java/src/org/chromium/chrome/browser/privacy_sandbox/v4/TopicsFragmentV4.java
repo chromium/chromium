@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
@@ -25,6 +24,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
@@ -40,9 +41,9 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String TOPICS_PAGE_FOOTER_PREFERENCE = "topics_page_footer";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
-    private PreferenceCategory mCurrentTopicsCategory;
-    private PreferenceCategory mEmptyTopicsPreference;
-    private PreferenceCategory mDisabledTopicsPreference;
+    private PreferenceCategoryWithClickableSummary mCurrentTopicsCategory;
+    private PreferenceCategoryWithClickableSummary mEmptyTopicsPreference;
+    private PreferenceCategoryWithClickableSummary mDisabledTopicsPreference;
     private TextMessagePreference mTopicsPageFooterPreference;
 
     static boolean isTopicsPrefEnabled() {
@@ -75,6 +76,15 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mTopicsTogglePreference.setChecked(isTopicsPrefEnabled());
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
+
+        mCurrentTopicsCategory.setSummary(SpanApplier.applySpans(
+                getResources().getString(R.string.settings_topics_page_current_topics_description),
+                new SpanApplier.SpanInfo("<link>", "</link>",
+                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+    }
+
+    private void onLearnMoreClicked(View view) {
+        launchSettingsActivity(TopicsLearnMoreFragment.class);
     }
 
     @Override

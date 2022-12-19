@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
@@ -22,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -30,13 +32,15 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  *
  * Subclasses have to call super.onCreatePreferences(bundle, s) when overriding onCreatePreferences.
  */
-public abstract class PrivacySandboxSettingsBaseFragment extends PreferenceFragmentCompat {
+public abstract class PrivacySandboxSettingsBaseFragment
+        extends PreferenceFragmentCompat implements FragmentSettingsLauncher {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.
     public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
 
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
+    private SettingsLauncher mSettingsLauncher;
 
     /**
      * Launches the right version of PrivacySandboxSettings depending on feature flags.
@@ -121,5 +125,16 @@ public abstract class PrivacySandboxSettingsBaseFragment extends PreferenceFragm
         } else if (referrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
         }
+    }
+
+    protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
+        if (mSettingsLauncher != null) {
+            mSettingsLauncher.launchSettingsActivity(getContext(), fragment);
+        }
+    }
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 }

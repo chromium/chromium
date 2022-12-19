@@ -12,23 +12,20 @@ found in the LICENSE file.
         android:title="@string/settings_topics_page_toggle_label"
         android:summary="@string/settings_topics_page_toggle_sub_label" />
 
-    <PreferenceCategory
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="current_topics"
-        android:layout="@layout/category_with_summary_preference"
         android:title="@string/settings_topics_page_current_topics_heading"
         android:summary="@string/settings_topics_page_current_topics_description" />
 
-    <PreferenceCategory
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="topics_disabled"
-        android:layout="@layout/category_with_summary_preference"
         android:title="@string/settings_topics_page_current_topics_heading"
         android:summary="@string/settings_topics_page_current_topics_description_disabled"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true" />
 
-    <PreferenceCategory
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="topics_empty"
-        android:layout="@layout/category_with_summary_preference"
         android:title="@string/settings_topics_page_current_topics_heading"
         android:summary="@string/settings_topics_page_current_topics_description_empty"
         app:allowDividerAbove="true"

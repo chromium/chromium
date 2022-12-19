@@ -1304,13 +1304,13 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
       <!-- TODO(http://b/254412601): Format link.-->
       <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Description for the Topics toggle.">
-        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus.  <ph name="BEGIN_LINK">&lt;link&gt;</ph>Mauris porta imperdiet venenatis<ph name="END_LINK">&lt;/link&gt;</ph>
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus.
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" translateable="false" desc="Section title for the current Topics list.">
         Mauris at lectus
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the current Topics list.">
-        Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit, eget bibendum neque.
+        Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit, eget bibendum neque.  <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="Description which appears when Topics are disabled.">
         Sed porta viverra lacus ut euismod. Integer a cursus metus, ac ultricies libero.
@@ -1333,6 +1333,18 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <!-- TODO(http://b/254412601): Format links.-->
       <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer for the Topics preference page.">
         Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>justo nec ultricies semper<ph name="END_LINK_1">&lt;/link1&gt;</ph>, <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>eros mauris varius nibh<ph name="END_LINK_2">&lt;/link2&gt;</ph>, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="">
+        Vivamus nibh turpis
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
       </message>
 
       <!-- Privacy Sandbox v4 - Fledge Page -->

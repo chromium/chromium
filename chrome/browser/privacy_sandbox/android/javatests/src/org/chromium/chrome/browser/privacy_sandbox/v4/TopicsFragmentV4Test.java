@@ -17,12 +17,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
@@ -121,6 +123,10 @@ public final class TopicsFragmentV4Test {
         return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_sub_page_title);
     }
 
+    private View getLearnMoreRootView() {
+        return getRootViewSanitized(R.string.settings_topics_page_learn_more_heading);
+    }
+
     private void setTopicsPrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> TopicsFragmentV4.setTopicsPrefEnabled(isEnabled));
@@ -178,6 +184,17 @@ public final class TopicsFragmentV4Test {
         startTopicsSettings();
         onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
         mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_populated");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderLearnMore() throws IOException {
+        setTopicsPrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
+        startTopicsSettings();
+        onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
+        mRenderTestRule.render(getLearnMoreRootView(), "topics_learn_more");
     }
 
     @Test

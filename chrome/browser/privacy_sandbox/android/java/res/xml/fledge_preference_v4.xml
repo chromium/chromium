@@ -12,12 +12,10 @@ found in the LICENSE file.
         android:title="@string/settings_fledge_page_toggle_label"
         android:summary="@string/settings_fledge_page_toggle_sub_label" />
 
-    <PreferenceCategory
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="current_fledge_sites"
-        android:layout="@layout/category_with_summary_preference"
         android:title="@string/settings_fledge_page_current_sites_heading"
         android:summary="@string/settings_fledge_page_current_sites_description"
-        app:isPreferenceVisible="false"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false" />
 

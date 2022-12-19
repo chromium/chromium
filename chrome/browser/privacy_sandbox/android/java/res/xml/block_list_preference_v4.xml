@@ -8,6 +8,6 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:key="block_list"
-        android:layout="@layout/category_with_summary_preference"
+        android:layout="@layout/category_with_clickable_summary_preference"
         app:allowDividerBelow="false" />
 </PreferenceScreen>
