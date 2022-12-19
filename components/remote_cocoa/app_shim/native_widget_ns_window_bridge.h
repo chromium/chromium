@@ -146,8 +146,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Called by the NSWindowDelegate when the system control tint changes.
   void OnSystemControlTintChanged();
 
-  // Called by the NSWindowDelegate on a scale factor or color space change.
-  void OnBackingPropertiesChanged();
+  // Called by the NSWindowDelegate on screen, scale, or color space changes.
+  void OnScreenOrBackingPropertiesChanged();
 
   // Called by the NSWindowDelegate when the window becomes or resigns key.
   void OnWindowKeyStatusChangedTo(bool is_key);

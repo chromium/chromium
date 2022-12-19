@@ -235,9 +235,9 @@ void RenderWidgetHostNSViewBridge::OnDisplayRemoved(const display::Display&) {
 void RenderWidgetHostNSViewBridge::OnDisplayMetricsChanged(
     const display::Display&,
     uint32_t) {
-  // Note that -updateScreenProperties is also be called by the notification
-  // NSWindowDidChangeBackingPropertiesNotification (some of these calls
-  // will be redundant).
+  // Note that -updateScreenProperties is also be called by the notifications
+  // NSWindowDidChangeScreen and NSWindowDidChangeBackingPropertiesNotification,
+  // so some of these calls will be redundant.
   [cocoa_view_ updateScreenProperties];
 }
 

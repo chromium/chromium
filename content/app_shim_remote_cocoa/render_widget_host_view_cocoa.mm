@@ -180,7 +180,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
                    consumed:(BOOL)consumed;
 - (void)keyEvent:(NSEvent*)theEvent wasKeyEquivalent:(BOOL)equiv;
-- (void)windowDidChangeBackingProperties:(NSNotification*)notification;
+- (void)windowDidChangeScreenOrBackingProperties:(NSNotification*)notification;
 - (void)windowChangedGlobalFrame:(NSNotification*)notification;
 - (void)windowDidBecomeKey:(NSNotification*)notification;
 - (void)windowDidResignKey:(NSNotification*)notification;
@@ -1403,6 +1403,9 @@ void ExtractUnderlines(NSAttributedString* string,
       [NSNotificationCenter defaultCenter];
 
   if (oldWindow) {
+    [notificationCenter removeObserver:self
+                                  name:NSWindowDidChangeScreenNotification
+                                object:oldWindow];
     [notificationCenter
         removeObserver:self
                   name:NSWindowDidChangeBackingPropertiesNotification
@@ -1423,7 +1426,12 @@ void ExtractUnderlines(NSAttributedString* string,
   if (newWindow) {
     [notificationCenter
         addObserver:self
-           selector:@selector(windowDidChangeBackingProperties:)
+           selector:@selector(windowDidChangeScreenOrBackingProperties:)
+               name:NSWindowDidChangeScreenNotification
+             object:newWindow];
+    [notificationCenter
+        addObserver:self
+           selector:@selector(windowDidChangeScreenOrBackingProperties:)
                name:NSWindowDidChangeBackingPropertiesNotification
              object:newWindow];
     [notificationCenter addObserver:self
@@ -1466,7 +1474,7 @@ void ExtractUnderlines(NSAttributedString* string,
 // another, and makes note of the new screen's color space, scale factor, etc.
 // It is also called when the current NSScreen's properties change (which is
 // redundant with display::DisplayObserver::OnDisplayMetricsChanged).
-- (void)windowDidChangeBackingProperties:(NSNotification*)notification {
+- (void)windowDidChangeScreenOrBackingProperties:(NSNotification*)notification {
   // Delay calling updateScreenProperties so that display::ScreenMac can
   // update our display::Displays first (if applicable).
   [self performSelector:@selector(updateScreenProperties)
