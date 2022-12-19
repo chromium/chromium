@@ -1,18 +1,15 @@
-<!--
-Copyright 2021 The Chromium Authors
+/* Copyright 2021 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
--->
+ */
 
-<!--
-****************************************************
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+/*****************************************************
 OOBE Flex Layout (based on polymer iron-flex-layout)
-*****************************************************
--->
-
-<dom-module id="oobe-flex-layout-styles">
-  <template>
-    <style>
+******************************************************/
 
       .layout.horizontal,
       .layout.horizontal-reverse,
@@ -120,7 +117,7 @@ OOBE Flex Layout (based on polymer iron-flex-layout)
       }
 
       /*******************************
-                Other Layout
+      Other Layout
       *******************************/
 
       [hidden] {
@@ -138,6 +135,3 @@ OOBE Flex Layout (based on polymer iron-flex-layout)
         right: 0;
         top: 0;
       }
-    </style>
-  </template>
-</dom-module>

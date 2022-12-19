@@ -1,16 +1,16 @@
-<!--
-Copyright 2020 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
+/* Copyright 2020 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
-<link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
-<link rel="import" href="../oobe_vars/oobe_shared_vars_css.html">
-<link rel="import" href="../common_styles/oobe_flex_layout_styles.html">
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../oobe_vars/oobe_custom_vars.css.js
+ * #import=../oobe_vars/oobe_shared_vars.css.js
+ * #import=./oobe_flex_layout_styles.css.js
+ * #include=oobe-flex-layout-styles
+ * #css_wrapper_metadata_end */
 
-<dom-module id="oobe-common-styles">
-  <template>
-    <style include="oobe-flex-layout-styles">
       :host .oobe-default-font {
         color: var(--oobe-text-color);
         font-family: var(--oobe-default-font-family);
@@ -20,7 +20,7 @@ found in the LICENSE file.
       }
 
       /* Classes can-scroll is-scrolled scrolled-to-bottom are set by
-         OobeScrollableBehavior. */
+          OobeScrollableBehavior. */
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
         background: linear-gradient(0deg,
                         rgba(var(--google-grey-100-rgb), 1) 0,
@@ -69,6 +69,3 @@ found in the LICENSE file.
       .oobe-optin-content {
         margin-inline-end: 16px;
       }
-    </style>
-  </template>
-</dom-module>

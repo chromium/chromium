@@ -13,8 +13,8 @@ import '//resources/cr_elements/icons.html.js';
 import './oobe_icons.m.js';
 import './buttons/oobe_back_button.js';
 import './buttons/oobe_next_button.js';
-import './common_styles/oobe_common_styles.m.js';
-import './common_styles/oobe_dialog_host_styles.m.js';
+import './common_styles/oobe_common_styles.css.js';
+import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_adaptive_dialog.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

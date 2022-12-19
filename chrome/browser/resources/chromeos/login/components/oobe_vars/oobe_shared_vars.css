@@ -1,14 +1,15 @@
-<!--
-Copyright 2021 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
-<custom-style>
-  <style is="custom-style">
-     /* Please check whether multidevice_setup/ui_page.html needs to be */
-     /* updated when below css vars are changed. */
-     /* TODO(crbug.com/1202135): Move equall custom vars here. */
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #css_wrapper_metadata_end */
+
+    /* Please check whether multidevice_setup/ui_page.html needs to be */
+    /* updated when below css vars are changed. */
+    /* TODO(crbug.com/1202135): Move equall custom vars here. */
     html {
       --oobe-adaptive-dialog-buttons-horizontal-padding: clamp(20px,
         calc(var(--oobe-adaptive-dialog-width) * 0.035), 40px);
@@ -17,7 +18,7 @@ found in the LICENSE file.
       --oobe-adaptive-dialog-back-button-vertical-padding:
         var(--oobe-adaptive-dialog-buttons-vertical-padding);
       /* 16px is a distance from border of button to icon. Once oobe-dialog is
-         deleted this could be calculated from button vars. */
+          deleted this could be calculated from button vars. */
       --oobe-adaptive-dialog-back-button-horizontal-padding:
         calc(var(--oobe-adaptive-dialog-buttons-horizontal-padding) - 16px);
       --oobe-adaptive-dialog-content-padding: 40px;
@@ -44,5 +45,3 @@ found in the LICENSE file.
       --oobe-radio-card-label-line-height: 24px;
       /* Fonts vars end */
     }
-  </style>
-</custom-style>

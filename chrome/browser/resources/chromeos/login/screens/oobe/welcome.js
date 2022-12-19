@@ -11,8 +11,8 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/oobe_i18n_dropdown.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

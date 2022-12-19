@@ -8,8 +8,8 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/js/action_link.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
-import '../../components/oobe_vars/oobe_shared_vars_css.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
+import '../../components/oobe_vars/oobe_shared_vars.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

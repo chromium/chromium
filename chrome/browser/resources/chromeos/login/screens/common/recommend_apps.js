@@ -9,7 +9,7 @@
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

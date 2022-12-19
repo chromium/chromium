@@ -10,7 +10,7 @@ import '//resources/ash/common/multidevice_setup/multidevice_setup_shared.css.js
 import '//resources/ash/common/multidevice_setup/multidevice_setup.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/throbber_notice.js';
 
 import {MultiDeviceSetupDelegate} from '//resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';

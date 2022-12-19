@@ -11,8 +11,8 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/ash/common/network/network_list.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';

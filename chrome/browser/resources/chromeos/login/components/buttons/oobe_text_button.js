@@ -32,8 +32,8 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../common_styles/oobe_common_styles.m.js';
-import '../oobe_vars/oobe_custom_vars_css.m.js';
+import '../common_styles/oobe_common_styles.css.js';
+import '../oobe_vars/oobe_custom_vars.css.js';
 
 import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

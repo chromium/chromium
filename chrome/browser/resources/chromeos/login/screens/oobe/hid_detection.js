@@ -11,8 +11,8 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
 import '../../components/hd_iron_icon.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.js';
 

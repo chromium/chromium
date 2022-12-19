@@ -2,62 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/chromeos/login/oobe_auto_imports.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
-    ":oobe_custom_vars_css.m",
-    ":oobe_custom_vars_remora_css.m",
-    ":oobe_shared_vars_css.m",
+    ":oobe_custom_vars.css",
+    ":oobe_custom_vars_remora.css",
+    ":oobe_shared_vars.css",
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":oobe_custom_vars_css_module",
-    ":oobe_custom_vars_remora_css_module",
-    ":oobe_shared_vars_css_module",
+js_library("oobe_custom_vars.css") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars.css.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  extra_deps = [ ":css_wrapper_files" ]
 }
 
-js_library("oobe_custom_vars_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_css.m.js" ]
-  deps = []
-  extra_deps = [ ":oobe_custom_vars_css_module" ]
+js_library("oobe_custom_vars_remora.css") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_remora.css.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":css_wrapper_files" ]
 }
 
-js_library("oobe_custom_vars_remora_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_remora_css.m.js" ]
-  deps = []
-  extra_deps = [ ":oobe_custom_vars_remora_css_module" ]
+js_library("oobe_shared_vars.css") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_shared_vars.css.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":css_wrapper_files" ]
 }
 
-js_library("oobe_shared_vars_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_shared_vars_css.m.js" ]
-  deps = []
-  extra_deps = [ ":oobe_shared_vars_css_module" ]
-}
-
-polymer_modulizer("oobe_custom_vars_css") {
-  js_file = "oobe_custom_vars_css.m.js"
-  html_file = "oobe_custom_vars_css.html"
-  html_type = "custom-style"
-  migrated_imports = oobe_migrated_imports
-}
-
-polymer_modulizer("oobe_custom_vars_remora_css") {
-  js_file = "oobe_custom_vars_remora_css.m.js"
-  html_file = "oobe_custom_vars_remora_css.html"
-  html_type = "custom-style"
-  migrated_imports = oobe_migrated_imports
-}
-
-polymer_modulizer("oobe_shared_vars_css") {
-  js_file = "oobe_shared_vars_css.m.js"
-  html_file = "oobe_shared_vars_css.html"
-  html_type = "custom-style"
-  migrated_imports = oobe_migrated_imports
+css_to_wrapper("css_wrapper_files") {
+  in_files = [
+    "oobe_custom_vars.css",
+    "oobe_custom_vars_remora.css",
+    "oobe_shared_vars.css",
+  ]
+  use_js = true
 }

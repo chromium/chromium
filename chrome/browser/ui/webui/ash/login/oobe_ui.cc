@@ -173,7 +173,7 @@ constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 
 // Components
 constexpr char kOobeCustomVarsCssJsM[] =
-    "components/oobe_vars/oobe_custom_vars_css.m.js";
+    "components/oobe_vars/oobe_custom_vars.css.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";

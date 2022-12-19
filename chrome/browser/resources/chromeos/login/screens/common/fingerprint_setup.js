@@ -10,8 +10,8 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

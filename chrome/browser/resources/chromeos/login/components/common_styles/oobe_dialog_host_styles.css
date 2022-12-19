@@ -1,16 +1,15 @@
-<!--
-Copyright 2021 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
-<link rel="import" href="/components/common_styles/oobe_common_styles.html">
-<link rel="import" href="/components/oobe_vars/oobe_custom_vars_css.html">
-<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
-
-<dom-module id="oobe-dialog-host-styles">
-    <template>
-      <style include="oobe-common-styles">
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../oobe_vars/oobe_custom_vars.css.js
+ * #import=../oobe_vars/oobe_shared_vars.css.js
+ * #import=./oobe_common_styles.css.js
+ * #include=oobe-common-styles
+ * #css_wrapper_metadata_end */
 
         :host(:not([hidden])) {
           display: flex;
@@ -67,6 +66,3 @@ found in the LICENSE file.
         :host-context([orientation=vertical]) .portrait-horizontal-centered {
           margin: 0 auto;
         }
-      </style>
-    </template>
-  </dom-module>

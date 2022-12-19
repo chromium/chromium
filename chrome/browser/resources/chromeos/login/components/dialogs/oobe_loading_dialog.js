@@ -6,8 +6,8 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../oobe_cr_lottie.js';
 import '../buttons/oobe_text_button.js';
-import '../common_styles/oobe_common_styles.m.js';
-import '../common_styles/oobe_dialog_host_styles.m.js';
+import '../common_styles/oobe_common_styles.css.js';
+import '../common_styles/oobe_dialog_host_styles.css.js';
 import './oobe_adaptive_dialog.js';
 import './oobe_content_dialog.js';
 

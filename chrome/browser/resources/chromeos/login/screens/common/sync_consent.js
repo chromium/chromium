@@ -16,8 +16,8 @@ import '//oobe/sync-consent-icons.m.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/hd_iron_icon.js';
-import '../../components/common_styles/oobe_common_styles.m.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.css.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';

@@ -13,7 +13,7 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import '../../components/gaia_header.js';
 import '../../components/gaia_input_form.js';
 import '../../components/gaia_button.js';
-import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 

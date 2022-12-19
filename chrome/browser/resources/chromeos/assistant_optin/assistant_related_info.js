@@ -14,7 +14,7 @@ import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../components/buttons/oobe_next_button.js';
 import '../components/buttons/oobe_text_button.js';
-import '../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../components/dialogs/oobe_adaptive_dialog.js';
 import './assistant_common_styles.m.js';
 import './assistant_icon.m.js';

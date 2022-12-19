@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import './common_styles/oobe_common_styles.m.js';
+import './common_styles/oobe_common_styles.css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

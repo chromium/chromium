@@ -22,8 +22,8 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './buttons/oobe_back_button.js';
 import './buttons/oobe_text_button.js';
-import './common_styles/oobe_common_styles.m.js';
-import './common_styles/oobe_dialog_host_styles.m.js';
+import './common_styles/oobe_common_styles.css.js';
+import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_content_dialog.js';
 
 import {sendWithPromise} from '//resources/ash/common/cr.m.js';

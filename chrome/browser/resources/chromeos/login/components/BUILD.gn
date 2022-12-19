@@ -51,9 +51,6 @@ group("closure_compile") {
 
 group("polymer3_elements") {
   public_deps = [
-                  "common_styles:polymer3_elements",
-                  "oobe_vars:polymer3_elements",
-
                   # Local targets
                   ":oobe_icons_module",
                   ":oobe_icons_module",
