@@ -4,6 +4,9 @@
 
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
@@ -18,7 +21,13 @@ const int kMenuButtonWidth = 63;
 
 // Should match size of |kMenuCommands| array in
 // touch_selection_menu_runner_views.cc.
-const int kMenuCommandCount = 4;
+const int kMenuCommandCount = 3;
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Should match size of |kMenuSelectionCommands| array in
+// touch_selection_menu_runner_views.cc.
+const int kMenuSelectionCommandCount = 1;
+#endif
 
 }  // namespace
 
@@ -36,6 +45,10 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kTouchTextEditingRedesign);
+#endif
     ViewsTestBase::SetUp();
     // These tests expect NativeWidgetAura and so aren't applicable to
     // aura-mus-client. http://crbug.com/663561.
@@ -68,6 +81,8 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
   bool no_command_available_ = false;
 
   int last_executed_command_id_ = 0;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the default touch selection menu runner is installed and opening
@@ -105,10 +120,17 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
       static_cast<TouchSelectionMenuRunnerViews*>(
           ui::TouchSelectionMenuRunner::GetInstance()));
 
-  // Calculate the width of quick menu. In addition to |kMenuCommandCount|
-  // commands, there is an item for ellipsis.
+  int menu_command_count =
+#if BUILDFLAG(IS_CHROMEOS)
+      kMenuCommandCount + kMenuSelectionCommandCount;
+#else
+      kMenuCommandCount;
+#endif
+
+  // Calculate the width of quick menu. In addition to the menu commands, there
+  // is an item for ellipsis.
   int quick_menu_width =
-      (kMenuCommandCount + 1) * kMenuButtonWidth + kMenuCommandCount;
+      (menu_command_count + 1) * kMenuButtonWidth + menu_command_count;
 
   // Set anchor rect's width a bit smaller than the quick menu width plus handle
   // image width and check that anchor rect's height is adjusted.

@@ -88,7 +88,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -527,9 +526,6 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
     // These commands do invoke the popup.
     case Textfield::kPaste:
       ExecuteTextEditCommand(ui::TextEditCommand::PASTE);
-      return;
-    case Textfield::kSelectAll:
-      ExecuteTextEditCommand(ui::TextEditCommand::SELECT_ALL);
       return;
     default:
       if (Textfield::IsCommandIdEnabled(command_id)) {
@@ -1449,11 +1445,6 @@ void OmniboxViewViews::OnBlur() {
 }
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (command_id == Textfield::kSelectAll) {
-    return features::IsTouchTextEditingRedesignEnabled();
-  }
-#endif
   if (command_id == Textfield::kPaste)
     return !GetReadOnly() &&
            !GetClipboardText(/*notify_if_restricted=*/false).empty();
@@ -1468,7 +1459,8 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     return true;
 
   return Textfield::IsCommandIdEnabled(command_id) ||
-         location_bar_view_->command_updater()->IsCommandEnabled(command_id);
+         (location_bar_view_ &&
+          location_bar_view_->command_updater()->IsCommandEnabled(command_id));
 }
 
 std::u16string OmniboxViewViews::GetSelectionClipboardText() const {

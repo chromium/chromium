@@ -11,10 +11,12 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/display.h"
@@ -36,12 +38,19 @@ namespace {
 struct MenuCommand {
   int command_id;
   int message_id;
-} kMenuCommands[] = {
+};
+
+MenuCommand kMenuCommands[] = {
     {ui::TouchEditable::kCut, IDS_APP_CUT},
     {ui::TouchEditable::kCopy, IDS_APP_COPY},
     {ui::TouchEditable::kPaste, IDS_APP_PASTE},
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+MenuCommand kMenuSelectCommands[] = {
     {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
 };
+#endif
 
 constexpr int kSpacingBetweenButtons = 2;
 
@@ -118,7 +127,12 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
   const auto is_enabled = [client](MenuCommand command) {
     return client->IsCommandIdEnabled(command.command_id);
   };
-  return base::ranges::any_of(kMenuCommands, is_enabled);
+  bool is_available = base::ranges::any_of(kMenuCommands, is_enabled);
+#if BUILDFLAG(IS_CHROMEOS)
+  is_available |= ::features::IsTouchTextEditingRedesignEnabled() &&
+                  base::ranges::any_of(kMenuSelectCommands, is_enabled);
+#endif
+  return is_available;
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
@@ -142,6 +156,18 @@ void TouchSelectionMenuViews::CreateButtons() {
                               base::Unretained(this), command.command_id));
     }
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    for (const auto& command : kMenuSelectCommands) {
+      if (client_->IsCommandIdEnabled(command.command_id)) {
+        CreateButton(
+            l10n_util::GetStringUTF16(command.message_id),
+            base::BindRepeating(&TouchSelectionMenuViews::ButtonPressed,
+                                base::Unretained(this), command.command_id));
+      }
+    }
+  }
+#endif
 
   // Finally, add ellipsis button.
   CreateButton(u"...",

@@ -805,6 +805,17 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
   EXPECT_EQ(expected_text, returned_text);
 }
 
+TEST_F(OmniboxViewViewsTest, SelectAllCommand) {
+  omnibox_view()->SetUserText(u"user text");
+  EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(views::Textfield::kSelectAll));
+
+  omnibox_view()->ExecuteCommand(views::Textfield::kSelectAll, 0);
+  EXPECT_TRUE(omnibox_view()->IsSelectAll());
+  // Test command is disabled if text is already all selected.
+  EXPECT_FALSE(
+      omnibox_view()->IsCommandIdEnabled(views::Textfield::kSelectAll));
+}
+
 // Verifies |OmniboxEditModel::State::needs_revert_and_select_all|, and verifies
 // a recent regression in this logic (see https://crbug.com/923290).
 TEST_F(OmniboxViewViewsTest, SelectAllOnReactivateTabAfterDeleteAll) {
