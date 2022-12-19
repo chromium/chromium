@@ -81,8 +81,8 @@ void PermissionActionsHistory::RecordAction(
     PermissionAction action,
     RequestType type,
     PermissionPromptDisposition prompt_disposition) {
-  DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
-  base::Value::Dict& update_dict = update->GetDict();
+  ScopedDictPrefUpdate update(pref_service_, prefs::kPermissionActions);
+  base::Value::Dict& update_dict = update.Get();
 
   const base::StringPiece permission_path(PermissionKeyForRequestType(type));
 
@@ -121,9 +121,9 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
+  ScopedDictPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
-  for (auto permission_entry : update->GetDict()) {
+  for (auto permission_entry : update.Get()) {
     permission_entry.second.GetList().EraseIf([delete_begin,
                                                delete_end](const auto& entry) {
       const absl::optional<base::Time> timestamp = base::ValueToTime(
