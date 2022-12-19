@@ -52,8 +52,6 @@ constexpr int kBannerHeightPx = 160;
 
 constexpr int kMaxRetries = 3;
 
-constexpr char kRecentHighlightsPhotoContainerId[] = "RECENT_PHOTOS";
-
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,          // Number of initial errors to ignore.
     500,        // Initial delay in ms.
@@ -189,13 +187,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       settings_->selected_album_ids.clear();
       for (const auto& personal_album : personal_albums_.albums) {
         if (personal_album.selected) {
-          std::string album_id = personal_album.album_id;
-
-          // Convert the fake album ID back to actual ID from IMAX so we can
-          // download the previews.
-          if (album_id == ash::kAmbientModeRecentHighlightsAlbumId)
-            album_id = kRecentHighlightsPhotoContainerId;
-          settings_->selected_album_ids.emplace_back(album_id);
+          settings_->selected_album_ids.push_back(personal_album.album_id);
         }
       }
 
