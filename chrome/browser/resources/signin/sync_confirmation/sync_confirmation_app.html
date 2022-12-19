@@ -230,6 +230,10 @@
     min-width: 111px;
   }
 
+  .window-button-container {
+    --cr-button-height: 36px;
+  }
+
   #headerContainer.signin-intercept-design {
     background: center 36px no-repeat
         url(./images/sync_confirmation_signin_intercept_illustration.svg);
@@ -321,16 +325,26 @@
 
   .tangible-sync #syncConfirmationHeading {
     font-family: 'Google Sans', arial, sans-serif;
-    font-size: 1.25rem;
+    font-size: 2.25rem;
     font-weight: 500;
+    line-height: 43px;
+    margin: 24px 0 16px;
+  }
+
+  .dialog-main-container.tangible-sync #syncConfirmationHeading {
+    font-size: 1.25rem;
     line-height: 24px;
-    margin: 16px 0 12px;
+    margin: 16px 0 12px
   }
 
   #syncInfoTitle {
     color: var(--sync-info-title-color);
-    font-size: 0.94rem;
+    font-size: 1.25rem;
     line-height: 24px;
+  }
+
+  .dialog-main-container.tangible-sync #syncInfoTitle {
+    font-size: 0.94rem;
   }
 
   #syncBenefitsList {
@@ -341,9 +355,14 @@
     font-size: 0.81rem;
     font-weight: 400;
     line-height: 20px;
+    margin: 24px 0 16px;
+    padding: 24px;
+    row-gap: 16px;
+  }
+
+  .dialog-main-container.tangible-sync #syncBenefitsList {
     margin: 16px 38px;
     padding: 20px 24px;
-    row-gap: 16px;
   }
 
   .sync-benefit {
@@ -363,6 +382,9 @@
   #syncInfoDesc {
     font-size: 0.75rem;
     line-height: 20px;
+  }
+
+  .dialog-main-container.tangible-sync #syncInfoDesc {
     margin: 0 38px;
   }
 
@@ -592,7 +614,8 @@
   </div>
   <div class="action-row tangible-sync">
     <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-    <div id="tangible-sync-button-container" class="action-container">
+    <div id="tangible-sync-button-container"
+        class$="action-container [[getButtonContainerClass_()]]">
       <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
           disabled="[[anyButtonClicked_]]" consent-confirmation
           autofocus="[[isModalDialog_]]">

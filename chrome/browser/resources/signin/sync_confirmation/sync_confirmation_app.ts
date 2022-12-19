@@ -164,6 +164,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
                                  'window-main-container';
   }
 
+  private getButtonContainerClass_() {
+    return this.isModalDialog_ ? 'dialog-button-container' :
+                                 'window-button-container';
+  }
+
   private getSigninInterceptDesignClass_(isSigninInterceptFre: boolean):
       string {
     return isSigninInterceptFre ? 'signin-intercept-design' : '';
