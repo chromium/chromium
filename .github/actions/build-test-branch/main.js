@@ -72,7 +72,7 @@ function platformTasks(platform) {
         numTests,
         // https://linear.app/replay/issue/RUN-885
         env: {
-          RECORD_REPLAY_JS_PROGRESS_ASSERTS: "1",
+          RECORD_REPLAY_JS_ASSERTS: "1",
         },
       },
       platform,
