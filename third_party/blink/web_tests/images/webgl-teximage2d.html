@@ -3,7 +3,7 @@
 <script src="../resources/testharnessreport.js"></script>
 <script src="../fast/webgl/resources/webgl-test.js"></script>
 <canvas width="0" height="0"> </canvas>
-<img src="resources/green.jpg" width="0" height="0"></img>
+<img width="0" height="0"></img>
 <script>
 async_test(function(t) {
     var gl = create3DContext(document.querySelector("canvas"));
@@ -14,5 +14,6 @@ async_test(function(t) {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
         assert_equals(gl.getError(), gl.NO_ERROR);
     });
+    img.src = "resources/green.jpg";
 });
 </script>
