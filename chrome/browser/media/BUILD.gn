@@ -16,6 +16,7 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"
+  use_typescript_sources = true
 }
 
 proto_library("media_engagement_preload_proto") {

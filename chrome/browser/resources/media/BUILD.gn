@@ -11,12 +11,12 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocess_folder = "preprocessed"
 copy("copy_mojo") {
   deps = [
-    "//chrome/browser/media:mojo_bindings_js",
+    "//chrome/browser/media:mojo_bindings_ts__generator",
     "//services/media_session/public/mojom:mojom_js",
   ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/media/media_engagement_score_details.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/media/history/media_history_store.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/media/media_engagement_score_details.mojom-webui.ts",
     "$root_gen_dir/mojom-webui/services/media_session/public/mojom/media_session.mojom-webui.js",
   ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
@@ -40,8 +40,8 @@ ts_library("build_ts") {
     "media_history.ts",
     "media_data_table.ts",
     "media_engagement.ts",
-    "media_engagement_score_details.mojom-webui.js",
-    "media_history_store.mojom-webui.js",
+    "media_engagement_score_details.mojom-webui.ts",
+    "media_history_store.mojom-webui.ts",
     "media_session.mojom-webui.js",
     "webrtc_logs.ts",
   ]
