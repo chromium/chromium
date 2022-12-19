@@ -1596,6 +1596,21 @@
             ]
         }
     ],
+    "AvatarsCloudMigration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvatarsCloudMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidRasterDuringElasticOverscroll": [
         {
             "platforms": [
