@@ -1397,7 +1397,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_WithInsufficientTimeout) {
   frame->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
       base::Milliseconds(1u).ToZxDuration())));
 
-  frame.RunUntilMessagePortClosed();
+  // Don't wait for the MessagePort to close, since that doesn't happen in
+  // ASAN builds, for some reason (crbug.com/1400304).
 
   // Regardless of how many events may have been delivered, teardown should
   // have timed-out.
