@@ -25,8 +25,7 @@ class MockAbstractTexture
   MOCK_METHOD0(ForceContextLost, void());
   MOCK_CONST_METHOD0(GetTextureBase, gpu::TextureBase*());
   MOCK_METHOD2(SetParameteri, void(GLenum pname, GLint param));
-  MOCK_METHOD2(BindStreamTextureImage,
-               void(gl::GLImage* image, GLuint service_id));
+  MOCK_METHOD1(BindToServiceId, void(GLuint service_id));
   MOCK_METHOD0(ReleaseImage, void());
   MOCK_CONST_METHOD0(GetImageForTesting, gl::GLImage*());
   MOCK_METHOD0(SetCleared, void());

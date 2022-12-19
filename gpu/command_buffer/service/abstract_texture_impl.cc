@@ -61,12 +61,14 @@ void AbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void AbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
-                                                 GLuint service_id) {
+void AbstractTextureImpl::BindToServiceId(GLuint service_id) {
   const GLint level = 0;
   const GLuint target = texture_->target();
-  texture_->SetLevelStreamTextureImage(
-      target, level, image, Texture::ImageState::UNBOUND, service_id);
+  // TODO(crbug.com/1310020): Simplify this flow for the fact that |image| is
+  // always null.
+  texture_->SetLevelStreamTextureImage(target, level, /*image=*/nullptr,
+                                       Texture::ImageState::UNBOUND,
+                                       service_id);
   texture_->SetLevelCleared(target, level, true);
 }
 #endif
@@ -143,12 +145,13 @@ void AbstractTextureImplPassthrough::SetParameteri(GLenum pname, GLint param) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void AbstractTextureImplPassthrough::BindStreamTextureImage(gl::GLImage* image,
-                                                            GLuint service_id) {
+void AbstractTextureImplPassthrough::BindToServiceId(GLuint service_id) {
   const GLint level = 0;
   const GLuint target = texture_->target();
-  texture_->SetStreamLevelImage(target, level, image, service_id);
-  texture_->set_bind_pending();
+  // TODO(crbug.com/1310020): Simplify this flow for the fact that |image| is
+  // always null.
+  texture_->SetStreamLevelImage(target, level, /*stream_texture_image=*/nullptr,
+                                service_id);
 }
 #endif
 

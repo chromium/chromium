@@ -56,19 +56,13 @@ class GPU_GLES2_EXPORT AbstractTexture {
   virtual void SetParameteri(GLenum pname, GLint param) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Set |image| to be our stream texture image, using |service_id| in place
-  // of our real service id when the client tries to bind us.  This must also
-  // guarantee that CopyTexImage() is called before drawing, so that |image|
-  // may update the stream texture.  This will do nothing if the texture has
+  // Binds the texture to |service_id|. This will do nothing if the texture has
   // been destroyed.
   //
-  // It is not required to SetCleared() if one binds an image.
+  // It is not required to SetCleared() if one calls this method.
   //
   // The context must be current.
-  // TODO(crbug.com/1310020): Simplify this interface/implementation for fact
-  // that we now always pass |nullptr| for |image| in production.
-  virtual void BindStreamTextureImage(gl::GLImage* image,
-                                      GLuint service_id) = 0;
+  virtual void BindToServiceId(GLuint service_id) = 0;
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

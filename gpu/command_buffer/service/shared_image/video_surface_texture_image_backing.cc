@@ -186,10 +186,9 @@ VideoSurfaceTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
 
   // If TextureOwner binds texture implicitly on update, that means it will
   // use TextureOwner texture_id to update and bind. Hence use TextureOwner
-  // texture_id in abstract texture via BindStreamTextureImage().
+  // texture_id in abstract texture via BindToServiceId().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
-  texture->BindStreamTextureImage(
-      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
+  texture->BindToServiceId(stream_texture_sii_->GetTextureBase()->service_id());
 
   return std::make_unique<GLTextureVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
@@ -214,10 +213,9 @@ VideoSurfaceTextureImageBacking::ProduceGLTexturePassthrough(
 
   // If TextureOwner binds texture implicitly on update, that means it will
   // use TextureOwner texture_id to update and bind. Hence use TextureOwner
-  // texture_id in abstract texture via BindStreamTextureImage().
+  // texture_id in abstract texture via BindToServiceId().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
-  texture->BindStreamTextureImage(
-      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
+  texture->BindToServiceId(stream_texture_sii_->GetTextureBase()->service_id());
 
   return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
       manager, this, tracker, std::move(texture));
@@ -254,10 +252,9 @@ VideoSurfaceTextureImageBacking::ProduceSkia(
 
   // If TextureOwner binds texture implicitly on update, that means it will
   // use TextureOwner texture_id to update and bind. Hence use TextureOwner
-  // texture_id in abstract texture via BindStreamTextureImage().
+  // texture_id in abstract texture via BindToServiceId().
   DCHECK(stream_texture_sii_->TextureOwnerBindsTextureOnUpdate());
-  texture->BindStreamTextureImage(
-      nullptr, stream_texture_sii_->GetTextureBase()->service_id());
+  texture->BindToServiceId(stream_texture_sii_->GetTextureBase()->service_id());
 
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
