@@ -46,7 +46,7 @@ void AppIconReader::ReadIcons(const std::string& app_id,
   IconEffects icon_effects = static_cast<IconEffects>(icon_key.icon_effects);
   int resource_id = GetResourceIdForIcon(app_id, size_in_dip, icon_key);
 
-  if (icon_key.resource_id != IconKey::kInvalidResourceId) {
+  if (resource_id != IconKey::kInvalidResourceId) {
     LoadIconFromResource(icon_type, size_in_dip, resource_id,
                          /*is_placeholder_icon=*/false, icon_effects,
                          std::move(callback));

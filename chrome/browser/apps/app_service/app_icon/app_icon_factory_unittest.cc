@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -15,6 +16,8 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -35,11 +38,20 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/component_extension_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "components/services/app_service/public/cpp/features.h"
 #endif
 
 namespace apps {
@@ -169,6 +181,16 @@ class AppIconFactoryTest : public testing::Test {
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
             IDR_LOGO_CROSTINI_DEFAULT);
     output = std::vector<uint8_t>(data.begin(), data.end());
+  }
+
+  void GeneratePlayStoreIcon(gfx::ImageSkia& output_image_skia) {
+    output_image_skia =
+        *(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_ARC_SUPPORT_ICON_192_PNG));
+    output_image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+        output_image_skia, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kSizeInDip, kSizeInDip));
+    EnsureRepresentationsLoaded(output_image_skia);
   }
 #endif
 
@@ -422,6 +444,134 @@ TEST_F(AppIconFactoryTest, ArcActivityIconsToImageSkias) {
     EXPECT_TRUE(icon.IsThreadSafe());
   }
 }
+
+class AppServiceAppIconTest : public AppIconFactoryTest {
+ public:
+  void SetUp() override {
+    AppIconFactoryTest::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::kUnifiedAppServiceIconLoading);
+
+    ash::CiceroneClient::InitializeFake();
+    profile_ = std::make_unique<TestingProfile>();
+    proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
+    scoped_decode_request_for_testing_ =
+        std::make_unique<ScopedDecodeRequestForTesting>();
+
+    crostini_test_helper_ =
+        std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
+    crostini_test_helper_->ReInitializeAppServiceIntegration();
+
+    fake_publisher_ =
+        std::make_unique<apps::FakePublisherForIconTest>(proxy_, AppType::kArc);
+  }
+
+  void TearDown() override {
+    crostini_test_helper_.reset();
+    profile_.reset();
+    ash::CiceroneClient::Shutdown();
+  }
+
+  void OverrideAppServiceProxyInnerIconLoader(apps::IconLoader* icon_loader) {
+    app_service_proxy().OverrideInnerIconLoaderForTesting(icon_loader);
+  }
+
+  void AddApp(const std::string& app_id, AppType app_type) {
+    std::vector<AppPtr> deltas;
+    deltas.push_back(std::make_unique<App>(app_type, app_id));
+    proxy_->OnApps(std::move(deltas), app_type,
+                   /*should_notify_initialized=*/false);
+  }
+
+  // Set up the test Crostini app.
+  std::string AddCrostiniApp(std::string app_id, std::string app_name) {
+    vm_tools::apps::App app;
+    app.set_desktop_file_id(app_id);
+    vm_tools::apps::App::LocaleString::Entry* entry =
+        app.mutable_name()->add_values();
+    entry->set_locale(std::string());
+    entry->set_value(app_name);
+    crostini_test_helper_->AddApp(app);
+
+    return crostini::CrostiniTestHelper::GenerateAppId(
+        app.desktop_file_id(), crostini::kCrostiniDefaultVmName,
+        crostini::kCrostiniDefaultContainerName);
+  }
+
+  apps::IconValuePtr LoadIconFromIconKey(const std::string& app_id,
+                                         const IconKey& icon_key,
+                                         IconType icon_type) {
+    base::test::TestFuture<apps::IconValuePtr> result;
+    app_service_proxy().LoadIconFromIconKey(
+        AppType::kCrostini, app_id, icon_key, icon_type, kSizeInDip,
+        /*allow_placeholder_icon=*/false, result.GetCallback());
+    return result.Take();
+  }
+
+  AppServiceProxy& app_service_proxy() { return *proxy_; }
+
+ private:
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<AppServiceProxy> proxy_;
+  std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
+  std::unique_ptr<ScopedDecodeRequestForTesting>
+      scoped_decode_request_for_testing_;
+
+  std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::WeakPtrFactory<AppServiceAppIconTest> weak_ptr_factory_{this};
+};
+
+TEST_F(AppServiceAppIconTest, GetCrostiniPenguinIcon) {
+  gfx::ImageSkia src_image_skia;
+  GenerateCrostiniPenguinIcon(src_image_skia);
+
+  std::string app_id = AddCrostiniApp("app_id", "app_name");
+
+  // Verify the icon reading function in AppService for the default Crostini
+  // penguin icon by calling LoadIconFromResource.
+  IconKey icon_key;
+  icon_key.resource_id = IDR_LOGO_CROSTINI_DEFAULT;
+  icon_key.icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  auto iv = LoadIconFromIconKey(app_id, icon_key, IconType::kStandard);
+  ASSERT_EQ(apps::IconType::kStandard, iv->icon_type);
+  EnsureRepresentationsLoaded(iv->uncompressed);
+  VerifyIcon(src_image_skia, iv->uncompressed);
+}
+
+TEST_F(AppServiceAppIconTest, GetCrostiniPenguinCompressedIcon) {
+  std::vector<uint8_t> src_data;
+  GenerateCrostiniPenguinCompressedIcon(src_data);
+
+  std::string app_id = AddCrostiniApp("app_id", "app_name");
+
+  // Verify the icon reading function in AppService for the default Crostini
+  // penguin icon by calling LoadIconFromResource.
+  IconKey icon_key;
+  icon_key.resource_id = IDR_LOGO_CROSTINI_DEFAULT;
+  icon_key.icon_effects = apps::IconEffects::kCrOsStandardIcon;
+  auto iv = LoadIconFromIconKey(app_id, icon_key, IconType::kCompressed);
+  VerifyCompressedIcon(src_data, *iv);
+}
+
+TEST_F(AppServiceAppIconTest, GetPlayStoreIcon) {
+  gfx::ImageSkia src_image_skia;
+  GeneratePlayStoreIcon(src_image_skia);
+
+  AddApp(arc::kPlayStoreAppId, AppType::kArc);
+
+  // Verify the icon reading function in AppService for the Play Store icon by
+  // calling LoadIconFromResource.
+  auto iv =
+      LoadIconFromIconKey(arc::kPlayStoreAppId, IconKey(), IconType::kStandard);
+  ASSERT_EQ(apps::IconType::kStandard, iv->icon_type);
+  EnsureRepresentationsLoaded(iv->uncompressed);
+  VerifyIcon(src_image_skia, iv->uncompressed);
+}
+
 #endif
 
 }  // namespace apps
