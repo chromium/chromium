@@ -3020,7 +3020,6 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac12 ] external/wpt/css/css-images/image-set/image-set-no-res-rendering.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/a-element-origin.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/size-adjust-02.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
@@ -6983,3 +6982,8 @@ external/wpt/css/css-images/image-set/image-set-invalid-resolution-rendering.htm
 
 # TODO(crbug.com/1401590): Re-enable this test
 [ Mac11 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
+
+
+# TODO(crbug.com/1402194): Re-enable this test
+crbug.com/1402194 [ Mac ] external/wpt/css/css-images/image-set/image-set-no-res-rendering-2.html [ Failure Pass ]
+crbug.com/1402194 [ Mac ] external/wpt/css/css-images/image-set/image-set-no-res-rendering.html [ Failure Pass ]
