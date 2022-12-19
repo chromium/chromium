@@ -928,9 +928,6 @@ extern const char kHideShelfControlsInTabletModeDescription[];
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 
-extern const char kHttpsFirstModeV2Name[];
-extern const char kHttpsFirstModeV2Description[];
-
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 

@@ -44,8 +44,6 @@
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::kEventHistogram;
 
-// Tests for the v1 implementation of HTTPS-First Mode. See
-// https_upgrade_browsertest.cc for the tests for v2.
 class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
  public:
   HttpsOnlyModeBrowserTest() = default;

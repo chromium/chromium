@@ -4121,14 +4121,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "https-first-mode-v2",
-    "owners": [
-      "cthomp",
-      "trusty-transport@chromium.org"
-    ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "https-only-mode",
     "owners": [ "meacer", "trusty-transport@chromium.org" ],
     "expiry_milestone": 110
