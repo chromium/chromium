@@ -95,15 +95,27 @@ suite('ColorsTest', () => {
 
     $$<HTMLElement>(colorsElement, '#mainColor')!.click();
 
-    assertEquals(1, handler.getCallCount('setForegroundColor'));
-    assertEquals(7, handler.getArgs('setForegroundColor')[0].value);
+    assertEquals(1, handler.getCallCount('setSeedColor'));
+    assertEquals(7, handler.getArgs('setSeedColor')[0].value);
   });
 
   test('renders chrome colors', async () => {
     const colors = {
       colors: [
-        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
-        {id: 2, name: 'bar', background: {value: 3}, foreground: {value: 4}},
+        {
+          id: 1,
+          name: 'foo',
+          seed: {value: 5},
+          background: {value: 1},
+          foreground: {value: 2},
+        },
+        {
+          id: 2,
+          name: 'bar',
+          seed: {value: 6},
+          background: {value: 3},
+          foreground: {value: 4},
+        },
       ],
     };
 
@@ -125,7 +137,13 @@ suite('ColorsTest', () => {
   test('sets chrome color', async () => {
     const colors = {
       colors: [
-        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
+        {
+          id: 1,
+          name: 'foo',
+          seed: {value: 3},
+          background: {value: 1},
+          foreground: {value: 2},
+        },
       ],
     };
 
@@ -134,8 +152,8 @@ suite('ColorsTest', () => {
     colorsElement.shadowRoot!.querySelector<ColorElement>(
                                  '.chrome-color')!.click();
 
-    assertEquals(1, handler.getCallCount('setForegroundColor'));
-    assertEquals(2, handler.getArgs('setForegroundColor')[0].value);
+    assertEquals(1, handler.getCallCount('setSeedColor'));
+    assertEquals(3, handler.getArgs('setSeedColor')[0].value);
   });
 
   test('opens color picker', () => {
@@ -152,7 +170,7 @@ suite('ColorsTest', () => {
     colorsElement.$.colorPicker.value = '#ff0000';
     colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
 
-    const args = handler.getArgs('setForegroundColor');
+    const args = handler.getArgs('setSeedColor');
     assertGE(1, args.length);
     assertEquals(0xffff0000, args.at(-1).value);
   });
@@ -160,7 +178,13 @@ suite('ColorsTest', () => {
   test('updates custom color for theme', async () => {
     const colors = {
       colors: [
-        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
+        {
+          id: 1,
+          name: 'foo',
+          seed: {value: 3},
+          background: {value: 1},
+          foreground: {value: 2},
+        },
       ],
     };
     chromeColorsResolver.resolve(colors);
@@ -197,8 +221,20 @@ suite('ColorsTest', () => {
   test('checks selected color', async () => {
     const colors = {
       colors: [
-        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
-        {id: 2, name: 'bar', background: {value: 3}, foreground: {value: 4}},
+        {
+          id: 1,
+          name: 'foo',
+          seed: {value: 5},
+          background: {value: 1},
+          foreground: {value: 2},
+        },
+        {
+          id: 2,
+          name: 'bar',
+          seed: {value: 6},
+          background: {value: 3},
+          foreground: {value: 4},
+        },
       ],
     };
     chromeColorsResolver.resolve(colors);
@@ -222,7 +258,8 @@ suite('ColorsTest', () => {
     assertEquals(defaultColorElement, indexedColors[0]);
 
     // Set main color.
-    theme.foregroundColor = {value: 7};
+    theme.seedColor = {value: 7};
+    theme.foregroundColor = {value: 5};
     theme.backgroundImage = createBackgroundImage('https://foo.com');
     theme.backgroundImage.mainColor = {value: 7};
     callbackRouter.setTheme(theme);
@@ -240,6 +277,7 @@ suite('ColorsTest', () => {
     assertEquals(mainColorElement, indexedColors[0]);
 
     // Set Chrome color.
+    theme.seedColor = {value: 5};
     theme.foregroundColor = {value: 2};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
@@ -255,6 +293,7 @@ suite('ColorsTest', () => {
     assertEquals('chrome-color', indexedColors[0]!.className);
 
     // Set custom color.
+    theme.seedColor = {value: 10};
     theme.foregroundColor = {value: 5};
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();

@@ -56,7 +56,7 @@ class CustomizeChromePageHandler
   void UpdateModulesSettings() override;
   void UpdateTheme() override;
   void SetDefaultColor() override;
-  void SetForegroundColor(SkColor foreground_color) override;
+  void SetSeedColor(SkColor seed_color) override;
   void SetClassicChromeDefaultTheme() override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;

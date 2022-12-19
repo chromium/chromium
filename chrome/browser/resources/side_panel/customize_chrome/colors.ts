@@ -155,15 +155,15 @@ export class ColorsElement extends PolymerElement {
     }
     if (this.theme_.backgroundImage && this.theme_.backgroundImage.mainColor &&
         this.theme_.backgroundImage.mainColor!.value ===
-            this.theme_.foregroundColor.value) {
+            this.theme_.seedColor.value) {
       return {type: ColorType.MAIN};
     }
     if (this.colors_.find(
-            (color: ChromeColor) => color.foreground.value ===
-                this.theme_.foregroundColor!.value)) {
+            (color: ChromeColor) =>
+                color.seed.value === this.theme_.seedColor.value)) {
       return {
         type: ColorType.CHROME,
-        chromeColor: this.theme_.foregroundColor!,
+        chromeColor: this.theme_.seedColor,
       };
     }
     return {type: ColorType.CUSTOM};
@@ -211,13 +211,13 @@ export class ColorsElement extends PolymerElement {
   }
 
   private onMainColorClick_() {
-    CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         this.theme_!.backgroundImage!.mainColor!);
   }
 
   private onChromeColorClick_(e: Event) {
-    CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
-        this.$.chromeColors.itemForElement(e.target as HTMLElement).foreground);
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
+        this.$.chromeColors.itemForElement(e.target as HTMLElement).seed);
   }
 
   private onCustomColorClick_() {
@@ -226,7 +226,7 @@ export class ColorsElement extends PolymerElement {
   }
 
   private onCustomColorChange_(e: Event) {
-    CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
+    CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value));
   }
 

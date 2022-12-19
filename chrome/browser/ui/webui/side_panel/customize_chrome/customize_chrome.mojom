@@ -25,6 +25,8 @@ struct Theme {
   BackgroundImage? background_image;
   // Whether the OS is in dark mode.
   bool system_dark_mode;
+  // The color this theme was calculated from.
+  skia.mojom.SkColor seed_color;
   // The current theme background color.
   skia.mojom.SkColor background_color;
   // The current theme foreground color. If not set, we use the default theme.
@@ -36,6 +38,8 @@ struct Theme {
 struct ChromeColor {
   // Localized string of the color name.
   string name;
+  // The color this Chrome color was calculated from.
+  skia.mojom.SkColor seed;
   // The foreground color.
   skia.mojom.SkColor background;
   // The background color.
@@ -93,8 +97,8 @@ interface CustomizeChromePageHandler {
   // Sets Chrome's theme according to the default color.
   SetDefaultColor();
 
-  // Sets Chrome's theme according to |foreground_color|.
-  SetForegroundColor(skia.mojom.SkColor foreground_color);
+  // Sets a Chrome theme generated from |seed_color|.
+  SetSeedColor(skia.mojom.SkColor seed_color);
 
   // Sets theme to default classic chrome.
   SetClassicChromeDefaultTheme();

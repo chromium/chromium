@@ -78,10 +78,10 @@
         title="[[item.name]]"
         aria-label$="[[item.name]]"
         role="radio"
-        checked="[[isChromeColorSelected_(item.foreground, selectedColor_)]]"
+        checked="[[isChromeColorSelected_(item.seed, selectedColor_)]]"
         aria-checked$=
-            "[[isChromeColorSelected_(item.foreground, selectedColor_)]]"
-        tabindex$="[[chromeColorTabIndex_(item.foreground, selectedColor_)]]"
+            "[[isChromeColorSelected_(item.seed, selectedColor_)]]"
+        tabindex$="[[chromeColorTabIndex_(item.seed, selectedColor_)]]"
         on-click="onChromeColorClick_">
     </customize-chrome-color>
   </template>
