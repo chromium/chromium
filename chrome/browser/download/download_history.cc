@@ -386,11 +386,6 @@ void DownloadHistory::LoadHistoryDownloads(
         history::ToContentDownloadInterruptReason(row.interrupt_reason);
     std::vector<GURL> url_chain = row.url_chain;
     TruncatedDataUrlAtTheEndIfNeeded(&url_chain);
-    download::DownloadItemRerouteInfo reroute_info;
-    if (row.reroute_info_serialized.empty() ||
-        !reroute_info.ParseFromString(row.reroute_info_serialized)) {
-      reroute_info.Clear();
-    }
 
     // If the serialized EmbedderDownloadData is not present in DownloadRow,
     // use the site URL to grab the appropriate StoragePartitionConfig to use
@@ -419,8 +414,7 @@ void DownloadHistory::LoadHistoryDownloads(
         history_download_state,
         history::ToContentDownloadDangerType(row.danger_type), history_reason,
         row.opened, row.last_access_time, row.transient,
-        history::ToContentReceivedSlices(row.download_slice_info),
-        reroute_info);
+        history::ToContentReceivedSlices(row.download_slice_info));
     // DownloadManager returns a nullptr if it decides to remove the download
     // permanently.
     if (item == nullptr) {

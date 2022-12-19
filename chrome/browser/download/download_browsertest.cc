@@ -531,8 +531,7 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
       download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED,
       download::DOWNLOAD_INTERRUPT_REASON_NONE, false /* opened */,
       current_time, false /* transient */,
-      std::vector<download::DownloadItem::ReceivedSlice>(),
-      download::DownloadItemRerouteInfo());
+      std::vector<download::DownloadItem::ReceivedSlice>());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

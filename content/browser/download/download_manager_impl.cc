@@ -1057,8 +1057,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     bool opened,
     base::Time last_access_time,
     bool transient,
-    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
-    const download::DownloadItemRerouteInfo& reroute_info) {
+    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
   // Retrieve the in-progress download if it exists. Notice that this also
   // removes it from |in_progress_downloads_|.
   auto in_progress_download = RetrieveInProgressDownload(id);
@@ -1075,7 +1074,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     DeleteDownloadedFileOnUIThread(current_path);
     return nullptr;
   }
-
+  download::DownloadItemRerouteInfo reroute_info;
   auto item = base::WrapUnique(item_factory_->CreatePersistedItem(
       this, guid, id, current_path, target_path, url_chain, referrer_url,
       StoragePartitionConfigToSerializedEmbedderDownloadData(

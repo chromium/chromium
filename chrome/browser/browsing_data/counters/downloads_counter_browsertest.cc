@@ -134,8 +134,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         GURL(), GURL(), url::Origin(), mime_type, std::string(), time_, time_,
         std::string(), std::string(), 1, 1, std::string(), state, danger,
         reason, false, time_, false,
-        std::vector<download::DownloadItem::ReceivedSlice>(),
-        download::DownloadItemRerouteInfo());
+        std::vector<download::DownloadItem::ReceivedSlice>());
 
     return guid;
   }

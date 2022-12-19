@@ -3626,8 +3626,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation_CrossSession) {
         download->GetTotalBytes(), download->GetHash(), download->GetState(),
         download->GetDangerType(), download->GetLastReason(),
         download->GetOpened(), download->GetLastAccessTime(),
-        download->IsTransient(), download->GetReceivedSlices(),
-        download->GetRerouteInfo()));
+        download->IsTransient(), download->GetReceivedSlices()));
   }
 
   content::DownloadTestObserverTerminal completion_observer(

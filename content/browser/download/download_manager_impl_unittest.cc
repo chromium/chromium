@@ -507,8 +507,7 @@ class DownloadManagerTest : public testing::Test {
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
             download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false,
             base::Time::Now(), true,
-            std::vector<download::DownloadItem::ReceivedSlice>(),
-            download::DownloadItemRerouteInfo());
+            std::vector<download::DownloadItem::ReceivedSlice>());
     return download_item;
   }
 
