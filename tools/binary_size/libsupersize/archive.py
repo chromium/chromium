@@ -260,17 +260,11 @@ def _CreateMetadata(container_spec, elf_info):
     shorten_path = os.path.basename
 
   if apk_spec:
-    if not container_spec.native_spec:
-      metadata[models.METADATA_APK_SIZE] = os.path.getsize(apk_spec.apk_path)
-      if apk_spec.mapping_path:
-        metadata[models.METADATA_PROGUARD_MAPPING_FILENAME] = shorten_path(
-            apk_spec.mapping_path)
-    if apk_spec.minimal_apks_path:
-      metadata[models.METADATA_APK_FILENAME] = shorten_path(
-          apk_spec.minimal_apks_path)
-      metadata[models.METADATA_APK_SPLIT_NAME] = apk_spec.split_name
-    else:
-      metadata[models.METADATA_APK_FILENAME] = shorten_path(apk_spec.apk_path)
+    apk_metadata = apk.CreateMetadata(apk_spec=apk_spec,
+                                      include_file_details=not native_spec,
+                                      shorten_path=shorten_path)
+    assert not (metadata.keys() & apk_metadata.keys())
+    metadata.update(apk_metadata)
 
   if native_spec:
     native_metadata = native.CreateMetadata(native_spec=native_spec,
