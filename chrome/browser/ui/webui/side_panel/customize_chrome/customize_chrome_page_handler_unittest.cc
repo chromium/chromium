@@ -15,6 +15,7 @@
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -155,6 +156,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD0(GetCustomBackground, absl::optional<CustomBackground>());
   MOCK_METHOD0(ResetCustomBackgroundInfo, void());
   MOCK_METHOD1(SelectLocalBackgroundImage, void(const base::FilePath&));
+  MOCK_METHOD1(AddObserver, void(NtpCustomBackgroundServiceObserver*));
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -225,12 +227,17 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     EXPECT_CALL(mock_ntp_background_service(), AddObserver)
         .Times(1)
         .WillOnce(testing::SaveArg<0>(&ntp_background_service_observer_));
+    EXPECT_CALL(mock_ntp_custom_background_service_, AddObserver)
+        .Times(1)
+        .WillOnce(
+            testing::SaveArg<0>(&ntp_custom_background_service_observer_));
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
         web_contents_);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
+    EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
 
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(profile_.get(), true);
@@ -248,6 +255,9 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   TestingProfile& profile() { return *profile_; }
   content::WebContents& web_contents() { return *web_contents_; }
   CustomizeChromePageHandler& handler() { return *handler_; }
+  NtpCustomBackgroundServiceObserver& ntp_custom_background_service_observer() {
+    return *ntp_custom_background_service_observer_;
+  }
   MockNtpBackgroundService& mock_ntp_background_service() {
     return *mock_ntp_background_service_;
   }
@@ -263,6 +273,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
+  NtpCustomBackgroundServiceObserver* ntp_custom_background_service_observer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -340,6 +351,7 @@ enum class ThemeUpdateSource {
   kMojo,
   kThemeService,
   kNativeTheme,
+  kCustomBackgroundService,
 };
 
 class CustomizeChromePageHandlerSetThemeTest
@@ -356,6 +368,10 @@ class CustomizeChromePageHandlerSetThemeTest
         break;
       case ThemeUpdateSource::kNativeTheme:
         ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+        break;
+      case ThemeUpdateSource::kCustomBackgroundService:
+        ntp_custom_background_service_observer()
+            .OnCustomBackgroundImageUpdated();
         break;
     }
   }
@@ -430,11 +446,13 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
   ASSERT_TRUE(theme->background_image->is_uploaded_image);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CustomizeChromePageHandlerSetThemeTest,
-                         ::testing::Values(ThemeUpdateSource::kMojo,
-                                           ThemeUpdateSource::kThemeService,
-                                           ThemeUpdateSource::kNativeTheme));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CustomizeChromePageHandlerSetThemeTest,
+    ::testing::Values(ThemeUpdateSource::kMojo,
+                      ThemeUpdateSource::kThemeService,
+                      ThemeUpdateSource::kNativeTheme,
+                      ThemeUpdateSource::kCustomBackgroundService));
 
 TEST_F(CustomizeChromePageHandlerTest, GetBackgroundCollections) {
   std::vector<CollectionInfo> test_collection_info;

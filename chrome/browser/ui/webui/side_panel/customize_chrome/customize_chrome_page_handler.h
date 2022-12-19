@@ -10,6 +10,7 @@
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
@@ -32,6 +33,7 @@ class CustomizeChromePageHandler
       public NtpBackgroundServiceObserver,
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
+      public NtpCustomBackgroundServiceObserver,
       public ui::SelectFileDialog::Listener {
  public:
   CustomizeChromePageHandler(
@@ -71,6 +73,10 @@ class CustomizeChromePageHandler
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+  void OnNtpCustomBackgroundServiceShuttingDown() override;
+
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
 
@@ -102,6 +108,9 @@ class CustomizeChromePageHandler
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      ntp_custom_background_service_observation_{this};
 
   mojo::Remote<side_panel::mojom::CustomizeChromePage> page_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandler> receiver_;

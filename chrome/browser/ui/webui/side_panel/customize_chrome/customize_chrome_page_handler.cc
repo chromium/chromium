@@ -65,6 +65,8 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpDisabledModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
+  ntp_custom_background_service_observation_.Observe(
+      ntp_custom_background_service_.get());
 }
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() {
@@ -141,6 +143,9 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
 }
 
 void CustomizeChromePageHandler::UpdateTheme() {
+  if (ntp_custom_background_service_) {
+    ntp_custom_background_service_->RefreshBackgroundIfNeeded();
+  }
   auto theme = side_panel::mojom::Theme::New();
   auto custom_background =
       ntp_custom_background_service_
@@ -185,7 +190,9 @@ void CustomizeChromePageHandler::SetSeedColor(SkColor seed_color) {
 }
 
 void CustomizeChromePageHandler::SetClassicChromeDefaultTheme() {
-  ntp_custom_background_service_->ResetCustomBackgroundInfo();
+  if (ntp_custom_background_service_) {
+    ntp_custom_background_service_->ResetCustomBackgroundInfo();
+  }
   theme_service_->UseDefaultTheme();
 }
 
@@ -233,6 +240,15 @@ void CustomizeChromePageHandler::OnNativeThemeUpdated(
 
 void CustomizeChromePageHandler::OnThemeChanged() {
   UpdateTheme();
+}
+
+void CustomizeChromePageHandler::OnCustomBackgroundImageUpdated() {
+  OnThemeChanged();
+}
+
+void CustomizeChromePageHandler::OnNtpCustomBackgroundServiceShuttingDown() {
+  ntp_custom_background_service_observation_.Reset();
+  ntp_custom_background_service_ = nullptr;
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {
