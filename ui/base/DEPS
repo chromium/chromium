@@ -19,7 +19,7 @@ include_rules = [
   "+ui/gfx",
   "+ui/resources/grit/ui_resources.h",
   "+ui/resources/grit/ui_unscaled_resources.h",
-  "+ui/resources/grit/webui_generated_resources.h",
+  "+ui/resources/grit/webui_resources.h",
   "+ui/strings/grit/app_locale_settings.h",
   "+ui/strings/grit/ax_strings.h",
   "+ui/strings/grit/ui_strings.h",

@@ -17,7 +17,7 @@ source_set("network_diagnostics_resource_provider") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/resources:webui_resources_grd_grit",
   ]
 }
 
@@ -31,7 +31,7 @@ source_set("network_health_resource_provider") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/resources:webui_resources_grd_grit",
   ]
 }
 
@@ -46,6 +46,6 @@ source_set("traffic_counters_resource_provider") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/resources:webui_resources_grd_grit",
   ]
 }

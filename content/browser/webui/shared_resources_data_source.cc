@@ -17,8 +17,8 @@
 #include "skia/grit/skia_resources.h"
 #include "skia/grit/skia_resources_map.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_generated_resources_map.h"
+#include "ui/resources/grit/webui_resources.h"
+#include "ui/resources/grit/webui_resources_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/grit/ash_resources.h"
@@ -103,7 +103,7 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
   source->AddResourcePaths(
-      base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize));
+      base::make_span(kWebuiResources, kWebuiResourcesSize));
   source->AddResourcePaths(
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
   source->AddResourcePaths(base::make_span(kSkiaResources, kSkiaResourcesSize));

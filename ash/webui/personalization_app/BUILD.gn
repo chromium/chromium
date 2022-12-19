@@ -41,7 +41,7 @@ static_library("personalization_app") {
     "//components/keyed_service/core",
     "//content/public/browser",
     "//ui/chromeos/styles:cros_styles_views",
-    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
   ]
 }

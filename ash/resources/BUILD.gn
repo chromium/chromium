@@ -44,7 +44,7 @@ template("ash_test_resources") {
     if (percent == "100") {
       sources += [
         "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
-        "$root_gen_dir/ui/resources/webui_generated_resources.pak",
+        "$root_gen_dir/ui/resources/webui_resources.pak",
       ]
     }
 

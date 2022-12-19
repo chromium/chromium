@@ -17,8 +17,8 @@
 #import "net/base/mime_util.h"
 #import "ui/base/webui/resource_path.h"
 #import "ui/base/webui/web_ui_util.h"
-#import "ui/resources/grit/webui_generated_resources.h"
-#import "ui/resources/grit/webui_generated_resources_map.h"
+#import "ui/resources/grit/webui_resources.h"
+#import "ui/resources/grit/webui_resources_map.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,9 +35,10 @@ const char kWebUIResourcesHost[] = "resources";
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
 const webui::ResourcePath* PathToResource(const std::string& path) {
-  for (size_t i = 0; i < kWebuiGeneratedResourcesSize; ++i) {
-    if (path == kWebuiGeneratedResources[i].path)
-      return &kWebuiGeneratedResources[i];
+  for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
+    if (path == kWebuiResources[i].path) {
+      return &kWebuiResources[i];
+    }
   }
   for (size_t i = 0; i < kMojoBindingsResourcesSize; ++i) {
     if (path == kMojoBindingsResources[i].path)

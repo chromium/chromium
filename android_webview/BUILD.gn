@@ -896,7 +896,7 @@ repack("repack_pack") {
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
     "$target_gen_dir/components_resources.pak",
     "$target_gen_dir/mojo_bindings_resources.pak",
-    "$target_gen_dir/webui_generated_resources.pak",
+    "$target_gen_dir/webui_resources.pak",
   ]
   deps = [
     ":generate_components_resources",
@@ -1045,14 +1045,14 @@ grit("generate_webui_resources") {
   enable_input_discovery_for_gn_analyze = false
   defines =
       [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-  source = "$root_gen_dir/ui/webui/resources/webui_generated_resources.grd"
+  source = "$root_gen_dir/ui/webui/resources/webui_resources.grd"
   deps = [ "//ui/webui/resources:build_grd" ]
 
   outputs = [
-    "grit/webui_generated_resources.h",
-    "grit/webui_generated_resources_map.cc",
-    "grit/webui_generated_resources_map.h",
-    "webui_generated_resources.pak",
+    "grit/webui_resources.h",
+    "grit/webui_resources_map.cc",
+    "grit/webui_resources_map.h",
+    "webui_resources.pak",
   ]
 
   # webui/resources has way too many resources. The allowlist is trim this down

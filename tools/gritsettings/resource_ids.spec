@@ -1033,11 +1033,7 @@
   "ui/webui/examples/resources/webui_examples_resources.grd": {
     "messages": [4850],
   },
-  "ui/webui/resources/webui_resources.grd": {
-    "includes": [4860],
-    "structures": [4880],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_generated_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_resources.grd": {
     "META": {"sizes": {"includes": [900]}},
     "includes": [4900],
   },

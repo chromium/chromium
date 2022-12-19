@@ -12,7 +12,7 @@ import("./cr_elements/cr_elements.gni")
 import("./js/js.gni")
 
 generate_grd("build_grd") {
-  grd_prefix = "webui_generated"
+  grd_prefix = "webui"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
   input_files = [ "test_loader.html" ]
