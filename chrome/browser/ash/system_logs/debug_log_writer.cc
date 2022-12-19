@@ -100,6 +100,7 @@ void RunCommand(const std::vector<std::string>& argv,
   }
 
   int exit_code = 0;
+  base::internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
   if (!process.WaitForExit(&exit_code)) {
     LOG(ERROR) << "Can't get exit code for pid " << process.Pid();
     if (!callback.is_null())
