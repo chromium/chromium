@@ -16,35 +16,32 @@ found in the LICENSE file.
         android:key="current_topics"
         android:layout="@layout/category_with_summary_preference"
         android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description"
-        app:isPreferenceVisible="false"
-        app:allowDividerAbove="false"
-        app:allowDividerBelow="false" />
+        android:summary="@string/settings_topics_page_current_topics_description" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <PreferenceCategory
         android:key="topics_disabled"
-        android:layout="@layout/centered_image_preference"
+        android:layout="@layout/category_with_summary_preference"
+        android:title="@string/settings_topics_page_current_topics_heading"
         android:summary="@string/settings_topics_page_current_topics_description_disabled"
-        android:icon="@drawable/ic_motion_photos_off_24dp"
-        app:isPreferenceVisible="false" />
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <PreferenceCategory
         android:key="topics_empty"
-        android:layout="@layout/centered_image_preference"
+        android:layout="@layout/category_with_summary_preference"
+        android:title="@string/settings_topics_page_current_topics_heading"
         android:summary="@string/settings_topics_page_current_topics_description_empty"
-        android:icon="@drawable/ic_hourglass_empty_24dp"
-        app:isPreferenceVisible="false" />
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="blocked_topics"
         android:title="@string/settings_topics_page_blocked_topics_heading"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.TopicsBlockedFragmentV4"
-        app:allowDividerBelow="false" />
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.TopicsBlockedFragmentV4" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_page_footer"
         android:summary="@string/settings_topics_page_footer"
-        app:isPreferenceVisible="false"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

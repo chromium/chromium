@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.privacy_sandbox.Topic;
 import org.chromium.chrome.browser.privacy_sandbox.TopicPreference;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -38,14 +37,12 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
     private static final String DISABLED_TOPICS_PREFERENCE = "topics_disabled";
-    private static final String BLOCKED_TOPICS_PREFERENCE = "blocked_topics";
     private static final String TOPICS_PAGE_FOOTER_PREFERENCE = "topics_page_footer";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
     private PreferenceCategory mCurrentTopicsCategory;
-    private TextMessagePreference mEmptyTopicsPreference;
-    private TextMessagePreference mDisabledTopicsPreference;
-    private ChromeBasePreference mBlockedTopicsPreference;
+    private PreferenceCategory mEmptyTopicsPreference;
+    private PreferenceCategory mDisabledTopicsPreference;
     private TextMessagePreference mTopicsPageFooterPreference;
 
     static boolean isTopicsPrefEnabled() {
@@ -73,7 +70,6 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
-        mBlockedTopicsPreference = findPreference(BLOCKED_TOPICS_PREFERENCE);
         mTopicsPageFooterPreference = findPreference(TOPICS_PAGE_FOOTER_PREFERENCE);
 
         mTopicsTogglePreference.setChecked(isTopicsPrefEnabled());
@@ -146,8 +142,6 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
         // Visible when Topics are enabled and the current Topics list is not empty.
         mCurrentTopicsCategory.setVisible(topicsEnabled && !topicsEmpty);
-        mTopicsPageFooterPreference.setVisible(topicsEnabled && !topicsEmpty);
-        mBlockedTopicsPreference.setDividerAllowedBelow(topicsEnabled && !topicsEmpty);
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {

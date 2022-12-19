@@ -172,23 +172,12 @@ public final class TopicsFragmentV4Test {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    public void testRenderBlockedTopicsOffPopulated() throws IOException {
+    public void testRenderBlockedTopicsPopulated() throws IOException {
         setTopicsPrefEnabled(false);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
         onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
-        mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_off_populated");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    public void testRenderBlockedTopicsOnPopulated() throws IOException {
-        setTopicsPrefEnabled(true);
-        mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
-        mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_on_populated");
+        mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_populated");
     }
 
     @Test
@@ -273,7 +262,7 @@ public final class TopicsFragmentV4Test {
         startTopicsSettings();
         onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
 
-        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description_disabled));
+        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description));
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
     }

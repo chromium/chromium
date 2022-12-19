@@ -81,13 +81,8 @@ public class TopicsBlockedFragmentV4
     }
 
     private void updateBlockedTopicsDescription() {
-        if (mBlockedTopicsCategory.getPreferenceCount() == 0) {
-            mBlockedTopicsCategory.setSummary(
-                    R.string.settings_topics_page_blocked_topics_description_empty);
-        } else {
-            mBlockedTopicsCategory.setSummary(TopicsFragmentV4.isTopicsPrefEnabled()
-                            ? R.string.settings_topics_page_blocked_topics_description
-                            : R.string.settings_topics_page_blocked_topics_description_disabled);
-        }
+        mBlockedTopicsCategory.setSummary(mBlockedTopicsCategory.getPreferenceCount() == 0
+                        ? R.string.settings_topics_page_blocked_topics_description_empty
+                        : R.string.settings_topics_page_blocked_topics_description);
     }
 }

@@ -1324,9 +1324,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" translateable="false" desc="">
         Donec fringilla justo vel ligula finibus, ut rutrum lectus vestibulum. Suspendisse vestibulum lorem lacinia nulla consequat auctor.
       </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="">
-        Donec commodo sem non augue blandit, ullamcorper aliquam enim fermentum
-      </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="">
         Diam maecenas sed
       </message>
