@@ -10,10 +10,6 @@
 
 namespace base::win {
 
-// Returns true if the OS has a default apps settings dialog. This method
-// returns false on Win7.
-BASE_EXPORT bool CanLaunchDefaultAppsSettingsModernDialog();
-
 // Launches the Windows 'settings' modern app with the 'default apps' view
 // focused. If `protocol` is not empty, it also highlights the `protocol` in
 // the dialog. Returns true if the default apps dialog was successfully opened,

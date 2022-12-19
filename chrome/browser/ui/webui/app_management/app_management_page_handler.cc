@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 
+#include <memory>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -111,7 +114,7 @@ bool ShouldHideStoragePermission(const std::string app_id) {
 // will be shown instead.
 bool CanShowDefaultAppAssociationsUi() {
 #if BUILDFLAG(IS_WIN)
-  return base::win::CanLaunchDefaultAppsSettingsModernDialog();
+  return true;
 #else
   return false;
 #endif
