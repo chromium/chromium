@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
@@ -101,21 +100,6 @@ public class SafeBrowsingReferringAppBridgeTest {
 
         Assert.assertEquals(ReferringAppSource.ACTIVITY_REFERRER, info.getSource());
         Assert.assertEquals(appReferrer, info.getName());
-    }
-
-    @Test
-    public void testFromActivityReferrerLowVersion() {
-        // @Config(..., sdk = Build.VERSION_CODES.LOLLIPOP) doesn't work. See crbug.com/944476.
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.LOLLIPOP);
-        String appReferrer = "android-app://app.name/";
-        setAppReferrerIntent(appReferrer);
-
-        ReferringAppInfo info = SafeBrowsingReferringAppBridge.getReferringAppInfo(mWindowAndroid);
-
-        // The getReferrer API is not available if the version code is too low.
-        Assert.assertEquals(ReferringAppSource.REFERRING_APP_SOURCE_UNSPECIFIED, info.getSource());
-        Assert.assertEquals("", info.getName());
     }
 
     private void setAppReferrerIntent(String appReferrer) {

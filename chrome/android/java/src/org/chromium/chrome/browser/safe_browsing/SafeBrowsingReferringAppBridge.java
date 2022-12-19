@@ -86,24 +86,23 @@ public class SafeBrowsingReferringAppBridge {
         }
 
         // If appId is empty, fallback to EXTRA_REFERRER;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-            // If the activity is launched through launcher activity, the referrer is set through
-            // intent extra.
-            String activity_referrer =
-                    IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_ACTIVITY_REFERRER);
-            if (activity_referrer != null) {
-                return new ReferringAppInfo(
-                        ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER, activity_referrer);
-            }
-
-            // If the activity referrer is not found in intent extra, get it from the activity
-            // directly.
-            Uri extraReferrer = activity.getReferrer();
-            if (extraReferrer != null) {
-                return new ReferringAppInfo(ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER,
-                        extraReferrer.toString());
-            }
+        // If the activity is launched through launcher activity, the referrer is set through
+        // intent extra.
+        String activity_referrer =
+                IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_ACTIVITY_REFERRER);
+        if (activity_referrer != null) {
+            return new ReferringAppInfo(
+                    ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER, activity_referrer);
         }
+
+        // If the activity referrer is not found in intent extra, get it from the activity
+        // directly.
+        Uri extraReferrer = activity.getReferrer();
+        if (extraReferrer != null) {
+            return new ReferringAppInfo(ReferringAppInfo.ReferringAppSource.ACTIVITY_REFERRER,
+                    extraReferrer.toString());
+        }
+
         return getEmptyReferringInfo();
     }
 
