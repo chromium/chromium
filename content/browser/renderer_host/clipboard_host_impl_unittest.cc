@@ -221,23 +221,12 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_Complete) {
 TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_IsObsolete) {
   ClipboardHostImpl::IsPasteContentAllowedRequest request;
 
-  // A request that is not too old is not obsolete, even if it has no callbacks.
-  EXPECT_FALSE(request.IsObsolete(
-      request.time() +
-      ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld / 2));
-
-  // A request that still has callbacks is not obsolete, even if older than
-  // "too old".
-  request.AddCallback(base::DoNothing());
-  EXPECT_FALSE(request.IsObsolete(
-      request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
-      base::Microseconds(1)));
-
-  // A request is obsolete once it is too old and has no callbacks.
+  // A request is obsolete once it is too old and completed.
   // Whether paste is allowed or not is not important.
   request.Complete("data");
   EXPECT_TRUE(request.IsObsolete(
-      request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
+      request.completed_time() +
+      ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
       base::Microseconds(1)));
 }
 
