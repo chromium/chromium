@@ -398,6 +398,11 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
 
   for (const CoreAccountId& account : accounts_to_revoke)
     FireRefreshTokenRevoked(account);
+
+  JNIEnv* env = AttachCurrentThread();
+  signin::
+      Java_ProfileOAuth2TokenServiceDelegate_invalidateAccountsSeedingStatus(
+          env, java_ref_);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(

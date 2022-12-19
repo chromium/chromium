@@ -144,6 +144,13 @@ final class ProfileOAuth2TokenServiceDelegate {
         mAccountManagerFacade.invalidateAccessToken(accessToken);
     }
 
+    /** Called by native to invalidate the seeding status in {@link AccountTrackerService} */
+    @MainThread
+    @CalledByNative
+    private void invalidateAccountsSeedingStatus() {
+        mAccountTrackerService.invalidateAccountsSeedingStatus();
+    }
+
     /**
      * Called by the native method
      * ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable

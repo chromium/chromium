@@ -7,6 +7,7 @@ package org.chromium.components.signin.identitymanager;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -103,6 +104,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
      * The given runnable will run after the accounts are seeded. If the accounts
      * are already seeded, the runnable will be executed immediately.
      */
+    @MainThread
     public void seedAccountsIfNeeded(Runnable onAccountsSeeded) {
         ThreadUtils.assertOnUiThread();
         switch (mAccountsSeedingStatus) {
@@ -132,6 +134,16 @@ public class AccountTrackerService implements AccountsChangeObserver {
     public void onCoreAccountInfosChanged() {
         if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
             onAccountsChangedInternal();
+        }
+    }
+
+    @MainThread
+    void invalidateAccountsSeedingStatus() {
+        if (mAccountsSeedingStatus == AccountsSeedingStatus.IN_PROGRESS) {
+            // Re-seed accounts again after the current, now invalid, seeding process finishes.
+            mExistsPendingSeedAccountsTask = true;
+        } else {
+            mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
         }
     }
 

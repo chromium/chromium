@@ -713,27 +713,22 @@ public abstract class SyncConsentFragmentBase
         AccountInfoServiceProvider.get()
                 .getAccountInfoByEmail(mSelectedAccountName)
                 .then(accountInfo -> {
-                    if (accountInfo != null) {
-                        mConsentTextTracker.recordConsent(accountInfo.getId(),
-                                ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView,
-                                mSyncConsentView != null ? mSyncConsentView : mSigninView);
-                        if (isResumed()) {
-                            runStateMachineAndSignin(settingsClicked);
-                        }
+                    if (accountInfo == null) {
+                        mIsSigninInProgress = false;
+                        // If accountInfo is null, then the account may have been removed while
+                        // sign-in is in progress. In this case update the UI with the updated
+                        // account list.
+                        mAccountManagerFacade.getAccounts().then(this::updateAccounts);
                         return;
                     }
-                    mAccountManagerFacade.getAccounts().then((accounts) -> {
-                        if (AccountUtils.findAccountByName(accounts, mSelectedAccountName)
-                                == null) {
-                            // TODO(crbug.com/1380917): This is a temporary solution to investigate
-                            // the crash. After the bug is fixed we can probably replace this with
-                            // just updateAccounts().
-                            updateAccounts(accounts);
-                        } else {
-                            throw new NullPointerException(
-                                    "The seeded CoreAccountInfo shouldn't be null");
-                        }
-                    });
+                    mConsentTextTracker.recordConsent(accountInfo.getId(),
+                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView,
+                            mSyncConsentView != null ? mSyncConsentView : mSigninView);
+                    if (isResumed()) {
+                        runStateMachineAndSignin(settingsClicked);
+                    } else {
+                        mIsSigninInProgress = false;
+                    }
                 });
     }
 
