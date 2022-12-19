@@ -51,6 +51,10 @@
       width: 200px;
     }
 
+    .widget-title {
+      text-decoration: underline;
+    }
+
   </style>
 
   <script type="module" src="./main.js"></script>
@@ -58,16 +62,15 @@
 
 <body>
   <h1>Files app Labs</h1>
-  <h2>Breadcrumb</h2>
-
-  <xf-breadcrumb path="My Files/Downloads"></xf-breadcrumb>
-  <xf-breadcrumb path="My Files/Downloads/AAA/BBB/CCC"></xf-breadcrumb>
-
-  <h2>Tree</h2>
-
   <div class="container">
     <div theme="legacy">
-      <h3>Legacy</h3>
+      <h2>Legacy</h2>
+
+      <h3 class="widget-title">Breadcrumb</h3>
+      <xf-breadcrumb path="My Files/Downloads"></xf-breadcrumb>
+      <xf-breadcrumb path="My Files/Downloads/AAA/BBB/CCC"></xf-breadcrumb>
+
+      <h3 class="widget-title">Tree</h3>
       <xf-tree>
         <xf-tree-item label="Level 1 (2 children)" icon="my_files">
           <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
@@ -84,7 +87,9 @@
     </div>
 
     <div theme="refresh23">
-      <h3>Refresh23</h3>
+      <h2>Refresh23</h2>
+
+      <h3 class="widget-title">Tree</h3>
       <xf-tree>
         <xf-tree-item label="Level 1 (2 children)" icon="my_files">
           <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
@@ -100,7 +105,8 @@
       </xf-tree>
     </div>
   </div>
-  <h2>Icons</h2>
+
+  <h2 class="widget">Icons</h2>
   <div class="icons">
     <div class="icon-wrapper">
       <span>type="android_files"</span>

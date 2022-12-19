@@ -90,6 +90,7 @@ vs-chromium-project.txt
 /ash/ash_unittests_run.xml
 /ash/webui/eche_app_ui/resources/app
 /ash/webui/eche_app_ui/resources/prod
+/ash/webui/file_manager/resources/tsconfig.json
 /ash/webui/help_app_ui/resources/prod
 /ash/webui/media_app_ui/resources/prod
 /ash/webui/media_app_ui/resources/app

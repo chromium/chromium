@@ -122,6 +122,8 @@ if (!optimize_webui) {
     extra_deps = [ ":copy_labs" ]
 
     in_files = ts_files
+
+    deps = [ "//ui/webui/resources:library" ]
   }
 }
 
