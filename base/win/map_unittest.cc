@@ -14,13 +14,9 @@
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ABI {
-namespace Windows {
-namespace Foundation {
-namespace Collections {
+namespace ABI::Windows::Foundation::Collections {
 
 // Add missing template specializations (since UWP doesn't provide them):
 
@@ -157,13 +153,9 @@ struct __declspec(uuid("079e2180-0c7a-4508-85ff-7a5f2b29b92b"))
     IObservableVector<IKeyValuePair<HSTRING, IInspectable*>*>
     : IObservableVector_impl<IKeyValuePair<HSTRING, IInspectable*>*> {};
 
-}  // namespace Collections
-}  // namespace Foundation
-}  // namespace Windows
-}  // namespace ABI
+}  // namespace ABI::Windows::Foundation::Collections
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
@@ -509,9 +501,6 @@ TEST(MapTest, First) {
 TEST(MapTest, Properties) {
   // This test case validates Map against Windows property key system,
   // which is used to store WinRT device properties.
-  if (GetVersion() < Version::WIN8)
-    return;
-
   ASSERT_TRUE(ResolveCoreWinRT());
   ScopedWinrtInitializer winrt_initializer;
   ASSERT_TRUE(winrt_initializer.Succeeded());
@@ -552,5 +541,4 @@ TEST(MapTest, Properties) {
   EXPECT_EQ(kTestValue, value_stringref_lookedup.Get());
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

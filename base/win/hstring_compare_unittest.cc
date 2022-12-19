@@ -5,11 +5,10 @@
 #include "base/win/hstring_compare.h"
 
 #include "base/win/hstring_reference.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace win {
+namespace base::win {
+
 namespace {
 
 constexpr wchar_t kTestString12[] = L"12";
@@ -18,21 +17,7 @@ constexpr wchar_t kTestString1234[] = L"1234";
 
 }  // namespace
 
-TEST(HStringCompareTest, WorksOnWindows8AndAbove) {
-  INT32 result;
-  HRESULT hr = HStringCompare(nullptr, nullptr, &result);
-  // HStringCompare requires WinRT core functions, which are not available in
-  // older versions.
-  if (GetVersion() < Version::WIN8)
-    EXPECT_HRESULT_FAILED(hr);
-  else
-    EXPECT_HRESULT_SUCCEEDED(hr);
-}
-
 TEST(HStringCompareTest, FirstStringBeforeSecondString) {
-  if (GetVersion() < Version::WIN8)
-    return;
-
   ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
 
   const HStringReference string12(kTestString12);
@@ -44,9 +29,6 @@ TEST(HStringCompareTest, FirstStringBeforeSecondString) {
 }
 
 TEST(HStringCompareTest, StringsEqual) {
-  if (GetVersion() < Version::WIN8)
-    return;
-
   ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
 
   const HStringReference string123(kTestString123);
@@ -57,9 +39,6 @@ TEST(HStringCompareTest, StringsEqual) {
 }
 
 TEST(HStringCompareTest, FirstStringAfterSecondString) {
-  if (GetVersion() < Version::WIN8)
-    return;
-
   ASSERT_TRUE(HStringReference::ResolveCoreWinRTStringDelayload());
 
   const HStringReference string123(kTestString123);
@@ -70,5 +49,4 @@ TEST(HStringCompareTest, FirstStringAfterSecondString) {
   EXPECT_EQ(1, result);
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

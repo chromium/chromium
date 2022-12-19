@@ -6,18 +6,12 @@
 
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 TEST(CoreWinrtUtilTest, PreloadFunctions) {
-  if (GetVersion() < Version::WIN8)
-    EXPECT_FALSE(ResolveCoreWinRTDelayload());
-  else
-    EXPECT_TRUE(ResolveCoreWinRTDelayload());
+  EXPECT_TRUE(ResolveCoreWinRTDelayload());
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

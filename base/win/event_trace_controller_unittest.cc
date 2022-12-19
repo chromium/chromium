@@ -19,11 +19,9 @@
 #include "base/win/event_trace_controller.h"
 #include "base/win/event_trace_provider.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
@@ -224,16 +222,11 @@ TEST_F(EtwTraceControllerTest, DISABLED_EnableDisable) {
 
   EXPECT_HRESULT_SUCCEEDED(controller.Stop(nullptr));
 
-  // Windows 7 does not call the callback when Stop() is called so we
-  // can't wait, and enable_level and enable_flags are not zeroed.
-  if (GetVersion() >= Version::WIN8) {
-    provider.WaitForCallback();
+  provider.WaitForCallback();
 
-    // Session should have wound down.
-    EXPECT_EQ(0, provider.enable_level());
-    EXPECT_EQ(0u, provider.enable_flags());
-  }
+  // Session should have wound down.
+  EXPECT_EQ(0, provider.enable_level());
+  EXPECT_EQ(0u, provider.enable_flags());
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

@@ -13,10 +13,8 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
-#include "base/win/windows_version.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 namespace {
 
@@ -63,7 +61,6 @@ void CallRoUninitialize() {
 ScopedWinrtInitializer::ScopedWinrtInitializer()
     : hr_(CallRoInitialize(RO_INIT_MULTITHREADED)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_GE(GetVersion(), Version::WIN8);
 #if DCHECK_IS_ON()
   if (SUCCEEDED(hr_))
     AssertComApartmentType(ComApartmentType::MTA);
@@ -82,5 +79,4 @@ bool ScopedWinrtInitializer::Succeeded() const {
   return SUCCEEDED(hr_);
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
