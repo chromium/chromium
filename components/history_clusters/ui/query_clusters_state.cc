@@ -87,7 +87,7 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
     return;
 
   base::TimeTicks query_start_time = base::TimeTicks::Now();
-  query_clusters_task = service_->QueryClusters(
+  query_clusters_task_ = service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage,
       /*begin_time=*/base::Time(), continuation_params_, recluster_,
       base::BindOnce(&QueryClustersState::OnGotRawClusters,

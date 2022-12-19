@@ -132,7 +132,7 @@ class QueryClustersState {
 
   // Used only to fast-cancel tasks in case we are destroyed.
   std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>
-      query_clusters_task;
+      query_clusters_task_;
 
   // A task runner to run all the post-processing tasks on.
   scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;
