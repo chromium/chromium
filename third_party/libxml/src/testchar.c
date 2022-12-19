@@ -259,9 +259,10 @@ static int testDocumentRanges(void) {
     return(test_ret);
 }
 
-static int testCharRangeByte1(xmlParserCtxtPtr ctxt, char *data) {
+static int testCharRangeByte1(xmlParserCtxtPtr ctxt) {
     int i = 0;
     int len, c;
+    char *data = (char *) ctxt->input->cur;
 
     data[1] = 0;
     data[2] = 0;
@@ -292,9 +293,10 @@ static int testCharRangeByte1(xmlParserCtxtPtr ctxt, char *data) {
     return(0);
 }
 
-static int testCharRangeByte2(xmlParserCtxtPtr ctxt, char *data) {
+static int testCharRangeByte2(xmlParserCtxtPtr ctxt) {
     int i, j;
     int len, c;
+    char *data = (char *) ctxt->input->cur;
 
     data[2] = 0;
     data[3] = 0;
@@ -379,10 +381,11 @@ static int testCharRangeByte2(xmlParserCtxtPtr ctxt, char *data) {
     return(0);
 }
 
-static int testCharRangeByte3(xmlParserCtxtPtr ctxt, char *data) {
+static int testCharRangeByte3(xmlParserCtxtPtr ctxt) {
     int i, j, k, K;
     int len, c;
     unsigned char lows[6] = {0, 0x80, 0x81, 0xC1, 0xFF, 0xBF};
+    char *data = (char *) ctxt->input->cur;
     int value;
 
     data[3] = 0;
@@ -476,10 +479,11 @@ static int testCharRangeByte3(xmlParserCtxtPtr ctxt, char *data) {
     return(0);
 }
 
-static int testCharRangeByte4(xmlParserCtxtPtr ctxt, char *data) {
+static int testCharRangeByte4(xmlParserCtxtPtr ctxt) {
     int i, j, k, K, l, L;
     int len, c;
     unsigned char lows[6] = {0, 0x80, 0x81, 0xC1, 0xFF, 0xBF};
+    char *data = (char *) ctxt->input->cur;
     int value;
 
     data[4] = 0;
@@ -606,8 +610,8 @@ static int testCharRanges(void) {
         fprintf(stderr, "Failed to allocate parser context\n");
 	return(1);
     }
-    buf = xmlParserInputBufferCreateStatic(data, sizeof(data),
-                                           XML_CHAR_ENCODING_NONE);
+    buf = xmlParserInputBufferCreateMem(data, sizeof(data),
+                                        XML_CHAR_ENCODING_NONE);
     if (buf == NULL) {
         fprintf(stderr, "Failed to allocate input buffer\n");
 	test_ret = 1;
@@ -628,16 +632,16 @@ static int testCharRanges(void) {
 
     printf("testing char range: 1");
     fflush(stdout);
-    test_ret += testCharRangeByte1(ctxt, data);
+    test_ret += testCharRangeByte1(ctxt);
     printf(" 2");
     fflush(stdout);
-    test_ret += testCharRangeByte2(ctxt, data);
+    test_ret += testCharRangeByte2(ctxt);
     printf(" 3");
     fflush(stdout);
-    test_ret += testCharRangeByte3(ctxt, data);
+    test_ret += testCharRangeByte3(ctxt);
     printf(" 4");
     fflush(stdout);
-    test_ret += testCharRangeByte4(ctxt, data);
+    test_ret += testCharRangeByte4(ctxt);
     printf(" done\n");
     fflush(stdout);
 

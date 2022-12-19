@@ -3,6 +3,7 @@
 
 #include <libxml/xmlautomata.h>
 
-void xmlAutomataSetFlags(xmlAutomataPtr am, int flags);
+XML_HIDDEN void
+xmlAutomataSetFlags(xmlAutomataPtr am, int flags);
 
 #endif /* XML_REGEXP_H_PRIVATE__ */

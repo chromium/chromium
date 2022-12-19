@@ -14,6 +14,8 @@
 #include "libxml.h"
 #include <libxml/chvalid.h>
 
+#include <stddef.h>
+
 /*
  * The initial tables ({func_name}_tab) are used to validate whether a
  * single-byte character is within the specified group.  Each table

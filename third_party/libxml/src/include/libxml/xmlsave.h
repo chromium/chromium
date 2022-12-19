@@ -41,42 +41,42 @@ typedef enum {
 typedef struct _xmlSaveCtxt xmlSaveCtxt;
 typedef xmlSaveCtxt *xmlSaveCtxtPtr;
 
-XMLPUBFUN xmlSaveCtxtPtr XMLCALL
+XMLPUBFUN xmlSaveCtxtPtr
 		xmlSaveToFd		(int fd,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN xmlSaveCtxtPtr XMLCALL
+XMLPUBFUN xmlSaveCtxtPtr
 		xmlSaveToFilename	(const char *filename,
 					 const char *encoding,
 					 int options);
 
-XMLPUBFUN xmlSaveCtxtPtr XMLCALL
+XMLPUBFUN xmlSaveCtxtPtr
 		xmlSaveToBuffer		(xmlBufferPtr buffer,
 					 const char *encoding,
 					 int options);
 
-XMLPUBFUN xmlSaveCtxtPtr XMLCALL
+XMLPUBFUN xmlSaveCtxtPtr
 		xmlSaveToIO		(xmlOutputWriteCallback iowrite,
 					 xmlOutputCloseCallback ioclose,
 					 void *ioctx,
 					 const char *encoding,
 					 int options);
 
-XMLPUBFUN long XMLCALL
+XMLPUBFUN long
 		xmlSaveDoc		(xmlSaveCtxtPtr ctxt,
 					 xmlDocPtr doc);
-XMLPUBFUN long XMLCALL
+XMLPUBFUN long
 		xmlSaveTree		(xmlSaveCtxtPtr ctxt,
 					 xmlNodePtr node);
 
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlSaveFlush		(xmlSaveCtxtPtr ctxt);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlSaveClose		(xmlSaveCtxtPtr ctxt);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlSaveSetEscape	(xmlSaveCtxtPtr ctxt,
 					 xmlCharEncodingOutputFunc escape);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlSaveSetAttrEscape	(xmlSaveCtxtPtr ctxt,
 					 xmlCharEncodingOutputFunc escape);
 #ifdef __cplusplus

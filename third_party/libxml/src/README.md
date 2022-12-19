@@ -3,15 +3,17 @@
 libxml2 is an XML toolkit implemented in C, originally developed for
 the GNOME Project.
 
-Full documentation is available at
-<https://gitlab.gnome.org/GNOME/libxml2/-/wikis>.
+Official releases can be downloaded from
+<https://download.gnome.org/sources/libxml2/>
+
+The git repository is hosted on GNOME's GitLab server:
+<https://gitlab.gnome.org/GNOME/libxml2>
 
 Bugs should be reported at
-<https://gitlab.gnome.org/GNOME/libxml2/-/issues>.
+<https://gitlab.gnome.org/GNOME/libxml2/-/issues>
 
-A mailing list xml@gnome.org is available. You can subscribe at
-<https://mail.gnome.org/mailman/listinfo/xml>. The list archive is at
-<https://mail.gnome.org/archives/xml/>.
+Documentation is available at
+<https://gitlab.gnome.org/GNOME/libxml2/-/wikis>
 
 ## License
 

@@ -14,8 +14,10 @@
 #include "libxml.h"
 #include <stdio.h>
 
-#if !defined(_WIN32)
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#elif defined (_WIN32)
+#include <io.h>
 #endif
 #include <string.h>
 #include <sys/stat.h>
@@ -110,7 +112,6 @@ static int checkTestFile(const char *filename);
 #if defined(_WIN32)
 
 #include <windows.h>
-#include <io.h>
 
 typedef struct
 {
@@ -246,7 +247,7 @@ testExternalEntityLoader(const char *URL, const char *ID,
 static char testErrors[32769];
 static int testErrorsSize = 0;
 
-static void XMLCDECL
+static void
 testErrorHandler(void *ctx  ATTRIBUTE_UNUSED, const char *msg, ...) {
     va_list args;
     int res;
@@ -268,7 +269,7 @@ testErrorHandler(void *ctx  ATTRIBUTE_UNUSED, const char *msg, ...) {
     testErrors[testErrorsSize] = 0;
 }
 
-static void XMLCDECL
+static void
 channel(void *ctx  ATTRIBUTE_UNUSED, const char *msg, ...) {
     va_list args;
     int res;
@@ -291,7 +292,7 @@ channel(void *ctx  ATTRIBUTE_UNUSED, const char *msg, ...) {
 }
 
 /**
- * xmlParserPrintFileContext:
+ * xmlParserPrintFileContextInternal:
  * @input:  an xmlParserInputPtr input
  *
  * Displays current context within the input content for error tracking
@@ -300,12 +301,14 @@ channel(void *ctx  ATTRIBUTE_UNUSED, const char *msg, ...) {
 static void
 xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
 		xmlGenericErrorFunc chanl, void *data ) {
-    const xmlChar *cur, *base;
+    const xmlChar *cur, *base, *start;
     unsigned int n, col;	/* GCC warns if signed, because compared with sizeof() */
     xmlChar  content[81]; /* space for 80 chars + line terminator */
     xmlChar *ctnt;
 
-    if (input == NULL) return;
+    if ((input == NULL) || (input->cur == NULL))
+        return;
+
     cur = input->cur;
     base = input->base;
     /* skip backwards over any end-of-lines */
@@ -315,21 +318,32 @@ xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
     n = 0;
     /* search backwards for beginning-of-line (to max buff size) */
     while ((n++ < (sizeof(content)-1)) && (cur > base) &&
-   (*(cur) != '\n') && (*(cur) != '\r'))
+	   (*(cur) != '\n') && (*(cur) != '\r'))
         cur--;
-    if ((*(cur) == '\n') || (*(cur) == '\r')) cur++;
+    if ((*(cur) == '\n') || (*(cur) == '\r')) {
+        cur++;
+    } else {
+        /* skip over continuation bytes */
+        while ((cur < input->cur) && ((*cur & 0xC0) == 0x80))
+            cur++;
+    }
     /* calculate the error position in terms of the current position */
     col = input->cur - cur;
     /* search forward for end-of-line (to max buff size) */
     n = 0;
-    ctnt = content;
+    start = cur;
     /* copy selected text to our buffer */
-    while ((*cur != 0) && (*(cur) != '\n') &&
-   (*(cur) != '\r') && (n < sizeof(content)-1)) {
-		*ctnt++ = *cur++;
-	n++;
+    while ((*cur != 0) && (*(cur) != '\n') && (*(cur) != '\r')) {
+        int len = input->end - cur;
+        int c = xmlGetUTF8Char(cur, &len);
+
+        if ((c < 0) || (n + len > sizeof(content)-1))
+            break;
+        cur += len;
+	n += len;
     }
-    *ctnt = 0;
+    memcpy(content, start, n);
+    content[n] = 0;
     /* print out the selected text */
     chanl(data ,"%s\n", content);
     /* create blank line with problem pointer */
@@ -530,10 +544,17 @@ testStructuredErrorHandler(void *ctx  ATTRIBUTE_UNUSED, xmlErrorPtr err) {
 
 static void
 initializeLibxml2(void) {
-    xmlPedanticParserDefault(0);
-
-    xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
+    /*
+     * This verifies that xmlInitParser doesn't allocate memory with
+     * xmlMalloc
+     */
+    xmlFree = NULL;
+    xmlMalloc = NULL;
+    xmlRealloc = NULL;
+    xmlMemStrdup = NULL;
     xmlInitParser();
+    xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
+    xmlPedanticParserDefault(0);
     xmlSetExternalEntityLoader(testExternalEntityLoader);
     xmlSetStructuredErrorFunc(NULL, testStructuredErrorHandler);
 #ifdef LIBXML_SCHEMAS_ENABLED
@@ -1352,7 +1373,7 @@ commentDebug(void *ctx ATTRIBUTE_UNUSED, const xmlChar *value)
  * Display and format a warning messages, gives file, line, position and
  * extra parameters.
  */
-static void XMLCDECL
+static void
 warningDebug(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
 {
     va_list args;
@@ -1375,7 +1396,7 @@ warningDebug(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
  * Display and format a error messages, gives file, line, position and
  * extra parameters.
  */
-static void XMLCDECL
+static void
 errorDebug(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
 {
     va_list args;
@@ -1398,7 +1419,7 @@ errorDebug(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
  * Display and format a fatalError messages, gives file, line, position and
  * extra parameters.
  */
-static void XMLCDECL
+static void
 fatalErrorDebug(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...)
 {
     va_list args;
@@ -1941,6 +1962,306 @@ pushParseTest(const char *filename, const char *result,
     res = ctxt->wellFormed;
     xmlFreeParserCtxt(ctxt);
     free((char *)base);
+    if (!res) {
+	xmlFreeDoc(doc);
+	fprintf(stderr, "Failed to parse %s\n", filename);
+	return(-1);
+    }
+#ifdef LIBXML_HTML_ENABLED
+    if (options & XML_PARSE_HTML)
+	htmlDocDumpMemory(doc, (xmlChar **) &base, &size);
+    else
+#endif
+    xmlDocDumpMemory(doc, (xmlChar **) &base, &size);
+    xmlFreeDoc(doc);
+    res = compareFileMem(result, base, size);
+    if ((base == NULL) || (res != 0)) {
+	if (base != NULL)
+	    xmlFree((char *)base);
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+	return(-1);
+    }
+    xmlFree((char *)base);
+    if (err != NULL) {
+	res = compareFileMem(err, testErrors, testErrorsSize);
+	if (res != 0) {
+	    fprintf(stderr, "Error for %s failed\n", filename);
+	    return(-1);
+	}
+    }
+    return(0);
+}
+
+static int pushBoundaryCount;
+static int pushBoundaryRefCount;
+static int pushBoundaryCharsCount;
+static int pushBoundaryCDataCount;
+
+static void
+internalSubsetBnd(void *ctx, const xmlChar *name, const xmlChar *externalID,
+                  const xmlChar *systemID) {
+    pushBoundaryCount++;
+    xmlSAX2InternalSubset(ctx, name, externalID, systemID);
+}
+
+static void
+referenceBnd(void *ctx, const xmlChar *name) {
+    pushBoundaryRefCount++;
+    xmlSAX2Reference(ctx, name);
+}
+
+static void
+charactersBnd(void *ctx, const xmlChar *ch, int len) {
+    pushBoundaryCount++;
+    pushBoundaryCharsCount++;
+    xmlSAX2Characters(ctx, ch, len);
+}
+
+static void
+cdataBlockBnd(void *ctx, const xmlChar *ch, int len) {
+    pushBoundaryCount++;
+    pushBoundaryCDataCount++;
+    xmlSAX2CDataBlock(ctx, ch, len);
+}
+
+static void
+processingInstructionBnd(void *ctx, const xmlChar *target,
+                         const xmlChar *data) {
+    pushBoundaryCount++;
+    xmlSAX2ProcessingInstruction(ctx, target, data);
+}
+
+static void
+commentBnd(void *ctx, const xmlChar *value) {
+    xmlParserCtxtPtr ctxt = ctx;
+    if (ctxt->inSubset == 0)
+        pushBoundaryCount++;
+    xmlSAX2Comment(ctx, value);
+}
+
+static void
+startElementBnd(void *ctx, const xmlChar *xname, const xmlChar **atts) {
+    const char *name = (const char *)xname;
+
+    /* Some elements might be created automatically. */
+    if ((strcmp(name, "html") != 0) &&
+        (strcmp(name, "body") != 0) &&
+        (strcmp(name, "head") != 0) &&
+        (strcmp(name, "p") != 0)) {
+        pushBoundaryCount++;
+    }
+    xmlSAX2StartElement(ctx, xname, atts);
+}
+
+static void
+endElementBnd(void *ctx, const xmlChar *name) {
+    /*pushBoundaryCount++;*/
+    xmlSAX2EndElement(ctx, name);
+}
+
+static void
+startElementNsBnd(void *ctx, const xmlChar *localname, const xmlChar *prefix,
+                  const xmlChar *URI, int nb_namespaces,
+                  const xmlChar **namespaces, int nb_attributes,
+                  int nb_defaulted, const xmlChar **attributes) {
+    pushBoundaryCount++;
+    xmlSAX2StartElementNs(ctx, localname, prefix, URI, nb_namespaces,
+                          namespaces, nb_attributes, nb_defaulted, attributes);
+}
+
+static void
+endElementNsBnd(void *ctx, const xmlChar *localname, const xmlChar *prefix,
+                const xmlChar *URI) {
+    /*pushBoundaryCount++;*/
+    xmlSAX2EndElementNs(ctx, localname, prefix, URI);
+}
+
+/**
+ * pushBoundaryTest:
+ * @filename: the file to parse
+ * @result: the file with expected result
+ * @err: the file with error messages: unused
+ *
+ * Test whether the push parser detects boundaries between syntactical
+ * elements correctly.
+ *
+ * Returns 0 in case of success, an error code otherwise
+ */
+static int
+pushBoundaryTest(const char *filename, const char *result,
+                 const char *err ATTRIBUTE_UNUSED,
+                 int options) {
+    xmlParserCtxtPtr ctxt;
+    xmlDocPtr doc;
+    xmlSAXHandler bndSAX;
+    const char *base;
+    int size, res, numCallbacks;
+    int cur = 0;
+    unsigned long avail, oldConsumed, consumed;
+
+    /*
+     * If the parser made progress, check that exactly one construct was
+     * processed and that the input buffer is (almost) empty.
+     * Since we use a chunk size of 1, this tests whether content is
+     * processed as early as possible.
+     */
+
+    nb_tests++;
+
+    memset(&bndSAX, 0, sizeof(bndSAX));
+#ifdef LIBXML_HTML_ENABLED
+    if (options & XML_PARSE_HTML) {
+        xmlSAX2InitHtmlDefaultSAXHandler(&bndSAX);
+        bndSAX.startElement = startElementBnd;
+        bndSAX.endElement = endElementBnd;
+    } else
+#endif
+    {
+        xmlSAXVersion(&bndSAX, 2);
+        bndSAX.startElementNs = startElementNsBnd;
+        bndSAX.endElementNs = endElementNsBnd;
+    }
+
+    bndSAX.internalSubset = internalSubsetBnd;
+    bndSAX.reference = referenceBnd;
+    bndSAX.characters = charactersBnd;
+    bndSAX.cdataBlock = cdataBlockBnd;
+    bndSAX.processingInstruction = processingInstructionBnd;
+    bndSAX.comment = commentBnd;
+
+    /*
+     * load the document in memory and work from there.
+     */
+    if (loadMem(filename, &base, &size) != 0) {
+        fprintf(stderr, "Failed to load %s\n", filename);
+	return(-1);
+    }
+
+#ifdef LIBXML_HTML_ENABLED
+    if (options & XML_PARSE_HTML)
+	ctxt = htmlCreatePushParserCtxt(&bndSAX, NULL, base, 1, filename,
+	                                XML_CHAR_ENCODING_NONE);
+    else
+#endif
+    ctxt = xmlCreatePushParserCtxt(&bndSAX, NULL, base, 1, filename);
+    xmlCtxtUseOptions(ctxt, options);
+    cur = 1;
+    consumed = 0;
+    numCallbacks = 0;
+    avail = 0;
+    while ((cur < size) && (numCallbacks <= 1) && (avail <= 0)) {
+        int terminate = (cur + 1 >= size);
+        int isText = 0;
+
+        if (ctxt->instate == XML_PARSER_CONTENT) {
+            int firstChar = (ctxt->input->end > ctxt->input->cur) ?
+                            *ctxt->input->cur :
+                            base[cur];
+
+            if ((firstChar != '<') &&
+                ((options & XML_PARSE_HTML) || (firstChar != '&')))
+                isText = 1;
+        }
+
+        oldConsumed = ctxt->input->consumed +
+                      (unsigned long) (ctxt->input->cur - ctxt->input->base);
+
+        pushBoundaryCount = 0;
+        pushBoundaryRefCount = 0;
+        pushBoundaryCharsCount = 0;
+        pushBoundaryCDataCount = 0;
+
+#ifdef LIBXML_HTML_ENABLED
+        if (options & XML_PARSE_HTML)
+            htmlParseChunk(ctxt, base + cur, 1, terminate);
+        else
+#endif
+        xmlParseChunk(ctxt, base + cur, 1, terminate);
+	cur += 1;
+
+        /*
+         * Callback check: Check that only a single construct was parsed.
+         */
+        if (pushBoundaryRefCount > 0) {
+            numCallbacks = 1;
+        } else {
+            numCallbacks = pushBoundaryCount;
+            if (pushBoundaryCharsCount > 1) {
+                if (options & XML_PARSE_HTML) {
+                    /*
+                     * The HTML parser can generate a mix of chars and
+                     * references.
+                     */
+                    numCallbacks -= pushBoundaryCharsCount - 1;
+                } else {
+                    /*
+                     * Allow two chars callbacks. This can happen when
+                     * multi-byte chars are split across buffer boundaries.
+                     */
+                    numCallbacks -= 1;
+                }
+            }
+            if (options & XML_PARSE_HTML) {
+                /*
+                 * Allow multiple cdata callbacks in HTML mode.
+                 */
+                if (pushBoundaryCDataCount > 1)
+                    numCallbacks -= pushBoundaryCDataCount - 1;
+            }
+        }
+
+        /*
+         * Buffer check: If input was consumed, check that the input
+         * buffer is (almost) empty.
+         */
+        consumed = ctxt->input->consumed +
+                   (unsigned long) (ctxt->input->cur - ctxt->input->base);
+        if ((ctxt->instate != XML_PARSER_DTD) &&
+            (consumed >= 4) &&
+            (consumed != oldConsumed)) {
+            size_t max = 0;
+
+            avail = ctxt->input->end - ctxt->input->cur;
+
+            if ((options & XML_PARSE_HTML) &&
+                (ctxt->instate == XML_PARSER_END_TAG)) {
+                /* Something related to script parsing. */
+                max = 3;
+            } else if (isText) {
+                int c = *ctxt->input->cur;
+
+                /* 3 bytes for partial UTF-8 */
+                max = ((c == '<') || (c == '&')) ? 1 : 3;
+            } else if (ctxt->instate == XML_PARSER_CDATA_SECTION) {
+                /* 2 bytes for terminator, 3 bytes for UTF-8 */
+                max = 5;
+            }
+
+            if (avail <= max)
+                avail = 0;
+        }
+    }
+    doc = ctxt->myDoc;
+#ifdef LIBXML_HTML_ENABLED
+    if (options & XML_PARSE_HTML)
+        res = 1;
+    else
+#endif
+    res = ctxt->wellFormed;
+    xmlFreeParserCtxt(ctxt);
+    free((char *)base);
+    if (numCallbacks > 1) {
+	xmlFreeDoc(doc);
+	fprintf(stderr, "Failed push boundary callback test (%d@%lu-%lu): %s\n",
+                numCallbacks, oldConsumed, consumed, filename);
+	return(-1);
+    }
+    if (avail > 0) {
+	xmlFreeDoc(doc);
+	fprintf(stderr, "Failed push boundary buffer test (%lu@%lu): %s\n",
+                avail, consumed, filename);
+	return(-1);
+    }
     if (!res) {
 	xmlFreeDoc(doc);
 	fprintf(stderr, "Failed to parse %s\n", filename);
@@ -4660,6 +4981,9 @@ testDesc testDescriptions[] = {
     { "XML push regression tests" ,
       pushParseTest, "./test/*", "result/", "", NULL,
       0 },
+    { "XML push boundary tests" ,
+      pushBoundaryTest, "./test/*", "result/", "", NULL,
+      0 },
 #endif
 #ifdef LIBXML_HTML_ENABLED
     { "HTML regression tests" ,
@@ -4671,6 +4995,9 @@ testDesc testDescriptions[] = {
 #ifdef LIBXML_PUSH_ENABLED
     { "Push HTML regression tests" ,
       pushParseTest, "./test/HTML/*", "result/HTML/", "", ".err",
+      XML_PARSE_HTML },
+    { "Push HTML boundary tests" ,
+      pushBoundaryTest, "./test/HTML/*", "result/HTML/", "", NULL,
       XML_PARSE_HTML },
 #endif
     { "HTML SAX regression tests" ,

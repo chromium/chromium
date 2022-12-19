@@ -89,35 +89,35 @@ typedef xmlXIncludeCtxt *xmlXIncludeCtxtPtr;
 /*
  * standalone processing
  */
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcess	(xmlDocPtr doc);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcessFlags	(xmlDocPtr doc,
 					 int flags);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcessFlagsData(xmlDocPtr doc,
 					 int flags,
 					 void *data);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
                 xmlXIncludeProcessTreeFlagsData(xmlNodePtr tree,
                                          int flags,
                                          void *data);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcessTree	(xmlNodePtr tree);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcessTreeFlags(xmlNodePtr tree,
 					 int flags);
 /*
  * contextual processing
  */
-XMLPUBFUN xmlXIncludeCtxtPtr XMLCALL
+XMLPUBFUN xmlXIncludeCtxtPtr
 		xmlXIncludeNewContext	(xmlDocPtr doc);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeSetFlags	(xmlXIncludeCtxtPtr ctxt,
 					 int flags);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 		xmlXIncludeFreeContext	(xmlXIncludeCtxtPtr ctxt);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		xmlXIncludeProcessNode	(xmlXIncludeCtxtPtr ctxt,
 					 xmlNodePtr tree);
 #ifdef __cplusplus

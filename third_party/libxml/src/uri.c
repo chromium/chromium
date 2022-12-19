@@ -35,6 +35,9 @@
  */
 #define MAX_URI_LENGTH 1024 * 1024
 
+#define PORT_EMPTY           0
+#define PORT_EMPTY_SERVER   -1
+
 static void
 xmlURIErrMemory(const char *extra)
 {
@@ -770,8 +773,11 @@ xmlParse3986HierPart(xmlURIPtr uri, const char **str)
         cur += 2;
 	ret = xmlParse3986Authority(uri, &cur);
 	if (ret != 0) return(ret);
-	if (uri->server == NULL)
-	    uri->port = -1;
+        /*
+         * An empty server is marked with a special URI value.
+         */
+	if ((uri->server == NULL) && (uri->port == PORT_EMPTY))
+	    uri->port = PORT_EMPTY_SERVER;
 	ret = xmlParse3986PathAbEmpty(uri, &cur);
 	if (ret != 0) return(ret);
 	*str = cur;
@@ -1028,6 +1034,7 @@ xmlCreateURI(void) {
 	return(NULL);
     }
     memset(ret, 0, sizeof(xmlURI));
+    ret->port = PORT_EMPTY;
     return(ret);
 }
 
@@ -1119,7 +1126,7 @@ xmlSaveUri(xmlURIPtr uri) {
 	    }
 	}
     } else {
-	if ((uri->server != NULL) || (uri->port == -1)) {
+	if ((uri->server != NULL) || (uri->port != PORT_EMPTY)) {
 	    if (len + 3 >= max) {
                 temp = xmlSaveUriRealloc(ret, &max);
                 if (temp == NULL) goto mem_error;
@@ -1166,15 +1173,15 @@ xmlSaveUri(xmlURIPtr uri) {
 		    }
 		    ret[len++] = *p++;
 		}
-		if (uri->port > 0) {
-		    if (len + 10 >= max) {
-			temp = xmlSaveUriRealloc(ret, &max);
-			if (temp == NULL) goto mem_error;
-			ret = temp;
-		    }
-		    len += snprintf((char *) &ret[len], max - len, ":%d", uri->port);
-		}
 	    }
+            if (uri->port > 0) {
+                if (len + 10 >= max) {
+                    temp = xmlSaveUriRealloc(ret, &max);
+                    if (temp == NULL) goto mem_error;
+                    ret = temp;
+                }
+                len += snprintf((char *) &ret[len], max - len, ":%d", uri->port);
+            }
 	} else if (uri->authority != NULL) {
 	    if (len + 3 >= max) {
                 temp = xmlSaveUriRealloc(ret, &max);
@@ -1820,10 +1827,10 @@ xmlURIEscape(const xmlChar * str)
         xmlFree(segment);
     }
 
-    if (uri->port) {
-        xmlChar port[10];
+    if (uri->port > 0) {
+        xmlChar port[11];
 
-        snprintf((char *) port, 10, "%d", uri->port);
+        snprintf((char *) port, 11, "%d", uri->port);
         ret = xmlStrcat(ret, BAD_CAST ":");
         ret = xmlStrcat(ret, port);
     }
@@ -1969,12 +1976,13 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
     if (res == NULL)
 	goto done;
     if ((ref->scheme == NULL) && (ref->path == NULL) &&
-	((ref->authority == NULL) && (ref->server == NULL))) {
+	((ref->authority == NULL) && (ref->server == NULL) &&
+         (ref->port == PORT_EMPTY))) {
 	if (bas->scheme != NULL)
 	    res->scheme = xmlMemStrdup(bas->scheme);
 	if (bas->authority != NULL)
 	    res->authority = xmlMemStrdup(bas->authority);
-	else if ((bas->server != NULL) || (bas->port == -1)) {
+	else {
 	    if (bas->server != NULL)
 		res->server = xmlMemStrdup(bas->server);
 	    if (bas->user != NULL)
@@ -2023,11 +2031,13 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
      *    component, which will also be undefined if the URI scheme does not
      *    use an authority component.
      */
-    if ((ref->authority != NULL) || (ref->server != NULL)) {
+    if ((ref->authority != NULL) || (ref->server != NULL) ||
+         (ref->port != PORT_EMPTY)) {
 	if (ref->authority != NULL)
 	    res->authority = xmlMemStrdup(ref->authority);
 	else {
-	    res->server = xmlMemStrdup(ref->server);
+            if (ref->server != NULL)
+                res->server = xmlMemStrdup(ref->server);
 	    if (ref->user != NULL)
 		res->user = xmlMemStrdup(ref->user);
             res->port = ref->port;
@@ -2038,7 +2048,7 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
     }
     if (bas->authority != NULL)
 	res->authority = xmlMemStrdup(bas->authority);
-    else if ((bas->server != NULL) || (bas->port == -1)) {
+    else if ((bas->server != NULL) || (bas->port != PORT_EMPTY)) {
 	if (bas->server != NULL)
 	    res->server = xmlMemStrdup(bas->server);
 	if (bas->user != NULL)
@@ -2108,7 +2118,7 @@ xmlBuildURI(const xmlChar *URI, const xmlChar *base) {
 	/*
 	 * Ensure the path includes a '/'
 	 */
-	if ((out == 0) && (bas->server != NULL))
+	if ((out == 0) && ((bas->server != NULL) || bas->port != PORT_EMPTY))
 	    res->path[out++] = '/';
 	while (ref->path[indx] != 0) {
 	    res->path[out++] = ref->path[indx++];
@@ -2226,7 +2236,8 @@ xmlBuildRelativeURI (const xmlChar * URI, const xmlChar * base)
     if ((ref->scheme != NULL) &&
 	((bas->scheme == NULL) ||
 	 (xmlStrcmp ((xmlChar *)bas->scheme, (xmlChar *)ref->scheme)) ||
-	 (xmlStrcmp ((xmlChar *)bas->server, (xmlChar *)ref->server)))) {
+	 (xmlStrcmp ((xmlChar *)bas->server, (xmlChar *)ref->server)) ||
+         (bas->port != ref->port))) {
 	val = xmlStrdup (URI);
 	goto done;
     }

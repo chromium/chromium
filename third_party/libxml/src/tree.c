@@ -7207,8 +7207,6 @@ xmlBufferDetach(xmlBufferPtr buf) {
 
     if (buf == NULL)
         return(NULL);
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE)
-        return(NULL);
 
     ret = buf->content;
     buf->content = NULL;
@@ -7224,31 +7222,14 @@ xmlBufferDetach(xmlBufferPtr buf) {
  * @mem: the memory area
  * @size:  the size in byte
  *
- * routine to create an XML buffer from an immutable memory area.
- * The area won't be modified nor copied, and is expected to be
- * present until the end of the buffer lifetime.
- *
- * returns the new structure.
+ * Create an XML buffer initialized with bytes.
  */
 xmlBufferPtr
 xmlBufferCreateStatic(void *mem, size_t size) {
-    xmlBufferPtr ret;
+    xmlBufferPtr buf = xmlBufferCreateSize(size);
 
-    if ((mem == NULL) || (size == 0))
-        return(NULL);
-    if (size > UINT_MAX)
-        return(NULL);
-
-    ret = (xmlBufferPtr) xmlMalloc(sizeof(xmlBuffer));
-    if (ret == NULL) {
-	xmlTreeErrMemory("creating buffer");
-        return(NULL);
-    }
-    ret->use = size;
-    ret->size = size;
-    ret->alloc = XML_BUFFER_ALLOC_IMMUTABLE;
-    ret->content = (xmlChar *) mem;
-    return(ret);
+    xmlBufferAdd(buf, mem, size);
+    return(buf);
 }
 
 /**
@@ -7268,12 +7249,10 @@ xmlBufferSetAllocationScheme(xmlBufferPtr buf,
 #endif
         return;
     }
-    if ((buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) ||
-        (buf->alloc == XML_BUFFER_ALLOC_IO)) return;
+    if (buf->alloc == XML_BUFFER_ALLOC_IO) return;
     if ((scheme == XML_BUFFER_ALLOC_DOUBLEIT) ||
         (scheme == XML_BUFFER_ALLOC_EXACT) ||
-        (scheme == XML_BUFFER_ALLOC_HYBRID) ||
-        (scheme == XML_BUFFER_ALLOC_IMMUTABLE))
+        (scheme == XML_BUFFER_ALLOC_HYBRID))
 	buf->alloc = scheme;
 }
 
@@ -7297,8 +7276,7 @@ xmlBufferFree(xmlBufferPtr buf) {
     if ((buf->alloc == XML_BUFFER_ALLOC_IO) &&
         (buf->contentIO != NULL)) {
         xmlFree(buf->contentIO);
-    } else if ((buf->content != NULL) &&
-        (buf->alloc != XML_BUFFER_ALLOC_IMMUTABLE)) {
+    } else if (buf->content != NULL) {
         xmlFree(buf->content);
     }
     xmlFree(buf);
@@ -7315,10 +7293,7 @@ xmlBufferEmpty(xmlBufferPtr buf) {
     if (buf == NULL) return;
     if (buf->content == NULL) return;
     buf->use = 0;
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) {
-        buf->content = BAD_CAST "";
-    } else if ((buf->alloc == XML_BUFFER_ALLOC_IO) &&
-               (buf->contentIO != NULL)) {
+    if ((buf->alloc == XML_BUFFER_ALLOC_IO) && (buf->contentIO != NULL)) {
         size_t start_buf = buf->content - buf->contentIO;
 
 	buf->size += start_buf;
@@ -7345,8 +7320,7 @@ xmlBufferShrink(xmlBufferPtr buf, unsigned int len) {
     if (len > buf->use) return(-1);
 
     buf->use -= len;
-    if ((buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) ||
-        ((buf->alloc == XML_BUFFER_ALLOC_IO) && (buf->contentIO != NULL))) {
+    if ((buf->alloc == XML_BUFFER_ALLOC_IO) && (buf->contentIO != NULL)) {
 	/*
 	 * we just move the content pointer, but also make sure
 	 * the perceived buffer size has shrunk accordingly
@@ -7390,7 +7364,6 @@ xmlBufferGrow(xmlBufferPtr buf, unsigned int len) {
 
     if (buf == NULL) return(-1);
 
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return(0);
     if (len < buf->size - buf->use)
         return(0);
     if (len >= UINT_MAX - buf->use) {
@@ -7514,8 +7487,6 @@ xmlBufferResize(xmlBufferPtr buf, unsigned int size)
     if (buf == NULL)
         return(0);
 
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return(0);
-
     /* Don't resize if we don't have to */
     if (size < buf->size)
         return 1;
@@ -7633,7 +7604,6 @@ xmlBufferAdd(xmlBufferPtr buf, const xmlChar *str, int len) {
     if ((str == NULL) || (buf == NULL)) {
 	return -1;
     }
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return -1;
     if (len < -1) {
 #ifdef DEBUG_BUFFER
         xmlGenericError(xmlGenericErrorContext,
@@ -7686,7 +7656,6 @@ xmlBufferAddHead(xmlBufferPtr buf, const xmlChar *str, int len) {
 
     if (buf == NULL)
         return(-1);
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return -1;
     if (str == NULL) {
 #ifdef DEBUG_BUFFER
         xmlGenericError(xmlGenericErrorContext,
@@ -7757,7 +7726,6 @@ int
 xmlBufferCat(xmlBufferPtr buf, const xmlChar *str) {
     if (buf == NULL)
         return(-1);
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return -1;
     if (str == NULL) return -1;
     return xmlBufferAdd(buf, str, -1);
 }
@@ -7789,7 +7757,6 @@ void
 xmlBufferWriteCHAR(xmlBufferPtr buf, const xmlChar *string) {
     if (buf == NULL)
         return;
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return;
     xmlBufferCat(buf, string);
 }
 
@@ -7805,7 +7772,6 @@ void
 xmlBufferWriteChar(xmlBufferPtr buf, const char *string) {
     if (buf == NULL)
         return;
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return;
     xmlBufferCCat(buf, string);
 }
 
@@ -7824,7 +7790,6 @@ xmlBufferWriteQuotedString(xmlBufferPtr buf, const xmlChar *string) {
     const xmlChar *cur, *base;
     if (buf == NULL)
         return;
-    if (buf->alloc == XML_BUFFER_ALLOC_IMMUTABLE) return;
     if (xmlStrchr(string, '\"')) {
         if (xmlStrchr(string, '\'')) {
 #ifdef DEBUG_BUFFER

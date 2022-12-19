@@ -49,24 +49,26 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     xmlStrPrintf(filename, sizeof(filename),
                  "%s/testdso%s",
                  (const xmlChar*)MODULE_PATH,
-		 (const xmlChar*)LIBXML_MODULE_EXTENSION);
+                 (const xmlChar*)LIBXML_MODULE_EXTENSION);
 
     module = xmlModuleOpen((const char*)filename, 0);
-    if (module)
-      {
-        if (xmlModuleSymbol(module, "hello_world", (void **) &hello_world)) {
-	    fprintf(stderr, "Failure to lookup\n");
-	    return(1);
-	}
-	if (hello_world == NULL) {
-	    fprintf(stderr, "Lookup returned NULL\n");
-	    return(1);
-	}
+    if (module == NULL) {
+      fprintf(stderr, "Failed to open module\n");
+      return(1);
+    }
 
-        (*hello_world)();
+    if (xmlModuleSymbol(module, "hello_world", (void **) &hello_world)) {
+      fprintf(stderr, "Failure to lookup\n");
+      return(1);
+    }
+    if (hello_world == NULL) {
+      fprintf(stderr, "Lookup returned NULL\n");
+      return(1);
+    }
 
-        xmlModuleClose(module);
-      }
+    (*hello_world)();
+
+    xmlModuleClose(module);
 
     xmlMemoryDump();
 

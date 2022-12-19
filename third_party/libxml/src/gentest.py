@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # generate a tester program for the API
 #
@@ -261,7 +261,6 @@ extra_post_call = {
    "xmlParseChunk": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlParseExtParsedEnt": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlDOMWrapAdoptNode": "if ((node != NULL) && (node->parent == NULL)) {xmlUnlinkNode(node);xmlFreeNode(node);node = NULL;}",
-   "xmlBufferSetAllocationScheme": "if ((buf != NULL) && (scheme == XML_BUFFER_ALLOC_IMMUTABLE) && (buf->content != NULL) && (buf->content != static_buf_content)) { xmlFree(buf->content); buf->content = NULL;}"
 }
 
 modules = []
@@ -800,9 +799,9 @@ test_%s(void) {
                 if btype == "const_char_ptr" or btype == "const_xmlChar_ptr":
                     test.write(
                         "        if ((%s != NULL) &&\n"
-                        "            (%s > (int) strlen((const char *) %s) + 1))\n"
-                        "            continue;\n"
-                        % (bnam, nam, bnam))
+                        "            (%s > xmlStrlen(BAD_CAST %s)))\n"
+                        "            %s = 0;\n"
+                        % (bnam, nam, bnam, nam))
                     break
         i = i + 1;
 

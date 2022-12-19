@@ -43,18 +43,18 @@ typedef enum {
     XML_PATTERN_XSFIELD		= 1<<2	/* XPath subset for schema field */
 } xmlPatternFlags;
 
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			xmlFreePattern		(xmlPatternPtr comp);
 
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			xmlFreePatternList	(xmlPatternPtr comp);
 
-XMLPUBFUN xmlPatternPtr XMLCALL
+XMLPUBFUN xmlPatternPtr
 			xmlPatterncompile	(const xmlChar *pattern,
 						 xmlDict *dict,
 						 int flags,
 						 const xmlChar **namespaces);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlPatternMatch		(xmlPatternPtr comp,
 						 xmlNodePtr node);
 
@@ -62,34 +62,34 @@ XMLPUBFUN int XMLCALL
 typedef struct _xmlStreamCtxt xmlStreamCtxt;
 typedef xmlStreamCtxt *xmlStreamCtxtPtr;
 
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlPatternStreamable	(xmlPatternPtr comp);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlPatternMaxDepth	(xmlPatternPtr comp);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlPatternMinDepth	(xmlPatternPtr comp);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlPatternFromRoot	(xmlPatternPtr comp);
-XMLPUBFUN xmlStreamCtxtPtr XMLCALL
+XMLPUBFUN xmlStreamCtxtPtr
 			xmlPatternGetStreamCtxt	(xmlPatternPtr comp);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			xmlFreeStreamCtxt	(xmlStreamCtxtPtr stream);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlStreamPushNode	(xmlStreamCtxtPtr stream,
 						 const xmlChar *name,
 						 const xmlChar *ns,
 						 int nodeType);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlStreamPush		(xmlStreamCtxtPtr stream,
 						 const xmlChar *name,
 						 const xmlChar *ns);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlStreamPushAttr	(xmlStreamCtxtPtr stream,
 						 const xmlChar *name,
 						 const xmlChar *ns);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlStreamPop		(xmlStreamCtxtPtr stream);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			xmlStreamWantsAnyNode	(xmlStreamCtxtPtr stream);
 #ifdef __cplusplus
 }

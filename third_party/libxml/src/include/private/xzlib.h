@@ -16,11 +16,16 @@
 
 typedef void *xzFile;           /* opaque lzma file descriptor */
 
-xzFile __libxml2_xzopen(const char *path, const char *mode);
-xzFile __libxml2_xzdopen(int fd, const char *mode);
-int __libxml2_xzread(xzFile file, void *buf, unsigned len);
-int __libxml2_xzclose(xzFile file);
-int __libxml2_xzcompressed(xzFile f);
+XML_HIDDEN xzFile
+__libxml2_xzopen(const char *path, const char *mode);
+XML_HIDDEN xzFile
+__libxml2_xzdopen(int fd, const char *mode);
+XML_HIDDEN int
+__libxml2_xzread(xzFile file, void *buf, unsigned len);
+XML_HIDDEN int
+__libxml2_xzclose(xzFile file);
+XML_HIDDEN int
+__libxml2_xzcompressed(xzFile f);
 
 #endif /* LIBXML_LZMA_ENABLED */
 

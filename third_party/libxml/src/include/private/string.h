@@ -3,6 +3,7 @@
 
 #include <libxml/xmlstring.h>
 
-xmlChar *xmlEscapeFormatString(xmlChar **msg);
+XML_HIDDEN xmlChar *
+xmlEscapeFormatString(xmlChar **msg);
 
 #endif /* XML_STRING_H_PRIVATE__ */

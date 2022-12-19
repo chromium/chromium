@@ -1,6 +1,6 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: 76d6b0d768d4e60a2d2844d55def120257ab6c6e
+Version: f67dc6189fce50aec9c1446cbe8c55268564485b
 CPEPrefix: cpe:/a:xmlsoft:libxml2:2.9.13
 License: MIT
 License File: src/Copyright

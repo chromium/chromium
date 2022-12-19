@@ -2950,43 +2950,14 @@ xmlParserInputBufferCreateMem(const char *mem, int size, xmlCharEncoding enc) {
  * @size:  the length of the memory block
  * @enc:  the charset encoding if known
  *
- * Create a buffered parser input for the progressive parsing for the input
- * from an immutable memory area. This will not copy the memory area to
- * the buffer, but the memory is expected to be available until the end of
- * the parsing, this is useful for example when using mmap'ed file.
+ * DEPRECATED: Use xmlParserInputBufferCreateMem.
  *
  * Returns the new parser input or NULL
  */
 xmlParserInputBufferPtr
 xmlParserInputBufferCreateStatic(const char *mem, int size,
                                  xmlCharEncoding enc) {
-    xmlParserInputBufferPtr ret;
-
-    if (size < 0) return(NULL);
-    if (mem == NULL) return(NULL);
-
-    ret = (xmlParserInputBufferPtr) xmlMalloc(sizeof(xmlParserInputBuffer));
-    if (ret == NULL) {
-	xmlIOErrMemory("creating input buffer");
-	return(NULL);
-    }
-    memset(ret, 0, sizeof(xmlParserInputBuffer));
-    ret->buffer = xmlBufCreateStatic((void *)mem, size);
-    if (ret->buffer == NULL) {
-        xmlFree(ret);
-	return(NULL);
-    }
-    ret->encoder = xmlGetCharEncodingHandler(enc);
-    if (ret->encoder != NULL)
-        ret->raw = xmlBufCreateSize(2 * xmlDefaultBufferSize);
-    else
-        ret->raw = NULL;
-    ret->compressed = -1;
-    ret->context = (void *) mem;
-    ret->readcallback = NULL;
-    ret->closecallback = NULL;
-
-    return(ret);
+    return(xmlParserInputBufferCreateMem(mem, size, enc));
 }
 
 #ifdef LIBXML_OUTPUT_ENABLED
@@ -3504,8 +3475,7 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
     int cons;        /* byte from str consumed */
 
     if ((out == NULL) || (out->error) || (str == NULL) ||
-        (out->buffer == NULL) ||
-	(xmlBufGetAllocationScheme(out->buffer) == XML_BUFFER_ALLOC_IMMUTABLE))
+        (out->buffer == NULL))
         return(-1);
     len = strlen((const char *)str);
     if (len < 0) return(0);

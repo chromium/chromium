@@ -65,7 +65,7 @@
  *
  * Default handler for out of context error messages.
  */
-void XMLCDECL
+void
 xmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
     va_list args;
 
@@ -163,7 +163,7 @@ xmlParserPrintFileInfo(xmlParserInputPtr input) {
 }
 
 /**
- * xmlParserPrintFileContext:
+ * xmlParserPrintFileContextInternal:
  * @input:  an xmlParserInputPtr input
  *
  * Displays current context within the input content for error tracking
@@ -172,7 +172,7 @@ xmlParserPrintFileInfo(xmlParserInputPtr input) {
 static void
 xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
 		xmlGenericErrorFunc channel, void *data ) {
-    const xmlChar *cur, *base;
+    const xmlChar *cur, *base, *start;
     unsigned int n, col;	/* GCC warns if signed, because compared with sizeof() */
     xmlChar  content[81]; /* space for 80 chars + line terminator */
     xmlChar *ctnt;
@@ -191,19 +191,30 @@ xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
     while ((n++ < (sizeof(content)-1)) && (cur > base) &&
 	   (*(cur) != '\n') && (*(cur) != '\r'))
         cur--;
-    if ((*(cur) == '\n') || (*(cur) == '\r')) cur++;
+    if ((*(cur) == '\n') || (*(cur) == '\r')) {
+        cur++;
+    } else {
+        /* skip over continuation bytes */
+        while ((cur < input->cur) && ((*cur & 0xC0) == 0x80))
+            cur++;
+    }
     /* calculate the error position in terms of the current position */
     col = input->cur - cur;
     /* search forward for end-of-line (to max buff size) */
     n = 0;
-    ctnt = content;
+    start = cur;
     /* copy selected text to our buffer */
-    while ((*cur != 0) && (*(cur) != '\n') &&
-	   (*(cur) != '\r') && (n < sizeof(content)-1)) {
-		*ctnt++ = *cur++;
-	n++;
+    while ((*cur != 0) && (*(cur) != '\n') && (*(cur) != '\r')) {
+        int len = input->end - cur;
+        int c = xmlGetUTF8Char(cur, &len);
+
+        if ((c < 0) || (n + len > sizeof(content)-1))
+            break;
+        cur += len;
+	n += len;
     }
-    *ctnt = 0;
+    memcpy(content, start, n);
+    content[n] = 0;
     /* print out the selected text */
     channel(data ,"%s\n", content);
     /* create blank line with problem pointer */
@@ -451,7 +462,7 @@ xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
  * then forward the error message down the parser or generic
  * error callback handler
  */
-void XMLCDECL
+void
 __xmlRaiseError(xmlStructuredErrorFunc schannel,
               xmlGenericErrorFunc channel, void *data, void *ctx,
               void *nod, int domain, int code, xmlErrorLevel level,
@@ -677,7 +688,7 @@ __xmlSimpleError(int domain, int code, xmlNodePtr node,
  * Display and format an error messages, gives file, line, position and
  * extra parameters.
  */
-void XMLCDECL
+void
 xmlParserError(void *ctx, const char *msg, ...)
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
@@ -720,7 +731,7 @@ xmlParserError(void *ctx, const char *msg, ...)
  * Display and format a warning messages, gives file, line, position and
  * extra parameters.
  */
-void XMLCDECL
+void
 xmlParserWarning(void *ctx, const char *msg, ...)
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
@@ -769,7 +780,7 @@ xmlParserWarning(void *ctx, const char *msg, ...)
  * Display and format an validity error messages, gives file,
  * line, position and extra parameters.
  */
-void XMLCDECL
+void
 xmlParserValidityError(void *ctx, const char *msg, ...)
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
@@ -813,7 +824,7 @@ xmlParserValidityError(void *ctx, const char *msg, ...)
  * Display and format a validity warning messages, gives file, line,
  * position and extra parameters.
  */
-void XMLCDECL
+void
 xmlParserValidityWarning(void *ctx, const char *msg, ...)
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;

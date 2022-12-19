@@ -387,6 +387,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	xmlCharEncoding enc;
 	int oldcharset;
 	const xmlChar *oldencoding;
+	int oldprogressive;
 
 	/*
 	 * Ask the Entity resolver to load the damn thing
@@ -409,7 +410,9 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	oldinputTab = ctxt->inputTab;
 	oldcharset = ctxt->charset;
 	oldencoding = ctxt->encoding;
+        oldprogressive = ctxt->progressive;
 	ctxt->encoding = NULL;
+        ctxt->progressive = 0;
 
 	ctxt->inputTab = (xmlParserInputPtr *)
 	                 xmlMalloc(5 * sizeof(xmlParserInputPtr));
@@ -422,6 +425,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	    ctxt->inputTab = oldinputTab;
 	    ctxt->charset = oldcharset;
 	    ctxt->encoding = oldencoding;
+            ctxt->progressive = oldprogressive;
 	    return;
 	}
 	ctxt->inputNr = 0;
@@ -472,6 +476,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	     (!xmlDictOwns(ctxt->dict, ctxt->encoding))))
 	    xmlFree((xmlChar *) ctxt->encoding);
 	ctxt->encoding = oldencoding;
+        ctxt->progressive = oldprogressive;
 	/* ctxt->wellFormed = oldwellFormed; */
     }
 }
@@ -2932,7 +2937,7 @@ xmlSAX2InitDefaultSAXHandler(xmlSAXHandler *hdlr, int warning)
 /**
  * xmlDefaultSAXHandlerInit:
  *
- * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * DEPRECATED: This function is a no-op. Call xmlInitParser to
  * initialize the library.
  *
  * Initialize the default SAX2 handler
@@ -2940,9 +2945,6 @@ xmlSAX2InitDefaultSAXHandler(xmlSAXHandler *hdlr, int warning)
 void
 xmlDefaultSAXHandlerInit(void)
 {
-#ifdef LIBXML_SAX1_ENABLED
-    xmlSAXVersion((xmlSAXHandlerPtr) &xmlDefaultSAXHandler, 1);
-#endif /* LIBXML_SAX1_ENABLED */
 }
 
 #ifdef LIBXML_HTML_ENABLED
@@ -2993,17 +2995,12 @@ xmlSAX2InitHtmlDefaultSAXHandler(xmlSAXHandler *hdlr)
 /**
  * htmlDefaultSAXHandlerInit:
  *
- * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * DEPRECATED: This function is a no-op. Call xmlInitParser to
  * initialize the library.
- *
- * Initialize the default SAX handler
  */
 void
 htmlDefaultSAXHandlerInit(void)
 {
-#ifdef LIBXML_SAX1_ENABLED
-    xmlSAX2InitHtmlDefaultSAXHandler((xmlSAXHandlerPtr) &htmlDefaultSAXHandler);
-#endif
 }
 
 #endif /* LIBXML_HTML_ENABLED */

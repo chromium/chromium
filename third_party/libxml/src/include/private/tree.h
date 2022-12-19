@@ -6,12 +6,13 @@
  * node creation/destruction. It avoids spending a lot of time in locking
  * function while checking if the callback exists.
  */
-extern int __xmlRegisterCallbacks;
+XML_HIDDEN extern int
+__xmlRegisterCallbacks;
 
-xmlNodePtr
+XML_HIDDEN xmlNodePtr
 xmlStaticCopyNode(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent,
                   int extended);
-xmlNodePtr
+XML_HIDDEN xmlNodePtr
 xmlStaticCopyNodeList(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent);
 
 #endif /* XML_TREE_H_PRIVATE__ */

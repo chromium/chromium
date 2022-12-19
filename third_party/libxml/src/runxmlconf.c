@@ -11,12 +11,8 @@
 
 #ifdef LIBXML_XPATH_ENABLED
 
-#if !defined(_WIN32)
-#include <unistd.h>
-#endif
 #include <string.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>

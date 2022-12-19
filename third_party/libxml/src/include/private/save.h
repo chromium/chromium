@@ -6,9 +6,11 @@
 
 #ifdef LIBXML_OUTPUT_ENABLED
 
-void xmlBufAttrSerializeTxtContent(xmlBufPtr buf, xmlDocPtr doc,
-                                   xmlAttrPtr attr, const xmlChar * string);
-void xmlNsListDumpOutput(xmlOutputBufferPtr buf, xmlNsPtr cur);
+XML_HIDDEN void
+xmlBufAttrSerializeTxtContent(xmlBufPtr buf, xmlDocPtr doc,
+                              xmlAttrPtr attr, const xmlChar * string);
+XML_HIDDEN void
+xmlNsListDumpOutput(xmlOutputBufferPtr buf, xmlNsPtr cur);
 
 #endif /* LIBXML_OUTPUT_ENABLED */
 

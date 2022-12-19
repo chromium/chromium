@@ -14,9 +14,6 @@
 #include <windows.h>
 #endif
 #include <string.h>
-#if !defined(_MSC_VER)
-#include <unistd.h>
-#endif
 #include <assert.h>
 
 #define	MAX_ARGC	20

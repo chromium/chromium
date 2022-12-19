@@ -84,100 +84,100 @@ struct _htmlEntityDesc {
  * There is only few public functions.
  */
 XML_DEPRECATED
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			htmlInitAutoClose	(void);
-XMLPUBFUN const htmlElemDesc * XMLCALL
+XMLPUBFUN const htmlElemDesc *
 			htmlTagLookup	(const xmlChar *tag);
-XMLPUBFUN const htmlEntityDesc * XMLCALL
+XMLPUBFUN const htmlEntityDesc *
 			htmlEntityLookup(const xmlChar *name);
-XMLPUBFUN const htmlEntityDesc * XMLCALL
+XMLPUBFUN const htmlEntityDesc *
 			htmlEntityValueLookup(unsigned int value);
 
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlIsAutoClosed(htmlDocPtr doc,
 					 htmlNodePtr elem);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlAutoCloseTag(htmlDocPtr doc,
 					 const xmlChar *name,
 					 htmlNodePtr elem);
 XML_DEPRECATED
-XMLPUBFUN const htmlEntityDesc * XMLCALL
+XMLPUBFUN const htmlEntityDesc *
 			htmlParseEntityRef(htmlParserCtxtPtr ctxt,
 					 const xmlChar **str);
 XML_DEPRECATED
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlParseCharRef(htmlParserCtxtPtr ctxt);
 XML_DEPRECATED
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			htmlParseElement(htmlParserCtxtPtr ctxt);
 
-XMLPUBFUN htmlParserCtxtPtr XMLCALL
+XMLPUBFUN htmlParserCtxtPtr
 			htmlNewParserCtxt(void);
-XMLPUBFUN htmlParserCtxtPtr XMLCALL
+XMLPUBFUN htmlParserCtxtPtr
 			htmlNewSAXParserCtxt(const htmlSAXHandler *sax,
 					     void *userData);
 
-XMLPUBFUN htmlParserCtxtPtr XMLCALL
+XMLPUBFUN htmlParserCtxtPtr
 			htmlCreateMemoryParserCtxt(const char *buffer,
 						   int size);
 
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlParseDocument(htmlParserCtxtPtr ctxt);
 XML_DEPRECATED
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 			htmlSAXParseDoc	(const xmlChar *cur,
 					 const char *encoding,
 					 htmlSAXHandlerPtr sax,
 					 void *userData);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 			htmlParseDoc	(const xmlChar *cur,
 					 const char *encoding);
-XMLPUBFUN htmlParserCtxtPtr XMLCALL
+XMLPUBFUN htmlParserCtxtPtr
 			htmlCreateFileParserCtxt(const char *filename,
 	                                         const char *encoding);
 XML_DEPRECATED
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 			htmlSAXParseFile(const char *filename,
 					 const char *encoding,
 					 htmlSAXHandlerPtr sax,
 					 void *userData);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 			htmlParseFile	(const char *filename,
 					 const char *encoding);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			UTF8ToHtml	(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlEncodeEntities(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen, int quoteChar);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlIsScriptAttribute(const xmlChar *name);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlHandleOmittedElem(int val);
 
 #ifdef LIBXML_PUSH_ENABLED
 /**
  * Interfaces for the Push mode.
  */
-XMLPUBFUN htmlParserCtxtPtr XMLCALL
+XMLPUBFUN htmlParserCtxtPtr
 			htmlCreatePushParserCtxt(htmlSAXHandlerPtr sax,
 						 void *user_data,
 						 const char *chunk,
 						 int size,
 						 const char *filename,
 						 xmlCharEncoding enc);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 			htmlParseChunk		(htmlParserCtxtPtr ctxt,
 						 const char *chunk,
 						 int size,
 						 int terminate);
 #endif /* LIBXML_PUSH_ENABLED */
 
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 			htmlFreeParserCtxt	(htmlParserCtxtPtr ctxt);
 
 /*
@@ -202,63 +202,63 @@ typedef enum {
     HTML_PARSE_IGNORE_ENC=1<<21 /* ignore internal document encoding hint */
 } htmlParserOption;
 
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
 		htmlCtxtReset		(htmlParserCtxtPtr ctxt);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
 		htmlCtxtUseOptions	(htmlParserCtxtPtr ctxt,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlReadDoc		(const xmlChar *cur,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlReadFile		(const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlReadMemory		(const char *buffer,
 					 int size,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlReadFd		(int fd,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlReadIO		(xmlInputReadCallback ioread,
 					 xmlInputCloseCallback ioclose,
 					 void *ioctx,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadDoc		(xmlParserCtxtPtr ctxt,
 					 const xmlChar *cur,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadFile		(xmlParserCtxtPtr ctxt,
 					 const char *filename,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadMemory		(xmlParserCtxtPtr ctxt,
 					 const char *buffer,
 					 int size,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadFd		(xmlParserCtxtPtr ctxt,
 					 int fd,
 					 const char *URL,
 					 const char *encoding,
 					 int options);
-XMLPUBFUN htmlDocPtr XMLCALL
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadIO		(xmlParserCtxtPtr ctxt,
 					 xmlInputReadCallback ioread,
 					 xmlInputCloseCallback ioclose,
@@ -280,10 +280,10 @@ typedef enum {
 /* Using htmlElemDesc rather than name here, to emphasise the fact
    that otherwise there's a lookup overhead
 */
-XMLPUBFUN htmlStatus XMLCALL htmlAttrAllowed(const htmlElemDesc*, const xmlChar*, int) ;
-XMLPUBFUN int XMLCALL htmlElementAllowedHere(const htmlElemDesc*, const xmlChar*) ;
-XMLPUBFUN htmlStatus XMLCALL htmlElementStatusHere(const htmlElemDesc*, const htmlElemDesc*) ;
-XMLPUBFUN htmlStatus XMLCALL htmlNodeStatus(const htmlNodePtr, int) ;
+XMLPUBFUN htmlStatus htmlAttrAllowed(const htmlElemDesc*, const xmlChar*, int) ;
+XMLPUBFUN int htmlElementAllowedHere(const htmlElemDesc*, const xmlChar*) ;
+XMLPUBFUN htmlStatus htmlElementStatusHere(const htmlElemDesc*, const htmlElemDesc*) ;
+XMLPUBFUN htmlStatus htmlNodeStatus(const htmlNodePtr, int) ;
 /**
  * htmlDefaultSubelement:
  * @elt: HTML element

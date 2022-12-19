@@ -773,7 +773,6 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
     xmlBufPtr inbuf;
     int val, s;
     xmlTextReaderState oldstate;
-    int alloc;
 
     if ((reader->input == NULL) || (reader->input->buffer == NULL))
 	return(-1);
@@ -781,7 +780,6 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
     oldstate = reader->state;
     reader->state = XML_TEXTREADER_NONE;
     inbuf = reader->input->buffer;
-    alloc = xmlBufGetAllocationScheme(inbuf);
 
     while (reader->state == XML_TEXTREADER_NONE) {
 	if (xmlBufUse(inbuf) < reader->cur + CHUNK_SIZE) {
@@ -791,7 +789,7 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
 	    if (reader->mode != XML_TEXTREADER_MODE_EOF) {
 		val = xmlParserInputBufferRead(reader->input, 4096);
 		if ((val == 0) &&
-		    (alloc == XML_BUFFER_ALLOC_IMMUTABLE)) {
+		    (reader->input->readcallback == NULL)) {
 		    if (xmlBufUse(inbuf) == reader->cur) {
 			reader->mode = XML_TEXTREADER_MODE_EOF;
 			reader->state = oldstate;
@@ -3983,19 +3981,19 @@ xmlTextReaderCurrentDoc(xmlTextReaderPtr reader) {
 #ifdef LIBXML_SCHEMAS_ENABLED
 static char *xmlTextReaderBuildMessage(const char *msg, va_list ap) LIBXML_ATTR_FORMAT(1,0);
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityError(void *ctxt, const char *msg, ...) LIBXML_ATTR_FORMAT(2,3);
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityWarning(void *ctxt, const char *msg, ...) LIBXML_ATTR_FORMAT(2,3);
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityErrorRelay(void *ctx, const char *msg, ...) LIBXML_ATTR_FORMAT(2,3);
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityWarningRelay(void *ctx, const char *msg, ...) LIBXML_ATTR_FORMAT(2,3);
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityErrorRelay(void *ctx, const char *msg, ...)
 {
     xmlTextReaderPtr reader = (xmlTextReaderPtr) ctx;
@@ -4018,7 +4016,7 @@ xmlTextReaderValidityErrorRelay(void *ctx, const char *msg, ...)
     va_end(ap);
 }
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityWarningRelay(void *ctx, const char *msg, ...)
 {
     xmlTextReaderPtr reader = (xmlTextReaderPtr) ctx;
@@ -4787,7 +4785,7 @@ xmlTextReaderStructuredError(void *ctxt, xmlErrorPtr error)
     }
 }
 
-static void XMLCDECL LIBXML_ATTR_FORMAT(2,3)
+static void LIBXML_ATTR_FORMAT(2,3)
 xmlTextReaderError(void *ctxt, const char *msg, ...)
 {
     va_list ap;
@@ -4800,7 +4798,7 @@ xmlTextReaderError(void *ctxt, const char *msg, ...)
 
 }
 
-static void XMLCDECL LIBXML_ATTR_FORMAT(2,3)
+static void LIBXML_ATTR_FORMAT(2,3)
 xmlTextReaderWarning(void *ctxt, const char *msg, ...)
 {
     va_list ap;
@@ -4812,7 +4810,7 @@ xmlTextReaderWarning(void *ctxt, const char *msg, ...)
     va_end(ap);
 }
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityError(void *ctxt, const char *msg, ...)
 {
     va_list ap;
@@ -4832,7 +4830,7 @@ xmlTextReaderValidityError(void *ctxt, const char *msg, ...)
     }
 }
 
-static void XMLCDECL
+static void
 xmlTextReaderValidityWarning(void *ctxt, const char *msg, ...)
 {
     va_list ap;
@@ -5366,8 +5364,7 @@ xmlReaderForMemory(const char *buffer, int size, const char *URL,
     xmlTextReaderPtr reader;
     xmlParserInputBufferPtr buf;
 
-    buf = xmlParserInputBufferCreateStatic(buffer, size,
-                                      XML_CHAR_ENCODING_NONE);
+    buf = xmlParserInputBufferCreateMem(buffer, size, XML_CHAR_ENCODING_NONE);
     if (buf == NULL) {
         return (NULL);
     }
@@ -5593,7 +5590,7 @@ xmlReaderNewMemory(xmlTextReaderPtr reader, const char *buffer, int size,
     if (buffer == NULL)
         return (-1);
 
-    input = xmlParserInputBufferCreateStatic(buffer, size,
+    input = xmlParserInputBufferCreateMem(buffer, size,
                                       XML_CHAR_ENCODING_NONE);
     if (input == NULL) {
         return (-1);

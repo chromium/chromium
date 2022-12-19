@@ -23,6 +23,8 @@
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#elif defined (_WIN32)
+#include <io.h>
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>

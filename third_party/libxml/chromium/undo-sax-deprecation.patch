@@ -1,8 +1,8 @@
 diff --git a/include/libxml/parser.h b/include/libxml/parser.h
-index f96148b5..1587b9d0 100644
+index d104b874..6dc4ca9b 100644
 --- a/include/libxml/parser.h
 +++ b/include/libxml/parser.h
-@@ -897,7 +897,9 @@ XMLPUBFUN xmlDocPtr XMLCALL
+@@ -899,7 +899,9 @@ XMLPUBFUN xmlDocPtr
  		xmlSAXParseDoc		(xmlSAXHandlerPtr sax,
  					 const xmlChar *cur,
  					 int recovery);
@@ -10,6 +10,6 @@ index f96148b5..1587b9d0 100644
 +// TODO(https://github.com/google/maldoca/issues/87): Re-Deprecate this when
 +//   maldoca stops using xmlSAXParseMemory.
 +//XML_DEPRECATED
- XMLPUBFUN xmlDocPtr XMLCALL
+ XMLPUBFUN xmlDocPtr
  		xmlSAXParseMemory	(xmlSAXHandlerPtr sax,
  					 const char *buffer,

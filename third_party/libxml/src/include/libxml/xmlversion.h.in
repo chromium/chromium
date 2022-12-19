@@ -21,7 +21,7 @@ extern "C" {
  * your library and includes mismatch
  */
 #ifndef LIBXML2_COMPILING_MSCCDEF
-XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
+XMLPUBFUN void xmlCheckVersion(int version);
 #endif /* LIBXML2_COMPILING_MSCCDEF */
 
 /**
@@ -440,10 +440,10 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #endif
 
 #ifndef XML_DEPRECATED
-#  ifdef IN_LIBXML
+#  if defined (IN_LIBXML) || (__GNUC__ * 100 + __GNUC_MINOR__ < 301)
 #    define XML_DEPRECATED
-#  else
 /* Available since at least GCC 3.1 */
+#  else
 #    define XML_DEPRECATED __attribute__((deprecated))
 #  endif
 #endif
@@ -487,20 +487,35 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  * is deprecated.
  */
 #ifndef XML_DEPRECATED
-#define XML_DEPRECATED
+#  if defined (IN_LIBXML) || !defined (_MSC_VER)
+#    define XML_DEPRECATED
+/* Available since Visual Studio 2005 */
+#  elif defined (_MSC_VER) && (_MSC_VER >= 1400)
+#    define XML_DEPRECATED __declspec(deprecated)
+#  endif
 #endif
 /**
  * LIBXML_IGNORE_FPTR_CAST_WARNINGS:
  *
  * Macro used to ignore pointer cast warnings that can't be worked around.
  */
-#define XML_IGNORE_FPTR_CAST_WARNINGS
+#if defined (_MSC_VER) && (_MSC_VER >= 1400)
+#  define XML_IGNORE_FPTR_CAST_WARNINGS __pragma(warning(push))
+#else
+#  define XML_IGNORE_FPTR_CAST_WARNINGS
+#endif
 /**
- * LIBXML_POP_WARNINGS:
+ * XML_POP_WARNINGS:
  *
  * Macro used to restore warnings state.
  */
-#define XML_POP_WARNINGS
+#ifndef XML_POP_WARNINGS
+#  if defined (_MSC_VER) && (_MSC_VER >= 1400)
+#    define XML_POP_WARNINGS __pragma(warning(pop))
+#  else
+#    define XML_POP_WARNINGS
+#  endif
+#endif
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus

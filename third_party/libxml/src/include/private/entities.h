@@ -4,6 +4,7 @@
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
 
-xmlChar *xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input);
+XML_HIDDEN xmlChar *
+xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input);
 
 #endif /* XML_ENTITIES_H_PRIVATE__ */

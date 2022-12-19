@@ -51,6 +51,7 @@
 
 #include "private/buf.h"
 #include "private/error.h"
+#include "private/xpath.h"
 
 #ifdef LIBXML_PATTERN_ENABLED
 #define XPATH_STREAMING
@@ -486,14 +487,21 @@ double xmlXPathNINF = 0.0;
 /**
  * xmlXPathInit:
  *
- * DEPRECATED: This function will be made private. Call xmlInitParser to
- * initialize the library.
+ * DEPRECATED: Alias for xmlInitParser.
+ */
+void
+xmlXPathInit(void) {
+    xmlInitParser();
+}
+
+/**
+ * xmlInitXPathInternal:
  *
  * Initialize the XPath environment
  */
 ATTRIBUTE_NO_SANITIZE("float-divide-by-zero")
 void
-xmlXPathInit(void) {
+xmlInitXPathInternal(void) {
 #if defined(NAN) && defined(INFINITY)
     xmlXPathNAN = NAN;
     xmlXPathPINF = INFINITY;

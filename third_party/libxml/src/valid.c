@@ -67,9 +67,7 @@ xmlVErrMemory(xmlValidCtxtPtr ctxt, const char *extra)
 	/* Look up flag to detect if it is part of a parsing
 	   context */
 	if (ctxt->flags & XML_VCTXT_USE_PCTXT) {
-	    long delta = (char *) ctxt - (char *) ctxt->userData;
-	    if ((delta > 0) && (delta < 250))
-		pctxt = ctxt->userData;
+	    pctxt = ctxt->userData;
 	}
     }
     if (extra)
@@ -106,9 +104,7 @@ xmlErrValid(xmlValidCtxtPtr ctxt, xmlParserErrors error,
 	/* Look up flag to detect if it is part of a parsing
 	   context */
 	if (ctxt->flags & XML_VCTXT_USE_PCTXT) {
-	    long delta = (char *) ctxt - (char *) ctxt->userData;
-	    if ((delta > 0) && (delta < 250))
-		pctxt = ctxt->userData;
+	    pctxt = ctxt->userData;
 	}
     }
     if (extra)
@@ -152,9 +148,7 @@ xmlErrValidNode(xmlValidCtxtPtr ctxt,
 	/* Look up flag to detect if it is part of a parsing
 	   context */
 	if (ctxt->flags & XML_VCTXT_USE_PCTXT) {
-	    long delta = (char *) ctxt - (char *) ctxt->userData;
-	    if ((delta > 0) && (delta < 250))
-		pctxt = ctxt->userData;
+	    pctxt = ctxt->userData;
 	}
     }
     __xmlRaiseError(schannel, channel, data, pctxt, node, XML_FROM_VALID, error,
@@ -194,9 +188,7 @@ xmlErrValidNodeNr(xmlValidCtxtPtr ctxt,
 	/* Look up flag to detect if it is part of a parsing
 	   context */
 	if (ctxt->flags & XML_VCTXT_USE_PCTXT) {
-	    long delta = (char *) ctxt - (char *) ctxt->userData;
-	    if ((delta > 0) && (delta < 250))
-		pctxt = ctxt->userData;
+	    pctxt = ctxt->userData;
 	}
     }
     __xmlRaiseError(schannel, channel, data, pctxt, node, XML_FROM_VALID, error,
@@ -234,9 +226,7 @@ xmlErrValidWarning(xmlValidCtxtPtr ctxt,
 	/* Look up flag to detect if it is part of a parsing
 	   context */
 	if (ctxt->flags & XML_VCTXT_USE_PCTXT) {
-	    long delta = (char *) ctxt - (char *) ctxt->userData;
-	    if ((delta > 0) && (delta < 250))
-		pctxt = ctxt->userData;
+	    pctxt = ctxt->userData;
 	}
     }
     __xmlRaiseError(schannel, channel, data, pctxt, node, XML_FROM_VALID, error,
@@ -7018,7 +7008,7 @@ xmlValidGetPotentialChildren(xmlElementContent *ctree,
 /*
  * Dummy function to suppress messages while we try out valid elements
  */
-static void XMLCDECL xmlNoValidityErr(void *ctx ATTRIBUTE_UNUSED,
+static void xmlNoValidityErr(void *ctx ATTRIBUTE_UNUSED,
                                 const char *msg ATTRIBUTE_UNUSED, ...) {
     return;
 }

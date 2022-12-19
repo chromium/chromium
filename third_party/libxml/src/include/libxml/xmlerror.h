@@ -844,7 +844,7 @@ typedef enum {
  * Signature of the function to use when there is an error and
  * no parsing or validity context available .
  */
-typedef void (XMLCDECL *xmlGenericErrorFunc) (void *ctx,
+typedef void (*xmlGenericErrorFunc) (void *ctx,
 				 const char *msg,
 				 ...) LIBXML_ATTR_FORMAT(2,3);
 /**
@@ -855,61 +855,61 @@ typedef void (XMLCDECL *xmlGenericErrorFunc) (void *ctx,
  * Signature of the function to use when there is an error and
  * the module handles the new error reporting mechanism.
  */
-typedef void (XMLCALL *xmlStructuredErrorFunc) (void *userData, xmlErrorPtr error);
+typedef void (*xmlStructuredErrorFunc) (void *userData, xmlErrorPtr error);
 
 /*
  * Use the following function to reset the two global variables
  * xmlGenericError and xmlGenericErrorContext.
  */
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlSetGenericErrorFunc	(void *ctx,
 				 xmlGenericErrorFunc handler);
 XML_DEPRECATED
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     initGenericErrorDefaultFunc	(xmlGenericErrorFunc *handler);
 
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlSetStructuredErrorFunc	(void *ctx,
 				 xmlStructuredErrorFunc handler);
 /*
  * Default message routines used by SAX and Valid context for error
  * and warning reporting.
  */
-XMLPUBFUN void XMLCDECL
+XMLPUBFUN void
     xmlParserError		(void *ctx,
 				 const char *msg,
 				 ...) LIBXML_ATTR_FORMAT(2,3);
-XMLPUBFUN void XMLCDECL
+XMLPUBFUN void
     xmlParserWarning		(void *ctx,
 				 const char *msg,
 				 ...) LIBXML_ATTR_FORMAT(2,3);
-XMLPUBFUN void XMLCDECL
+XMLPUBFUN void
     xmlParserValidityError	(void *ctx,
 				 const char *msg,
 				 ...) LIBXML_ATTR_FORMAT(2,3);
-XMLPUBFUN void XMLCDECL
+XMLPUBFUN void
     xmlParserValidityWarning	(void *ctx,
 				 const char *msg,
 				 ...) LIBXML_ATTR_FORMAT(2,3);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlParserPrintFileInfo	(xmlParserInputPtr input);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlParserPrintFileContext	(xmlParserInputPtr input);
 
 /*
  * Extended error information routines
  */
-XMLPUBFUN xmlErrorPtr XMLCALL
+XMLPUBFUN xmlErrorPtr
     xmlGetLastError		(void);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlResetLastError		(void);
-XMLPUBFUN xmlErrorPtr XMLCALL
+XMLPUBFUN xmlErrorPtr
     xmlCtxtGetLastError		(void *ctx);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlCtxtResetLastError	(void *ctx);
-XMLPUBFUN void XMLCALL
+XMLPUBFUN void
     xmlResetError		(xmlErrorPtr err);
-XMLPUBFUN int XMLCALL
+XMLPUBFUN int
     xmlCopyError		(xmlErrorPtr from,
 				 xmlErrorPtr to);
 

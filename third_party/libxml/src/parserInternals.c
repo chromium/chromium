@@ -400,7 +400,7 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
 	return;
     }
 
-    if ((*ctxt->input->cur == 0) &&
+    if ((ctxt->input->cur >= ctxt->input->end) &&
         (xmlParserInputGrow(ctxt->input, INPUT_CHUNK) <= 0)) {
         return;
     }
@@ -1109,6 +1109,7 @@ xmlSwitchInputEncodingInt(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
          */
         processed = input->cur - input->base;
         xmlBufShrink(in->buffer, processed);
+        input->consumed += processed;
         in->raw = in->buffer;
         in->buffer = xmlBufCreate();
         in->rawconsumed = processed;

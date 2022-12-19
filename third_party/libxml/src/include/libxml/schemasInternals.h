@@ -947,8 +947,8 @@ struct _xmlSchema {
     void *volatiles; /* Obsolete */
 };
 
-XMLPUBFUN void XMLCALL         xmlSchemaFreeType        (xmlSchemaTypePtr type);
-XMLPUBFUN void XMLCALL         xmlSchemaFreeWildcard(xmlSchemaWildcardPtr wildcard);
+XMLPUBFUN void         xmlSchemaFreeType        (xmlSchemaTypePtr type);
+XMLPUBFUN void         xmlSchemaFreeWildcard(xmlSchemaWildcardPtr wildcard);
 
 #ifdef __cplusplus
 }

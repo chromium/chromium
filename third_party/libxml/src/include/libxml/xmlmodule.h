@@ -37,16 +37,16 @@ typedef enum {
     XML_MODULE_LOCAL= 2		/* local binding */
 } xmlModuleOption;
 
-XMLPUBFUN xmlModulePtr XMLCALL xmlModuleOpen	(const char *filename,
+XMLPUBFUN xmlModulePtr xmlModuleOpen	(const char *filename,
 						 int options);
 
-XMLPUBFUN int XMLCALL xmlModuleSymbol		(xmlModulePtr module,
+XMLPUBFUN int xmlModuleSymbol		(xmlModulePtr module,
 						 const char* name,
 						 void **result);
 
-XMLPUBFUN int XMLCALL xmlModuleClose		(xmlModulePtr module);
+XMLPUBFUN int xmlModuleClose		(xmlModulePtr module);
 
-XMLPUBFUN int XMLCALL xmlModuleFree		(xmlModulePtr module);
+XMLPUBFUN int xmlModuleFree		(xmlModulePtr module);
 
 #ifdef __cplusplus
 }

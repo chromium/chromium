@@ -5,7 +5,8 @@
 
 #ifdef LIBXML_HTML_ENABLED
 
-void __htmlParseContent(void *ctx);
+XML_HIDDEN void
+__htmlParseContent(void *ctx);
 
 #endif /* LIBXML_HTML_ENABLED */
 

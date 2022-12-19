@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Original script modified in November 2003 to take advantage of
 # the character-validation range routines, and updated to the
@@ -373,7 +373,7 @@ static xmlIntFunc
 
 for block in bkeys:
     name = block.replace('-', '')
-    header.write("XMLPUBFUN int XMLCALL xmlUCSIs%s\t(int code);\n" % name)
+    header.write("XMLPUBFUN int xmlUCSIs%s\t(int code);\n" % name)
     output.write("/**\n * xmlUCSIs%s:\n * @code: UCS code point\n" % (name))
     output.write(" *\n * Check whether the character is part of %s UCS Block\n"%
                  (block))
@@ -388,7 +388,7 @@ for block in bkeys:
         output.write("((code >= %s) && (code <= %s))" % (start, end))
     output.write(");\n}\n\n")
 
-header.write("\nXMLPUBFUN int XMLCALL xmlUCSIsBlock\t(int code, const char *block);\n\n")
+header.write("\nXMLPUBFUN int xmlUCSIsBlock\t(int code, const char *block);\n\n")
 output.write(
 """/**
  * xmlUCSIsBlock:
@@ -413,7 +413,7 @@ xmlUCSIsBlock(int code, const char *block) {
 
 for name in ckeys:
     ranges = Categories[name]
-    header.write("XMLPUBFUN int XMLCALL xmlUCSIsCat%s\t(int code);\n" % name)
+    header.write("XMLPUBFUN int xmlUCSIsCat%s\t(int code);\n" % name)
     output.write("/**\n * xmlUCSIsCat%s:\n * @code: UCS code point\n" % (name))
     output.write(" *\n * Check whether the character is part of %s UCS Category\n"%
                  (name))
@@ -438,7 +438,7 @@ for name in ckeys:
                          hex(begin), hex(end)))
     output.write(");\n}\n\n")
 
-header.write("\nXMLPUBFUN int XMLCALL xmlUCSIsCat\t(int code, const char *cat);\n")
+header.write("\nXMLPUBFUN int xmlUCSIsCat\t(int code, const char *cat);\n")
 output.write(
 """/**
  * xmlUCSIsCat:
