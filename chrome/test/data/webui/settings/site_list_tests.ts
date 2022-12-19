@@ -306,6 +306,12 @@ function populateTestExceptions() {
           createRawSiteException('http://foo-allow.com', {
             embeddingOrigin: '',
           }),
+          createRawSiteException('http://bar-allow.com', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException('http://baz-allow.com', {
+            embeddingOrigin: '',
+          }),
           createRawSiteException(SITE_EXCEPTION_WILDCARD, {
             embeddingOrigin: 'http://3pc-block.com',
             setting: ContentSetting.BLOCK,
@@ -456,12 +462,14 @@ suite('SiteListCookiesExceptionTypes', function() {
         ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
         prefsMixedCookiesExceptionTypes);
     return browserProxy.whenCalled('getExceptionList').then(() => {
-      assertEquals(2, testElement.sites.length);
+      assertEquals(4, testElement.sites.length);
       assertEquals(testElement.sites[0]!.origin, 'http://foo-allow.com');
+      assertEquals(testElement.sites[1]!.origin, 'http://bar-allow.com');
+      assertEquals(testElement.sites[2]!.origin, 'http://baz-allow.com');
       assertEquals(
-          testElement.sites[1]!.origin, 'http://mixed-primary-allow.com');
+          testElement.sites[3]!.origin, 'http://mixed-primary-allow.com');
       assertEquals(
-          testElement.sites[1]!.embeddingOrigin,
+          testElement.sites[3]!.embeddingOrigin,
           'http://mixed-secondary-allow.com');
     });
   });
@@ -472,14 +480,16 @@ suite('SiteListCookiesExceptionTypes', function() {
         ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
         prefsMixedCookiesExceptionTypes);
     return browserProxy.whenCalled('getExceptionList').then(() => {
-      assertEquals(3, testElement.sites.length);
+      assertEquals(5, testElement.sites.length);
       assertEquals(testElement.sites[0]!.origin, 'http://foo-allow.com');
+      assertEquals(testElement.sites[1]!.origin, 'http://bar-allow.com');
+      assertEquals(testElement.sites[2]!.origin, 'http://baz-allow.com');
       assertEquals(
-          testElement.sites[1]!.embeddingOrigin, 'http://3pc-allow.com');
+          testElement.sites[3]!.embeddingOrigin, 'http://3pc-allow.com');
       assertEquals(
-          testElement.sites[2]!.origin, 'http://mixed-primary-allow.com');
+          testElement.sites[4]!.origin, 'http://mixed-primary-allow.com');
       assertEquals(
-          testElement.sites[2]!.embeddingOrigin,
+          testElement.sites[4]!.embeddingOrigin,
           'http://mixed-secondary-allow.com');
     });
   });
