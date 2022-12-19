@@ -125,10 +125,10 @@ RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
     cast::common::ApplicationConfig config,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CastWebService& web_service)
-    : runtime_application_(std::move(runtime_application)),
-      config_(std::move(config)),
+    : config_(std::move(config)),
       task_runner_(std::move(task_runner)),
-      web_service_(web_service) {
+      web_service_(web_service),
+      runtime_application_(std::move(runtime_application)) {
   DCHECK(runtime_application_);
   DCHECK(task_runner_);
 }

@@ -139,7 +139,6 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void InnerContentsCreated(CastWebContents* inner_contents,
                             CastWebContents* outer_contents) override;
 
-  std::unique_ptr<cast_receiver::RuntimeApplication> const runtime_application_;
   const cast::common::ApplicationConfig config_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -170,6 +169,9 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   absl::optional<std::string> cast_media_service_grpc_endpoint_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<cast_receiver::RuntimeApplication> const runtime_application_;
+
   base::WeakPtrFactory<RuntimeApplicationServiceImpl> weak_factory_{this};
 };
 
