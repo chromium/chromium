@@ -245,7 +245,10 @@ public abstract class OriginVerifier {
                 break;
             case RelationshipCheckResult.NO_CONNECTION:
                 Log.i(TAG, "Device is offline, checking saved verification result.");
-                checkForSavedResult(origin);
+                boolean storedResult = checkForSavedResult(origin);
+                recordResultMetrics(storedResult ? VerifierResult.OFFLINE_SUCCESS
+                                                 : VerifierResult.OFFLINE_FAILURE);
+                originVerified(origin, storedResult, false);
                 break;
             default:
                 assert false;
@@ -301,16 +304,15 @@ public abstract class OriginVerifier {
     /**
      * Checks for a previously saved verification result.
      */
-    private void checkForSavedResult(Origin origin) {
+    public boolean checkForSavedResult(Origin origin) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            boolean verified = mVerificationResultStore.isRelationshipSaved(
+            return mVerificationResultStore.isRelationshipSaved(
                     new Relationship(mPackageName, mSignatureFingerprints, origin, mRelation));
-
-            recordResultMetrics(
-                    verified ? VerifierResult.OFFLINE_SUCCESS : VerifierResult.OFFLINE_FAILURE);
-
-            originVerified(origin, verified, false);
         }
+    }
+
+    public boolean checkForSavedResult(String url) {
+        return checkForSavedResult(Origin.create(url));
     }
 
     /**

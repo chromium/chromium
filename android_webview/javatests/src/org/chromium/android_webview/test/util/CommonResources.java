@@ -7,6 +7,10 @@ package org.chromium.android_webview.test.util;
 import android.graphics.Color;
 import android.util.Pair;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +63,8 @@ public class CommonResources {
 
     // Default name for the test image.
     public static final String TEST_IMAGE_FILENAME = "testimage.png";
+
+    public static final String ASSET_LINKS_PATH = "/.well-known/assetlinks.json";
 
     // HTML code of a static simple page with a favicon.
     public static final String FAVICON_STATIC_HTML =
@@ -149,5 +155,25 @@ public class CommonResources {
                 "<form action=\"" + destination + "\" method=\"post\">"
                 + "  <input type=\"submit\" value=\"post\" id=\"link\">"
                 + "</form>");
+    }
+
+    public static String makeAssetFile(String fingerprint) {
+        try {
+            return (new JSONArray().put(
+                            new JSONObject()
+                                    .put("relation",
+                                            new JSONArray().put(
+                                                    "delegate_permission/common.handle_all_urls"))
+                                    .put("target",
+                                            new JSONObject()
+                                                    .put("namespace", "android_app")
+                                                    .put("package_name",
+                                                            "org.chromium.android_webview.shell")
+                                                    .put("sha256_cert_fingerprints",
+                                                            new JSONArray().put(fingerprint)))))
+                    .toString();
+        } catch (JSONException e) {
+        }
+        return "";
     }
 }
