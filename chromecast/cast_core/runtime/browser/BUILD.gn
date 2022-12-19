@@ -81,6 +81,7 @@ cast_source_set("runtime_service_impl") {
     ":grpc_webui",
     ":metrics_recorder",
     "//base",
+    "//chromecast:chromecast_buildflags",
     "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/cast_core/runtime/browser/url_rewrite",
