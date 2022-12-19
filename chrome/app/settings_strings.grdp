@@ -1880,13 +1880,28 @@
     Mauris at lectus
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the current Topics list in the Topics preferences page.">
-    Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit. Eget bibendum neque.
+    Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE" translateable="false" desc="Text for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
+    Eget bibendum neque.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="Section description for the current Topics list when Topics is disabled in the Topics preferences page.">
     Sed porta viverra lacus ut euismod. Integer a cursus metus, ac ultricies libero.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current Topics list when the Topics list is empty in the Topics preferences page.">
     Curabitur sagittis sapien ut turpis interdum, vitae porttitor sem pretium. Vestibulum sem mauris, ultrices ac massa sit amet, sodales aliquet est.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page.">
+    Suspendisse sit amet consectetur sapien
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="First bullet on 'Learn more' dialog in the Topics preferences page.">
+    Vestibulum arcu elit, pulvinar eu orci at, semper finibus metus. Donec sollicitudin, risus eu congue ullamcorper, nisl lorem consectetur risus, nec vulputate risus eros quis diam.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="Second bullet on 'Learn more' dialog in the Topics preferences page.">
+    Aenean vel turpis id arcu viverra aliquet. Donec convallis, felis eget dictum venenatis, odio orci bibendum neque, quis egestas sem turpis et dui.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the Topics preferences page.">
+    Integer convallis congue ex non vehicula. Nam vel vestibulum ante, ut consectetur ex. Duis semper lectus velit, id porttitor massa mattis sit amet. Integer pulvinar non nisi et tincidunt. Proin aliquam turpis massa, eget tincidunt orci vulputate vitae.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Fledge Page -->

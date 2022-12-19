@@ -21,10 +21,26 @@
     padding-block-end: var(--cr-section-vertical-padding);
   }
 
+  #learnMoreLink {
+    background: none;
+    border: none;
+    color: var(--cr-link-color);
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+  }
+
   .no-topics {
     padding-block-end: 32px;
     padding-block-start: 16px;
     padding-inline-start: 40px;
+  }
+
+  #dialog p {
+    margin: 0;
+    padding-block-end: 16px;
+    padding-block-start: 4px;
   }
 </style>
 
@@ -42,10 +58,15 @@
     <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
         prefs.privacy_sandbox.m1.topics_enabled.value, isTopicsListLoaded_)]]"
         restamp>
-        <!-- TODO(b/254413439): Add "Learn more" link. -->
         <div id="currentTopicsDescription" class="cr-secondary-text"
             hidden="[[isTopicsListEmpty_(topicsList_.length)]]">
           $i18n{topicsPageCurrentTopicsDescription}
+          <!-- TODO(b/262502300): Add "Learn more" into current topics
+               description string. -->
+          <!-- TODO(b/254412650): Add aria-label or aria-describedby. -->
+          <button id="learnMoreLink" on-click="onLearnMoreClick_">
+            $i18n{topicsPageCurrentTopicsDescriptionLearnMore}
+          </button>
         </div>
         <!-- TODO(b/254412594): Add Topics list. -->
         <div id="currentTopicsDescriptionEmpty"
@@ -61,3 +82,20 @@
     </div>
   </div>
 </div>
+
+<template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
+  <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
+    <div slot="title">$i18n{topicsPageLearnMoreHeading}</div>
+    <div slot="body">
+      <p>$i18n{topicsPageLearnMoreBullet1}</p>
+      <p>$i18n{topicsPageLearnMoreBullet2}</p>
+      <p>$i18n{topicsPageLearnMoreBullet3}</p>
+    </div>
+    <div slot="button-container">
+      <cr-button id="closeButton" class="cancel-button" autofocus
+          on-click="onCloseDialog_">
+        $i18n{close}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

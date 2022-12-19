@@ -5,11 +5,13 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
 suite('PrivacySandboxPageTests', function() {
   let page: SettingsPrivacySandboxPageElement;
@@ -114,6 +116,7 @@ suite('PrivacySandboxPageTests', function() {
 
 suite('PrivacySandboxTopicsSubpageTests', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
@@ -124,18 +127,33 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-topics-subpage');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     return flushTasks();
   });
 
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
   });
+
+  function assertLearnMoreDialogClosed() {
+    const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertFalse(!!dialog);
+  }
+
+  function assertLearnMoreDialogOpened() {
+    const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+  }
 
   test('enableTopicsToggle', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
@@ -157,11 +175,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertTrue(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
-    // TODO(crbug.com/1378703): Test for `#currentTopicsDescription` and
-    // `#currentTopicsDescriptionEmpty` separately.
-    assertTrue(
-        isChildVisible(page, '#currentTopicsDescription') ||
-        isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
+    // TODO(crbug.com/1378703): Add test for `#currentTopicsDescriptionEmpty`
+    // when `getTopicsState()` returns an empty list.
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
   });
 
@@ -173,11 +190,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
-    // TODO(crbug.com/1378703): Test for `#currentTopicsDescription` and
-    // `#currentTopicsDescriptionEmpty` separately.
-    assertTrue(
-        isChildVisible(page, '#currentTopicsDescription') ||
-        isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
+    // TODO(crbug.com/1378703): Add test for `#currentTopicsDescriptionEmpty`
+    // when `getTopicsState()` returns an empty list.
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
 
     page.$.topicsToggle.click();
@@ -191,6 +207,28 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertFalse(isChildVisible(page, '#currentTopicsDescription'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
+  });
+
+  test('learnMoreDialog', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+
+    assertLearnMoreDialogClosed();
+    const learnMoreButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!;
+    assertTrue(isVisible(learnMoreButton));
+    learnMoreButton.click();
+    await flushTasks();
+
+    assertLearnMoreDialogOpened();
+    const closeButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#closeButton')!;
+    assertTrue(isVisible(closeButton));
+    closeButton.click();
+    await flushTasks();
+    assertLearnMoreDialogClosed();
+    await waitAfterNextRender(page);
+    assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
 });
 
