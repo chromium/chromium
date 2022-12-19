@@ -1806,12 +1806,22 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // recreate the engine, so that it uses the correct (overridden) callback.
   // This is a horrible hack; the proper fix would be to inject the
   // callback in the ctor instead of adding it retroactively.
+  // TODO(crbug.com/949504): Clean this up and inject required upon
+  // construction.
   bool restart = false;
   if (engine_) {
     // Use BROWSER_SHUTDOWN_AND_KEEP_DATA to prevent the engine from immediately
     // restarting.
     ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA,
                 ResetEngineReason::kShutdown);
+    // The startup logic and DCHECKs require that datatypes start stopped.
+    // Since ResetEngine() doesn't do this, it is necessary to stop them here.
+    // STOP_SYNC_AND_KEEP_DATA is used instead of BROWSER_SHUTDOWN_AND_KEEP_DATA
+    // because crbug.com/1400437 is removing shutdown logic from controllers.
+    for (const auto& [type, controller] : data_type_controllers_) {
+      controller->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+                       base::DoNothing());
+    }
     restart = true;
   }
   DCHECK(!engine_);

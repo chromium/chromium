@@ -116,7 +116,10 @@ DataTypeManagerImpl::DataTypeManagerImpl(
     DataTypeController::State state = controller->state();
     DCHECK(state == DataTypeController::NOT_RUNNING ||
            state == DataTypeController::STOPPING ||
-           state == DataTypeController::FAILED);
+           state == DataTypeController::FAILED)
+        << " actual=" << DataTypeController::StateToString(state) << " for "
+        << ModelTypeToDebugString(type);
+
     if (state == DataTypeController::FAILED) {
       existing_errors[type] =
           SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
