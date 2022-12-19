@@ -206,10 +206,7 @@ SkColor OmniboxChipButton::GetTextAndIconColor() const {
 
 SkColor OmniboxChipButton::GetBackgroundColor() const {
   DCHECK(theme_ != OmniboxChipTheme::kIconStyle);
-  return GetColorProvider()->GetColor(
-      theme_ == OmniboxChipTheme::kLowVisibility
-          ? kColorOmniboxChipBackgroundLowVisibility
-          : kColorOmniboxChipBackgroundNormalVisibility);
+  return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
 }
 
 void OmniboxChipButton::SetForceExpandedForTesting(
