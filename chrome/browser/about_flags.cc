@@ -6769,10 +6769,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWifiSyncAllowDeletesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWifiSyncAllowDeletes)},
 
-    {"wifi-sync-android", flag_descriptions::kWifiSyncAndroidName,
-     flag_descriptions::kWifiSyncAndroidDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWifiSyncAndroid)},
-
     {"display-alignment-assistance",
      flag_descriptions::kDisplayAlignmentAssistanceName,
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,

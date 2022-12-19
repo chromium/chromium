@@ -6048,12 +6048,6 @@ const char kWifiSyncAllowDeletesDescription[] =
     "Enables the option to sync deletions of Wi-Fi networks to other ChromeOS "
     "devices when Wi-Fi Sync is enabled.";
 
-const char kWifiSyncAndroidName[] =
-    "Sync Wi-Fi network configurations with Android";
-const char kWifiSyncAndroidDescription[] =
-    "Enables the option to sync Wi-Fi network configurations between ChromeOS "
-    "devices and a connected Android phone";
-
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";

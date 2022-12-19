@@ -3486,9 +3486,6 @@ extern const char kWifiConnectMacAddressRandomizationDescription[];
 extern const char kWifiSyncAllowDeletesName[];
 extern const char kWifiSyncAllowDeletesDescription[];
 
-extern const char kWifiSyncAndroidName[];
-extern const char kWifiSyncAndroidDescription[];
-
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
