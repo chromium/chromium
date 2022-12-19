@@ -149,6 +149,14 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 
   ShowPopupCallback shown_callback_;
 
+#if BUILDFLAG(IS_MAC)
+  class ScopedBrowserActivationObservation;
+  // The observation on the browser window.
+  // Closes the extension popup when the browser window gets activation.
+  std::unique_ptr<ScopedBrowserActivationObservation>
+      scoped_browser_activation_obvervation_;
+#endif
+
   // Note: This must be reset *before* `host_`. See note in
   // OnExtensionUnloaded().
   std::unique_ptr<ScopedDevToolsAgentHostObservation>

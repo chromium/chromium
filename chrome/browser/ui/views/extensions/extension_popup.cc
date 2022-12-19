@@ -10,6 +10,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -62,6 +63,32 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
  private:
   raw_ptr<content::DevToolsAgentHostObserver> observer_;
 };
+
+#if BUILDFLAG(IS_MAC)
+// Observes the browser window and forwards OnWidgetActivationChanged()
+// to ExtensionPopup.
+class ExtensionPopup::ScopedBrowserActivationObservation
+    : public views::WidgetObserver {
+ public:
+  explicit ScopedBrowserActivationObservation(ExtensionPopup* owner)
+      : owner_(owner) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(owner->host()->browser());
+    observation_.Observe(browser_view->GetWidget());
+  }
+  ~ScopedBrowserActivationObservation() override = default;
+
+  // views::WidgetObserer:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    owner_->OnWidgetActivationChanged(widget, active);
+  }
+
+ private:
+  ExtensionPopup* owner_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+#endif
 
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
@@ -140,6 +167,16 @@ void ExtensionPopup::OnWidgetActivationChanged(views::Widget* widget,
     // https://crbug.com/941994 for more discussion.
     if (widget == anchor_widget() && active)
       CloseUnlessUnderInspection();
+#if BUILDFLAG(IS_MAC)
+    // In macOS fullscreen, the extension popup is anchored to the overlay
+    // widget that never gets activated, therefore we observe the activation of
+    // the browser window.
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(host_->browser());
+    if (browser_view->IsImmersiveModeEnabled() && browser_view->IsActive()) {
+      CloseUnlessUnderInspection();
+    }
+#endif
   }
 }
 
@@ -279,6 +316,11 @@ ExtensionPopup::ExtensionPopup(
   scoped_devtools_observation_ =
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
   host_->browser()->tab_strip_model()->AddObserver(this);
+
+#if BUILDFLAG(IS_MAC)
+  scoped_browser_activation_obvervation_ =
+      std::make_unique<ScopedBrowserActivationObservation>(this);
+#endif
 
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so
