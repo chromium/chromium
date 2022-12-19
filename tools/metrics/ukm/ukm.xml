@@ -16098,7 +16098,7 @@ be describing additional metrics about the same event.
       enum="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
     <summary>
       Records how the flow was ended, e.g. whether it ended with an generated
-      password from an automated flow, a password reset link, etc.
+      password from a manual flow, a password reset link, etc.
     </summary>
   </metric>
   <metric name="EntryPoint"
@@ -16111,8 +16111,8 @@ be describing additional metrics about the same event.
   <metric name="StartEvent"
       enum="PasswordManager.PasswordChangeSuccessTracker.StartEvent">
     <summary>
-      Records how the flow was started, e.g. whether it was an automated flow, a
-      manual flow will a well-known/.change-password URL, etc.
+      Records how the flow was started, e.g. whether it was a manual from
+      settings, a manual flow will a well-known/.change-password URL, etc.
     </summary>
   </metric>
 </event>
@@ -16123,10 +16123,7 @@ be describing additional metrics about the same event.
   <summary>
     Metrics related to password change. The Password Checkup in Chrome Settings
     aims to help users find their leaked passwords. After getting list of
-    compromised passwords, user can trigger password change. On some limited
-    number of sites automated password change is available and on others only
-    manual change is available. We collect what type of password change user
-    triggered.
+    compromised passwords, user can trigger password change.
   </summary>
   <metric name="PasswordChangeType" enum="PasswordChangeType">
     <summary>

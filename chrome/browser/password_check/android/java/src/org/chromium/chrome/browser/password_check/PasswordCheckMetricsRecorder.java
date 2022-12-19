@@ -31,7 +31,8 @@ public final class PasswordCheckMetricsRecorder {
 
     public static void recordCheckResolutionAction(
             @PasswordCheckResolutionAction int action, CompromisedCredential credential) {
-        // TODO(crbug.com/1386065): Update histogram name.
+        // This histogram's name was defined when automated password changes
+        // were offered by chrome. Today, it simply captures regular "manual" changes interactions.
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton", action,
                 PasswordCheckResolutionAction.COUNT);

@@ -842,6 +842,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
     enum="PasswordCheckResolutionAction" expires_after="2023-05-07">
+  <obsolete>
+    Obsolete in M110 after automated password change deprecation.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -856,7 +859,9 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <summary>
     Resolution action to fix a compromised credential when there is no
-    &quot;Change password automatically&quot; button.
+    &quot;Change password automatically&quot; button. Starting with M110, no
+    credential will have a button to change the password automatically anymore
+    so this is recorded for all compromised credentials.
   </summary>
 </histogram>
 
@@ -864,6 +869,9 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.AutomaticChange.AssistantStoppedBubbleCloseReason"
     enum="PasswordManager.AssistantStoppedBubble.CloseReason"
     expires_after="2023-09-26">
+  <obsolete>
+    Obsolete in M110 after automated password change deprecation.
+  </obsolete>
   <owner>brunobraga@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
@@ -875,6 +883,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
     enum="PasswordCheckResolutionAction" expires_after="2023-05-27">
+  <obsolete>
+    Obsolete in M110 after automated password change deprecation.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
