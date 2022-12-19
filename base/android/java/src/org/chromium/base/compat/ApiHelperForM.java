@@ -153,11 +153,6 @@ public final class ApiHelperForM {
         return display.getSupportedModes();
     }
 
-    /** See {@link Display#getMode() }. */
-    public static Display.Mode getDisplayMode(Display display) {
-        return display.getMode();
-    }
-
     /** See {@link Display.Mode#getPhysicalWidth() }. */
     public static int getModePhysicalWidth(Display.Mode mode) {
         return mode.getPhysicalWidth();

@@ -219,9 +219,9 @@ import java.util.List;
 
         Display.Mode currentMode = null;
         List<Display.Mode> supportedModes = null;
-        currentMode = ApiHelperForM.getDisplayMode(display);
+        // Note: getMode() can return null in some situations - see crbug.com/1401322.
+        currentMode = display.getMode();
         supportedModes = Arrays.asList(ApiHelperForM.getDisplaySupportedModes(display));
-        assert currentMode != null;
         assert supportedModes != null;
         assert supportedModes.size() > 0;
 
