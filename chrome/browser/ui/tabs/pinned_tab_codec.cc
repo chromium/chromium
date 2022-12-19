@@ -29,9 +29,9 @@ const char kURL[] = "url";
 
 // Returns a Value representing the supplied StartupTab.
 base::Value EncodeTab(const GURL& url) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringPath(kURL, url.spec());
-  return dict;
+  base::Value::Dict dict;
+  dict.SetByDottedPath(kURL, url.spec());
+  return base::Value(std::move(dict));
 }
 
 // Encodes all the pinned tabs from |browser| into |serialized_tabs|.

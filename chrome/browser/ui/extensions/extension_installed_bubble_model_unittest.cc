@@ -55,15 +55,14 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
 
   void AddBrowserActionKeyBinding(extensions::ExtensionBuilder* builder,
                                   const std::string& key) {
-    base::Value command(base::Value::Type::DICTIONARY);
-    command.SetStringKey("suggested_key", key);
-    command.SetStringKey("description", "Invoke the page action");
-    auto commands =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-    commands->SetKey(extensions::manifest_values::kBrowserActionCommandEvent,
-                     std::move(command));
+    base::Value::Dict command;
+    command.Set("suggested_key", key);
+    command.Set("description", "Invoke the page action");
+    base::Value::Dict commands;
+    commands.Set(extensions::manifest_values::kBrowserActionCommandEvent,
+                 base::Value(std::move(command)));
     builder->SetManifestKey(extensions::manifest_keys::kCommands,
-                            std::move(commands));
+                            std::make_unique<base::Value>(std::move(commands)));
   }
 
   extensions::ExtensionService* extension_service() {

@@ -74,7 +74,7 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
-  CHECK_EQ(args[1].type(), base::Value::Type::DICTIONARY);
+  CHECK_EQ(args[1].type(), base::Value::Type::DICT);
 
   const base::Value& callback_id = args[0];
   absl::optional<bool> metrics_consent = args[1].GetDict().FindBool("consent");

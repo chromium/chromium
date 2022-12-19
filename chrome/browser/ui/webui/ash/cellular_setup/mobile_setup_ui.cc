@@ -142,23 +142,23 @@ constexpr char kMdn[] = "MDN";
 // return an empty dictionary if either is not set.
 base::Value GetCellularNetworkInfoValue(const NetworkState* network,
                                         const DeviceState* device) {
-  base::Value info(base::Value::Type::DICTIONARY);
+  base::Value::Dict info;
   if (!device || !network)
-    return info;
+    return base::Value(std::move(info));
 
   DCHECK_EQ(network->device_path(), device->path());
 
-  info.SetKey(keys::kMeid, base::Value(device->meid()));
-  info.SetKey(keys::kImei, base::Value(device->imei()));
-  info.SetKey(keys::kMdn, base::Value(device->mdn()));
-  info.SetKey(keys::kCarrier, base::Value(device->operator_name()));
-  info.SetKey(keys::kCellularActivationType,
-              base::Value(network->activation_type()));
-  info.SetKey(keys::kPaymentPortalUrl, base::Value(network->payment_url()));
-  info.SetKey(keys::kPaymentPortalPostData,
-              base::Value(network->payment_post_data()));
+  info.Set(keys::kMeid, base::Value(device->meid()));
+  info.Set(keys::kImei, base::Value(device->imei()));
+  info.Set(keys::kMdn, base::Value(device->mdn()));
+  info.Set(keys::kCarrier, base::Value(device->operator_name()));
+  info.Set(keys::kCellularActivationType,
+           base::Value(network->activation_type()));
+  info.Set(keys::kPaymentPortalUrl, base::Value(network->payment_url()));
+  info.Set(keys::kPaymentPortalPostData,
+           base::Value(network->payment_post_data()));
 
-  return info;
+  return base::Value(std::move(info));
 }
 
 }  // namespace
@@ -416,7 +416,7 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
   const NetworkState* network = nsh->GetNetworkState(path.substr(1));
   if (!network) {
     CallJavascriptFunction(kJsGetDeviceInfoCallback,
-                           base::Value(base::Value::Type::DICTIONARY));
+                           base::Value(base::Value::Type::DICT));
     return;
   }
 

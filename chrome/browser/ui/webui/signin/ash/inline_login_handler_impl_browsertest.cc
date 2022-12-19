@@ -98,12 +98,12 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
 }
 
 base::Value GetCompleteLoginArgs(const std::string& email) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kEmailKey, base::Value(email));
-  dict.SetKey(kPasswordKey, base::Value("fake password"));
-  dict.SetKey(kGaiaIdKey, base::Value(signin::GetTestGaiaIdForEmail(email)));
-  dict.SetKey(kIsAvailableInArcKey, base::Value(true));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set(kEmailKey, base::Value(email));
+  dict.Set(kPasswordKey, base::Value("fake password"));
+  dict.Set(kGaiaIdKey, base::Value(signin::GetTestGaiaIdForEmail(email)));
+  dict.Set(kIsAvailableInArcKey, base::Value(true));
+  return base::Value(std::move(dict));
 }
 
 MATCHER_P(AccountEmailEq, expected_email, "") {

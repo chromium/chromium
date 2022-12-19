@@ -137,18 +137,18 @@ base::Value GetWebApps::GetInstalledWebApps() {
   for (auto* item : profiles_) {
     web_app::WebAppProvider* web_app_provider =
         web_app::WebAppProvider::GetForWebApps(item);
-    base::Value item_info(base::Value::Type::DICTIONARY);
-    item_info.SetStringKey("profile_id", item->GetBaseName().AsUTF8Unsafe());
+    base::Value::Dict item_info;
+    item_info.Set("profile_id", item->GetBaseName().AsUTF8Unsafe());
     base::Value& installed_apps_per_profile =
-        *item_info.SetKey("web_apps", base::Value(base::Value::Type::LIST));
+        *item_info.Set("web_apps", base::Value(base::Value::Type::LIST));
     for (const web_app::WebApp& web_app :
          web_app_provider->registrar_unsafe().GetApps()) {
-      base::Value web_app_info(base::Value::Type::DICTIONARY);
-      web_app_info.SetStringKey("name", web_app.untranslated_name());
-      web_app_info.SetStringKey("id", web_app.app_id());
-      installed_apps_per_profile.Append(std::move(web_app_info));
+      base::Value::Dict web_app_info;
+      web_app_info.Set("name", web_app.untranslated_name());
+      web_app_info.Set("id", web_app.app_id());
+      installed_apps_per_profile.Append(base::Value(std::move(web_app_info)));
     }
-    installed_apps_list.Append(std::move(item_info));
+    installed_apps_list.Append(base::Value(std::move(item_info)));
   }
   return installed_apps_list;
 }
@@ -164,21 +164,21 @@ base::Value GetWebApps::GetOpenWebApps() {
         profile_base_name_.AsUTF8Unsafe() != app_profile_base_name) {
       continue;
     }
-    base::Value web_app_info(base::Value::Type::DICTIONARY);
-    web_app_info.SetStringKey("id", browser->app_controller()->app_id());
-    web_app_info.SetStringKey(
-        "name",
-        base::UTF16ToUTF8(browser->app_controller()->GetAppShortName()));
+    base::Value::Dict web_app_info;
+    web_app_info.Set("id", browser->app_controller()->app_id());
+    web_app_info.Set("name", base::UTF16ToUTF8(
+                                 browser->app_controller()->GetAppShortName()));
     auto iter_and_inserted = open_apps.emplace(
         app_profile_base_name, base::Value(base::Value::Type::LIST));
-    iter_and_inserted.first->second.Append(std::move(web_app_info));
+    iter_and_inserted.first->second.Append(
+        base::Value(std::move(web_app_info)));
   }
   base::Value open_apps_list(base::Value::Type::LIST);
   for (auto& item : open_apps) {
-    base::Value item_info(base::Value::Type::DICTIONARY);
-    item_info.SetStringKey("profile_id", item.first);
-    item_info.SetKey("web_apps", std::move(item.second));
-    open_apps_list.Append(std::move(item_info));
+    base::Value::Dict item_info;
+    item_info.Set("profile_id", item.first);
+    item_info.Set("web_apps", std::move(item.second));
+    open_apps_list.Append(base::Value(std::move(item_info)));
   }
   return open_apps_list;
 }
@@ -198,10 +198,10 @@ void GetWebApps::OnProfileLoaded(base::RepeatingClosure callback,
 }
 
 void GetWebApps::FetchWebAppsAndWriteToDisk() {
-  base::Value apps_dict(base::Value::Type::DICTIONARY);
-  apps_dict.SetKey("installed_web_apps", GetInstalledWebApps());
-  apps_dict.SetKey("open_web_apps", GetOpenWebApps());
-  SerializeAndScheduleWrite(apps_dict);
+  base::Value::Dict apps_dict;
+  apps_dict.Set("installed_web_apps", GetInstalledWebApps());
+  apps_dict.Set("open_web_apps", GetOpenWebApps());
+  SerializeAndScheduleWrite(base::Value(std::move(apps_dict)));
   // `this` is owned by the callback that calls this function, so it will be
   // destroyed automatically after being run.
 }

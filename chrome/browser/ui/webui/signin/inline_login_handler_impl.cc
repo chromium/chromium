@@ -349,16 +349,16 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     // Provider for Windows.
 #if BUILDFLAG(IS_WIN)
     std::string json_retval;
-    base::Value args(base::Value::Type::DICTIONARY);
-    args.SetKey(credential_provider::kKeyEmail, base::Value(email_));
-    args.SetKey(credential_provider::kKeyPassword, base::Value(password_));
-    args.SetKey(credential_provider::kKeyId, base::Value(gaia_id_));
-    args.SetKey(credential_provider::kKeyRefreshToken,
-                base::Value(result.refresh_token));
-    args.SetKey(credential_provider::kKeyAccessToken,
-                base::Value(result.access_token));
+    base::Value::Dict args;
+    args.Set(credential_provider::kKeyEmail, base::Value(email_));
+    args.Set(credential_provider::kKeyPassword, base::Value(password_));
+    args.Set(credential_provider::kKeyId, base::Value(gaia_id_));
+    args.Set(credential_provider::kKeyRefreshToken,
+             base::Value(result.refresh_token));
+    args.Set(credential_provider::kKeyAccessToken,
+             base::Value(result.access_token));
 
-    handler_->SendLSTFetchResultsMessage(args);
+    handler_->SendLSTFetchResultsMessage(base::Value(std::move(args)));
 #else
     NOTREACHED() << "Google Credential Provider is only available on Windows";
 #endif  // BUILDFLAG(IS_WIN)
@@ -759,17 +759,17 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   if (reason == HandlerSigninReason::kFetchLstOnly) {
-    base::Value error_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict error_value;
 #if BUILDFLAG(IS_WIN)
     // If the error contains an integer error code, send it as part of the
     // result.
     if (error.type() ==
         SigninUIError::Type::kFromCredentialProviderUiExitCode) {
-      error_value.SetKey(credential_provider::kKeyExitCode,
-                         base::Value(error.credential_provider_exit_code()));
+      error_value.Set(credential_provider::kKeyExitCode,
+                      base::Value(error.credential_provider_exit_code()));
     }
 #endif
-    SendLSTFetchResultsMessage(error_value);
+    SendLSTFetchResultsMessage(base::Value(std::move(error_value)));
     return;
   }
   SyncSetupFailed();

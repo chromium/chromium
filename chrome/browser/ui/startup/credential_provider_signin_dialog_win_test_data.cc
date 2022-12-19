@@ -29,44 +29,41 @@ const char
     CredentialProviderSigninDialogTestDataStorage::kInvalidEmailForSignin[] =
         "foo_bar@example.com";
 CredentialProviderSigninDialogTestDataStorage::
-    CredentialProviderSigninDialogTestDataStorage()
-    : expected_success_signin_result_(base::Value::Type::DICTIONARY),
-      expected_success_fetch_result_(base::Value::Type::DICTIONARY) {
+    CredentialProviderSigninDialogTestDataStorage() {
   SetSigninPassword("password");
 }
 
 void CredentialProviderSigninDialogTestDataStorage::SetSigninPassword(
     const std::string& password) {
   // Initialize expected successful result from oauth2 fetches.
-  expected_success_fetch_result_.SetKey(credential_provider::kKeyTokenHandle,
-                                        base::Value("token_handle"));
-  expected_success_fetch_result_.SetKey(credential_provider::kKeyMdmIdToken,
-                                        base::Value("mdm_token"));
-  expected_success_fetch_result_.SetKey(credential_provider::kKeyFullname,
-                                        base::Value("Foo Bar"));
-  expected_success_fetch_result_.SetKey(credential_provider::kKeyMdmAccessToken,
-                                        base::Value("123456789"));
+  expected_success_fetch_result_.Set(credential_provider::kKeyTokenHandle,
+                                     base::Value("token_handle"));
+  expected_success_fetch_result_.Set(credential_provider::kKeyMdmIdToken,
+                                     base::Value("mdm_token"));
+  expected_success_fetch_result_.Set(credential_provider::kKeyFullname,
+                                     base::Value("Foo Bar"));
+  expected_success_fetch_result_.Set(credential_provider::kKeyMdmAccessToken,
+                                     base::Value("123456789"));
 
   // Initialize expected successful full result sent to the credential provider.
-  expected_success_signin_result_.SetKey(credential_provider::kKeyId,
-                                         base::Value("gaia_user_id"));
-  expected_success_signin_result_.SetKey(credential_provider::kKeyPassword,
-                                         base::Value(password));
-  expected_success_signin_result_.SetKey(credential_provider::kKeyEmail,
-                                         base::Value("foo_bar@gmail.com"));
-  expected_success_signin_result_.SetKey(credential_provider::kKeyAccessToken,
-                                         base::Value("access_token"));
-  expected_success_signin_result_.SetKey(credential_provider::kKeyRefreshToken,
-                                         base::Value("refresh_token"));
-  expected_success_signin_result_.SetKey(
+  expected_success_signin_result_.Set(credential_provider::kKeyId,
+                                      base::Value("gaia_user_id"));
+  expected_success_signin_result_.Set(credential_provider::kKeyPassword,
+                                      base::Value(password));
+  expected_success_signin_result_.Set(credential_provider::kKeyEmail,
+                                      base::Value("foo_bar@gmail.com"));
+  expected_success_signin_result_.Set(credential_provider::kKeyAccessToken,
+                                      base::Value("access_token"));
+  expected_success_signin_result_.Set(credential_provider::kKeyRefreshToken,
+                                      base::Value("refresh_token"));
+  expected_success_signin_result_.Set(
       credential_provider::kKeyExitCode,
       base::Value(credential_provider::kUiecSuccess));
 
   // Merge with results from chrome://inline-signin to form the full
   // result.
   expected_success_full_result_ = expected_success_signin_result_.Clone();
-  expected_success_full_result_.MergeDictionary(
-      &expected_success_fetch_result_);
+  expected_success_full_result_.Merge(expected_success_fetch_result_.Clone());
 }
 
 // static
@@ -77,23 +74,21 @@ CredentialProviderSigninDialogTestDataStorage::MakeSignInResponseValue(
     const std::string& email,
     const std::string& access_token,
     const std::string& refresh_token) {
-  base::Value args(base::Value::Type::DICTIONARY);
+  base::Value::Dict args;
   if (!email.empty())
-    args.SetKey(credential_provider::kKeyEmail, base::Value(email));
+    args.Set(credential_provider::kKeyEmail, base::Value(email));
   if (!password.empty())
-    args.SetKey(credential_provider::kKeyPassword, base::Value(password));
+    args.Set(credential_provider::kKeyPassword, base::Value(password));
   if (!id.empty())
-    args.SetKey(credential_provider::kKeyId, base::Value(id));
+    args.Set(credential_provider::kKeyId, base::Value(id));
   if (!refresh_token.empty())
-    args.SetKey(credential_provider::kKeyRefreshToken,
-                base::Value(refresh_token));
+    args.Set(credential_provider::kKeyRefreshToken, base::Value(refresh_token));
   if (!access_token.empty())
-    args.SetKey(credential_provider::kKeyAccessToken,
-                base::Value(access_token));
+    args.Set(credential_provider::kKeyAccessToken, base::Value(access_token));
 
-  args.SetKey(credential_provider::kKeyExitCode,
-              base::Value(credential_provider::kUiecSuccess));
-  return args;
+  args.Set(credential_provider::kKeyExitCode,
+           base::Value(credential_provider::kUiecSuccess));
+  return base::Value(std::move(args));
 }
 
 base::Value

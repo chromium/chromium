@@ -94,7 +94,7 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
       NOTREACHED();
       break;
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       NSAppleEventDescriptor* keyValuePairs =
           [NSAppleEventDescriptor listDescriptor];
       for (auto iter : value->DictItems()) {

@@ -403,8 +403,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
 
   // Generate an image loader request. The request type is defined in
   // ui/file_manager/image_loader/load_image_request.js.
-  base::Value request_value(base::Value::Type::DICTIONARY);
-  base::Value::Dict& request_dict = request_value.GetDict();
+  base::Value::Dict request_dict;
   request_dict.Set("taskId", base::Value(request_id.ToString()));
   request_dict.Set("url", base::Value(thumbnail_url.spec()));
   request_dict.Set("timestamp", base::TimeToValue(file_info.last_modified));
@@ -416,7 +415,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   request_dict.Set("height", base::Value(size));
 
   std::string request_message;
-  base::JSONWriter::Write(request_value, &request_message);
+  base::JSONWriter::Write(request_dict, &request_message);
 
   // Open a channel to the image loader extension using a message host that send
   // the image loader request.

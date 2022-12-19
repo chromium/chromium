@@ -75,11 +75,11 @@ base::Value RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
   for (const auto& rule : ruleset.greylist)
     greylist.Append(rule->ToString());
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("sitelist", std::move(sitelist));
-  dict.SetKey("greylist", std::move(greylist));
+  base::Value::Dict dict;
+  dict.Set("sitelist", std::move(sitelist));
+  dict.Set("greylist", std::move(greylist));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 browser_switcher::BrowserSwitcherService* GetBrowserSwitcherService(
