@@ -151,6 +151,10 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image->is_uploaded_image = custom_background->is_uploaded_image;
     background_image->title =
         custom_background->custom_background_attribution_line_1;
+    if (custom_background->custom_background_main_color.has_value()) {
+      background_image->main_color =
+          *custom_background->custom_background_main_color;
+    }
   } else {
     background_image = nullptr;
   }

@@ -15,6 +15,8 @@ struct BackgroundImage {
   bool is_uploaded_image;
   // Title of the background image.
   string title;
+  // The main color of the background image.
+  skia.mojom.SkColor? main_color;
 };
 
 // A generic theme.

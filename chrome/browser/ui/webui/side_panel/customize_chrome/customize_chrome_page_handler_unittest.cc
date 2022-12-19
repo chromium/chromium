@@ -370,6 +370,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
   custom_background.is_uploaded_image = false;
+  custom_background.custom_background_main_color = SK_ColorGREEN;
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::make_optional(custom_background)));
   ON_CALL(mock_theme_service(), UsingDefaultTheme())
@@ -384,7 +385,9 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
-  ASSERT_FALSE(theme->background_image->is_uploaded_image);
+  EXPECT_FALSE(theme->background_image->is_uploaded_image);
+  EXPECT_EQ(SK_ColorGREEN,
+            theme->background_image->main_color.value_or(SK_ColorWHITE));
   EXPECT_EQ("foo line", theme->background_image->title);
   EXPECT_TRUE(theme->system_dark_mode);
   EXPECT_EQ(

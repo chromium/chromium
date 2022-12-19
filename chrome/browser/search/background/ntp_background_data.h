@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/search/background/ntp_background.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -135,7 +136,7 @@ struct CustomBackground {
   std::string collection_id;
 
   // Main color of the image.
-  SkColor custom_background_main_color;
+  absl::optional<SkColor> custom_background_main_color;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_

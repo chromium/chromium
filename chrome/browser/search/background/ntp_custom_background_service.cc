@@ -430,7 +430,10 @@ NtpCustomBackgroundService::GetCustomBackground() {
     const base::Value* attribution_action_url =
         background_info.Find(kNtpCustomBackgroundAttributionActionURL);
     const base::Value* color =
-        background_info.Find(kNtpCustomBackgroundMainColor);
+        base::FeatureList::IsEnabled(
+            ntp_features::kCustomizeChromeColorExtraction)
+            ? background_info.Find(kNtpCustomBackgroundMainColor)
+            : nullptr;
     custom_background->custom_background_url = custom_background_url;
     custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;

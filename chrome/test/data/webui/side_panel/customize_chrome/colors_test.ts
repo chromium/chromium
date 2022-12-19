@@ -13,7 +13,7 @@ import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://web
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {assertStyle, capture, createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, assertStyle, capture, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 suite('ColorsTest', () => {
   let colorsElement: ColorsElement;
@@ -46,20 +46,57 @@ suite('ColorsTest', () => {
 
           callbackRouter.setTheme(theme);
           await callbackRouter.$.flushForTesting();
+          await waitAfterNextRender(colorsElement);
 
+          const defaultColorElement =
+              $$<ColorElement>(colorsElement, '#defaultColor')!;
           assertDeepEquals(
-              defaultColor.foreground,
-              colorsElement.$.defaultColor.foregroundColor);
+              defaultColor.foreground, defaultColorElement.foregroundColor);
           assertDeepEquals(
-              defaultColor.background,
-              colorsElement.$.defaultColor.backgroundColor);
+              defaultColor.background, defaultColorElement.backgroundColor);
         });
       });
 
-  test('sets default color', () => {
-    colorsElement.$.defaultColor.click();
+  test('sets default color', async () => {
+    const theme = createTheme();
+    theme.foregroundColor = undefined;
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
+
+    $$<HTMLElement>(colorsElement, '#defaultColor')!.click();
 
     assertEquals(1, handler.getCallCount('setDefaultColor'));
+  });
+
+  test('renders main color', async () => {
+    const theme: Theme = createTheme();
+    theme.foregroundColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
+
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
+
+    assertEquals(
+        7,
+        $$<ColorElement>(colorsElement, '#mainColor')!.foregroundColor.value);
+  });
+
+  test('sets main color', async () => {
+    const theme = createTheme();
+    theme.foregroundColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
+
+    $$<HTMLElement>(colorsElement, '#mainColor')!.click();
+
+    assertEquals(1, handler.getCallCount('setForegroundColor'));
+    assertEquals(7, handler.getArgs('setForegroundColor')[0].value);
   });
 
   test('renders chrome colors', async () => {
@@ -171,15 +208,36 @@ suite('ColorsTest', () => {
     theme.foregroundColor = undefined;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
 
     // Check default color selected.
+    const defaultColorElement =
+        $$<ColorElement>(colorsElement, '#defaultColor')!;
     let checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
-    assertEquals(colorsElement.$.defaultColor, checkedColors[0]);
+    assertEquals(defaultColorElement, checkedColors[0]);
     let indexedColors =
         colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
-    assertEquals(colorsElement.$.defaultColor, indexedColors[0]);
+    assertEquals(defaultColorElement, indexedColors[0]);
+
+    // Set main color.
+    theme.foregroundColor = {value: 7};
+    theme.backgroundImage = createBackgroundImage('https://foo.com');
+    theme.backgroundImage.mainColor = {value: 7};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(colorsElement);
+
+    // Check main color selected.
+    const mainColorElement = $$<ColorElement>(colorsElement, '#mainColor')!;
+    checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals(mainColorElement, checkedColors[0]);
+    indexedColors =
+        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+    assertEquals(1, indexedColors.length);
+    assertEquals(mainColorElement, indexedColors[0]);
 
     // Set Chrome color.
     theme.foregroundColor = {value: 2};

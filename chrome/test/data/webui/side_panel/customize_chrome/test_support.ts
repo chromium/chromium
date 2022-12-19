@@ -43,6 +43,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
     url: {url},
     isUploadedImage: false,
     title: '',
+    mainColor: undefined,
   };
 }
 

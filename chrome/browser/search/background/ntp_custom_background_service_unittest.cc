@@ -25,6 +25,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -577,8 +578,9 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
   task_environment_.RunUntilIdle();
   auto custom_background = custom_background_service_->GetCustomBackground();
   auto custom_background_main_color =
-      custom_background ? custom_background->custom_background_main_color : 0;
-  EXPECT_NE(SK_ColorRED, custom_background_main_color);
+      custom_background ? custom_background->custom_background_main_color
+                        : SK_ColorWHITE;
+  EXPECT_NE(SK_ColorRED, custom_background_main_color.value_or(SK_ColorWHITE));
 
   const GURL kUrl("https://www.foo.com");
   const GURL kThumbnailUrl("https://www.thumbnail.com");
@@ -597,12 +599,16 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
       GURL("different_url"), image, image_fetcher::RequestMetadata());
   task_environment_.RunUntilIdle();
   custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_NE(SK_ColorRED, custom_background->custom_background_main_color);
+  EXPECT_NE(
+      SK_ColorRED,
+      custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
 
   // Background color should update.
   custom_background_service_->UpdateCustomBackgroundColorAsync(
       kUrl, image, image_fetcher::RequestMetadata());
   task_environment_.RunUntilIdle();
   custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_EQ(SK_ColorRED, custom_background->custom_background_main_color);
+  EXPECT_EQ(
+      SK_ColorRED,
+      custom_background->custom_background_main_color.value_or(SK_ColorWHITE));
 }
