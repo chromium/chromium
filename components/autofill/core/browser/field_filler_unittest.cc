@@ -2221,9 +2221,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardholderName) {
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NAME_FULL);
 
   CreditCard card = test::GetVirtualCard();
-  card.SetRawInfoWithVerificationStatus(
-      CREDIT_CARD_NAME_FULL, name,
-      structured_address::VerificationStatus::kFormatted);
+  card.SetRawInfoWithVerificationStatus(CREDIT_CARD_NAME_FULL, name,
+                                        VerificationStatus::kFormatted);
   filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,

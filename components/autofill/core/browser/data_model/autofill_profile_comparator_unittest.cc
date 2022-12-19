@@ -104,17 +104,13 @@ class AutofillProfileComparatorTest : public testing::Test {
                           const char16_t* full) {
     NameInfo name;
     name.SetRawInfoWithVerificationStatus(
-        NAME_FIRST, first,
-        autofill::structured_address::VerificationStatus::kObserved);
+        NAME_FIRST, first, autofill::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_MIDDLE, middle,
-        autofill::structured_address::VerificationStatus::kObserved);
+        NAME_MIDDLE, middle, autofill::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_LAST, last,
-        autofill::structured_address::VerificationStatus::kObserved);
+        NAME_LAST, last, autofill::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_FULL, full,
-        autofill::structured_address::VerificationStatus::kObserved);
+        NAME_FULL, full, autofill::VerificationStatus::kObserved);
     return name;
   }
 
@@ -747,26 +743,23 @@ TEST_F(AutofillProfileComparatorTest, MergeNames_WithPermutation) {
   // The first name has an observed structure.
   NameInfo name1;
   name1.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Thomas",
-      autofill::structured_address::VerificationStatus::kObserved);
+      NAME_FIRST, u"Thomas", autofill::VerificationStatus::kObserved);
   name1.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"A.",
-      autofill::structured_address::VerificationStatus::kObserved);
+      NAME_MIDDLE, u"A.", autofill::VerificationStatus::kObserved);
   name1.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Anderson",
-      autofill::structured_address::VerificationStatus::kObserved);
+      NAME_LAST, u"Anderson", autofill::VerificationStatus::kObserved);
   AutofillProfile profile1 = CreateProfileWithName(name1);
   profile1.FinalizeAfterImport();
 
   EXPECT_EQ(profile1.GetRawInfo(NAME_FULL), u"Thomas A. Anderson");
   EXPECT_EQ(profile1.GetVerificationStatus(NAME_FULL),
-            autofill::structured_address::VerificationStatus::kFormatted);
+            autofill::VerificationStatus::kFormatted);
 
   // The second name has an observed full name that uses a custom formatting.
   NameInfo name2;
   name2.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"Anderson, Thomas A.",
-      autofill::structured_address::VerificationStatus::kObserved);
+      autofill::VerificationStatus::kObserved);
   AutofillProfile profile2 = CreateProfileWithName(name2);
   profile2.FinalizeAfterImport();
 
@@ -777,16 +770,16 @@ TEST_F(AutofillProfileComparatorTest, MergeNames_WithPermutation) {
   // the custom-formatted full name.
   EXPECT_EQ(merged_name.GetRawInfo(NAME_FULL), u"Anderson, Thomas A.");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FULL),
-            autofill::structured_address::VerificationStatus::kObserved);
+            autofill::VerificationStatus::kObserved);
   EXPECT_EQ(merged_name.GetRawInfo(NAME_FIRST), u"Thomas");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FIRST),
-            autofill::structured_address::VerificationStatus::kObserved);
+            autofill::VerificationStatus::kObserved);
   EXPECT_EQ(merged_name.GetRawInfo(NAME_MIDDLE), u"A.");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_MIDDLE),
-            autofill::structured_address::VerificationStatus::kObserved);
+            autofill::VerificationStatus::kObserved);
   EXPECT_EQ(merged_name.GetRawInfo(NAME_LAST), u"Anderson");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_LAST),
-            autofill::structured_address::VerificationStatus::kObserved);
+            autofill::VerificationStatus::kObserved);
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeNames) {
@@ -1424,7 +1417,7 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
   // and change of the stored value.
   mergeable_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_CITY, u"the real City",
-      autofill::structured_address::VerificationStatus::kObserved);
+      autofill::VerificationStatus::kObserved);
   EXPECT_TRUE(comparator.IsMergeCandidate(existing_profile, mergeable_profile,
                                           "en_US"));
 
@@ -1434,8 +1427,7 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
   // This is a subset of the existing city name and should result in a merge but
   // without changing the stored value.
   mergeable_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"City",
-      autofill::structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_CITY, u"City", autofill::VerificationStatus::kObserved);
   EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile, updateable_profile,
                                            "en_US"));
 
@@ -1443,8 +1435,7 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
   AutofillProfile unmergeable_profile = existing_profile;
   // This is a different city name and therefore should not result in a merge.
   mergeable_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"Village",
-      autofill::structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_CITY, u"Village", autofill::VerificationStatus::kObserved);
   EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile,
                                            unmergeable_profile, "en_US"));
 }
@@ -1475,8 +1466,7 @@ TEST_F(AutofillProfileComparatorTest, GetMergeCandidate) {
   // mergeable and the profile should be updated to the new value.
   new_profile = existing_profile;
   new_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"the City",
-      autofill::structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_CITY, u"the City", autofill::VerificationStatus::kObserved);
   absl::optional<AutofillProfile> optional_merge_candidate =
       AutofillProfileComparator::GetAutofillProfileMergeCandidate(
           new_profile, {&existing_profile}, "en_US");

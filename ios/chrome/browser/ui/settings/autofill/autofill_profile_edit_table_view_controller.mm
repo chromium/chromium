@@ -119,11 +119,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
             autofill::AutofillType(serverFieldType),
             base::SysNSStringToUTF16(item.textFieldValue),
             GetApplicationContext()->GetApplicationLocale(),
-            autofill::structured_address::VerificationStatus::kUserVerified);
+            autofill::VerificationStatus::kUserVerified);
       } else {
         _autofillProfile.SetRawInfoWithVerificationStatus(
             serverFieldType, base::SysNSStringToUTF16(item.textFieldValue),
-            autofill::structured_address::VerificationStatus::kUserVerified);
+            autofill::VerificationStatus::kUserVerified);
       }
     }
 

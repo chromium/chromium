@@ -150,14 +150,13 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
   // Since the country field is a text field, we should use SetInfo() to make
   // sure they get converted to country codes.
   if (type == ADDRESS_HOME_COUNTRY) {
-    profile_.SetInfoWithVerificationStatus(
-        type, value, locale_,
-        structured_address::VerificationStatus::kUserVerified);
+    profile_.SetInfoWithVerificationStatus(type, value, locale_,
+                                           VerificationStatus::kUserVerified);
     return;
   }
 
-  profile_.SetRawInfoWithVerificationStatus(
-      type, value, structured_address::VerificationStatus::kUserVerified);
+  profile_.SetRawInfoWithVerificationStatus(type, value,
+                                            VerificationStatus::kUserVerified);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {

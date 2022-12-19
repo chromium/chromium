@@ -47,8 +47,7 @@ static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 
 // Constant to assign a user-verified verification status to the autofill
 // profile.
-constexpr auto kUserVerified =
-    autofill::structured_address::VerificationStatus::kUserVerified;
+constexpr auto kUserVerified = autofill::VerificationStatus::kUserVerified;
 
 // Dictionary keys used for serializing AddressUiComponent. Those values
 // are used as keys in JavaScript code and shouldn't be modified.

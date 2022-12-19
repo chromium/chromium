@@ -73,13 +73,12 @@ void RemoveProfile(int profile, const std::string& guid);
 
 // Updates the autofill profile with guid |guid| in sync profile |profile|
 // to |type| and |value| with the verification status |status|.
-void UpdateProfile(
-    int profile,
-    const std::string& guid,
-    const autofill::AutofillType& type,
-    const std::u16string& value,
-    autofill::structured_address::VerificationStatus status =
-        autofill::structured_address::VerificationStatus::kObserved);
+void UpdateProfile(int profile,
+                   const std::string& guid,
+                   const autofill::AutofillType& type,
+                   const std::u16string& value,
+                   autofill::VerificationStatus status =
+                       autofill::VerificationStatus::kObserved);
 
 // Gets all the Autofill profiles in the PersonalDataManager of sync profile
 // |profile|.

@@ -23,8 +23,6 @@ using base::UTF8ToUTF16;
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 struct FullNameTestCase {
   std::string full_name_input;
   std::string given_name_output;

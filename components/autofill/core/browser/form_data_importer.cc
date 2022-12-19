@@ -46,8 +46,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 using AddressImportRequirement =

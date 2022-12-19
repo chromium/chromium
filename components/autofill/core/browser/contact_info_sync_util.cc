@@ -13,7 +13,6 @@ namespace autofill {
 
 namespace {
 
-using structured_address::VerificationStatus;
 using sync_pb::ContactInfoSpecifics;
 
 // Converts the verification status representation used in AutofillProfile to

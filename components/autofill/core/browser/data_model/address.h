@@ -28,10 +28,9 @@ class Address : public FormGroup {
 
   // FormGroup:
   std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& locale,
                         ServerFieldTypeSet* matching_types) const override;
@@ -60,26 +59,25 @@ class Address : public FormGroup {
   bool IsStructuredAddressMergeable(const Address& newer) const;
 
   // Returns a constant reference to |structured_address_|.
-  const structured_address::Address& GetStructuredAddress() const;
+  const AddressNode& GetStructuredAddress() const;
 
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& locale) const override;
-  bool SetInfoWithVerificationStatusImpl(
-      const AutofillType& type,
-      const std::u16string& value,
-      const std::string& locale,
-      structured_address::VerificationStatus status) override;
+  bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
+                                         const std::u16string& value,
+                                         const std::string& locale,
+                                         VerificationStatus status) override;
 
   // Return the verification status of a structured name value.
-  structured_address::VerificationStatus GetVerificationStatusImpl(
+  VerificationStatus GetVerificationStatusImpl(
       ServerFieldType type) const override;
 
   // This data structure holds the address information if the structured address
   // feature is enabled.
-  structured_address::Address structured_address_;
+  AddressNode structured_address_;
 };
 
 }  // namespace autofill

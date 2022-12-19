@@ -108,14 +108,12 @@ void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
   // country codes.
   if (type == autofill::ADDRESS_HOME_COUNTRY) {
     profile_to_edit_.SetInfoWithVerificationStatus(
-        type, value, locale_,
-        autofill::structured_address::VerificationStatus::kUserVerified);
+        type, value, locale_, autofill::VerificationStatus::kUserVerified);
     return;
   }
 
   profile_to_edit_.SetRawInfoWithVerificationStatus(
-      type, value,
-      autofill::structured_address::VerificationStatus::kUserVerified);
+      type, value, autofill::VerificationStatus::kUserVerified);
 }
 
 std::u16string AddressEditorController::GetProfileInfo(

@@ -44,10 +44,9 @@ class IBAN : public AutofillDataModel {
   bool IsDeletable() const override;
 
   std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 
   // How this IBAN is stored.

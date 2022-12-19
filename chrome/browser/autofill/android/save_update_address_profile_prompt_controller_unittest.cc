@@ -48,14 +48,12 @@ class SaveUpdateAddressProfilePromptControllerTest : public testing::Test {
   // Profile with verified data as it is returned from Java.
   AutofillProfile GetFullProfileWithVerifiedData() {
     AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
-    profile.SetRawInfoWithVerificationStatus(
-        NAME_FULL, u"Mona J. Liza",
-        structured_address::VerificationStatus::kUserVerified);
+    profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Mona J. Liza",
+                                             VerificationStatus::kUserVerified);
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",
                          "Company Inc.", "33 Narrow Street", "Apt 42",
                          "Playa Vista", "LA", "12345", "US", "13105551234",
-                         /*finalize=*/true,
-                         structured_address::VerificationStatus::kUserVerified);
+                         /*finalize=*/true, VerificationStatus::kUserVerified);
     return profile;
   }
 

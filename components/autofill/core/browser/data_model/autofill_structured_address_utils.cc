@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill::structured_address {
+namespace autofill {
 
 SortedTokenComparisonResult::SortedTokenComparisonResult(
     SortedTokenComparisonStatus status,
@@ -435,4 +435,4 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   return tokens;
 }
 
-}  // namespace autofill::structured_address
+}  // namespace autofill

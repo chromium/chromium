@@ -84,15 +84,14 @@ class AutofillProfile : public AutofillDataModel {
 
   int GetRawInfoAsInt(ServerFieldType type) const override;
 
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
 
   void SetRawInfoAsIntWithVerificationStatus(
       ServerFieldType type,
       int value,
-      structured_address::VerificationStatus status) override;
+      VerificationStatus status) override;
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 
@@ -281,14 +280,13 @@ class AutofillProfile : public AutofillDataModel {
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
 
-  structured_address::VerificationStatus GetVerificationStatusImpl(
+  VerificationStatus GetVerificationStatusImpl(
       const ServerFieldType type) const override;
 
-  bool SetInfoWithVerificationStatusImpl(
-      const AutofillType& type,
-      const std::u16string& value,
-      const std::string& app_locale,
-      structured_address::VerificationStatus status) override;
+  bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
+                                         const std::u16string& value,
+                                         const std::string& app_locale,
+                                         VerificationStatus status) override;
 
   // Creates inferred labels for |profiles| at indices corresponding to
   // |indices|, and stores the results to the corresponding elements of

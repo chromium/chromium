@@ -633,23 +633,19 @@ TEST_F(AutofillProfileSyncBridgeTest, ProfileMigration) {
   // Create the expected profile after migration.
   AutofillProfile finalized_profile = AutofillProfile(kGuidC, kHttpOrigin);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"Thomas Neo Anderson",
-      structured_address::VerificationStatus::kFormatted);
+      NAME_FULL, u"Thomas Neo Anderson", VerificationStatus::kFormatted);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Thomas", structured_address::VerificationStatus::kObserved);
+      NAME_FIRST, u"Thomas", VerificationStatus::kObserved);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Neo", structured_address::VerificationStatus::kObserved);
+      NAME_MIDDLE, u"Neo", VerificationStatus::kObserved);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Anderson",
-      structured_address::VerificationStatus::kObserved);
+      NAME_LAST, u"Anderson", VerificationStatus::kObserved);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST_SECOND, u"Anderson",
-      structured_address::VerificationStatus::kParsed);
+      NAME_LAST_SECOND, u"Anderson", VerificationStatus::kParsed);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST_FIRST, u"", structured_address::VerificationStatus::kParsed);
+      NAME_LAST_FIRST, u"", VerificationStatus::kParsed);
   finalized_profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST_CONJUNCTION, u"",
-      structured_address::VerificationStatus::kParsed);
+      NAME_LAST_CONJUNCTION, u"", VerificationStatus::kParsed);
 
   EXPECT_THAT(GetAllLocalData(), UnorderedElementsAre(finalized_profile));
 }
@@ -685,38 +681,34 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToClient) {
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_IdenticalProfiles) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
+  local1.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
+                                          VerificationStatus::kObserved);
   local1.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"John", structured_address::VerificationStatus::kObserved);
-  local1.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"1 1st st",
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_STREET_ADDRESS, u"1 1st st", VerificationStatus::kObserved);
   local1.FinalizeAfterImport();
 
   AutofillProfile local2 = AutofillProfile(kGuidB, kSettingsOrigin);
+  local2.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Tom",
+                                          VerificationStatus::kObserved);
   local2.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Tom", structured_address::VerificationStatus::kObserved);
-  local2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st",
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st", VerificationStatus::kObserved);
   local2.FinalizeAfterImport();
   AddAutofillProfilesToTable({local1, local2});
 
   // The synced profiles are identical to the local ones, except that the guids
   // are different.
   AutofillProfile remote1 = AutofillProfile(kGuidC, kHttpsOrigin);
+  remote1.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
+                                           VerificationStatus::kObserved);
   remote1.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"John", structured_address::VerificationStatus::kObserved);
-  remote1.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"1 1st st",
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_STREET_ADDRESS, u"1 1st st", VerificationStatus::kObserved);
   remote1.FinalizeAfterImport();
 
   AutofillProfile remote2 = AutofillProfile(kGuidD, kHttpsOrigin);
+  remote2.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Tom",
+                                           VerificationStatus::kObserved);
   remote2.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Tom", structured_address::VerificationStatus::kObserved);
-  remote2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st",
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st", VerificationStatus::kObserved);
   remote2.FinalizeAfterImport();
 
   AutofillProfileSpecifics remote1_specifics =
@@ -1092,15 +1084,13 @@ TEST_F(AutofillProfileSyncBridgeTest,
 
   // Verify that full street address takes precedence over address lines.
   AutofillProfile local(kGuidA, kHttpsOrigin);
+  local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                         u"456 El Camino Real\nSuite #1337",
+                                         VerificationStatus::kObserved);
   local.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"456 El Camino Real\nSuite #1337",
-      structured_address::VerificationStatus::kObserved);
-  local.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_LINE1, u"456 El Camino Real",
-      structured_address::VerificationStatus::kObserved);
-  local.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_LINE2, u"Suite #1337",
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_LINE1, u"456 El Camino Real", VerificationStatus::kObserved);
+  local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LINE2, u"Suite #1337",
+                                         VerificationStatus::kObserved);
   local.FinalizeAfterImport();
   EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
 }
@@ -1113,9 +1103,9 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_StreetAddress_NoUpdateToEmptyStreetAddressSyncedUp) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
-  local.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"123 Example St.\nApt. 42",
-      structured_address::VerificationStatus::kObserved);
+  local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                         u"123 Example St.\nApt. 42",
+                                         VerificationStatus::kObserved);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
@@ -1331,29 +1321,28 @@ TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_FullName_ExistingLocalWinsOverMissingRemote) {
   // Local autofill profile has a full name.
   AutofillProfile local(kGuidA, kHttpsOrigin);
-  local.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"John Jacob Smith",
-      structured_address::VerificationStatus::kObserved);
+  local.SetRawInfoWithVerificationStatus(NAME_FULL, u"John Jacob Smith",
+                                         VerificationStatus::kObserved);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // After finalization, the first, middle and last name should have the
   // status |kParsed|.
   ASSERT_EQ(local.GetVerificationStatus(NAME_FIRST),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   ASSERT_EQ(local.GetVerificationStatus(NAME_MIDDLE),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   ASSERT_EQ(local.GetVerificationStatus(NAME_LAST),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
 
   // Remote data does not have a full name value.
   AutofillProfile remote_profile = AutofillProfile(kGuidA, kHttpsOrigin);
   remote_profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"John", structured_address::VerificationStatus::kObserved);
+      NAME_FIRST, u"John", VerificationStatus::kObserved);
   remote_profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Jacob", structured_address::VerificationStatus::kObserved);
+      NAME_MIDDLE, u"Jacob", VerificationStatus::kObserved);
   remote_profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Smith", structured_address::VerificationStatus::kObserved);
+      NAME_LAST, u"Smith", VerificationStatus::kObserved);
   remote_profile.FinalizeAfterImport();
   AutofillProfileSpecifics remote =
       CreateAutofillProfileSpecifics(remote_profile);
@@ -1364,12 +1353,12 @@ TEST_F(AutofillProfileSyncBridgeTest,
   // Note, for structured names, the verification status of those tokens is
   // |kParsed| for local and becomes |kObserved| when merged with the remote
   // profile.
-  merged.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"John", structured_address::VerificationStatus::kObserved);
-  merged.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Jacob", structured_address::VerificationStatus::kObserved);
-  merged.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Smith", structured_address::VerificationStatus::kObserved);
+  merged.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
+                                          VerificationStatus::kObserved);
+  merged.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Jacob",
+                                          VerificationStatus::kObserved);
+  merged.SetRawInfoWithVerificationStatus(NAME_LAST, u"Smith",
+                                          VerificationStatus::kObserved);
 
   // No update to sync, merged changes in local data.
   EXPECT_CALL(mock_processor(), Put).Times(0);

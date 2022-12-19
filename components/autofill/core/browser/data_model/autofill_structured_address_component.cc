@@ -19,7 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
-namespace autofill::structured_address {
+namespace autofill {
 
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right) {
@@ -1396,4 +1396,4 @@ std::u16string AddressComponent::ValueForComparison(
   return NormalizedValue();
 }
 
-}  // namespace autofill::structured_address
+}  // namespace autofill

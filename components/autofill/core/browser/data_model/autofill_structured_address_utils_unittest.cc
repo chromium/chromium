@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-namespace structured_address {
 
 // Element-wise comparison operator.
 bool operator==(const AddressToken& lhs, const AddressToken& rhs) {
@@ -233,5 +232,4 @@ TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
   EXPECT_EQ(RewriterCache::Rewrite(u"us", u"california"), u"ca");
 }
 
-}  // namespace structured_address
 }  // namespace autofill

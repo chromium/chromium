@@ -14,7 +14,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
-namespace structured_address {
 
 // Enumeration of all regular expressions supported for matching and parsing
 // values in an AddressComponent tree.
@@ -88,8 +87,6 @@ class StructuredAddressesRegExProvider {
   // A lock to prevent concurrent access to the cached expressions map.
   base::Lock lock_;
 };
-
-}  // namespace structured_address
 
 }  // namespace autofill
 

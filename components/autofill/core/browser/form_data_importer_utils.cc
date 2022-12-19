@@ -299,7 +299,7 @@ bool MultiStepImportMerger::MergeableByRemovingIncorrectlyComplementedCountry(
   // importing a countryless profile.
   complemented_profile.SetInfoWithVerificationStatus(
       AutofillType(ADDRESS_HOME_COUNTRY), complemented_country, app_locale_,
-      structured_address::VerificationStatus::kObserved);
+      VerificationStatus::kObserved);
   return false;
 }
 

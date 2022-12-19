@@ -31,8 +31,6 @@ using UkmAddressProfileImportType =
 
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
-using structured_address::VerificationStatus;
-
 // Names of histrogram used for metric collection.
 constexpr char kProfileImportTypeHistogram[] =
     "Autofill.ProfileImport.ProfileImportType";

@@ -15,7 +15,6 @@ class RE2;
 }  // namespace re2
 
 namespace autofill {
-namespace structured_address {
 
 // Atomic component that represents the honorific prefix of a name.
 class NameHonorific : public AddressComponent {
@@ -51,7 +50,7 @@ class NameMiddle : public AddressComponent {
   bool ConvertAndSetValueForAdditionalFieldTypeName(
       const std::string& type_name,
       const std::u16string& value,
-      const structured_address::VerificationStatus& status) override;
+      const VerificationStatus& status) override;
 };
 
 // Atomic component that represents the first part of a last name.
@@ -200,8 +199,6 @@ class NameFullWithPrefix : public AddressComponent {
   NameHonorificPrefix honorific_prefix_{this};
   NameFull name_full_{this};
 };
-
-}  // namespace structured_address
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_NAME_H_

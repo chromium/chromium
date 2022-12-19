@@ -20,7 +20,6 @@ using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
-namespace structured_address {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
@@ -1751,5 +1750,4 @@ TEST(AutofillStructuredAddressAddressComponent,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
 }
 
-}  // namespace structured_address
 }  // namespace autofill

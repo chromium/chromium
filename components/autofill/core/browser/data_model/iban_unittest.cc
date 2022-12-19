@@ -121,9 +121,9 @@ TEST(IBANTest, SetRawData) {
   IBAN iban(base::GenerateGUID());
 
   // Verify RawInfo can be correctly set and read.
-  iban.SetRawInfoWithVerificationStatus(
-      IBAN_VALUE, u"DE91 1000 0000 0123 4567 89",
-      structured_address::VerificationStatus::kUserVerified);
+  iban.SetRawInfoWithVerificationStatus(IBAN_VALUE,
+                                        u"DE91 1000 0000 0123 4567 89",
+                                        VerificationStatus::kUserVerified);
   EXPECT_EQ(u"DE91 1000 0000 0123 4567 89", iban.GetRawInfo(IBAN_VALUE));
 }
 

@@ -34,10 +34,9 @@ class NameInfo : public FormGroup {
                         const std::string& app_locale,
                         ServerFieldTypeSet* matching_types) const override;
 
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
 
   // Derives all missing tokens in the structured representation of the name by
   // either parsing missing tokens from their assigned parent or by formatting
@@ -68,9 +67,7 @@ class NameInfo : public FormGroup {
   void MergeStructuredNameValidationStatuses(const NameInfo& newer);
 
   // Returns a constant reference to the structured name tree.
-  const structured_address::AddressComponent& GetStructuredName() const {
-    return *name_;
-  }
+  const AddressComponent& GetStructuredName() const { return *name_; }
 
  private:
   // FormGroup:
@@ -78,19 +75,18 @@ class NameInfo : public FormGroup {
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
 
-  bool SetInfoWithVerificationStatusImpl(
-      const AutofillType& type,
-      const std::u16string& value,
-      const std::string& app_locale,
-      structured_address::VerificationStatus status) override;
+  bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
+                                         const std::u16string& value,
+                                         const std::string& app_locale,
+                                         VerificationStatus status) override;
 
   // Return the verification status of a structured name value.
-  structured_address::VerificationStatus GetVerificationStatusImpl(
+  VerificationStatus GetVerificationStatusImpl(
       ServerFieldType type) const override;
 
   // This data structure stores the more-structured representation of the name
   // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
-  const std::unique_ptr<structured_address::AddressComponent> name_;
+  const std::unique_ptr<AddressComponent> name_;
 };
 
 class EmailInfo : public FormGroup {
@@ -105,10 +101,9 @@ class EmailInfo : public FormGroup {
 
   // FormGroup:
   std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
 
  private:
   // FormGroup:
@@ -130,10 +125,9 @@ class CompanyInfo : public FormGroup {
 
   // FormGroup:
   std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }
 
  private:

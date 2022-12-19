@@ -482,13 +482,13 @@ TEST_F(AddressTest, TestMergeStructuredAddressesMissingCountry) {
   Address address2;
 
   address1.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
-  address1.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"1 Trafalgar Square",
-      structured_address::VerificationStatus::kUserVerified);
+  address1.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                            u"1 Trafalgar Square",
+                                            VerificationStatus::kUserVerified);
 
-  address2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"1 Trafalgar Square",
-      structured_address::VerificationStatus::kObserved);
+  address2.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                            u"1 Trafalgar Square",
+                                            VerificationStatus::kObserved);
 
   // |address1| and |address2|'s street address are not trivially the same,
   // because their verification status differs. But they should still be
@@ -506,8 +506,7 @@ TEST_F(AddressTest, TestGettingTheStructuredAddress) {
   address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
 
   // Get the structured address and verify that it has the same test value set.
-  structured_address::Address structured_address =
-      address1.GetStructuredAddress();
+  AddressNode structured_address = address1.GetStructuredAddress();
   EXPECT_EQ(structured_address.GetValueForType(ADDRESS_HOME_ZIP), u"12345");
 }
 
@@ -516,54 +515,53 @@ TEST_F(AddressTest, TestGettingTheStructuredAddress) {
 TEST_F(AddressTest, ResetStructuredTokens) {
   Address address;
   // Set a structured address line and call the finalization routine.
-  address.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"Erika-Mann-Str 12",
-      structured_address::VerificationStatus::kUserVerified);
+  address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           u"Erika-Mann-Str 12",
+                                           VerificationStatus::kUserVerified);
   address.FinalizeAfterImport();
 
   // Verify that structured tokens have been assigned correctly.
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Erika-Mann-Str");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"12");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
 
   // Lift the verification status of the house number to be |kObserved|.
-  address.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, u"12",
-      structured_address::VerificationStatus::kObserved);
+  address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"12",
+                                           VerificationStatus::kObserved);
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
 
   // Now, set a new unstructured street address that has the same tokens in a
   // different order.
-  address.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"12 Erika-Mann-Str",
-      structured_address::VerificationStatus::kUserVerified);
+  address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           u"12 Erika-Mann-Str",
+                                           VerificationStatus::kUserVerified);
 
   // After this operation, the structure should be maintained including the
   // observed status of the house number.
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Erika-Mann-Str");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"12");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
 
   // Now set a different street address.
-  address.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS, u"Marienplatz",
-      structured_address::VerificationStatus::kUserVerified);
+  address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           u"Marienplatz",
+                                           VerificationStatus::kUserVerified);
 
   // The set address is not parsable and the this should unset both the street
   // name and the house number.
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kNoStatus);
+            VerificationStatus::kNoStatus);
   ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"");
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kNoStatus);
+            VerificationStatus::kNoStatus);
 }
 
 }  // namespace autofill

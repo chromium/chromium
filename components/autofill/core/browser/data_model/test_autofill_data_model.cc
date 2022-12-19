@@ -27,7 +27,7 @@ std::u16string TestAutofillDataModel::GetRawInfo(ServerFieldType type) const {
 void TestAutofillDataModel::SetRawInfoWithVerificationStatus(
     ServerFieldType type,
     const std::u16string& value,
-    structured_address::VerificationStatus status) {}
+    VerificationStatus status) {}
 
 void TestAutofillDataModel::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {}

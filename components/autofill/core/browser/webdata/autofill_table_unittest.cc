@@ -56,8 +56,6 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 // So we can compare AutofillKeys with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const AutofillKey& key) {
   return os << base::UTF16ToASCII(key.name()) << ", "

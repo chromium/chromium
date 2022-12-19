@@ -19,8 +19,6 @@
 
 namespace autofill {
 
-namespace structured_address {
-
 std::u16string ReduceToInitials(const std::u16string& value) {
   if (value.empty())
     return std::u16string();
@@ -284,7 +282,5 @@ void NameFullWithPrefix::MigrateLegacyStructure(bool is_verified_profile) {
     FormatValueFromSubcomponents();
   }
 }
-
-}  // namespace structured_address
 
 }  // namespace autofill

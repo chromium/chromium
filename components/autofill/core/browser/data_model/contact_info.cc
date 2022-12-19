@@ -25,17 +25,14 @@ namespace autofill {
 namespace {
 
 // Factory for the structured tree to be used in NameInfo.
-std::unique_ptr<structured_address::AddressComponent>
-CreateStructuredNameTree() {
-  if (structured_address::HonorificPrefixEnabled()) {
-    return std::make_unique<structured_address::NameFullWithPrefix>();
+std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
+  if (HonorificPrefixEnabled()) {
+    return std::make_unique<NameFullWithPrefix>();
   }
-  return std::make_unique<structured_address::NameFull>();
+  return std::make_unique<NameFull>();
 }
 
 }  // namespace
-
-using structured_address::VerificationStatus;
 
 NameInfo::NameInfo() : name_(CreateStructuredNameTree()) {}
 
@@ -82,16 +79,14 @@ std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
 
   // TODO(crbug.com/1141460): Remove once honorific prefixes are launched.
-  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX &&
-      !structured_address::HonorificPrefixEnabled()) {
+  if (type == NAME_FULL_WITH_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
     type = NAME_FULL;
   }
     // Without the second generation of the structured name tree, honorific
     // prefixes and the name including the prefix are unsupported types.
-    if (type == NAME_HONORIFIC_PREFIX &&
-        !structured_address::HonorificPrefixEnabled()) {
-      return std::u16string();
-    }
+  if (type == NAME_HONORIFIC_PREFIX && !HonorificPrefixEnabled()) {
+    return std::u16string();
+  }
 
     return name_->GetValueForType(type);
 }
@@ -104,7 +99,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
   // prefixes and the name including the prefix are unsupported types.
   if ((type == NAME_HONORIFIC_PREFIX ||
        type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-      !structured_address::HonorificPrefixEnabled()) {
+      !HonorificPrefixEnabled()) {
     return;
   }
   bool success = name_->SetValueForTypeIfPossible(type, value, status);
@@ -128,8 +123,8 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
-    bool token_equivalent = structured_address::AreStringTokenEquivalent(
-        value, name_->GetValueForType(NAME_FULL));
+    bool token_equivalent =
+        AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL));
     name_->SetValueForTypeIfPossible(
         type.GetStorableType(), value, status,
         /*invalidate_child_nodes=*/!token_equivalent);
@@ -158,7 +153,7 @@ VerificationStatus NameInfo::GetVerificationStatusImpl(
   // prefixes and the name including the prefix are unsupported types.
   if (!((type == NAME_HONORIFIC_PREFIX ||
          type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
-        !structured_address::HonorificPrefixEnabled())) {
+        !HonorificPrefixEnabled())) {
     return name_->GetVerificationStatusForType(type);
   }
   return VerificationStatus::kNoStatus;

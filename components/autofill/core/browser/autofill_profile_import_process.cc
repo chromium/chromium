@@ -294,12 +294,10 @@ void ProfileImportProcess::SetUserDecision(
       // fields in the edited profile are set to kUserVerified.
       for (auto type : GetUserVisibleTypes()) {
         std::u16string value = edited_profile->GetRawInfo(type);
-        if (!value.empty() &&
-            edited_profile->GetVerificationStatus(type) ==
-                structured_address::VerificationStatus::kNoStatus) {
+        if (!value.empty() && edited_profile->GetVerificationStatus(type) ==
+                                  VerificationStatus::kNoStatus) {
           edited_profile->SetRawInfoWithVerificationStatus(
-              type, value,
-              structured_address::VerificationStatus::kUserVerified);
+              type, value, VerificationStatus::kUserVerified);
         }
       }
 

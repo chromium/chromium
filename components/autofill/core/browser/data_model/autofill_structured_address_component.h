@@ -19,7 +19,6 @@ class RE2;
 }  // namespace re2
 
 namespace autofill {
-namespace structured_address {
 
 struct AddressToken;
 struct SortedTokenComparisonResult;
@@ -596,8 +595,6 @@ class AddressComponent {
   // Defines if and how two components can be merged.
   int merge_mode_;
 };
-
-}  // namespace structured_address
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_COMPONENT_H_

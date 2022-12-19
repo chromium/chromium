@@ -20,7 +20,6 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
-namespace structured_address {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
@@ -67,7 +66,7 @@ void TestNameParsing(const std::u16string& full_with_prefix,
   EXPECT_EQ(name.GetValueForType(NAME_FULL_WITH_HONORIFIC_PREFIX),
             full_with_prefix);
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  if (structured_address::HonorificPrefixEnabled()) {
+  if (HonorificPrefixEnabled()) {
     EXPECT_EQ(name.GetValueForType(NAME_HONORIFIC_PREFIX), honorific);
   }
 
@@ -1096,5 +1095,4 @@ TEST(AutofillStructuredName, MergeSubsetLastname2) {
   VerifyTestValues(&name, name_values);
 }
 
-}  // namespace structured_address
 }  // namespace autofill

@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 namespace autofill {
-namespace structured_address {
 
 // This class reimplements the ValueForComparison method to apply a
 // country-specific rewriter to the normalized value.
@@ -31,79 +30,79 @@ class AddressComponentWithRewriter : public AddressComponent {
 };
 
 // The name of the street.
-class StreetName : public AddressComponent {
+class StreetNameNode : public AddressComponent {
  public:
-  explicit StreetName(AddressComponent* parent);
-  ~StreetName() override;
+  explicit StreetNameNode(AddressComponent* parent);
+  ~StreetNameNode() override;
 };
 
 // In some countries, addresses use the intersection of two streets.
 // The DependentStreetName is represents the second street of the intersections.
-class DependentStreetName : public AddressComponent {
+class DependentStreetNameNode : public AddressComponent {
  public:
-  explicit DependentStreetName(AddressComponent* parent);
-  ~DependentStreetName() override;
+  explicit DependentStreetNameNode(AddressComponent* parent);
+  ~DependentStreetNameNode() override;
 };
 
 // Contains both the StreetName and the DependentStreetName of an address.
-class StreetAndDependentStreetName : public AddressComponent {
+class StreetAndDependentStreetNameNode : public AddressComponent {
  public:
-  explicit StreetAndDependentStreetName(AddressComponent* parent);
-  ~StreetAndDependentStreetName() override;
+  explicit StreetAndDependentStreetNameNode(AddressComponent* parent);
+  ~StreetAndDependentStreetNameNode() override;
 
  private:
-  StreetName thoroughfare_name_{this};
-  DependentStreetName dependent_thoroughfare_name_{this};
+  StreetNameNode thoroughfare_name_{this};
+  DependentStreetNameNode dependent_thoroughfare_name_{this};
 };
 
 // The house number. It also contains the subunit descriptor, e.g. the 'a' in
 // '73a'.
-class HouseNumber : public AddressComponent {
+class HouseNumberNode : public AddressComponent {
  public:
-  explicit HouseNumber(AddressComponent* parent);
-  ~HouseNumber() override;
+  explicit HouseNumberNode(AddressComponent* parent);
+  ~HouseNumberNode() override;
 };
 
 // The name of the premise.
-class Premise : public AddressComponent {
+class PremiseNode : public AddressComponent {
  public:
-  explicit Premise(AddressComponent* parent);
-  ~Premise() override;
+  explicit PremiseNode(AddressComponent* parent);
+  ~PremiseNode() override;
 };
 
 // The floor the apartment is located in.
-class Floor : public AddressComponent {
+class FloorNode : public AddressComponent {
  public:
-  explicit Floor(AddressComponent* parent);
-  ~Floor() override;
+  explicit FloorNode(AddressComponent* parent);
+  ~FloorNode() override;
 };
 
 // The number of the apartment.
-class Apartment : public AddressComponent {
+class ApartmentNode : public AddressComponent {
  public:
-  explicit Apartment(AddressComponent* parent);
-  ~Apartment() override;
+  explicit ApartmentNode(AddressComponent* parent);
+  ~ApartmentNode() override;
 };
 
 // The SubPremise contains the floor and the apartment number.
-class SubPremise : public AddressComponent {
+class SubPremiseNode : public AddressComponent {
  public:
-  explicit SubPremise(AddressComponent* parent);
-  ~SubPremise() override;
+  explicit SubPremiseNode(AddressComponent* parent);
+  ~SubPremiseNode() override;
 
  private:
-  Floor floor_{this};
-  Apartment apartment_{this};
+  FloorNode floor_{this};
+  ApartmentNode apartment_{this};
 };
 
 // The StreetAddress incorporates the StreetAndDependentStreetName, the
 // HouseNumber, the PremiseName and SubPremise.
 // This class inherits from AddressComponentWithRewriter to implement rewriting
 // values for comparison.
-class StreetAddress : public AddressComponentWithRewriter {
+class StreetAddressNode : public AddressComponentWithRewriter {
  public:
-  explicit StreetAddress(AddressComponent* parent);
-  ~StreetAddress() override;
+  explicit StreetAddressNode(AddressComponent* parent);
+  ~StreetAddressNode() override;
 
   void GetAdditionalSupportedFieldTypes(
       ServerFieldTypeSet* supported_types) const override;
@@ -150,10 +149,10 @@ class StreetAddress : public AddressComponentWithRewriter {
   // Calculates the address line from the street address.
   void CalculateAddressLines();
 
-  StreetAndDependentStreetName streets_{this};
-  HouseNumber number_{this};
-  Premise premise_{this};
-  SubPremise sub_premise_{this};
+  StreetAndDependentStreetNameNode streets_{this};
+  HouseNumberNode number_{this};
+  PremiseNode premise_{this};
+  SubPremiseNode sub_premise_{this};
 
   // Holds the values of the individual address lines.
   // Must be recalculated if the value of the component changes.
@@ -161,33 +160,33 @@ class StreetAddress : public AddressComponentWithRewriter {
 };
 
 // Stores the country code of an address profile.
-class CountryCode : public AddressComponent {
+class CountryCodeNode : public AddressComponent {
  public:
-  explicit CountryCode(AddressComponent* parent);
-  ~CountryCode() override;
+  explicit CountryCodeNode(AddressComponent* parent);
+  ~CountryCodeNode() override;
 };
 
 // Stores the city of an address.
-class DependentLocality : public AddressComponent {
+class DependentLocalityNode : public AddressComponent {
  public:
-  explicit DependentLocality(AddressComponent* parent);
-  ~DependentLocality() override;
+  explicit DependentLocalityNode(AddressComponent* parent);
+  ~DependentLocalityNode() override;
 };
 
 // Stores the city of an address.
-class City : public AddressComponent {
+class CityNode : public AddressComponent {
  public:
-  explicit City(AddressComponent* parent);
-  ~City() override;
+  explicit CityNode(AddressComponent* parent);
+  ~CityNode() override;
 };
 
 // Stores the state of an address.
 // This class inherits from AddressComponentWithRewriter to implement rewriting
 // values for comparison.
-class State : public AddressComponentWithRewriter {
+class StateNode : public AddressComponentWithRewriter {
  public:
-  explicit State(AddressComponent* parent);
-  ~State() override;
+  explicit StateNode(AddressComponent* parent);
+  ~StateNode() override;
 
   // For states we use the AlternativeStateNameMap to offer canonicalized state
   // names.
@@ -197,10 +196,10 @@ class State : public AddressComponentWithRewriter {
 // Stores the postal code of an address.
 // This class inherits from AddressComponentWithRewriter to implement rewriting
 // values for comparison.
-class PostalCode : public AddressComponentWithRewriter {
+class PostalCodeNode : public AddressComponentWithRewriter {
  public:
-  explicit PostalCode(AddressComponent* parent);
-  ~PostalCode() override;
+  explicit PostalCodeNode(AddressComponent* parent);
+  ~PostalCodeNode() override;
 
  protected:
   // In contrast to the base class, the normalization removes all white spaces
@@ -209,21 +208,21 @@ class PostalCode : public AddressComponentWithRewriter {
 };
 
 // Stores the sorting code.
-class SortingCode : public AddressComponent {
+class SortingCodeNode : public AddressComponent {
  public:
-  explicit SortingCode(AddressComponent* parent);
-  ~SortingCode() override;
+  explicit SortingCodeNode(AddressComponent* parent);
+  ~SortingCodeNode() override;
 };
 
 // Stores the overall Address that contains the StreetAddress, the PostalCode
 // the City, the State and the CountryCode.
-class Address : public AddressComponent {
+class AddressNode : public AddressComponent {
  public:
-  Address();
-  Address(const Address& other);
-  explicit Address(AddressComponent* parent);
-  ~Address() override;
-  Address& operator=(const Address& other);
+  AddressNode();
+  AddressNode(const AddressNode& other);
+  explicit AddressNode(AddressComponent* parent);
+  AddressNode& operator=(const AddressNode& other);
+  ~AddressNode() override;
 
   void MigrateLegacyStructure(bool is_verified_profile) override;
 
@@ -232,16 +231,14 @@ class Address : public AddressComponent {
   bool WipeInvalidStructure() override;
 
  private:
-  StreetAddress street_address_{this};
-  PostalCode postal_code_{this};
-  SortingCode sorting_code_{this};
-  DependentLocality dependent_locality_{this};
-  City city_{this};
-  State state_{this};
-  CountryCode country_code_{this};
+  StreetAddressNode street_address_{this};
+  PostalCodeNode postal_code_{this};
+  SortingCodeNode sorting_code_{this};
+  DependentLocalityNode dependent_locality_{this};
+  CityNode city_{this};
+  StateNode state_{this};
+  CountryCodeNode country_code_{this};
 };
-
-}  // namespace structured_address
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_H_

@@ -1696,8 +1696,7 @@ TEST_F(PersonalDataManagerTest, SaveImportedProfileWithVerifiedData) {
   // The full name was missing in |profile| and was formatted from its
   // components.
   expected.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"Marion Mitchell Morrison",
-      structured_address::VerificationStatus::kFormatted);
+      NAME_FULL, u"Marion Mitchell Morrison", VerificationStatus::kFormatted);
   expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+1 234-567-8910");
   EXPECT_EQ(0, expected.Compare(*results[0]))
       << "result = {" << *results[0] << "} | expected = {" << expected << "}";
@@ -3648,8 +3647,7 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
   // Apply changes to the original profile (if applicable).
   for (ProfileField change : test_case.changes_to_original) {
     original_profile.SetRawInfoWithVerificationStatus(
-        change.field_type, change.field_value,
-        structured_address::VerificationStatus::kObserved);
+        change.field_type, change.field_value, VerificationStatus::kObserved);
   }
 
   // Initialize PersonalDataManager with the original profile.
@@ -3664,8 +3662,7 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
   // Apply changes to the second profile (if applicable).
   for (ProfileField change : test_case.changes_to_new) {
     profile2.SetRawInfoWithVerificationStatus(
-        change.field_type, change.field_value,
-        structured_address::VerificationStatus::kObserved);
+        change.field_type, change.field_value, VerificationStatus::kObserved);
   }
 
   profile2.FinalizeAfterImport();

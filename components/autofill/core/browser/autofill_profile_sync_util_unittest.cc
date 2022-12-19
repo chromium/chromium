@@ -19,8 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;

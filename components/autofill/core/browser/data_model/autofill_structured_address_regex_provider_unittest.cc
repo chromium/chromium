@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-namespace structured_address {
 
 // Tests the caching of a compiled regular expression.
 TEST(AutofillStructuredAddressRegExProvider, IsRegExCached) {
@@ -29,5 +28,4 @@ TEST(AutofillStructuredAddressRegExProvider, BuildAllRegExs) {
   }
 }
 
-}  // namespace structured_address
 }  // namespace autofill

@@ -10,8 +10,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 bool operator==(const Birthdate& a, const Birthdate& b) {
   return a.day_ == b.day_ && a.month_ == b.month_ && a.year_ == b.year_;
 }

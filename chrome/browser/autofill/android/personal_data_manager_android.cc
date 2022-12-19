@@ -82,7 +82,7 @@ void MaybeSetRawInfoWithVerificationStatus(
   if (value)
     profile->SetRawInfoWithVerificationStatus(
         type, ConvertJavaStringToUTF16(value),
-        static_cast<structured_address::VerificationStatus>(status));
+        static_cast<VerificationStatus>(status));
 }
 
 void MaybeSetInfoWithVerificationStatus(
@@ -94,7 +94,7 @@ void MaybeSetInfoWithVerificationStatus(
     profile->SetInfoWithVerificationStatus(
         type, ConvertJavaStringToUTF16(value),
         g_browser_process->GetApplicationLocale(),
-        static_cast<structured_address::VerificationStatus>(status));
+        static_cast<VerificationStatus>(status));
 }
 
 // Self-deleting requester of full card details, including full PAN and the CVC

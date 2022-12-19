@@ -8,8 +8,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace test {
 
 void SetProfileTestValues(AutofillProfile* profile,

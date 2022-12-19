@@ -19,8 +19,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 class AutofillProfileImportProcessTest : public testing::Test {

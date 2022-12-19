@@ -14,8 +14,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 void FormGroup::GetMatchingTypes(const std::u16string& text,
                                  const std::string& app_locale,
                                  ServerFieldTypeSet* matching_types) const {

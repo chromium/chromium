@@ -20,8 +20,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 const base::Time kArbitraryTime = base::Time::FromDoubleT(25);

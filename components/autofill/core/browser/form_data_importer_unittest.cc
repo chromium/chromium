@@ -202,9 +202,8 @@ AutofillProfile ConstructProfileFromTypeValuePairs(
     TypeValuePairs type_value_pairs) {
   AutofillProfile profile;
   for (const auto& [type, value] : type_value_pairs) {
-    profile.SetRawInfoWithVerificationStatus(
-        type, base::UTF8ToUTF16(value),
-        structured_address::VerificationStatus::kObserved);
+    profile.SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
+                                             VerificationStatus::kObserved);
   }
   if (!profile.FinalizeAfterImport())
     NOTREACHED();
@@ -960,11 +959,11 @@ TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
             u"21 Laussat St");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kParsed);
+            VerificationStatus::kParsed);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
 }
 
 TEST_P(FormDataImporterTest,
@@ -1006,11 +1005,11 @@ TEST_P(FormDataImporterTest,
             u"21 Laussat St");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
-            structured_address::VerificationStatus::kFormatted);
+            VerificationStatus::kFormatted);
 }
 
 TEST_P(
@@ -1060,11 +1059,11 @@ TEST_P(
             u"21 Laussat St APT 101");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_APT_NUM), u"101");
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
-            structured_address::VerificationStatus::kFormatted);
+            VerificationStatus::kFormatted);
 }
 
 TEST_P(FormDataImporterTest,
@@ -1107,11 +1106,11 @@ TEST_P(FormDataImporterTest,
             u"Hermann Strasse 23");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
-            structured_address::VerificationStatus::kObserved);
+            VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS),
-            structured_address::VerificationStatus::kFormatted);
+            VerificationStatus::kFormatted);
 }
 
 // ImportAddressProfiles tests.
@@ -1772,11 +1771,10 @@ TEST_P(FormDataImporterTest,
   EXPECT_TRUE(profile.IsVerified());
 
   // Set the verification status for the first and middle name to parsed.
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Mitchell",
-      structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Marion",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Mitchell",
+                                           VerificationStatus::kParsed);
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -1814,14 +1812,12 @@ TEST_P(FormDataImporterTest,
   ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   // The form submission should result in a change of name structure.
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Marion Mitchell",
-      structured_address::VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"", structured_address::VerificationStatus::kNoStatus);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Morrison",
-      structured_address::VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Marion Mitchell",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"",
+                                           VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
+                                           VerificationStatus::kObserved);
 
   // Expect that no new profile is saved.
   const std::vector<AutofillProfile*>& results =
@@ -1857,15 +1853,13 @@ TEST_P(FormDataImporterTest,
   EXPECT_TRUE(profile.IsVerified());
 
   // Reset the structured address to emulate a failed parsing attempt.
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, u"",
-      structured_address::VerificationStatus::kNoStatus);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, u"",
-      structured_address::VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"",
+                                           VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME, u"",
+                                           VerificationStatus::kNoStatus);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"",
-      structured_address::VerificationStatus::kNoStatus);
+      VerificationStatus::kNoStatus);
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -1909,13 +1903,11 @@ TEST_P(FormDataImporterTest,
   // The form submission should result in a change of the address structure.
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"Zoo St.",
-      structured_address::VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, u"Zoo St.",
-      structured_address::VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, u"123",
-      structured_address::VerificationStatus::kObserved);
+      VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME, u"Zoo St.",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"123",
+                                           VerificationStatus::kObserved);
 
   // Expect that no new profile is saved.
   const std::vector<AutofillProfile*>& results =
@@ -4056,13 +4048,12 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
   // Set the verification status for the first and middle name to parsed.
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Mitchell",
-      structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Morrison", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Marion",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Mitchell",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
+                                           VerificationStatus::kParsed);
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -4113,13 +4104,12 @@ TEST_P(
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
   // Set the verification status for the first and middle name to parsed.
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Mitchell",
-      structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Morrison", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Marion",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Mitchell",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
+                                           VerificationStatus::kParsed);
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -4170,13 +4160,12 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
   // Set the verification status for the first and middle name to parsed.
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, u"Mitchell",
-      structured_address::VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, u"Morrison", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Marion",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Mitchell",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
+                                           VerificationStatus::kParsed);
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -4334,9 +4323,8 @@ TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
 
   // Update the profile's ZIP through external means.
   AutofillProfile profile = *personal_data_manager_->GetProfiles()[0];
-  profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_ZIP, u"12345", kLocale,
-      structured_address::VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"12345", kLocale,
+                                        VerificationStatus::kObserved);
   personal_data_manager_->UpdateProfile(profile);
   WaitForOnPersonalDataChanged();
 
@@ -4344,8 +4332,7 @@ TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
   form_structure = ConstructDefaultEmailFormStructure();
   AutofillProfile expected_profile = ConstructDefaultProfile();
   expected_profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_ZIP, u"12345", kLocale,
-      structured_address::VerificationStatus::kObserved);
+      ADDRESS_HOME_ZIP, u"12345", kLocale, VerificationStatus::kObserved);
   ImportAddressProfilesAndVerifyExpectation(*form_structure,
                                             {expected_profile});
 }

@@ -6,11 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_CONSTANTS_H_
 
 namespace autofill {
-namespace structured_address {
 
 // List of name separators.
 extern const char kNameSeparators[];
 
-}  // namespace structured_address
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_CONSTANTS_H_

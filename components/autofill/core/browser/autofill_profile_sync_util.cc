@@ -29,8 +29,6 @@ using syncer::EntityData;
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 //  Converts the verification status representation used in the

@@ -21,8 +21,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 // Returns the region code for this phone number, which is an ISO 3166 2-letter

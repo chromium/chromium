@@ -429,8 +429,7 @@ inline void check_and_set(
     FormGroup* profile,
     ServerFieldType type,
     const char* value,
-    structured_address::VerificationStatus status =
-        structured_address::VerificationStatus::kObserved) {
+    VerificationStatus status = VerificationStatus::kObserved) {
   if (value) {
     profile->SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
                                               status);
@@ -818,7 +817,7 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* country,
                     const char* phone,
                     bool finalize,
-                    structured_address::VerificationStatus status) {
+                    VerificationStatus status) {
   check_and_set(profile, NAME_FIRST, first_name, status);
   check_and_set(profile, NAME_MIDDLE, middle_name, status);
   check_and_set(profile, NAME_LAST, last_name, status);
@@ -851,7 +850,7 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* country,
                     const char* phone,
                     bool finalize,
-                    structured_address::VerificationStatus status) {
+                    VerificationStatus status) {
   check_and_set(profile, NAME_FIRST, first_name, status);
   check_and_set(profile, NAME_MIDDLE, middle_name, status);
   check_and_set(profile, NAME_LAST, last_name, status);
@@ -883,7 +882,7 @@ void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* country,
                             const char* phone,
                             bool finalize,
-                            structured_address::VerificationStatus status) {
+                            VerificationStatus status) {
   if (guid)
     profile->set_guid(guid);
   SetProfileInfo(profile, first_name, middle_name, last_name, email, company,

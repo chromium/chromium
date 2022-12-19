@@ -13,7 +13,6 @@ namespace autofill {
 
 namespace {
 
-using structured_address::VerificationStatus;
 using sync_pb::ContactInfoSpecifics;
 
 const char kGuid[] = "00000000-0000-0000-0000-000000000001";

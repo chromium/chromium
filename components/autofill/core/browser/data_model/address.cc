@@ -29,8 +29,6 @@
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 Address::Address() = default;
 
 Address::Address(const Address& address) = default;
@@ -78,7 +76,7 @@ bool Address::IsStructuredAddressMergeable(const Address& newer) const {
       newer.GetStructuredAddress());
 }
 
-const structured_address::Address& Address::GetStructuredAddress() const {
+const AddressNode& Address::GetStructuredAddress() const {
   return structured_address_;
 }
 
@@ -99,7 +97,7 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
     const std::u16string current_value =
         structured_address_.GetValueForType(type);
     if (!current_value.empty()) {
-      bool token_equivalent = structured_address::AreStringTokenEquivalent(
+      bool token_equivalent = AreStringTokenEquivalent(
           value, structured_address_.GetValueForType(type));
       structured_address_.SetValueForTypeIfPossible(
           ADDRESS_HOME_STREET_ADDRESS, value, status,

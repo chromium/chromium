@@ -58,8 +58,6 @@ using ::i18n::addressinput::AddressField;
 
 namespace autofill {
 
-using structured_address::VerificationStatus;
-
 namespace {
 
 // Stores the data types that are relevant for the structured address/name.
@@ -433,12 +431,12 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     if (profile.GetRawInfo(type).empty())
       continue;
 
-    if (structured_address::IsLessSignificantVerificationStatus(
+    if (IsLessSignificantVerificationStatus(
             GetVerificationStatus(type), profile.GetVerificationStatus(type))) {
       return -1;
     }
-    if (structured_address::IsLessSignificantVerificationStatus(
-            profile.GetVerificationStatus(type), GetVerificationStatus(type))) {
+    if (IsLessSignificantVerificationStatus(profile.GetVerificationStatus(type),
+                                            GetVerificationStatus(type))) {
       return 1;
     }
   }
@@ -587,8 +585,8 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
   // names and addresses are mergeable.
   // However, the structure should only be merged if the full names or addresses
   // are token equivalent.
-  if (structured_address::AreStringTokenEquivalent(
-          GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL))) {
+  if (AreStringTokenEquivalent(GetRawInfo(NAME_FULL),
+                               profile.GetRawInfo(NAME_FULL))) {
     NameInfo name;
     if (!comparator.MergeNames(profile, *this, name)) {
       NOTREACHED();
@@ -600,7 +598,7 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
     }
   }
 
-  if (structured_address::AreStringTokenEquivalent(
+  if (AreStringTokenEquivalent(
           GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
           profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
     Address address;

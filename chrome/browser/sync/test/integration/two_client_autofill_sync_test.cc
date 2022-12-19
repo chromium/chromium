@@ -337,14 +337,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
   ASSERT_TRUE(profile);
-  UpdateProfile(
-      0, profile->guid(), AutofillType(autofill::NAME_FIRST),
-      profile->GetRawInfo(autofill::NAME_FIRST),
-      autofill::structured_address::VerificationStatus::kUserVerified);
+  UpdateProfile(0, profile->guid(), AutofillType(autofill::NAME_FIRST),
+                profile->GetRawInfo(autofill::NAME_FIRST),
+                autofill::VerificationStatus::kUserVerified);
 
   // Make sure the change is propagated to the other client.
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
-  EXPECT_EQ(autofill::structured_address::VerificationStatus::kUserVerified,
+  EXPECT_EQ(autofill::VerificationStatus::kUserVerified,
             GetAllAutoFillProfiles(1)[0]->GetVerificationStatus(
                 autofill::NAME_FIRST));
 }

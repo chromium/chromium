@@ -23,7 +23,6 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
-namespace structured_address {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
@@ -48,7 +47,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
-  Address address(nullptr);
+  AddressNode address(nullptr);
   const AddressComponentTestValues test_value = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = test_case.street_address,
@@ -81,7 +80,7 @@ void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
 }
 
 void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
-  Address address;
+  AddressNode address;
   const AddressComponentTestValues test_value = {
       {.type = ADDRESS_HOME_COUNTRY,
        .value = test_case.country_code,
@@ -239,7 +238,7 @@ TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
 }
 
 TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
-  Address address;
+  AddressNode address;
 
   std::vector<AddressLineParsingTestCase> test_cases = {
       {
@@ -311,7 +310,7 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
 
 // Test setting the first address line.
 TEST(AutofillStructuredAddress, TestSettingsAddressLine1) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_LINE1,
        .value = "line1",
@@ -332,7 +331,7 @@ TEST(AutofillStructuredAddress, TestSettingsAddressLine1) {
 
 // Test settings all three address lines.
 TEST(AutofillStructuredAddress, TestSettingsAddressLines) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_LINE1,
        .value = "line1",
@@ -365,7 +364,7 @@ TEST(AutofillStructuredAddress, TestSettingsAddressLines) {
 
 // Test setting the home street address and retrieving the address lines.
 TEST(AutofillStructuredAddress, TestGettingAddressLines) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "line1\nline2\nline3",
@@ -392,7 +391,7 @@ TEST(AutofillStructuredAddress, TestGettingAddressLines) {
 
 // Test setting the home street address and retrieving the address lines.
 TEST(AutofillStructuredAddress, TestGettingAddressLines_JoinedAdditionalLines) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "line1\nline2\nline3\nline4",
@@ -420,7 +419,7 @@ TEST(AutofillStructuredAddress, TestGettingAddressLines_JoinedAdditionalLines) {
 // Tests that a structured address gets successfully migrated and subsequently
 // completed.
 TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
@@ -490,7 +489,7 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
 
 // Tests the migration of a structured address in a verified profile.
 TEST(AutofillStructuredAddress, TestMigrationOfVerifiedProfile) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
@@ -532,7 +531,7 @@ TEST(AutofillStructuredAddress, TestMigrationOfVerifiedProfile) {
 // Tests that the migration does not happen of the root node
 // (ADDRESS_HOME_ADDRESS) already has a verification status.
 TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "123 Street name",
@@ -560,7 +559,7 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
 // Tests that a valid address structure is not wiped.
 TEST(AutofillStructuredAddress,
      TestWipingAnInvalidSubstructure_ValidStructure) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues address_with_valid_structure = {
       // This structure is valid because all structured components are contained
       // in the unstructured representation.
@@ -584,7 +583,7 @@ TEST(AutofillStructuredAddress,
 // Tests that an invalid address structure is wiped.
 TEST(AutofillStructuredAddress,
      TestWipingAnInvalidSubstructure_InValidStructure) {
-  Address address;
+  AddressNode address;
   AddressComponentTestValues address_with_valid_structure = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "Some other name",
@@ -619,8 +618,8 @@ TEST(AutofillStructuredAddress,
 
 // Test that the correct country for merging structured addresses is computed.
 TEST(AutofillStructuredAddress, TestGetCommonCountryForMerge) {
-  CountryCode country1(nullptr);
-  CountryCode country2(nullptr);
+  CountryCodeNode country1(nullptr);
+  CountryCodeNode country2(nullptr);
 
   // No countries set.
   EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
@@ -714,16 +713,16 @@ TEST_P(MergeStatesWithCanonicalNamesTest, MergeTest) {
                      : test_case.older_status},
   };
 
-  Address older_address;
+  AddressNode older_address;
   SetTestValues(&older_address, older_values);
 
-  Address newer_address;
+  AddressNode newer_address;
   SetTestValues(&newer_address, newer_values);
 
   EXPECT_EQ(test_case.is_mergeable,
             older_address.IsMergeableWithComponent(newer_address));
 
-  Address expectation_address;
+  AddressNode expectation_address;
   SetTestValues(&expectation_address, expectation_values);
 
   older_address.MergeWithComponent(newer_address);
@@ -770,5 +769,5 @@ INSTANTIATE_TEST_SUITE_P(
             VerificationStatus::kParsed, "CanonicalState", false}));
 
 }  // namespace
-}  // namespace structured_address
+
 }  // namespace autofill

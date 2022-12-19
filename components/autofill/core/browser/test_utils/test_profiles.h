@@ -17,8 +17,7 @@ namespace autofill::test {
 struct ProfileTestData {
   ServerFieldType field_type;
   std::string value;
-  structured_address::VerificationStatus verification_status =
-      structured_address::VerificationStatus::kNoStatus;
+  VerificationStatus verification_status = VerificationStatus::kNoStatus;
 };
 
 // Set the values and verification statuses for the field types in

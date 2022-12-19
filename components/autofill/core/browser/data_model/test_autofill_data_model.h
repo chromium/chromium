@@ -25,10 +25,9 @@ class TestAutofillDataModel : public AutofillDataModel {
 
  private:
   std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(
-      ServerFieldType type,
-      const std::u16string& value,
-      structured_address::VerificationStatus status) override;
+  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status) override;
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 };
 

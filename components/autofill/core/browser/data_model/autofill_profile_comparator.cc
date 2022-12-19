@@ -980,8 +980,9 @@ bool AutofillProfileComparator::HaveMergeableNames(
 
   // If the two names are just a permutation of each other, they are mergeable
   // for structured names.
-  if (structured_address::AreStringTokenEquivalent(full_name_1, full_name_2))
+  if (AreStringTokenEquivalent(full_name_1, full_name_2)) {
     return true;
+  }
 
   std::u16string canon_full_name_1 = NormalizeForComparison(full_name_1);
   std::u16string canon_full_name_2 = NormalizeForComparison(full_name_2);

@@ -21,7 +21,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
-namespace structured_address {
 
 struct AddressToken {
   // The original value.
@@ -303,8 +302,6 @@ SortedTokenComparisonResult CompareSortedTokens(
 // Convenience wrapper to supply untokenized strings.
 SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
                                                 const std::u16string& second);
-
-}  // namespace structured_address
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_UTILS_H_

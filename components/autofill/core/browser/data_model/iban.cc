@@ -59,10 +59,9 @@ std::u16string IBAN::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void IBAN::SetRawInfoWithVerificationStatus(
-    ServerFieldType type,
-    const std::u16string& value,
-    structured_address::VerificationStatus status) {
+void IBAN::SetRawInfoWithVerificationStatus(ServerFieldType type,
+                                            const std::u16string& value,
+                                            VerificationStatus status) {
   if (type == IBAN_VALUE) {
     set_value(value);
   } else {

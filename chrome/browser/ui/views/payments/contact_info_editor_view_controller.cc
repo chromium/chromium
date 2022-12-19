@@ -140,7 +140,7 @@ void ContactInfoEditorViewController::PopulateProfile(
     profile->SetInfoWithVerificationStatus(
         autofill::AutofillType(field.second.type), field.first->GetText(),
         state()->GetApplicationLocale(),
-        autofill::structured_address::VerificationStatus::kUserVerified);
+        autofill::VerificationStatus::kUserVerified);
   }
   profile->set_origin(autofill::kSettingsOrigin);
 }

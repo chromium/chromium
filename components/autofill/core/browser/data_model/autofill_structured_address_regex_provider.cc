@@ -15,8 +15,6 @@
 
 namespace autofill {
 
-namespace structured_address {
-
 namespace {
 
 // Best practices for writing regular expression snippets:
@@ -553,7 +551,5 @@ const RE2* StructuredAddressesRegExProvider::GetRegEx(
   }
   return it->second.get();
 }
-
-}  // namespace structured_address
 
 }  // namespace autofill
