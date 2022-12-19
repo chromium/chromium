@@ -324,7 +324,6 @@ StripChecksumsFromPackageList() {
 HacksAndPatchesCommon() {
   local arch=$1
   local os=$2
-  local strip=$3
   Banner "Misc Hacks & Patches"
 
   # Remove an unnecessary dependency on qtchooser.
@@ -376,44 +375,40 @@ ReversionGlibc() {
 
 
 HacksAndPatchesAmd64() {
-  HacksAndPatchesCommon x86_64 linux-gnu strip
+  HacksAndPatchesCommon x86_64 linux-gnu
   ReversionGlibc x86_64 linux-gnu
 }
 
 
 HacksAndPatchesI386() {
-  HacksAndPatchesCommon i386 linux-gnu strip
+  HacksAndPatchesCommon i386 linux-gnu
   ReversionGlibc i386 linux-gnu
 }
 
 
 HacksAndPatchesARM() {
-  HacksAndPatchesCommon arm linux-gnueabihf arm-linux-gnueabihf-strip
+  HacksAndPatchesCommon arm linux-gnueabihf
   ReversionGlibc arm linux-gnueabihf
 }
 
 HacksAndPatchesARM64() {
-  # Use the unstripped libdbus for arm64 to prevent linker errors.
-  # https://bugs.chromium.org/p/webrtc/issues/detail?id=8535
-  HacksAndPatchesCommon aarch64 linux-gnu true
-  # Skip reversion_glibc.py. Glibc is compiled in a way where many libm math
-  # functions do not have compatibility symbols for versions <= 2.17.
-  # ReversionGlibc aarch64 linux-gnu
+  HacksAndPatchesCommon aarch64 linux-gnu
+  ReversionGlibc aarch64 linux-gnu
 }
 
 HacksAndPatchesARMEL() {
-  HacksAndPatchesCommon arm linux-gnueabi arm-linux-gnueabi-strip
+  HacksAndPatchesCommon arm linux-gnueabi
   ReversionGlibc arm linux-gnueabi
 }
 
 HacksAndPatchesMips() {
-  HacksAndPatchesCommon mipsel linux-gnu mipsel-linux-gnu-strip
+  HacksAndPatchesCommon mipsel linux-gnu
   ReversionGlibc mipsel linux-gnu
 }
 
 
 HacksAndPatchesMips64el() {
-  HacksAndPatchesCommon mips64el linux-gnuabi64 mips64el-linux-gnuabi64-strip
+  HacksAndPatchesCommon mips64el linux-gnuabi64
   ReversionGlibc mips64el linux-gnuabi64
 }
 
