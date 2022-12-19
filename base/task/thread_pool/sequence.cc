@@ -46,29 +46,19 @@ Sequence::Transaction::Transaction(Sequence::Transaction&& other) = default;
 
 Sequence::Transaction::~Transaction() = default;
 
-bool Sequence::DelayedSortKeyWillChange(const Task& delayed_task) const {
-  AnnotateLockAcquired annotate(lock_);
-  // If sequence has already been picked up by a worker or moved, no need to
-  // proceed further here.
-  if (is_immediate_.load(std::memory_order_relaxed))
-    return false;
-
-  if (IsEmpty())
-    return true;
-
-  return delayed_task.latest_delayed_run_time() <
-         delayed_queue_.top().latest_delayed_run_time();
-}
-
 bool Sequence::Transaction::WillPushImmediateTask() {
+  // In a Transaction.
   AnnotateLockAcquired annotate(sequence()->lock_);
+
   bool was_immediate =
       sequence()->is_immediate_.exchange(true, std::memory_order_relaxed);
   return !was_immediate;
 }
 
 void Sequence::Transaction::PushImmediateTask(Task task) {
+  // In a Transaction.
   AnnotateLockAcquired annotate(sequence()->lock_);
+
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
@@ -96,7 +86,9 @@ void Sequence::Transaction::PushImmediateTask(Task task) {
 }
 
 bool Sequence::Transaction::PushDelayedTask(Task task) {
+  // In a Transaction.
   AnnotateLockAcquired annotate(sequence()->lock_);
+
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
@@ -255,6 +247,21 @@ bool Sequence::WillReEnqueue(TimeTicks now,
     is_immediate_.store(false, std::memory_order_relaxed);
 
   return has_ready_tasks;
+}
+
+bool Sequence::DelayedSortKeyWillChange(const Task& delayed_task) const {
+  // If sequence has already been picked up by a worker or moved, no need to
+  // proceed further here.
+  if (is_immediate_.load(std::memory_order_relaxed)) {
+    return false;
+  }
+
+  if (IsEmpty()) {
+    return true;
+  }
+
+  return delayed_task.latest_delayed_run_time() <
+         delayed_queue_.top().latest_delayed_run_time();
 }
 
 bool Sequence::HasReadyTasks(TimeTicks now) const {

@@ -132,7 +132,8 @@ class BASE_EXPORT Sequence : public TaskSource {
 
   // Returns true if the delayed task to be posted will cause the delayed sort
   // key to change.
-  bool DelayedSortKeyWillChange(const Task& delayed_task) const;
+  bool DelayedSortKeyWillChange(const Task& delayed_task) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Selects the earliest task to run, either from immediate or
   // delayed queue and return it.
