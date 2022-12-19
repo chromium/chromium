@@ -13,40 +13,137 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-
+#include "testing/gtest/include/gtest/gtest.h"
 namespace privacy_sandbox_test_util {
 
+namespace {
+
+// Convenience function that unpacks a map keyed on both MultipleXKeys, and
+// single keys (e.g. keyed on the TestKey variant type), into a map key _only_
+// on single keys.
+template <typename T>
+std::map<T, TestCaseItemValue> UnpackKeys(
+    const std::map<TestKey<T>, TestCaseItemValue>& test_key_to_test_value) {
+  std::map<T, TestCaseItemValue> unpacked_map;
+
+  for (const auto& [test_key, value] : test_key_to_test_value) {
+    // If test_key is a single key, set the value in the map directly.
+    if (absl::holds_alternative<T>(test_key)) {
+      auto key = absl::get<T>(test_key);
+      EXPECT_EQ(0u, unpacked_map.count(key))
+          << "Duplicate test key " << static_cast<int>(key);
+      unpacked_map[key] = value;
+    } else {
+      auto keys = absl::get<MultipleKeys<T>>(test_key);
+      for (auto key : keys) {
+        EXPECT_EQ(0u, unpacked_map.count(key))
+            << "Duplicate test key " << static_cast<int>(key);
+        unpacked_map[key] = value;
+      }
+    }
+  }
+
+  return unpacked_map;
+}
+
+template <typename T>
+T GetItemValue(const TestCaseItemValue& value) {
+  EXPECT_TRUE(absl::holds_alternative<T>(value));
+  return absl::get<T>(value);
+}
+
+template <typename V, typename K>
+V GetItemValueForKey(K key, std::map<K, TestCaseItemValue> test_components) {
+  EXPECT_TRUE(test_components.count(key))
+      << "Unable to find key " << static_cast<int>(key);
+  return GetItemValue<V>(test_components.at(key));
+}
+
+// Applies the state defined by `key`, `value` to the provided profile
+// components.
+void ApplyTestState(
+    StateKey key,
+    const TestCaseItemValue& value,
+    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
+    HostContentSettingsMap* map,
+    MockPrivacySandboxSettingsDelegate* mock_delegate,
+    content_settings::MockProvider* user_content_setting_provider,
+    content_settings::MockProvider* managed_content_setting_provider) {
+  switch (key) {
+    case (StateKey::kM1TopicsEnabledUserPrefValue): {
+      SCOPED_TRACE("State Setup: User M1 Topics pref");
+      testing_pref_service->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
+                                        base::Value(GetItemValue<bool>(value)));
+      return;
+    }
+    case (StateKey::kCookieControlsModeUserPrefValue): {
+      SCOPED_TRACE("State Setup: User cookies controls mode");
+
+      testing_pref_service->SetUserPref(
+          prefs::kCookieControlsMode,
+          base::Value(static_cast<int>(
+              GetItemValue<content_settings::CookieControlsMode>(value))));
+      return;
+    }
+    case (StateKey::kSiteDataUserDefault): {
+      SCOPED_TRACE("State Setup: User site data default");
+      auto content_setting = GetItemValue<ContentSetting>(value);
+      user_content_setting_provider->SetWebsiteSetting(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+          base::Value(content_setting));
+      return;
+    }
+    case (StateKey::kSiteDataUserExceptions): {
+      SCOPED_TRACE("State Setup: User site data exceptions");
+      auto exceptions = GetItemValue<SiteDataExceptions>(value);
+
+      for (const auto& [primary_pattern, content_setting] : exceptions) {
+        user_content_setting_provider->SetWebsiteSetting(
+            ContentSettingsPattern::FromString(primary_pattern),
+            ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+            base::Value(content_setting));
+      }
+      return;
+    }
+    default:
+      NOTREACHED();
+  }
+}
+
+void CheckOutput(
+    const std::map<InputKey, TestCaseItemValue>& input,
+    const std::pair<OutputKey, TestCaseItemValue>& output,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings) {
+  auto [output_key, output_value] = output;
+  switch (output_key) {
+    case (OutputKey::kIsTopicsAllowed): {
+      SCOPED_TRACE("Check Output: IsTopicsAllowed()");
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsTopicsAllowed());
+      return;
+    }
+    case (OutputKey::kIsTopicsAllowedForContext): {
+      SCOPED_TRACE("Check Output: IsTopicsAllowedForContext()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto topics_url = GetItemValueForKey<GURL>(InputKey::kTopicsURL, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsTopicsAllowedForContext(
+                    topics_url, top_frame_origin));
+      return;
+    }
+  }
+}
+
+}  // namespace
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
 MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
     default;
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
     default;
-
-void SetupMinimialTestStateForM1(
-    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
-    HostContentSettingsMap* map,
-    ContentSetting default_cookie_setting,
-    const std::vector<CookieContentSettingException>& user_cookie_exceptions) {
-  // Setup cookie content settings.
-  auto user_provider = std::make_unique<content_settings::MockProvider>();
-
-  if (default_cookie_setting != kNoSetting) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(default_cookie_setting));
-  }
-
-  for (const auto& exception : user_cookie_exceptions) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(exception.primary_pattern),
-        ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
-  }
-
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(user_provider), HostContentSettingsMap::DEFAULT_PROVIDER);
-}
 
 void SetupTestState(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
@@ -110,6 +207,30 @@ void SetupTestState(
   } else {
     testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabled,
                                       base::Value(privacy_sandbox_enabled));
+  }
+}
+
+void RunTestCase(
+    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
+    HostContentSettingsMap* host_content_settings_map,
+    MockPrivacySandboxSettingsDelegate* mock_delegate,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    content_settings::MockProvider* user_content_setting_provider,
+    content_settings::MockProvider* managed_content_setting_provider,
+    const TestCase& test_case) {
+  auto [test_state, test_input, test_output] = test_case;
+
+  // Setup test state.
+  for (const auto& [key, value] : UnpackKeys<StateKey>(test_state)) {
+    ApplyTestState(key, value, testing_pref_service, host_content_settings_map,
+                   mock_delegate, user_content_setting_provider,
+                   managed_content_setting_provider);
+  }
+
+  // Check expected outputs for provided inputs matches actual output.
+  auto inputs = UnpackKeys<InputKey>(test_input);
+  for (const auto& output : UnpackKeys<OutputKey>(test_output)) {
+    CheckOutput(inputs, output, privacy_sandbox_settings);
   }
 }
 

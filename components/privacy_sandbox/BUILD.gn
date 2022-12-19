@@ -82,5 +82,7 @@ source_set("test_support") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gmock",
+    "//testing/gtest:gtest",
+    "//url:url",
   ]
 }

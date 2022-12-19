@@ -25,7 +25,53 @@ namespace privacy_sandbox {
 
 using Topic = browsing_topics::Topic;
 
-class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
+namespace {
+
+// C++20 introduces the "using enum" construct, which significantly reduces the
+// required verbosity here. C++20 is support is coming to Chromium
+// (crbug.com/1284275), with Mac / Windows / Linux support at the time of
+// writing.
+// TODO (crbug.com/1401686): Replace groups with commented lines when C++20 is
+// supported.
+
+// using enum privacy_sandbox_test_util::TestState;
+using privacy_sandbox_test_util::StateKey;
+constexpr auto kM1TopicsEnabledUserPrefValue =
+    StateKey::kM1TopicsEnabledUserPrefValue;
+constexpr auto kCookieControlsModeUserPrefValue =
+    StateKey::kCookieControlsModeUserPrefValue;
+constexpr auto kSiteDataUserDefault = StateKey::kSiteDataUserDefault;
+constexpr auto kSiteDataUserExceptions = StateKey::kSiteDataUserExceptions;
+
+// using enum privacy_sandbox_test_util::InputKey;
+using privacy_sandbox_test_util::InputKey;
+constexpr auto kTopFrameOrigin = InputKey::kTopFrameOrigin;
+constexpr auto kTopicsURL = InputKey::kTopicsURL;
+
+// using enum privacy_sandbox_test_util::TestOutput;
+using privacy_sandbox_test_util::OutputKey;
+constexpr auto kIsTopicsAllowed = OutputKey::kIsTopicsAllowed;
+constexpr auto kIsTopicsAllowedForContext =
+    OutputKey::kIsTopicsAllowedForContext;
+
+// using enum ContentSetting;
+constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
+constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
+
+// using enum content_settings::CookieControlsMode;
+constexpr auto kBlockThirdParty =
+    content_settings::CookieControlsMode::kBlockThirdParty;
+
+using privacy_sandbox_test_util::MultipleOutputKeys;
+using privacy_sandbox_test_util::SiteDataExceptions;
+using privacy_sandbox_test_util::TestCase;
+using privacy_sandbox_test_util::TestInput;
+using privacy_sandbox_test_util::TestOutput;
+using privacy_sandbox_test_util::TestState;
+
+}  // namespace
+
+class PrivacySandboxSettingsTest : public testing::Test {
  public:
   PrivacySandboxSettingsTest()
       : browser_task_environment_(
@@ -33,7 +79,6 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
-
     host_content_settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
@@ -909,144 +954,163 @@ TEST_F(PrivacySandboxSettingLocalOverrideTest, FollowsOverrideBehavior) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
 
-/**
- * A test fixture for privacy sandbox M1 for Topics.
- *
- * TODO(crbug.com/1378703): Add tests for Incognito and supervised accounts to
- * see that API is disabled for them.  The tests could be potentially also added
- * in privacy_sandbox_settings_delegate_unittest.cc
- */
-class PrivacySandboxSettingsTopicsM1Test : public PrivacySandboxSettingsTest {
+// Tests class for the PrivacySandboxSettings4 / M1 launch.
+class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
  public:
   void InitializeFeaturesBeforeStart() override {
-    feature_list_.InitWithFeatureState(
-        privacy_sandbox::kPrivacySandboxSettings4, GetParam());
-    mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
-        /*restricted= */ false);
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxSettings4);
   }
 
-  void InitializePrefsBeforeStart() override {
-    prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, GetParam());
+ protected:
+  void RunTestCase(const TestState& test_state,
+                   const TestInput& test_input,
+                   const TestOutput& test_output) {
+    ASSERT_FALSE(test_case_run_)
+        << "Each test fixture should run a single test, to ensure the test "
+           "profile is in a known state.";
+    test_case_run_ = true;
+    auto user_provider = std::make_unique<content_settings::MockProvider>();
+    auto* user_provider_raw = user_provider.get();
+    auto managed_provider = std::make_unique<content_settings::MockProvider>();
+    auto* managed_provider_raw = managed_provider.get();
+    content_settings::TestUtils::OverrideProvider(
+        host_content_settings_map(), std::move(user_provider),
+        HostContentSettingsMap::PREF_PROVIDER);
+    content_settings::TestUtils::OverrideProvider(
+        host_content_settings_map(), std::move(managed_provider),
+        HostContentSettingsMap::POLICY_PROVIDER);
+
+    privacy_sandbox_test_util::RunTestCase(
+        prefs(), host_content_settings_map(), mock_delegate(),
+        privacy_sandbox_settings(), user_provider_raw, managed_provider_raw,
+        TestCase(test_state, test_input, test_output));
   }
+
+ private:
+  bool test_case_run_ = false;
 };
 
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsTestM1Instance,
-                         PrivacySandboxSettingsTopicsM1Test,
-                         testing::Bool());
-
-TEST_P(PrivacySandboxSettingsTopicsM1Test, IsTopicsAllowed_M1) {
-  bool is_topics_pref_enabled =
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
-
-  // Update the underlying topics prefs to disable.
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-  // Topics should always be disabled is the underlying pref is disabled.
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
+TEST_F(PrivacySandboxSettingsM1Test, SpecificPreferenceEnabled) {
+  // Confirm that M1 kAPI respect M1 targeted preferences when enabled.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, true}},
+              TestInput{{kTopFrameOrigin,
+                         url::Origin::Create(GURL("https://top-frame.com"))},
+                        {kTopicsURL, GURL("https://embedded.com")}},
+              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
+                                             kIsTopicsAllowedForContext},
+                          true}});
 }
 
-// Test that CookieControlsMode has not affect on whether Topics is allowed or
-// not.
-TEST_P(PrivacySandboxSettingsTopicsM1Test,
-       IsTopicAllowed_CookieControlsMode_M1) {
-  bool is_topics_pref_enabled =
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      base::Value(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
-
-  prefs()->SetUserPref(prefs::kCookieControlsMode,
-                       base::Value(static_cast<int>(
-                           content_settings::CookieControlsMode::kOff)));
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
+TEST_F(PrivacySandboxSettingsM1Test, SpecificPreferenceDisabled) {
+  // Confirm that M1 kAPI respect M1 targeted preferences when disabled.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, false}},
+              TestInput{{kTopFrameOrigin,
+                         url::Origin::Create(GURL("https://top-frame.com"))},
+                        {kTopicsURL, GURL("https://embedded.com")}},
+              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
+                                             kIsTopicsAllowedForContext},
+                          false}});
 }
 
-// Test that the Topics API is blocked for a site if its corresponding Site data
-// setting is blocked, regardless if the default content setting is allowed.
-TEST_P(PrivacySandboxSettingsTopicsM1Test,
-       IsTopicAllowedForContext_CookieContentSetting_PrimaryPattern_Block_M1) {
-  bool is_topics_pref_enabled =
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
-
-  // Allow default cookie content setting but block on primary pattern.
-  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
-      prefs(), host_content_settings_map(),
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/
-      {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}});
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"), {}));
+TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
+  // Confirm that M1 kAPIs ignore the Cookie Controls mode preference.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, true},
+                        {kCookieControlsModeUserPrefValue, kBlockThirdParty}},
+              TestInput{{kTopFrameOrigin,
+                         url::Origin::Create(GURL("https://top-frame.com"))},
+                        {kTopicsURL, GURL("https://embedded.com")}},
+              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
+                                             kIsTopicsAllowedForContext},
+                          true}});
 }
 
-// Test that the Topics API is allowed for a site if its corresponding Site data
-// setting is allowed, regardless if the default content setting is blocked.
-TEST_P(PrivacySandboxSettingsTopicsM1Test,
-       IsTopicAllowedForContext_CookieContentSetting_PrimaryPattern_Allow_M1) {
-  bool is_topics_pref_enabled =
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  bool is_topics_allowed = privacy_sandbox_settings()->IsTopicsAllowed();
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
-
-  // Block default cookie content setting but allow on primary pattern.
-  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
-      prefs(), host_content_settings_map(),
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
-      /*user_cookie_exceptions=*/
-      {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_ALLOW}});
-
-  // Should allow topics for the context, as long as the low level Topics API is
-  // allowed.
-  EXPECT_EQ(is_topics_allowed,
-            privacy_sandbox_settings()->IsTopicsAllowedForContext(
-                GURL("https://embedded.com"), {}));
+TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockApplies) {
+  // Confirm that blocking site data disabled M1 kAPIs.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(
+      TestState{
+          {kM1TopicsEnabledUserPrefValue, true},
+          {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
+          {kSiteDataUserExceptions,
+           SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_BLOCK}}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")}},
+      TestOutput{{kIsTopicsAllowed, true},
+                 {kIsTopicsAllowedForContext, false}});
 }
 
-// Test that the Topics API is allowed by default for any site without any
-// corresponding Site data exception.
-TEST_P(PrivacySandboxSettingsTopicsM1Test,
-       IsTopicAllowedForContext_CookieContentSetting_Default_Allow_M1) {
-  bool is_topics_pref_enabled =
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  bool is_topics_allowed = privacy_sandbox_settings()->IsTopicsAllowed();
-  EXPECT_EQ(is_topics_pref_enabled,
-            privacy_sandbox_settings()->IsTopicsAllowed());
-
-  // Allow default cookie content setting.
-  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
-      prefs(), host_content_settings_map(),
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{});
-
-  // Should allow topics for the context, as long as the low level Topics API is
-  // allowed.
-  EXPECT_EQ(is_topics_allowed,
-            privacy_sandbox_settings()->IsTopicsAllowedForContext(
-                GURL("https://embedded.com"), {}));
+TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
+  // Confirm that allowing site data doesn't override preference values, even
+  // via exceptions.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(
+      TestState{
+          {kM1TopicsEnabledUserPrefValue, false},
+          {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
+          {kSiteDataUserExceptions,
+           SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_ALLOW},
+                              {"[*.]top-frame.com", CONTENT_SETTING_ALLOW}}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+           false}});
 }
 
-// Test that the Topics API is blocked by default for any site without any
-// corresponding Site data exception.
-TEST_P(PrivacySandboxSettingsTopicsM1Test,
-       IsTopicAllowedForContext_CookieContentSetting_Default_Block_M1) {
-  EXPECT_EQ(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled),
-            privacy_sandbox_settings()->IsTopicsAllowed());
+TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
+  // Confirm that site data exceptions override the default site data setting.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(
+      TestState{
+          {kM1TopicsEnabledUserPrefValue, true},
+          {kSiteDataUserDefault, CONTENT_SETTING_BLOCK},
+          {kSiteDataUserExceptions,
+           SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_ALLOW}}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+           true}});
+}
 
-  // Block default cookie content setting.
-  privacy_sandbox_test_util::SetupMinimialTestStateForM1(
-      prefs(), host_content_settings_map(),
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
-      /*user_cookie_exceptions=*/{});
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"), {}));
+TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
+  // Confirm that unrelated site data block exceptions don't affect kAPIs.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(
+      TestState{
+          {kM1TopicsEnabledUserPrefValue, true},
+          {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
+          {kSiteDataUserExceptions,
+           SiteDataExceptions{{"[*.]unrelated.com", CONTENT_SETTING_BLOCK}}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+           true}});
+}
+
+TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
+  // Confirm that unrelated site data allow exceptions don't affect kAPIs.
+  // TODO(crbug.com/1378703): Add testing for all kAPIs.
+  RunTestCase(
+      TestState{
+          {kM1TopicsEnabledUserPrefValue, true},
+          {kSiteDataUserDefault, CONTENT_SETTING_BLOCK},
+          {kSiteDataUserExceptions,
+           SiteDataExceptions{{"[*.]unrelated.com", CONTENT_SETTING_ALLOW}}}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")}},
+      TestOutput{{kIsTopicsAllowed, true},
+                 {kIsTopicsAllowedForContext, false}});
 }
 
 }  // namespace privacy_sandbox
