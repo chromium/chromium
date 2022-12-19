@@ -33,7 +33,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"

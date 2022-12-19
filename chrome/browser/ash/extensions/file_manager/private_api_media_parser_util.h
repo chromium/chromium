@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MEDIA_PARSER_UTIL_H_
 
 #include "base/values.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 
 namespace extensions {
 

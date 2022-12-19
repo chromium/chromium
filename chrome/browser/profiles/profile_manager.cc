@@ -159,9 +159,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/extensions/desk_api/desk_api_extension_manager.h"
 #include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h"
-#endif
+#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 

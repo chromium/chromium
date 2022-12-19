@@ -11,7 +11,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 
 namespace extensions {
 

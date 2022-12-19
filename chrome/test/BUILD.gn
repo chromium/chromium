@@ -8282,7 +8282,6 @@ test("unit_tests") {
 
     if (is_chromeos) {
       sources += [
-        "../browser/ash/extensions/desk_api/desk_api_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",

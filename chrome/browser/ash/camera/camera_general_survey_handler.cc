@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
 

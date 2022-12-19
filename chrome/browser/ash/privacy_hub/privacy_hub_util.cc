@@ -11,7 +11,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash::privacy_hub_util {
 

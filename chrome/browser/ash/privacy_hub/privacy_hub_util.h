@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
 

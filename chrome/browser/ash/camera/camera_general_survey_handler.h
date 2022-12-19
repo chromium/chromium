@@ -13,7 +13,6 @@
 #include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 
 namespace ash {
 

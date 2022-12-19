@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
