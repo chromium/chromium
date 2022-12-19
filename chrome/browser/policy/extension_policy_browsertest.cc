@@ -83,7 +83,6 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
-#include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/switches.h"
@@ -2703,17 +2702,13 @@ IN_PROC_BROWSER_TEST_F(MixinBasedExtensionPolicyTest,
     EXPECT_EQ(proxy_mode, "system");
   }
 
-  // Force load extension from source dir and get back extension_id.
+  // Force load extension from the source dir and wait until message "ready"
+  // is received.
   // As PEM file is provided, we are expecting same extension ID always.
-  ExtensionTestMessageListener ready_listener("ready");
-  ready_listener.set_extension_id(kProxySettingExtensionId);
   EXPECT_TRUE(force_mixin()->ForceInstallFromSourceDir(
       GetTestDataDir().AppendASCII(kProxySettingExtensionExtensionPath),
       GetTestDataDir().AppendASCII(kProxySettingExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad, nullptr));
-
-  // Waiting for JS execution after the extension is loaded.
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+      ExtensionForceInstallMixin::WaitMode::kReadyMessageReceived));
 
   // Verify extension is installed and enabled.
   ASSERT_TRUE(force_mixin()->GetInstalledExtension(kProxySettingExtensionId));

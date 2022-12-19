@@ -87,6 +87,10 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
     kLoad,
     // Wait until the extension's background page is loaded for the first time.
     kBackgroundPageFirstLoad,
+    // Wait until the extension is loaded and its (presumably javascript
+    // typescript) code sends the hard-coded message 'ready'. The extension
+    // needs to send a message via `chrome.test.sendMessage('ready')`.
+    kReadyMessageReceived,
   };
 
   // The type of the waiting mode for the force-installed extension update.
