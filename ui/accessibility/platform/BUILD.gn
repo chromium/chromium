@@ -245,6 +245,9 @@ component("platform") {
         "AppKit.framework",
         "Foundation.framework",
       ]
+      weak_frameworks = [
+        "Accessibility.framework",  # macOS 11
+      ]
     }
 
     if (use_atk) {

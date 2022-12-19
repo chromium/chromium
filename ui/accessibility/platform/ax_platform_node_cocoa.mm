@@ -7,8 +7,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/logging.h"
-
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -235,6 +235,8 @@ void CollectAncestorRoles(
 }
 
 @synthesize node = _node;
+// Required for AXCustomContentProvider, which defines the property.
+@synthesize accessibilityCustomContent = _accessibilityCustomContent;
 
 - (ui::AXPlatformNodeDelegate*)nodeDelegate {
   return _node ? _node->GetDelegate() : nil;
@@ -807,6 +809,17 @@ void CollectAncestorRoles(
     anchorStartOffset += leafTextLength;
   }
   [attributedString endEditing];
+}
+
+- (NSString*)descriptionIfFromAriaDescription {
+  // TODO(crbug.com/1373178): Eventually this should include the DescriptionFrom
+  // for content from aria-describedby, kRelatedContent.
+  ax::mojom::DescriptionFrom descFrom = static_cast<ax::mojom::DescriptionFrom>(
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom));
+  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription) {
+    return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
+  }
+  return nil;
 }
 
 - (NSString*)getName {
@@ -1646,6 +1659,14 @@ void CollectAncestorRoles(
   if (![self instanceActive])
     return nil;
 
+  // AXCustomContent is only supported by VoiceOver since macOS 11. In
+  // macOS 11 or later we expose the aria description in AXCustomContent,
+  // before then we expose the description in AXHelp.
+  if (base::mac::IsAtLeastOS11() &&
+      [[self descriptionIfFromAriaDescription] length]) {
+    return nil;
+  }
+
   return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
 
@@ -1947,8 +1968,27 @@ void CollectAncestorRoles(
   return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
+- (NSArray*)accessibilityCustomContent {
+  if (![self instanceActive])
+    return nil;
+
+  if (@available(macOS 11.0, *)) {
+    NSString* description = [self descriptionIfFromAriaDescription];
+    if ([description length]) {
+      return @[ [AXCustomContent customContentWithLabel:@"description"
+                                                  value:description] ];
+    }
+  }
+
+  return nil;
+}
+
 - (NSRect)accessibilityFrame {
   return [self boundsInScreen];
+}
+
+- (NSString*)accessibilityHelp {
+  return [self AXHelp];
 }
 
 - (NSString*)accessibilityLabel {

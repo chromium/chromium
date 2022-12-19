@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -30,7 +31,10 @@ struct AXAnnouncementSpec {
 }  // namespace ui
 
 COMPONENT_EXPORT(AX_PLATFORM)
-@interface AXPlatformNodeCocoa : NSAccessibilityElement <NSAccessibility>
+@interface AXPlatformNodeCocoa
+    : NSAccessibilityElement <NSAccessibility, AXCustomContentProvider>
+
+- (NSArray*)accessibilityCustomContent;
 
 // Determines if this object is alive, i.e. it hasn't been detached.
 - (BOOL)instanceActive;

@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_call_statement_invoker_mac.h"
 
+#import <Accessibility/Accessibility.h>
+
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
@@ -167,7 +169,30 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
   if ([target isKindOfClass:[NSDictionary class]])
     return InvokeForDictionary(target, property_node);
 
+  if (@available(macOS 11.0, *)) {
+    if ([target isKindOfClass:[AXCustomContent class]])
+      return InvokeForAXCustomContent(target, property_node);
+  }
+
   LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
+  return AXOptionalNSObject::Error();
+}
+
+AXOptionalNSObject AXCallStatementInvoker::InvokeForAXCustomContent(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  if (@available(macOS 11.0, *)) {
+    AXCustomContent* content = target;
+
+    if (property_node.name_or_value == "label")
+      return AXOptionalNSObject(content.label);
+    if (property_node.name_or_value == "value")
+      return AXOptionalNSObject(content.value);
+
+    return AXOptionalNSObject::Error(
+        "Unrecognized '" + property_node.name_or_value +
+        "' attribute called on AXCustomContent object.");
+  }
   return AXOptionalNSObject::Error();
 }
 

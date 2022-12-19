@@ -1,0 +1,16 @@
+<!--
+@SCRIPT:
+  div.accessibilityAttributeValue(AXHelp)
+  div_with_tooltip.accessibilityAttributeValue(AXHelp)
+-->
+<!--
+Note, this test will only run when macOS is less than 11, and the purpose of the test is to show that AXHelp DOES surface the aria-description string.
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="div" aria-label="description" aria-description="Text-description" ></div>
+  <div id="div_with_tooltip" aria-label="both" aria-description="describedby overrides description" aria-describedby="desc1" ></div>
+  <div role="tooltip" id="desc1">Description from describedby</div>
+</body>
+</html>

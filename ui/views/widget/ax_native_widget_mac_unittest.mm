@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
@@ -329,14 +330,39 @@ TEST_F(AXNativeWidgetMacTest, PositionAttribute) {
   EXPECT_NSEQ(widget_origin, A11yElementAtMidpoint().accessibilityFrame.origin);
 }
 
-// Test for NSAccessibilityHelpAttribute.
-TEST_F(AXNativeWidgetMacTest, HelpAttribute) {
+// Test for surfacing information in TooltipText.
+TEST_F(AXNativeWidgetMacTest, TooltipText) {
   Label* label = new Label(base::SysNSStringToUTF16(kTestStringValue));
   label->SetSize(GetWidgetBounds().size());
   EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
   label->SetTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
   widget()->GetContentsView()->AddChildView(label);
-  EXPECT_NSEQ(kTestPlaceholderText, A11yElementAtMidpoint().accessibilityHelp);
+
+  // The tooltip is exposed in accessibilityHelp only before macOS 11. After,
+  // it is accessibilityCustomContent. This is because the DescriptionFrom
+  // for the ToolTip string has been been set to kAriaDescription, and
+  // `aria-description` is exposed in AXCustomContent.
+  id<NSAccessibility> element = A11yElementAtMidpoint();
+
+  if (@available(macOS 11.0, *)) {
+    NSString* description = nil;
+    ASSERT_TRUE(
+        [element conformsToProtocol:@protocol(AXCustomContentProvider)]);
+    auto element_with_content =
+        static_cast<id<AXCustomContentProvider>>(element);
+    for (AXCustomContent* content in element_with_content
+             .accessibilityCustomContent) {
+      if ([content.label isEqualToString:@"description"]) {
+        // There should be only one AXCustomContent with the label
+        // "description".
+        EXPECT_EQ(description, nil);
+        description = content.value;
+      }
+    }
+    EXPECT_NSEQ(kTestPlaceholderText, description);
+  } else {
+    EXPECT_NSEQ(kTestPlaceholderText, element.accessibilityHelp);
+  }
 }
 
 // Test view properties that should report the native NSWindow, and test
