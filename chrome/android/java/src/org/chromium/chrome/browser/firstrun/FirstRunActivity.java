@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
@@ -423,13 +422,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                     activity.finish();
                 } else {
                     activity.finishAndRemoveTask();
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        // On L ApiCompatibilityUtils.finishAndRemoveTask() sometimes fails. Try one
-                        // last time, see crbug.com/781396 for origin of this approach.
-                        if (!activity.isFinishing()) {
-                            activity.finish();
-                        }
-                    }
                 }
             }
         }
