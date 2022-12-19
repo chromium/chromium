@@ -137,13 +137,15 @@ def _GetPolicyChangeList(input_api):
       continue
     old_policy = None
     new_policy = None
-    if affected_file.Action() in ['M', 'D']:
-      try:
+    if affected_file.Action() == 'M':
         old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
         old_policy['name'] = policy_name
         old_policy['id'] = policy_name_to_id[policy_name]
-      except:
-        old_policy = None
+
+    if affected_file.Action() == 'D':
+        old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
+        old_policy['name'] = policy_name
+
     if affected_file.Action() != 'D':
       new_policy = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
       new_policy['name'] = policy_name
@@ -470,6 +472,11 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
     current_version: The current major version of the branch as stored in
       chrome/VERSION.'''
   results = []
+  if _SkipPresubmitChecks(
+      input_api,
+      [_POLICIES_DEFINITIONS_PATH, _PRESUBMIT_PATH]):
+    return results
+
   policy_changelist = _GetPolicyChangeList(input_api)
   current_version = _GetCurrentVersion(input_api)
   for policy_changes in policy_changelist:
