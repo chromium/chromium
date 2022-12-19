@@ -424,14 +424,16 @@ export class DialogActionController {
     if (this.dialogType_ === DialogType.SELECT_OPEN_FILE) {
       this.dialogFooter_.okButton.disabled = selection.directoryCount !== 0 ||
           selection.fileCount !== 1 ||
-          !this.fileSelectionHandler_.isAvailable();
+          !this.fileSelectionHandler_.isAvailable() ||
+          this.fileSelectionHandler_.isDlpBlocked();
       return;
     }
 
     if (this.dialogType_ === DialogType.SELECT_OPEN_MULTI_FILE) {
       this.dialogFooter_.okButton.disabled = selection.directoryCount !== 0 ||
           selection.fileCount === 0 ||
-          !this.fileSelectionHandler_.isAvailable();
+          !this.fileSelectionHandler_.isAvailable() ||
+          this.fileSelectionHandler_.isDlpBlocked();
       return;
     }
 

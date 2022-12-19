@@ -318,29 +318,41 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
 /**
  * Tests the open file dialogs properly show DLP blocked files. If a file cannot
  * be opened by the caller of the dialog, it should be marked as disabled in the
- * details list.
+ * details list. If such a file is selected, the "Open" dialog button should be
+ * disabled.
  */
 testcase.openDlpRestrictedFile = async () => {
   // Setup the restrictions.
-  await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
   await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
 
+  // TODO(b/263079195): Add mix of dirs and files when mocking is improved.
   // Add entries to Downloads.
-  await addEntries(['local'], [ENTRIES.hello]);
+  const entries = [
+    ENTRIES.hello,     /** blocked */
+    ENTRIES.world,     /** not blocked */
+    ENTRIES.beautiful, /** not blocked */
+    ENTRIES.desktop,   /** blocked */
+  ];
+  await addEntries(['local'], entries);
 
+  const disabledOkButton = '.button-panel button.ok:disabled';
   const cancelButton = '.button-panel button.cancel';
 
   const closer = async (dialog) => {
     // Wait for the file list to appear.
     await remoteCall.waitForElement(dialog, '#file-list');
-    await remoteCall.waitForFiles(
-        dialog, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
     // Wait for the DLP managed icon to be shown - this means that metadata has
     // been fetched and we can check the disabled status as well.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 1);
+        dialog, ['#file-list .dlp-managed-icon'], 2);
+
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .file[disabled]'], 1);
+        dialog, ['#file-list .file[disabled]'], 2);
+
+    // Verify that the button is disabled when a blocked file is selected.
+    await remoteCall.waitUntilSelected(dialog, entries[3].nameText);
+    await remoteCall.waitForElement(dialog, disabledOkButton);
 
     // Click the close button to dismiss the dialog.
     await remoteCall.waitForElement(dialog, cancelButton);
@@ -351,5 +363,5 @@ testcase.openDlpRestrictedFile = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
-          {type: 'openFile'}, 'downloads', [ENTRIES.hello], closer));
+          {type: 'openFile'}, 'downloads', entries, closer));
 };
