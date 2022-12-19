@@ -174,12 +174,19 @@ class DTraceParser:
     Raises:
       SystemExit: When no results are found in stack_dir.
     """
+    # Define the format for DTrace stacks filenames.
+    stack_filename_regex = re.compile('[0-9]*_[0-9]*.txt')
+
+    # Treat all files that respect the name stack_filename_regex as DTrace
+    # stacks.
     for root, dirs, files in os.walk(stack_dir):
       for stack_filename in files:
-        with open(os.path.join(stack_dir, stack_filename),
-                  newline='',
-                  encoding="ISO-8859-1") as stack_file:
-          self.ParseFile(stack_file)
+        if stack_filename_regex.match(stack_filename):
+          logging.info(f"Processing {stack_filename} ...")
+          with open(os.path.join(root, stack_filename),
+                    newline='',
+                    encoding="ISO-8859-1") as stack_file:
+            self.ParseFile(stack_file)
 
     if not self._stack_frames:
       logging.error("No results found, check directory contents")
@@ -320,12 +327,19 @@ class DTraceParser:
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
-      description='Flip stack order of a collapsed stack file.')
-  parser.add_argument("--stack_dir",
-                      help="Collapsed stack file.",
+      description='Export DTrace stack files into another format.')
+  parser.add_argument("--data_dir",
+                      help="Top level directory that contains DTrace stacks. "
+                      "The directory will be fully walked to find stacks "
+                      "and metadata.json files",
                       required=True)
   parser.add_argument("--output",
                       help="The file to write the collapsed stacks into.")
+  parser.add_argument('--unit',
+                      dest='unit',
+                      choices=["cpu_samples", "wakeups"],
+                      default="pprof",
+                      help="The unit of counts acquired with DTrace")
   parser.add_argument('--format',
                       dest='format',
                       action='store',
@@ -334,31 +348,33 @@ if __name__ == "__main__":
                       help="Output format to generate.")
   parser.add_argument('--shorten',
                       action='store_true',
-                      help="Shorten stacks by removing.")
+                      help="Shorten stacks by removing the base part ",
+                      "of the stack that doesn't provide useful information")
   args = parser.parse_args()
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
-  profile_mode = 'cpu_time'
-  if 'wakeups' in args.stack_dir:
-    profile_mode = 'wakeups'
-  parser = DTraceParser(profile_mode)
-  parser.ParseDir(args.stack_dir)
+  # Traverse |data_dir| and concatenate all metadata.json into one big comment
+  # for the pprof.
+  full_comment = ""
+  metadata_filename_regex = re.compile('metadata.json')
+  for root, dirs, files in os.walk(args.data_dir):
+    for file in files:
+      if metadata_filename_regex.match(file):
+        with open(os.path.join(root, file)) as meta_json:
+          for line in meta_json:
+            full_comment += line
+
+  parser = DTraceParser(args.unit)
+  parser.ParseDir(args.data_dir)
   if args.shorten:
     parser.EnableShortenStackSamples()
   parser.PostProcessStackSamples()
 
-  data_dir = os.path.abspath(os.path.join(args.stack_dir, os.pardir))
-  metadata_path = os.path.join(data_dir, "metadata.json")
-  if not os.path.isfile(metadata_path):
-    logging.error(f"Could not find metadata.json.")
-    sys.exit(-1)
-  with open(metadata_path, 'r') as metadata_file:
-    metadata = json.load(metadata_file)
-
   output_filename = args.output
+  data_dir = os.path.abspath(os.path.join(args.data_dir, os.pardir))
   if args.format == "pprof":
     profile_builder = ProfileBuilder()
-    profile_builder.AddComment(json.dumps(metadata, indent=2))
+    profile_builder.AddComment(full_comment)
     profile_builder.AddComment(f"Profile mode: {profile_mode}")
     parser.ConvertToPprof(profile_builder)
     if output_filename is None:
