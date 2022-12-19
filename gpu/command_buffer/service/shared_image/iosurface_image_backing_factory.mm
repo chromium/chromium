@@ -365,10 +365,9 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter)
     : progress_reporter_(progress_reporter),
+      gpu_memory_buffer_formats_(
+          feature_info->feature_flags().gpu_memory_buffer_formats),
       angle_texture_usage_(feature_info->feature_flags().angle_texture_usage) {
-  gpu_memory_buffer_formats_ =
-      feature_info->feature_flags().gpu_memory_buffer_formats;
-
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
@@ -376,12 +375,9 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
   // cases, clamped to INT_MAX, always invalid.
   max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
 
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
-    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
-    const viz::ResourceFormat resource_format =
-        viz::GetResourceFormat(buffer_format);
-    if (gpu_memory_buffer_formats_.Has(buffer_format) &&
-        IsFormatSupported(resource_format)) {
+  for (gfx::BufferFormat buffer_format : gpu_memory_buffer_formats_) {
+    viz::ResourceFormat resource_format = viz::GetResourceFormat(buffer_format);
+    if (IsFormatSupported(resource_format)) {
       supported_formats_.insert(resource_format);
     }
   }

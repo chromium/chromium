@@ -428,7 +428,7 @@ void FeatureInfo::EnableOESTextureHalfFloatLinear() {
   // IOSurfaces.
   if (workarounds_.disable_half_float_for_gmb)
     return;
-  feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::RGBA_F16);
+  feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RGBA_F16);
 }
 
 void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
@@ -979,8 +979,8 @@ void FeatureInfo::InitializeFeatures() {
         GL_BGRA8_EXT);
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRX_8888);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRX_8888);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -1236,7 +1236,7 @@ void FeatureInfo::InitializeFeatures() {
 
   if (feature_flags_.chromium_image_ycbcr_420v) {
     AddExtensionString("GL_CHROMIUM_ycbcr_420v_image");
-    feature_flags_.gpu_memory_buffer_formats.Add(
+    feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::YUV_420_BIPLANAR);
   }
 
@@ -1261,22 +1261,22 @@ void FeatureInfo::InitializeFeatures() {
     validators_.pixel_type.AddValue(GL_UNSIGNED_INT_2_10_10_10_REV);
   }
   if (feature_flags_.chromium_image_ar30) {
-    feature_flags_.gpu_memory_buffer_formats.Add(
+    feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::BGRA_1010102);
   }
   if (feature_flags_.chromium_image_ab30) {
-    feature_flags_.gpu_memory_buffer_formats.Add(
+    feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::RGBA_1010102);
   }
 
   if (feature_flags_.chromium_image_ycbcr_p010) {
     AddExtensionString("GL_CHROMIUM_ycbcr_p010_image");
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::P010);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::P010);
   }
 
 #if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS11()) {
-    feature_flags_.gpu_memory_buffer_formats.Add(
+    feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::YUVA_420_TRIPLANAR);
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1487,8 +1487,8 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_internal_format_storage.AddValue(GL_R8_EXT);
     validators_.texture_internal_format_storage.AddValue(GL_RG8_EXT);
 
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::R_8);
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::RG_88);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::R_8);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RG_88);
   }
 
   if (IsWebGL2OrES3OrHigherContext() &&
@@ -1544,8 +1544,8 @@ void FeatureInfo::InitializeFeatures() {
 
     // TODO(shrekshao): gpu_memory_buffer_formats is not used by WebGL
     // So didn't expose all buffer formats here.
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::R_16);
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::RG_1616);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::R_16);
+    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RG_1616);
   }
 
   if (enable_es3 && gfx::HasExtension(extensions, "GL_EXT_window_rectangles")) {
