@@ -15,13 +15,13 @@
 TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   base::Value string_value_1("string value 1");
   base::Value string_value_2("string value 2");
-  base::DictionaryValue dictionary_value_1;
-  dictionary_value_1.GetDict().Set("int value", 1);
-  dictionary_value_1.SetKey("nested empty map", base::DictionaryValue());
-  base::DictionaryValue dictionary_value_1_equivalent;
-  dictionary_value_1_equivalent.GetDict().Set("int value", 1);
-  base::DictionaryValue dictionary_value_2;
-  dictionary_value_2.GetDict().Set("int value", 2);
+  base::Value::Dict dictionary_value_1;
+  dictionary_value_1.Set("int value", 1);
+  dictionary_value_1.Set("nested empty map", base::Value::Dict());
+  base::Value::Dict dictionary_value_1_equivalent;
+  dictionary_value_1_equivalent.Set("int value", 1);
+  base::Value::Dict dictionary_value_2;
+  dictionary_value_2.Set("int value", 2);
 
   PrefHashCalculator calc1("seed1", "deviceid", "legacydeviceid");
   PrefHashCalculator calc1_dup("seed1", "deviceid", "legacydeviceid");
@@ -85,36 +85,35 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
 
   // For legacy reasons, we have to support pruning of empty lists/dictionaries
   // and nested empty lists/dicts in the hash generation algorithm.
-  base::DictionaryValue nested_empty_dict;
-  nested_empty_dict.SetKey("a", base::DictionaryValue());
-  nested_empty_dict.SetKey("b", base::ListValue());
-  base::ListValue nested_empty_list;
-  nested_empty_list.Append(base::Value(base::Value::Type::DICTIONARY));
-  nested_empty_list.Append(base::Value(base::Value::Type::LIST));
+  base::Value::Dict nested_empty_dict;
+  nested_empty_dict.Set("a", base::Value::Dict());
+  nested_empty_dict.Set("b", base::Value::List());
+  base::Value::List nested_empty_list;
+  nested_empty_list.Append(base::Value::Dict());
+  nested_empty_list.Append(base::Value::List());
   nested_empty_list.Append(nested_empty_dict.Clone());
 
   // A dictionary with an empty dictionary, an empty list, and nested empty
   // dictionaries/lists in it.
-  base::DictionaryValue dict_value;
-  dict_value.SetString("a", "foo");
-  dict_value.SetKey("d", base::ListValue());
-  dict_value.SetKey("b", base::DictionaryValue());
-  dict_value.SetString("c", "baz");
-  dict_value.SetKey("e", std::move(nested_empty_dict));
-  dict_value.SetKey("f", std::move(nested_empty_list));
+  base::Value::Dict dict_value;
+  dict_value.Set("a", "foo");
+  dict_value.Set("d", base::Value::List());
+  dict_value.Set("b", base::Value::Dict());
+  dict_value.Set("c", "baz");
+  dict_value.Set("e", std::move(nested_empty_dict));
+  dict_value.Set("f", std::move(nested_empty_list));
 
   base::ListValue list_value;
   list_value.Append(true);
   list_value.Append(100);
   list_value.Append(1.0);
 
-  ASSERT_EQ(base::Value::Type::NONE, null_value.type());
-  ASSERT_EQ(base::Value::Type::BOOLEAN, bool_value.type());
-  ASSERT_EQ(base::Value::Type::INTEGER, int_value.type());
-  ASSERT_EQ(base::Value::Type::DOUBLE, double_value.type());
-  ASSERT_EQ(base::Value::Type::STRING, string_value.type());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, dict_value.type());
-  ASSERT_EQ(base::Value::Type::LIST, list_value.type());
+  ASSERT_TRUE(null_value.is_none());
+  ASSERT_TRUE(bool_value.is_bool());
+  ASSERT_TRUE(int_value.is_int());
+  ASSERT_TRUE(double_value.is_double());
+  ASSERT_TRUE(string_value.is_string());
+  ASSERT_TRUE(list_value.is_list());
 
   // Test every value type independently. Intentionally omits Type::BINARY which
   // isn't even allowed in JSONWriter's input.
@@ -161,14 +160,14 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
                 .Validate("pref.path", &list_value, kExpectedListValue));
 
   // Also test every value type together in the same dictionary.
-  base::DictionaryValue everything;
-  everything.SetKey("null", std::move(null_value));
-  everything.SetKey("bool", std::move(bool_value));
-  everything.SetKey("int", std::move(int_value));
-  everything.SetKey("double", std::move(double_value));
-  everything.SetKey("string", std::move(string_value));
-  everything.SetKey("list", std::move(list_value));
-  everything.SetKey("dict", std::move(dict_value));
+  base::Value::Dict everything;
+  everything.Set("null", std::move(null_value));
+  everything.Set("bool", std::move(bool_value));
+  everything.Set("int", std::move(int_value));
+  everything.Set("double", std::move(double_value));
+  everything.Set("string", std::move(string_value));
+  everything.Set("list", std::move(list_value));
+  everything.Set("dict", std::move(dict_value));
   static const char kExpectedEverythingValue[] =
       "B97D09BE7005693574DCBDD03D8D9E44FB51F4008B73FB56A49A9FA671A1999B";
   EXPECT_EQ(PrefHashCalculator::VALID,

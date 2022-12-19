@@ -17,7 +17,7 @@ using ValueState =
 
 class PrefHashStoreImplTest : public testing::Test {
  public:
-  PrefHashStoreImplTest() : contents_(pref_store_contents_.GetDict()) {}
+  PrefHashStoreImplTest() : contents_(pref_store_contents_) {}
 
   PrefHashStoreImplTest(const PrefHashStoreImplTest&) = delete;
   PrefHashStoreImplTest& operator=(const PrefHashStoreImplTest&) = delete;
@@ -26,7 +26,7 @@ class PrefHashStoreImplTest : public testing::Test {
   HashStoreContents* GetHashStoreContents() { return &contents_; }
 
  private:
-  base::DictionaryValue pref_store_contents_;
+  base::Value::Dict pref_store_contents_;
   // Must be declared after |pref_store_contents_| as it needs to be outlived
   // by it.
   DictionaryHashStoreContents contents_;
