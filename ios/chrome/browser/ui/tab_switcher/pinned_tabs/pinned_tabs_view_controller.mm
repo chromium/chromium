@@ -111,6 +111,30 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
       }];
 }
 
+#pragma mark - PinnedTabsCollectionConsumer
+
+- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
+       selectedItemID:(NSString*)selectedItemID {
+}
+
+- (void)insertItem:(TabSwitcherItem*)item
+           atIndex:(NSUInteger)index
+    selectedItemID:(NSString*)selectedItemID {
+}
+
+- (void)removeItemWithID:(NSString*)removedItemID
+          selectedItemID:(NSString*)selectedItemID {
+}
+
+- (void)selectItemWithID:(NSString*)selectedItemID {
+}
+
+- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
+}
+
+- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:

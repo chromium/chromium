@@ -24,6 +24,7 @@ class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
+@protocol PinnedTabsCollectionConsumer;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
@@ -119,6 +120,8 @@ enum class TabGridPageConfiguration {
     id<TabCollectionConsumer, IncognitoReauthConsumer>
         incognitoTabsConsumer;
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
+@property(nonatomic, readonly) id<PinnedTabsCollectionConsumer>
+    pinnedTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;

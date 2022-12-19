@@ -52,6 +52,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
@@ -116,6 +118,8 @@
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
+// Mediator for pinned Tabs.
+@property(nonatomic, strong) PinnedTabsMediator* pinnedTabsMediator;
 // Coordinator for history, which can be started from recent tabs.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 // Coordinator for the thumb strip.
@@ -645,6 +649,12 @@
     self.regularTabsMediator.tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             regularBrowserState);
+  }
+
+  if (IsPinnedTabsEnabled()) {
+    self.pinnedTabsMediator = [[PinnedTabsMediator alloc]
+        initWithConsumer:baseViewController.pinnedTabsConsumer];
+    self.pinnedTabsMediator.browser = _regularBrowser;
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]

@@ -7,10 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_collection_consumer.h"
+
 @protocol GridImageDataSource;
 
 // UICollectionViewController used to display pinned tabs.
-@interface PinnedTabsViewController : UICollectionViewController
+@interface PinnedTabsViewController
+    : UICollectionViewController <PinnedTabsCollectionConsumer>
 
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;

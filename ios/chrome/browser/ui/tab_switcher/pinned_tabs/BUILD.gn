@@ -2,6 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("pinned_tabs") {
+  sources = [
+    "pinned_tabs_collection_consumer.h",
+    "pinned_tabs_mediator.h",
+    "pinned_tabs_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//components/favicon/ios:ios",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web",
+  ]
+}
+
 source_set("pinned_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -16,6 +39,7 @@ source_set("pinned_tabs_ui") {
   ]
   deps = [
     ":features",
+    ":pinned_tabs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
