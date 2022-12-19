@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Test that document pip is not allowed in iframes.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<iframe></iframe>
+</body>
+<script>
+promise_test(t => {
+  const frame = document.querySelector('iframe');
+  const frameDOMException = frame.contentWindow.DOMException;
+  return promise_rejects_dom(t, 'NotAllowedError', frameDOMException,
+    frame.contentWindow.documentPictureInPicture.requestWindow());
+});
+</script>

@@ -54,6 +54,13 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     return ScriptPromise();
   }
 
+  if (dom_window->GetFrame() && !dom_window->GetFrame()->IsMainFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Opening a PiP window from iframe is not allowed");
+    return ScriptPromise();
+  }
+
   if (dom_window->IsPictureInPictureWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
