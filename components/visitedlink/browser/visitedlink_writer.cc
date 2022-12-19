@@ -113,10 +113,9 @@ void AsyncTruncate(FILE** file) {
 // Closes the file on a background thread and releases memory used for storage
 // of FILE* value. Double pointer to FILE is used because file may still not
 // be opened by the time of scheduling the task for execution.
-void AsyncClose(FILE** file) {
+void AsyncClose(std::unique_ptr<FILE*, base::FreeDeleter> file) {
   if (*file)
     base::IgnoreResult(fclose(*file));
-  free(file);
 }
 
 }  // namespace
@@ -572,10 +571,10 @@ void VisitedLinkWriter::WriteFullTable() {
   DCHECK(persist_to_disk_);
 
   if (!file_) {
-    file_ = static_cast<FILE**>(calloc(1, sizeof(*file_)));
+    file_.reset(static_cast<FILE**>(calloc(1, sizeof(*file_))));
     base::FilePath filename;
     GetDatabaseFileName(&filename);
-    PostIOTask(FROM_HERE, base::BindOnce(&AsyncOpen, file_, filename));
+    PostIOTask(FROM_HERE, base::BindOnce(&AsyncOpen, file_.get(), filename));
   }
 
   // Write the new header.
@@ -584,15 +583,15 @@ void VisitedLinkWriter::WriteFullTable() {
   header[1] = kFileCurrentVersion;
   header[2] = table_length_;
   header[3] = used_items_;
-  WriteToFile(file_, 0, header, sizeof(header));
-  WriteToFile(file_, sizeof(header), salt_, LINK_SALT_LENGTH);
+  WriteToFile(file_.get(), 0, header, sizeof(header));
+  WriteToFile(file_.get(), sizeof(header), salt_, LINK_SALT_LENGTH);
 
   // Write the hash data.
-  WriteToFile(file_, kFileHeaderSize, hash_table_,
+  WriteToFile(file_.get(), kFileHeaderSize, hash_table_,
               table_length_ * sizeof(Fingerprint));
 
   // The hash table may have shrunk, so make sure this is the end.
-  PostIOTask(FROM_HERE, base::BindOnce(&AsyncTruncate, file_));
+  PostIOTask(FROM_HERE, base::BindOnce(&AsyncTruncate, file_.get()));
 }
 
 bool VisitedLinkWriter::InitFromFile() {
@@ -702,7 +701,7 @@ void VisitedLinkWriter::OnTableLoadComplete(
   // Assign the open file.
   DCHECK(!file_);
   DCHECK(load_from_file_result->file.get());
-  file_ = static_cast<FILE**>(malloc(sizeof(*file_)));
+  file_.reset(static_cast<FILE**>(malloc(sizeof(*file_))));
   *file_ = load_from_file_result->file.release();
 
   // Assign the loaded table.
@@ -900,9 +899,9 @@ void VisitedLinkWriter::FreeURLTable() {
   mapped_table_memory_ = base::MappedReadOnlyRegion();
   if (!persist_to_disk_ || !file_)
     return;
-  PostIOTask(FROM_HERE, base::BindOnce(&AsyncClose, file_));
+
   // AsyncClose() will close the file and free the memory pointed by |file_|.
-  file_ = nullptr;
+  PostIOTask(FROM_HERE, base::BindOnce(&AsyncClose, std::move(file_)));
 }
 
 bool VisitedLinkWriter::ResizeTableIfNecessary() {
@@ -1079,7 +1078,8 @@ void VisitedLinkWriter::WriteUsedItemCountToFile() {
   DCHECK(persist_to_disk_);
   if (!file_)
     return;  // See comment on the file_ variable for why this might happen.
-  WriteToFile(file_, kFileHeaderUsedOffset, &used_items_, sizeof(used_items_));
+  WriteToFile(file_.get(), kFileHeaderUsedOffset, &used_items_,
+              sizeof(used_items_));
 }
 
 void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
@@ -1089,16 +1089,16 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     return;  // See comment on the file_ variable for why this might happen.
   if (last_hash < first_hash) {
     // Handle wraparound at 0. This first write is first_hash->EOF
-    WriteToFile(file_, first_hash * sizeof(Fingerprint) + kFileHeaderSize,
+    WriteToFile(file_.get(), first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &hash_table_[first_hash],
                 (table_length_ - first_hash + 1) * sizeof(Fingerprint));
 
     // Now do 0->last_lash.
-    WriteToFile(file_, kFileHeaderSize, hash_table_,
+    WriteToFile(file_.get(), kFileHeaderSize, hash_table_,
                 (last_hash + 1) * sizeof(Fingerprint));
   } else {
     // Normal case, just write the range.
-    WriteToFile(file_, first_hash * sizeof(Fingerprint) + kFileHeaderSize,
+    WriteToFile(file_.get(), first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &hash_table_[first_hash],
                 (last_hash - first_hash + 1) * sizeof(Fingerprint));
   }
