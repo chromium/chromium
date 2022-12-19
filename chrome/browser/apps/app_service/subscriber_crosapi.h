@@ -17,7 +17,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -32,10 +31,7 @@ namespace apps {
 // crosapi and App Service.
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250): Remove dependency on apps::mojom::Subscriber.
 class SubscriberCrosapi : public KeyedService,
-                          public apps::mojom::Subscriber,
                           public crosapi::mojom::AppServiceProxy {
  public:
   explicit SubscriberCrosapi(Profile* profile);
@@ -55,11 +51,6 @@ class SubscriberCrosapi : public KeyedService,
   virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes);
 
  protected:
-  // apps::mojom::Subscriber overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
-              apps::mojom::AppType mojom_app_type,
-              bool should_notify_initialized) override;
-  void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
   void OnCrosapiDisconnected();
 
   // crosapi::mojom::AppServiceProxy overrides.
@@ -84,7 +75,6 @@ class SubscriberCrosapi : public KeyedService,
   void OnSubscriberDisconnected();
 
   mojo::Receiver<crosapi::mojom::AppServiceProxy> crosapi_receiver_{this};
-  mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
   mojo::Remote<crosapi::mojom::AppServiceSubscriber> subscriber_;
 
   raw_ptr<Profile> profile_;

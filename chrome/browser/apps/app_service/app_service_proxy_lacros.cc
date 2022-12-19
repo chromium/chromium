@@ -34,14 +34,12 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/url_data_source.h"
 #include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
@@ -580,15 +578,6 @@ void AppServiceProxyLacros::Shutdown() {
 void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
                                    AppType app_type,
                                    bool should_notify_initialized) {
-  std::vector<apps::mojom::AppPtr> mojom_deltas;
-  for (const auto& app : deltas) {
-    if (app) {
-      mojom_deltas.push_back(ConvertAppToMojomApp(app));
-    }
-  }
-  app_registry_cache_.OnApps(std::move(mojom_deltas),
-                             ConvertAppTypeToMojomAppType(app_type),
-                             should_notify_initialized);
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
 }

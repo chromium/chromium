@@ -28,8 +28,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

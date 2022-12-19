@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace {
 
@@ -111,18 +109,6 @@ void SubscriberCrosapi::OnPreferredAppsChanged(PreferredAppChangesPtr changes) {
   subscriber_->OnPreferredAppsChanged(std::move(changes));
 }
 
-void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                               apps::mojom::AppType mojom_app_type,
-                               bool should_notify_initialized) {
-  // The non mojom OnApps is used to publish apps.
-  return;
-}
-
-void SubscriberCrosapi::Clone(
-    mojo::PendingReceiver<apps::mojom::Subscriber> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
 void SubscriberCrosapi::OnCrosapiDisconnected() {
   crosapi_receiver_.reset();
   subscriber_.reset();
@@ -139,15 +125,6 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
   subscriber_.Bind(std::move(subscriber));
   subscriber_.set_disconnect_handler(base::BindOnce(
       &SubscriberCrosapi::OnSubscriberDisconnected, base::Unretained(this)));
-
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
-    mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
-    DCHECK(app_service.is_bound());
-    mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
-    receivers_.Add(this,
-                   app_service_subscriber.InitWithNewPipeAndPassReceiver());
-    app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
-  }
 
   proxy_->RegisterCrosApiSubScriber(this);
 }
