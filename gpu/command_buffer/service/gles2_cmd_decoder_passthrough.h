@@ -417,6 +417,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Allow unittests to inspect internal state tracking
   friend class GLES2DecoderPassthroughTestBase;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Attaches |image| to the texture referred to by |client_texture_id|, marking
   // the image as needing on-demand binding by the decoder if
   // |can_bind_to_sampler| is false and as not needing on-demand binding by the
@@ -426,6 +427,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                          uint32_t texture_target,
                          gl::GLImage* image,
                          bool can_bind_to_sampler);
+#endif
 
   const char* GetCommandName(unsigned int command_id) const;
 
@@ -521,10 +523,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   error::Error CheckSwapBuffersResult(gfx::SwapResult result,
                                       const char* function_name);
 
-  // Textures can be marked as needing binding only on Android/Windows/Mac, so
-  // all functionality related to binding textures is relevant only on those
+  // Textures can be marked as needing binding only on Windows/Mac, so all
+  // functionality related to binding textures is relevant only on those
   // platforms.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Issue BindTexImage / CopyTexImage calls for |passthrough_texture|, if
   // they're pending.
   void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
@@ -699,7 +701,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     GLuint unit;
     base::WeakPtr<TexturePassthrough> texture;
   };
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::vector<TexturePendingBinding> textures_pending_binding_;
 #endif
 

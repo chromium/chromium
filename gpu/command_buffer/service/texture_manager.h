@@ -87,7 +87,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
                            gl::GLImage* stream_texture_image,
                            GLuint service_id);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Return true if and only if the decoder should BindTexImage / CopyTexImage
   // us before sampling.
   bool is_bind_pending() const { return is_bind_pending_; }
@@ -115,7 +115,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   const GLuint owned_service_id_ = 0;
 
   bool have_context_;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   bool is_bind_pending_ = false;
 #endif
 
