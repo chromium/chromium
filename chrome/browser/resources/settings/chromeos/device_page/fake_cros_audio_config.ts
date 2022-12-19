@@ -82,7 +82,6 @@ export function createAudioDevice(
 }
 
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
-  setActiveDevice(outputDevice: AudioDevice): void;
   setOutputMuted(muted: boolean): void;
   setInputMuted(muted: boolean): void;
   setInputVolumePercent(percent: number): void;
@@ -102,23 +101,23 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   /**
    * Sets the active output or input device and notifies observers.
    */
-  setActiveDevice(nextActiveDevice: AudioDevice): void {
+  setActiveDevice(deviceId: bigint): void {
     const isOutputDevice: boolean =
         !!(this.audioSystemProperties.outputDevices.find(
-            (device: AudioDevice) => device.id === nextActiveDevice.id));
+            (device: AudioDevice) => device.id === deviceId));
     if (isOutputDevice) {
       const devices = this.audioSystemProperties.outputDevices.map(
           (device: AudioDevice): AudioDevice =>
-              createAudioDevice(device, device.id === nextActiveDevice.id));
+              createAudioDevice(device, device.id === deviceId));
       this.audioSystemProperties.outputDevices = devices;
     } else {
       // Device must be an input device otherwise an invalid device was
       // provided.
       assert(this.audioSystemProperties.inputDevices.find(
-          (device: AudioDevice) => device.id === nextActiveDevice.id));
+          (device: AudioDevice) => device.id === deviceId));
       const devices = this.audioSystemProperties.inputDevices.map(
           (device: AudioDevice): AudioDevice =>
-              createAudioDevice(device, device.id === nextActiveDevice.id));
+              createAudioDevice(device, device.id === deviceId));
       this.audioSystemProperties.inputDevices = devices;
     }
     this.notifyAudioSystemPropertiesUpdated();

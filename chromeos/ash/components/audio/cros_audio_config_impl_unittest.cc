@@ -114,6 +114,11 @@ class CrosAudioConfigImplTest : public testing::Test {
     return fake_observer;
   }
 
+  void SimulateSetActiveDevice(const uint64_t& device_id) {
+    remote_->SetActiveDevice(device_id);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetOutputVolumePercent(uint8_t volume_percent) {
     remote_->SetOutputVolumePercent(volume_percent);
     base::RunLoop().RunUntilIdle();
@@ -463,6 +468,54 @@ TEST_F(CrosAudioConfigImplTest, HandleExternalActiveInputDeviceUpdate) {
   ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
                    ->input_devices[1]
                    ->is_active);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetActiveOutputDevice) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // Test default audio node list, with two output and one input node.
+  SetAudioNodes({kInternalSpeaker, kHDMIOutput, kMicJack});
+  // Set active output node for test.
+  SetActiveOutputNodes({kInternalSpeakerId});
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->output_devices[0]
+                  ->is_active);
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->output_devices[1]
+                   ->is_active);
+
+  SimulateSetActiveDevice(kHDMIOutputId);
+
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->output_devices[0]
+                   ->is_active);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->output_devices[1]
+                  ->is_active);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetActiveInputDevice) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // Test default audio node list, with two input and one output node.
+  SetAudioNodes({kInternalSpeaker, kMicJack, kUsbMic});
+  // Set active output node for test.
+  SetActiveInputNodes({kMicJackId});
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->input_devices[0]
+                  ->is_active);
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->input_devices[1]
+                   ->is_active);
+
+  SimulateSetActiveDevice(kUsbMicId);
+
+  ASSERT_FALSE(fake_observer->last_audio_system_properties_.value()
+                   ->input_devices[0]
+                   ->is_active);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
+                  ->input_devices[1]
+                  ->is_active);
 }
 
 }  // namespace ash::audio_config

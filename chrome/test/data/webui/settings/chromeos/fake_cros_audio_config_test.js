@@ -100,7 +100,8 @@ suite('FakeCrosAudioConfig', function() {
           ],
         };
         onPropertiesUpdated.addExpectation(updateActiveOutputDevice);
-        crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.defaultFakeSpeaker);
+        crosAudioConfig.setActiveDevice(
+            fakeCrosAudioConfig.defaultFakeSpeaker.id);
 
         mockController.verifyMocks();
       });
@@ -117,7 +118,7 @@ suite('FakeCrosAudioConfig', function() {
       ],
     };
     onPropertiesUpdated.addExpectation(updateActiveInputDevice);
-    crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.fakeBluetoothMic);
+    crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.fakeBluetoothMic.id);
 
     mockController.verifyMocks();
   });

@@ -95,4 +95,8 @@ interface CrosAudioConfig {
   // Sets the volume of the active output device. If |volume| is above a
   // threshold and the device is muted, it's unmuted.
   SetOutputVolumePercent(int8 volume);
+
+  // Updates active output or input device based on the audio device ID
+  // provided.
+  SetActiveDevice(uint64 device);
 };

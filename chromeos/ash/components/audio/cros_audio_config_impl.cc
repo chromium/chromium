@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
+#include "base/logging.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::audio_config {
@@ -109,6 +110,22 @@ void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
       volume > audio_handler->GetOutputDefaultVolumeMuteThreshold()) {
     audio_handler->SetOutputMute(false);
   }
+}
+
+void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  const AudioDevice* next_active_device =
+      audio_handler->GetDeviceFromId(device_id);
+
+  if (!next_active_device) {
+    LOG(ERROR) << "SetActiveDevice: Cannot find device id="
+               << "0x" << std::hex << device_id;
+    return;
+  }
+
+  audio_handler->SwitchToDevice(
+      *next_active_device, /*notify=*/true,
+      CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

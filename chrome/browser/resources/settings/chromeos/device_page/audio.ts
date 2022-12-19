@@ -18,7 +18,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AudioDevice, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -142,10 +142,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     const inputDeviceSelect = this.shadowRoot!.querySelector<HTMLSelectElement>(
         '#audioInputDeviceDropdown');
     assert(!!inputDeviceSelect);
-    const nextActiveDevice = this.audioSystemProperties_.inputDevices.find(
-        (device: AudioDevice) => device.id === BigInt(inputDeviceSelect.value));
-    assert(!!nextActiveDevice);
-    this.crosAudioConfig_.setActiveDevice(nextActiveDevice);
+    this.crosAudioConfig_.setActiveDevice(BigInt(inputDeviceSelect.value));
   }
 
   /**
@@ -185,11 +182,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         this.shadowRoot!.querySelector<HTMLSelectElement>(
             '#audioOutputDeviceDropdown');
     assert(!!outputDeviceSelect);
-    const nextActiveDevice = this.audioSystemProperties_.outputDevices.find(
-        (device: AudioDevice) =>
-            device.id === BigInt(outputDeviceSelect.value));
-    assert(!!nextActiveDevice);
-    this.crosAudioConfig_.setActiveDevice(nextActiveDevice);
+    this.crosAudioConfig_.setActiveDevice(BigInt(outputDeviceSelect.value));
   }
 
   /** Handles updating outputMuteState. */
