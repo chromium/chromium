@@ -13,8 +13,10 @@
 #endif
 
 namespace {
-// Spacing between container view and subviews.
-const CGFloat kContainerViewSpacing = 25;
+// Leading and trailing container view margin.
+const CGFloat kContainerViewSpacing = 5;
+// Spacing between elements(label,activity view) and container view.
+const CGFloat kPaddingElementsFromContainerView = 25;
 // Corner radius of container view.
 const CGFloat kContainerCornerRadius = 10;
 // UIActivityIndicatorView's height and width
@@ -41,20 +43,25 @@ const CGFloat kActivityIndicatorViewSize = 55;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.text = self.messageText;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.numberOfLines = 0;
   [containerView addSubview:label];
+  [self.view addSubview:containerView];
 
   NSArray* constraints = @[
-    [label.leadingAnchor constraintEqualToAnchor:containerView.leadingAnchor
-                                        constant:kContainerViewSpacing],
-    [label.trailingAnchor constraintEqualToAnchor:containerView.trailingAnchor
-                                         constant:-kContainerViewSpacing],
+    [label.leadingAnchor
+        constraintEqualToAnchor:containerView.leadingAnchor
+                       constant:kPaddingElementsFromContainerView],
+    [label.trailingAnchor
+        constraintEqualToAnchor:containerView.trailingAnchor
+                       constant:-kPaddingElementsFromContainerView],
     [label.topAnchor constraintEqualToAnchor:containerView.topAnchor
-                                    constant:kContainerViewSpacing],
+                                    constant:kPaddingElementsFromContainerView],
     [label.bottomAnchor constraintEqualToAnchor:activityView.topAnchor
                                        constant:-5],
     [activityView.bottomAnchor
         constraintEqualToAnchor:containerView.bottomAnchor
-                       constant:-kContainerViewSpacing],
+                       constant:-kPaddingElementsFromContainerView],
     [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
     [activityView.heightAnchor
         constraintEqualToConstant:kActivityIndicatorViewSize],
@@ -63,8 +70,11 @@ const CGFloat kActivityIndicatorViewSize = 55;
   ];
   [NSLayoutConstraint activateConstraints:constraints];
 
-  [self.view addSubview:containerView];
-  AddSameCenterConstraints(self.view, containerView);
+  LayoutSides sides = LayoutSides::kLeading | LayoutSides::kTrailing;
+  NSDirectionalEdgeInsets insets = NSDirectionalEdgeInsetsMake(
+      0, kContainerViewSpacing, 0, kContainerViewSpacing);
+  AddSameConstraintsToSidesWithInsets(containerView, self.view, sides, insets);
+  AddSameCenterYConstraint(self.view, containerView);
 
   // To allow message text to be read by screen reader, and to make sure the
   // speech will finish.
