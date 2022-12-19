@@ -91,9 +91,16 @@ namespace {
 
 constexpr size_t kMaxItemsInFolder = 48;
 
+// The drag and drop app icon is scaled by this factor.
+constexpr float kDragDropAppIconScale = 1.2f;
+
 gfx::RectF GetViewBoundsWithCurrentTransform(views::View* view) {
   return view->layer()->transform().MapRect(
       gfx::RectF(view->GetMirroredBounds()));
+}
+
+float CalculateManhattanDistance(gfx::Point p1, gfx::Point p2) {
+  return std::abs(p1.x() - p2.x()) + std::abs(p1.y() - p2.y());
 }
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
@@ -546,25 +553,38 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     AppListItemView* view = test_api.GetViewAtIndex(index);
     DCHECK(view);
 
-    gfx::Point from = view->GetLocalBounds().CenterPoint();
+    gfx::Point from = view->GetBoundsInScreen().CenterPoint();
 
-    gfx::Point root_from = from;
-    gfx::NativeWindow window = apps_grid_view->GetWidget()->GetNativeWindow();
-    views::View::ConvertPointToWidget(view, &root_from);
-    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                       &root_from);
-
-    view->InitiateDrag(from, root_from);
-    current_drag_location_ = root_from;
+    // TODO(anasalazar): Investigate icon jump by a few pixels when starting
+    // drag.
+    auto* generator = GetEventGenerator();
+    if (pointer == AppsGridView::TOUCH) {
+      generator->MoveTouch(from);
+      generator->PressTouch();
+      view->FireTouchDragTimerForTest();
+    } else {
+      generator->MoveMouseTo(from);
+      generator->PressLeftButton();
+      view->FireMouseDragTimerForTest();
+    }
+    current_drag_location_ = from;
 
     // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state -
     // the cardified state starts only once the drag distance exceeds a drag
     // threshold, so the pointer has to sufficiently move from the original
     // position.
-    gfx::Point from_in_grid = from;
-    views::View::ConvertPointToTarget(view, apps_grid_view, &from_in_grid);
-    UpdateDrag(pointer, from_in_grid + gfx::Vector2d(10, 10), apps_grid_view);
+    current_drag_location_ = from + gfx::Vector2d(10, 10);
+    UpdateDragInScreen(pointer, from + gfx::Vector2d(10, 10));
     return view;
+  }
+
+  void UpdateDragInScreen(AppsGridView::Pointer pointer,
+                          const gfx::Point& to_in_screen) {
+    auto* generator = GetEventGenerator();
+    if (pointer == AppsGridView::TOUCH)
+      generator->MoveTouch(to_in_screen);
+    else
+      generator->MoveMouseTo(to_in_screen);
   }
 
   // Updates the drag from the current drag location to the destination point
@@ -577,35 +597,36 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     // Check that the drag has been initialized.
     DCHECK(current_drag_location_);
 
-    gfx::Point root_to(to);
-    gfx::NativeWindow window = apps_grid_view->GetWidget()->GetNativeWindow();
-    views::View::ConvertPointToWidget(apps_grid_view, &root_to);
-    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                       &root_to);
+    gfx::Point to_in_screen(to);
+    views::View::ConvertPointToScreen(apps_grid_view, &to_in_screen);
 
     for (int step = 1; step <= steps; step += 1) {
       gfx::Point drag_increment_point(*current_drag_location_);
       drag_increment_point += gfx::Vector2d(
-          (root_to.x() - current_drag_location_->x()) * step / steps,
-          (root_to.y() - current_drag_location_->y()) * step / steps);
-      ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, to, drag_increment_point,
-                                ui::EventTimeForNow(), 0, 0);
-      apps_grid_view->UpdateDragFromItem(
-          /*is_touch=*/pointer == AppsGridView::TOUCH, drag_event);
+          (to_in_screen.x() - current_drag_location_->x()) * step / steps,
+          (to_in_screen.y() - current_drag_location_->y()) * step / steps);
+      UpdateDragInScreen(pointer, drag_increment_point);
     }
 
-    current_drag_location_ = root_to;
+    current_drag_location_ = to_in_screen;
   }
 
-  void EndDrag(AppsGridView* grid_view, bool cancel) {
-    grid_view->EndDrag(cancel);
+  void EndDrag(AppsGridView::Pointer pointer = AppsGridView::MOUSE) {
+    auto* generator = GetEventGenerator();
+    if (pointer == AppsGridView::TOUCH)
+      generator->ReleaseTouch();
+    else
+      generator->ReleaseLeftButton();
+
     current_drag_location_ = absl::nullopt;
   }
 
   // Simulate drag from the |from| point to either next or previous page's |to|
   // point.
   // Update drag to either next or previous page's |to| point.
-  void UpdateDragToNeighborPage(bool next_page, const gfx::Point& to) {
+  void UpdateDragToNeighborPage(bool next_page,
+                                const gfx::Point& to,
+                                AppsGridView::Pointer pointer) {
     ASSERT_TRUE(paged_apps_grid_view_) << "Only available in tablet mode.";
     const int selected_page = GetPaginationModel()->selected_page();
     DCHECK(selected_page >= 0 &&
@@ -618,29 +639,19 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
         gfx::Point(apps_grid_bounds.width() / 2,
                    next_page ? apps_grid_bounds.bottom() - 1 : 0);
 
-    // Build the drag event which will be triggered after page flip.
-    gfx::Point root_to(to);
-    views::View::ConvertPointToWidget(paged_apps_grid_view_, &root_to);
-    gfx::NativeWindow window = app_list_view_->GetWidget()->GetNativeWindow();
-    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                       &root_to);
-
     // Update dragging and relayout apps grid view after drag ends.
-    PostPageFlipTask task(
-        GetPaginationModel(), base::BindLambdaForTesting([&]() {
-          ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, to, root_to,
-                                    ui::EventTimeForNow(), 0, 0);
-          paged_apps_grid_view_->UpdateDragFromItem(/*is_touch=*/false,
-                                                    drag_event);
-        }));
+    PostPageFlipTask task(GetPaginationModel(),
+                          base::BindLambdaForTesting([&]() {
+                            UpdateDrag(pointer, to, paged_apps_grid_view_,
+                                       /*steps=*/10);
+                          }));
     page_flip_waiter_->Reset();
-    UpdateDrag(AppsGridView::MOUSE, point_in_page_flip_buffer,
-               paged_apps_grid_view_,
+    UpdateDrag(pointer, point_in_page_flip_buffer, paged_apps_grid_view_,
                /*steps=*/10);
     while (HasPendingPageFlip(paged_apps_grid_view_)) {
       page_flip_waiter_->Wait();
     }
-    EndDrag(paged_apps_grid_view_, false /*cancel*/);
+    EndDrag(pointer);
     test_api_->LayoutToIdealBounds();
   }
 
@@ -929,7 +940,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   }
 
   // End the drag and check that no more item layer copies remain.
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->WaitForItemMoveAnimationDone();
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 }
@@ -1080,7 +1091,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // End the drag and check that no more item layer copies remain.
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->WaitForItemMoveAnimationDone();
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 }
@@ -1624,7 +1635,7 @@ TEST_P(AppsGridViewDragTest, ItemViewsHaveLayerDuringDrag) {
   for (size_t i = 0; i < model_->top_level_item_list()->item_count(); ++i)
     EXPECT_TRUE(GetItemViewInTopLevelGrid(i)->layer());
 
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
@@ -1639,7 +1650,7 @@ TEST_P(AppsGridViewDragTest, ItemViewsDontHaveLayerAfterDrag) {
   // Dragging item_1 over item_0 creates a folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->WaitForItemMoveAnimationDone();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
@@ -1659,7 +1670,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemIntoFolder) {
   // Dragging item_1 over item_0 creates a folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->WaitForItemMoveAnimationDone();
   test_api_->LayoutToIdealBounds();
 
@@ -1697,7 +1708,7 @@ TEST_P(AppsGridViewDragTest, MouseDragSecondItemIntoFolder) {
   // Dragging item_2 to the folder adds Item_2 to the folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->WaitForItemMoveAnimationDone();
   test_api_->LayoutToIdealBounds();
 
@@ -1733,7 +1744,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToFolder) {
   // Dragging item_2 to the folder adds Item_2 to the folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
   ASSERT_TRUE(drag_icon_layer);
@@ -1795,7 +1806,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToCreateFolder) {
   // Dragging item_1 over item_0 creates a folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
   ASSERT_TRUE(drag_icon_layer);
@@ -1822,7 +1833,7 @@ TEST_P(AppsGridViewDragTest, FolderNotOpenedIfGridHidesDuringIconDrop) {
   // Dragging item_1 over Item_0 creates a folder.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
   ASSERT_TRUE(drag_icon_layer);
@@ -1876,7 +1887,7 @@ TEST_F(AppsGridViewTest, CreatingFolderRecordsUserAction) {
                                      /*column=*/1, apps_grid_view_);
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, /*steps=*/10);
-  EndDrag(apps_grid_view_, /*cancel=*/false);
+  EndDrag();
 
   // Both items are in the folder.
   AppListItem* item_0 = model_->FindItem("Item 0");
@@ -1918,7 +1929,7 @@ TEST_F(AppsGridViewTest, DeletingFolderRecordsUserAction) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              /*steps=*/5);
-  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+  EndDrag();
 
   // Item is in top-level grid and folder is deleted.
   EXPECT_EQ("Item 0", model_->GetModelContent());
@@ -1957,7 +1968,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              5 /*steps*/);
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   AppListItem* item_0 = model_->FindItem("Item 0");
@@ -2000,7 +2011,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragOutOfFolder) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              5 /*steps*/);
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
@@ -2037,7 +2048,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterDragToAnotherFolder) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              5 /*steps*/);
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
@@ -2081,7 +2092,7 @@ TEST_P(AppsGridViewDragTest,
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              5 /*steps*/);
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
@@ -2092,6 +2103,7 @@ TEST_P(AppsGridViewDragTest,
 TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterReorderDrag) {
   model_->PopulateApps(3);
   test_api_->Update();
+  UpdateLayout();
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -2102,7 +2114,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterReorderDrag) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
   gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, 5 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
@@ -2126,7 +2138,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolder) {
   // Dragging one item into the folder, the folder should accept the item.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->LayoutToIdealBounds();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
@@ -2145,6 +2157,7 @@ TEST_P(AppsGridViewDragTest, MouseDragExceedMaxItemsInFolder) {
 
   // Create and add another 2 item.
   model_->PopulateAppWithId(kMaxItemsInFolder + 1);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
                                      apps_grid_view_);
   EXPECT_EQ(1, GetHapticTickEventsCount());
@@ -2153,7 +2166,7 @@ TEST_P(AppsGridViewDragTest, MouseDragExceedMaxItemsInFolder) {
   // item.
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->LayoutToIdealBounds();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
@@ -2186,7 +2199,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMovement) {
   EXPECT_EQ(folder_view, GetItemViewForPoint(
                              GetItemRectOnCurrentPageAt(0, 1).CenterPoint()));
 
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
@@ -2199,6 +2212,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
       model_->top_level_item_list()->item_at(0));
   // Create and add another item.
   model_->PopulateAppWithId(kMaxItemsInFolder);
+  UpdateLayout();
   // Drag the new item to the left so that the grid reorders.
   AppListItemView* dragged_view = InitiateDragForItemAtCurrentPageAt(
       AppsGridView::MOUSE, 0, 1, apps_grid_view_);
@@ -2214,7 +2228,7 @@ TEST_P(AppsGridViewDragTest, MouseDragMaxItemsInFolderWithMovement) {
   ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, translated_destination,
                             folder_in_second_slot, ui::EventTimeForNow(), 0, 0);
   apps_grid_view_->UpdateDragFromItem(/*is_touch=*/false, drag_event);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   // The item should not have moved into the folder.
@@ -2244,7 +2258,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderBeforeFolderDropPoint) {
   // Drag left but stop before the folder dropping circle.
   UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
              10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());
@@ -2273,7 +2287,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderAfterFolderDropPoint) {
   // Drag left, past the folder dropping circle.
   UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
              10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 1,Item 0"), model_->GetModelContent());
@@ -2304,7 +2318,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragDownOneRow) {
   // app 1 in the bottom left.
   UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
              10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 2,Item 3,Item 4,Item 5,Item 1,Item 6"),
@@ -2336,7 +2350,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragUpOneRow) {
   // 1 in the top right.
   UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
              10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->LayoutToIdealBounds();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
@@ -2369,7 +2383,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderDragPastLastApp) {
 
   UpdateDrag(AppsGridView::MOUSE, to + drag_vector, apps_grid_view_,
              10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 2,Item 3,Item 4,Item 5,Item 6,Item 1"),
@@ -2383,13 +2397,14 @@ TEST_P(AppsGridViewDragTest, MouseDragFolderOverItemReorder) {
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   model_->PopulateAppWithId(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
   EXPECT_EQ(1, GetHapticTickEventsCount());
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   test_api_->LayoutToIdealBounds();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
@@ -2403,13 +2418,17 @@ TEST_P(AppsGridViewDragTest, MouseDragFolderOverItemReorder) {
 TEST_P(AppsGridViewDragTest, MouseDragWithCancelKeepsOrder) {
   size_t kTotalItems = 2;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
   EXPECT_EQ(1, GetHapticTickEventsCount());
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, true /*cancel*/);
+
+  // Dismiss the app list to cancel drag.
+  GetAppListTestHelper()->Dismiss();
+  GetAppListTestHelper()->ShowAppList();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());
@@ -2420,6 +2439,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithCancelKeepsOrder) {
 TEST_P(AppsGridViewDragTest, MouseDragWithDeleteItemKeepsOrder) {
   size_t kTotalItems = 3;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
   EXPECT_EQ(1, GetHapticTickEventsCount());
@@ -2427,7 +2447,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithDeleteItemKeepsOrder) {
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
   model_->DeleteItem(model_->GetItemName(2));
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());
@@ -2438,6 +2458,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithDeleteItemKeepsOrder) {
 TEST_P(AppsGridViewDragTest, MouseDragWithAddItemKeepsOrder) {
   size_t kTotalItems = 2;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
   EXPECT_EQ(1, GetHapticTickEventsCount());
@@ -2445,7 +2466,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithAddItemKeepsOrder) {
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
   model_->CreateAndAddItem("Extra");
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(std::string("Item 0,Item 1,Extra"), model_->GetModelContent());
@@ -3278,13 +3299,16 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   EXPECT_EQ(2, GetPaginationModel()->selected_page());
 
   // The drag is centered relative to the app item icon bounds, not the whole
-  // app item view.
-  gfx::Vector2d icon_offset(0,
-                            GetAppListConfig()->grid_icon_bottom_padding() / 2);
-  EXPECT_EQ(apps_grid_bottom_center - icon_offset, GetDragIconCenter());
+  // app item view. Account for the scale factor of the app icon during drag.
+  gfx::Vector2d icon_offset(
+      0, std::round(GetAppListConfig()->grid_icon_bottom_padding() *
+                    kDragDropAppIconScale) /
+             2);
+  EXPECT_LE(2, CalculateManhattanDistance(apps_grid_bottom_center - icon_offset,
+                                          GetDragIconCenter()));
 
   // End the drag to satisfy checks in AppsGridView destructor.
-  EndDrag(apps_grid_view_, /*cancel=*/true);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
@@ -3527,7 +3551,7 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
     EXPECT_LE(last_view_right_center_in_grid.x(), last_slot_rect.x());
   }
 
-  EndDrag(paged_apps_grid_view_, false);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_EQ(1, GetPaginationModel()->selected_page());
@@ -3789,20 +3813,25 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   // We flipped back to the first page.
   EXPECT_EQ("1,0", page_flip_waiter_->selected_pages());
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
+
   // The drag is centered relative to the app item icon bounds, not the whole
-  // app item view.
-  gfx::Vector2d icon_offset(0,
-                            GetAppListConfig()->grid_icon_bottom_padding() / 2);
-  EXPECT_EQ(apps_grid_top_center - icon_offset, GetDragIconCenter());
+  // app item view. Account for the scale factor of the app icon during drag.
+  gfx::Vector2d icon_offset(
+      0, std::round(GetAppListConfig()->grid_icon_bottom_padding() *
+                    kDragDropAppIconScale) /
+             2);
+  EXPECT_LE(2, CalculateManhattanDistance(apps_grid_top_center - icon_offset,
+                                          GetDragIconCenter()));
 
   // End the drag to satisfy checks in AppsGridView destructor.
-  EndDrag(paged_apps_grid_view_, /*cancel=*/true);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 TEST_P(AppsGridViewDragTest, CancelDragDoesNotReorderItems) {
   const int kTotalItems = 4;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
   ASSERT_EQ(std::string("Item 0,Item 1,Item 2,Item 3"),
             model_->GetModelContent());
 
@@ -3812,7 +3841,8 @@ TEST_P(AppsGridViewDragTest, CancelDragDoesNotReorderItems) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
   const gfx::Point to = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
-  EndDrag(apps_grid_view_, /*cancel=*/true);
+  GetAppListTestHelper()->Dismiss();
+  GetAppListTestHelper()->ShowAppList();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   // Model is not changed.
@@ -3842,7 +3872,7 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewDuringDrag) {
   EXPECT_FALSE(search_box_view_->search_box()->HasFocus());
   EXPECT_TRUE(item_view->HasFocus());
 
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
 }
 
 // Test focus change after dragging an item. (See https://crbug.com/834682)
@@ -3855,7 +3885,7 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
   const gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  EndDrag(apps_grid_view_, false /*cancel*/);
+  EndDrag();
 
   // The search box keeps focus after drags.
   EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
@@ -3899,7 +3929,7 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              /*steps=*/5);
   BoundsChangeCounter counter(GetItemViewInTopLevelGrid(1));
-  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+  EndDrag();
 
   // The folder should be deleted. The first item should be Item 2, the second
   // item should be Item 0.
@@ -3947,7 +3977,7 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewAfterDrag) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              /*steps=*/5);
-  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+  EndDrag();
 
   AppListItemView* const item_view = GetItemViewInTopLevelGrid(3);
   EXPECT_EQ("Item 0", item_view->item()->id());
@@ -4802,7 +4832,8 @@ TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
 
   // Drag the last item to the first item's left position in previous
   // page.
-  UpdateDragToNeighborPage(false /* next_page */, to_in_previous_page);
+  UpdateDragToNeighborPage(false /* next_page */, to_in_previous_page,
+                           AppsGridView::MOUSE);
 
   // The dragging is successful, the last item becomes the first item.
   EXPECT_EQ("0", page_flip_waiter_->selected_pages());
@@ -4828,6 +4859,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardLayerOrderedAtBottom) {
 
   // Create only one page with two apps.
   model_->PopulateApps(2);
+  UpdateLayout();
 
   // Start cardified apps grid.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
@@ -4851,6 +4883,7 @@ TEST_P(AppsGridViewTabletTest, PeekingCardOnLastPage) {
 
   // Create only one page with two apps.
   model_->PopulateApps(2);
+  UpdateLayout();
 
   // Start cardified apps grid.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
@@ -4859,12 +4892,13 @@ TEST_P(AppsGridViewTabletTest, PeekingCardOnLastPage) {
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
   EXPECT_EQ(1, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-  EndDrag(paged_apps_grid_view_, false /*cancel*/);
+  EndDrag();
 }
 
 TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
   ASSERT_TRUE(paged_apps_grid_view_);
   model_->PopulateApps(30);
+  UpdateLayout();
 
   // Enter cardified state.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
@@ -4929,7 +4963,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << last_item_bounds.ToString();
 
-  EndDrag(paged_apps_grid_view_, false /*cancel*/);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(gfx::Rect(), paged_apps_grid_view_->layer()->clip_rect());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   EXPECT_EQ(0, paged_apps_grid_view_->BackgroundCardCountForTesting());
@@ -4938,17 +4972,21 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
 TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
   model_->PopulateApps(30);
+  UpdateLayout();
 
   // Enter cardified state, and drag the item to the second apps grid page.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
                                      paged_apps_grid_view_);
   const gfx::Point to_in_next_page =
       test_api_->GetItemTileRectAtVisualIndex(1, 0).left_center();
   // Drag the first item to the next page to create another page.
-  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page);
+  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page,
+                           AppsGridView::TOUCH);
+
+  ASSERT_EQ(1, GetPaginationModel()->selected_page());
 
   // Trigger cardified state again.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
                                      paged_apps_grid_view_);
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
@@ -5010,7 +5048,7 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << last_item_bounds.ToString();
 
-  EndDrag(paged_apps_grid_view_, false /*cancel*/);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(gfx::Rect(), paged_apps_grid_view_->layer()->clip_rect());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   EXPECT_EQ(0, paged_apps_grid_view_->BackgroundCardCountForTesting());
@@ -5037,7 +5075,7 @@ TEST_F(AppsGridViewTest, DragItemVisibleAfterDragInScrolledView) {
 
   UpdateDrag(AppsGridView::MOUSE, drop_point, apps_grid_view_, /*steps=*/5);
 
-  EndDrag(apps_grid_view_, /*cancel=*/false);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
 
   // Verify that the dragged item was dropped into the last slot in the grid,
@@ -5086,7 +5124,7 @@ TEST_F(AppsGridViewTest, DragItemVisibleAfterReparentDragInScrolledView) {
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              5 /*steps*/);
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
 
@@ -5105,6 +5143,7 @@ TEST_P(AppsGridViewTabletTest, AppsGridIsCardifiedDuringDrag) {
 
   // Create only one page with two apps.
   model_->PopulateApps(2);
+  UpdateLayout();
 
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
                                      paged_apps_grid_view_);
@@ -5112,7 +5151,7 @@ TEST_P(AppsGridViewTabletTest, AppsGridIsCardifiedDuringDrag) {
 
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
 
-  EndDrag(paged_apps_grid_view_, false /*cancel*/);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
@@ -5140,7 +5179,7 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
 
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
 
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag();
   EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
@@ -5168,7 +5207,7 @@ TEST_P(AppsGridViewTabletTest, DragOutsideFolderEntersCardifiedState) {
 
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
 
-  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(0, GetHapticTickEventsCount());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
 }
@@ -5179,6 +5218,7 @@ TEST_P(AppsGridViewTabletTest, DragItemIntoFolderStaysInCardifiedState) {
   // Create a folder item with some apps. Add another app to the main grid.
   model_->CreateAndPopulateFolderWithApps(2);
   model_->PopulateApps(1);
+  UpdateLayout();
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 1,
                                      paged_apps_grid_view_);
   EXPECT_EQ(0, GetHapticTickEventsCount());
@@ -5189,7 +5229,7 @@ TEST_P(AppsGridViewTabletTest, DragItemIntoFolderStaysInCardifiedState) {
 
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
 
-  EndDrag(paged_apps_grid_view_, false /*cancel*/);
+  EndDrag(AppsGridView::TOUCH);
   EXPECT_EQ(0, GetHapticTickEventsCount());
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   test_api_->WaitForItemMoveAnimationDone();
