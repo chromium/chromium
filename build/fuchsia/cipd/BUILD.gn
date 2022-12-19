@@ -44,16 +44,16 @@ _host_tools_directory = "host_tools"
 
 _archive_suffix = "_archive"
 
-# Extracts the numeric Chrome build ID and writes it to a file in the output
+# Extracts the numeric Chrome version and writes it to a file in the output
 # directory.
 #
-# To check out the repository on the commit where the build ID was generated,
-# simply call `git checkout <build-id>`, and Git will check out the commit
-# associated with the <build-id> tag.
-process_version("build_id") {
-  template_file = "build_id.template"
+# To check out the repository on the commit where the version was generated,
+# simply call `git checkout <version>`, and Git will check out the commit
+# associated with the <version> tag.
+process_version("version") {
+  template_file = "version.template"
   sources = [ "//chrome/VERSION" ]
-  output = "${target_gen_dir}/build_id.txt"
+  output = "${target_gen_dir}/VERSION"
   process_only = true
 }
 
@@ -145,13 +145,15 @@ template("cipd_archive") {
   deps += [
     ":${target_name}_license",
     ":${target_name}_license_spdx",
+    ":version",
   ]
 
   if (!defined(sources)) {
     sources = []
   }
-  sources += get_target_outputs(":${target_name}_license")
-  sources += get_target_outputs(":${target_name}_license_spdx")
+  sources += get_target_outputs(":${target_name}_license") +
+             get_target_outputs(":${target_name}_license_spdx") +
+             [ "${target_gen_dir}/VERSION" ]
 
   fuchsia_cipd_package("${target_name}${_archive_suffix}") {
     package = "${package_base_path}/${package_subdirectory}/${targetarch}/${invoker.target_name}"
