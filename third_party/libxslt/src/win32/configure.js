@@ -36,6 +36,7 @@ var verMicroXslt;
 var verMajorExslt;
 var verMinorExslt;
 var verMicroExslt;
+var verLibxmlReq;
 var verCvs;
 var useCvsVer = true;
 /* Libxslt features. */
@@ -48,6 +49,7 @@ var withZlib = false;
 var withCrypto = true;
 var withModules = false;
 var withProfiler = true;
+var withPython = false;
 /* Win32 build options. */
 var dirSep = "\\";
 var compiler = "msvc";
@@ -108,6 +110,7 @@ function usage()
 	txt += "  crypto:     Enable Crypto support (" + (withCrypto? "yes" : "no") + ")\n";
 	txt += "  modules:    Enable Module support (" + (withModules? "yes" : "no") + ")\n";
 	txt += "  profiler:   Enable Profiler support (" + (withProfiler? "yes" : "no") + ")\n";
+	txt += "  python:     Build Python bindings (" + (withPython? "yes" : "no")  + ")\n";
 	txt += "\nWin32 build options, default value given in parentheses:\n\n";
 	txt += "  compiler:   Compiler to be used [msvc|mingw] (" + compiler + ")\n";
 	txt += "  cruntime:   C-runtime compiler option (only msvc) (" + cruntime + ")\n";
@@ -169,6 +172,9 @@ function discoverVersion()
 		} else if(s.search(/^LIBEXSLT_MICRO_VERSION=/) != -1) {
 			vf.WriteLine(s);
 			verMicroExslt = s.substring(s.indexOf("=") + 1, s.length);
+		} else if(s.search(/^LIBXML_REQUIRED_VERSION=/) != -1) {
+			vf.WriteLine(s);
+			verLibxmlReq = s.substring(s.indexOf("=") + 1, s.length);
 		}
 	}
 	cf.Close();
@@ -181,6 +187,7 @@ function discoverVersion()
 	vf.WriteLine("WITH_CRYPTO=" + (withCrypto? "1" : "0"));
 	vf.WriteLine("WITH_MODULES=" + (withModules? "1" : "0"));
 	vf.WriteLine("WITH_PROFILER=" + (withProfiler? "1" : "0"));
+	vf.WriteLine("WITH_PYTHON=" + (withPython? "1" : "0"));
 	vf.WriteLine("DEBUG=" + (buildDebug? "1" : "0"));
 	vf.WriteLine("STATIC=" + (buildStatic? "1" : "0"));
 	vf.WriteLine("PREFIX=" + buildPrefix);
@@ -251,8 +258,8 @@ function configureExslt()
 	while (ofi.AtEndOfStream != true) {
 		ln = ofi.ReadLine();
 		s = new String(ln);
-		if (s.search(/\@LIBEXSLT_VERSION\@/) != -1) {
-			of.WriteLine(s.replace(/\@LIBEXSLT_VERSION\@/, 
+		if (s.search(/\@VERSION\@/) != -1) {
+			of.WriteLine(s.replace(/\@VERSION\@/, 
 				verMajorExslt + "." + verMinorExslt + "." + verMicroExslt));
 		} else if (s.search(/\@LIBEXSLT_VERSION_NUMBER\@/) != -1) {
 			of.WriteLine(s.replace(/\@LIBEXSLT_VERSION_NUMBER\@/, 
@@ -263,6 +270,51 @@ function configureExslt()
 			of.WriteLine(s.replace(/\@WITH_CRYPTO\@/, withCrypto? "1" : "0"));
 		} else if (s.search(/\@WITH_MODULES\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_MODULES\@/, withModules? "1" : "0"));
+		} else
+			of.WriteLine(ln);
+	}
+	ofi.Close();
+	of.Close();
+}
+
+/* Configures Python bindings. Otherwise identical to the above */
+function configureLibxsltPy()
+{
+	var pyOptsFileIn = baseDir + "\\python\\setup.py.in";
+	var pyOptsFile = baseDir + "\\python\\setup.py";
+	var fso, ofi, of, ln, s;
+	fso = new ActiveXObject("Scripting.FileSystemObject");
+	ofi = fso.OpenTextFile(pyOptsFileIn, 1);
+	of = fso.CreateTextFile(pyOptsFile, true);
+	while (ofi.AtEndOfStream != true) {
+		ln = ofi.ReadLine();
+		s = new String(ln);
+		if (s.search(/\@VERSION\@/) != -1) {
+			of.WriteLine(s.replace(/\@VERSION\@/, 
+				verMajorXslt + "." + verMinorXslt + "." + verMicroXslt));
+		} else if (s.search(/\@prefix\@/) != -1) {
+			of.WriteLine(s.replace(/\@prefix\@/, buildPrefix));
+		} else if (s.search(/\@LIBXSLT_VERSION_NUMBER\@/) != -1) {
+			of.WriteLine(s.replace(/\@LIBXSLT_VERSION_NUMBER\@/, 
+				verMajorXslt*10000 + verMinorXslt*100 + verMicroXslt*1));
+		} else if (s.search(/\@LIBXSLT_VERSION_EXTRA\@/) != -1) {
+			of.WriteLine(s.replace(/\@LIBXSLT_VERSION_EXTRA\@/, verCvs));
+		} else if (s.search(/\@WITH_TRIO\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_TRIO\@/, withTrio? "1" : "0"));
+		} else if (s.search(/\@WITH_XSLT_DEBUG\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_XSLT_DEBUG\@/, withXsltDebug? "1" : "0"));
+		} else if (s.search(/\@WITH_MEM_DEBUG\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_MEM_DEBUG\@/, withMemDebug? "1" : "0"));
+		} else if (s.search(/\@WITH_DEBUGGER\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_DEBUGGER\@/, withDebugger? "1" : "0"));
+		} else if (s.search(/\@WITH_MODULES\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_MODULES\@/, withModules? "1" : "0"));
+		} else if (s.search(/\@WITH_PROFILER\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_PROFILER\@/, withProfiler? "1" : "0"));
+		} else if (s.search(/\@LIBXSLT_DEFAULT_PLUGINS_PATH\@/) != -1) {
+			of.WriteLine(s.replace(/\@LIBXSLT_DEFAULT_PLUGINS_PATH\@/, "NULL"));
+		} else if (s.search(/\@LIBXML_REQUIRED_VERSION\@/) != -1) {
+			of.WriteLine(s.replace(/\@LIBXML_REQUIRED_VERSION\@/, verLibxmlReq));
 		} else
 			of.WriteLine(ln);
 	}
@@ -336,6 +388,8 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			withModules = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "profiler")
 			withProfiler = strToBool(arg.substring(opt.length + 1, arg.length));
+		else if (opt == "python")
+			withPython = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "compiler")
 			compiler = arg.substring(opt.length + 1, arg.length);
  		else if (opt == "cruntime")
@@ -432,6 +486,15 @@ if (error != 0) {
 	WScript.Quit(error);
 }
 
+if (withPython == true) {
+	configureLibxsltPy();
+	if (error != 0) {
+		WScript.Echo("Configuration failed, aborting.");
+		WScript.Quit(error);
+	}
+
+}
+
 // Configure libexslt.
 configureExslt();
 if (error != 0) {
@@ -469,6 +532,7 @@ txtOut += "         With zlib: " + boolToStr(withZlib) + "\n";
 txtOut += "            Crypto: " + boolToStr(withCrypto) + "\n";
 txtOut += "           Modules: " + boolToStr(withModules) + "\n";
 txtOut += "          Profiler: " + boolToStr(withProfiler) + "\n";
+txtOut += "   Python bindings: " + boolToStr(withPython) + "\n";
 txtOut += "\n";
 txtOut += "Win32 build configuration\n";
 txtOut += "-------------------------\n";

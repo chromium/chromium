@@ -492,7 +492,7 @@ void xsltDebugSetDefaultTrace(xsltDebugTraceCodes val) {
  *
  * Returns the current default debug tracing level mask
  */
-xsltDebugTraceCodes xsltDebugGetDefaultTrace() {
+xsltDebugTraceCodes xsltDebugGetDefaultTrace(void) {
 	return xsltDefaultTrace;
 }
 

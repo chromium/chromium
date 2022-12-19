@@ -6703,7 +6703,7 @@ xsltParseStylesheetUser(xsltStylesheetPtr style, xmlDocPtr doc) {
 
 /**
  * xsltParseStylesheetDoc:
- * @doc:  and xmlDoc parsed XML
+ * @doc:  an xmlDoc parsed XML
  *
  * parse an XSLT stylesheet, building the associated structures.  doc
  * is kept as a reference within the returned stylesheet, so changes

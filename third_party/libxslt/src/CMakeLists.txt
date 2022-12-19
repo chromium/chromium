@@ -59,10 +59,16 @@ endif()
 if(LIBXSLT_WITH_PYTHON)
 	check_include_files(unistd.h HAVE_UNISTD_H)
 	check_symbol_exists(F_GETFL fcntl.h HAVE_F_GETFL)
-	find_package(Python COMPONENTS Interpreter Development REQUIRED)
-        #set(LIBXSLT_PYTHON_INSTALL_DIR ${Python_SITEARCH} CACHE PATH "Python bindings install directory")
-	set(LIBXSLT_PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/python"
-	    CACHE PATH "Python bindings install directory")
+	if(WIN32 OR (HAVE_UNISTD_H AND HAVE_F_GETFL))
+		find_package(Python COMPONENTS Interpreter Development REQUIRED)
+	else()
+		find_package(Python2 COMPONENTS Interpreter Development REQUIRED)
+		add_library(Python::Python ALIAS Python2::Python)
+		set(Python_EXECUTABLE ${Python2_EXECUTABLE})
+		set(Python_SITEARCH ${Python2_SITEARCH})
+	endif()
+	#set(LIBXSLT_PYTHON_INSTALL_DIR ${Python_SITEARCH} CACHE PATH "Python bindings install directory")
+	set(LIBXSLT_PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/python" CACHE PATH "Python bindings install directory")
 endif()
 
 if(LIBXSLT_WITH_THREADS)
@@ -307,6 +313,11 @@ if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	set(LIBGCRYPT_LIBS "-lgcrypt")
 endif()
 
+if(UNIX)
+	target_link_libraries(LibExslt PRIVATE m)
+	set(LIBM "-lm")
+endif()
+
 target_link_libraries(LibExslt PUBLIC LibXslt LibXml2::LibXml2)
 
 set_target_properties(
@@ -500,7 +511,7 @@ set(XSLT_PRIVATE_LIBS "${LIBM}")
 
 set(EXSLT_INCLUDEDIR "-I\${includedir}")
 set(EXSLT_LIBDIR "-L\${libdir}")
-set(EXSLT_PRIVATE_LIBS "${XSLT_PRIVATE_LIBS} ${LIBGCRYPT_LIBS}")
+set(EXSLT_PRIVATE_LIBS "${XSLT_PRIVATE_LIBS} ${LIBGCRYPT_LIBS} ${LIBM}")
 
 file(RELATIVE_PATH PACKAGE_RELATIVE_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
 string(REGEX REPLACE "/$" "" PACKAGE_RELATIVE_PATH "${PACKAGE_RELATIVE_PATH}")

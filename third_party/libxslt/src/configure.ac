@@ -549,6 +549,7 @@ libexslt/Makefile
 libexslt/exsltconfig.h
 xsltproc/Makefile
 python/Makefile
+python/setup.py
 python/tests/Makefile
 tests/Makefile
 tests/xmlspec/Makefile

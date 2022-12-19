@@ -1683,7 +1683,7 @@ xsltProcessUserParamInternal(xsltTransformContextPtr ctxt,
 
 int
 xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
-    int indx = 0;
+    size_t indx = 0;
     const xmlChar *name;
     const xmlChar *value;
 
@@ -1713,7 +1713,7 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 
 int
 xsltQuoteUserParams(xsltTransformContextPtr ctxt, const char **params) {
-    int indx = 0;
+    size_t indx = 0;
     const xmlChar *name;
     const xmlChar *value;
 
