@@ -1378,20 +1378,20 @@ public class PersonalDataManager {
         // wait and can show the default network icon.
         fetchImage(customImageUrl, bitmap -> {
             // Create an empty mutable bitmap and set it in a canvas.
-            Bitmap cardArtImageWithGrayOverlay = Bitmap.createBitmap(
+            Bitmap cardArtImageWithOverlay = Bitmap.createBitmap(
                     bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(cardArtImageWithGrayOverlay);
+            Canvas canvas = new Canvas(cardArtImageWithOverlay);
 
-            // Create a gray paint with 4% opacity.
+            // Create a black paint with 4% opacity.
             Paint paint = new Paint();
             paint.setColorFilter(new PorterDuffColorFilter(
-                    Color.argb(/* alpha= */ 10, /* red= */ 68, /* green= */ 68, /* blue= */ 68),
+                    Color.argb(/* alpha= */ 10, /* red= */ 0, /* green= */ 0, /* blue= */ 0),
                     Mode.DARKEN));
 
-            // Add the icon and the 4% gray overlay.
+            // Add the icon and the 4% overlay.
             canvas.drawBitmap(
                     /* bitmap= */ bitmap, /* left= */ 0, /* top= */ 0, /* paint= */ paint);
-            mCreditCardArtImages.put(customImageUrl.getSpec(), cardArtImageWithGrayOverlay);
+            mCreditCardArtImages.put(customImageUrl.getSpec(), cardArtImageWithOverlay);
         });
         return null;
     }
