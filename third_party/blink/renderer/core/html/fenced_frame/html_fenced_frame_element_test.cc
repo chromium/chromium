@@ -228,17 +228,17 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
       FencedFrameCreationOutcome::kIncompatibleURLOpaque, 1);
 }
 
-// TODO(lbrady): Get this test working with MPArch.
-TEST_F(HTMLFencedFrameElementTest, DISABLED_HistogramTestResizeAfterFreeze) {
+TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
   Document& doc = GetDocument();
 
   auto* fenced_frame_opaque = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
   fenced_frame_opaque->setAttribute(html_names::kModeAttr, String("opaque-ads"),
                                     ASSERT_NO_EXCEPTION);
-  fenced_frame_opaque->setAttribute(html_names::kSrcAttr,
-                                    String("https://example.com/"),
-                                    ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame_opaque);
+
+  // The fenced frame was not navigated to any page. Manually tell it that it
+  // should freeze the frame size.
+  fenced_frame_opaque->should_freeze_frame_size_on_next_layout_ = true;
 
   // This first resize call will freeze the frame size.
   fenced_frame_opaque->OnResize(PhysicalRect(10, 20, 30, 40));
