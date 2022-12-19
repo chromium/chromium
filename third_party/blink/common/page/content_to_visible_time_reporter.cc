@@ -79,7 +79,12 @@ ContentToVisibleTimeReporter::TabWasShown(
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
   }
-  DCHECK(!tab_switch_start_state_);
+  // Note: Usually `tab_switch_start_state_` should be null here, but sometimes
+  // it isn't (in practice, this happens on Mac - see crbug.com/1284500). This
+  // can happen if TabWasShown() gets called twice without TabWasHidden() in
+  // between (which is supposed to be impossible).
+  // DCHECK(!tab_switch_start_state_);
+
   OverwriteTabSwitchStartState(std::move(start_state), has_saved_frames);
 
   // |tab_switch_start_state_| is only reset by RecordHistogramsAndTraceEvents
