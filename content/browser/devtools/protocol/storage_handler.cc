@@ -1233,6 +1233,34 @@ Response StorageHandler::SetSharedStorageTracking(bool enable) {
   return Response::Success();
 }
 
+void StorageHandler::ResetSharedStorageBudget(
+    const std::string& owner_origin_string,
+    std::unique_ptr<ResetSharedStorageBudgetCallback> callback) {
+  auto manager_or_response = GetSharedStorageManager();
+  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+    return;
+  }
+
+  storage::SharedStorageManager* manager =
+      absl::get<storage::SharedStorageManager*>(manager_or_response);
+  DCHECK(manager);
+
+  GURL owner_origin_url(owner_origin_string);
+  if (!owner_origin_url.is_valid()) {
+    callback->sendFailure(Response::InvalidParams("Invalid owner origin"));
+    return;
+  }
+  url::Origin owner_origin = url::Origin::Create(owner_origin_url);
+  DCHECK(!owner_origin.opaque());
+
+  manager->ResetBudgetForDevTools(
+      owner_origin,
+      base::BindOnce(
+          &DispatchSharedStorageCallback<ResetSharedStorageBudgetCallback>,
+          std::move(callback)));
+}
+
 void StorageHandler::NotifySharedStorageAccessed(
     const base::Time& access_time,
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType

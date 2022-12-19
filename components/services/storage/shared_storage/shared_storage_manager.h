@@ -253,6 +253,13 @@ class SharedStorageManager {
   void GetEntriesForDevTools(url::Origin context_origin,
                              base::OnceCallback<void(EntriesResult)> callback);
 
+  // Removes all budget withdrawals for `context_origin`. Calls `callback` to
+  // indicate whether the transaction succeeded. Intended as a convenience for
+  // the DevTools UX.
+  void ResetBudgetForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(OperationResult)> callback);
+
   void SetOnDBDestroyedCallbackForTesting(
       base::OnceCallback<void(bool)> callback);
 

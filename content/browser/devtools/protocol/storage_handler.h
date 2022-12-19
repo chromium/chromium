@@ -125,6 +125,9 @@ class StorageHandler : public DevToolsDomainHandler,
       const std::string& owner_origin_string,
       std::unique_ptr<ClearSharedStorageEntriesCallback> callback) override;
   Response SetSharedStorageTracking(bool enable) override;
+  void ResetSharedStorageBudget(
+      const std::string& owner_origin_string,
+      std::unique_ptr<ResetSharedStorageBudgetCallback> callback) override;
 
  private:
   // See definition for lifetime information.

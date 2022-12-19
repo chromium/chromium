@@ -1002,6 +1002,32 @@ SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
   return entries;
 }
 
+SharedStorageDatabase::OperationResult
+SharedStorageDatabase::ResetBudgetForDevTools(url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted) {
+      return OperationResult::kSuccess;
+    } else {
+      return OperationResult::kInitFailure;
+    }
+  }
+
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM budget_mapping WHERE context_origin=?";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  statement.BindString(0, SerializeOrigin(context_origin));
+
+  if (!statement.Run()) {
+    return OperationResult::kSqlError;
+  }
+  return OperationResult::kSuccess;
+}
+
 bool SharedStorageDatabase::IsOpenForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_.is_open();

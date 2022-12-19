@@ -238,6 +238,16 @@ void AsyncSharedStorageDatabaseImpl::GetEntriesForDevTools(
       .Then(std::move(callback));
 }
 
+void AsyncSharedStorageDatabaseImpl::ResetBudgetForDevTools(
+    url::Origin context_origin,
+    base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::ResetBudgetForDevTools)
+      .WithArgs(std::move(context_origin))
+      .Then(std::move(callback));
+}
+
 base::SequenceBound<SharedStorageDatabase>*
 AsyncSharedStorageDatabaseImpl::GetSequenceBoundDatabaseForTesting() {
   return database_ ? &database_ : nullptr;

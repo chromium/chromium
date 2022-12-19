@@ -254,6 +254,11 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
       base::OnceCallback<void(EntriesResult)> callback) override {
     Run(std::move(callback));
   }
+  void ResetBudgetForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(OperationResult)> callback) override {
+    Run(std::move(callback));
+  }
 
   void SetResultsForTesting(std::queue<OperationResult> result_queue,
                             base::OnceClosure callback) {
@@ -817,6 +822,16 @@ class SharedStorageManagerTest : public testing::Test {
     GetManager()->GetEntriesForDevTools(std::move(context_origin),
                                         future.GetCallback());
     return future.Take();
+  }
+
+  OperationResult ResetBudgetForDevToolsSync(
+      const url::Origin& context_origin) {
+    DCHECK(GetManager());
+
+    base::test::TestFuture<OperationResult> future;
+    GetManager()->ResetBudgetForDevTools(std::move(context_origin),
+                                         future.GetCallback());
+    return future.Get();
   }
 
  protected:
@@ -1504,6 +1519,30 @@ TEST_P(SharedStorageManagerParamTest, SyncMakeBudgetWithdrawal) {
   EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
   EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin2));
   EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
+}
+
+TEST_P(SharedStorageManagerParamTest, ResetBudgetForDevTools) {
+  // There should be no entries in the budget table.
+  EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+
+  // Make withdrawal.
+  EXPECT_EQ(OperationResult::kSuccess,
+            MakeBudgetWithdrawalSync(kOrigin1, 1.75));
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_EQ(1, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(1, GetTotalNumBudgetEntriesSync());
+
+  // Reset budget.
+  EXPECT_EQ(OperationResult::kSuccess, ResetBudgetForDevToolsSync(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, GetRemainingBudgetSync(kOrigin1).bits);
+  EXPECT_EQ(0, GetNumBudgetEntriesSync(kOrigin1));
+  EXPECT_EQ(0, GetTotalNumBudgetEntriesSync());
 }
 
 class SharedStorageManagerErrorParamTest

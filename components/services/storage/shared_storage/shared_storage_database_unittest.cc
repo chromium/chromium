@@ -421,6 +421,9 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
   EXPECT_EQ(OperationResult::kInitFailure,
             db_->GetEntriesForDevTools(kOrigin).result);
 
+  EXPECT_EQ(OperationResult::kInitFailure,
+            db_->ResetBudgetForDevTools(kOrigin));
+
   auto metadata = db_->GetMetadata(kOrigin);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.time_result);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.budget_result);
@@ -1140,6 +1143,62 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
   EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
+}
+
+TEST_P(SharedStorageDatabaseParamTest, ResetBudgetForDevTools) {
+  // There should be no entries in the budget table.
+  EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // SQL database hasn't yet been lazy-initialized. Nevertheless, remaining
+  // budgets should be returned as the max possible.
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
+
+  // Resetting a budget in an empty uninitialized database causes no error.
+  EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
+
+  // Making withdrawals will initialize the database.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 1.75));
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 2.5));
+
+  // Advance halfway through the lookback window to separate withdrawal times.
+  clock_.Advance(base::Hours(kBudgetIntervalHours) / 2);
+
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin1, 1.0));
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->MakeBudgetWithdrawal(kOrigin2, 3.4));
+
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.75 - 2.5 - 1.0,
+                   db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // Resetting `kOrigin1`'s budget doesn't affect `kOrigin2`'s budget.
+  EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_DOUBLE_EQ(kBitBudget - 3.4, db_->GetRemainingBudget(kOrigin2).bits);
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+  EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
+  EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
+
+  // Resetting an already reset budget causes no error.
+  EXPECT_EQ(OperationResult::kSuccess, db_->ResetBudgetForDevTools(kOrigin1));
+  EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
+  EXPECT_EQ(0L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
+
+  // Resetting budget for a nonexistent origin causes no error.
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->ResetBudgetForDevTools(
+                url::Origin::Create(GURL("http://www.example3.test"))));
 }
 
 TEST_P(SharedStorageDatabaseParamTest,

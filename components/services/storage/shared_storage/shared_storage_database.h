@@ -366,6 +366,11 @@ class SharedStorageDatabase {
   // To only be used by DevTools.
   [[nodiscard]] EntriesResult GetEntriesForDevTools(url::Origin context_origin);
 
+  // Removes all budget withdrawals for `context_origin`. Intended as a
+  // convenience for the DevTools UX.
+  [[nodiscard]] OperationResult ResetBudgetForDevTools(
+      url::Origin context_origin);
+
   // Returns whether the SQLite database is open.
   [[nodiscard]] bool IsOpenForTesting() const;
 

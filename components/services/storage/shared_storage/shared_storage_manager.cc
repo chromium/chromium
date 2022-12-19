@@ -314,6 +314,16 @@ void SharedStorageManager::GetEntriesForDevTools(
                                    std::move(new_callback));
 }
 
+void SharedStorageManager::ResetBudgetForDevTools(
+    url::Origin context_origin,
+    base::OnceCallback<void(OperationResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_->ResetBudgetForDevTools(
+      std::move(context_origin),
+      GetOperationResultCallback(std::move(callback)));
+}
+
 void SharedStorageManager::SetOnDBDestroyedCallbackForTesting(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(callback);

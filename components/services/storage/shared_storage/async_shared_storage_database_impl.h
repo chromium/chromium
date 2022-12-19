@@ -131,6 +131,9 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   void GetEntriesForDevTools(
       url::Origin context_origin,
       base::OnceCallback<void(EntriesResult)> callback) override;
+  void ResetBudgetForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(OperationResult)> callback) override;
 
   // Gets the underlying database for tests.
   base::SequenceBound<SharedStorageDatabase>*
