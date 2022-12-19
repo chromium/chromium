@@ -4324,7 +4324,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaRoot) {
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
-    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
   } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());

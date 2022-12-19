@@ -1262,17 +1262,25 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
   // TODO(eroman): Initialize inhibit policy mapping based on anchor
   // constraints.
 
-  // From RFC 5937 section 3.2:
-  //
-  //    If a basic constraints extension is associated with the trust
-  //    anchor and contains a pathLenConstraint value, set the
-  //    max_path_length state variable equal to the pathLenConstraint
-  //    value from the basic constraints extension.
-  //
-  // NOTE: RFC 5937 does not say to enforce the CA=true part of basic
-  // constraints.
-  if (cert.has_basic_constraints() && cert.basic_constraints().has_path_len)
-    max_path_length_ = cert.basic_constraints().path_len;
+  if (cert.has_basic_constraints()) {
+    // Enforce CA=true if basicConstraints is present. This matches behavior of
+    // other verifiers, and seems like a good thing to do to avoid a
+    // certificate being used in the wrong context if it was specifically
+    // marked as not being a CA.
+    if (!cert.basic_constraints().is_ca) {
+      errors->AddError(cert_errors::kBasicConstraintsIndicatesNotCa);
+    }
+    // From RFC 5937 section 3.2:
+    //
+    //    If a basic constraints extension is associated with the trust
+    //    anchor and contains a pathLenConstraint value, set the
+    //    max_path_length state variable equal to the pathLenConstraint
+    //    value from the basic constraints extension.
+    //
+    if (cert.basic_constraints().has_path_len) {
+      max_path_length_ = cert.basic_constraints().path_len;
+    }
+  }
 
   // From RFC 5937 section 2:
   //
