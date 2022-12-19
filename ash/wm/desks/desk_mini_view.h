@@ -160,9 +160,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // The root window on which this mini_view is created.
   aura::Window* const root_window_;
 
-  // The associated desk. Can be null when the desk is deleted before this
-  // mini_view completes its removal animation. See comment above
-  // OnDeskRemoved().
+  // The associated desk. This can become null if the desk is deleted before the
+  // mini view is done. Desk deletion is monitored by `OnDeskDestroyed`.
   Desk* desk_;  // Not owned.
 
   // The view that shows a preview of the desk contents.

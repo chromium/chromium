@@ -126,7 +126,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
             IsPointOnMiniView(
                 owner_bar_->last_dragged_item_screen_location())) ||
            desk_preview_->IsViewHighlighted() ||
-           (desk_->is_active() &&
+           (desk_ && desk_->is_active() &&
             !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary());
   });
 
