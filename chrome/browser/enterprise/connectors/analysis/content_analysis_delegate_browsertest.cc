@@ -772,8 +772,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
 }
 
-// Flaky on linux: https://crbug.com/1299762.
-#if BUILDFLAG(IS_LINUX)
+// Flaky on linux and mac: https://crbug.com/1299762.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_BlockLargeFiles DISABLED_BlockLargeFiles
 #else
 #define MAYBE_BlockLargeFiles BlockLargeFiles
