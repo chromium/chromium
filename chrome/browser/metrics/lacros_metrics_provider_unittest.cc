@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -18,6 +19,7 @@ using UkmEntry = ukm::builders::ChromeOS_DeviceManagement;
 
 TEST(LacrosMetricsProviderTest, EnrollmentStatusRecordedForCurrentSession) {
   base::test::TaskEnvironment task_environment;
+  chromeos::ScopedLacrosServiceTestHelper lacros_test_helper;
 
   // Simulate lacros initialization on an enterprise-enrolled device.
   crosapi::mojom::BrowserInitParamsPtr init_params =
@@ -39,6 +41,7 @@ TEST(LacrosMetricsProviderTest, EnrollmentStatusRecordedForCurrentSession) {
 TEST(LacrosMetricsProviderTest,
      EnrollmentStatusRecordedForCurrentSessionUKMData) {
   base::test::TaskEnvironment task_environment;
+  chromeos::ScopedLacrosServiceTestHelper lacros_test_helper;
 
   // Simulate lacros initialization on an enterprise-enrolled device.
   crosapi::mojom::BrowserInitParamsPtr init_params =

@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Clients that upload metrics often need some device-specific metadata that is
+// used to segment the metrics server-side. This interface allows clients to get
+// that metadata. Implemented by ash-chrome.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="45ecfa93-4332-4c68-a355-87e3d0407427"]
+interface Metrics {
+  // Provides an opaque string which identifies the current hardware. The string
+  // is not structured and information should not be derived from its content.
+  // If the string is empty then this is not a known hardware type.
+  GetFullHardwareClass@0() => (string full_hardware_class);
+};

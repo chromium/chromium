@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
+#include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
@@ -231,6 +232,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
+      metrics_ash_(std::make_unique<MetricsAsh>()),
       metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
           g_browser_process->metrics_service())),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
@@ -625,6 +627,10 @@ void CrosapiAsh::BindMediaSessionController(
 void CrosapiAsh::BindMessageCenter(
     mojo::PendingReceiver<mojom::MessageCenter> receiver) {
   message_center_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) {
+  metrics_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMetricsReporting(
