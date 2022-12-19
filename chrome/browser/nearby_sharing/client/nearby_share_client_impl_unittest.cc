@@ -13,6 +13,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
@@ -156,18 +157,6 @@ void NotCalled(T type) {
 template <class T>
 void NotCalledConstRef(const T& type) {
   EXPECT_TRUE(false);
-}
-
-// Callback that saves the result returned by NearbyShareClient.
-template <class T>
-void SaveResult(T* out, T result) {
-  *out = result;
-}
-
-// Callback that saves the result returned by NearbyShareClient.
-template <class T>
-void SaveResultConstRef(T* out, const T& result) {
-  *out = result;
 }
 
 }  // namespace
@@ -332,15 +321,12 @@ class NearbyShareClientImplTest : public testing::Test,
 };
 
 TEST_F(NearbyShareClientImplTest, UpdateDeviceSuccess) {
-  nearbyshare::proto::UpdateDeviceResponse result_proto;
+  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+      future;
   nearbyshare::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
-  client_->UpdateDevice(
-      request_proto,
-      base::BindOnce(
-          &SaveResultConstRef<nearbyshare::proto::UpdateDeviceResponse>,
-          &result_proto),
-      base::BindOnce(&NotCalled<NearbyShareHttpError>));
+  client_->UpdateDevice(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NearbyShareHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -376,6 +362,7 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceSuccess) {
   VerifyResponseNotification(response_proto);
 
   // Check that the result received in callback is the same as the response.
+  nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
   ASSERT_EQ(3, result_proto.device().contacts_size());
   EXPECT_EQ(nearbyshare::proto::Contact::Identifier::kPhoneNumber,
             result_proto.device().contacts(0).identifier().identifier_case());
@@ -395,12 +382,12 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceFailure) {
   nearbyshare::proto::UpdateDeviceRequest request;
   request.mutable_device()->set_name(kDeviceIdPath);
 
-  NearbyShareHttpError error;
+  base::test::TestFuture<NearbyShareHttpError> future;
   client_->UpdateDevice(
       request,
       base::BindOnce(
           &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
-      base::BindOnce(&SaveResult<NearbyShareHttpError>, &error));
+      future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -410,21 +397,18 @@ TEST_F(NearbyShareClientImplTest, UpdateDeviceFailure) {
                                 std::string(kDeviceIdPath)));
 
   FailApiCallFlow(NearbyShareHttpError::kInternalServerError);
-  EXPECT_EQ(NearbyShareHttpError::kInternalServerError, error);
+  EXPECT_EQ(NearbyShareHttpError::kInternalServerError, future.Get());
 }
 
 TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
-  nearbyshare::proto::ListContactPeopleResponse result_proto;
+  base::test::TestFuture<const nearbyshare::proto::ListContactPeopleResponse&>
+      future;
   nearbyshare::proto::ListContactPeopleRequest request_proto;
   request_proto.set_page_size(kPageSize1);
   request_proto.set_page_token(kPageToken1);
 
-  client_->ListContactPeople(
-      request_proto,
-      base::BindOnce(
-          &SaveResultConstRef<nearbyshare::proto::ListContactPeopleResponse>,
-          &result_proto),
-      base::BindOnce(&NotCalled<NearbyShareHttpError>));
+  client_->ListContactPeople(request_proto, future.GetCallback(),
+                             base::BindOnce(&NotCalled<NearbyShareHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -455,6 +439,7 @@ TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
   FinishApiCallFlow(&response_proto);
   VerifyResponseNotification(response_proto);
 
+  nearbyshare::proto::ListContactPeopleResponse result_proto = future.Take();
   EXPECT_EQ(1, result_proto.contact_records_size());
   EXPECT_EQ(kContactId1, result_proto.contact_records(0).id());
   EXPECT_EQ(kPersonName1, result_proto.contact_records(0).person_name());
@@ -468,7 +453,9 @@ TEST_F(NearbyShareClientImplTest, ListContactPeopleSuccess) {
 }
 
 TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
-  nearbyshare::proto::ListPublicCertificatesResponse result_proto;
+  base::test::TestFuture<
+      const nearbyshare::proto::ListPublicCertificatesResponse&>
+      future;
   nearbyshare::proto::ListPublicCertificatesRequest request_proto;
   request_proto.set_parent(kDeviceIdPath);
   request_proto.set_page_size(kPageSize1);
@@ -479,10 +466,7 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
   request_proto.set_secret_ids(1, kSecretId2);
 
   client_->ListPublicCertificates(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<
-                         nearbyshare::proto::ListPublicCertificatesResponse>,
-                     &result_proto),
+      request_proto, future.GetCallback(),
       base::BindOnce(&NotCalled<NearbyShareHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -533,6 +517,8 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
   FinishApiCallFlow(&response_proto);
   VerifyResponseNotification(response_proto);
 
+  nearbyshare::proto::ListPublicCertificatesResponse result_proto =
+      future.Take();
   EXPECT_EQ(kPageToken2, result_proto.next_page_token());
   EXPECT_EQ(1, result_proto.public_certificates_size());
   EXPECT_EQ(kSecretId1, result_proto.public_certificates(0).secret_id());
@@ -553,29 +539,29 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
 }
 
 TEST_F(NearbyShareClientImplTest, FetchAccessTokenFailure) {
-  NearbyShareHttpError error;
+  base::test::TestFuture<NearbyShareHttpError> future;
   client_->UpdateDevice(
       nearbyshare::proto::UpdateDeviceRequest(),
       base::BindOnce(
           &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
-      base::BindOnce(&SaveResult<NearbyShareHttpError>, &error));
+      future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
           GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
 
-  EXPECT_EQ(NearbyShareHttpError::kAuthenticationError, error);
+  EXPECT_EQ(NearbyShareHttpError::kAuthenticationError, future.Get());
 }
 
 TEST_F(NearbyShareClientImplTest, ParseResponseProtoFailure) {
   nearbyshare::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
-  NearbyShareHttpError error;
+  base::test::TestFuture<NearbyShareHttpError> future;
   client_->UpdateDevice(
       request_proto,
       base::BindOnce(
           &NotCalledConstRef<nearbyshare::proto::UpdateDeviceResponse>),
-      base::BindOnce(&SaveResult<NearbyShareHttpError>, &error));
+      future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -585,7 +571,7 @@ TEST_F(NearbyShareClientImplTest, ParseResponseProtoFailure) {
                                std::string(kDeviceIdPath));
 
   FinishApiCallFlowRaw("Not a valid serialized response message.");
-  EXPECT_EQ(NearbyShareHttpError::kResponseMalformed, error);
+  EXPECT_EQ(NearbyShareHttpError::kResponseMalformed, future.Get());
 }
 
 TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
@@ -593,13 +579,10 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
   // Make first request.
-  nearbyshare::proto::UpdateDeviceResponse result_proto;
-  client_->UpdateDevice(
-      request_proto,
-      base::BindOnce(
-          &SaveResultConstRef<nearbyshare::proto::UpdateDeviceResponse>,
-          &result_proto),
-      base::BindOnce(&NotCalled<NearbyShareHttpError>));
+  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+      future;
+  client_->UpdateDevice(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NearbyShareHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -610,12 +593,12 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
 
   // With request pending, make second request.
   {
-    NearbyShareHttpError error;
+    base::test::TestFuture<NearbyShareHttpError> future2;
     EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
         nearbyshare::proto::ListPublicCertificatesRequest(),
         base::BindOnce(&NotCalledConstRef<
                        nearbyshare::proto::ListPublicCertificatesResponse>),
-        base::BindOnce(&SaveResult<NearbyShareHttpError>, &error)));
+        future2.GetCallback()));
   }
 
   // Complete first request.
@@ -625,22 +608,20 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestBeforeFirstRequestSucceeds) {
     FinishApiCallFlow(&response_proto);
   }
 
+  nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
   EXPECT_EQ(kDeviceIdPath, result_proto.device().name());
 }
 
 TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
   // Make first request successfully.
   {
-    nearbyshare::proto::UpdateDeviceResponse result_proto;
+    base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+        future;
     nearbyshare::proto::UpdateDeviceRequest request_proto;
     request_proto.mutable_device()->set_name(kDeviceIdPath);
 
-    client_->UpdateDevice(
-        request_proto,
-        base::BindOnce(
-            &SaveResultConstRef<nearbyshare::proto::UpdateDeviceResponse>,
-            &result_proto),
-        base::BindOnce(&NotCalled<NearbyShareHttpError>));
+    client_->UpdateDevice(request_proto, future.GetCallback(),
+                          base::BindOnce(&NotCalled<NearbyShareHttpError>));
     identity_test_environment_
         .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
             kAccessToken, base::Time::Max());
@@ -652,33 +633,31 @@ TEST_F(NearbyShareClientImplTest, MakeSecondRequestAfterFirstRequestSucceeds) {
     nearbyshare::proto::UpdateDeviceResponse response_proto;
     response_proto.mutable_device()->set_name(kDeviceIdPath);
     FinishApiCallFlow(&response_proto);
+    nearbyshare::proto::UpdateDeviceResponse result_proto = future.Take();
     EXPECT_EQ(kDeviceIdPath, result_proto.device().name());
   }
 
   // Second request fails.
   {
-    NearbyShareHttpError error;
+    base::test::TestFuture<NearbyShareHttpError> future;
     EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
         nearbyshare::proto::ListPublicCertificatesRequest(),
         base::BindOnce(&NotCalledConstRef<
                        nearbyshare::proto::ListPublicCertificatesResponse>),
-        base::BindOnce(&SaveResult<NearbyShareHttpError>, &error)));
+        future.GetCallback()));
   }
 }
 
 TEST_F(NearbyShareClientImplTest, GetAccessTokenUsed) {
   EXPECT_TRUE(client_->GetAccessTokenUsed().empty());
 
-  nearbyshare::proto::UpdateDeviceResponse result_proto;
+  base::test::TestFuture<const nearbyshare::proto::UpdateDeviceResponse&>
+      future;
   nearbyshare::proto::UpdateDeviceRequest request_proto;
   request_proto.mutable_device()->set_name(kDeviceIdPath);
 
-  client_->UpdateDevice(
-      request_proto,
-      base::BindOnce(
-          &SaveResultConstRef<nearbyshare::proto::UpdateDeviceResponse>,
-          &result_proto),
-      base::BindOnce(&NotCalled<NearbyShareHttpError>));
+  client_->UpdateDevice(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NearbyShareHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
