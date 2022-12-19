@@ -217,18 +217,10 @@ class OsDiagnosticsRunDnsResolverPresentRoutineFunction
 
 class OsDiagnosticsRunFingerprintAliveRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runFingerprintAliveRoutine",
                              OS_DIAGNOSTICS_RUNFINGERPRINTALIVEROUTINE)
-
-  OsDiagnosticsRunFingerprintAliveRoutineFunction();
-  OsDiagnosticsRunFingerprintAliveRoutineFunction(
-      const OsDiagnosticsRunFingerprintAliveRoutineFunction&) = delete;
-  OsDiagnosticsRunFingerprintAliveRoutineFunction& operator=(
-      const OsDiagnosticsRunFingerprintAliveRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunFingerprintAliveRoutineFunction() override;
+  ~OsDiagnosticsRunFingerprintAliveRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -236,18 +228,10 @@ class OsDiagnosticsRunFingerprintAliveRoutineFunction
 
 class OsDiagnosticsRunEmmcLifetimeRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
- public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runEmmcLifetimeRoutine",
                              OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE)
-
-  OsDiagnosticsRunEmmcLifetimeRoutineFunction();
-  OsDiagnosticsRunEmmcLifetimeRoutineFunction(
-      const OsDiagnosticsRunEmmcLifetimeRoutineFunction&) = delete;
-  OsDiagnosticsRunEmmcLifetimeRoutineFunction& operator=(
-      const OsDiagnosticsRunEmmcLifetimeRoutineFunction&) = delete;
-
  private:
-  ~OsDiagnosticsRunEmmcLifetimeRoutineFunction() override;
+  ~OsDiagnosticsRunEmmcLifetimeRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
