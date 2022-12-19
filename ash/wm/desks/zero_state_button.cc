@@ -35,7 +35,7 @@ constexpr int kZeroStateButtonHeight = 28;
 
 constexpr int kZeroStateDefaultButtonHorizontalPadding = 16;
 
-// The width for the zero state new desk button and templates button.
+// The width for the zero state new desk button and library button.
 constexpr int kZeroStateIconButtonWidth = 36;
 
 constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;

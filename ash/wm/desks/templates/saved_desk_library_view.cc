@@ -104,7 +104,7 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
       case DeskTemplateType::kSaveAndRecall:
         grouped.save_and_recall.push_back(saved_desk);
         break;
-      // Do nothing in the case of an unknown template or floating workspace.
+      // Do nothing in the case of a floating workspace type or an unknown type.
       case DeskTemplateType::kFloatingWorkspace:
       case DeskTemplateType::kUnknown:
         break;
@@ -581,7 +581,7 @@ void SavedDeskLibraryView::OnKeyEvent(ui::KeyEvent* event) {
       is_scrolling_event = true;
       // Do not process if home/end key are for text editing.
       for (SavedDeskGridView* grid_view : grid_views_) {
-        if (grid_view->IsTemplateNameBeingModified()) {
+        if (grid_view->IsSavedDeskNameBeingModified()) {
           is_scrolling_event = false;
           break;
         }

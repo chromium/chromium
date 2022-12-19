@@ -72,12 +72,12 @@ class ASH_EXPORT DesksBarView : public views::View,
     return expanded_state_new_desk_button_;
   }
 
-  ZeroStateIconButton* zero_state_desks_templates_button() const {
-    return zero_state_desks_templates_button_;
+  ZeroStateIconButton* zero_state_library_button() const {
+    return zero_state_library_button_;
   }
 
-  ExpandedDesksBarButton* expanded_state_desks_templates_button() const {
-    return expanded_state_desks_templates_button_;
+  ExpandedDesksBarButton* expanded_state_library_button() const {
+    return expanded_state_library_button_;
   }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
@@ -187,9 +187,9 @@ class ASH_EXPORT DesksBarView : public views::View,
       DesksCreationRemovalSource desks_creation_removal_source);
 
   // If in expanded state, updates the border color of the
-  // `expanded_state_desks_templates_button_` and the active desk's mini view
+  // `expanded_state_library_button_` and the active desk's mini view
   // after the saved desk library has been shown. If not in expanded state,
-  // updates the background color of the `zero_state_desks_templates_button_`
+  // updates the background color of the `zero_state_library_button_`
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForSavedDeskGrid();
 
@@ -287,7 +287,7 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // Contents of `scroll_view_`, which includes `mini_views_`,
   // `expanded_state_new_desk_button_` and optionally
-  // `expanded_state_desks_templates_button_` currently.
+  // `expanded_state_library_button_` currently.
   views::View* scroll_view_contents_ = nullptr;
 
   // True if the `DesksBarBoundsAnimation` is started and hasn't finished yet.
@@ -304,9 +304,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;
   ExpandedDesksBarButton* expanded_state_new_desk_button_ = nullptr;
 
-  // Buttons to show the desks templates grid.
-  ZeroStateIconButton* zero_state_desks_templates_button_ = nullptr;
-  ExpandedDesksBarButton* expanded_state_desks_templates_button_ = nullptr;
+  // Buttons to show the saved desk grid.
+  ZeroStateIconButton* zero_state_library_button_ = nullptr;
+  ExpandedDesksBarButton* expanded_state_library_button_ = nullptr;
 
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;

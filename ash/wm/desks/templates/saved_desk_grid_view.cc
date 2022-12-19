@@ -37,17 +37,17 @@ constexpr int kPortraitMaxColumns = 2;
 
 constexpr int kGridPaddingDp = 24;
 
-// This is the maximum number of templates we will show in the grid. This
+// This is the maximum number of saved desks we will show in the grid. This
 // constant is used instead of the Desk model `GetMaxEntryCount()` because that
 // takes into consideration the number of `policy_entries_`, which can cause it
 // to exceed 6 items.
-// Note: Because we are only showing a maximum number of templates, there are
-// cases that not all existing templates will be displayed, such as when a user
-// has more than the maximum count. Since we also don't update the grid whenever
-// there is a change, deleting a template may result in existing templates not
-// being shown as well, if the user originally exceeded the max template count
-// when the grid was first shown.
-constexpr std::size_t kMaxTemplateCount = 6u;
+// Note: Because we are only showing a maximum number of saved desks, there are
+// cases that not all existing saved desks will be displayed, such as when a
+// user has more than the maximum count. Since we also don't update the grid
+// whenever there is a change, deleting a saved desk may result in existing
+// saved desks not being shown as well, if the user originally exceeded the max
+// saved desk item count when the grid was first shown.
+constexpr std::size_t kMaxItemCount = 6u;
 
 constexpr gfx::Transform kEndTransform;
 
@@ -57,7 +57,7 @@ constexpr float kAddOrDeleteItemScale = 0.75f;
 constexpr base::TimeDelta kBoundsChangeAnimationDuration =
     base::Milliseconds(300);
 
-constexpr base::TimeDelta kTemplateViewsScaleAndFadeDuration =
+constexpr base::TimeDelta kItemViewsScaleAndFadeDuration =
     base::Milliseconds(50);
 
 // Gets the scale transform for `view`. It returns a transform with a scale of
@@ -114,8 +114,8 @@ void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
   // A11y traverses views based on the order of the children, so we need to
   // manually reorder the child views to match the order that they are
   // displayed, which is the alphabetically sorted `grid_items_` order. If
-  // there was a newly saved template, the first template in the grid will
-  // be the new template, while the rest will be sorted alphabetically.
+  // there was a newly saved desk item, the first item in the grid will
+  // be the new item, while the rest will be sorted alphabetically.
   for (size_t i = 0; i < grid_items_.size(); i++)
     ReorderChildView(grid_items_[i], i);
   NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
@@ -136,8 +136,8 @@ void SavedDeskGridView::AddOrUpdateEntries(
                                    &SavedDeskItemView::uuid);
 
     if (iter != grid_items_.end()) {
-      (*iter)->UpdateTemplate(*entry);
-    } else if (grid_items_.size() < kMaxTemplateCount) {
+      (*iter)->UpdateSavedDesk(*entry);
+    } else if (grid_items_.size() < kMaxItemCount) {
       SavedDeskItemView* grid_item =
           AddChildView(std::make_unique<SavedDeskItemView>(entry->Clone()));
       grid_items_.push_back(grid_item);
@@ -187,7 +187,7 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::GUID>& uuids,
           .SetTransform(old_grid_item_layer_tree_root,
                         GetScaleTransformForView(grid_item))
           .SetOpacity(old_grid_item_layer_tree_root, 1.f)
-          .SetDuration(kTemplateViewsScaleAndFadeDuration);
+          .SetDuration(kItemViewsScaleAndFadeDuration);
     }
 
     RemoveChildViewT(grid_item);
@@ -198,7 +198,7 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::GUID>& uuids,
   NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
-bool SavedDeskGridView::IsTemplateNameBeingModified() const {
+bool SavedDeskGridView::IsSavedDeskNameBeingModified() const {
   if (!GetWidget()->IsActive())
     return false;
 
@@ -316,10 +316,10 @@ void SavedDeskGridView::AnimateGridItems(
       views::AnimationBuilder()
           .Once()
           .Offset(kBoundsChangeAnimationDuration -
-                  kTemplateViewsScaleAndFadeDuration)
+                  kItemViewsScaleAndFadeDuration)
           .SetTransform(layer, kEndTransform)
           .SetOpacity(layer, 1.f)
-          .SetDuration(kTemplateViewsScaleAndFadeDuration);
+          .SetDuration(kItemViewsScaleAndFadeDuration);
       continue;
     }
 

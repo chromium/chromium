@@ -52,8 +52,8 @@ class ASH_EXPORT OverviewHighlightController {
   // Moves the focus ring to the next traversable view.
   void MoveHighlight(bool reverse);
 
-  // Called when pressing two save desks buttons to show the desks templates
-  // grids and focus on a saved desk name view.
+  // Called when pressing two save desks buttons to show the saved desk grids
+  // and focus on a saved desk name view.
   void UpdateA11yFocusWindow(OverviewHighlightableView* name_view);
 
   // Moves the focus ring directly to |target_view|. |target_view| must be a

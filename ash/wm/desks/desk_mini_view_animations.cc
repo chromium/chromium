@@ -238,7 +238,7 @@ void PerformNewDeskMiniViewAnimation(
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
     ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_desks_templates_button,
+    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x) {
   DCHECK(expanded_state_new_desk_button);
   gfx::Transform mini_views_left_begin_transform;
@@ -262,14 +262,15 @@ void PerformNewDeskMiniViewAnimation(
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
 
-  // The new desk button and the desk templates button in the expanded desks bar
+  // The new desk button and the library button in the expanded desks bar
   // always move to the right when a new desk is added.
   const auto& button_transform = base::i18n::IsRTL()
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
   AnimateView(expanded_state_new_desk_button, button_transform);
-  if (expanded_state_desks_templates_button)
-    AnimateView(expanded_state_desks_templates_button, button_transform);
+  if (expanded_state_library_button) {
+    AnimateView(expanded_state_library_button, button_transform);
+  }
 }
 
 void PerformRemoveDeskMiniViewAnimation(
@@ -278,7 +279,7 @@ void PerformRemoveDeskMiniViewAnimation(
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
     ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_desks_templates_button,
+    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x) {
   gfx::Transform mini_views_left_begin_transform;
   mini_views_left_begin_transform.Translate(shift_x, 0);
@@ -295,8 +296,9 @@ void PerformRemoveDeskMiniViewAnimation(
                                      ? mini_views_left_begin_transform
                                      : mini_views_right_begin_transform;
   AnimateView(expanded_state_new_desk_button, button_transform);
-  if (expanded_state_desks_templates_button)
-    AnimateView(expanded_state_desks_templates_button, button_transform);
+  if (expanded_state_library_button) {
+    AnimateView(expanded_state_library_button, button_transform);
+  }
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
@@ -307,9 +309,9 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
 
   ScaleUpAndFadeInView(bar_view->expanded_state_new_desk_button(),
                        bar_x_center);
-  if (auto* expanded_state_desks_templates_button =
-          bar_view->expanded_state_desks_templates_button()) {
-    ScaleUpAndFadeInView(expanded_state_desks_templates_button, bar_x_center);
+  if (auto* expanded_state_library_button =
+          bar_view->expanded_state_library_button()) {
+    ScaleUpAndFadeInView(expanded_state_library_button, bar_x_center);
   }
   PositionWindowsInOverview();
 }
@@ -323,9 +325,9 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
   const gfx::Rect bounds = bar_view->bounds();
   ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
                           bounds.CenterPoint().x());
-  if (auto* expanded_state_desks_templates_button =
-          bar_view->expanded_state_desks_templates_button()) {
-    ScaleDownAndFadeOutView(expanded_state_desks_templates_button,
+  if (auto* expanded_state_library_button =
+          bar_view->expanded_state_library_button()) {
+    ScaleDownAndFadeOutView(expanded_state_library_button,
                             bounds.CenterPoint().x());
   }
 

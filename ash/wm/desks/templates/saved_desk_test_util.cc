@@ -139,9 +139,9 @@ std::vector<SavedDeskIconView*> SavedDeskItemViewTestApi::GetIconViews() const {
 }
 
 SavedDeskIconViewTestApi::SavedDeskIconViewTestApi(
-    const SavedDeskIconView* desks_templates_icon_view)
-    : desks_templates_icon_view_(desks_templates_icon_view) {
-  DCHECK(desks_templates_icon_view_);
+    const SavedDeskIconView* saved_desk_icon_view)
+    : saved_desk_icon_view_(saved_desk_icon_view) {
+  DCHECK(saved_desk_icon_view_);
 }
 
 SavedDeskIconViewTestApi::~SavedDeskIconViewTestApi() = default;
@@ -187,8 +187,7 @@ views::Button* GetZeroStateLibraryButton() {
 
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
-  return desks_bar_view ? desks_bar_view->zero_state_desks_templates_button()
-                        : nullptr;
+  return desks_bar_view ? desks_bar_view->zero_state_library_button() : nullptr;
 }
 
 views::Button* GetExpandedStateLibraryButton() {
@@ -199,8 +198,7 @@ views::Button* GetExpandedStateLibraryButton() {
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   return desks_bar_view
-             ? desks_bar_view->expanded_state_desks_templates_button()
-                   ->GetInnerButton()
+             ? desks_bar_view->expanded_state_library_button()->GetInnerButton()
              : nullptr;
 }
 
@@ -216,12 +214,12 @@ views::Button* GetSaveDeskForLaterButton() {
   return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
-views::Button* GetTemplateItemButton(int index) {
+views::Button* GetSavedDeskItemButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
 }
 
-views::Button* GetTemplateItemDeleteButton(int index) {
+views::Button* GetSavedDeskItemDeleteButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(const_cast<CloseButton*>(
                     SavedDeskItemViewTestApi(item).delete_button()))

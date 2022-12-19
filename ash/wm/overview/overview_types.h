@@ -44,8 +44,8 @@ enum OverviewAnimationType {
   OVERVIEW_ANIMATION_NO_RECENTS_FADE,
   // Used to fade in all windows when window drag starts or during window drag.
   OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG,
-  // Used to fade out the desks templates grid when exiting overview mode.
-  OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT,
+  // Used to fade out the saved desk grid when exiting overview mode.
+  OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT,
 };
 
 enum class OverviewTransition {

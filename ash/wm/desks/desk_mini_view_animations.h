@@ -24,7 +24,7 @@ class ExpandedDesksBarButton;
 // the newly-created mini_views. `mini_views_left` are the mini views on the
 // left of the new mini views in the desks bar, while `mini_views_right` are the
 // mini views on the right side of the new mini views.
-// `expanded_state_new_desk_button` and `expanded_state_desks_templates_button`
+// `expanded_state_new_desk_button` and `expanded_state_library_button`
 // (if it exists) will be moved to the right. `shift_x` is the amount by which
 // the mini_views (new and existing) will be moved horizontally as a result of
 // creating the new mini_views.
@@ -38,7 +38,7 @@ void PerformNewDeskMiniViewAnimation(
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
     ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_desks_templates_button,
+    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x);
 
 // Performs the mini_view removal animation. It is in charge of removing the
@@ -47,7 +47,7 @@ void PerformNewDeskMiniViewAnimation(
 // |mini_views_left|, and |mini_views_right| are lists of the remaining
 // mini_views to left and to the right of the removed mini_view respectively.
 // |expanded_state_new_desk_button| will be moved to right the same as
-// |mini_views_right|. If |expanded_state_desks_templates_button| is non-null,
+// |mini_views_right|. If |expanded_state_library_button| is non-null,
 // it will also be moved to the right the same as |mini_views_right|. Either
 // list can be empty (e.g. if the removed mini_view is the last one on the
 // right). |shift_x| is the amount by which the remaining mini_views will be
@@ -60,7 +60,7 @@ void PerformRemoveDeskMiniViewAnimation(
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
     ExpandedDesksBarButton* expanded_state_new_desk_button,
-    ExpandedDesksBarButton* expanded_state_desks_templates_button,
+    ExpandedDesksBarButton* expanded_state_library_button,
     int shift_x);
 
 // Performs the animation of switching from zero state desks bar to expanded

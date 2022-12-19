@@ -87,8 +87,8 @@ constexpr int kNoItemsIndicatorHorizontalPaddingDp = 16;
 constexpr int kNoItemsIndicatorRoundingDp = 16;
 constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
 
-// Distance from the bottom of the SaveDeskAsTemplate button to the top of the
-// first overview item.
+// Distance from the bottom of the save desk as template button to the top of
+// the first overview item.
 constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 40;
 
 // Windows are not allowed to get taller than this.
@@ -283,8 +283,8 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   return widget;
 }
 
-// Creates `save_desk_button_container_widget_`. It contains save desk as
-// template button and save for later button.
+// Creates `save_desk_button_container_widget_`. It contains SaveDeskAsTemplate
+// button and save for later button.
 std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params;
@@ -1726,7 +1726,7 @@ void OverviewGrid::CommitNameChanges() {
   if (desks_widget_)
     DeskNameView::CommitChanges(desks_widget_.get());
 
-  // The templates grid may not be shown.
+  // The saved desk grid may not be shown.
   if (saved_desk_library_widget_)
     SavedDeskNameView::CommitChanges(saved_desk_library_widget_.get());
 }
@@ -1803,7 +1803,7 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
 
     FadeOutWidgetFromOverview(
         std::move(saved_desk_library_widget_),
-        OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT);
+        OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT);
     return;
   }
 
@@ -1824,11 +1824,12 @@ bool OverviewGrid::WillShowSavedDeskLibrary() const {
          saved_desk_library_widget_->GetLayer()->GetTargetVisibility() != 0.f;
 }
 
-bool OverviewGrid::IsTemplateNameBeingModified() const {
+bool OverviewGrid::IsSavedDeskNameBeingModified() const {
   if (auto* library_view = GetSavedDeskLibraryView()) {
     for (auto* grid_view : library_view->grid_views()) {
-      if (grid_view->IsTemplateNameBeingModified())
+      if (grid_view->IsSavedDeskNameBeingModified()) {
         return true;
+      }
     }
   }
   return false;
@@ -1878,8 +1879,8 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
 void OverviewGrid::UpdateSaveDeskButtons() {
   // TODO(crbug.com/1275282): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
-  // templates grid. This will be needed when we make it so that switching desks
-  // keeps us in overview mode.
+  // saved desk grid. This will be needed when we make it so that switching
+  // desks keeps us in overview mode.
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
 
@@ -2509,7 +2510,7 @@ void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
     return;
   container->SetEnabled(false);
 
-  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kTemplate, root_window());
 }
 
@@ -2521,7 +2522,7 @@ void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
     return;
   container->SetEnabled(false);
 
-  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kSaveAndRecall, root_window());
 }
 

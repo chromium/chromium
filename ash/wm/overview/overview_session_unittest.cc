@@ -3199,8 +3199,8 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
 // Tests that accessibility overrides are set as expected on overview related
 // widgets.
 TEST_P(OverviewSessionTest, AccessibilityFocusAnnotatorNoSavedDesks) {
-  // If desks templates is enabled, the a11y order changes. This is tested in
-  // the desks templates test suite.
+  // If saved desk is enabled, the a11y order changes. This is tested in
+  // the saved desk test suite.
   if (GetParam() || saved_desk_util::IsDeskSaveAndRecallEnabled())
     return;
 

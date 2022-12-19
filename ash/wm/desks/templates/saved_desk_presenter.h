@@ -56,7 +56,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // `should_show_saved_desk_library_`.
   void UpdateUIForSavedDeskLibrary();
 
-  // Calls the DeskModel to get all the template entries, with a callback to
+  // Calls the DeskModel to get all the saved desk entries, with a callback to
   // `OnGetAllEntries`. `saved_desk_name` is used for the name overwrite nudge
   // for duplicate desk names.
   void GetAllEntries(const base::GUID& item_to_focus,
@@ -76,13 +76,13 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // callback to `OnAddOrUpdateEntry`. If there are unsupported apps on the
   // active desk, a dialog will open up and we may or may not save the desk
   // asynchronously based on the user's decision.
-  void MaybeSaveActiveDeskAsTemplate(DeskTemplateType template_type,
-                                     aura::Window* root_window_to_show);
+  void MaybeSaveActiveDeskAsSavedDesk(DeskTemplateType template_type,
+                                      aura::Window* root_window_to_show);
 
-  // Saves or updates the `desk_template` to the model.
-  void SaveOrUpdateDeskTemplate(bool is_update,
-                                aura::Window* const root_window,
-                                std::unique_ptr<DeskTemplate> desk_template);
+  // Saves or updates the `saved_desk` to the model.
+  void SaveOrUpdateSavedDesk(bool is_update,
+                             aura::Window* const root_window,
+                             std::unique_ptr<DeskTemplate> saved_desk);
 
   // desks_storage::DeskModelObserver:
   void DeskModelLoaded() override {}
@@ -106,13 +106,14 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Callback after adding or updating an entry. Will then call
-  // `AddOrUpdateUIEntries` to update the UI by adding or updating the template.
+  // `AddOrUpdateUIEntries` to update the UI by adding or updating the saved
+  // desk.
   void OnAddOrUpdateEntry(
       bool was_update,
       aura::Window* const root_window,
       const std::u16string& saved_desk_name,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-      std::unique_ptr<DeskTemplate> desk_template);
+      std::unique_ptr<DeskTemplate> saved_desk);
 
   // Helper functions for updating the UI.
   void AddOrUpdateUIEntries(
@@ -138,8 +139,8 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
 
-  // If the user has at least one template entry, the saved desk library should
-  // be shown. Otherwise, it should be invisible.
+  // If the user has at least one saved desk entry, the saved desk library
+  // should be shown. Otherwise, it should be invisible.
   bool should_show_saved_desk_library_ = false;
 
   // Test closure that runs after the UI has been updated async after a call to

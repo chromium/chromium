@@ -73,7 +73,7 @@ class OverviewHighlightControllerTest
   }
 
   // Helper to make tests more readable.
-  bool IsDesksTemplatesEnabled() const {
+  bool AreDeskTemplatesEnabled() const {
     return GetParam().desk_templates_enabled;
   }
 
@@ -84,10 +84,11 @@ class OverviewHighlightControllerTest
   // OverviewTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features, disabled_features;
-    if (IsDesksTemplatesEnabled())
+    if (AreDeskTemplatesEnabled()) {
       enabled_features.push_back(features::kDesksTemplates);
-    else
+    } else {
       disabled_features.push_back(features::kDesksTemplates);
+    }
     if (IsDeskSaveAndRecallEnabled())
       enabled_features.push_back(features::kEnableSavedDesks);
     else
@@ -471,7 +472,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
   // Tests that tabbing past the new desk button, we highlight the save to a new
   // desk template. The templates button is not in the tab traversal since it is
   // hidden when we have no templates.
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
@@ -508,7 +509,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
               GetHighlightedView());
   }
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
@@ -551,7 +552,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
               GetHighlightedView());
   }
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
@@ -641,7 +642,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
 
   EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
@@ -670,7 +671,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());
@@ -699,7 +700,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
-  if (IsDesksTemplatesEnabled()) {
+  if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetHighlightedView());

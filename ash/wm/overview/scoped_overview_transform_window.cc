@@ -260,7 +260,7 @@ ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
 
 void ScopedOverviewTransformWindow::RestoreWindow(
     bool reset_transform,
-    bool was_desk_templates_grid_showing) {
+    bool was_saved_desk_grid_showing) {
   // Shadow controller may be null on shutdown.
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
@@ -268,7 +268,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(
   // We will handle clipping here, no need to do anything in the destructor.
   reset_clip_on_shutdown_ = false;
 
-  if (IsMinimized() || was_desk_templates_grid_showing) {
+  if (IsMinimized() || was_saved_desk_grid_showing) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
     ScopedOverviewAnimationSettings animation_settings(OVERVIEW_ANIMATION_NONE,
@@ -456,11 +456,12 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
         new_bounds.Inset(gfx::InsetsF::TLBR(title_height, 0, 0, 0));
         if (top_view_inset) {
           new_bounds.set_height(new_height);
-          // Calculate `scaled_top_view_inset` without considering `title_height`
-          // because we have already inset the top of `new_bounds` by that value.
-          // We also do not consider `top_view_inset` in our calculation of
-          // `new_scale` because we want to find out the height of the inset when
-          // the whole window, including the inset, is scaled down to `new_bounds`.
+          // Calculate `scaled_top_view_inset` without considering
+          // `title_height` because we have already inset the top of
+          // `new_bounds` by that value. We also do not consider
+          // `top_view_inset` in our calculation of `new_scale` because we want
+          // to find out the height of the inset when the whole window,
+          // including the inset, is scaled down to `new_bounds`.
           const float new_scale =
               GetItemScale(rect.size(), new_bounds.size(), 0, 0);
           const float scaled_top_view_inset = top_view_inset * new_scale;
@@ -470,7 +471,8 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
                                    (new_height - scaled_top_view_inset) / 2 -
                                    scaled_top_view_inset);
         } else {
-          new_bounds.ClampToCenteredSize(gfx::SizeF(bounds.width(), new_height));
+          new_bounds.ClampToCenteredSize(
+              gfx::SizeF(bounds.width(), new_height));
         }
       }
       break;

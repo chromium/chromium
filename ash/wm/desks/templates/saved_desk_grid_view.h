@@ -60,9 +60,9 @@ class SavedDeskGridView : public views::View {
   void DeleteEntries(const std::vector<base::GUID>& uuids,
                      bool delete_animation);
 
-  // Returns true if a template name is being modified using an item view's
+  // Returns true if a saved desk name is being modified using an item view's
   // `SavedDeskNameView` in this grid.
-  bool IsTemplateNameBeingModified() const;
+  bool IsSavedDeskNameBeingModified() const;
 
   // Returns the item view associated with `uuid`.
   SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);

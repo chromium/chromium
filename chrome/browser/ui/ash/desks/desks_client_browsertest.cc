@@ -319,7 +319,7 @@ void ClickExpandedStateTemplatesButton() {
 }
 
 void ClickFirstTemplateItem() {
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  views::Button* template_item = ash::GetSavedDeskItemButton(/*index=*/0);
   DCHECK(template_item);
   ClickButton(template_item);
 }
@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   ASSERT_TRUE(expanded_state_templates_button);
   EXPECT_TRUE(expanded_state_templates_button->GetVisible());
 
-  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  views::Button* template_item = ash::GetSavedDeskItemButton(/*index=*/0);
   EXPECT_TRUE(template_item);
 }
 
@@ -2233,7 +2233,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
     }
   }
 
-  views::Button* delete_button = ash::GetTemplateItemDeleteButton(/*index=*/0);
+  views::Button* delete_button = ash::GetSavedDeskItemDeleteButton(/*index=*/0);
   ClickButton(delete_button);
 
   // Confirm deleting a template. Use a key press to accept the dialog instead

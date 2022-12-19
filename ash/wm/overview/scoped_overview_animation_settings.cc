@@ -71,7 +71,7 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kTransition;
     case OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG:
       return kFadeInOnWindowDrag;
-    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT:
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT:
       return kFadeOut;
   }
   NOTREACHED();
@@ -163,7 +163,7 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
       break;
-    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT:
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT:
       animation_settings_->SetTweenType(gfx::Tween::LINEAR);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);

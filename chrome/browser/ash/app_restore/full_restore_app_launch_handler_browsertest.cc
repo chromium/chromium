@@ -249,7 +249,7 @@ void ClickSaveDeskAsTemplateButton() {
 }
 
 void ClickTemplateItem(int index) {
-  ClickButton(GetTemplateItemButton(/*index=*/0));
+  ClickButton(GetSavedDeskItemButton(/*index=*/0));
 }
 
 }  // namespace

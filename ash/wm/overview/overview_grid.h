@@ -347,9 +347,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // True if the saved desk library will be shown shortly.
   bool WillShowSavedDeskLibrary() const;
 
-  // Returns true if any template name is being modified in its item view on
+  // Returns true if any saved desk name is being modified in its item view on
   // this grid.
-  bool IsTemplateNameBeingModified() const;
+  bool IsSavedDeskNameBeingModified() const;
 
   // Updates the visibility of the `no_windows_widget_`. If `no_items` is true,
   // the widget will be shown. If `no_items` is false or the desk templates grid
@@ -522,7 +522,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   void UpdateCannotSnapWarningVisibility(bool animate);
 
-  // Called back when the button to save a desk as a template is pressed.
+  // Called back when the button to save desk as template button is pressed.
   void OnSaveDeskAsTemplateButtonPressed();
 
   // Called back when the button to save a desk for later is pressed.

@@ -257,11 +257,12 @@ OverviewHighlightController::GetTraversableViews() const {
       if (is_zero_state) {
         traversable_views.push_back(bar_view->zero_state_default_desk_button());
         traversable_views.push_back(bar_view->zero_state_new_desk_button());
-        // Desks templates buttons are only present if the feature is enabled.
-        if (auto* desks_templates_button =
-                bar_view->zero_state_desks_templates_button()) {
-          if (desks_templates_button->GetVisible())
-            traversable_views.push_back(desks_templates_button);
+        // Library button is only present if the desk templates feature or the
+        // save and recall feature is enabled.
+        if (auto* library_button = bar_view->zero_state_library_button()) {
+          if (library_button->GetVisible()) {
+            traversable_views.push_back(library_button);
+          }
         }
       } else {
         for (auto* mini_view : bar_view->mini_views()) {
@@ -274,13 +275,11 @@ OverviewHighlightController::GetTraversableViews() const {
         if (new_desk_button->GetEnabled())
           traversable_views.push_back(new_desk_button);
 
-        if (auto* desks_templates_button =
-                bar_view->expanded_state_desks_templates_button()) {
-          auto* inner_desks_templates_button =
-              desks_templates_button->GetInnerButton();
-          if (desks_templates_button->GetVisible() &&
-              inner_desks_templates_button->GetEnabled()) {
-            traversable_views.push_back(inner_desks_templates_button);
+        if (auto* library_button = bar_view->expanded_state_library_button()) {
+          auto* inner_library_button = library_button->GetInnerButton();
+          if (library_button->GetVisible() &&
+              inner_library_button->GetEnabled()) {
+            traversable_views.push_back(inner_library_button);
           }
         }
       }

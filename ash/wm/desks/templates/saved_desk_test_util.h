@@ -109,7 +109,7 @@ class SavedDeskItemViewTestApi {
 
   const PillButton* launch_button() const { return item_view_->launch_button_; }
 
-  const base::GUID uuid() const { return item_view_->desk_template_->uuid(); }
+  const base::GUID uuid() const { return item_view_->saved_desk_->uuid(); }
 
   const views::View* hover_container() const {
     return item_view_->hover_container_;
@@ -128,25 +128,25 @@ class SavedDeskItemViewTestApi {
 class SavedDeskIconViewTestApi {
  public:
   explicit SavedDeskIconViewTestApi(
-      const SavedDeskIconView* desks_templates_icon_view);
+      const SavedDeskIconView* saved_desk_icon_view);
   SavedDeskIconViewTestApi(const SavedDeskIconViewTestApi&) = delete;
   SavedDeskIconViewTestApi& operator=(const SavedDeskIconViewTestApi&) = delete;
   ~SavedDeskIconViewTestApi();
 
   const views::Label* count_label() const {
-    return desks_templates_icon_view_->count_label_;
+    return saved_desk_icon_view_->count_label_;
   }
 
   const RoundedImageView* icon_view() const {
-    return desks_templates_icon_view_->icon_view_;
+    return saved_desk_icon_view_->icon_view_;
   }
 
-  const SavedDeskIconView* desks_templates_icon_view() const {
-    return desks_templates_icon_view_;
+  const SavedDeskIconView* saved_desk_icon_view() const {
+    return saved_desk_icon_view_;
   }
 
  private:
-  const SavedDeskIconView* desks_templates_icon_view_;
+  const SavedDeskIconView* saved_desk_icon_view_;
 };
 
 // Returns all saved desk item views from the desk library on the given
@@ -167,8 +167,8 @@ views::Button* GetZeroStateLibraryButton();
 views::Button* GetExpandedStateLibraryButton();
 views::Button* GetSaveDeskAsTemplateButton();
 views::Button* GetSaveDeskForLaterButton();
-views::Button* GetTemplateItemButton(int index);
-views::Button* GetTemplateItemDeleteButton(int index);
+views::Button* GetSavedDeskItemButton(int index);
+views::Button* GetSavedDeskItemDeleteButton(int index);
 views::Button* GetSavedDeskDialogAcceptButton();
 
 // A lot of the UI relies on calling into the local desk data manager to

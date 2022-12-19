@@ -68,7 +68,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
  public:
   METADATA_HEADER(SavedDeskItemView);
 
-  explicit SavedDeskItemView(std::unique_ptr<DeskTemplate> desk_template);
+  explicit SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk);
   SavedDeskItemView(const SavedDeskItemView&) = delete;
   SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;
   ~SavedDeskItemView() override;
@@ -76,9 +76,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // The preferred size of the whole SavedDeskItemView.
   static constexpr gfx::Size kPreferredSize = {220, 120};
 
-  const DeskTemplate& desk_template() const { return *desk_template_; }
+  const DeskTemplate& saved_desk() const { return *saved_desk_; }
   SavedDeskNameView* name_view() const { return name_view_; }
-  const base::GUID& uuid() const { return desk_template_->uuid(); }
+  const base::GUID& uuid() const { return saved_desk_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.
@@ -100,15 +100,15 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
                               const base::GUID& uuid);
   // Rename current saved desk with new name, delete old saved desk with same
   // name by uuid. Used for callback functions for Replace Dialog.
-  void ReplaceTemplate(const base::GUID& uuid);
-  void RevertTemplateName();
+  void ReplaceSavedDesk(const base::GUID& uuid);
+  void RevertSavedDeskName();
 
-  // This allows us to update an existing template view. Currently, this
+  // This allows us to update an existing saved desk view. Currently, this
   // function will only update the name. We will need to update this once we
-  // allow the user to make more changes to a template. If the text field is
+  // allow the user to make more changes to a saved desk. If the text field is
   // blurred when there is an update, we intentionally leave it blurred in order
   // to align this behavior with other similar cases.
-  void UpdateTemplate(const DeskTemplate& updated_template);
+  void UpdateSavedDesk(const DeskTemplate& updated_saved_desk);
 
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -137,21 +137,21 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void OnHoverAnimationEnded();
   void AnimateHover(ui::Layer* layer_to_show, ui::Layer* layer_to_hide);
 
-  void OnDeleteTemplate();
+  void OnDeleteSavedDesk();
   void OnDeleteButtonPressed();
 
   void OnGridItemPressed(const ui::Event& event);
 
-  // Launches the apps associated with the template unless editing the desk
-  // template name is underway.
-  void MaybeLaunchTemplate();
+  // Launches the apps associated with the saved desk unless editing the saved
+  // desk name is underway.
+  void MaybeLaunchSavedDesk();
 
-  // Called when we want to update `name_view_` when the template's name
+  // Called when we want to update `name_view_` when the saved desk's name
   // changes.
-  void OnTemplateNameChanged(const std::u16string& new_name);
+  void OnSavedDeskNameChanged(const std::u16string& new_name);
 
-  // Update template name based on `name_view_` string.
-  void UpdateTemplateName();
+  // Update saved desk name based on `name_view_` string.
+  void UpdateSavedDeskName();
 
   // OverviewHighlightableView:
   views::View* GetView() override;
@@ -162,7 +162,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void OnViewUnhighlighted() override;
 
   // A copy of the associated saved desk.
-  std::unique_ptr<DeskTemplate> desk_template_;
+  std::unique_ptr<DeskTemplate> saved_desk_;
 
   // Owned by the views hierarchy.
   SavedDeskNameView* name_view_ = nullptr;
@@ -181,10 +181,10 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   bool defer_select_all_ = false;
 
   // This is set when `name_view_` is focused or blurred to indicate whether
-  // this template's name is being modified or not. This is used instead of
+  // this saved desk's name is being modified or not. This is used instead of
   // `HasFocus()` to defer text selection, since the first mouse press event is
   // triggered before the `name_view_` is actually focused.
-  bool is_template_name_being_modified_ = false;
+  bool is_saved_desk_name_being_modified_ = false;
 
   // This is initialized to true and tells the `OnViewBlurred` function if the
   // user wants to set a new template name. We set this to false if the

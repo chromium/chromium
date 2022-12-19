@@ -194,14 +194,14 @@ class SavedDeskTest : public OverviewTestBase {
   ZeroStateIconButton* GetZeroStateDeskTemplateButtonForRoot(
       aura::Window* root_window) {
     if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
-      return desks_bar_view->zero_state_desks_templates_button();
+      return desks_bar_view->zero_state_library_button();
     return nullptr;
   }
 
   ExpandedDesksBarButton* GetExpandedStateDeskTemplateButtonForRoot(
       aura::Window* root_window) {
     if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
-      return desks_bar_view->expanded_state_desks_templates_button();
+      return desks_bar_view->expanded_state_library_button();
     return nullptr;
   }
 
@@ -1254,7 +1254,7 @@ TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Expect that the last added template item name view has focus.
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view->HasFocus());
   EXPECT_TRUE(name_view->HasSelection());
   EXPECT_EQ(u"Desk 1", name_view->GetText());
@@ -1556,9 +1556,8 @@ TEST_F(SavedDeskTest, OverflowIconView) {
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+1", overflow_icon_view.count_label()->GetText());
-  EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
-  EXPECT_TRUE(
-      item_view->Contains(overflow_icon_view.desks_templates_icon_view()));
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->GetVisible());
+  EXPECT_TRUE(item_view->Contains(overflow_icon_view.saved_desk_icon_view()));
 }
 
 // Tests that when there isn't enough space to display
@@ -1629,9 +1628,8 @@ TEST_F(SavedDeskTest, OverflowIconViewIncrementsForHiddenIcons) {
   // and were added to the overflow count. With 2 of the 7 apps being displayed,
   // having 2 windows each, the overflow count should be 14 - (2 * 2) = 10.
   EXPECT_EQ(u"+10", overflow_icon_view.count_label()->GetText());
-  EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
-  EXPECT_TRUE(
-      item_view->Contains(overflow_icon_view.desks_templates_icon_view()));
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->GetVisible());
+  EXPECT_TRUE(item_view->Contains(overflow_icon_view.saved_desk_icon_view()));
 }
 
 // Tests that apps with multiple window are counted correctly.
@@ -1664,36 +1662,36 @@ TEST_F(SavedDeskTest, IconViewMultipleWindows) {
 
   // Verify each of the apps' count labels are correct.
   SavedDeskIconViewTestApi icon_view_1(icon_views[0]);
-  EXPECT_TRUE(icon_view_1.desks_templates_icon_view()->GetVisible());
+  EXPECT_TRUE(icon_view_1.saved_desk_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_1.icon_view());
   EXPECT_FALSE(icon_view_1.count_label());
 
   SavedDeskIconViewTestApi icon_view_2(icon_views[1]);
-  EXPECT_TRUE(icon_view_2.desks_templates_icon_view()->GetVisible());
+  EXPECT_TRUE(icon_view_2.saved_desk_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_2.icon_view());
   EXPECT_FALSE(icon_view_2.count_label());
 
   SavedDeskIconViewTestApi icon_view_3(icon_views[2]);
-  EXPECT_TRUE(icon_view_3.desks_templates_icon_view()->GetVisible());
+  EXPECT_TRUE(icon_view_3.saved_desk_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_3.icon_view());
   EXPECT_TRUE(icon_view_3.count_label());
   EXPECT_EQ(u"+1", icon_view_3.count_label()->GetText());
 
   SavedDeskIconViewTestApi icon_view_4(icon_views[3]);
-  EXPECT_FALSE(icon_view_4.desks_templates_icon_view()->GetVisible());
+  EXPECT_FALSE(icon_view_4.saved_desk_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_4.icon_view());
   EXPECT_TRUE(icon_view_4.count_label());
   EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
 
   SavedDeskIconViewTestApi icon_view_5(icon_views[4]);
-  EXPECT_FALSE(icon_view_5.desks_templates_icon_view()->GetVisible());
+  EXPECT_FALSE(icon_view_5.saved_desk_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_5.icon_view());
   EXPECT_TRUE(icon_view_5.count_label());
   EXPECT_EQ(u"+2", icon_view_5.count_label()->GetText());
 
   // The overflow counter should display the number of excess windows.
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
-  EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
+  EXPECT_TRUE(overflow_icon_view.saved_desk_icon_view()->GetVisible());
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
@@ -2005,7 +2003,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   auto* overview_grid = GetOverviewSession()->GetGridWithRootWindow(
       Shell::GetPrimaryRootWindow());
   ZeroStateIconButton* button =
-      overview_grid->desks_bar_view()->zero_state_desks_templates_button();
+      overview_grid->desks_bar_view()->zero_state_library_button();
   ASSERT_TRUE(button);
   ASSERT_FALSE(button->GetVisible());
 
@@ -2030,7 +2028,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 
   overview_grid = GetOverviewSession()->GetGridWithRootWindow(
       Shell::GetPrimaryRootWindow());
-  button = overview_grid->desks_bar_view()->zero_state_desks_templates_button();
+  button = overview_grid->desks_bar_view()->zero_state_library_button();
   ASSERT_TRUE(button);
   ASSERT_FALSE(button->GetVisible());
 
@@ -2060,7 +2058,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   auto* expanded_new_desk_button =
       desks_bar_view->expanded_state_new_desk_button();
   auto* expanded_templates_button =
-      desks_bar_view->expanded_state_desks_templates_button();
+      desks_bar_view->expanded_state_library_button();
   EXPECT_TRUE(expanded_new_desk_button->GetVisible());
   EXPECT_TRUE(expanded_templates_button->GetVisible());
   EXPECT_FALSE(desks_bar_view->IsZeroState());
@@ -2518,7 +2516,7 @@ TEST_F(SavedDeskTest, TemplateNameChangeAborted) {
 
   // Pressing enter with no changes to the text.
   ClickOnView(name_view);
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view->HasFocus());
   EXPECT_TRUE(name_view->HasSelection());
   SendKey(ui::VKEY_RETURN);
@@ -2709,7 +2707,7 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
   SavedDeskNameView* saved_name_view =
       GetItemViewFromSavedDeskGrid(0)->name_view();
   ClickOnView(saved_name_view);
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(saved_name_view->HasFocus());
   EXPECT_TRUE(saved_name_view->HasSelection());
 
@@ -3120,7 +3118,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   ToggleOverview();
 
   // Mocks saving templates with some browsers.
-  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateSavedDesk(
       /*is_update=*/false, Shell::GetPrimaryRootWindow(),
       std::move(desk_template));
 
@@ -3233,7 +3231,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   auto callback = base::BindLambdaForTesting([&]() {
     item_view->name_view()->SetText(base::UTF8ToUTF16(name_1));
-    item_view->ReplaceTemplate(uuid_1);
+    item_view->ReplaceSavedDesk(uuid_1);
   });
 
   dialog_controller->ShowReplaceDialog(
@@ -3622,7 +3620,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   // changes and bring up the hover button.
   auto* event_generator = GetEventGenerator();
   ClickOnView(name_view1);
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view1->HasFocus());
   EXPECT_TRUE(name_view1->HasSelection());
   LongGestureTap(template1->GetBoundsInScreen().CenterPoint(), event_generator);
@@ -3634,7 +3632,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   // edit mode should commit changes.
   ClickOnView(name_view2);
   EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view2->HasFocus());
   EXPECT_TRUE(name_view2->HasSelection());
   gfx::Point p = library_view->GetBoundsInScreen().bottom_center();
@@ -3647,7 +3645,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   // Tests that long pressing on template2 when template1 in edit mode should
   // commit changes for template1 and bring up the hover button for template2.
   ClickOnView(name_view1);
-  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view1->HasFocus());
   EXPECT_TRUE(name_view1->HasSelection());
   LongGestureTap(template2->GetBoundsInScreen().CenterPoint(), event_generator);
@@ -3774,13 +3772,13 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   // The actual template name will still have "(1)" appended to maintain its
   // uniqueness.
   EXPECT_EQ(u"Desk 1 (1)",
-            GetItemViewFromSavedDeskGrid(0)->desk_template().template_name());
+            GetItemViewFromSavedDeskGrid(0)->saved_desk().template_name());
 
   // Set the second template to have a new unique name by updating the model
   // directly. This mimics updating the name on a different device and is the
   // only way to change the name without prompting the replace dialog.
   SavedDeskItemView* second_item = GetItemViewFromSavedDeskGrid(1);
-  auto new_desk_template = second_item->desk_template().Clone();
+  auto new_desk_template = second_item->saved_desk().Clone();
   new_desk_template->set_template_name(u"Desk 2");
   const base::GUID uuid = new_desk_template->uuid();
 
@@ -3806,7 +3804,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   saved_desk_util::GetSavedDeskPresenter()->EntriesAddedOrUpdatedRemotely(
       {result.entry.get()});
   ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
-  ASSERT_EQ(u"Desk 2", second_item->desk_template().template_name());
+  ASSERT_EQ(u"Desk 2", second_item->saved_desk().template_name());
 
   // Save template 2 under new name and confirm, this will trigger replace
   // dialog.
@@ -4393,7 +4391,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
     // that we have a saved desk with the expected `name`.
     OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
     SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
-    EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+    EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
     EXPECT_TRUE(name_view->HasFocus());
     EXPECT_TRUE(name_view->HasSelection());
     EXPECT_EQ(name, name_view->GetText());
@@ -4519,7 +4517,7 @@ TEST_F(SavedDeskTest, NoEmptyDeskTemplate) {
   ToggleOverview();
   auto* overview_session = GetOverviewSession();
   ASSERT_TRUE(overview_session);
-  overview_session->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
+  overview_session->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kTemplate, Shell::GetPrimaryRootWindow());
 
   // Ensure there are no templates.

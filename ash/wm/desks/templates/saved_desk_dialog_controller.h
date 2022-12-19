@@ -25,7 +25,7 @@ namespace ash {
 class SavedDeskDialog;
 
 // SavedDeskDialogController controls when to show the various confirmation
-// dialogs for modifying desk templates.
+// dialogs for modifying saved desks.
 class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
  public:
   SavedDeskDialogController();

@@ -203,10 +203,9 @@ class DeskContainerObserver : public aura::WindowObserver {
   }
 
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    // We need this for desks templates, where new app windows can be created
-    // while in overview. The window may not be visible when `OnWindowAdded` is
-    // called so updating the previews then wouldn't show the new window
-    // preview.
+    // We need this for saved desks, where new app windows can be created while
+    // in overview. The window may not be visible when `OnWindowAdded` is called
+    // so updating the previews then wouldn't show the new window preview.
 
     if (!Shell::Get()->overview_controller()->InOverviewSession())
       return;

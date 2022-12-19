@@ -858,7 +858,7 @@ bool DesksController::MoveWindowFromActiveDeskTo(
     } else if (visible_on_all_desks) {
       // Create an item for a visible on all desks window if it doesn't have one
       // already. This can happen when launching a template. When we are in the
-      // templates grid, there are no items.
+      // saved desk grid, there are no items.
       overview_session->AppendItem(window,
                                    /*reposition=*/true, /*animate=*/true);
     }
@@ -1150,9 +1150,9 @@ const Desk* DesksController::CreateNewDeskForSavedDesk(
 
   if (template_type == DeskTemplateType::kTemplate ||
       template_type == DeskTemplateType::kFloatingWorkspace) {
-    // We're staying in overview mode, so move desks bar window and the save
-    // template button to the new desk. They would otherwise disappear when the
-    // new desk is activated.
+    // We're staying in overview mode, so move desks bar window and the
+    // save desk buttons to the new desk. They would otherwise disappear
+    // when the new desk is activated.
     DCHECK(active_desk_);
 
     // Since we're going to move certain windows from the currently active desk,
