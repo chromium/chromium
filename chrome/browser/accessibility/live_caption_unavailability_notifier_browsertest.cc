@@ -62,14 +62,14 @@ class LiveCaptionUnavailabilityNotifierTest : public LiveCaptionBrowserTest {
 
   bool HasBubbleController() {
     return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
-               ->caption_bubble_controller_.get() != nullptr;
+               ->caption_bubble_controller_for_testing() != nullptr;
   }
 
   void ExpectIsWidgetVisible(bool visible) {
 #if defined(TOOLKIT_VIEWS)
     CaptionBubbleController* bubble_controller =
         LiveCaptionControllerFactory::GetForProfile(browser()->profile())
-            ->caption_bubble_controller_.get();
+            ->caption_bubble_controller_for_testing();
     EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
 #endif
   }

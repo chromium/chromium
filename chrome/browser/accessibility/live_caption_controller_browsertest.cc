@@ -73,7 +73,8 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   CaptionBubbleController* GetBubbleControllerForProfile(Profile* profile) {
-    return GetControllerForProfile(profile)->caption_bubble_controller_.get();
+    return GetControllerForProfile(profile)
+        ->caption_bubble_controller_for_testing();
   }
 
   CaptionBubbleContextBrowser* GetCaptionBubbleContextBrowser() {
@@ -123,8 +124,8 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
   }
 
   bool HasBubbleControllerOnProfile(Profile* profile) {
-    return GetControllerForProfile(profile)->caption_bubble_controller_ !=
-           nullptr;
+    return GetControllerForProfile(profile)
+               ->caption_bubble_controller_for_testing() != nullptr;
   }
 
   void ExpectIsWidgetVisible(bool visible) {

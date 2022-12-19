@@ -27,6 +27,10 @@ namespace captions {
 class LiveCaptionController;
 }  // namespace captions
 
+namespace media {
+class AudioSystem;
+}  // namespace media
+
 namespace ash {
 
 // Responsible for running the live captioning model on audio from non-web (e.g.
@@ -71,6 +75,13 @@ class SystemLiveCaptionService
       bool is_speech_recognition_available) override;
   void SpeechRecognitionLanguageChanged(const std::string& language) override;
 
+  void set_audio_system_factory_for_testing(
+      base::RepeatingCallback<std::unique_ptr<media::AudioSystem>()>
+          create_audio_system_for_testing) {
+    create_audio_system_for_testing_ =
+        std::move(create_audio_system_for_testing);
+  }
+
  private:
   // Stops and destructs audio stream recognizing client.
   void StopRecognizing();
@@ -84,6 +95,10 @@ class SystemLiveCaptionService
 
   mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
       browser_observer_receiver_{this};
+
+  // Used to inject a fake audio system into our client in tests.
+  base::RepeatingCallback<std::unique_ptr<media::AudioSystem>()>
+      create_audio_system_for_testing_;
 
   base::WeakPtrFactory<SystemLiveCaptionService> weak_ptr_factory_{this};
 };

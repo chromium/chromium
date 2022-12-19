@@ -64,13 +64,10 @@ class CaptionBubbleController {
   virtual void UpdateCaptionStyle(
       absl::optional<ui::CaptionStyle> caption_style) = 0;
 
- private:
-  friend class LiveCaptionControllerTest;
-  friend class LiveCaptionSpeechRecognitionHostTest;
-  friend class LiveCaptionUnavailabilityNotifierTest;
-
   virtual bool IsWidgetVisibleForTesting() = 0;
+  virtual bool IsGenericErrorMessageVisibleForTesting() = 0;
   virtual std::string GetBubbleLabelTextForTesting() = 0;
+  virtual void CloseActiveModelForTesting() = 0;
 };
 
 }  // namespace captions

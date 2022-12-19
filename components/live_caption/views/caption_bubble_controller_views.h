@@ -60,6 +60,11 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   void UpdateCaptionStyle(
       absl::optional<ui::CaptionStyle> caption_style) override;
 
+  bool IsWidgetVisibleForTesting() override;
+  bool IsGenericErrorMessageVisibleForTesting() override;
+  std::string GetBubbleLabelTextForTesting() override;
+  void CloseActiveModelForTesting() override;
+
  private:
   friend class CaptionBubbleControllerViewsTest;
   friend class LiveCaptionUnavailabilityNotifierTest;
@@ -78,9 +83,6 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
 
   // Called on a cross-origin navigation or reload.
   void OnSessionReset(const std::string& session_id);
-
-  bool IsWidgetVisibleForTesting() override;
-  std::string GetBubbleLabelTextForTesting() override;
 
   raw_ptr<CaptionBubble, DanglingUntriaged> caption_bubble_;
   raw_ptr<views::Widget, DanglingUntriaged> caption_widget_;

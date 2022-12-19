@@ -100,6 +100,13 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
             prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
             /*is_server_based=*/false,
             media::mojom::RecognizerClientType::kLiveCaption));
+
+    // Inject a fake audio system in tests.
+    if (!create_audio_system_for_testing_.is_null()) {
+      client_->set_audio_system_for_testing(  // IN-TEST
+          create_audio_system_for_testing_.Run());
+    }
+
     return;
   }
 

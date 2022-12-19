@@ -92,6 +92,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
+  bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;

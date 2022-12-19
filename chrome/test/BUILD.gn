@@ -3662,6 +3662,7 @@ if (!is_android) {
         "../browser/ash/accessibility/spoken_feedback_browsertest.h",
         "../browser/ash/accessibility/sticky_keys_browsertest.cc",
         "../browser/ash/accessibility/switch_access_browsertest.cc",
+        "../browser/ash/accessibility/system_live_caption_service_browsertest.cc",
         "../browser/ash/accessibility/touch_exploration_controller_browsertest.cc",
         "../browser/ash/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",

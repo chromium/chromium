@@ -1159,6 +1159,10 @@ views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
 }
 
+bool CaptionBubble::IsGenericErrorMessageVisibleForTesting() const {
+  return generic_error_message_->GetVisible();
+}
+
 void CaptionBubble::SetCaptionBubbleStyle() {
   SetTextSizeAndFontFamily();
   if (GetWidget()) {

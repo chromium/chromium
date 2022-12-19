@@ -168,7 +168,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
         std::make_unique<MockAudioSystem>();
     mock_audio_system->SetInputStreamParameters(
         media::AudioDeviceDescription::kDefaultDeviceId, params);
-    recognizer_->audio_system_ = std::move(mock_audio_system);
+    recognizer_->set_audio_system_for_testing(std::move(mock_audio_system));
     StartAndWaitForRecognizing();
   }
 

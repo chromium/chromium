@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/speech/speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "media/audio/audio_system.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,9 +65,12 @@ class SpeechRecognitionRecognizerClientImpl
       media::mojom::LanguageIdentificationEventPtr event) override;
   void OnSpeechRecognitionStopped() override;
 
- private:
-  friend class SpeechRecognitionRecognizerClientImplTest;
+  void set_audio_system_for_testing(
+      std::unique_ptr<media::AudioSystem> audio_system) {
+    audio_system_ = std::move(audio_system);
+  }
 
+ private:
   void OnRecognizerBound(bool success);
   void OnRecognizerDisconnected();
   void StartFetchingOnInputDeviceInfo(
@@ -85,7 +89,7 @@ class SpeechRecognitionRecognizerClientImpl
   // in between requesting the callback and it running.
   bool waiting_for_params_;
 
-  // Tests may set audio_system_ after constructing an
+  // Tests may use the audio system setter above after constructing an
   // SpeechRecognitionRecognizerClientImpl to override default behavior.
   std::unique_ptr<media::AudioSystem> audio_system_;
 

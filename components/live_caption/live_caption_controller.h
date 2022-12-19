@@ -80,12 +80,11 @@ class LiveCaptionController : public KeyedService,
   void OnToggleFullscreen(CaptionBubbleContext* caption_bubble_context);
 #endif
 
- private:
-  friend class LiveCaptionControllerFactory;
-  friend class LiveCaptionControllerTest;
-  friend class LiveCaptionSpeechRecognitionHostTest;
-  friend class LiveCaptionUnavailabilityNotifierTest;
+  CaptionBubbleController* caption_bubble_controller_for_testing() {
+    return caption_bubble_controller_.get();
+  }
 
+ private:
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
