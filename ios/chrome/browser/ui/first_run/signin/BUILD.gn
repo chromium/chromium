@@ -34,8 +34,6 @@ source_set("signin") {
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/uma",
     "//ios/chrome/browser/ui/first_run/welcome",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 

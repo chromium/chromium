@@ -96,7 +96,6 @@ source_set("policy") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser/signin",
     "//services/network/public/cpp",
     "//url",
   ]

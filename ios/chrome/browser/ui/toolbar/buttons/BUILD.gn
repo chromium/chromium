@@ -52,7 +52,6 @@ source_set("buttons") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",

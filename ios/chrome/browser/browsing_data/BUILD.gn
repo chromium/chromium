@@ -79,7 +79,6 @@ source_set("browsing_data") {
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/net",
-    "//ios/public/provider/chrome/browser",
     "//ios/web/common:web_view_creation_util",
     "//net",
     "//url",

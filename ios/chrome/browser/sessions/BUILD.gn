@@ -38,7 +38,6 @@ source_set("sessions") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
-    "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//ios/web/public/security",
     "//ios/web/public/session",

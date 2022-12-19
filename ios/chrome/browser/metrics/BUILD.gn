@@ -115,7 +115,6 @@ source_set("metrics") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web/common",
     "//ios/web/public/deprecated",

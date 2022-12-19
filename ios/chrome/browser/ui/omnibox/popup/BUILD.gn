@@ -199,7 +199,6 @@ source_set("popup_ui") {
     "//ios/chrome/common/ui/elements:elements",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
     "//url",

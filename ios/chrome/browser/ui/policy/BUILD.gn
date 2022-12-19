@@ -38,8 +38,6 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/main:scene_ui_provider",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

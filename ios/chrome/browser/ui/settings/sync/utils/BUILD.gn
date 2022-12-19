@@ -54,7 +54,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings/sync/utils/test",
     "//ios/chrome/common/ui/colors",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

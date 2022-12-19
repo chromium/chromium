@@ -316,7 +316,6 @@ source_set("main") {
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
-    "//ios/public/provider/chrome/browser",
     "//net",
   ]
 

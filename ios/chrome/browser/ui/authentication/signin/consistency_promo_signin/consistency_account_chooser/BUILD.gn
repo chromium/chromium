@@ -39,8 +39,6 @@ source_set("consistency_account_chooser") {
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/ui/colors",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]
 }

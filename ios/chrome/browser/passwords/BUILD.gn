@@ -88,7 +88,6 @@ source_set("passwords") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
     "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ios/web/public/js_messaging",

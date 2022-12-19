@@ -51,8 +51,6 @@ source_set("sync") {
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
     "//url",
   ]
@@ -93,7 +91,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",

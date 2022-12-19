@@ -47,7 +47,6 @@ source_set("discover_feed_factory") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
   ]
 }

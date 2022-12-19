@@ -69,7 +69,6 @@ source_set("privacy_ui") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/components/security_interstitials/https_only_mode:feature",
-    "//ios/public/provider/chrome/browser",
     "//ui/base",
   ]
   frameworks = [ "LocalAuthentication.framework" ]

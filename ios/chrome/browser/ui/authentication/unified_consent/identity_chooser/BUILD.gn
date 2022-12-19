@@ -23,7 +23,6 @@ source_set("identity_chooser") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 

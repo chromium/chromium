@@ -168,7 +168,6 @@ source_set("bookmarks_ui") {
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view:views",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
     "//ui/base",
   ]
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/bookmarks/cells" ]

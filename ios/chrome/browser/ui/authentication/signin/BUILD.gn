@@ -66,8 +66,6 @@ source_set("signin_impl") {
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 
@@ -122,10 +120,11 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//base/test:test_support",
-    "//components/policy:policy_code_generate",
+    "//components/policy:generated",
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
@@ -143,7 +142,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

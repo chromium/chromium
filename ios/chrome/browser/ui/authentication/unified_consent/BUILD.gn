@@ -23,7 +23,6 @@ source_set("unified_consent") {
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 

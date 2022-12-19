@@ -46,8 +46,6 @@ source_set("user_signin") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]
   public_deps = [
@@ -87,7 +85,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
@@ -118,7 +115,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

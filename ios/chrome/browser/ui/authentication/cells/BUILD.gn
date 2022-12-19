@@ -79,7 +79,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/third_party/material_components_ios",

@@ -177,9 +177,7 @@ source_set("browser_state_impl") {
     "//ios/components/cookie_util",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/net",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/web/net/cookies",
     "//net",
     "//net:extras",
@@ -261,7 +259,6 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//net:test_support",
   ]

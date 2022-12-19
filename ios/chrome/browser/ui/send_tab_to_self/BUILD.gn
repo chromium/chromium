@@ -26,7 +26,6 @@ source_set("send_tab_to_self") {
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url:constants",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/third_party/material_components_ios",
     "//ui/base",
     "//url",

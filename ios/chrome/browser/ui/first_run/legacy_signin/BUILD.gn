@@ -33,8 +33,6 @@ source_set("legacy_signin") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/browser/url_loading",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
   ]
 }
 

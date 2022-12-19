@@ -17,7 +17,6 @@ source_set("geolocation") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
-    "//ios/public/provider/chrome/browser",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ui/base",

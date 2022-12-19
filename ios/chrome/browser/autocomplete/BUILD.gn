@@ -53,7 +53,6 @@ source_set("autocomplete") {
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/components/webui:url_constants",
-    "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//url",
   ]

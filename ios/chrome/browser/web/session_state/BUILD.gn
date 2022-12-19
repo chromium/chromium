@@ -26,7 +26,6 @@ source_set("session_state") {
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web_state_list",
-    "//ios/public/provider/chrome/browser",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",

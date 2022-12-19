@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace syncer {
 class SyncService;

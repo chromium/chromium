@@ -49,7 +49,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/test/fakes",
-    "//ios/public/provider/chrome/browser",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",

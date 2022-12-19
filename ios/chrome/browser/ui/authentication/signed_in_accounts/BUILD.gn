@@ -28,7 +28,6 @@ source_set("signed_in_accounts") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/signin",
   ]
   public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]

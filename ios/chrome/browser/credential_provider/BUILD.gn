@@ -54,7 +54,6 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/common/credential_provider:ui",
       "//ios/chrome/common/ui/favicon:favicon",
       "//ios/chrome/common/ui/favicon:favicon_constants",
-      "//ios/public/provider/chrome/browser/signin",
       "//url",
     ]
     frameworks = [
