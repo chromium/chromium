@@ -1743,9 +1743,7 @@ bool NGBoxFragmentPainter::ShouldPaint(
   // rectangle.
   if (box_fragment_.IsPaginatedRoot())
     return true;
-  const auto& box = *To<LayoutBox>(box_fragment_.GetLayoutObject());
-  return paint_state.LocalRectIntersectsCullRect(
-      box.PhysicalVisualOverflowRect());
+  return paint_state.LocalRectIntersectsCullRect(box_fragment_.InkOverflow());
 }
 
 void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
