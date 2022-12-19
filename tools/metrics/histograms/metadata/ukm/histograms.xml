@@ -115,6 +115,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UKM.Entries.Dropped.RejectedByFilter.ByEntryHash"
+    enum="UkmEventNameHash" expires_after="2023-05-05">
+  <owner>yrsun@chromium.org</owner>
+  <owner>ukm-team@google.com</owner>
+  <summary>
+    The hashed name of the UKM entry being dropped. The hash is the same hash
+    sent in the UKM log but truncated to 31 bits with &quot;event_hash &amp;
+    0x7fffffff&quot;. Recorded when adding an entry and the UKM recorder decides
+    it should be dropped due to the UkmRecorderImpl::ApplyEntryFilter check.
+  </summary>
+</histogram>
+
 <histogram name="UKM.Entries.Dropped.SampledOut.ByEntryHash"
     enum="UkmEventNameHash" expires_after="2023-05-05">
   <owner>lucnguyen@google.com</owner>
