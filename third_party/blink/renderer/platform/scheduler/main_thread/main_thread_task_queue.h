@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -15,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/request_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
@@ -437,9 +439,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   FrameSchedulerImpl* GetFrameScheduler() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
-      TaskType task_type) {
-    return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
-  }
+      TaskType task_type);
 
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
   absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
@@ -456,7 +456,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the desired task type.
   const scoped_refptr<base::SingleThreadTaskRunner>&
   GetTaskRunnerWithDefaultTaskType() {
-    return task_queue_->task_runner();
+    return task_runner_with_default_task_type_;
   }
 
   bool IsThrottled() const;
@@ -538,7 +538,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // DetachFromMainThreadScheduler.
   void ClearReferencesToSchedulers();
 
+  scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner>);
+
   scoped_refptr<TaskQueue> task_queue_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      task_runner_with_default_task_type_;
   absl::optional<TaskQueueThrottler> throttler_;
 
   const QueueType queue_type_;

@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
@@ -28,7 +30,8 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const TaskQueue::Spec& spec,
       NonMainThreadSchedulerBase* non_main_thread_scheduler,
-      bool can_be_throttled);
+      bool can_be_throttled,
+      scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner);
   ~NonMainThreadTaskQueue();
 
   void OnTaskCompleted(
@@ -37,9 +40,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
       base::LazyNow* lazy_now);
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
-      TaskType task_type) {
-    return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
-  }
+      TaskType task_type);
 
   bool IsThrottled() const { return throttler_->IsThrottled(); }
 
@@ -88,11 +89,14 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   // the desired task type.
   const scoped_refptr<base::SingleThreadTaskRunner>&
   GetTaskRunnerWithDefaultTaskType() {
-    return task_queue_->task_runner();
+    return task_runner_with_default_task_type_;
   }
 
  private:
   void OnWebSchedulingPriorityChanged();
+
+  scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner>);
 
   scoped_refptr<TaskQueue> task_queue_;
   absl::optional<TaskQueueThrottler> throttler_;
@@ -103,6 +107,10 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used to determine the task queue priority.
   absl::optional<WebSchedulingPriority> web_scheduling_priority_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      task_runner_with_default_task_type_;
 };
 
 }  // namespace scheduler

@@ -16,6 +16,8 @@ blink_platform_sources("scheduler") {
     "common/auto_advancing_virtual_time_domain.h",
     "common/back_forward_cache_disabling_feature_tracker.cc",
     "common/back_forward_cache_disabling_feature_tracker.h",
+    "common/blink_scheduler_single_thread_task_runner.cc",
+    "common/blink_scheduler_single_thread_task_runner.h",
     "common/cancelable_closure_holder.cc",
     "common/cancelable_closure_holder.h",
     "common/cooperative_scheduling_manager.cc",
@@ -233,6 +235,7 @@ source_set("unit_tests") {
   sources = [
     "common/auto_advancing_virtual_time_domain_unittest.cc",
     "common/back_forward_cache_disabling_feature_tracker_unittest.cc",
+    "common/blink_scheduler_single_thread_task_runner_unittest.cc",
     "common/cooperative_scheduling_manager_unittest.cc",
     "common/idle_helper_unittest.cc",
     "common/metrics_helper_unittest.cc",

@@ -5,12 +5,16 @@
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
 namespace blink {
@@ -40,10 +44,15 @@ IdleHelper::IdleHelper(
   on_idle_task_posted_closure_.Reset(base::BindRepeating(
       &IdleHelper::OnIdleTaskPostedOnMainThread, weak_idle_helper_ptr_));
 
+  int idle_task_type = static_cast<int>(TaskType::kMainThreadTaskQueueIdle);
+  scoped_refptr<base::SingleThreadTaskRunner> idle_queue_task_runner =
+      base::FeatureList::IsEnabled(
+          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)
+          ? base::MakeRefCounted<BlinkSchedulerSingleThreadTaskRunner>(
+                idle_queue_->CreateTaskRunner(idle_task_type), nullptr)
+          : idle_queue_->CreateTaskRunner(idle_task_type);
   idle_task_runner_ = base::MakeRefCounted<SingleThreadIdleTaskRunner>(
-      idle_queue_->CreateTaskRunner(
-          static_cast<int>(TaskType::kMainThreadTaskQueueIdle)),
-      helper_->ControlTaskRunner(), this);
+      std::move(idle_queue_task_runner), helper_->ControlTaskRunner(), this);
 
   // This fence will block any idle tasks from running.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);

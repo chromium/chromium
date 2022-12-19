@@ -5,6 +5,12 @@ specific_include_rules = {
   "back_forward_cache_disabling_feature_tracker_unittest.cc": [
     "+third_party/blink/renderer/platform/bindings/source_location.h",
   ],
+  "blink_scheduler_single_thread_task_runner.cc": [
+    "+base/functional/callback_helpers.h",
+  ],
+  "blink_scheduler_single_thread_task_runner.h": [
+    "+base/functional/callback_forward.h",
+  ],
   "frame_or_worker_scheduler.cc": [
     "+third_party/blink/renderer/platform/bindings/source_location.h",
   ],

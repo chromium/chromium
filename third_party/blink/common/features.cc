@@ -1670,5 +1670,10 @@ BASE_FEATURE(kSpeculationRulesPrefetchFuture,
 BASE_FEATURE(kAllowPageWithIDBConnectionInBFCache,
              "AllowPageWithIDBConnectionInBFCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
+             "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

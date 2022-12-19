@@ -221,6 +221,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // Submits a non-nestable task to delete the given object.  Returns
   // true if the object may be deleted at some point in the future,
   // and false if the object definitely will not be deleted.
+  //
+  // By default, this leaks `object` if the deleter task doesn't run, e.g. if
+  // the underlying task queue is shut down first. Subclasses can override this
+  // behavior by specializing `DeleteOrReleaseSoonInternal()`.
   template <class T>
   bool DeleteSoon(const Location& from_here, const T* object) {
     return DeleteOrReleaseSoonInternal(from_here, &DeleteHelper<T>::DoDelete,
@@ -234,6 +238,10 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   }
 
   // Submits a non-nestable task to release the given object.
+  //
+  // By default, this leaks `object` if the releaser task doesn't run, e.g. if
+  // the underlying task queue is shut down first. Subclasses can override this
+  // behavior by specializing `DeleteOrReleaseSoonInternal()`.
   //
   // ReleaseSoon makes sure that the object it the scoped_refptr points to gets
   // properly released on the correct thread.
@@ -320,10 +328,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
     current_default.task_runner_ = task_runner;
   }
 
- private:
-  bool DeleteOrReleaseSoonInternal(const Location& from_here,
-                                   void (*deleter)(const void*),
-                                   const void* object);
+  virtual bool DeleteOrReleaseSoonInternal(const Location& from_here,
+                                           void (*deleter)(const void*),
+                                           const void* object);
 };
 
 // Sample usage with std::unique_ptr :

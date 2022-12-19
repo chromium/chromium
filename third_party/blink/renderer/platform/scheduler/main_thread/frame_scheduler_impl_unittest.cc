@@ -96,6 +96,16 @@ void RecordRunTime(std::vector<base::TimeTicks>* run_times) {
   run_times->push_back(base::TimeTicks::Now());
 }
 
+class TestObject {
+ public:
+  explicit TestObject(int* counter) : counter_(counter) {}
+
+  ~TestObject() { ++(*counter_); }
+
+ private:
+  int* counter_;
+};
+
 }  // namespace
 
 // All TaskTypes that can be passed to
@@ -3329,6 +3339,111 @@ TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasVeryHighPriority) {
   EXPECT_EQ(TaskQueue::QueuePriority::kVeryHighPriority,
             task_queue->GetQueuePriority());
 }
+
+class FrameSchedulerImplDeleterTaskRunnerEnabledTest
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplDeleterTaskRunnerEnabledTest()
+      : FrameSchedulerImplTest(
+            {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter},
+            {}) {}
+};
+
+TEST_F(FrameSchedulerImplDeleterTaskRunnerEnabledTest,
+       DeleteSoonUsesBackupTaskRunner) {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
+  int counter = 0;
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  frame_scheduler_.reset();
+
+  EXPECT_EQ(0, counter);
+  // Because of graceful shutdown, the increment task should run since it was
+  // queued. Since it's empty after the task finishes, the queue should then be
+  // shut down.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, counter);
+
+  std::unique_ptr<TestObject> test_object =
+      std::make_unique<TestObject>(&counter);
+  task_runner->DeleteSoon(FROM_HERE, std::move(test_object));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, counter);
+}
+
+enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };
+
+class FrameSchedulerImplTaskRunnerWithCustomDeleterTest
+    : public FrameSchedulerImplTest,
+      public ::testing::WithParamInterface<DeleterTaskRunnerEnabled> {
+ public:
+  FrameSchedulerImplTaskRunnerWithCustomDeleterTest() {
+    feature_list_.Reset();
+    if (GetParam() == DeleterTaskRunnerEnabled::kEnabled) {
+      feature_list_.InitWithFeatures(
+          {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter});
+    }
+  }
+};
+
+TEST_P(FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
+       DeleteSoonAfterShutdown) {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
+  int counter = 0;
+
+  // Deleting before shutdown should always work.
+  std::unique_ptr<TestObject> test_object1 =
+      std::make_unique<TestObject>(&counter);
+  task_runner->DeleteSoon(FROM_HERE, std::move(test_object1));
+  EXPECT_EQ(counter, 0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(counter, 1);
+
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  frame_scheduler_.reset();
+
+  EXPECT_EQ(counter, 1);
+  // Because of graceful shutdown, the increment task should run since it was
+  // queued. Since it's empty after the task finishes, the queue should then be
+  // shut down.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(counter, 2);
+
+  std::unique_ptr<TestObject> test_object2 =
+      std::make_unique<TestObject>(&counter);
+  TestObject* unowned_test_object2 = test_object2.get();
+  task_runner->DeleteSoon(FROM_HERE, std::move(test_object2));
+  EXPECT_EQ(counter, 2);
+  base::RunLoop().RunUntilIdle();
+
+  // Without the custom task runner, this leaks.
+  if (GetParam() == DeleterTaskRunnerEnabled::kDisabled) {
+    EXPECT_EQ(counter, 2);
+    delete (unowned_test_object2);
+  } else {
+    EXPECT_EQ(counter, 3);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
+    testing::Values(DeleterTaskRunnerEnabled::kEnabled,
+                    DeleterTaskRunnerEnabled::kDisabled),
+    [](const testing::TestParamInfo<DeleterTaskRunnerEnabled>& info) {
+      switch (info.param) {
+        case DeleterTaskRunnerEnabled::kEnabled:
+          return "Enabled";
+        case DeleterTaskRunnerEnabled::kDisabled:
+          return "Disabled";
+      }
+    });
 
 }  // namespace frame_scheduler_impl_unittest
 }  // namespace scheduler
