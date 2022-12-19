@@ -196,6 +196,29 @@ class TastTests(TestRunnerTest):
       [True],
       [False],
   ])
+  def test_tast_retries(self, use_vm):
+    """Tests running a tast tests with retries."""
+    with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
+      json.dump(_TAST_TEST_RESULTS_JSON, f)
+
+    args = self.get_common_tast_args(use_vm) + [
+        '-t=login.Chrome',
+        '--tast-retries=1',
+    ]
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
+      mock_popen.return_value.returncode = 0
+      test_runner.main()
+      expected_cmd = self.get_common_tast_expectations(use_vm) + [
+          '--tast', 'login.Chrome', '--tast-retries=1'
+      ]
+
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
   def test_tast(self, use_vm):
     """Tests running a tast tests."""
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
