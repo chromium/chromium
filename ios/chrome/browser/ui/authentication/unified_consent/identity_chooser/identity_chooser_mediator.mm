@@ -20,10 +20,6 @@
       _accountManagerServiceObserver;
 }
 
-// Gets the Chrome identity service.
-@property(nonatomic, assign, readonly)
-    ios::ChromeIdentityService* chromeIdentityService;
-
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
@@ -119,11 +115,6 @@
   item.avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::Regular);
   [self.consumer itemHasChanged:item];
-}
-
-// Getter for the Chrome identity service.
-- (ios::ChromeIdentityService*)chromeIdentityService {
-  return ios::GetChromeBrowserProvider().GetChromeIdentityService();
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
