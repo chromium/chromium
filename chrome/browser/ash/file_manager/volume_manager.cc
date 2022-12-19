@@ -711,15 +711,9 @@ void VolumeManager::Initialize() {
   VLOG(1) << *this << "::Initialize";
 
   // If in the Sign in profile or the lock screen app profile or lock screen
-  // profile (i.e. if ash::ProfileHelper::IsUserProfile(etc) returns false),
-  // skip mounting and listening for mount events.
-  //
-  // Ditto (return early) for incognito profiles. We largely treat
-  // VolumeManager as a per-login singleton regarding its control-plane duties.
-  if (!ash::ProfileHelper::IsUserProfile(profile_) ||
-      profile_->IsIncognitoProfile()) {
-    VLOG(1) << *this << ": Not an incogntio or a user profile: "
-            << profile_->GetDebugName();
+  // profile, skip mounting and listening for mount events.
+  if (!ash::ProfileHelper::IsUserProfile(profile_)) {
+    VLOG(1) << *this << ": Not a user profile: " << profile_->GetDebugName();
     return;
   }
 
@@ -1364,12 +1358,14 @@ void VolumeManager::OnProvidedFileSystemMount(
                                                  volume_context);
 
   // Register the fusebox FSP storage device with chrome::storage.
-  bool result = mount_points->RegisterFileSystem(
-      base::StrCat(
-          {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid}),
-      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-      volume_with_fusebox->mount_path());
-  DCHECK(result);
+  if (!profile_->IsIncognitoProfile()) {
+    bool result = mount_points->RegisterFileSystem(
+        base::StrCat({util::kFuseBoxMountNamePrefix,
+                      util::kFuseBoxSubdirPrefixFSP, fsid}),
+        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+        volume_with_fusebox->mount_path());
+    DCHECK(result);
+  }
 
   // Mount the fusebox FSP storage device in files app.
   DoMountEvent(std::move(volume_with_fusebox));
@@ -1570,10 +1566,12 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Register the MTP storage device with chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  bool result_sans_fusebox = mount_points->RegisterFileSystem(
-      fsid, storage::kFileSystemTypeDeviceMediaAsFileStorage,
-      storage::FileSystemMountOption(), path);
-  DCHECK(result_sans_fusebox);
+  if (!profile_->IsIncognitoProfile()) {
+    bool result = mount_points->RegisterFileSystem(
+        fsid, storage::kFileSystemTypeDeviceMediaAsFileStorage,
+        storage::FileSystemMountOption(), path);
+    DCHECK(result);
+  }
 
   // Register the MTP storage device with the MTPDeviceMapService.
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -1608,11 +1606,13 @@ void VolumeManager::DoAttachMtpStorage(
       Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
 
   // Register the fusebox MTP storage device with chrome::storage.
-  bool result_with_fusebox = mount_points->RegisterFileSystem(
-      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
-      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-      volume_with_fusebox->mount_path());
-  DCHECK(result_with_fusebox);
+  if (!profile_->IsIncognitoProfile()) {
+    bool result = mount_points->RegisterFileSystem(
+        base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
+        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+        volume_with_fusebox->mount_path());
+    DCHECK(result);
+  }
 
   // Mount the fusebox MTP storage device in files app.
   DoMountEvent(std::move(volume_with_fusebox));
@@ -1703,11 +1703,13 @@ void VolumeManager::OnDocumentsProviderRootAdded(
                                          summary, icon_url, read_only, subdir);
 
   // Register the fusebox ADP storage device with chrome::storage.
-  bool result = mount_points->RegisterFileSystem(
-      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
-      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-      volume->mount_path());
-  DCHECK(result);
+  if (!profile_->IsIncognitoProfile()) {
+    bool result = mount_points->RegisterFileSystem(
+        base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
+        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+        volume->mount_path());
+    DCHECK(result);
+  }
 
   // Mount the fusebox ADP storage device in files app.
   DoMountEvent(std::move(volume));
