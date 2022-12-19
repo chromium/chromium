@@ -1,8 +1,8 @@
-# WebView quick start
+# WebView quick start (legacy)
 
-*** promo
-Googlers may wish to consult http://go/clank-webview for Google-specific
-developer guides.
+*** note
+This is an old version of the quick start guide. We recommend following the [new
+version instead](./quick-start.md).
 ***
 
 [TOC]
@@ -44,11 +44,9 @@ $ source build/android/envsetup.sh
 
 ## Device setup
 
-The recommend configuration is to use an **Android 10 (Q) emulator**. Android R
-or higher is also OK. If you need to use Android N-P instead then you can use
-the [old version of this guide](./quick-start-legacy.md). If you need to use any
-other configuration, then you need to switch to the full [build
-guide](./build-instructions.md) instead.
+The recommend configuration is to use an **Android P emulator**. Android N or O
+are also OK, however if you need to use any other OS version then you need to
+switch to the full [build guide](./build-instructions.md) instead.
 
 Set up an [Android emulator](/docs/android_emulator.md). You have 2 options for
 this:
@@ -61,7 +59,7 @@ this:
 
   ```shell
   $ tools/android/avd/avd.py start \
-      --avd-config tools/android/avd/proto/generic_android29.textpb --emulator-window
+      --avd-config tools/android/avd/proto/generic_android28.textpb --emulator-window
   ```
 
 2. Android Studio Emulator image. [Install the Android Studio
@@ -70,7 +68,7 @@ this:
    to launch the Device Manager GUI. Create an emulator with these settings:
 
    * Skin: any Pixel device skin is fine
-   * Release name: **10**
+   * Release name: **Pie**
    * ABI: **x86**
    * Target: **Google APIs**
    <!-- Keep this part in sync with /docs/android_emulator.md -->
@@ -101,6 +99,11 @@ Configure GN args (run `gn args out/Default`) as follows:
 ```gn
 target_os = "android"
 target_cpu = "x86"
+
+# This package name is allowed for debuggable (userdebug) devices, and lets
+# devs install a WebView provider without the usual signature checks. This only
+# works on N-P.
+system_webview_package_name = "com.google.android.apps.chrome"
 
 # Recommended: this lets you use System WebView Shell as a test app.
 system_webview_shell_package_name = "org.chromium.my_webview_shell"
@@ -195,6 +198,7 @@ troubleshoot the problem is to query the state of the on-device
 WebViewUpdateService:
 
 ```shell
+# Only available on O+
 $ adb shell dumpsys webviewupdate
 
 Current WebView Update Service state
@@ -279,21 +283,12 @@ hitting one of the cases above.
 
 ### INSTALL\_FAILED\_UPDATE\_INCOMPATIBLE: Package ... signatures do not match previously installed version
 
-Double check your emulator is Android 10 (Q) and that this is a **Google APIs**
-image. Double check your GN args to make sure you are **not** setting the
-`system_webview_package_name` argument (it's OK to set
-`system_webview_shell_package_name`, but the other arg should be the default
-value). If everything looks correct, try:
-
-```shell
-# Try uninstalling any WebView updates
-$ adb uninstall com.android.webview
-
-# If the uninstall command succeeded, then try installing your locally compiled
-# WebView again:
-$ out/Default/bin/system_webview_shell_apk install
-$ out/Default/bin/system_webview_shell_apk set-webview-provider
-```
+This is probably because you've already installed Chrome Debug (ex. with the
+Google-only `monochrome_apk` target, or through a Google-only official build).
+This guide borrows that app's package name, but the locally compiled APK may not
+have the same signing key, causing the `adb install` error. You should remove
+the conflicting package with `out/Default/bin/system_webview_apk uninstall`, and
+then try installing WebView again.
 
 ### I couldn't install the APK/... is NOT installed.
 
@@ -315,8 +310,7 @@ don't know what you're doing) there's a good chance of making mistakes (some of
 which don't have any error messages).
 
 If you can't follow the quick start guide for some reason, please consult our
-[general build instructions](build-instructions.md). You can also try the [old
-version of the quick start](./quick-start-legacy.md).
+[general build instructions](build-instructions.md).
 
 [1]: https://groups.google.com/a/chromium.org/forum/#!forum/android-webview-dev
 [ProductionSupportedFlagList.java]: https://source.chromium.org/chromium/chromium/src/+/main:android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java
