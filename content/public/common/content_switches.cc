@@ -470,10 +470,6 @@ const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[] =
 // file:///alias/some/path.html into file:///replacement/some/path.html.
 const char kFileUrlPathAlias[] = "file-url-path-alias";
 
-// Forces the Chrome major version to the minor position in the User-Agent
-// string. Locks major version to 99.
-const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";
-
 // This forces pages to be loaded as presentation receivers.  Useful for testing
 // behavior specific to presentation receivers.
 // Spec: https://www.w3.org/TR/presentation-api/#interface-presentationreceiver
