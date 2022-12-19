@@ -60,6 +60,8 @@ class SharedImageFormat {
     k16F  // 16 bit float
   };
 
+  // TODO(kylechar): Replace usage of these constant with SinglePlanarFormat
+  // version and delete these.
   static const SharedImageFormat kRGBA_8888;
   static const SharedImageFormat kBGRA_8888;
   static const SharedImageFormat kRGBA_F16;
@@ -203,6 +205,66 @@ constexpr SharedImageFormat SharedImageFormat::kRGBA_F16 =
     SharedImageFormat::SinglePlane(ResourceFormat::RGBA_F16);
 constexpr SharedImageFormat SharedImageFormat::kBGR_565 =
     SharedImageFormat::SinglePlane(ResourceFormat::BGR_565);
+
+// Constants for common single-planar formats.
+namespace SinglePlaneFormat {
+inline constexpr SharedImageFormat kRGBA_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888);
+inline constexpr SharedImageFormat kRGBA_4444 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_4444);
+inline constexpr SharedImageFormat kBGRA_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::BGRA_8888);
+inline constexpr SharedImageFormat kALPHA_8 =
+    SharedImageFormat::SinglePlane(ResourceFormat::ALPHA_8);
+inline constexpr SharedImageFormat kLUMINANCE_8 =
+    SharedImageFormat::SinglePlane(ResourceFormat::LUMINANCE_8);
+inline constexpr SharedImageFormat kRGB_565 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGB_565);
+inline constexpr SharedImageFormat kBGR_565 =
+    SharedImageFormat::SinglePlane(ResourceFormat::BGR_565);
+inline constexpr SharedImageFormat kETC1 =
+    SharedImageFormat::SinglePlane(ResourceFormat::ETC1);
+inline constexpr SharedImageFormat kRED_8 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RED_8);
+inline constexpr SharedImageFormat kRG_88 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RG_88);
+inline constexpr SharedImageFormat kLUMINANCE_F16 =
+    SharedImageFormat::SinglePlane(ResourceFormat::LUMINANCE_F16);
+inline constexpr SharedImageFormat kRGBA_F16 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_F16);
+inline constexpr SharedImageFormat kR16_EXT =
+    SharedImageFormat::SinglePlane(ResourceFormat::R16_EXT);
+inline constexpr SharedImageFormat kRG16_EXT =
+    SharedImageFormat::SinglePlane(ResourceFormat::RG16_EXT);
+inline constexpr SharedImageFormat kRGBX_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBX_8888);
+inline constexpr SharedImageFormat kBGRX_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::BGRX_8888);
+inline constexpr SharedImageFormat kRGBA_1010102 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_1010102);
+inline constexpr SharedImageFormat kBGRA_1010102 =
+    SharedImageFormat::SinglePlane(ResourceFormat::BGRA_1010102);
+}  // namespace SinglePlaneFormat
+
+// Constants for common multi-planar formats.
+namespace MultiPlaneFormat {
+inline constexpr SharedImageFormat kYVU_420 =
+    SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_V_U,
+                                  SharedImageFormat::Subsampling::k420,
+                                  SharedImageFormat::ChannelFormat::k8);
+inline constexpr SharedImageFormat kYUV_420_BIPLANAR =
+    SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
+                                  SharedImageFormat::Subsampling::k420,
+                                  SharedImageFormat::ChannelFormat::k8);
+inline constexpr SharedImageFormat kYUVA_420_TRIPLANAR =
+    SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV_A,
+                                  SharedImageFormat::Subsampling::k420,
+                                  SharedImageFormat::ChannelFormat::k8);
+inline constexpr SharedImageFormat kP010 =
+    SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
+                                  SharedImageFormat::Subsampling::k420,
+                                  SharedImageFormat::ChannelFormat::k10);
+}  // namespace MultiPlaneFormat
 
 }  // namespace viz
 
