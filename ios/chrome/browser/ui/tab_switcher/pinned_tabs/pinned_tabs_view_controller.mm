@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,6 +43,9 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   // Background color of the view.
   UIColor* _backgroundColor;
 
+  // UILabel displayed when the collection view is empty.
+  UILabel* _emptyCollectionViewLabel;
+
   // Tracks if the view is available.
   BOOL _available;
 
@@ -64,6 +69,7 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   _isDragActionInProgress = NO;
 
   [self configureCollectionView];
+  [self configureEmptyCollectionViewLabel];
 }
 
 #pragma mark - Public
@@ -251,6 +257,26 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   _defaultConstraint.active = YES;
 }
 
+// Configures `_emptyCollectionViewLabel`.
+- (void)configureEmptyCollectionViewLabel {
+  _emptyCollectionViewLabel = [[UILabel alloc] init];
+  _emptyCollectionViewLabel.numberOfLines = 0;
+  _emptyCollectionViewLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  _emptyCollectionViewLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _emptyCollectionViewLabel.text =
+      l10n_util::GetNSString(IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL);
+  _emptyCollectionViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_emptyCollectionViewLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_emptyCollectionViewLabel.centerYAnchor
+        constraintEqualToAnchor:self.view.centerYAnchor],
+    [_emptyCollectionViewLabel.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+  ]];
+}
+
 // Configures `cell`'s title synchronously, and favicon asynchronously with
 // information from `item`. Updates the `cell`'s theme to this view controller's
 // theme.
@@ -277,6 +303,11 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   }
 }
 
+// Hides `_emptyCollectionViewLabel` when the collection view is not empty.
+- (void)updateEmptyCollectionViewLabelVisibility {
+  _emptyCollectionViewLabel.hidden = _items.count > 0;
+}
+
 // Adds fake items to the collection view.
 // TODO(crbug.com/1382015): Remove this when `_items` are correctly populated.
 - (void)populateFakeItems {
@@ -290,6 +321,7 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
   }
 
   _items = [items mutableCopy];
+  [self updateEmptyCollectionViewLabelVisibility];
   [self.collectionView reloadData];
 }
 

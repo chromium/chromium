@@ -1994,6 +1994,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE" desc="Title of the infobar modal shown when the user taps Camera/Microphone access.">
         Edit Permissions
       </message>
+      <message name="IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL" desc="Label displayed in the pin tab toolbar when a Tab is being dragged.">
+        Drag here to Pin Tab
+      </message>
       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.
       </message>
