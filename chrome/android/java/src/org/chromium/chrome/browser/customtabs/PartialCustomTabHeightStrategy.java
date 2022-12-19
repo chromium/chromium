@@ -68,7 +68,7 @@ import java.lang.annotation.RetentionPolicy;
  * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be
  * owned by the CustomTabActivity.
  */
-public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
+public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
                    PartialCustomTabHandleStrategy.DragEventCallback, FullscreenManager.Observer {
     @VisibleForTesting
@@ -110,23 +110,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int CLOSE = 3;
     }
 
-    private final Activity mActivity;
-    private final PartialCustomTabVersionCompat mVersionCompat;
-
-    private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mCachedHandleHeight;
-    private final boolean mInteractWithBackground;
-    private final boolean mIsFixedHeight;
-    private final @Px int mUnclampedInitialHeight;
-    private final FullscreenManager mFullscreenManager;
+
     private final boolean mAlwaysShowNavbarButtons;
     private final Rect mFullscreenRestoreRect = new Rect();
 
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
-    private @Px int mDisplayHeight;
-    private @Px int mDisplayWidth;
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
     private int mShadowOffset;
@@ -186,12 +177,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int COUNT = 4;
     }
 
-    /** A callback to be called once the Custom Tab has been resized. */
-    interface OnResizedCallback {
-        /** The Custom Tab has been resized. */
-        void onResized(int height, int width);
-    }
-
     // The current height/width used to trigger onResizedCallback when it is resized.
     private int mHeight;
     private int mWidth;
@@ -204,23 +189,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
     private boolean mInitFirstHeight;
 
-    private boolean mIsTablet;
-
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground) {
+        super(activity, initialHeight, isFixedHeight, onResizedCallback, fullscreenManager,
+                isTablet, interactWithBackground);
+
         mAlwaysShowNavbarButtons =
                 ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled();
-        mActivity = activity;
-        mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
-        mDisplayHeight = mVersionCompat.getDisplayHeight();
-        mDisplayWidth = mVersionCompat.getDisplayWidth();
-        mUnclampedInitialHeight = initialHeight;
-        mIsFixedHeight = isFixedHeight;
-        mInteractWithBackground = interactWithBackground;
-        mOnResizedCallback = onResizedCallback;
-        mFullscreenManager = fullscreenManager;
 
         int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
@@ -255,6 +232,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     @Override
+    @PartialCustomTabType
+    public int getStrategyType() {
+        return PartialCustomTabType.BOTTOM_SHEET;
+    }
+
+    @Override
     public void onPostInflationStartup() {
         mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
         // Elevate the main web contents area as high as the handle bar to have the shadow
@@ -265,6 +248,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mPositionUpdater.run();
     }
 
+    @Override
     public void onShowSoftInput(Runnable softKeyboardRunnable) {
         // Expands to full height to avoid the tab being hidden by the soft keyboard.
         // Necessary only if we're at the initial height status.
@@ -323,7 +307,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mTabAnimator.start(attrs.y, end, targetStatus, autoResize);
     }
 
-    private void updatePosition() {
+    @Override
+    protected void updatePosition() {
         if (mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeHeight();
@@ -358,6 +343,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        // When the side-sheet implementation is enabled the configuration change will be handled
+        // by PartialCustomTabSizeStrategy.
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
+
         boolean isInMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         int orientation = newConfig.orientation;
         int displayHeight = mVersionCompat.getDisplayHeight();
@@ -958,11 +947,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 onDragEnd(0);
             });
         }
-    }
-
-    @Override
-    public void destroy() {
-        mFullscreenManager.removeObserver(this);
     }
 
     @VisibleForTesting

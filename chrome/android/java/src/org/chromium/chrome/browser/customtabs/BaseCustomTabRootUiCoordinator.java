@@ -207,8 +207,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
         if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
-            Callback<Runnable> softInputCallback =
-                    ((PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
+            Callback<Runnable> softInputCallback;
+            if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+                softInputCallback = ((
+                        PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;
+            } else {
+                softInputCallback = ((
+                        PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
+            }
+
             mTabController.get().registerTabObserver(
                     new PartialCustomTabTabObserver(softInputCallback));
             mTabController.get().registerTabObserver(new EmptyTabObserver() {

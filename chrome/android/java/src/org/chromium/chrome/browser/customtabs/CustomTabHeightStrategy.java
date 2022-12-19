@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
@@ -20,6 +21,12 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
  * The default strategy for setting the height of the custom tab.
  */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
+    /** A callback to be called once the Custom Tab has been resized. */
+    interface OnResizedCallback {
+        /** The Custom Tab has been resized. */
+        void onResized(int height, int width);
+    }
+
     public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
             boolean isPartialCustomTabFixedHeight, CustomTabsConnection connection,
             @Nullable CustomTabsSessionToken session,
@@ -29,10 +36,19 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             return new CustomTabHeightStrategy();
         }
 
-        return new PartialCustomTabHeightStrategy(activity, initialHeight,
-                isPartialCustomTabFixedHeight,
-                (height, width) -> connection.onResized(session, height, width),
-                lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+            return new PartialCustomTabDisplayManager(activity, initialHeight,
+                    isPartialCustomTabFixedHeight,
+                    (height, width)
+                            -> connection.onResized(session, height, width),
+                    lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
+        } else {
+            return new PartialCustomTabHeightStrategy(activity, initialHeight,
+                    isPartialCustomTabFixedHeight,
+                    (height, width)
+                            -> connection.onResized(session, height, width),
+                    lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground);
+        }
     }
 
     /**
