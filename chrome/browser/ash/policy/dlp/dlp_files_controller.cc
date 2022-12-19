@@ -311,7 +311,7 @@ class RootsRecursionDelegate {
   // counts the number of |roots| processed.
   uint counter_ = 0;
   storage::FileSystemContext* file_system_context_ = nullptr;
-  const std::vector<storage::FileSystemURL>& roots_;
+  const std::vector<storage::FileSystemURL> roots_;
   FolderRecursionDelegate::FileURLsCallback callback_;
   std::vector<storage::FileSystemURL> files_urls_;
   std::vector<std::unique_ptr<FolderRecursionDelegate>> delegates_;
@@ -546,11 +546,6 @@ void DlpFilesController::GetDisallowedTransfers(
     storage::FileSystemURL destination,
     bool is_move,
     GetDisallowedTransfersCallback result_callback) {
-  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
-    return;
-  }
-
   auto* file_system_context = GetFileSystemContext();
   if (!file_system_context) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
@@ -559,7 +554,7 @@ void DlpFilesController::GetDisallowedTransfers(
 
   auto* roots_recursion_delegate = new RootsRecursionDelegate(
       file_system_context, transferred_files,
-      base::BindOnce(&DlpFilesController::OnGetFilesUrls,
+      base::BindOnce(&DlpFilesController::ContinueGetDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(destination),
                      is_move, std::move(result_callback)));
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -660,49 +655,51 @@ void DlpFilesController::GetDlpMetadata(
 }
 
 void DlpFilesController::FilterDisallowedUploads(
-    std::vector<ui::SelectedFileInfo> uploaded_files,
+    std::vector<ui::SelectedFileInfo> selected_files,
     const DlpFileDestination& destination,
     FilterDisallowedUploadsCallback result_callback) {
-  if (uploaded_files.empty()) {
-    std::move(result_callback).Run(std::move(uploaded_files));
+  if (selected_files.empty()) {
+    std::move(result_callback).Run(std::move(selected_files));
     return;
   }
 
-  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback).Run(std::move(uploaded_files));
+  auto* file_system_context = GetFileSystemContext();
+  if (!file_system_context) {
+    std::move(result_callback).Run(std::move(selected_files));
     return;
   }
 
-  // TODO(b/260313148): Handle the case if the uploads are folders not only
-  // files.
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
 
-  ::dlp::CheckFilesTransferRequest request;
-  for (const auto& file : uploaded_files) {
-    auto file_path = file.local_path.empty() ? file.file_path.value()
-                                             : file.local_path.value();
-    request.add_files_paths(file_path);
+  std::vector<storage::FileSystemURL> file_system_urls;
+  for (const auto& file : selected_files) {
+    GURL gurl;
+    auto file_path = file.local_path.empty() ? file.file_path : file.local_path;
+    if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+            profile, file_path, file_manager::util::GetFileManagerURL(),
+            &gurl)) {
+      file_system_urls.push_back(
+          file_system_context->CrackURLInFirstPartyContext(gurl));
+    }
   }
-  if (destination.component.has_value()) {
-    request.set_destination_component(
-        MapPolicyComponentToProto(destination.component.value()));
-  } else {
-    DCHECK(destination.url_or_path.has_value());
-    request.set_destination_url(destination.url_or_path.value());
-  }
-  request.set_file_action(::dlp::FileAction::UPLOAD);
 
-  auto return_uploads_callback = base::BindOnce(
-      &DlpFilesController::ReturnAllowedUploads, weak_ptr_factory_.GetWeakPtr(),
-      std::move(uploaded_files), std::move(result_callback));
-  auto close_dialog_callback =
-      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
-                     // base::Unretained() is safe since |this| is bound to
-                     // |return_uploads_callback|, which will be called after
-                     // |close_dialog_callback|
-                     base::Unretained(this));
-  chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, std::move(close_dialog_callback)
-                   .Then(std::move(return_uploads_callback)));
+  if (file_system_urls.empty()) {
+    std::move(result_callback).Run(std::move(selected_files));
+    return;
+  }
+
+  auto* roots_recursion_delegate = new RootsRecursionDelegate(
+      file_system_context, std::move(file_system_urls),
+      base::BindOnce(&DlpFilesController::ContinueFilterDisallowedUploads,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(selected_files),
+                     std::move(destination), std::move(result_callback)));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RootsRecursionDelegate::Run,
+                     // base::Unretained() is safe since |recursion_delegate|
+                     // will delete itself after all the files list if ready.
+                     base::Unretained(roots_recursion_delegate)));
 }
 
 void DlpFilesController::CheckIfDownloadAllowed(
@@ -1034,6 +1031,8 @@ void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
+  MaybeCloseDialog(response);
+
   std::vector<storage::FileSystemURL> restricted_files;
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
@@ -1051,35 +1050,43 @@ void DlpFilesController::ReturnDisallowedTransfers(
 }
 
 void DlpFilesController::ReturnAllowedUploads(
-    std::vector<ui::SelectedFileInfo> uploaded_files,
+    std::vector<ui::SelectedFileInfo> selected_files,
     FilterDisallowedUploadsCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
+  MaybeCloseDialog(response);
+
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
     std::move(result_callback).Run(std::vector<ui::SelectedFileInfo>());
     return;
   }
-  std::set<std::string> restricted_files(response.files_paths().begin(),
-                                         response.files_paths().end());
+  std::set<base::FilePath> restricted_files(response.files_paths().begin(),
+                                            response.files_paths().end());
   if (!restricted_files.empty()) {
     ShowNotification(
         kUploadBlockedNotificationId,
         l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE),
         l10n_util::GetPluralStringFUTF16(
             IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE,
+            // TODO(b/261575072): What's the correct number to show if multiple
+            // folders are uploaded?
             restricted_files.size()));
   }
 
-  std::vector<ui::SelectedFileInfo> filtered_files;
-  for (auto& file : uploaded_files) {
-    auto file_path = file.local_path.empty() ? file.file_path.value()
-                                             : file.local_path.value();
-    if (base::Contains(restricted_files, file_path))
-      continue;
-    filtered_files.push_back(std::move(file));
-  }
-  std::move(result_callback).Run(std::move(filtered_files));
+  // If any of the selected files/folders is restricted or contains a restricted
+  // file, it'll be removed.
+  base::EraseIf(
+      selected_files,
+      [&restricted_files](const ui::SelectedFileInfo& selected_file) -> bool {
+        return base::ranges::any_of(
+            restricted_files, [&](const base::FilePath& restricted_file) {
+              return selected_file.file_path == restricted_file ||
+                     selected_file.file_path.IsParent(restricted_file);
+            });
+      });
+
+  std::move(result_callback).Run(std::move(selected_files));
 }
 
 void DlpFilesController::ReturnDlpMetadata(
@@ -1218,21 +1225,25 @@ void DlpFilesController::MaybeReportEvent(
   reporting_manager->ReportEvent(event_builder->Create());
 }
 
-::dlp::CheckFilesTransferResponse DlpFilesController::MaybeCloseDialog(
+void DlpFilesController::MaybeCloseDialog(
     ::dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message() && warn_dialog_widget_ &&
       !warn_dialog_widget_->IsClosed()) {
     warn_dialog_widget_->CloseWithReason(
         views::Widget::ClosedReason::kUnspecified);
   }
-  return response;
 }
 
-void DlpFilesController::OnGetFilesUrls(
+void DlpFilesController::ContinueGetDisallowedTransfers(
     storage::FileSystemURL destination,
     bool is_move,
     GetDisallowedTransfersCallback result_callback,
     std::vector<storage::FileSystemURL> transferred_files) {
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    return;
+  }
+
   ::dlp::CheckFilesTransferRequest request;
   base::flat_map<std::string, storage::FileSystemURL> filtered_files;
   for (const auto& file : transferred_files) {
@@ -1257,15 +1268,40 @@ void DlpFilesController::OnGetFilesUrls(
       base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
                      std::move(result_callback));
-  auto close_dialog_callback =
-      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
-                     // base::Unretained() is safe since |this| is bound to
-                     // |return_transfers_callback|, which will be called after
-                     // |close_dialog_callback|
-                     base::Unretained(this));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, std::move(close_dialog_callback)
-                   .Then(std::move(return_transfers_callback)));
+      request, std::move(return_transfers_callback));
+}
+
+void DlpFilesController::ContinueFilterDisallowedUploads(
+    std::vector<ui::SelectedFileInfo> selected_files,
+    const DlpFileDestination& destination,
+    FilterDisallowedUploadsCallback result_callback,
+    std::vector<storage::FileSystemURL> uploaded_files) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback).Run(std::move(selected_files));
+    return;
+  }
+
+  ::dlp::CheckFilesTransferRequest request;
+  for (const auto& file : uploaded_files) {
+    request.add_files_paths(file.path().value());
+  }
+  if (destination.component.has_value()) {
+    request.set_destination_component(
+        MapPolicyComponentToProto(destination.component.value()));
+  } else {
+    DCHECK(destination.url_or_path.has_value());
+    request.set_destination_url(destination.url_or_path.value());
+  }
+  request.set_file_action(::dlp::FileAction::UPLOAD);
+
+  auto return_uploads_callback = base::BindOnce(
+      &DlpFilesController::ReturnAllowedUploads, weak_ptr_factory_.GetWeakPtr(),
+      std::move(selected_files), std::move(result_callback));
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request, std::move(return_uploads_callback));
 }
 
 }  // namespace policy

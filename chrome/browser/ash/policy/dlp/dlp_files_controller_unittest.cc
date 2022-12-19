@@ -238,6 +238,7 @@ class DlpFilesControllerTest : public testing::Test {
     ASSERT_TRUE(rules_manager_);
 
     chromeos::DlpClient::InitializeFake();
+    chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
@@ -254,7 +255,7 @@ class DlpFilesControllerTest : public testing::Test {
     profile_.reset();
     reporting_manager_.reset();
 
-    if (chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive()) {
+    if (chromeos::DlpClient::Get()) {
       chromeos::DlpClient::Shutdown();
     }
   }
@@ -305,7 +306,7 @@ class DlpFilesControllerTest : public testing::Test {
 
       auto file_url = CreateFileSystemURL(file.path.value());
       ASSERT_TRUE(file_url.is_valid());
-      out_files_urls.push_back(file_url);
+      out_files_urls.push_back(std::move(file_url));
     }
     testing::Mock::VerifyAndClearExpectations(&add_file_cb);
   }
@@ -612,6 +613,16 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      temp_dir_.GetPath()));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -653,6 +664,16 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      temp_dir_.GetPath()));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -663,10 +684,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<ui::SelectedFileInfo> uploaded_files;
-  uploaded_files.emplace_back(files_urls[0].path(), files_urls[0].path());
-  uploaded_files.emplace_back(files_urls[1].path(), files_urls[1].path());
-  uploaded_files.emplace_back(files_urls[2].path(), files_urls[2].path());
+  std::vector<ui::SelectedFileInfo> selected_files;
+  selected_files.emplace_back(files_urls[0].path(), files_urls[0].path());
+  selected_files.emplace_back(files_urls[1].path(), files_urls[1].path());
+  selected_files.emplace_back(files_urls[2].path(), files_urls[2].path());
 
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(files_urls[0].path().value());
@@ -679,12 +700,74 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      std::move(uploaded_files),
+      std::move(selected_files),
       DlpFilesController::DlpFileDestination("https://example.com"),
       future.GetCallback());
 
   ASSERT_EQ(0u, future.Get().size());
   EXPECT_FALSE(
+      display_service_tester.GetNotification(kUploadBlockedNotificationId));
+}
+
+TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MultiFolder) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      temp_dir_.GetPath()));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
+  base::ScopedTempDir sub_dir1;
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  base::ScopedTempDir sub_dir2;
+  ASSERT_TRUE(sub_dir2.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  base::ScopedTempDir sub_dir2_1;
+  ASSERT_TRUE(sub_dir2_1.CreateUniqueTempDirUnderPath(sub_dir2.GetPath()));
+  base::ScopedTempDir sub_dir3;
+  ASSERT_TRUE(sub_dir3.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  std::vector<FileDaemonInfo> files{
+      FileDaemonInfo(kInode1, sub_dir1.GetPath().AppendASCII(kFilePath1),
+                     kExampleUrl1),
+      FileDaemonInfo(kInode2, sub_dir1.GetPath().AppendASCII(kFilePath2),
+                     kExampleUrl2),
+      FileDaemonInfo(kInode3, sub_dir2_1.GetPath().AppendASCII(kFilePath3),
+                     kExampleUrl3),
+      FileDaemonInfo(kInode4, sub_dir2_1.GetPath().AppendASCII(kFilePath4),
+                     kExampleUrl4),
+      FileDaemonInfo(kInode5, sub_dir3.GetPath().AppendASCII(kFilePath5),
+                     kExampleUrl5)};
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  std::vector<FileSystemURL> files_urls;
+  AddFilesToDlpClient(std::move(files), files_urls);
+
+  std::vector<ui::SelectedFileInfo> selected_files(
+      {{sub_dir1.GetPath(), sub_dir1.GetPath()},
+       {sub_dir2_1.GetPath(), sub_dir2_1.GetPath()},
+       {sub_dir3.GetPath(), sub_dir3.GetPath()}});
+
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(files_urls[0].path().value());
+  check_files_transfer_response.add_files_paths(files_urls[1].path().value());
+  check_files_transfer_response.add_files_paths(files_urls[3].path().value());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->FilterDisallowedUploads(
+      selected_files, DlpFilesController::DlpFileDestination(kExampleUrl1),
+      future.GetCallback());
+
+  std::vector<ui::SelectedFileInfo> expected_filtered_uploads(
+      {{sub_dir3.GetPath(), sub_dir3.GetPath()}});
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(expected_filtered_uploads, future.Take());
+  EXPECT_TRUE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
 

@@ -188,7 +188,7 @@ class DlpFilesController {
 
   // Filters files disallowed to be uploaded to `destination`.
   virtual void FilterDisallowedUploads(
-      std::vector<ui::SelectedFileInfo> uploaded_files,
+      std::vector<ui::SelectedFileInfo> selected_files,
       const DlpFileDestination& destination,
       FilterDisallowedUploadsCallback result_callback);
 
@@ -289,15 +289,23 @@ class DlpFilesController {
                         absl::optional<DlpRulesManager::Level> level);
 
   // Closes warning dialog if `response` has error.
-  ::dlp::CheckFilesTransferResponse MaybeCloseDialog(
-      ::dlp::CheckFilesTransferResponse response);
+  void MaybeCloseDialog(::dlp::CheckFilesTransferResponse response);
 
   // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
   // request and forwards it to the dlp daemon.
-  void OnGetFilesUrls(storage::FileSystemURL destination,
-                      bool is_move,
-                      GetDisallowedTransfersCallback result_callback,
-                      std::vector<storage::FileSystemURL> transferred_files);
+  void ContinueGetDisallowedTransfers(
+      storage::FileSystemURL destination,
+      bool is_move,
+      GetDisallowedTransfersCallback result_callback,
+      std::vector<storage::FileSystemURL> transferred_files);
+
+  // Called when `uploaded_files` is ready. Constructs CheckFilesTransfer
+  // request and forwards it to the dlp daemon.
+  void ContinueFilterDisallowedUploads(
+      std::vector<ui::SelectedFileInfo> selected_files,
+      const DlpFileDestination& destination,
+      FilterDisallowedUploadsCallback result_callback,
+      std::vector<storage::FileSystemURL> uploaded_files);
 
   const DlpRulesManager& rules_manager_;
 
