@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
-import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -1501,40 +1500,15 @@ public class CustomTabsConnection {
         int uid = Binder.getCallingUid();
         if (uid == Process.myUid()) return true;
 
-        // Starting with L MR1, AM.getRunningAppProcesses doesn't return all the
-        // processes. We use a workaround in this case.
-        boolean useWorkaround = true;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            do {
-                Context context = ContextUtils.getApplicationContext();
-                ActivityManager am =
-                        (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                // Extra paranoia here and below, some L 5.0.x devices seem to throw NPE somewhere
-                // in this code.
-                // See https://crbug.com/654705.
-                if (am == null) break;
-                List<ActivityManager.RunningAppProcessInfo> running = am.getRunningAppProcesses();
-                if (running == null) break;
-                for (ActivityManager.RunningAppProcessInfo rpi : running) {
-                    if (rpi == null) continue;
-                    boolean matchingUid = rpi.uid == uid;
-                    boolean isForeground = rpi.importance
-                            == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
-                    useWorkaround &= !matchingUid;
-                    if (matchingUid && isForeground) return true;
-                }
-            } while (false);
-        }
-        if (useWorkaround) {
-            int pid = Binder.getCallingPid();
-            boolean workaroundAvailable = canGetSchedulerGroup(pid);
-            // If we have no way to find out whether the calling process is in the foreground,
-            // optimistically assume it is. Otherwise we would effectively disable CCT warmup
-            // on these devices.
-            if (!workaroundAvailable) return true;
-            return isBackgroundProcess(pid);
-        }
-        return false;
+        // Starting with L MR1, AM.getRunningAppProcesses doesn't return all the processes so we use
+        // a workaround in this case.
+        int pid = Binder.getCallingPid();
+        boolean workaroundAvailable = canGetSchedulerGroup(pid);
+        // If we have no way to find out whether the calling process is in the foreground,
+        // optimistically assume it is. Otherwise we would effectively disable CCT warmup
+        // on these devices.
+        if (!workaroundAvailable) return true;
+        return isBackgroundProcess(pid);
     }
 
     void cleanupAllForTesting() {

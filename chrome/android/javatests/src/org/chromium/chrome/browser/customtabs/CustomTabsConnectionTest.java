@@ -10,7 +10,6 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.test.InstrumentationRegistry;
@@ -25,7 +24,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +45,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -459,43 +456,10 @@ public class CustomTabsConnectionTest {
     @Test
     @SmallTest
     public void testCanGetSchedulerGroup() {
-        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
         // self is always accessible.
         Assert.assertTrue(CustomTabsConnection.canGetSchedulerGroup(Process.myPid()));
         // PID 1 always exists, yet should never be accessible by regular apps.
         Assert.assertFalse(CustomTabsConnection.canGetSchedulerGroup(1));
-    }
-
-    /**
-     * Tests that CPU cgroups exist and have the expected values for background and foreground.
-     *
-     * To make testing easier the test assumes that the Android Framework uses
-     * the same cgroup for background processes and background _threads_, which
-     * is the the case between LOLLIPOP_MR1 and O.
-     */
-    @Test
-    @SmallTest
-    public void testGetSchedulerGroup() throws Exception {
-        // After M, /proc is mounted with hidepid=2, so even though the test still passes, it
-        // is not useful in practice. See crbug.com/973368 for details.
-        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.M);
-        Assert.assertNotNull(CustomTabsConnection.getSchedulerGroup(Process.myPid()));
-        String cgroup = CustomTabsConnection.getSchedulerGroup(Process.myPid());
-        // Tests run in the foreground. Last two are from Android O.
-        List<String> foregroundGroups = Arrays.asList("/", "/apps", "/top-app", "/foreground");
-        Assert.assertTrue(foregroundGroups.contains(cgroup));
-
-        final AtomicReference<String> backgroundThreadCgroup = new AtomicReference<>();
-        Thread backgroundThread = new Thread(() -> {
-            int tid = Process.myTid();
-            Process.setThreadPriority(tid, Process.THREAD_PRIORITY_BACKGROUND);
-            backgroundThreadCgroup.set(CustomTabsConnection.getSchedulerGroup(tid));
-        });
-        backgroundThread.start();
-        backgroundThread.join();
-        String threadCgroup = backgroundThreadCgroup.get();
-        Assert.assertNotNull(threadCgroup);
-        Assert.assertTrue(CustomTabsConnection.BACKGROUND_GROUPS.contains(threadCgroup));
     }
 
     /**
