@@ -5,24 +5,72 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_MOCK_DRM_DEVICE_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_MOCK_DRM_DEVICE_H_
 
+#include <drm_fourcc.h>
 #include <drm_mode.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drm.h>
+#include <xf86drmMode.h>
 
+#include <cstdint>
 #include <limits>
 #include <map>
 #include <memory>
 #include <set>
+#include <tuple>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 namespace ui {
+
+// DRM Object Base IDs:
+constexpr uint32_t kPlaneOffset = 100;
+constexpr uint32_t kCrtcIdBase = 200;
+constexpr uint32_t kConnectorIdBase = 300;
+constexpr uint32_t kInFormatsBlobIdBase = 400;
+
+// Required Connector Property IDs:
+constexpr uint32_t kCrtcIdPropId = 1000;
+constexpr uint32_t kLinkStatusPropId = 1001;
+
+// Required CRTC Property IDs:
+constexpr uint32_t kActivePropId = 2000;
+constexpr uint32_t kModePropId = 2001;
+
+// Optional CRTC Property IDs:
+constexpr uint32_t kBackgroundColorPropId = 3000;
+constexpr uint32_t kCtmPropId = 3001;
+constexpr uint32_t kDegammaLutPropId = 3002;
+constexpr uint32_t kDegammaLutSizePropId = 3003;
+constexpr uint32_t kGammaLutPropId = 3004;
+constexpr uint32_t kGammaLutSizePropId = 3005;
+constexpr uint32_t kInFencePropId = 3006;
+constexpr uint32_t kOutFencePtrPropId = 3007;
+constexpr uint32_t kVrrEnabledPropId = 3008;
+
+// Required Plane Property IDs:
+constexpr uint32_t kCrtcH = 4001;
+constexpr uint32_t kCrtcW = 4002;
+constexpr uint32_t kCrtcX = 4003;
+constexpr uint32_t kCrtcY = 4004;
+constexpr uint32_t kPlaneCrtcId = 4005;
+constexpr uint32_t kPlaneFbId = 4006;
+constexpr uint32_t kSrcH = 4007;
+constexpr uint32_t kSrcW = 4008;
+constexpr uint32_t kSrcX = 4009;
+constexpr uint32_t kSrcY = 4010;
+
+// Optional Plane Property IDs:
+constexpr uint32_t kTypePropId = 5000;
+constexpr uint32_t kInFormatsPropId = 5001;
+constexpr uint32_t kPlaneCtmId = 5002;
+constexpr uint32_t kRotationPropId = 5003;
 
 template <class Object>
 Object* DrmAllocator(size_t num_of_objects = 1) {
@@ -57,9 +105,42 @@ class MockDrmDevice : public DrmDevice {
     PlaneProperties(const PlaneProperties&);
     ~PlaneProperties();
 
+    uint32_t type() const;
+
+    absl::optional<const DrmDevice::Property*> GetProp(uint32_t prop_id) const;
+    void SetProp(uint32_t prop_id, uint32_t value);
+
     uint32_t id;
     uint32_t crtc_mask;
+
     std::vector<DrmDevice::Property> properties;
+  };
+
+  struct MockDrmState {
+    MockDrmState();
+    MockDrmState(const MockDrmState&);
+    ~MockDrmState();
+
+    // Creates a totally empty |MockDrmState| with no properties configured and
+    // no property names set.
+    static MockDrmState CreateStateWithNoProperties();
+    // Creates a |MockDrmState| with all properties registered with their names
+    // in |property_names|, but no objects configured.
+    static MockDrmState CreateStateWithAllProperties();
+    // Creates a generic |MockDrmState|. Will create |crtc_count| different
+    // CRTCs and connectors with 1 primary plane, 1 cursor plane (since some
+    // tests expect them), and |planes_per_crtc| - 1 overlay planes for each
+    // CRTC.
+    static MockDrmState CreateStateWithDefaultObjects(size_t crtc_count,
+                                                      size_t planes_per_crtc);
+
+    std::pair<CrtcProperties&, ConnectorProperties&> AddCrtcAndConnector();
+    PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
+
+    std::vector<CrtcProperties> crtc_properties;
+    std::vector<ConnectorProperties> connector_properties;
+    std::vector<PlaneProperties> plane_properties;
+    std::map<uint32_t, std::string> property_names;
   };
 
   explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
@@ -119,23 +200,10 @@ class MockDrmDevice : public DrmDevice {
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
-  void InitializeState(
-      const std::vector<CrtcProperties>& crtc_properties,
-      const std::vector<ConnectorProperties>& connector_properties,
-      const std::vector<PlaneProperties>& plane_properties,
-      const std::map<uint32_t, std::string>& property_names,
-      bool use_atomic);
-  bool InitializeStateWithResult(
-      const std::vector<CrtcProperties>& crtc_properties,
-      const std::vector<ConnectorProperties>& connector_properties,
-      const std::vector<PlaneProperties>& plane_properties,
-      const std::map<uint32_t, std::string>& property_names,
-      bool use_atomic);
+  void InitializeState(const MockDrmState& state, bool use_atomic);
+  bool InitializeStateWithResult(const MockDrmState& state, bool use_atomic);
 
-  void UpdateState(const std::vector<CrtcProperties>& crtc_properties,
-                   const std::vector<ConnectorProperties>& connector_properties,
-                   const std::vector<PlaneProperties>& plane_properties,
-                   const std::map<uint32_t, std::string>& property_names);
+  void UpdateStateBesidesPlaneManager(const MockDrmState& state);
 
   void RunCallbacks();
 
@@ -143,6 +211,29 @@ class MockDrmDevice : public DrmDevice {
 
   void SetModifiersOverhead(base::flat_map<uint64_t, int> modifiers_overhead);
   void SetSystemLimitOfModifiers(uint64_t limit);
+
+  const CrtcProperties& crtc_property(size_t idx) const {
+    return drm_state_.crtc_properties[idx];
+  }
+  const ConnectorProperties& connector_property(size_t idx) const {
+    return drm_state_.connector_properties[idx];
+  }
+  const PlaneProperties& plane_property(size_t idx) const {
+    return drm_state_.plane_properties[idx];
+  }
+
+  const std::vector<CrtcProperties>& crtc_properties() const {
+    return drm_state_.crtc_properties;
+  }
+  const std::vector<ConnectorProperties>& connector_properties() const {
+    return drm_state_.connector_properties;
+  }
+  const std::vector<PlaneProperties>& plane_properties() const {
+    return drm_state_.plane_properties;
+  }
+  const std::map<uint32_t, std::string>& property_names() const {
+    return drm_state_.property_names;
+  }
 
   // DrmDevice:
   ScopedDrmResourcesPtr GetResources() override;
@@ -255,7 +346,6 @@ class MockDrmDevice : public DrmDevice {
   bool modeset_with_overlays_expectation_ = true;
 
   uint32_t current_framebuffer_;
-  uint32_t plane_crtc_id_prop_id_ = 0;
 
   absl::optional<std::string> driver_name_ = "mock";
 
@@ -270,11 +360,7 @@ class MockDrmDevice : public DrmDevice {
 
   base::queue<PageFlipCallback> callbacks_;
 
-  std::vector<CrtcProperties> crtc_properties_;
-  std::vector<ConnectorProperties> connector_properties_;
-  std::vector<PlaneProperties> plane_properties_;
-
-  std::map<uint32_t, std::string> property_names_;
+  MockDrmState drm_state_;
 
   std::set<uint32_t> allocated_property_blobs_;
 

@@ -98,7 +98,7 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   if (properties_.in_formats.id) {
     ScopedDrmPropertyBlobPtr blob(
         drm->GetPropertyBlob(properties_.in_formats.value));
-    DCHECK(blob);
+    DCHECK(blob) << "No blob found with id=" << properties_.in_formats.value;
     ParseSupportedFormatsAndModifiers(blob.get(), &supported_formats_,
                                       &supported_format_modifiers_);
   }

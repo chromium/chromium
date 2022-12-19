@@ -6,11 +6,12 @@
 
 #include <drm_fourcc.h>
 #include <xf86drm.h>
+#include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/files/platform_file.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -35,13 +36,6 @@ namespace {
 const drmModeModeInfo kDefaultMode = {.hdisplay = 12, .vdisplay = 8};
 
 const gfx::AcceleratedWidget kDefaultWidgetHandle = 1;
-constexpr uint32_t kCrtcIdBase = 1;
-constexpr uint32_t kConnectorIdBase = 100;
-constexpr uint32_t kPlaneIdBase = 200;
-constexpr uint32_t kInFormatsBlobPropIdBase = 400;
-
-constexpr uint32_t kTypePropId = 3010;
-constexpr uint32_t kInFormatsPropId = 3011;
 
 }  // namespace
 
@@ -140,102 +134,51 @@ void DrmOverlayValidatorTest::SetUp() {
 
 void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
     const std::vector<CrtcState>& crtc_states) {
-  std::vector<ui::MockDrmDevice::CrtcProperties> crtc_properties(
-      crtc_states.size());
-  std::map<uint32_t, std::string> crtc_property_names = {
-      {1000, "ACTIVE"},
-      {1001, "MODE_ID"},
-  };
-
-  std::vector<ui::MockDrmDevice::ConnectorProperties> connector_properties(2);
-  std::map<uint32_t, std::string> connector_property_names = {
-      {2000, "CRTC_ID"},
-  };
-  for (size_t i = 0; i < connector_properties.size(); ++i) {
-    connector_properties[i].id = kConnectorIdBase + i;
-    for (const auto& pair : connector_property_names) {
-      connector_properties[i].properties.push_back(
-          {.id = pair.first, .value = 0});
-    }
+  size_t plane_count = crtc_states[0].planes.size();
+  for (const auto& crtc_state : crtc_states) {
+    ASSERT_EQ(plane_count, crtc_state.planes.size())
+        << "MockDrmDevice::CreateStateWithDefaultObjects currently expects the "
+           "same number "
+           "of planes per CRTC";
   }
 
-  std::vector<ui::MockDrmDevice::PlaneProperties> plane_properties;
-  std::map<uint32_t, std::string> plane_property_names = {
-      // Add all required properties.
-      {3000, "CRTC_ID"},
-      {3001, "CRTC_X"},
-      {3002, "CRTC_Y"},
-      {3003, "CRTC_W"},
-      {3004, "CRTC_H"},
-      {3005, "FB_ID"},
-      {3006, "SRC_X"},
-      {3007, "SRC_Y"},
-      {3008, "SRC_W"},
-      {3009, "SRC_H"},
-      // Defines some optional properties we use for convenience.
-      {kTypePropId, "type"},
-      {kInFormatsPropId, "IN_FORMATS"},
-  };
+  auto drm_state =
+      ui::MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
-  uint32_t plane_id = kPlaneIdBase;
-  uint32_t property_id = kInFormatsBlobPropIdBase;
+  // Set up the default format property ID for the cursor planes:
+  drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+      ui::kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
-  for (size_t crtc_idx = 0; crtc_idx < crtc_states.size(); ++crtc_idx) {
-    crtc_properties[crtc_idx].id = kCrtcIdBase + crtc_idx;
-    for (const auto& pair : crtc_property_names) {
-      crtc_properties[crtc_idx].properties.push_back(
-          {.id = pair.first, .value = 0});
+  uint32_t blob_id = ui::kInFormatsBlobIdBase + 1;
+  for (const auto& crtc_state : crtc_states) {
+    const auto& crtc = drm_state.AddCrtcAndConnector().first;
+
+    for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
+      uint32_t new_blob_id = blob_id++;
+      drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+          new_blob_id, crtc_state.planes[i].formats, {}));
+
+      auto& plane = drm_state.AddPlane(
+          crtc.id, i == 0 ? DRM_PLANE_TYPE_PRIMARY : DRM_PLANE_TYPE_OVERLAY);
+      plane.SetProp(ui::kInFormatsPropId, new_blob_id);
     }
-
-    std::vector<ui::MockDrmDevice::PlaneProperties> crtc_plane_properties(
-        crtc_states[crtc_idx].planes.size());
-    for (size_t plane_idx = 0; plane_idx < crtc_states[crtc_idx].planes.size();
-         ++plane_idx) {
-      crtc_plane_properties[plane_idx].id = plane_id++;
-      crtc_plane_properties[plane_idx].crtc_mask = 1 << crtc_idx;
-
-      for (const auto& pair : plane_property_names) {
-        uint64_t value = 0;
-        if (pair.first == kTypePropId) {
-          value =
-              plane_idx == 0 ? DRM_PLANE_TYPE_PRIMARY : DRM_PLANE_TYPE_OVERLAY;
-        } else if (pair.first == kInFormatsPropId) {
-          value = property_id++;
-          drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
-              value, crtc_states[crtc_idx].planes[plane_idx].formats,
-              std::vector<drm_format_modifier>()));
-        }
-
-        crtc_plane_properties[plane_idx].properties.push_back(
-            {.id = pair.first, .value = value});
-      }
-    }
-
-    plane_properties.insert(plane_properties.end(),
-                            crtc_plane_properties.begin(),
-                            crtc_plane_properties.end());
   }
-
-  std::map<uint32_t, std::string> property_names;
-  property_names.insert(crtc_property_names.begin(), crtc_property_names.end());
-  property_names.insert(connector_property_names.begin(),
-                        connector_property_names.end());
-  property_names.insert(plane_property_names.begin(),
-                        plane_property_names.end());
-  drm_->InitializeState(crtc_properties, connector_properties, plane_properties,
-                        property_names,
-                        /* use_atomic= */ true);
+  drm_->InitializeState(drm_state, /*use_atomic=*/true);
 
   SetupControllers();
 }
 
 void DrmOverlayValidatorTest::SetupControllers() {
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+
   screen_manager_ = std::make_unique<ui::ScreenManager>();
-  screen_manager_->AddDisplayController(drm_, kCrtcIdBase, kConnectorIdBase);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
   std::vector<ui::ScreenManager::ControllerConfigParams> controllers_to_enable;
   controllers_to_enable.emplace_back(
-      1 /*display_id*/, drm_, kCrtcIdBase, kConnectorIdBase, gfx::Point(),
-      std::make_unique<drmModeModeInfo>(kDefaultMode));
+      1 /*display_id*/, drm_, primary_crtc_id, primary_connector_id,
+      gfx::Point(), std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
@@ -410,7 +353,7 @@ TEST_F(DrmOverlayValidatorTest,
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   gfx::RectF crop_rect = gfx::RectF(0, 0, 0.5, 0.5);
@@ -443,7 +386,7 @@ TEST_F(DrmOverlayValidatorTest,
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   gfx::RectF crop_rect = gfx::RectF(0, 0, 0.5, 0.5);
@@ -472,7 +415,7 @@ TEST_F(DrmOverlayValidatorTest,
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   gfx::RectF crop_rect = gfx::RectF(0, 0, 0.5, 0.5);
@@ -502,7 +445,7 @@ TEST_F(DrmOverlayValidatorTest, OptimalFormatXRGB_MirroredControllers) {
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   overlay_params_.back().buffer_size = overlay_rect_.size();
@@ -527,7 +470,7 @@ TEST_F(DrmOverlayValidatorTest,
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   overlay_params_.back().buffer_size = overlay_rect_.size();
@@ -550,7 +493,7 @@ TEST_F(DrmOverlayValidatorTest,
 
   ui::HardwareDisplayController* controller = window_->GetController();
   controller->AddCrtc(std::make_unique<ui::CrtcController>(
-      drm_.get(), kCrtcIdBase + 1, kConnectorIdBase + 1));
+      drm_.get(), drm_->crtc_property(1).id, drm_->connector_property(1).id));
   EXPECT_TRUE(ModesetController(controller));
 
   overlay_params_.back().buffer_size = overlay_rect_.size();

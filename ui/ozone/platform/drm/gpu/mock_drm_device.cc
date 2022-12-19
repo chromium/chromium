@@ -4,6 +4,12 @@
 
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
+#include <stdint.h>
+#include <xf86drm.h>
+
+#include <cstdint>
+#include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -45,6 +51,58 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // This also happens to be the same set of flags as would be used for a
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
+
+const std::map<uint32_t, std::string> kCrtcRequiredPropertyNames = {
+    {kActivePropId, "ACTIVE"},
+    {kModePropId, "MODE_ID"},
+};
+
+const std::map<uint32_t, std::string> kCrtcOptionalPropertyNames = {
+    {kBackgroundColorPropId, "BACKGROUND_COLOR"},
+    {kCtmPropId, "CTM"},
+    {kGammaLutPropId, "GAMMA_LUT"},
+    {kGammaLutSizePropId, "GAMMA_LUT_SIZE"},
+    {kDegammaLutPropId, "DEGAMMA_LUT"},
+    {kDegammaLutSizePropId, "DEGAMMA_LUT_SIZE"},
+    {kOutFencePtrPropId, "OUT_FENCE_PTR"},
+    {kVrrEnabledPropId, "VRR_ENABLED"},
+};
+
+const std::map<uint32_t, std::string> kConnectorRequiredPropertyNames = {
+    {kCrtcIdPropId, "CRTC_ID"},
+    {kLinkStatusPropId, "link-status"},
+};
+
+const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
+    // Add all required properties.
+    {kPlaneCrtcId, "CRTC_ID"},
+    {kCrtcX, "CRTC_X"},
+    {kCrtcY, "CRTC_Y"},
+    {kCrtcW, "CRTC_W"},
+    {kCrtcH, "CRTC_H"},
+    {kPlaneFbId, "FB_ID"},
+    {kSrcX, "SRC_X"},
+    {kSrcY, "SRC_Y"},
+    {kSrcW, "SRC_W"},
+    {kSrcH, "SRC_H"},
+    {kInFencePropId, "IN_FENCE_FD"},
+    {kTypePropId, "type"},
+    {kInFormatsPropId, "IN_FORMATS"},
+    {kRotationPropId, "rotation"},
+};
+
+const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
+    {kPlaneCtmId, "PLANE_CTM"},
+};
+
+template <class T>
+uint32_t GetNextId(const std::vector<T>& collection, uint32_t base) {
+  uint32_t max = 0;
+  for (const auto t : collection) {
+    max = std::max(t.id, max);
+  }
+  return max == 0 ? base : max + 1;
+}
 
 ScopedDrmObjectPropertyPtr CreatePropertyObject(
     const std::vector<DrmDevice::Property>& properties) {
@@ -91,6 +149,131 @@ MockDrmDevice::PlaneProperties::PlaneProperties() = default;
 MockDrmDevice::PlaneProperties::PlaneProperties(const PlaneProperties&) =
     default;
 MockDrmDevice::PlaneProperties::~PlaneProperties() = default;
+
+uint32_t MockDrmDevice::PlaneProperties::type() const {
+  auto prop = GetProp(kTypePropId);
+  CHECK(prop);
+  return prop.value()->value;
+}
+
+absl::optional<const DrmDevice::Property*>
+MockDrmDevice::PlaneProperties::GetProp(uint32_t prop_id) const {
+  for (const auto& prop : properties) {
+    if (prop.id == prop_id)
+      return {&prop};
+  }
+  return absl::nullopt;
+}
+
+void MockDrmDevice::PlaneProperties::SetProp(uint32_t prop_id, uint32_t value) {
+  for (auto& prop : properties) {
+    if (prop.id == prop_id) {
+      prop.value = value;
+      return;
+    }
+  }
+  properties.push_back({prop_id, value});
+}
+
+MockDrmDevice::MockDrmState::MockDrmState() = default;
+MockDrmDevice::MockDrmState::MockDrmState(const MockDrmState&) = default;
+MockDrmDevice::MockDrmState::~MockDrmState() = default;
+
+MockDrmDevice::MockDrmState
+MockDrmDevice::MockDrmState::CreateStateWithNoProperties() {
+  return MockDrmState();
+}
+
+MockDrmDevice::MockDrmState
+MockDrmDevice::MockDrmState::CreateStateWithAllProperties() {
+  MockDrmState state;
+  state.property_names.insert(kCrtcRequiredPropertyNames.begin(),
+                              kCrtcRequiredPropertyNames.end());
+  state.property_names.insert(kConnectorRequiredPropertyNames.begin(),
+                              kConnectorRequiredPropertyNames.end());
+  state.property_names.insert(kPlaneRequiredPropertyNames.begin(),
+                              kPlaneRequiredPropertyNames.end());
+
+  // Separately add optional properties that will be used in some tests, but the
+  // tests will append the property to the planes on a case-by-case basis.
+  state.property_names.insert(kPlaneOptionalPropertyNames.begin(),
+                              kPlaneOptionalPropertyNames.end());
+  state.property_names.insert(kCrtcOptionalPropertyNames.begin(),
+                              kCrtcOptionalPropertyNames.end());
+
+  return state;
+}
+
+MockDrmDevice::MockDrmState
+MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+    size_t crtc_count,
+    size_t planes_per_crtc) {
+  MockDrmState state = CreateStateWithAllProperties();
+  for (size_t i = 0; i < crtc_count; ++i) {
+    const auto& crtc = state.AddCrtcAndConnector().first;
+
+    state.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
+    for (size_t j = 0; j < planes_per_crtc - 1; ++j) {
+      state.AddPlane(crtc.id, DRM_PLANE_TYPE_OVERLAY);
+    }
+    state.AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
+  }
+  return state;
+}
+
+std::pair<MockDrmDevice::CrtcProperties&, MockDrmDevice::ConnectorProperties&>
+MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
+  uint32_t next_connector_id =
+      GetNextId(connector_properties, kConnectorIdBase);
+  uint32_t next_crtc_id = GetNextId(crtc_properties, kCrtcIdBase);
+
+  auto& connector_property = connector_properties.emplace_back();
+  connector_property.id = next_connector_id;
+  for (const auto& pair : kConnectorRequiredPropertyNames) {
+    connector_property.properties.push_back({.id = pair.first, .value = 0});
+    if (!base::Contains(property_names, pair.first))
+      property_names.emplace(pair.first, pair.second);
+  }
+
+  auto& crtc_property = crtc_properties.emplace_back();
+  crtc_property.id = next_crtc_id;
+  for (const auto& pair : kCrtcRequiredPropertyNames) {
+    crtc_property.properties.push_back({.id = pair.first, .value = 0});
+    if (!base::Contains(property_names, pair.first))
+      property_names.emplace(pair.first, pair.second);
+  }
+
+  return {crtc_property, connector_property};
+}
+
+MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
+    uint32_t crtc_id,
+    uint32_t type) {
+  uint32_t next_plane_id = GetNextId(plane_properties, kPlaneOffset);
+
+  size_t crtc_idx = UINT32_MAX;
+  for (size_t i = 0; i < crtc_properties.size(); ++i) {
+    if (crtc_properties[i].id == crtc_id) {
+      crtc_idx = i;
+      break;
+    }
+  }
+  CHECK(crtc_idx != UINT32_MAX) << "Could not find crtc with id " << crtc_id;
+
+  auto& plane = plane_properties.emplace_back();
+  plane.id = next_plane_id;
+  plane.crtc_mask = (1 << crtc_idx);
+  for (const auto& pair : kPlaneRequiredPropertyNames) {
+    plane.properties.push_back({.id = pair.first, .value = 0});
+    if (!base::Contains(property_names, pair.first))
+      property_names.emplace(pair.first, pair.second);
+  }
+
+  plane.SetProp(kTypePropId, type);
+  plane.SetProp(kInFormatsPropId, kInFormatsBlobIdBase);
+
+  return plane;
+}
 
 MockDrmDevice::MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
     : DrmDevice(base::FilePath(),
@@ -142,25 +325,15 @@ ScopedDrmPropertyBlobPtr MockDrmDevice::AllocateInFormatsBlob(
   return blob;
 }
 
-void MockDrmDevice::InitializeState(
-    const std::vector<CrtcProperties>& crtc_properties,
-    const std::vector<ConnectorProperties>& connector_properties,
-    const std::vector<PlaneProperties>& plane_properties,
-    const std::map<uint32_t, std::string>& property_names,
-    bool use_atomic) {
-  CHECK(InitializeStateWithResult(crtc_properties, connector_properties,
-                                  plane_properties, property_names,
-                                  use_atomic));
+void MockDrmDevice::InitializeState(const MockDrmState& state,
+                                    bool use_atomic) {
+  CHECK(InitializeStateWithResult(state, use_atomic));
 }
 
-bool MockDrmDevice::InitializeStateWithResult(
-    const std::vector<CrtcProperties>& crtc_properties,
-    const std::vector<ConnectorProperties>& connector_properties,
-    const std::vector<PlaneProperties>& plane_properties,
-    const std::map<uint32_t, std::string>& property_names,
-    bool use_atomic) {
-  UpdateState(crtc_properties, connector_properties, plane_properties,
-              property_names);
+bool MockDrmDevice::InitializeStateWithResult(const MockDrmState& state,
+                                              bool use_atomic) {
+  UpdateStateBesidesPlaneManager(state);
+
   if (use_atomic) {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
@@ -170,33 +343,8 @@ bool MockDrmDevice::InitializeStateWithResult(
   return plane_manager_->Initialize();
 }
 
-void MockDrmDevice::UpdateState(
-    const std::vector<CrtcProperties>& crtc_properties,
-    const std::vector<ConnectorProperties>& connector_properties,
-    const std::vector<PlaneProperties>& plane_properties,
-    const std::map<uint32_t, std::string>& property_names) {
-  crtc_properties_ = crtc_properties;
-  connector_properties_ = connector_properties;
-  plane_properties_ = plane_properties;
-  property_names_ = property_names;
-
-  // Props IDs shouldn't change throughout a DRM state. Grab it once at
-  // UpdateState.
-  plane_crtc_id_prop_id_ = 0;
-  for (const PlaneProperties& plane_props : plane_properties) {
-    const std::vector<DrmDevice::Property>& props = plane_props.properties;
-    auto it = base::ranges::find(
-        props, "CRTC_ID",
-        [&names = property_names_](const DrmDevice::Property& prop) {
-          return names.at(prop.id);
-        });
-    if (it != props.end()) {
-      plane_crtc_id_prop_id_ = it->id;
-      // all planes should have the same prop ID for the name. Break right after
-      // the first one is found.
-      break;
-    }
-  }
+void MockDrmDevice::UpdateStateBesidesPlaneManager(const MockDrmState& state) {
+  drm_state_ = state;
 }
 
 void MockDrmDevice::SetModifiersOverhead(
@@ -211,28 +359,28 @@ void MockDrmDevice::SetSystemLimitOfModifiers(uint64_t limit) {
 
 ScopedDrmResourcesPtr MockDrmDevice::GetResources() {
   ScopedDrmResourcesPtr resources(DrmAllocator<drmModeRes>());
-  resources->count_crtcs = crtc_properties_.size();
+  resources->count_crtcs = drm_state_.crtc_properties.size();
   resources->crtcs = static_cast<uint32_t*>(
       drmMalloc(sizeof(uint32_t) * resources->count_crtcs));
-  for (size_t i = 0; i < crtc_properties_.size(); ++i)
-    resources->crtcs[i] = crtc_properties_[i].id;
+  for (size_t i = 0; i < drm_state_.crtc_properties.size(); ++i)
+    resources->crtcs[i] = drm_state_.crtc_properties[i].id;
 
-  resources->count_connectors = connector_properties_.size();
+  resources->count_connectors = drm_state_.connector_properties.size();
   resources->connectors = static_cast<uint32_t*>(
       drmMalloc(sizeof(uint32_t) * resources->count_connectors));
-  for (size_t i = 0; i < connector_properties_.size(); ++i)
-    resources->connectors[i] = connector_properties_[i].id;
+  for (size_t i = 0; i < drm_state_.connector_properties.size(); ++i)
+    resources->connectors[i] = drm_state_.connector_properties[i].id;
 
   return resources;
 }
 
 ScopedDrmPlaneResPtr MockDrmDevice::GetPlaneResources() {
   ScopedDrmPlaneResPtr resources(DrmAllocator<drmModePlaneRes>());
-  resources->count_planes = plane_properties_.size();
+  resources->count_planes = drm_state_.plane_properties.size();
   resources->planes = static_cast<uint32_t*>(
       drmMalloc(sizeof(uint32_t) * resources->count_planes));
-  for (size_t i = 0; i < plane_properties_.size(); ++i)
-    resources->planes[i] = plane_properties_[i].id;
+  for (size_t i = 0; i < drm_state_.plane_properties.size(); ++i)
+    resources->planes[i] = drm_state_.plane_properties[i].id;
 
   return resources;
 }
@@ -241,16 +389,18 @@ ScopedDrmObjectPropertyPtr MockDrmDevice::GetObjectProperties(
     uint32_t object_id,
     uint32_t object_type) {
   if (object_type == DRM_MODE_OBJECT_PLANE) {
-    PlaneProperties* properties = FindObjectById(object_id, plane_properties_);
+    PlaneProperties* properties =
+        FindObjectById(object_id, drm_state_.plane_properties);
     if (properties)
       return CreatePropertyObject(properties->properties);
   } else if (object_type == DRM_MODE_OBJECT_CRTC) {
-    CrtcProperties* properties = FindObjectById(object_id, crtc_properties_);
+    CrtcProperties* properties =
+        FindObjectById(object_id, drm_state_.crtc_properties);
     if (properties)
       return CreatePropertyObject(properties->properties);
   } else if (object_type == DRM_MODE_OBJECT_CONNECTOR) {
     ConnectorProperties* properties =
-        FindObjectById(object_id, connector_properties_);
+        FindObjectById(object_id, drm_state_.connector_properties);
     if (properties)
       return CreatePropertyObject(properties->properties);
   }
@@ -337,7 +487,8 @@ bool MockDrmDevice::PageFlip(uint32_t crtc_id,
 }
 
 ScopedDrmPlanePtr MockDrmDevice::GetPlane(uint32_t plane_id) {
-  PlaneProperties* properties = FindObjectById(plane_id, plane_properties_);
+  PlaneProperties* properties =
+      FindObjectById(plane_id, drm_state_.plane_properties);
   if (!properties)
     return nullptr;
 
@@ -352,8 +503,8 @@ ScopedDrmPropertyPtr MockDrmDevice::GetProperty(drmModeConnector* connector,
 }
 
 ScopedDrmPropertyPtr MockDrmDevice::GetProperty(uint32_t id) {
-  auto it = property_names_.find(id);
-  if (it == property_names_.end())
+  auto it = drm_state_.property_names.find(id);
+  if (it == drm_state_.property_names.end())
     return nullptr;
 
   ScopedDrmPropertyPtr property(DrmAllocator<drmModePropertyRes>());
@@ -504,7 +655,7 @@ bool MockDrmDevice::CommitPropertiesInternal(
       requested_resources += modifiers_overhead_[props.modifier];
     }
 
-    if (item.property_id == plane_crtc_id_prop_id_) {
+    if (item.property_id == kPlaneCrtcId) {
       if (++crtc_planes_counter[item.value] > 1 &&
           !modeset_with_overlays_expectation_)
         return false;
@@ -532,8 +683,8 @@ bool MockDrmDevice::CommitPropertiesInternal(
       return false;
   }
 
-  // Count all committed planes at the end just before returning true to reflect
-  // the number of planes that have successfully been committed.
+  // Count all committed planes at the end just before returning true to
+  // reflect the number of planes that have successfully been committed.
   last_planes_committed_count_ = 0;
   for (const auto& planes_counter : crtc_planes_counter)
     last_planes_committed_count_ += planes_counter.second;
@@ -593,16 +744,17 @@ bool MockDrmDevice::UpdateProperty(uint32_t object_id,
                                    uint32_t property_id,
                                    uint64_t value) {
   PlaneProperties* plane_properties =
-      FindObjectById(object_id, plane_properties_);
+      FindObjectById(object_id, drm_state_.plane_properties);
   if (plane_properties)
     return UpdateProperty(property_id, value, &plane_properties->properties);
 
-  CrtcProperties* crtc_properties = FindObjectById(object_id, crtc_properties_);
+  CrtcProperties* crtc_properties =
+      FindObjectById(object_id, drm_state_.crtc_properties);
   if (crtc_properties)
     return UpdateProperty(property_id, value, &crtc_properties->properties);
 
   ConnectorProperties* connector_properties =
-      FindObjectById(object_id, connector_properties_);
+      FindObjectById(object_id, drm_state_.connector_properties);
   if (connector_properties) {
     return UpdateProperty(property_id, value,
                           &connector_properties->properties);
@@ -612,8 +764,8 @@ bool MockDrmDevice::UpdateProperty(uint32_t object_id,
 }
 
 bool MockDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
-  auto it = property_names_.find(id);
-  if (it == property_names_.end())
+  auto it = drm_state_.property_names.find(id);
+  if (it == drm_state_.property_names.end())
     return false;
 
   if (value == 0)

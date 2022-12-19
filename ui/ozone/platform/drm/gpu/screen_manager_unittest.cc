@@ -6,12 +6,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drm.h>
+#include <xf86drmMode.h>
 #include <memory>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/files/platform_file.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_fence.h"
@@ -39,20 +38,6 @@ const drmModeModeInfo kDefaultMode = ConstructMode(6, 4);
 
 const uint32_t kPrimaryDisplayId = 1;
 const uint32_t kSecondaryDisplayId = 2;
-
-constexpr uint32_t kCrtcIdBase = 100;
-constexpr uint32_t kPrimaryCrtc = kCrtcIdBase;
-constexpr uint32_t kSecondaryCrtc = kCrtcIdBase + 1;
-
-constexpr uint32_t kConnectorIdBase = 200;
-constexpr uint32_t kPrimaryConnector = kConnectorIdBase;
-constexpr uint32_t kSecondaryConnector = kConnectorIdBase + 1;
-constexpr uint32_t kPlaneIdBase = 300;
-constexpr uint32_t kInFormatsBlobPropIdBase = 400;
-
-constexpr uint32_t kFbIdPropId = 3005;
-constexpr uint32_t kTypePropId = 3010;
-constexpr uint32_t kInFormatsPropId = 3011;
 
 }  // namespace
 
@@ -87,103 +72,45 @@ class ScreenManagerTest : public testing::Test {
                           const std::vector<CrtcState>& crtc_states,
                           bool is_atomic,
                           bool use_modifiers_list = false) {
-    std::vector<ui::MockDrmDevice::CrtcProperties> crtc_properties(
-        crtc_states.size());
-    std::map<uint32_t, std::string> crtc_property_names = {
-        {1000, "ACTIVE"},
-        {1001, "MODE_ID"},
-    };
+    size_t plane_count = crtc_states[0].planes.size();
+    for (const auto& crtc_state : crtc_states) {
+      ASSERT_EQ(plane_count, crtc_state.planes.size())
+          << "MockDrmDevice::CreateStateWithAllProperties currently expects "
+             "the same number of planes per CRTC";
+    }
 
-    std::vector<ui::MockDrmDevice::ConnectorProperties> connector_properties(3);
-    std::map<uint32_t, std::string> connector_property_names = {
-        {2000, "CRTC_ID"},
-    };
-    for (size_t i = 0; i < connector_properties.size(); ++i) {
-      connector_properties[i].id = kPrimaryConnector + i;
-      for (const auto& pair : connector_property_names) {
-        connector_properties[i].properties.push_back(
-            {.id = pair.first, .value = 0});
+    std::vector<drm_format_modifier> drm_format_modifiers;
+    if (use_modifiers_list) {
+      for (const auto modifier : supported_modifiers_) {
+        drm_format_modifiers.push_back(
+            {.formats = 1, .offset = 0, .pad = 0, .modifier = modifier});
       }
     }
 
-    std::vector<ui::MockDrmDevice::PlaneProperties> plane_properties;
-    std::map<uint32_t, std::string> plane_property_names = {
-        // Add all required properties.
-        {3000, "CRTC_ID"},
-        {3001, "CRTC_X"},
-        {3002, "CRTC_Y"},
-        {3003, "CRTC_W"},
-        {3004, "CRTC_H"},
-        {kFbIdPropId, "FB_ID"},
-        {3006, "SRC_X"},
-        {3007, "SRC_Y"},
-        {3008, "SRC_W"},
-        {3009, "SRC_H"},
-        // Defines some optional properties we use for convenience.
-        {kTypePropId, "type"},
-        {kInFormatsPropId, "IN_FORMATS"},
-    };
+    auto drm_state =
+        ui::MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
-    uint32_t plane_id = kPlaneIdBase;
-    uint32_t property_id = kInFormatsBlobPropIdBase;
+    // Set up the default format property ID for the cursor planes:
+    drm->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+        ui::kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
-    for (size_t crtc_idx = 0; crtc_idx < crtc_states.size(); ++crtc_idx) {
-      crtc_properties[crtc_idx].id = kPrimaryCrtc + crtc_idx;
-      for (const auto& pair : crtc_property_names) {
-        crtc_properties[crtc_idx].properties.push_back(
-            {.id = pair.first, .value = 0});
+    uint32_t blob_id = ui::kInFormatsBlobIdBase + 1;
+    for (const auto& crtc_state : crtc_states) {
+      const auto& crtc = drm_state.AddCrtcAndConnector().first;
+
+      for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
+        uint32_t new_blob_id = blob_id++;
+        drm->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
+            new_blob_id, crtc_state.planes[i].formats, drm_format_modifiers));
+
+        auto& plane = drm_state.AddPlane(
+            crtc.id, i == 0 ? DRM_PLANE_TYPE_PRIMARY : DRM_PLANE_TYPE_OVERLAY);
+        plane.SetProp(ui::kInFormatsPropId, new_blob_id);
       }
-
-      std::vector<ui::MockDrmDevice::PlaneProperties> crtc_plane_properties(
-          crtc_states[crtc_idx].planes.size());
-      for (size_t plane_idx = 0;
-           plane_idx < crtc_states[crtc_idx].planes.size(); ++plane_idx) {
-        crtc_plane_properties[plane_idx].id = plane_id++;
-        crtc_plane_properties[plane_idx].crtc_mask = 1 << crtc_idx;
-
-        for (const auto& pair : plane_property_names) {
-          uint64_t value = 0;
-          if (pair.first == kTypePropId) {
-            value = plane_idx == 0 ? DRM_PLANE_TYPE_PRIMARY
-                                   : DRM_PLANE_TYPE_OVERLAY;
-          } else if (pair.first == kInFormatsPropId) {
-            value = property_id++;
-            std::vector<drm_format_modifier> drm_format_modifiers;
-            if (use_modifiers_list) {
-              for (const auto modifier : supported_modifiers_) {
-                drm_format_modifiers.push_back({.formats = 1,
-                                                .offset = 0,
-                                                .pad = 0,
-                                                .modifier = modifier});
-              }
-            }
-
-            drm->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
-                value, crtc_states[crtc_idx].planes[plane_idx].formats,
-                std::move(drm_format_modifiers)));
-          }
-
-          crtc_plane_properties[plane_idx].properties.push_back(
-              {.id = pair.first, .value = value});
-        }
-      }
-
-      plane_properties.insert(plane_properties.end(),
-                              crtc_plane_properties.begin(),
-                              crtc_plane_properties.end());
     }
-
-    std::map<uint32_t, std::string> property_names;
-    property_names.insert(crtc_property_names.begin(),
-                          crtc_property_names.end());
-    property_names.insert(connector_property_names.begin(),
-                          connector_property_names.end());
-    property_names.insert(plane_property_names.begin(),
-                          plane_property_names.end());
 
     drm->SetModifiersOverhead(modifiers_overhead_);
-    drm->InitializeState(crtc_properties, connector_properties,
-                         plane_properties, property_names, is_atomic);
+    drm->InitializeState(drm_state, is_atomic);
   }
 
   void InitializeDrmStateWithDefault(ui::MockDrmDevice* drm,
@@ -245,12 +172,14 @@ TEST_F(ScreenManagerTest, CheckWithNoControllers) {
 
 TEST_F(ScreenManagerTest, CheckWithValidController) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -262,17 +191,19 @@ TEST_F(ScreenManagerTest, CheckWithValidController) {
       screen_manager_->GetDisplayController(GetPrimaryBounds());
 
   EXPECT_TRUE(controller);
-  EXPECT_TRUE(controller->HasCrtc(drm_, kPrimaryCrtc));
+  EXPECT_TRUE(controller->HasCrtc(drm_, crtc_id));
 }
 
 TEST_F(ScreenManagerTest, CheckWithSeamlessModeset) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -285,12 +216,14 @@ TEST_F(ScreenManagerTest, CheckWithSeamlessModeset) {
 
 TEST_F(ScreenManagerTest, CheckWithInvalidBounds) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -302,19 +235,24 @@ TEST_F(ScreenManagerTest, CheckWithInvalidBounds) {
 
 TEST_F(ScreenManagerTest, CheckForSecondValidController) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -335,19 +273,24 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysWithinModifiersLimit) {
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true,
                                 /*use_modifiers_list=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
@@ -364,19 +307,24 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysOutsideModifiersLimit) {
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true,
                                 /*use_modifiers_list=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
@@ -393,19 +341,24 @@ TEST_F(ScreenManagerTest, CheckDisplaysWith0Limit) {
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true,
                                 /*use_modifiers_list=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   EXPECT_FALSE(screen_manager_->ConfigureDisplayControllers(
@@ -419,12 +372,14 @@ TEST_F(ScreenManagerTest, CheckDisplaysWith0Limit) {
 
 TEST_F(ScreenManagerTest, CheckControllerAfterItIsRemoved) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -433,20 +388,23 @@ TEST_F(ScreenManagerTest, CheckControllerAfterItIsRemoved) {
   EXPECT_TRUE(screen_manager_->GetDisplayController(GetPrimaryBounds()));
 
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
-  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
+  controllers_to_remove.emplace_back(crtc_id, drm_);
   screen_manager_->RemoveDisplayControllers(controllers_to_remove);
   EXPECT_FALSE(screen_manager_->GetDisplayController(GetPrimaryBounds()));
 }
 
 TEST_F(ScreenManagerTest, CheckControllerAfterDisabled) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   // Enable
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     screen_manager_->ConfigureDisplayControllers(
@@ -457,8 +415,8 @@ TEST_F(ScreenManagerTest, CheckControllerAfterDisabled) {
   int commit_modeset_count_before_disable = drm_->get_commit_modeset_count();
   // Disable
   ScreenManager::ControllerConfigsList controllers_to_enable;
-  controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_, kPrimaryCrtc,
-                                     kPrimaryConnector, gfx::Point(), nullptr);
+  controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_, crtc_id,
+                                     connector_id, gfx::Point(), nullptr);
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
@@ -472,18 +430,23 @@ TEST_F(ScreenManagerTest, CheckControllerAfterDisabled) {
 
 TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingRemoved) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -491,8 +454,8 @@ TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingRemoved) {
 
   int modeset_count_after_enable = drm_->get_commit_modeset_count();
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
-  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
-  controllers_to_remove.emplace_back(kSecondaryCrtc, drm_);
+  controllers_to_remove.emplace_back(primary_crtc_id, drm_);
+  controllers_to_remove.emplace_back(secondary_crtc_id, drm_);
   screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   // Removed displays are disabled in only 1 modeset commit.
@@ -504,18 +467,24 @@ TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingRemoved) {
 
 TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingDisabled) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
+
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
   // Enable
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     controllers_to_enable.emplace_back(
-        kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+        kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
         GetSecondaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     screen_manager_->ConfigureDisplayControllers(
@@ -526,11 +495,12 @@ TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingDisabled) {
   int commit_modeset_count_before_disable = drm_->get_commit_modeset_count();
   // Disable
   ScreenManager::ControllerConfigsList controllers_to_enable;
-  controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_, kPrimaryCrtc,
-                                     kPrimaryConnector, gfx::Point(), nullptr);
-  controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_, kSecondaryCrtc,
-                                     kSecondaryConnector, gfx::Point(),
+  controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_, primary_crtc_id,
+                                     primary_connector_id, gfx::Point(),
                                      nullptr);
+  controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_,
+                                     secondary_crtc_id, secondary_connector_id,
+                                     gfx::Point(), nullptr);
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
@@ -545,12 +515,14 @@ TEST_F(ScreenManagerTest, CheckMultipleControllersAfterBeingDisabled) {
 
 TEST_F(ScreenManagerTest, CheckDuplicateConfiguration) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic*/ false);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -560,7 +532,7 @@ TEST_F(ScreenManagerTest, CheckDuplicateConfiguration) {
 
   controllers_to_enable.clear();
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -575,14 +547,16 @@ TEST_F(ScreenManagerTest, CheckDuplicateConfiguration) {
 
 TEST_F(ScreenManagerTest, CheckChangingMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
 
   // Modeset with default mode.
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     screen_manager_->ConfigureDisplayControllers(
@@ -594,7 +568,7 @@ TEST_F(ScreenManagerTest, CheckChangingMode) {
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(new_mode));
     screen_manager_->ConfigureDisplayControllers(
@@ -613,19 +587,24 @@ TEST_F(ScreenManagerTest, CheckChangingMode) {
 
 TEST_F(ScreenManagerTest, CheckForControllersInMirroredMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -642,19 +621,24 @@ TEST_F(ScreenManagerTest, CheckMirrorModeTransitions) {
       {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
                   {.formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -666,12 +650,12 @@ TEST_F(ScreenManagerTest, CheckMirrorModeTransitions) {
   controllers_to_enable.clear();
   drmModeModeInfo transition1_primary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(transition1_primary_mode));
   drmModeModeInfo transition1_secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(transition1_secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -683,12 +667,12 @@ TEST_F(ScreenManagerTest, CheckMirrorModeTransitions) {
   controllers_to_enable.clear();
   drmModeModeInfo transition2_primary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(transition2_primary_mode));
   drmModeModeInfo transition2_secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(transition2_secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -702,14 +686,19 @@ TEST_F(ScreenManagerTest, CheckMirrorModeTransitions) {
 // the timings may be off.
 TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   // Copy the mode and use the copy so we can tell what mode the CRTC was
@@ -718,7 +707,7 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   drmModeModeInfo secondary_mode = kDefaultMode;
   secondary_mode.clock++;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -727,9 +716,9 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   ui::HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
   for (const auto& crtc : controller->crtc_controllers()) {
-    if (crtc->crtc() == kPrimaryCrtc)
+    if (crtc->crtc() == primary_crtc_id)
       EXPECT_EQ(kDefaultMode.clock, crtc->mode().clock);
-    else if (crtc->crtc() == kSecondaryCrtc)
+    else if (crtc->crtc() == secondary_crtc_id)
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
     else
       NOTREACHED();
@@ -738,26 +727,31 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
 
 TEST_F(ScreenManagerTest, MonitorGoneInMirrorMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
-  controllers_to_remove.emplace_back(kSecondaryCrtc, drm_);
+  controllers_to_remove.emplace_back(secondary_crtc_id, drm_);
   screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   ui::HardwareDisplayController* controller =
@@ -765,27 +759,32 @@ TEST_F(ScreenManagerTest, MonitorGoneInMirrorMode) {
   EXPECT_TRUE(controller);
   EXPECT_FALSE(screen_manager_->GetDisplayController(GetSecondaryBounds()));
 
-  EXPECT_TRUE(controller->HasCrtc(drm_, kPrimaryCrtc));
-  EXPECT_FALSE(controller->HasCrtc(drm_, kSecondaryCrtc));
+  EXPECT_TRUE(controller->HasCrtc(drm_, primary_crtc_id));
+  EXPECT_FALSE(controller->HasCrtc(drm_, secondary_crtc_id));
 }
 
 TEST_F(ScreenManagerTest, MonitorDisabledInMirrorMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   // Enable in Mirror Mode.
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     drmModeModeInfo secondary_mode = kDefaultMode;
     controllers_to_enable.emplace_back(
-        kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+        kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(secondary_mode));
     screen_manager_->ConfigureDisplayControllers(
@@ -794,8 +793,8 @@ TEST_F(ScreenManagerTest, MonitorDisabledInMirrorMode) {
 
   // Disable display Controller.
   ScreenManager::ControllerConfigsList controllers_to_enable;
-  controllers_to_enable.emplace_back(0, drm_, kSecondaryCrtc, 0, gfx::Point(),
-                                     nullptr);
+  controllers_to_enable.emplace_back(0, drm_, secondary_crtc_id, 0,
+                                     gfx::Point(), nullptr);
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
@@ -804,27 +803,32 @@ TEST_F(ScreenManagerTest, MonitorDisabledInMirrorMode) {
   EXPECT_TRUE(controller);
   EXPECT_FALSE(screen_manager_->GetDisplayController(GetSecondaryBounds()));
 
-  EXPECT_TRUE(controller->HasCrtc(drm_, kPrimaryCrtc));
-  EXPECT_FALSE(controller->HasCrtc(drm_, kSecondaryCrtc));
+  EXPECT_TRUE(controller->HasCrtc(drm_, primary_crtc_id));
+  EXPECT_FALSE(controller->HasCrtc(drm_, secondary_crtc_id));
 }
 
 TEST_F(ScreenManagerTest, DoNotEnterMirrorModeUnlessSameBounds) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
 
   // Configure displays in extended mode.
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     drmModeModeInfo secondary_mode = kDefaultMode;
     controllers_to_enable.emplace_back(
-        kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+        kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
         GetSecondaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(secondary_mode));
     screen_manager_->ConfigureDisplayControllers(
@@ -837,7 +841,7 @@ TEST_F(ScreenManagerTest, DoNotEnterMirrorModeUnlessSameBounds) {
     // Shouldn't enter mirror mode unless the display bounds are the same.
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+        kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
         GetPrimaryBounds().origin(), std::move(new_mode));
     screen_manager_->ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -849,11 +853,13 @@ TEST_F(ScreenManagerTest, DoNotEnterMirrorModeUnlessSameBounds) {
 
 TEST_F(ScreenManagerTest, ReuseFramebufferIfDisabledThenReEnabled) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -863,7 +869,7 @@ TEST_F(ScreenManagerTest, ReuseFramebufferIfDisabledThenReEnabled) {
 
   controllers_to_enable.clear();
   // Disable display controller.
-  controllers_to_enable.emplace_back(0, drm_, kPrimaryCrtc, 0, gfx::Point(),
+  controllers_to_enable.emplace_back(0, drm_, crtc_id, 0, gfx::Point(),
                                      nullptr);
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -872,7 +878,7 @@ TEST_F(ScreenManagerTest, ReuseFramebufferIfDisabledThenReEnabled) {
   controllers_to_enable.clear();
   drmModeModeInfo reenable_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(reenable_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -884,19 +890,24 @@ TEST_F(ScreenManagerTest, ReuseFramebufferIfDisabledThenReEnabled) {
 
 TEST_F(ScreenManagerTest, CheckMirrorModeAfterBeginReEnabled) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t primary_crtc_id = drm_->crtc_property(0).id;
+  uint32_t primary_connector_id = drm_->connector_property(0).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm_, kSecondaryCrtc,
-                                        kSecondaryConnector);
+  screen_manager_->AddDisplayController(drm_, primary_crtc_id,
+                                        primary_connector_id);
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
+                                        secondary_connector_id);
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     drmModeModeInfo secondary_mode = kDefaultMode;
     controllers_to_enable.emplace_back(
-        kSecondaryDisplayId, drm_, kSecondaryCrtc, kSecondaryConnector,
+        kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(secondary_mode));
     screen_manager_->ConfigureDisplayControllers(
@@ -904,8 +915,8 @@ TEST_F(ScreenManagerTest, CheckMirrorModeAfterBeginReEnabled) {
   }
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
-    controllers_to_enable.emplace_back(0, drm_, kPrimaryCrtc, 0, gfx::Point(),
-                                       nullptr);
+    controllers_to_enable.emplace_back(0, drm_, primary_crtc_id, 0,
+                                       gfx::Point(), nullptr);
     screen_manager_->ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
   }
@@ -919,7 +930,7 @@ TEST_F(ScreenManagerTest, CheckMirrorModeAfterBeginReEnabled) {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     drmModeModeInfo reenable_mode = kDefaultMode;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, primary_crtc_id, primary_connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(reenable_mode));
     screen_manager_->ConfigureDisplayControllers(
@@ -942,26 +953,29 @@ TEST_F(ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
       {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm2.get(), crtc_states, /*is_atomic=*/false);
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm2, kSecondaryCrtc,
-                                        kSecondaryConnector);
-  screen_manager_->AddDisplayController(drm2, kSecondaryCrtc + 1,
-                                        kSecondaryConnector + 1);
+  uint32_t drm_1_crtc_1 = drm_->crtc_property(0).id;
+  uint32_t drm_1_connector_1 = drm_->connector_property(0).id;
+  uint32_t drm_2_crtc_1 = drm2->crtc_property(0).id;
+  uint32_t drm_2_connector_1 = drm2->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, drm_1_crtc_1, drm_1_connector_1);
+  screen_manager_->AddDisplayController(drm2, drm_2_crtc_1, drm_2_connector_1);
+  screen_manager_->AddDisplayController(drm2, drm_2_crtc_1, drm_2_connector_1);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, drm_1_crtc_1, drm_1_connector_1,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm2, kSecondaryCrtc, kSecondaryConnector,
+      kSecondaryDisplayId, drm2, drm_2_crtc_1, drm_2_connector_1,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   drmModeModeInfo secondary_mode2 = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId + 1, drm2, kSecondaryCrtc + 1,
-      kSecondaryConnector + 1, GetSecondaryBounds().origin(),
+      kSecondaryDisplayId + 1, drm2, drm_2_crtc_1, drm_2_connector_1,
+      GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode2));
   screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -970,6 +984,8 @@ TEST_F(ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
   EXPECT_EQ(drm2->get_set_crtc_call_count(), 2);
 }
 
+// Tests that two devices that may share the same object IDs are
+// treated independently.
 TEST_F(ScreenManagerTest,
        CheckProperConfigurationWithDifferentDeviceAndSameCrtc) {
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();
@@ -977,19 +993,27 @@ TEST_F(ScreenManagerTest,
       new ui::MockDrmDevice(std::move(gbm_device));
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
-  InitializeDrmStateWithDefault(drm2.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
-  screen_manager_->AddDisplayController(drm2, kPrimaryCrtc, kPrimaryConnector);
+  InitializeDrmStateWithDefault(drm2.get(), /*is_atomic=*/true);
+  uint32_t drm2_crtc_id = drm2->crtc_property(0).id;
+  uint32_t drm2_connector_id = drm2->connector_property(0).id;
+
+  ASSERT_EQ(crtc_id, drm2_crtc_id);
+  ASSERT_EQ(connector_id, drm2_connector_id);
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  screen_manager_->AddDisplayController(drm2, crtc_id, connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm2, kPrimaryCrtc, kPrimaryConnector,
+      kSecondaryDisplayId, drm2, crtc_id, connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1007,6 +1031,8 @@ TEST_F(ScreenManagerTest,
 
 TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithSameBounds) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1014,10 +1040,10 @@ TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithSameBounds) {
   window->SetBounds(GetPrimaryBounds());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1031,6 +1057,8 @@ TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithSameBounds) {
 
 TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithDifferentBounds) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1040,10 +1068,10 @@ TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithDifferentBounds) {
   window->SetBounds(new_bounds);
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1058,6 +1086,8 @@ TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithDifferentBounds) {
 TEST_F(ScreenManagerTest,
        CheckControllerToWindowMappingWithOverlappingWindows) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   const size_t kWindowCount = 2;
   for (size_t i = 1; i < kWindowCount + 1; ++i) {
@@ -1068,10 +1098,10 @@ TEST_F(ScreenManagerTest,
     screen_manager_->AddWindow(i, std::move(window));
   }
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1090,6 +1120,8 @@ TEST_F(ScreenManagerTest,
 
 TEST_F(ScreenManagerTest, ShouldDissociateWindowOnControllerRemoval) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   gfx::AcceleratedWidget window_id = 1;
   std::unique_ptr<ui::DrmWindow> window(new ui::DrmWindow(
@@ -1098,10 +1130,10 @@ TEST_F(ScreenManagerTest, ShouldDissociateWindowOnControllerRemoval) {
   window->SetBounds(GetPrimaryBounds());
   screen_manager_->AddWindow(window_id, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1110,7 +1142,7 @@ TEST_F(ScreenManagerTest, ShouldDissociateWindowOnControllerRemoval) {
   EXPECT_TRUE(screen_manager_->GetWindow(window_id)->GetController());
 
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
-  controllers_to_remove.emplace_back(kPrimaryCrtc, drm_);
+  controllers_to_remove.emplace_back(crtc_id, drm_);
   screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   EXPECT_FALSE(screen_manager_->GetWindow(window_id)->GetController());
@@ -1121,6 +1153,8 @@ TEST_F(ScreenManagerTest, ShouldDissociateWindowOnControllerRemoval) {
 
 TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasNoBuffer) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1128,10 +1162,10 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasNoBuffer) {
   window->SetBounds(GetPrimaryBounds());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1144,7 +1178,7 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasNoBuffer) {
 
   controllers_to_enable.clear();
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1160,6 +1194,8 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasNoBuffer) {
 
 TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasBuffer) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1173,10 +1209,10 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasBuffer) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1190,6 +1226,10 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasBuffer) {
 
 // See crbug.com/868010
 TEST_F(ScreenManagerTest, DISABLED_RejectBufferWithIncompatibleModifiers) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
   window->Initialize();
@@ -1202,10 +1242,10 @@ TEST_F(ScreenManagerTest, DISABLED_RejectBufferWithIncompatibleModifiers) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1224,6 +1264,8 @@ TEST_F(ScreenManagerTest, DISABLED_RejectBufferWithIncompatibleModifiers) {
 
 TEST_F(ScreenManagerTest, ConfigureDisplayControllerShouldModesetOnce) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1231,10 +1273,10 @@ TEST_F(ScreenManagerTest, ConfigureDisplayControllerShouldModesetOnce) {
   window->SetBounds(GetPrimaryBounds());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
@@ -1262,10 +1304,10 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
   DrmDeviceManager drm_device_manager(nullptr);
   ScreenManager screen_manager;
 
-  constexpr uint32_t kCrtc1 = kPrimaryCrtc;
-  constexpr uint32_t kConnector1 = kPrimaryConnector;
-  constexpr uint32_t kCrtc2 = kSecondaryCrtc;
-  constexpr uint32_t kConnector2 = kSecondaryConnector;
+  uint32_t crtc1 = drm_device1->crtc_property(0).id;
+  uint32_t connector1 = drm_device1->connector_property(0).id;
+  uint32_t crtc2 = drm_device1->crtc_property(1).id;
+  uint32_t connector2 = drm_device1->connector_property(1).id;
 
   drmModeModeInfo k1920x1080Screen = ConstructMode(1920, 1080);
 
@@ -1284,19 +1326,19 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
     window1->Initialize();
     screen_manager.AddWindow(1, std::move(window1));
     screen_manager.GetWindow(1)->SetBounds(gfx::Rect(0, 0, 1920, 1080));
-    screen_manager.AddDisplayController(drm_device1, kCrtc1, kConnector1);
-    screen_manager.AddDisplayController(drm_device2, kCrtc2, kConnector2);
+    screen_manager.AddDisplayController(drm_device1, crtc1, connector1);
+    screen_manager.AddDisplayController(drm_device2, crtc2, connector2);
 
     ScreenManager::ControllerConfigsList controllers_to_enable;
     std::unique_ptr<drmModeModeInfo> primary_mode =
         std::make_unique<drmModeModeInfo>(k1920x1080Screen);
     std::unique_ptr<drmModeModeInfo> secondary_mode =
         std::make_unique<drmModeModeInfo>(k1920x1080Screen);
-    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device1, kCrtc1,
-                                       kConnector1, gfx::Point(0, 0),
+    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device1, crtc1,
+                                       connector1, gfx::Point(0, 0),
                                        std::move(primary_mode));
-    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, kCrtc2,
-                                       kConnector2, gfx::Point(0, 1140),
+    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, crtc2,
+                                       connector2, gfx::Point(0, 1140),
                                        std::move(secondary_mode));
     screen_manager.ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -1315,21 +1357,21 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
     HardwareDisplayController* controller2 =
         screen_manager.GetWindow(2)->GetController();
     EXPECT_NE(controller1, controller2);
-    EXPECT_TRUE(controller1->HasCrtc(drm_device1, kCrtc1));
-    EXPECT_TRUE(controller2->HasCrtc(drm_device2, kCrtc2));
+    EXPECT_TRUE(controller1->HasCrtc(drm_device1, crtc1));
+    EXPECT_TRUE(controller2->HasCrtc(drm_device2, crtc2));
   }
 
   // Disconnect first display. Second display moves to origin.
   {
     ScreenManager::CrtcsWithDrmList controllers_to_remove;
-    controllers_to_remove.emplace_back(kCrtc1, drm_device1);
+    controllers_to_remove.emplace_back(crtc1, drm_device1);
     screen_manager.RemoveDisplayControllers(controllers_to_remove);
 
     ScreenManager::ControllerConfigsList controllers_to_enable;
     std::unique_ptr<drmModeModeInfo> secondary_mode =
         std::make_unique<drmModeModeInfo>(k1920x1080Screen);
-    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, kCrtc2,
-                                       kConnector2, gfx::Point(0, 0),
+    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, crtc2,
+                                       connector2, gfx::Point(0, 0),
                                        std::move(secondary_mode));
     screen_manager.ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -1341,12 +1383,12 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
 
   // Reconnect first display. Original configuration restored.
   {
-    screen_manager.AddDisplayController(drm_device1, kCrtc1, kConnector1);
+    screen_manager.AddDisplayController(drm_device1, crtc1, connector1);
     ScreenManager::ControllerConfigsList controllers_to_enable;
     std::unique_ptr<drmModeModeInfo> primary_mode =
         std::make_unique<drmModeModeInfo>(k1920x1080Screen);
-    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device1, kCrtc1,
-                                       kConnector1, gfx::Point(0, 0),
+    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device1, crtc1,
+                                       connector1, gfx::Point(0, 0),
                                        std::move(primary_mode));
     screen_manager.ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -1357,14 +1399,14 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
       EXPECT_FALSE(controller->IsMirrored());
       // We don't really care which crtc it has, but it should have just
       EXPECT_EQ(1U, controller->crtc_controllers().size());
-      EXPECT_TRUE(controller->HasCrtc(drm_device1, kCrtc1) ||
-                  controller->HasCrtc(drm_device2, kCrtc2));
+      EXPECT_TRUE(controller->HasCrtc(drm_device1, crtc1) ||
+                  controller->HasCrtc(drm_device2, crtc2));
     }
     controllers_to_enable.clear();
     std::unique_ptr<drmModeModeInfo> secondary_mode =
         std::make_unique<drmModeModeInfo>(k1920x1080Screen);
-    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, kCrtc2,
-                                       kConnector2, gfx::Point(0, 1140),
+    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device2, crtc2,
+                                       connector2, gfx::Point(0, 1140),
                                        std::move(secondary_mode));
     screen_manager.ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
@@ -1385,8 +1427,8 @@ TEST_F(ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
     HardwareDisplayController* controller3 =
         screen_manager.GetWindow(3)->GetController();
     EXPECT_NE(controller1, controller3);
-    EXPECT_TRUE(controller1->HasCrtc(drm_device1, kCrtc1));
-    EXPECT_TRUE(controller3->HasCrtc(drm_device2, kCrtc2));
+    EXPECT_TRUE(controller1->HasCrtc(drm_device1, crtc1));
+    EXPECT_TRUE(controller3->HasCrtc(drm_device2, crtc2));
   }
 
   // Cleanup.
@@ -1403,10 +1445,10 @@ TEST_F(ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
   DrmDeviceManager drm_device_manager(nullptr);
   ScreenManager screen_manager;
 
-  constexpr uint32_t kCrtc1 = kPrimaryCrtc;
-  constexpr uint32_t kConnector1 = kPrimaryConnector;
-  constexpr uint32_t kCrtc2 = kSecondaryCrtc;
-  constexpr uint32_t kConnector2 = kSecondaryConnector;
+  uint32_t crtc1 = drm_device->crtc_property(0).id;
+  uint32_t connector1 = drm_device->connector_property(0).id;
+  uint32_t crtc2 = drm_device->crtc_property(1).id;
+  uint32_t connector2 = drm_device->connector_property(1).id;
 
   constexpr drmModeModeInfo k1080p60Screen = {
       .clock = 148500,
@@ -1433,26 +1475,26 @@ TEST_F(ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
     window1->Initialize();
     screen_manager.AddWindow(1, std::move(window1));
     screen_manager.GetWindow(1)->SetBounds(gfx::Rect(0, 0, 1920, 1080));
-    screen_manager.AddDisplayController(drm_device, kCrtc1, kConnector1);
-    screen_manager.AddDisplayController(drm_device, kCrtc2, kConnector2);
+    screen_manager.AddDisplayController(drm_device, crtc1, connector1);
+    screen_manager.AddDisplayController(drm_device, crtc2, connector2);
 
     ScreenManager::ControllerConfigsList controllers_to_enable;
     std::unique_ptr<drmModeModeInfo> primary_mode =
         std::make_unique<drmModeModeInfo>(k1080p60Screen);
     std::unique_ptr<drmModeModeInfo> secondary_mode =
         std::make_unique<drmModeModeInfo>(k1080p60Screen);
-    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device, kCrtc1,
-                                       kConnector1, gfx::Point(0, 0),
+    controllers_to_enable.emplace_back(kPrimaryDisplayId, drm_device, crtc1,
+                                       connector1, gfx::Point(0, 0),
                                        std::move(primary_mode));
-    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device, kCrtc2,
-                                       kConnector2, gfx::Point(0, 0),
+    controllers_to_enable.emplace_back(kSecondaryDisplayId, drm_device, crtc2,
+                                       connector2, gfx::Point(0, 0),
                                        std::move(secondary_mode));
     screen_manager.ConfigureDisplayControllers(
         controllers_to_enable, display::kTestModeset | display::kCommitModeset);
   }
 
-  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(kCrtc1));
-  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(kCrtc2));
+  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(crtc1));
+  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(crtc2));
 
   // Cleanup.
   screen_manager.RemoveWindow(1)->Shutdown();
@@ -1460,17 +1502,19 @@ TEST_F(ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
 
 TEST_F(ScreenManagerTest, DrmFramebufferSequenceIdIncrementingAtModeset) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   scoped_refptr<DrmFramebuffer> pre_modeset_buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   CHECK_EQ(pre_modeset_buffer->modeset_sequence_id_at_allocation(), 0);
 
   // Successful modeset
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   {
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
         GetPrimaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
@@ -1488,7 +1532,7 @@ TEST_F(ScreenManagerTest, DrmFramebufferSequenceIdIncrementingAtModeset) {
     drm_->set_set_crtc_expectation(false);
     ScreenManager::ControllerConfigsList controllers_to_enable;
     controllers_to_enable.emplace_back(
-        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
         GetSecondaryBounds().origin(),
         std::make_unique<drmModeModeInfo>(kDefaultMode));
     ASSERT_FALSE(screen_manager_->ConfigureDisplayControllers(
@@ -1505,6 +1549,8 @@ TEST_F(ScreenManagerTest, DrmFramebufferSequenceIdIncrementingAtModeset) {
 
 TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1518,17 +1564,17 @@ TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
 
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              buffer));
 
@@ -1537,14 +1583,12 @@ TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
 }
 
 TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
-  std::vector<CrtcState> crtc_states = {{
-      .planes =
-          {
-              {.formats = {DRM_FORMAT_XRGB8888}},
-              {.formats = {DRM_FORMAT_XRGB8888}}
-          }
-  }};
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1561,21 +1605,21 @@ TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
 
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              primary));
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              overlay));
 
@@ -1585,6 +1629,8 @@ TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
 
 TEST_F(ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1598,16 +1644,16 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
   ASSERT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              buffer));
 
@@ -1619,14 +1665,12 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
 }
 
 TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
-  std::vector<CrtcState> crtc_states = {{
-      .planes =
-          {
-              {.formats = {DRM_FORMAT_XRGB8888}},
-              {.formats = {DRM_FORMAT_XRGB8888}}
-          }
-  }};
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1643,21 +1687,21 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
 
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              primary));
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              overlay));
 
@@ -1669,14 +1713,12 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
 }
 
 TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
-  std::vector<CrtcState> crtc_states = {{
-      .planes =
-          {
-              {.formats = {DRM_FORMAT_XRGB8888}},
-              {.formats = {DRM_FORMAT_XRGB8888}}
-          }
-  }};
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
 
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
@@ -1694,21 +1736,21 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
   screen_manager_->AddWindow(1, std::move(window));
 
   drm_->set_overlay_modeset_expecation(false);
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
 
   EXPECT_TRUE(base::Contains(drm_->plane_manager()
-                                 ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                 ->GetCrtcStateForCrtcId(crtc_id)
                                  .modeset_framebuffers,
                              primary));
   EXPECT_FALSE(base::Contains(drm_->plane_manager()
-                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                  ->GetCrtcStateForCrtcId(crtc_id)
                                   .modeset_framebuffers,
                               overlay));
 
@@ -1720,15 +1762,14 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
 }
 
 TEST_F(ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
-  std::vector<CrtcState> crtc_states = {{
-      .planes =
-          {
-              {.formats = {DRM_FORMAT_XRGB8888}},
-              {.formats = {DRM_FORMAT_XRGB8888}}
-          }
-  }};
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true,
                      /*use_modifiers_list=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
   std::unique_ptr<ui::DrmWindow> window(
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
   window->Initialize();
@@ -1745,21 +1786,21 @@ TEST_F(ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(
-      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
       GetPrimaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
       controllers_to_enable, display::kTestModeset | display::kCommitModeset));
 
   EXPECT_FALSE(base::Contains(drm_->plane_manager()
-                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                  ->GetCrtcStateForCrtcId(crtc_id)
                                   .modeset_framebuffers,
                               primary));
   EXPECT_FALSE(base::Contains(drm_->plane_manager()
-                                  ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                  ->GetCrtcStateForCrtcId(crtc_id)
                                   .modeset_framebuffers,
                               overlay));
 
