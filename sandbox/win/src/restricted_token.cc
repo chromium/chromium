@@ -127,9 +127,9 @@ DWORD RestrictedToken::GetRestrictedToken(
       return ::GetLastError();
   } else {
     // Modify the default dacl on the token to contain Restricted.
-    if (!AddSidToDefaultDacl(new_token.Get(),
-                             base::win::WellKnownSid::kRestricted,
-                             SecurityAccessMode::kGrant, GENERIC_ALL)) {
+    if (!AddSidToDefaultDacl(
+            new_token.Get(), base::win::WellKnownSid::kRestricted,
+            base::win::SecurityAccessMode::kGrant, GENERIC_ALL)) {
       return ::GetLastError();
     }
   }
@@ -299,9 +299,10 @@ void RestrictedToken::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-DWORD RestrictedToken::AddDefaultDaclSid(const base::win::Sid& sid,
-                                         SecurityAccessMode access_mode,
-                                         ACCESS_MASK access) {
+DWORD RestrictedToken::AddDefaultDaclSid(
+    const base::win::Sid& sid,
+    base::win::SecurityAccessMode access_mode,
+    ACCESS_MASK access) {
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
@@ -311,9 +312,10 @@ DWORD RestrictedToken::AddDefaultDaclSid(const base::win::Sid& sid,
   return ERROR_SUCCESS;
 }
 
-DWORD RestrictedToken::AddDefaultDaclSid(base::win::WellKnownSid known_sid,
-                                         SecurityAccessMode access_mode,
-                                         ACCESS_MASK access) {
+DWORD RestrictedToken::AddDefaultDaclSid(
+    base::win::WellKnownSid known_sid,
+    base::win::SecurityAccessMode access_mode,
+    ACCESS_MASK access) {
   return AddDefaultDaclSid(base::win::Sid(known_sid), access_mode, access);
 }
 

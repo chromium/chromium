@@ -6,10 +6,8 @@
 
 #include <windows.h>
 
-#include <aclapi.h>
-
 #include "base/win/scoped_handle.h"
-#include "base/win/scoped_localalloc.h"
+#include "base/win/security_descriptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -31,18 +29,18 @@ void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
                                   IntegrityLevel integrity_level,
                                   DWORD expected_error = ERROR_SUCCESS) {
   base::win::ScopedHandle job(::CreateJobObject(nullptr, nullptr));
-  DWORD result = SetObjectIntegrityLabel(job.Get(), SecurityObjectType::kKernel,
-                                         mandatory_policy, integrity_level);
+  DWORD result =
+      SetObjectIntegrityLabel(job.Get(), base::win::SecurityObjectType::kKernel,
+                              mandatory_policy, integrity_level);
   EXPECT_EQ(result, expected_error);
   if (result != ERROR_SUCCESS)
     return;
-  PACL sacl = nullptr;
-  PSECURITY_DESCRIPTOR sd_ptr = nullptr;
-  result =
-      ::GetSecurityInfo(job.Get(), SE_KERNEL_OBJECT, LABEL_SECURITY_INFORMATION,
-                        nullptr, nullptr, nullptr, &sacl, &sd_ptr);
-  ASSERT_EQ(result, DWORD{ERROR_SUCCESS});
-  auto sd = base::win::TakeLocalAlloc(sd_ptr);
+  absl::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromHandle(
+          job.get(), base::win::SecurityObjectType::kKernel,
+          LABEL_SECURITY_INFORMATION);
+  ASSERT_TRUE(sd);
+  PACL sacl = sd->sacl()->get();
   ASSERT_EQ(sacl->AceCount, 1);
   LPVOID ace_ptr;
   ASSERT_TRUE(::GetAce(sacl, 0, &ace_ptr));
@@ -74,12 +72,14 @@ TEST(AclTest, GetIntegrityLevelSid) {
 
 // Checks the functionality of SetObjectIntegrityLabel.
 TEST(AclTest, SetObjectIntegrityLabel) {
-  EXPECT_EQ(SetObjectIntegrityLabel(nullptr, SecurityObjectType::kKernel, 0,
-                                    INTEGRITY_LEVEL_LAST),
-            DWORD{ERROR_INVALID_SID});
-  EXPECT_EQ(SetObjectIntegrityLabel(nullptr, SecurityObjectType::kKernel, 0,
-                                    INTEGRITY_LEVEL_LOW),
-            DWORD{ERROR_INVALID_HANDLE});
+  EXPECT_EQ(
+      SetObjectIntegrityLabel(nullptr, base::win::SecurityObjectType::kKernel,
+                              0, INTEGRITY_LEVEL_LAST),
+      DWORD{ERROR_INVALID_SID});
+  EXPECT_EQ(
+      SetObjectIntegrityLabel(nullptr, base::win::SecurityObjectType::kKernel,
+                              0, INTEGRITY_LEVEL_LOW),
+      DWORD{ERROR_INVALID_HANDLE});
   // This assumes that the caller doesn't have SeRelabelPrivilege or is running
   // as a service process.
   CheckSetObjectIntegrityLabel(0, INTEGRITY_LEVEL_SYSTEM, ERROR_INVALID_LABEL);

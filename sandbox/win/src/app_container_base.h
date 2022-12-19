@@ -31,7 +31,7 @@ class AppContainerBase final : public AppContainer {
   bool GetPipePath(const wchar_t* pipe_name,
                    base::FilePath* pipe_path) override;
   bool AccessCheck(const wchar_t* object_name,
-                   SecurityObjectType object_type,
+                   base::win::SecurityObjectType object_type,
                    DWORD desired_access,
                    DWORD* granted_access,
                    BOOL* access_status) override;

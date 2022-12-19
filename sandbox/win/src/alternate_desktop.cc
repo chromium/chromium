@@ -36,7 +36,7 @@ ResultCode AlternateDesktop::UpdateDesktopIntegrity(
     return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
   if (integrity_ < integrity_level) {
     DWORD result = SetObjectIntegrityLabel(
-        desktop_, SecurityObjectType::kWindow, 0, integrity_level);
+        desktop_, base::win::SecurityObjectType::kDesktop, 0, integrity_level);
     if (ERROR_SUCCESS != result)
       return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
     integrity_ = integrity_level;

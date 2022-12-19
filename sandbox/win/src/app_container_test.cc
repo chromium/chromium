@@ -4,8 +4,6 @@
 
 #include <windows.h>
 
-#include <sddl.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,8 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/scoped_localalloc.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/features.h"
@@ -101,30 +99,28 @@ void CheckThreadToken(HANDLE thread,
 // Check for LPAC using an access check. We could query for a security attribute
 // but that's undocumented and has the potential to change.
 void CheckLpacToken(HANDLE process) {
-  HANDLE token_handle;
-  ASSERT_TRUE(::OpenProcessToken(process, TOKEN_ALL_ACCESS, &token_handle));
-  base::win::ScopedHandle token(token_handle);
-  ASSERT_TRUE(
-      ::DuplicateToken(token.Get(), ::SecurityImpersonation, &token_handle));
-  token.Set(token_handle);
-  PSECURITY_DESCRIPTOR security_desc_ptr;
-  // AC is AllPackages, S-1-15-2-2 is AllRestrictedPackages. An LPAC token
-  // will get granted access of 2, where as a normal AC token will get 3.
-  ASSERT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
-      L"O:SYG:SYD:(A;;0x3;;;WD)(A;;0x1;;;AC)(A;;0x2;;;S-1-15-2-2)",
-      SDDL_REVISION_1, &security_desc_ptr, nullptr));
-  base::win::ScopedLocalAlloc security_desc =
-      base::win::TakeLocalAlloc(security_desc_ptr);
+  auto token =
+      base::win::AccessToken::FromProcess(process, /*impersonation=*/true);
+  ASSERT_TRUE(token);
+  constexpr ACCESS_MASK kACAccess = 0x1;
+  constexpr ACCESS_MASK kLPACAccess = 0x2;
+  base::win::SecurityDescriptor sd;
+  sd.set_owner(base::win::Sid(base::win::WellKnownSid::kLocalSystem));
+  sd.set_group(base::win::Sid(base::win::WellKnownSid::kLocalSystem));
+  ASSERT_TRUE(sd.SetDaclEntry(base::win::WellKnownSid::kWorld,
+                              base::win::SecurityAccessMode::kGrant,
+                              kACAccess | kLPACAccess, 0));
+  ASSERT_TRUE(sd.SetDaclEntry(base::win::WellKnownSid::kAllApplicationPackages,
+                              base::win::SecurityAccessMode::kGrant, kACAccess,
+                              0));
+  ASSERT_TRUE(sd.SetDaclEntry(
+      base::win::WellKnownSid::kAllRestrictedApplicationPackages,
+      base::win::SecurityAccessMode::kGrant, kLPACAccess, 0));
   GENERIC_MAPPING generic_mapping = {};
-  PRIVILEGE_SET priv_set = {};
-  DWORD priv_set_length = sizeof(PRIVILEGE_SET);
-  DWORD granted_access;
-  BOOL access_status;
-  ASSERT_TRUE(::AccessCheck(security_desc.get(), token.Get(), MAXIMUM_ALLOWED,
-                            &generic_mapping, &priv_set, &priv_set_length,
-                            &granted_access, &access_status));
-  ASSERT_TRUE(access_status);
-  ASSERT_EQ(DWORD{2}, granted_access);
+  auto result = sd.AccessCheck(*token, MAXIMUM_ALLOWED, generic_mapping);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->access_status);
+  ASSERT_EQ(kLPACAccess, result->granted_access);
 }
 
 // Generate a unique sandbox AC profile for the appcontainer based on the SHA1

@@ -950,7 +950,7 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
   BOOL granted_access_status;
   bool access_check =
       container->AccessCheck(command_line.GetProgram().value().c_str(),
-                             SecurityObjectType::kFile,
+                             base::win::SecurityObjectType::kFile,
                              GENERIC_READ | GENERIC_EXECUTE, &granted_access,
                              &granted_access_status) &&
       granted_access_status;

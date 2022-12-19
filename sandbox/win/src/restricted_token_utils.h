@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
@@ -67,20 +68,11 @@ DWORD SetProcessIntegrityLevel(IntegrityLevel integrity_level);
 // policy to block read and execute so that a lower privileged process cannot
 // open the token for impersonate or duplicate permissions. This should limit
 // potential security holes.
-// |token| must be a token handle with READ_CONTROL and WRITE_OWNER access.
+// |token| must be a token with READ_CONTROL and WRITE_OWNER access.
 // If the function succeeds, the return value is ERROR_SUCCESS. If the
 // function fails, the return value is the win32 error code corresponding to
 // the error.
-DWORD HardenTokenIntegrityLevelPolicy(HANDLE token);
-
-// Hardens the integrity level policy on the current process. Specifically it
-// sets the policy to block read and execute so that a lower privileged process
-// cannot open the token for impersonate or duplicate permissions. This should
-// limit potential security holes.
-// If the function succeeds, the return value is ERROR_SUCCESS. If the
-// function fails, the return value is the win32 error code corresponding to
-// the error.
-DWORD HardenProcessIntegrityLevelPolicy();
+DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token);
 
 // Create a lowbox token. This is not valid prior to Windows 8.
 // |base_token| a base token to derive the lowbox token from. Can be nullptr.

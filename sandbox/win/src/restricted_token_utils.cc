@@ -4,48 +4,24 @@
 
 #include "sandbox/win/src/restricted_token_utils.h"
 
-#include <aclapi.h>
-#include <sddl.h>
-
 #include <memory>
 #include <vector>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_descriptor.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_level.h"
 #include "sandbox/win/src/win_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
 namespace {
-
-DWORD GetObjectSecurityDescriptor(HANDLE handle,
-                                  SECURITY_INFORMATION security_info,
-                                  std::vector<char>* security_desc_buffer,
-                                  PSECURITY_DESCRIPTOR* security_desc) {
-  DWORD last_error = 0;
-  DWORD length_needed = 0;
-
-  ::GetKernelObjectSecurity(handle, security_info, nullptr, 0, &length_needed);
-  last_error = ::GetLastError();
-  if (last_error != ERROR_INSUFFICIENT_BUFFER)
-    return last_error;
-
-  security_desc_buffer->resize(length_needed);
-  *security_desc =
-      reinterpret_cast<PSECURITY_DESCRIPTOR>(security_desc_buffer->data());
-
-  if (!::GetKernelObjectSecurity(handle, security_info, *security_desc,
-                                 length_needed, &length_needed)) {
-    return ::GetLastError();
-  }
-
-  return ERROR_SUCCESS;
-}
 
 void AddSidException(std::vector<base::win::Sid>& sids,
                      base::win::WellKnownSid known_sid) {
@@ -73,10 +49,11 @@ DWORD CreateRestrictedToken(
     restricted_token.SetLockdownDefaultDacl();
   if (unique_restricted_sid) {
     restricted_token.AddDefaultDaclSid(*unique_restricted_sid,
-                                       SecurityAccessMode::kGrant, GENERIC_ALL);
+                                       base::win::SecurityAccessMode::kGrant,
+                                       GENERIC_ALL);
     restricted_token.AddDefaultDaclSid(
         base::win::WellKnownSid::kCreatorOwnerRights,
-        SecurityAccessMode::kGrant, READ_CONTROL);
+        base::win::SecurityAccessMode::kGrant, READ_CONTROL);
   }
 
   std::vector<std::wstring> privilege_exceptions;
@@ -242,22 +219,20 @@ DWORD SetProcessIntegrityLevel(IntegrityLevel integrity_level) {
   return SetTokenIntegrityLevel(token.Get(), integrity_level);
 }
 
-DWORD HardenTokenIntegrityLevelPolicy(HANDLE token) {
-  std::vector<char> security_desc_buffer;
-  PSECURITY_DESCRIPTOR security_desc = nullptr;
-  DWORD last_error = GetObjectSecurityDescriptor(
-      token, LABEL_SECURITY_INFORMATION, &security_desc_buffer, &security_desc);
-  if (last_error != ERROR_SUCCESS)
-    return last_error;
-
-  PACL sacl = nullptr;
-  BOOL sacl_present = false;
-  BOOL sacl_defaulted = false;
-
-  if (!::GetSecurityDescriptorSacl(security_desc, &sacl_present, &sacl,
-                                   &sacl_defaulted)) {
+DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token) {
+  absl::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromHandle(
+          token.get(), base::win::SecurityObjectType::kKernel,
+          LABEL_SECURITY_INFORMATION);
+  if (!sd) {
     return ::GetLastError();
   }
+
+  // If no SACL then nothing to do.
+  if (!sd->sacl()) {
+    return ERROR_SUCCESS;
+  }
+  PACL sacl = sd->sacl()->get();
 
   for (DWORD ace_index = 0; ace_index < sacl->AceCount; ++ace_index) {
     PSYSTEM_MANDATORY_LABEL_ACE ace;
@@ -269,23 +244,12 @@ DWORD HardenTokenIntegrityLevelPolicy(HANDLE token) {
       break;
     }
   }
-
-  if (!::SetKernelObjectSecurity(token, LABEL_SECURITY_INFORMATION,
-                                 security_desc))
+  if (!sd->WriteToHandle(token.get(), base::win::SecurityObjectType::kKernel,
+                         LABEL_SECURITY_INFORMATION)) {
     return ::GetLastError();
+  }
 
   return ERROR_SUCCESS;
-}
-
-DWORD HardenProcessIntegrityLevelPolicy() {
-  HANDLE token_handle;
-  if (!::OpenProcessToken(GetCurrentProcess(), READ_CONTROL | WRITE_OWNER,
-                          &token_handle))
-    return ::GetLastError();
-
-  base::win::ScopedHandle token(token_handle);
-
-  return HardenTokenIntegrityLevelPolicy(token.Get());
 }
 
 DWORD CreateLowBoxToken(HANDLE base_token,
@@ -339,16 +303,18 @@ DWORD CreateLowBoxToken(HANDLE base_token,
   // Copy security descriptor from primary token as the new object will have
   // the DACL from the current token's default DACL.
   base::win::ScopedHandle token_for_sd(dup_handle);
-  std::vector<char> security_desc_buffer;
-  PSECURITY_DESCRIPTOR security_desc = nullptr;
-  DWORD last_error = GetObjectSecurityDescriptor(
-      token_lowbox_handle.Get(), DACL_SECURITY_INFORMATION,
-      &security_desc_buffer, &security_desc);
-  if (last_error != ERROR_SUCCESS)
-    return last_error;
 
-  if (!::SetKernelObjectSecurity(token_for_sd.Get(), DACL_SECURITY_INFORMATION,
-                                 security_desc)) {
+  absl::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromHandle(
+          token_lowbox_handle.get(), base::win::SecurityObjectType::kKernel,
+          DACL_SECURITY_INFORMATION);
+  if (!sd) {
+    return ::GetLastError();
+  }
+
+  if (!sd->WriteToHandle(token_for_sd.get(),
+                         base::win::SecurityObjectType::kKernel,
+                         DACL_SECURITY_INFORMATION)) {
     return ::GetLastError();
   }
 
@@ -362,78 +328,37 @@ bool CanLowIntegrityAccessDesktop() {
   // win32k lockdown).
   DWORD desired_access = DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS;
 
-  // From MSDN
-  // https://docs.microsoft.com/en-us/windows/win32/winstation/desktop-security-and-access-rights
-  GENERIC_MAPPING generic_mapping{
-      STANDARD_RIGHTS_READ | DESKTOP_READOBJECTS | DESKTOP_ENUMERATE,
-      STANDARD_RIGHTS_WRITE | DESKTOP_CREATEWINDOW | DESKTOP_CREATEMENU |
-          DESKTOP_HOOKCONTROL | DESKTOP_JOURNALRECORD |
-          DESKTOP_JOURNALPLAYBACK | DESKTOP_WRITEOBJECTS,
-      STANDARD_RIGHTS_EXECUTE | DESKTOP_SWITCHDESKTOP,
-      STANDARD_RIGHTS_REQUIRED | DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
-          DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK |
-          DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP |
-          DESKTOP_WRITEOBJECTS};
-  ::MapGenericMask(&desired_access, &generic_mapping);
-
   // Desktop is inherited by child process unless overridden, e.g. by sandbox.
   HDESK hdesk = ::GetThreadDesktop(GetCurrentThreadId());
-
-  // Get the security descriptor of the desktop.
-  DWORD size = 0;
-  SECURITY_INFORMATION security_information =
-      OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
-      DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION;
-  ::GetUserObjectSecurity(hdesk, &security_information, nullptr, 0, &size);
-  std::vector<char> sd_buffer(size);
-  PSECURITY_DESCRIPTOR sd =
-      reinterpret_cast<PSECURITY_DESCRIPTOR>(sd_buffer.data());
-  if (!::GetUserObjectSecurity(hdesk, &security_information, sd, size, &size)) {
+  absl::optional<base::win::SecurityDescriptor> sd =
+      base::win::SecurityDescriptor::FromHandle(
+          hdesk, base::win::SecurityObjectType::kDesktop,
+          OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+              DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION);
+  if (!sd) {
     return false;
   }
 
-  // Get a low IL token starting with the current process token and lowering it.
-  HANDLE temp_process_token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ALL_ACCESS,
-                          &temp_process_token)) {
+  absl::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess(/*impersonation=*/true,
+                                                 TOKEN_ADJUST_DEFAULT);
+  if (!token) {
     return false;
   }
-  base::win::ScopedHandle process_token(temp_process_token);
 
-  HANDLE temp_duplicate_token = nullptr;
-  if (!::DuplicateTokenEx(process_token.Get(), MAXIMUM_ALLOWED, nullptr,
-                          SecurityImpersonation, TokenImpersonation,
-                          &temp_duplicate_token)) {
-    return false;
-  }
-  base::win::ScopedHandle low_il_token(temp_duplicate_token);
-
+  absl::optional<base::win::AccessCheckResult> result;
   // The token should still succeed before lowered, even if the lowered token
   // fails.
-  PRIVILEGE_SET priv_set = {};
-  DWORD priv_set_length = sizeof(PRIVILEGE_SET);
-  DWORD granted_access = 0;
-  BOOL access_status = false;
-  DCHECK(!!::AccessCheck(sd, low_il_token.Get(), desired_access,
-                         &generic_mapping, &priv_set, &priv_set_length,
-                         &granted_access, &access_status) &&
-         access_status);
-
-  if (sandbox::SetTokenIntegrityLevel(
-          low_il_token.Get(), sandbox::INTEGRITY_LEVEL_LOW) != ERROR_SUCCESS) {
+  DCHECK((result = sd->AccessCheck(*token, desired_access,
+                                   base::win::SecurityObjectType::kDesktop)) &&
+         result->access_status);
+  if (!token->SetIntegrityLevel(SECURITY_MANDATORY_LOW_RID)) {
     return false;
   }
 
-  // Access check the Low-IL token against the desktop - known to fail for third
-  // party, winlogon, other non-default desktops, and required for user32.dll to
-  // load.
-  if (::AccessCheck(sd, low_il_token.Get(), desired_access, &generic_mapping,
-                    &priv_set, &priv_set_length, &granted_access,
-                    &access_status) &&
-      access_status) {
-    return true;
-  }
-  return false;
+  result = sd->AccessCheck(*token, desired_access,
+                           base::win::SecurityObjectType::kDesktop);
+  return result && result->access_status;
 }
 
 }  // namespace sandbox

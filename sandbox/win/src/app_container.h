@@ -46,7 +46,7 @@ class [[clang::lto_visibility_public]] AppContainer {
   // See ::GetNamedSecurityInfo for more information about how the enumeration
   // is used and what format object_name needs to be.
   virtual bool AccessCheck(const wchar_t* object_name,
-                           SecurityObjectType object_type,
+                           base::win::SecurityObjectType object_type,
                            DWORD desired_access,
                            DWORD* granted_access,
                            BOOL* access_status) = 0;

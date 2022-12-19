@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/scoped_native_library.h"
+#include "base/win/access_token.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/interception.h"
@@ -132,9 +133,16 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
   }
 
   if (flags & MITIGATION_HARDEN_TOKEN_IL_POLICY) {
-    DWORD error = HardenProcessIntegrityLevelPolicy();
-    if ((error != ERROR_SUCCESS))
+    absl::optional<base::win::AccessToken> token =
+        base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
+                                                   READ_CONTROL | WRITE_OWNER);
+    if (!token) {
       return false;
+    }
+    DWORD error = HardenTokenIntegrityLevelPolicy(*token);
+    if (error != ERROR_SUCCESS) {
+      return false;
+    }
     applied_flags |= MITIGATION_HARDEN_TOKEN_IL_POLICY;
   }
 

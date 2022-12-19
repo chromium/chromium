@@ -4,7 +4,6 @@
 
 #include "sandbox/win/src/sandbox_policy_base.h"
 
-#include <sddl.h>
 #include <stddef.h>
 #include <stdint.h>
 
