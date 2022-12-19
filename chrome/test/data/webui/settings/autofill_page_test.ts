@@ -439,8 +439,11 @@ suite('PasswordsUITest', function() {
         await flushTasks();
 
         // <if expr="is_chromeos">
-        autofillSection.tokenRequestManager.resolve();
-        await flushTasks();
+        if (!loadTimeData.getBoolean(
+                'useSystemAuthenticationForPasswordManager')) {
+          autofillSection.tokenRequestManager.resolve();
+          await flushTasks();
+        }
         // </if>
 
         const eventDetail = {entry: {id: 123}} as unknown as
