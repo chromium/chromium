@@ -42,6 +42,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
     private static final Object DELEGATE_LOCK = new Object();
     private static OmahaService sInstance;
+    private static boolean sHasPendingJob;
 
     @Nullable
     public static OmahaService getInstance() {
@@ -63,6 +64,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
      * Must only be called by {@link OmahaBase#onForegroundSessionStart}.
      */
     static void startServiceImmediately() {
+        if (sHasPendingJob) return;
         scheduleJobService(0);
     }
 
@@ -72,6 +74,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     @Override
     public boolean onStartTask(
             Context context, TaskParameters parameters, final TaskFinishedCallback callback) {
+        sHasPendingJob = false;
         mJobServiceTask = new AsyncTask<Void>() {
             @Override
             public Void doInBackground() {
@@ -89,6 +92,9 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
     @Override
     public boolean onStopTask(Context context, TaskParameters taskParameters) {
+        // Just in case it's possible for onStopTask to be called before onStartTask, we should
+        // clear this flag to avoid getting stuck in state where we won't ever be scheduled again.
+        sHasPendingJob = false;
         if (mJobServiceTask != null) {
             mJobServiceTask.cancel(false);
             mJobServiceTask = null;
@@ -110,7 +116,8 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
 
         TaskInfo taskInfo =
                 TaskInfo.createOneOffTask(TaskIds.OMAHA_JOB_ID, latency, latency).build();
-        return BackgroundTaskSchedulerFactory.getScheduler().schedule(
+        sHasPendingJob = BackgroundTaskSchedulerFactory.getScheduler().schedule(
                 ContextUtils.getApplicationContext(), taskInfo);
+        return sHasPendingJob;
     }
 }
