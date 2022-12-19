@@ -172,6 +172,7 @@ source_set("chromeos") {
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/resources/chromeos/cloud_upload:resources_grit",
     "//chrome/browser/resources/settings:resources_grit",

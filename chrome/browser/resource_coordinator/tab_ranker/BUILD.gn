@@ -1,0 +1,46 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_ranker") {
+  # Dependent targets should not include native_inference.h directly.
+  public = [
+    "mru_features.h",
+    "tab_features.h",
+    "tab_score_predictor.h",
+    "window_features.h",
+  ]
+
+  sources = [
+    "native_inference.cc",
+    "native_inference.h",
+    "pairwise_inference.cc",
+    "pairwise_inference.h",
+    "tab_features.cc",
+    "tab_score_predictor.cc",
+    "window_features.cc",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser:resources",
+    "//chrome/browser/resource_coordinator:tab_manager_features",
+    "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
+    "//components/assist_ranker",
+    "//components/assist_ranker/proto",
+    "//components/sessions",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+# target for using GetFullTabFeaturesForTesting in unit tests.
+static_library("tab_features_test_helper") {
+  testonly = true
+  sources = [
+    "tab_features_test_helper.cc",
+    "tab_features_test_helper.h",
+  ]
+
+  deps = [ ":tab_ranker" ]
+}
