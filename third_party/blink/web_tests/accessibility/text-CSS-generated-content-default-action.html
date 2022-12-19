@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+span::before { content: "this is a "; }
+</style>
+
+<a id="link" href="google.es"><span>link</span></a>
+<div id="div"><span>div</span></div>
+
+<script>
+test(function(t) {
+  const axLink = accessibilityController.accessibleElementById("link");
+  // The AX subtree is:
+  // ++++++link name='this is a link'
+  // ++++++++genericContainer
+  // ++++++++++genericContainer
+  // ++++++++++++staticText name='this is a '
+  // ++++++++++++++inlineTextBox name='this is a '
+  // ++++++++++staticText name='link'
+  // ++++++++++++inlineTextBox name='link'
+
+  const axPseudo = axLink.childAtIndex(0).childAtIndex(0).childAtIndex(0);
+  assert_equals(axPseudo.role, "AXRole: AXStaticText");
+  assert_true(axPseudo.hasDefaultAction());
+
+  const axText = axLink.childAtIndex(0).childAtIndex(1);
+  assert_equals(axText.role, "AXRole: AXStaticText");
+  assert_true(axText.hasDefaultAction());
+
+}, "Test there is a default action for text inside a link");
+
+test(function(t) {
+  const axDiv = accessibilityController.accessibleElementById("div");
+  // The AX subtree is:
+  // ++++++genericContainer
+  // ++++++++genericContainer
+  // ++++++++++genericContainer
+  // ++++++++++++staticText name='this is a '
+  // ++++++++++++++inlineTextBox name='this is a '
+  // ++++++++++staticText name='div'
+  // ++++++++++++inlineTextBox name='div'
+
+  const axPseudo = axDiv.childAtIndex(0).childAtIndex(0).childAtIndex(0);
+  assert_equals(axPseudo.role, "AXRole: AXStaticText");
+  assert_false(axPseudo.hasDefaultAction());
+
+  const axText = axDiv.childAtIndex(0).childAtIndex(1);
+  assert_equals(axText.role, "AXRole: AXStaticText");
+  assert_false(axText.hasDefaultAction());
+
+}, "Test we don't unexpectly add default actions to not-interactive text nodes");
+</script>
