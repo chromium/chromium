@@ -78,13 +78,8 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
   // earlier.
   web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 
-  /*content::URLDataSource::Add(
-      GetProfile(),
-      std::make_unique<HTMLSource>(GetProfile()->GetOriginalProfile()));*/
-
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
-  content::WebUIDataSource::Add(GetProfile(), source);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      GetProfile(), chrome::kChromeUIAppLauncherPageHost);
 
   source->AddResourcePaths(base::make_span(kAppsResources, kAppsResourcesSize));
   source->SetDefaultResource(IDR_APPS_NEW_TAB_HTML);

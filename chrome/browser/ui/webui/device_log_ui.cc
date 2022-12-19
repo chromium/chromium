@@ -65,8 +65,9 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<DeviceLogMessageHandler>());
 
-  content::WebUIDataSource* html =
-      content::WebUIDataSource::Create(chrome::kChromeUIDeviceLogHost);
+  content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIDeviceLogHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"titleText", IDS_DEVICE_LOG_TITLE},
@@ -101,9 +102,6 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   html->AddResourcePath("device_log_ui.css", IDR_DEVICE_LOG_UI_CSS);
   html->AddResourcePath("device_log_ui.js", IDR_DEVICE_LOG_UI_JS);
   html->SetDefaultResource(IDR_DEVICE_LOG_UI_HTML);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html);
 }
 
 DeviceLogUI::~DeviceLogUI() {

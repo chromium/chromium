@@ -238,19 +238,13 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
 
 DiscardsUI::DiscardsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  std::unique_ptr<content::WebUIDataSource> source(
-      content::WebUIDataSource::Create(chrome::kChromeUIDiscardsHost));
-
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIDiscardsHost);
 
   webui::SetupWebUIDataSource(
-      source.get(), base::make_span(kDiscardsResources, kDiscardsResourcesSize),
+      source, base::make_span(kDiscardsResources, kDiscardsResourcesSize),
       IDR_DISCARDS_DISCARDS_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, source.release());
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

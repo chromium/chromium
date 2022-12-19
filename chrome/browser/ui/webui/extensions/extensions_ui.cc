@@ -67,10 +67,10 @@ std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
 
-content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
-                                                 bool in_dev_mode) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIExtensionsHost);
+content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
+                                                       bool in_dev_mode) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIExtensionsHost);
   webui::SetupWebUIDataSource(
       source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
       IDR_EXTENSIONS_EXTENSIONS_HTML);
@@ -413,7 +413,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                     base::BindRepeating(&ExtensionsUI::OnDevModeChanged,
                                         base::Unretained(this)));
 
-  source = CreateExtensionsSource(profile, *in_dev_mode_);
+  source = CreateAndAddExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -427,7 +427,6 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
 
-  content::WebUIDataSource::Add(profile, source);
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

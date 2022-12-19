@@ -45,9 +45,10 @@ using system_logs::SystemLogsResponse;
 
 namespace {
 
-content::WebUIDataSource* CreateSystemInfoUIDataSource() {
+void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUISystemInfoHost);
+      content::WebUIDataSource::CreateAndAdd(profile,
+                                             chrome::kChromeUISystemInfoHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"title", IDS_ABOUT_SYS_TITLE},
@@ -66,7 +67,6 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
   html_source->AddResourcePath("about_sys.css", IDR_ABOUT_SYS_CSS);
   html_source->SetDefaultResource(IDR_ABOUT_SYS_HTML);
   html_source->UseStringsJs();
-  return html_source;
 }
 
 }  // namespace
@@ -154,6 +154,5 @@ SystemInfoUI::SystemInfoUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SystemInfoHandler>());
 
   // Set up the chrome://system/ source.
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
-                                CreateSystemInfoUIDataSource());
+  CreateAndAddSystemInfoUIDataSource(Profile::FromWebUI(web_ui));
 }

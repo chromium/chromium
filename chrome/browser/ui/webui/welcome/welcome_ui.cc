@@ -131,7 +131,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
   web_ui->AddMessageHandler(std::make_unique<WelcomeHandler>(web_ui));
 
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(url.host());
+      content::WebUIDataSource::CreateAndAdd(profile, url.host());
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kWelcomeResources, kWelcomeResourcesSize),
       IDR_WELCOME_WELCOME_HTML);
@@ -175,8 +175,6 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&HandleRequestCallback,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 WelcomeUI::~WelcomeUI() {}

@@ -56,9 +56,9 @@ using content::WebContents;
 
 namespace {
 
-content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIDownloadsHost);
+content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIDownloadsHost);
   webui::SetupWebUIDataSource(
       source, base::make_span(kDownloadsResources, kDownloadsResourcesSize),
       IDR_DOWNLOADS_DOWNLOADS_HTML);
@@ -181,9 +181,8 @@ DownloadsUI::DownloadsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   // Set up the chrome://downloads/ source.
-  content::WebUIDataSource* source = CreateDownloadsUIHTMLSource(profile);
+  content::WebUIDataSource* source = CreateAndAddDownloadsUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, source);
-  content::WebUIDataSource::Add(profile, source);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   base::UmaHistogramEnumeration(

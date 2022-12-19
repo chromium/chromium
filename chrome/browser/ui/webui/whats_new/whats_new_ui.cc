@@ -31,9 +31,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIWhatsNewHost);
+void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIWhatsNewHost);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kWhatsNewResources, kWhatsNewResourcesSize),
@@ -49,7 +49,6 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ChildSrc,
       base::StringPrintf("child-src chrome://webui-test https: %s;",
                          whats_new::kChromeWhatsNewURLShort));
-  return source;
 }
 
 }  // namespace
@@ -63,8 +62,7 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
-  content::WebUIDataSource* source = CreateWhatsNewUIHtmlSource(profile_);
-  content::WebUIDataSource::Add(profile_, source);
+  CreateAndAddWhatsNewUIHtmlSource(profile_);
   web_ui->AddMessageHandler(std::make_unique<WhatsNewHandler>());
 }
 
