@@ -47,6 +47,7 @@ source_set("authentication") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",

@@ -149,7 +149,10 @@ source_set("fetcher") {
 
 source_set("capabilities_types") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "capabilities_dict.h" ]
+  sources = [
+    "capabilities_dict.h",
+    "capabilities_types.h",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -200,6 +203,7 @@ source_set("system_identity_manager") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
+    ":capabilities_types",
     ":system_identity",
     "//components/signin/internal/identity_manager",
   ]

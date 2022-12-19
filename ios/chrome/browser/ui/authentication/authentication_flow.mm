@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -296,8 +297,8 @@ enum AuthenticationState {
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
       __weak AuthenticationFlow* weakSelf = self;
       ios::CapabilitiesCallback callback =
-          ^(ios::ChromeIdentityCapabilityResult result) {
-            if (result == ios::ChromeIdentityCapabilityResult::kTrue) {
+          ^(SystemIdentityCapabilityResult result) {
+            if (result == SystemIdentityCapabilityResult::kTrue) {
               [weakSelf didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
               return;
             }
@@ -316,7 +317,7 @@ enum AuthenticationState {
         identity_service->IsSubjectToParentalControls(_identityToSignIn,
                                                       callback);
       } else {
-        callback(ios::ChromeIdentityCapabilityResult::kFalse);
+        callback(SystemIdentityCapabilityResult::kFalse);
       }
       return;
     }

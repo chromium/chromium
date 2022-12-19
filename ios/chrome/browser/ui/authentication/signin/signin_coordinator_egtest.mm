@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -95,7 +96,7 @@ void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {
 
   ios::CapabilitiesDict* capabilities = @{
     @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue))
+        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
   };
   [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
 }

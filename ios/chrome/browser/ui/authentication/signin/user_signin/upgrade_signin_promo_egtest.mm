@@ -6,6 +6,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -48,7 +49,7 @@ void VerifySigninPromoSufficientlyVisible() {
 }
 
 ios::CapabilitiesDict* GetCapabilitiesDictionary(
-    ios::ChromeIdentityCapabilityResult result) {
+    SystemIdentityCapabilityResult result) {
   int intResult = static_cast<int>(result);
   return @{
     @(kCanOfferExtendedChromeSyncPromosCapabilityName) : @(intResult),
@@ -97,10 +98,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)testStartupSigninPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey
-      setCapabilities:GetCapabilitiesDictionary(
-                          ios::ChromeIdentityCapabilityResult::kTrue)
-          forIdentity:fakeIdentity];
+  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
+                                      SystemIdentityCapabilityResult::kTrue)
+                      forIdentity:fakeIdentity];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -115,10 +115,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey
-      setCapabilities:GetCapabilitiesDictionary(
-                          ios::ChromeIdentityCapabilityResult::kFalse)
-          forIdentity:fakeIdentity];
+  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
+                                      SystemIdentityCapabilityResult::kFalse)
+                      forIdentity:fakeIdentity];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
@@ -131,10 +130,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey
-      setCapabilities:GetCapabilitiesDictionary(
-                          ios::ChromeIdentityCapabilityResult::kTrue)
-          forIdentity:fakeIdentity];
+  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
+                                      SystemIdentityCapabilityResult::kTrue)
+                      forIdentity:fakeIdentity];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   VerifySigninPromoSufficientlyVisible();

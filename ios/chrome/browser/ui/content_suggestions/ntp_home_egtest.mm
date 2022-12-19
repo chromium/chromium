@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -1211,7 +1212,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   ios::CapabilitiesDict* capabilities = @{
     @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue))
+        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
   };
   [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
 

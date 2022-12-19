@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -790,14 +791,14 @@ void InjectNTP(Browser* browser) {
   // sync promos and displays the sign-in promo if possible.
   base::Time fetch_start = base::Time::Now();
   identityService->CanOfferExtendedSyncPromos(
-      defaultIdentity, ^(ios::ChromeIdentityCapabilityResult result) {
+      defaultIdentity, ^(SystemIdentityCapabilityResult result) {
         base::TimeDelta fetch_delay = (base::Time::Now() - fetch_start);
         base::UmaHistogramTimes(
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
             "SigninUpgradePromo",
             fetch_delay);
         if (fetch_delay > signin::GetWaitThresholdForCapabilities() ||
-            result != ios::ChromeIdentityCapabilityResult::kTrue) {
+            result != SystemIdentityCapabilityResult::kTrue) {
           return;
         }
         [weakSelf presentSigninUpgradePromo];

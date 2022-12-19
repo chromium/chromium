@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -61,7 +62,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
   // Ensure that callback gets `capability_enabled` on
   // `kCanHaveEmailAddressDisplayedCapabilityName`.
   void testCapabilityValueFetchedIsReceived(
-      ios::ChromeIdentityCapabilityResult capability_fetched,
+      SystemIdentityCapabilityResult capability_fetched,
       signin::Tribool capability_expected) {
     base::test::SingleThreadTaskEnvironment task_environment;
     base::RunLoop run_loop;
@@ -88,18 +89,18 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
 
 // Check that a capability set to True is received as True.
 TEST_F(AccountCapabilitiesFetcherIOSTest, CheckTrueCapability) {
-  testCapabilityValueFetchedIsReceived(
-      ios::ChromeIdentityCapabilityResult::kTrue, signin::Tribool::kTrue);
+  testCapabilityValueFetchedIsReceived(SystemIdentityCapabilityResult::kTrue,
+                                       signin::Tribool::kTrue);
 }
 
 // Check that a capability set to False is received as False.
 TEST_F(AccountCapabilitiesFetcherIOSTest, CheckFalseCapability) {
-  testCapabilityValueFetchedIsReceived(
-      ios::ChromeIdentityCapabilityResult::kFalse, signin::Tribool::kFalse);
+  testCapabilityValueFetchedIsReceived(SystemIdentityCapabilityResult::kFalse,
+                                       signin::Tribool::kFalse);
 }
 
 // Check that a capability set to Unknown is received as Unknown.
 TEST_F(AccountCapabilitiesFetcherIOSTest, CheckUnknownCapability) {
-  testCapabilityValueFetchedIsReceived(
-      ios::ChromeIdentityCapabilityResult::kUnknown, signin::Tribool::kUnknown);
+  testCapabilityValueFetchedIsReceived(SystemIdentityCapabilityResult::kUnknown,
+                                       signin::Tribool::kUnknown);
 }

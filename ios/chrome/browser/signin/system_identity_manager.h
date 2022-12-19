@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "ios/chrome/browser/signin/capabilities_types.h"
 #include "ios/chrome/browser/signin/system_identity_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,19 +28,13 @@ class SystemIdentityManagerObserver;
 // SystemIdentityManager abstracts the signin flow on iOS.
 class SystemIdentityManager {
  public:
+  // Alias SystemIdentityCapabilityResult.
+  using CapabilityResult = SystemIdentityCapabilityResult;
+
   // Value returned by IdentityIteratorCallback.
   enum class IteratorResult {
     kContinueIteration,
     kInterruptIteration,
-  };
-
-  // Value representing account capabilities. The enumerator values must not
-  // be changed as they correspond to the value exchanged on the wire with
-  // the server.
-  enum class CapabilityResult {
-    kFalse = 0,    // Capability not allowed for identity.
-    kTrue = 1,     // Capability allowed for identity.
-    kUnknown = 2,  // Capability not set for identity.
   };
 
   // Value representing a refresh access token.

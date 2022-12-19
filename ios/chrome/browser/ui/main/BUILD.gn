@@ -181,6 +181,7 @@ source_set("scene") {
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/app_store_rating",

@@ -13,7 +13,8 @@
 
 #include "base/callback.h"
 #include "base/observer_list.h"
-#import "ios/chrome/browser/signin/capabilities_dict.h"
+#include "ios/chrome/browser/signin/capabilities_dict.h"
+#include "ios/chrome/browser/signin/capabilities_types.h"
 
 @class ChromeIdentityInteractionManager;
 @protocol SystemIdentity;
@@ -51,14 +52,7 @@ typedef void (^MDMStatusCallback)(bool is_blocked);
 typedef void (^DismissASMViewControllerBlock)(BOOL animated);
 
 // Defines account capability state based on GCRSSOCapabilityResult.
-enum class ChromeIdentityCapabilityResult {
-  // Capability is not allowed for identity.
-  kFalse,
-  // Capability is allowed for identity.
-  kTrue,
-  // Capability has not been set for identity.
-  kUnknown,
-};
+using ChromeIdentityCapabilityResult = SystemIdentityCapabilityResult;
 
 // Callback to retrieve account capabilities. Maps `capability_result` to the
 // corresponding state in ChromeIdentityCapabilityResult.

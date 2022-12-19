@@ -8,6 +8,7 @@
 #import <map>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -51,15 +52,15 @@ void AccountCapabilitiesFetcherIOS::OnCapabilitiesFetched(
   __block base::flat_map<std::string, bool> capabilities_map;
   [dict enumerateKeysAndObjectsUsingBlock:^(NSString* name, NSNumber* value,
                                             BOOL* stop) {
-    ios::ChromeIdentityCapabilityResult capability_state =
-        static_cast<ios::ChromeIdentityCapabilityResult>(value.intValue);
+    SystemIdentityCapabilityResult capability_state =
+        static_cast<SystemIdentityCapabilityResult>(value.intValue);
     switch (value.intValue) {
-      case static_cast<int>(ios::ChromeIdentityCapabilityResult::kTrue):
-      case static_cast<int>(ios::ChromeIdentityCapabilityResult::kFalse):
+      case static_cast<int>(SystemIdentityCapabilityResult::kTrue):
+      case static_cast<int>(SystemIdentityCapabilityResult::kFalse):
         capabilities_map[base::SysNSStringToUTF8(name)] =
-            capability_state == ios::ChromeIdentityCapabilityResult::kTrue;
+            capability_state == SystemIdentityCapabilityResult::kTrue;
         break;
-      case static_cast<int>(ios::ChromeIdentityCapabilityResult::kUnknown):
+      case static_cast<int>(SystemIdentityCapabilityResult::kUnknown):
         break;
       default:
         NOTREACHED();

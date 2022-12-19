@@ -82,6 +82,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
