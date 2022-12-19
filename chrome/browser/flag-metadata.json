@@ -2369,8 +2369,8 @@
   },
   {
     "name": "enable-fullscreen-api",
-    "owners": [ "ajuma", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "owners": [ "ajuma", "joemerramos" ],
+    "expiry_milestone": 113
   },
   {
     "name": "enable-future-v8-vm-features",
