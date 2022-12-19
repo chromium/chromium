@@ -39,7 +39,7 @@ namespace net {
 namespace {
 
 constexpr CertificateTrust ExpectedTrustForAnchor() {
-  return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+  return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
 }
 
 // The PEM block header used for DER certificates

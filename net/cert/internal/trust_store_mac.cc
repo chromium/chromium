@@ -1156,7 +1156,7 @@ CertificateTrust TrustStoreMac::GetTrust(
   TrustStatus trust_status = trust_cache_->IsCertTrusted(cert, debug_data);
   switch (trust_status) {
     case TrustStatus::TRUSTED:
-      return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+      return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
     case TrustStatus::DISTRUSTED:
       return CertificateTrust::ForDistrusted();
     case TrustStatus::UNSPECIFIED:

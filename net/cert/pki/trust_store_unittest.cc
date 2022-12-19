@@ -11,23 +11,17 @@
 
 namespace net {
 
-constexpr CertificateTrust TrustAnchorEnforcingExpirationAndConstraints() {
-  CertificateTrust result;
-  result.type = CertificateTrustType::TRUSTED_ANCHOR;
-  result.enforce_anchor_constraints = true;
-  result.enforce_anchor_expiry = true;
-  return result;
-}
-
 // Other tests use comparisons on the ToDebugString values as test
 // expectations, so confirm that each CertificateTrust of interest has a
 // unique string value.
 TEST(CertificateTrustTest, ToDebugStringUniqueness) {
   std::vector<CertificateTrust> trust_settings = {
       CertificateTrust::ForTrustAnchor(),
-      CertificateTrust::ForTrustAnchorEnforcingConstraints(),
-      CertificateTrust::ForTrustAnchorEnforcingExpiration(),
-      TrustAnchorEnforcingExpirationAndConstraints(),
+      CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints(),
+      CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry(),
+      CertificateTrust::ForTrustAnchor()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry(),
       CertificateTrust::ForUnspecified(),
       CertificateTrust::ForDistrusted(),
   };

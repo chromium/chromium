@@ -307,7 +307,7 @@ CertificateTrust TrustStoreWin::GetTrust(
       // If we find at least one version of the cert that is trusted for TLS
       // Server Auth, we will trust the cert.
       if (IsCertTrustedForServerAuth(cert_from_store)) {
-        return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+        return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
       }
     }
   }

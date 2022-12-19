@@ -25,13 +25,14 @@ void TrustStoreInMemory::AddTrustAnchor(
 void TrustStoreInMemory::AddTrustAnchorWithExpiration(
     std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert),
-                 CertificateTrust::ForTrustAnchorEnforcingExpiration());
+                 CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry());
 }
 
 void TrustStoreInMemory::AddTrustAnchorWithConstraints(
     std::shared_ptr<const ParsedCertificate> cert) {
-  AddCertificate(std::move(cert),
-                 CertificateTrust::ForTrustAnchorEnforcingConstraints());
+  AddCertificate(
+      std::move(cert),
+      CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints());
 }
 
 void TrustStoreInMemory::AddDistrustedCertificateForTest(

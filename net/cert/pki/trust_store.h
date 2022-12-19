@@ -34,20 +34,6 @@ struct NET_EXPORT CertificateTrust {
     return result;
   }
 
-  static constexpr CertificateTrust ForTrustAnchorEnforcingExpiration() {
-    CertificateTrust result;
-    result.type = CertificateTrustType::TRUSTED_ANCHOR;
-    result.enforce_anchor_expiry = true;
-    return result;
-  }
-
-  static constexpr CertificateTrust ForTrustAnchorEnforcingConstraints() {
-    CertificateTrust result;
-    result.type = CertificateTrustType::TRUSTED_ANCHOR;
-    result.enforce_anchor_constraints = true;
-    return result;
-  }
-
   static constexpr CertificateTrust ForUnspecified() {
     CertificateTrust result;
     return result;
@@ -56,6 +42,19 @@ struct NET_EXPORT CertificateTrust {
   static constexpr CertificateTrust ForDistrusted() {
     CertificateTrust result;
     result.type = CertificateTrustType::DISTRUSTED;
+    return result;
+  }
+
+  constexpr CertificateTrust WithEnforceAnchorExpiry(bool value = true) const {
+    CertificateTrust result = *this;
+    result.enforce_anchor_expiry = value;
+    return result;
+  }
+
+  constexpr CertificateTrust WithEnforceAnchorConstraints(
+      bool value = true) const {
+    CertificateTrust result = *this;
+    result.enforce_anchor_constraints = value;
     return result;
   }
 

@@ -30,7 +30,7 @@ namespace net {
 namespace {
 
 constexpr CertificateTrust ExpectedTrustForAnchor() {
-  return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+  return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
 }
 
 // These tests use a series of cross-signed certificates. The overall
