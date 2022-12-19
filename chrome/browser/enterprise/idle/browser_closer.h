@@ -55,6 +55,8 @@ class BrowserCloser {
 
   void DismissDialogForTesting();
 
+  bool IsDialogOpenForTesting() const;
+
  private:
   friend class base::NoDestructor<BrowserCloser>;
 

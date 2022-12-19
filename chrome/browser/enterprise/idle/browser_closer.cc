@@ -82,6 +82,10 @@ void BrowserCloser::DismissDialogForTesting() {
   OnDialogDismissedByUser();
 }
 
+bool BrowserCloser::IsDialogOpenForTesting() const {
+  return bool(dialog_);
+}
+
 void BrowserCloser::OnDialogExpired() {
   DCHECK(!closing_profiles_.empty());
 
