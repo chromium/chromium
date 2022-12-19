@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 
 class Profile;
 
@@ -55,9 +56,17 @@ class SearchMetricsManager : ash::AppListNotifier::Observer {
                 const std::vector<Result>& results,
                 const std::u16string& query) override;
 
+  void OnOpen(ash::AppListSearchResultType result_type,
+              const std::u16string& query);
+  void OnTrain(LaunchData& launch_data, const std::string& query);
+
  private:
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observation_{this};
+
+  // The ID of the most recently launched app. This is used for app list launch
+  // recording.
+  std::string last_launched_app_id_;
 };
 
 }  // namespace app_list

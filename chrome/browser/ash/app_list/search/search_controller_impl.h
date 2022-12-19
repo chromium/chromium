@@ -131,10 +131,6 @@ class SearchControllerImpl : public SearchController {
   // The time when StartSearch was most recently called.
   base::Time session_start_;
 
-  // The ID of the most recently launched app. This is used for app list launch
-  // recording.
-  std::string last_launched_app_id_;
-
   // Top-level result ranker.
   std::unique_ptr<RankerManager> ranker_manager_;
 

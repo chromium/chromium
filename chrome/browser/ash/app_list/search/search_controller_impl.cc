@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,8 +77,6 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
 
   burnin_controller_->Start();
 
-  // TODO(crbug.com/1199206): We should move this histogram logic somewhere
-  // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
   // Clear all search results but preserve zero-state results.
@@ -167,14 +164,7 @@ void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
   if (!result)
     return;
 
-  // Log the length of the last query that led to the clicked result - for zero
-  // state search results, log 0.
-  // TODO(crbug.com/1199206): This histogram logic should be moved somewhere
-  // else.
-  if (ash::IsZeroStateResultType(result->result_type()))
-    ash::RecordLauncherClickedSearchQueryLength(0);
-  else
-    ash::RecordLauncherClickedSearchQueryLength(last_query_.length());
+  metrics_manager_->OnOpen(result->result_type(), last_query_);
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
 
@@ -387,32 +377,8 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
                                 : base::UTF16ToUTF8(last_query_);
   launch_data.query = query;
 
-  // TODO(crbug.com/1199206): This logging code should move elsewhere.
   if (app_list_features::IsAppListLaunchRecordingEnabled()) {
-    // Record a structured metrics event.
-    const base::Time now = base::Time::Now();
-    base::Time::Exploded now_exploded;
-    now.LocalExplode(&now_exploded);
-
-    metrics::structured::events::v2::launcher_usage::LauncherUsage()
-        .SetTarget(NormalizeId(launch_data.id))
-        .SetApp(last_launched_app_id_)
-        .SetSearchQuery(query)
-        .SetSearchQueryLength(query.size())
-        .SetProviderType(static_cast<int>(launch_data.result_type))
-        .SetHour(now_exploded.hour)
-        .SetScore(launch_data.score)
-        .Record();
-
-    // Only record the last launched app if the hashed logging feature flag is
-    // enabled, because it is only used by hashed logging.
-    if (IsAppListSearchResultAnApp(launch_data.result_type)) {
-      last_launched_app_id_ = NormalizeId(launch_data.id);
-    } else if (launch_data.result_type ==
-               ash::AppListSearchResultType::kArcAppShortcut) {
-      last_launched_app_id_ =
-          RemoveAppShortcutLabel(NormalizeId(launch_data.id));
-    }
+    metrics_manager_->OnTrain(launch_data, query);
   }
 
   profile_->GetPrefs()->SetBoolean(ash::prefs::kLauncherResultEverLaunched,

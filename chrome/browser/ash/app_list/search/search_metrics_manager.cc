@@ -8,9 +8,11 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
 
 namespace app_list {
@@ -185,6 +187,44 @@ void SearchMetricsManager::OnIgnore(Location location,
   LogTypeActions("Ignore", location, query, TypeSet(results));
   if (!results.empty())
     LogViewAction(location, query, Action::kIgnore);
+}
+
+// Log the length of the last query that led to the clicked result - for zero
+// state search results, log 0.
+void SearchMetricsManager::OnOpen(ash::AppListSearchResultType result_type,
+                                  const std::u16string& query) {
+  if (ash::IsZeroStateResultType(result_type)) {
+    ash::RecordLauncherClickedSearchQueryLength(0);
+  } else {
+    ash::RecordLauncherClickedSearchQueryLength(query.length());
+  }
+}
+
+void SearchMetricsManager::OnTrain(LaunchData& launch_data,
+                                   const std::string& query) {
+  // Record a structured metrics event.
+  const base::Time now = base::Time::Now();
+  base::Time::Exploded now_exploded;
+  now.LocalExplode(&now_exploded);
+
+  metrics::structured::events::v2::launcher_usage::LauncherUsage()
+      .SetTarget(NormalizeId(launch_data.id))
+      .SetApp(last_launched_app_id_)
+      .SetSearchQuery(query)
+      .SetSearchQueryLength(query.size())
+      .SetProviderType(static_cast<int>(launch_data.result_type))
+      .SetHour(now_exploded.hour)
+      .SetScore(launch_data.score)
+      .Record();
+
+  // Only record the last launched app if the hashed logging feature flag is
+  // enabled, because it is only used by hashed logging.
+  if (IsAppListSearchResultAnApp(launch_data.result_type)) {
+    last_launched_app_id_ = NormalizeId(launch_data.id);
+  } else if (launch_data.result_type ==
+             ash::AppListSearchResultType::kArcAppShortcut) {
+    last_launched_app_id_ = RemoveAppShortcutLabel(NormalizeId(launch_data.id));
+  }
 }
 
 }  // namespace app_list
