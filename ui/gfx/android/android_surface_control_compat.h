@@ -175,15 +175,19 @@ class GFX_EXPORT SurfaceControl {
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     void Apply();
+    // Caller(e.g.,WebView) must call ASurfaceTransaction_apply(), otherwise
+    // SurfaceControl leaks.
     ASurfaceTransaction* GetTransaction();
 
    private:
     void PrepareCallbacks();
+    void DestroyIfNeeded();
 
     int id_;
     ASurfaceTransaction* transaction_;
     OnCommitCb on_commit_cb_;
     OnCompleteCb on_complete_cb_;
+    bool need_to_apply_ = false;
   };
 };
 }  // namespace gfx
