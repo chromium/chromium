@@ -65,11 +65,12 @@ void SetDisabledTimesPref(std::vector<base::Time> times) {
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
 
-  base::ListValue time_list;
+  base::Value::List time_list;
   for (auto time : times)
     time_list.Append(base::TimeToValue(time));
 
-  service->Set(prefs::kHardwareSecureDecryptionDisabledTimes, time_list);
+  service->SetList(prefs::kHardwareSecureDecryptionDisabledTimes,
+                   std::move(time_list));
 }
 
 // Adds a new time to the list of disabled times in "Local State".

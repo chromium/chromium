@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
@@ -64,8 +65,9 @@ Value GetPlayerStateValue(const mojom::MediaStatus& status) {
   }
 }
 
-Value GetSupportedMediaCommandsValue(const mojom::MediaStatus& status) {
-  base::ListValue commands;
+base::Value::List GetSupportedMediaCommandsValue(
+    const mojom::MediaStatus& status) {
+  base::Value::List commands;
   // |can_set_volume| and |can_mute| are not used, because the receiver volume
   // is used instead.
   if (status.can_play_pause)
@@ -76,7 +78,7 @@ Value GetSupportedMediaCommandsValue(const mojom::MediaStatus& status) {
     commands.Append("queue_next");
   if (status.can_skip_to_previous_track)
     commands.Append("queue_next");
-  return std::move(commands);
+  return commands;
 }
 
 Value::List CreateImagesValue(const std::vector<mojom::MediaImagePtr>& images) {
