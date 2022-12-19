@@ -43,22 +43,23 @@ export class SpeechParser {
   }
 
   /**
-   * Parses user text to produce a macro command. Async to allow pumpkin to
-   * complete loading if needed.
+   * Parses user text to produce a macro command.
    * @param {string} text The text to parse.
    * @return {!Promise<!Macro>}
    */
   async parse(text) {
-    // Use either `pumpkinParseStrategy_` or `simpleParseStrategy_` because if
-    // `pumpkinParseStrategy_` fails, then `simpleParseStrategy_` will also
-    // fail.
     if (this.pumpkinParseStrategy_.isEnabled()) {
       MetricsUtils.recordPumpkinUsed(true);
       const macro = await this.pumpkinParseStrategy_.parse(text);
       if (macro) {
         return macro;
       }
-    } else if (this.simpleParseStrategy_.isEnabled()) {
+    }
+
+    // If we get here, then Pumpkin failed to parse `text`. There are cases
+    // where this can happen e.g. if Pumpkin failed to initialize properly.
+    // Try using `simpleParseStrategy_` as a fall-back.
+    if (this.simpleParseStrategy_.isEnabled()) {
       MetricsUtils.recordPumpkinUsed(false);
       return await /** @type {!Promise<!Macro>} */ (
           this.simpleParseStrategy_.parse(text));
