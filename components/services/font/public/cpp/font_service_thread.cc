@@ -13,6 +13,8 @@
 #include "base/task/thread_pool.h"
 #include "components/services/font/public/cpp/mapped_font_file.h"
 
+#include "base/record_replay.h"
+
 namespace font_service {
 namespace internal {
 
@@ -29,6 +31,9 @@ FontServiceThread::~FontServiceThread() {
 
 void FontServiceThread::Init(
     mojo::PendingRemote<mojom::FontService> pending_font_service) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&FontServiceThread::InitImpl, this,
                                         std::move(pending_font_service)));
@@ -411,6 +416,9 @@ void FontServiceThread::OnFontServiceDisconnected() {
 
 void FontServiceThread::InitImpl(
     mojo::PendingRemote<mojom::FontService> pending_font_service) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   font_service_.Bind(std::move(pending_font_service));
 
   // NOTE: Unretained is safe here because the callback can never be invoked
