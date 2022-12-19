@@ -127,6 +127,10 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 namespace base::internal {
 
 namespace {
+
+static bool asan_brp_callbacks_installed = false;
+static AsanBackupRefPtrCallbacks g_callbacks = {};
+
 bool IsFreedHeapPointer(void const volatile* ptr) {
   // Use `__asan_region_is_poisoned` instead of `__asan_address_is_poisoned`
   // because the latter may crash on an invalid pointer.
@@ -164,6 +168,12 @@ NOINLINE NOT_TAIL_CALLED void CrashImmediatelyOnUseAfterFree(
   asm volatile("" : "+r"(unused));
 }
 }  // namespace
+
+void InstallAsanBackupRefPtrCallbacks(
+    const AsanBackupRefPtrCallbacks& callbacks) {
+  g_callbacks = callbacks;
+  asan_brp_callbacks_installed = true;
+}
 
 NO_SANITIZE("address")
 void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(

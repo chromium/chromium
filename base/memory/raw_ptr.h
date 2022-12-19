@@ -735,6 +735,32 @@ struct BackupRefPtrImpl {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+// Maps 1-to-1 onto the public enum of `RawPtrAsanService`.
+enum class AsanBackupRefPtrReportType {
+  kDereference,
+  kExtraction,
+  kInstantiation,
+};
+
+// Callback carrier struct that inverts a dependency from `raw_ptr` to
+// `//base`.
+struct AsanBackupRefPtrCallbacks {
+  // `RawPtrAsanService` callbacks.
+  bool (*is_dereference_check_enabled)() = nullptr;
+  bool (*is_extraction_check_enabled)() = nullptr;
+  bool (*is_instantiation_check_enabled)() = nullptr;
+  void (*set_pending_report)(AsanBackupRefPtrReportType type,
+                             const volatile void* ptr) = nullptr;
+
+  // Logs an invalid extraction for `ptr` without crashing.
+  void (*emit_invalid_extraction)(void const volatile* ptr) = nullptr;
+};
+
+static_assert(std::is_trivially_destructible<AsanBackupRefPtrCallbacks>());
+
+void InstallAsanBackupRefPtrCallbacks(
+    const AsanBackupRefPtrCallbacks& callbacks);
+
 // Implementation that allows us to detect BackupRefPtr problems in ASan builds.
 struct AsanBackupRefPtrImpl {
   // Wraps a pointer.
