@@ -794,16 +794,25 @@ void PrerenderHostRegistry::ResourceLoadComplete(
     RenderFrameHost* render_frame_host,
     const GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
+  DCHECK(render_frame_host);
+
+  if (render_frame_host->GetLifecycleState() !=
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    return;
+  }
+
+  // This function only handles ERR_BLOCKED_BY_CLIENT error for now.
+  if (resource_load_info.net_error != net::Error::ERR_BLOCKED_BY_CLIENT) {
+    return;
+  }
+
+  // Cancel the corresponding prerender if the resource load is blocked.
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    // Observe resource loads only in the prerendering frame tree.
     if (&render_frame_host->GetPage() !=
         &iter.second->GetPrerenderedMainFrameHost()->GetPage()) {
       continue;
     }
-
-    if (resource_load_info.net_error == net::Error::ERR_BLOCKED_BY_CLIENT) {
-      CancelHost(iter.first, PrerenderFinalStatus::kBlockedByClient);
-    }
+    CancelHost(iter.first, PrerenderFinalStatus::kBlockedByClient);
     break;
   }
 }
