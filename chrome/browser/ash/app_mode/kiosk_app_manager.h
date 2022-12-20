@@ -25,6 +25,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -246,6 +247,11 @@ class KioskAppManager : public KioskAppManagerBase,
   // kiosk-mode behavior (such as network reporting) is only enabled for
   // kiosk apps that are immediately auto-launched on startup.
   void SetAppWasAutoLaunchedWithZeroDelay(const std::string& app_id);
+
+  // Sets retry backoff policy of extension downloader. Set `absl::nullopt` to
+  // restore to the default. Used to reduce backoff while Kiosk is launching.
+  void SetExtensionDownloaderBackoffPolicy(
+      absl::optional<net::BackoffEntry::Policy> backoff_policy);
 
   // Initialize |app_session_|.
   void InitSession(Profile* profile, const std::string& app_id);

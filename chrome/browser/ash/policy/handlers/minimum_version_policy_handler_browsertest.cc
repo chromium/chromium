@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -829,6 +831,10 @@ class MinimumVersionKioskAutoLoginTest : public MinimumVersionExistingUserTest {
     ash::KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
     helper_.RefreshDevicePolicy();
   }
+
+ private:
+  base::AutoReset<bool> block_kiosk_launcher_exit_on_failure_ =
+      ash::KioskLaunchController::BlockExitOnFailureForTesting();
 };
 
 // Checks kiosk auto launch is not blocked even if immediate update is required

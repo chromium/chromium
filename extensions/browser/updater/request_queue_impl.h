@@ -19,7 +19,7 @@ namespace extensions {
 
 template <typename T>
 RequestQueue<T>::RequestQueue(
-    const net::BackoffEntry::Policy* const backoff_policy,
+    net::BackoffEntry::Policy backoff_policy,
     const base::RepeatingClosure& start_request_callback)
     : backoff_policy_(backoff_policy),
       start_request_callback_(start_request_callback),
@@ -50,7 +50,7 @@ typename RequestQueue<T>::Request RequestQueue<T>::reset_active_request() {
 template <typename T>
 void RequestQueue<T>::ScheduleRequest(std::unique_ptr<T> request) {
   PushImpl(Request(std::unique_ptr<net::BackoffEntry>(
-                       new net::BackoffEntry(backoff_policy_)),
+                       new net::BackoffEntry(&backoff_policy_)),
                    std::move(request)));
   StartNextRequest();
 }
@@ -170,7 +170,7 @@ std::vector<std::unique_ptr<T>> RequestQueue<T>::erase_if(
 
 template <typename T>
 void RequestQueue<T>::set_backoff_policy(
-    const net::BackoffEntry::Policy* backoff_policy) {
+    const net::BackoffEntry::Policy backoff_policy) {
   backoff_policy_ = backoff_policy;
 }
 

@@ -1145,7 +1145,7 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestMultipleManifestDownloading() {
     ExtensionDownloaderTestHelper helper;
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
-    helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
+    helper.downloader().manifests_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL kUpdateUrl("http://localhost/manifest1");
 
@@ -1276,7 +1276,7 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestManifestRetryDownloading() {
     ExtensionDownloaderTestHelper helper;
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
-    helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
+    helper.downloader().manifests_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL kUpdateUrl("http://localhost/manifest1");
 
@@ -1357,7 +1357,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
   void TestManifestCredentialsNonWebstore() {
     ExtensionDownloaderTestHelper helper;
-    helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
+    helper.downloader().manifests_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL kUpdateUrl("http://localhost/manifest1");
 
@@ -1386,7 +1386,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
   void TestManifestCredentialsWebstore() {
     ExtensionDownloaderTestHelper helper;
-    helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
+    helper.downloader().manifests_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL kUpdateUrl(extension_urls::kChromeWebstoreUpdateURL);
 
@@ -1418,7 +1418,7 @@ class ExtensionUpdaterTest : public testing::Test {
   // request's |fetch_priority| is in the FOREGROUND.
   void TestManifestFetchPriority(DownloadFetchPriority fetch_priority) {
     ExtensionDownloaderTestHelper helper;
-    helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
+    helper.downloader().manifests_queue_.set_backoff_policy(kNoBackoffPolicy);
     GURL test_url("http://localhost/manifest1");
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(test_url));
@@ -1464,8 +1464,7 @@ class ExtensionUpdaterTest : public testing::Test {
     service->OverrideDownloaderDelegate(&delegate);
     updater.Start();
     updater.EnsureDownloaderCreated();
-    updater.downloader_->extensions_queue_.set_backoff_policy(
-        &kNoBackoffPolicy);
+    updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL test_url("http://localhost/extension.crx");
     const std::string id(32, 'a');
@@ -1504,8 +1503,7 @@ class ExtensionUpdaterTest : public testing::Test {
     service->OverrideDownloaderDelegate(&delegate);
     updater.Start();
     updater.EnsureDownloaderCreated();
-    updater.downloader_->extensions_queue_.set_backoff_policy(
-        &kNoBackoffPolicy);
+    updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL test_url("http://localhost/extension.crx");
 
@@ -1797,8 +1795,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
     updater.Start();
     updater.EnsureDownloaderCreated();
-    updater.downloader_->extensions_queue_.set_backoff_policy(
-        &kNoBackoffPolicy);
+    updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     GURL test_url(base::StringPrintf("%s/extension.crx", url_prefix.c_str()));
 
@@ -2004,8 +2001,7 @@ class ExtensionUpdaterTest : public testing::Test {
                              service.GetDownloaderFactory());
     updater.Start();
     updater.EnsureDownloaderCreated();
-    updater.downloader_->extensions_queue_.set_backoff_policy(
-        &kNoBackoffPolicy);
+    updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
 
     EXPECT_THAT(GetRunningInstallIds(updater), testing::IsEmpty());
 

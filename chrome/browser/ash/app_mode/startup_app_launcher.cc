@@ -41,6 +41,17 @@ namespace {
 
 const int kMaxLaunchAttempt = 5;
 
+// Reduced backoff policy for extension downloader while Kiosk is launching.
+const net::BackoffEntry::Policy kKioskLaunchExtensionBackoffPolicy = {
+    .num_errors_to_ignore = 0,
+    .initial_delay_ms = 2000,
+    .multiply_factor = 2,
+    .jitter_factor = 0.1,
+    .maximum_backoff_ms = 3000,
+    .entry_lifetime_ms = -1,
+    .always_use_initial_delay = false,
+};
+
 crosapi::BrowserManager* browser_manager() {
   return crosapi::BrowserManager::Get();
 }
@@ -102,9 +113,17 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
       should_skip_install_(should_skip_install) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
+
+  // Reduce extension downloader retry backoff to avoid waiting on splash screen
+  // for a long time.
+  KioskAppManager::Get()->SetExtensionDownloaderBackoffPolicy(
+      kKioskLaunchExtensionBackoffPolicy);
 }
 
-StartupAppLauncher::~StartupAppLauncher() = default;
+StartupAppLauncher::~StartupAppLauncher() {
+  // Restore to default extension downloader backoff policy.
+  KioskAppManager::Get()->SetExtensionDownloaderBackoffPolicy(absl::nullopt);
+}
 
 void StartupAppLauncher::Initialize() {
   DCHECK(state_ != LaunchState::kReadyToLaunch &&

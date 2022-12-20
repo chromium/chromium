@@ -274,9 +274,9 @@ void ExtensionUpdater::UpdateImmediatelyForFirstRun() {
 }
 
 void ExtensionUpdater::SetBackoffPolicyForTesting(
-    const net::BackoffEntry::Policy* backoff_policy) {
+    const net::BackoffEntry::Policy& backoff_policy) {
   EnsureDownloaderCreated();
-  downloader_->SetBackoffPolicyForTesting(backoff_policy);
+  downloader_->SetBackoffPolicy(backoff_policy);
 }
 
 // static

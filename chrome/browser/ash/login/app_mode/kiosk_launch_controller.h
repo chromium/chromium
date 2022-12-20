@@ -103,6 +103,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   SetNetworkWaitForTesting(base::TimeDelta wait_time);
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   BlockAppLaunchForTesting();
+  [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
   static void SetNetworkTimeoutCallbackForTesting(base::OnceClosure* callback);
   static void SetCanConfigureNetworkCallbackForTesting(
       ReturnBoolCallback* callback);

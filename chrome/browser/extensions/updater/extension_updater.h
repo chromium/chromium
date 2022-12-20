@@ -153,7 +153,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // For testing, changes the backoff policy for ExtensionDownloader's manifest
   // queue to get less initial delay and the tests don't time out.
   void SetBackoffPolicyForTesting(
-      const net::BackoffEntry::Policy* backoff_policy);
+      const net::BackoffEntry::Policy& backoff_policy);
 
   // Always fetch updates via update service, not the extension downloader.
   static base::AutoReset<bool> GetScopedUseUpdateServiceForTesting();

@@ -88,6 +88,11 @@ void TestExternalCache::PutExternalExtension(
   std::move(callback).Run(id, true);
 }
 
+void TestExternalCache::SetBackoffPolicy(
+    absl::optional<net::BackoffEntry::Policy> new_backoff_policy) {
+  backoff_policy_ = new_backoff_policy;
+}
+
 bool TestExternalCache::SimulateExtensionDownloadFinished(
     const std::string& id,
     const std::string& crx_path,
