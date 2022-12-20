@@ -200,11 +200,10 @@ gfx::PointF SVGLengthContext::ResolvePoint(const SVGElement* context,
     SVGLengthContext length_context(context);
     return gfx::PointF(x.Value(length_context), y.Value(length_context));
   }
-
-  // FIXME: valueAsPercentage() won't be correct for eg. cm units. They need to
-  // be resolved in user space and then be considered in objectBoundingBox
+  // TODO(fs): ScaleByPercentage() won't be correct for eg. cm units. They need
+  // to be resolved in user space and then be considered in objectBoundingBox
   // space.
-  return gfx::PointF(x.ValueAsPercentage(), y.ValueAsPercentage());
+  return gfx::PointF(x.ScaleByPercentage(1), y.ScaleByPercentage(1));
 }
 
 gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
@@ -235,11 +234,10 @@ float SVGLengthContext::ResolveLength(const SVGElement* context,
     SVGLengthContext length_context(context);
     return x.Value(length_context);
   }
-
-  // FIXME: valueAsPercentage() won't be correct for eg. cm units. They need to
-  // be resolved in user space and then be considered in objectBoundingBox
+  // TODO(fs): ScaleByPercentage() won't be correct for eg. cm units. They need
+  // to be resolved in user space and then be considered in objectBoundingBox
   // space.
-  return x.ValueAsPercentage();
+  return x.ScaleByPercentage(1);
 }
 
 float SVGLengthContext::ValueForLength(const UnzoomedLength& unzoomed_length,
