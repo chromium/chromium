@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
+import {CrDialogElement, SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxFledgeSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrivacySandboxBrowserProxyImpl, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -229,6 +229,70 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertLearnMoreDialogClosed();
     await waitAfterNextRender(page);
     assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
+  });
+});
+
+suite('PrivacySandboxFledgeSubpageTests', function() {
+  let page: SettingsPrivacySandboxFledgeSubpageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-fledge-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('enableFledgeToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.fledgeToggle));
+    assertFalse(page.$.fledgeToggle.checked);
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'),
+        page.$.fledgeToggle.subLabel);
+
+    page.$.fledgeToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.fledgeToggle));
+    assertTrue(page.$.fledgeToggle.checked);
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'),
+        page.$.fledgeToggle.subLabel);
+    assertTrue(!!page.getPref('privacy_sandbox.m1.fledge_enabled.value'));
+  });
+
+  test('disableFledgeToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.fledgeToggle));
+    assertTrue(page.$.fledgeToggle.checked);
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'),
+        page.$.fledgeToggle.subLabel);
+
+    page.$.fledgeToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.fledgeToggle));
+    assertFalse(page.$.fledgeToggle.checked);
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'),
+        page.$.fledgeToggle.subLabel);
+    assertFalse(!!page.getPref('privacy_sandbox.m1.fledge_enabled.value'));
   });
 });
 

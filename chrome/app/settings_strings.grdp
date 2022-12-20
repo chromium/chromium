@@ -1908,6 +1908,12 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
     Aenean erat leo
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL" translateable="false" desc="Label for the toggle in the Fledge preferences page.">
+    Nunc aliquam consequat felis non tincidunt
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Subabel for the toggle in the Fledge preferences page.">
+    Donec pretium non elit vitae ornare. Morbi arcu elit, rutrum nec sapien quis, tristique tristique ante.
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
