@@ -14,6 +14,7 @@
 namespace gl {
 class GLDisplay;
 
+// TODO(blundell): Rename this class/file. They don't reference GLImage.
 class GLImageTestSupport {
  public:
   // Initialize GL for image testing. |prefered_impl| is the GL implementation

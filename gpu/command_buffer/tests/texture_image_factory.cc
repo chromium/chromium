@@ -4,11 +4,13 @@
 
 #include "gpu/command_buffer/tests/texture_image_factory.h"
 
+#include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image.h"
 
 namespace gpu {
 
+#if !BUILDFLAG(IS_ANDROID)
 // An image that allocates storage for the texture using glTexImage2D.
 class TextureImage : public gl::GLImage {
  public:
@@ -45,9 +47,14 @@ class TextureImage : public gl::GLImage {
   ~TextureImage() override = default;
   gfx::Size size_;
 };
+#endif
 
 bool TextureImageFactory::SupportsCreateAnonymousImage() const {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   return true;
+#endif
 }
 
 scoped_refptr<gl::GLImage> TextureImageFactory::CreateAnonymousImage(
@@ -56,8 +63,13 @@ scoped_refptr<gl::GLImage> TextureImageFactory::CreateAnonymousImage(
     gfx::BufferUsage usage,
     SurfaceHandle surface_handle,
     bool* is_cleared) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+  return nullptr;
+#else
   *is_cleared = true;
   return new TextureImage(size);
+#endif
 }
 
 unsigned TextureImageFactory::RequiredTextureType() {

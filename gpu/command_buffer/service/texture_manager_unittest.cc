@@ -1667,6 +1667,7 @@ TEST_F(TextureTest, UseDeletedTexture) {
   texture_ref = nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(TextureTest, GetLevelImage) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
@@ -1707,6 +1708,7 @@ TEST_F(TextureTest, SetLevelImageState) {
   texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
   EXPECT_EQ(state, Texture::COPIED);
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TextureTest, SetStreamTextureImageServiceID) {
@@ -1722,10 +1724,11 @@ TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   EXPECT_EQ(owned_service_id, service_id);
 
   // Override the service_id.
+  // TODO(blundell): Remove |image| parameter from this method - |null| is
+  // always passed in production.
   GLuint stream_texture_service_id = service_id + 1;
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
   manager_->SetLevelStreamTextureImage(
-      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, image.get(),
+      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, /*image=*/nullptr,
       Texture::BOUND, stream_texture_service_id);
 
   // Make sure that service_id() changed but owned_service_id() didn't.
@@ -1734,8 +1737,8 @@ TEST_F(TextureTest, SetStreamTextureImageServiceID) {
 
   // Undo the override.
   manager_->SetLevelStreamTextureImage(texture_ref_.get(),
-                                       GL_TEXTURE_EXTERNAL_OES, 0, image.get(),
-                                       Texture::BOUND, 0);
+                                       GL_TEXTURE_EXTERNAL_OES, 0,
+                                       /*image=*/nullptr, Texture::BOUND, 0);
 
   // The service IDs should be back as they were.
   EXPECT_EQ(service_id, texture->service_id());
@@ -1743,7 +1746,7 @@ TEST_F(TextureTest, SetStreamTextureImageServiceID) {
 
   // Override again, so that we can check delete behavior.
   manager_->SetLevelStreamTextureImage(
-      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, image.get(),
+      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, /*image=*/nullptr,
       Texture::BOUND, stream_texture_service_id);
 
   // Remove the Texture.  It should delete the texture id that it owns, even
@@ -2091,11 +2094,15 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   manager_->SetTarget(texture_ref_.get(), target);
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
+#if !BUILDFLAG(IS_ANDROID)
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+#endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
+#if !BUILDFLAG(IS_ANDROID)
   manager_->SetLevelImage(texture_ref_.get(), target, 0, image.get(),
                           Texture::BOUND);
+#endif
   GLuint service_id = texture->service_id();
   Texture* produced_texture = Produce(texture_ref_.get());
 
@@ -2105,7 +2112,9 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   scoped_refptr<TextureRef> restored_texture = manager_->GetTexture(client_id);
   EXPECT_EQ(produced_texture, restored_texture->texture());
   EXPECT_EQ(service_id, restored_texture->service_id());
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(image.get(), restored_texture->texture()->GetLevelImage(target, 0));
+#endif
 }
 
 static const GLenum kTextureTargets[] = {GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES,
@@ -2386,6 +2395,7 @@ TEST_F(SharedTextureTest, Memory) {
   EXPECT_EQ(initial_memory2, memory_tracker2_.GetSize());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SharedTextureTest, Images) {
   scoped_refptr<TextureRef> ref1 = texture_manager1_->CreateTexture(10, 10);
   scoped_refptr<TextureRef> ref2 =
@@ -2427,7 +2437,7 @@ TEST_F(SharedTextureTest, Images) {
   texture_manager1_->RemoveTexture(10);
   texture_manager2_->RemoveTexture(20);
 }
-
+#endif
 
 class TextureFormatTypeValidationTest : public TextureManagerTest {
  public:
