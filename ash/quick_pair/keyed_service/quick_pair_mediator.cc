@@ -250,15 +250,6 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
-  if (device_currently_showing_notification_ &&
-      !IsDeviceCurrentlyShowingNotification(device)) {
-    QP_LOG(INFO) << __func__
-                 << ": first come first serve: already showing notification "
-                    "for different device="
-                 << device_currently_showing_notification_;
-    return;
-  }
-
   // SFUL metrics will cause a crash if Fast Pair is disabled when we
   // retroactive pair, so prevent a notification from popping up.
   // TODO(b/247148054): Look into moving this elsewhere.
