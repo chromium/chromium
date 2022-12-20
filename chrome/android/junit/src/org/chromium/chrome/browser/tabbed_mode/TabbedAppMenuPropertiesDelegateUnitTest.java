@@ -183,7 +183,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private boolean mIsPartnerHomepageEnabled;
     private boolean mIsTabletScreen;
     private boolean mIsMultiWindowApiSupported;
-    private boolean mIsNewWindowMenuFeatureEnabled;
 
     // Used to ensure all the combinations are tested.
     private boolean[] mFlagCombinations = new boolean[1 << 6];
@@ -251,33 +250,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void testPageMenuItems_multiWindowMenu_featureDisabled() {
-        setUpMocksForPageMenu();
-
-        mIsNewWindowMenuFeatureEnabled = false;
-
-        // In general multiple tab/window/instances, show 'Move to other window'
-        testWindowMenu(TAB_M, WIN_M, INST_M, X____, X____, X____, NEW_NO, MOVE_YES);
-
-        // In multi-window, show it if partner homepage is disabled.
-        // Even though partner homepage is enabled, multiple tabs allows it as well.
-        testWindowMenu(X____, WIN_M, X____, X____, X____, PARTNER_NO, NEW_NO, MOVE_YES);
-        testWindowMenu(TAB_M, WIN_M, INST_S, X____, X____, PARTNER_YES, NEW_NO, MOVE_YES);
-
-        // Hide it for single window, or single tab + partner homepage set.
-        testWindowMenu(X____, WIN_S, INST_S, X____, X____, X____, NEW_NO, MOVE_NO);
-        testWindowMenu(TAB_S, WIN_M, X____, X____, X____, PARTNER_YES, NEW_NO, MOVE_NO);
-
-        assertTestedAllCombinations();
-    }
-
-    @Test
     public void testPageMenuItems_multiWindowMenu_featureEnabled() {
         setUpMocksForPageMenu();
 
-        mIsNewWindowMenuFeatureEnabled = true;
-
-        //
         // Single window
         //
         // No API support (i.e. cannot enter multi-window through menu), do not show 'New Window'
@@ -310,7 +285,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_newWindow() {
         setUpMocksForPageMenu();
-        mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
         createInstance(0, "https://url0");
@@ -345,7 +319,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_moveTabToOtherWindow() {
         setUpMocksForPageMenu();
-        mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
         createInstance(0, "https://url0");
@@ -364,7 +337,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_manageAllWindow() {
         setUpMocksForPageMenu();
-        mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
         createInstance(0, "https://url0");
@@ -449,7 +421,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowReaderModePrefs(any(Tab.class));
         doReturn(false).when(mTabbedAppMenuPropertiesDelegate).isPartnerHomepageEnabled();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isNewWindowMenuFeatureEnabled();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 
         setUpIncognitoMocks();
@@ -507,9 +478,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .isPartnerHomepageEnabled();
         doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
-        doReturn(mIsNewWindowMenuFeatureEnabled)
-                .when(mTabbedAppMenuPropertiesDelegate)
-                .isNewWindowMenuFeatureEnabled();
         doReturn(MultiWindowUtils.getInstanceCount())
                 .when(mMultiWindowModeStateDispatcher)
                 .getInstanceCount();

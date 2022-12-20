@@ -107,7 +107,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sInstanceSwitcher);
                 add(ChromeFeatureList.sInstantStart);
                 add(ChromeFeatureList.sInterestFeedV2);
-                add(ChromeFeatureList.sNewWindowAppMenu);
                 add(ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor);
                 add(ChromeFeatureList.sOmniboxModernizeVisualUpdate);
                 add(ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool);

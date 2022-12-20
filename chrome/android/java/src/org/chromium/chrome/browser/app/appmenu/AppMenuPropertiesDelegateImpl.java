@@ -776,11 +776,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public boolean isNewWindowMenuFeatureEnabled() {
-        return ChromeFeatureList.sNewWindowAppMenu.isEnabled();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isAutoDarkWebContentsEnabled() {
         Profile profile = mTabModelSelector.getCurrentModel().getProfile();
         assert profile != null;
@@ -795,7 +790,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "New window" menu item should be displayed.
      */
     protected boolean shouldShowNewWindow() {
-        if (!isNewWindowMenuFeatureEnabled()) return false;
         if (instanceSwitcherEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
             if (getInstanceCount() >= MultiWindowUtils.getMaxInstances()) return false;

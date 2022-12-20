@@ -2143,9 +2143,6 @@ extern const char kMessagesForAndroidStackingAnimationDescription[];
 extern const char kNetworkServiceInProcessName[];
 extern const char kNetworkServiceInProcessDescription[];
 
-extern const char kNewWindowAppMenuName[];
-extern const char kNewWindowAppMenuDescription[];
-
 extern const char kNotificationPermissionRationaleName[];
 extern const char kNotificationPermissionRationaleDescription[];
 
