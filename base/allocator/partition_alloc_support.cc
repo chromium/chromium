@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
@@ -23,7 +22,6 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
