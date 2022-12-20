@@ -148,6 +148,9 @@ function createOSSettingsRoutes() {
     r.PER_DEVICE_MOUSE = createSubpage(
         r.DEVICE, routesMojomWebui.PER_DEVICE_MOUSE_SUBPAGE_PATH,
         Subpage.kPerDeviceMouse);
+    r.PER_DEVICE_POINTING_STICK = createSubpage(
+        r.DEVICE, routesMojomWebui.PER_DEVICE_POINTING_STICK_SUBPAGE_PATH,
+        Subpage.kPerDevicePointingStick);
     r.PER_DEVICE_TOUCHPAD = createSubpage(
         r.DEVICE, routesMojomWebui.PER_DEVICE_TOUCHPAD_SUBPAGE_PATH,
         Subpage.kPerDeviceTouchpad);

@@ -28,7 +28,7 @@ const TestNames = {
   NightLight: 'night light',
   PerDeviceKeyboard: 'per-device keyboard',
   Pointers: 'pointers',
-  PointingStick: 'pointing stick',
+  PerDevicePointingStick: 'per-device pointing stick',
   Power: 'power',
   Storage: 'storage',
   Stylus: 'stylus',
@@ -528,7 +528,7 @@ suite('SettingsDevicePage', function() {
         devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
   });
 
-  test('per-device-pointing stick row visibility', async function() {
+  test('per-device-pointing-stick row visibility', async function() {
     setDeviceSplitEnabled(false);
     await init();
     assertFalse(isVisible(
@@ -671,6 +671,34 @@ suite('SettingsDevicePage', function() {
           routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
           '#perDeviceTouchpadSubpageTitle')));
+    });
+  });
+
+  suite(assert(TestNames.PerDevicePointingStick), function() {
+    let perDevicePointingStickPage;
+
+    setup(async function() {
+      await init();
+      const row = assert(devicePage.shadowRoot.querySelector(
+          `#main #perDevicePointingStickRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_POINTING_STICK,
+          Router.getInstance().getCurrentRoute());
+      const page = devicePage.shadowRoot.querySelector(
+          'settings-per-device-pointing-stick');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDevicePointingStickPage = page;
+      });
+    });
+
+    test('per-device pointing stick subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_POINTING_STICK,
+          Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDevicePointingStickPage.shadowRoot.querySelector(
+          '#perDevicePointingStickSubpageTitle')));
     });
   });
 

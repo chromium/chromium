@@ -48,6 +48,7 @@ using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceMouseSubpagePath;
+using ::chromeos::settings::mojom::kPerDevicePointingStickSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kPointersSubpagePath;
 using ::chromeos::settings::mojom::kPowerSubpagePath;
@@ -1022,6 +1023,14 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                        mojom::SearchResultIcon::kDisplay,
                                        mojom::SearchResultDefaultRank::kMedium,
                                        mojom::kPerDeviceTouchpadSubpagePath);
+
+    // Per-device Pointing stick.
+    generator->RegisterTopLevelSubpage(
+        IDS_SETTINGS_POINTING_STICK_TITLE,
+        mojom::Subpage::kPerDevicePointingStick,
+        mojom::SearchResultIcon::kDisplay,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kPerDevicePointingStickSubpagePath);
   }
 
   // Keyboard.
