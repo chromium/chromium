@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -104,10 +105,30 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   return AllowedScreenCaptureLevel::kDisallowed;
 }
 
-bool IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite() {
-  // TODO(crbug.com/1399866): Implement the check whether multi screen capture
-  // is allowed on any site.
+bool IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite(
+    content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS)
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return false;
+  }
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map) {
+    return false;
+  }
+  ContentSettingsForOneType content_settings;
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+      &content_settings);
+  return base::ranges::any_of(content_settings,
+                              [](const ContentSettingPatternSource& source) {
+                                return source.GetContentSetting() ==
+                                       ContentSetting::CONTENT_SETTING_ALLOW;
+                              });
+#else
   return false;
+#endif
 }
 
 bool IsGetDisplayMediaSetSelectAllScreensAllowed(

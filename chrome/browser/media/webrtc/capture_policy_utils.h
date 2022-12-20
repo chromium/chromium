@@ -65,7 +65,8 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const GURL& url);
 
-bool IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite();
+bool IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite(
+    content::BrowserContext* context);
 
 }  // namespace capture_policy
 

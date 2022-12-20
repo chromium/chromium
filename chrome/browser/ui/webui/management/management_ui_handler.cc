@@ -964,7 +964,8 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (capture_policy::IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite()) {
+  if (capture_policy::IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite(
+          profile)) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,
                                   kManagementScreenCaptureData, &info);
   }
