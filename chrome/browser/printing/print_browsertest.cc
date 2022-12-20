@@ -2545,6 +2545,44 @@ class SystemAccessProcessPrintBrowserTestBase
     WaitUntilCallbackReceived();
   }
 
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
+  void SystemPrintFromPreviewOnceReadyAndLoaded() {
+    // First invoke the Print Preview dialog with `StartPrint()`.
+    PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+               /*print_renderer=*/mojo::NullAssociatedRemote(),
+               /*print_preview_disabled=*/false,
+               /*has_selection=*/false);
+    print_preview_observer.WaitUntilPreviewIsReady();
+
+    set_rendered_page_count(print_preview_observer.rendered_page_count());
+
+    content::WebContents* preview_dialog =
+        print_preview_observer.GetPrintPreviewDialog();
+    ASSERT_TRUE(preview_dialog);
+
+    // Print Preview is completely ready, can now initiate printing.
+    // This script locates and clicks the "Print using system dialog",
+    // which is still enabled even if it is hidden.
+    const char kPrintWithSystemDialogScript[] = R"(
+      const printSystemDialog
+          = document.getElementsByTagName('print-preview-app')[0]
+              .$['sidebar']
+              .shadowRoot.querySelector('print-preview-link-container')
+              .$['systemDialogLink'];
+        printSystemDialog.click();)";
+    // It is possible for sufficient processing for the system print to
+    // complete such that the renderer naturally terminates before ExecJs()
+    // returns here.  This causes ExecJs() to return false, with a JavaScript
+    // error of "Renderer terminated".  Since the termination can actually be
+    // a result of successful print processing, do not assert on this return
+    // result, just ignore the error instead.  Rely upon tests catching any
+    // failure through the use of other expectation checks.
+    std::ignore = content::ExecJs(preview_dialog, kPrintWithSystemDialogScript);
+    WaitUntilCallbackReceived();
+  }
+#endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
+
   void PrimeAsRepeatingErrorGenerator() { reset_errors_after_check_ = false; }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -3314,6 +3352,67 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       SystemPrintFromPrintPreview) {
+  // TODO(crbug.com/1393505)  Enable OOP test coverage once underlying
+  // printing stack updates to support this scenario with out-of-process are
+  // in place.
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+    GTEST_SKIP() << "Skipping test for out-of-process, which is known to crash "
+                    "when transitioning to system print from print preview";
+  }
+
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+#if BUILDFLAG(IS_WIN)
+    // There are no callbacks that trigger for print stages with in-browser
+    // printing for the Windows case.  The only expected event for this is to
+    // wait for the one print job to be destroyed, to ensure printing finished
+    // cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/1);
+#else
+    // Once the transition to system print is initiated, the expected events
+    // are:
+    // 1.  Use default settings.
+    // 2.  Ask the user for settings.
+    // 3.  Wait until all processing for DidPrintDocument is known to have
+    //     completed, to ensure printing finished cleanly before completing the
+    //     test.
+    // 4.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/4);
+#endif  // BUILDFLAG(IS_WIN)
+  } else {
+    // TODO(crbug.com/1393505)  Fill in expected events once the printing stack
+    // updates to support this scenario with out-of-process are in place.
+  }
+  SystemPrintFromPreviewOnceReadyAndLoaded();
+
+#if !BUILDFLAG(IS_WIN)
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    EXPECT_TRUE(did_get_settings_with_ui());
+    EXPECT_EQ(did_print_document_count(), 1);
+  } else {
+    // TODO(crbug.com/1393505)  Fill in expectations once the printing stack
+    // updates to support this scenario with out-of-process are in place.
+  }
+#endif
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
                        StartBasicPrint) {
   AddPrinter("printer1");

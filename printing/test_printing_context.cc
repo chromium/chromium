@@ -26,6 +26,17 @@
 
 namespace printing {
 
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+void CaptureResult(mojom::ResultCode& capture_result,
+                   mojom::ResultCode result) {
+  capture_result = result;
+}
+#endif
+
+}  // namespace
+
 TestPrintingContextDelegate::TestPrintingContextDelegate() = default;
 
 TestPrintingContextDelegate::~TestPrintingContextDelegate() = default;
@@ -117,7 +128,11 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
 #if BUILDFLAG(IS_MAC)
   DCHECK(!printer_settings.external_preview) << "Not implemented";
 #endif
+
+  // Windows is special case where system dialog can be shown from here.
+#if !BUILDFLAG(IS_WIN)
   DCHECK(!printer_settings.show_system_dialog) << "Not implemented";
+#endif
 
   // The printer name is to be embedded in the printing context's existing
   // settings.
@@ -138,6 +153,16 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (const auto& item : existing_settings->advanced_settings())
     settings_->advanced_settings().emplace(item.first, item.second.Clone());
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (printer_settings.show_system_dialog) {
+    mojom::ResultCode result = mojom::ResultCode::kFailed;
+    AskUserForSettings(printer_settings.page_count, /*has_selection=*/false,
+                       /*is_scripted=*/false,
+                       base::BindOnce(&CaptureResult, std::ref(result)));
+    return result;
+  }
 #endif
 
   return mojom::ResultCode::kSuccess;
