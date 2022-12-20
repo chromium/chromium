@@ -29,6 +29,7 @@ static_library("browser_sync") {
     "//components/history/core/common",
     "//components/password_manager/core/browser",
     "//components/prefs",
+    "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/send_tab_to_self",
     "//components/sync/invalidations",

@@ -253,7 +253,7 @@ TEST_F(ReadingListModelTest, ModelLoadFailure) {
 
   AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  EXPECT_TRUE(model_->GetModelTypeSyncBridge()
+  EXPECT_TRUE(model_->GetSyncBridgeForTest()
                   ->change_processor()
                   ->GetError()
                   .has_value());

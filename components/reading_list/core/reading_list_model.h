@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 #include <vector>
-
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 
@@ -18,8 +18,8 @@ class GURL;
 class ReadingListModelObserver;
 
 namespace syncer {
-class ModelTypeSyncBridge;
-}
+class ModelTypeControllerDelegate;
+}  // namespace syncer
 
 // The reading list model contains two list of entries: one of unread urls, the
 // other of read ones. This object should only be accessed from one thread
@@ -39,11 +39,19 @@ class ReadingListModel : public KeyedService {
   // reading list is not ready for use.
   virtual bool loaded() const = 0;
 
+  // Returns the delegate responsible for integrating with sync. This
+  // corresponds to the regular sync mode, rather than transport-only sync (i.e.
+  // the user opted into sync-the-feature).
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegate() = 0;
+
+  // Same as above, but specifically for sync-the-transport (i.e. the user is
+  // signed in but didn't opt into sync-the-feature).
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateForTransportMode() = 0;
+
   // Returns true if the model is performing batch updates right now.
   virtual bool IsPerformingBatchUpdates() const = 0;
-
-  // Returns the ModelTypeSyncBridge responsible for handling sync message.
-  virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
 
   // Tells model to prepare for batch updates.
   // This method is reentrant, i.e. several batch updates may take place at the

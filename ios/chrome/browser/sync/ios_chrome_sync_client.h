@@ -41,10 +41,11 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
-  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
-      override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  ReadingListModel* GetReadingListModel() override;
+  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
+      override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(

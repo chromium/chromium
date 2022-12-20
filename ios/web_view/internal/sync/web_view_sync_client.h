@@ -47,6 +47,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  ReadingListModel* GetReadingListModel() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;

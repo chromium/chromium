@@ -18,6 +18,8 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+class ReadingListModel;
+
 namespace send_tab_to_self {
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
@@ -63,6 +65,7 @@ class BrowserSyncClient : public syncer::SyncClient {
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
+  virtual ReadingListModel* GetReadingListModel() = 0;
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
 };

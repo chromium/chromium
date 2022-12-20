@@ -107,7 +107,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
         .WillByDefault(testing::Return(true));
   }
 
-  ReadingListSyncBridge* bridge() { return model_->GetModelTypeSyncBridge(); }
+  ReadingListSyncBridge* bridge() { return model_->GetSyncBridgeForTest(); }
 
   // In memory model type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;

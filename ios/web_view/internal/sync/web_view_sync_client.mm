@@ -141,6 +141,10 @@ history::HistoryService* WebViewSyncClient::GetHistoryService() {
   return nullptr;
 }
 
+ReadingListModel* WebViewSyncClient::GetReadingListModel() {
+  return nullptr;
+}
+
 sync_preferences::PrefServiceSyncable*
 WebViewSyncClient::GetPrefServiceSyncable() {
   return nullptr;

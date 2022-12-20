@@ -9,6 +9,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
   "+components/prefs",
+  "+components/reading_list/core",
   "+components/reading_list/features",
   "+components/send_tab_to_self",
   "+components/sync",

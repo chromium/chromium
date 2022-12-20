@@ -40,8 +40,11 @@ class ReadingListModelImpl : public ReadingListModel {
 
   // ReadingListModel implementation.
   bool loaded() const override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetSyncControllerDelegate()
+      override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateForTransportMode() override;
   bool IsPerformingBatchUpdates() const override;
-  ReadingListSyncBridge* GetModelTypeSyncBridge() override;
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;
   base::flat_set<GURL> GetKeys() const override;
   size_t size() const override;
@@ -106,6 +109,9 @@ class ReadingListModelImpl : public ReadingListModel {
       std::unique_ptr<ReadingListModelStorage> storage_layer,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  // Exposes the sync bridge publicly for testing purposes.
+  ReadingListSyncBridge* GetSyncBridgeForTest();
 
  private:
   ReadingListModelImpl(

@@ -121,12 +121,6 @@ syncer::DeviceInfoSyncService* IOSChromeSyncClient::GetDeviceInfoSyncService() {
   return DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
-send_tab_to_self::SendTabToSelfSyncService*
-IOSChromeSyncClient::GetSendTabToSelfSyncService() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state_);
-}
-
 favicon::FaviconService* IOSChromeSyncClient::GetFaviconService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return ios::FaviconServiceFactory::GetForBrowserState(
@@ -137,6 +131,17 @@ history::HistoryService* IOSChromeSyncClient::GetHistoryService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return ios::HistoryServiceFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+ReadingListModel* IOSChromeSyncClient::GetReadingListModel() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return ReadingListModelFactory::GetForBrowserState(browser_state_);
+}
+
+send_tab_to_self::SendTabToSelfSyncService*
+IOSChromeSyncClient::GetSendTabToSelfSyncService() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
 sync_preferences::PrefServiceSyncable*
@@ -186,13 +191,6 @@ IOSChromeSyncClient::GetExtensionsActivity() {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
   switch (type) {
-    case syncer::READING_LIST: {
-      ReadingListModel* reading_list_model =
-          ReadingListModelFactory::GetForBrowserState(browser_state_);
-      return reading_list_model->GetModelTypeSyncBridge()
-          ->change_processor()
-          ->GetControllerDelegate();
-    }
     case syncer::USER_CONSENTS:
       return ConsentAuditorFactory::GetForBrowserState(browser_state_)
           ->GetControllerDelegate();
@@ -208,6 +206,7 @@ IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::AUTOFILL_WALLET_METADATA:
     case syncer::BOOKMARKS:
     case syncer::DEVICE_INFO:
+    case syncer::READING_LIST:
     case syncer::SESSIONS:
     case syncer::TYPED_URLS:
       NOTREACHED();

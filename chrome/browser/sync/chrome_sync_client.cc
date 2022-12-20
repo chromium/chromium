@@ -68,8 +68,6 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -342,6 +340,11 @@ history::HistoryService* ChromeSyncClient::GetHistoryService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+ReadingListModel* ChromeSyncClient::GetReadingListModel() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return ReadingListModelFactory::GetForBrowserContext(profile_);
 }
 
 send_tab_to_self::SendTabToSelfSyncService*
@@ -619,13 +622,6 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
   switch (type) {
-    case syncer::READING_LIST: {
-      DCHECK(reading_list::switches::IsReadingListEnabled());
-      return ReadingListModelFactory::GetForBrowserContext(profile_)
-          ->GetModelTypeSyncBridge()
-          ->change_processor()
-          ->GetControllerDelegate();
-    }
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     case syncer::SAVED_TAB_GROUP: {
@@ -688,6 +684,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::AUTOFILL_WALLET_METADATA:
     case syncer::BOOKMARKS:
     case syncer::DEVICE_INFO:
+    case syncer::READING_LIST:
     case syncer::SECURITY_EVENTS:
     case syncer::SEND_TAB_TO_SELF:
     case syncer::SESSIONS:

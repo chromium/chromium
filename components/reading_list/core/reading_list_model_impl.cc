@@ -538,6 +538,10 @@ std::unique_ptr<ReadingListModelImpl> ReadingListModelImpl::BuildNewForTest(
       std::move(storage_layer), clock, std::move(change_processor)));
 }
 
+ReadingListSyncBridge* ReadingListModelImpl::GetSyncBridgeForTest() {
+  return &sync_bridge_;
+}
+
 void ReadingListModelImpl::StoreLoaded(
     ReadingListModelStorage::LoadResultOrError result_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -582,8 +586,17 @@ void ReadingListModelImpl::EndBatchUpdates() {
   }
 }
 
-ReadingListSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
-  return &sync_bridge_;
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+ReadingListModelImpl::GetSyncControllerDelegate() {
+  return sync_bridge_.change_processor()->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+ReadingListModelImpl::GetSyncControllerDelegateForTransportMode() {
+  // ReadingListModelImpl doesn't directly implement account storage. Upper
+  // layers are responsible for maintaining two instances of
+  // ReadingListModelImpl and exposing one of them as account storage.
+  return nullptr;
 }
 
 ReadingListModelStorage* ReadingListModelImpl::StorageLayer() {
