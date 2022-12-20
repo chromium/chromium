@@ -41,22 +41,28 @@ function convertMojoTimeToJS(mojoTime: Time) {
 }
 
 /**
- * Converts the source location to chromium source URL.
+ * Creates the chromium source URL from sourceLocation.
  * @param sourceFile
  * @param sourceLine
- * @returns string
+ * @param targetElement The element to which source link should be created.
  */
-function getChromiumSourceLink(sourceFile: string, sourceLine: number) {
+function createChromiumSourceLink(
+    sourceFile: string, sourceLine: number, targetElement: Element) {
   // Valid source file starts with ../../
   if (!sourceFile.startsWith('../../')) {
-    return `${sourceFile}(${sourceLine})`;
+    targetElement.textContent = `${sourceFile}(${sourceLine})`;
+    return;
   }
   const fileName = sourceFile.slice(sourceFile.lastIndexOf('/') + 1);
   if (fileName.length == 0) {
-    return `${sourceFile}(${sourceLine})`;
+    targetElement.textContent = `${sourceFile}(${sourceLine})`;
+    return;
   }
-  return `<a href="https://source.chromium.org/chromium/chromium/src/+/main:${
-      sourceFile.slice(6)};l=${sourceLine}">${fileName}(${sourceLine})</a>`;
+  const anchor = document.createElement('a');
+  anchor.appendChild(document.createTextNode(`${fileName}(${sourceLine}`));
+  anchor.href = `https://source.chromium.org/chromium/chromium/src/+/main:${
+      sourceFile.slice(6)};l=${sourceLine}`;
+  targetElement.appendChild(anchor);
 }
 
 /**
@@ -141,19 +147,21 @@ async function onModelsPageOpen() {
 }
 
 /**
- * Appends a new TD element to the specified |parent| element.
+ * Appends a new TD element to the specified |parent| element, and returns the
+ * newly created element.
  *
  * @param {HTMLTableRowElement} parent The element to which a new TD element is
  *     appended.
- * @param {string} innerHTML The inner HTML of the element.
+ * @param {string} textContent The inner HTML of the element.
  * @param {string} className The class name of the element.
  */
 function appendTD(
-    parent: HTMLTableRowElement, innerHTML: string, className: string) {
+    parent: HTMLTableRowElement, textContent: string, className: string) {
   const td = parent.insertCell();
-  td.innerHTML = innerHTML;
+  td.textContent = textContent;
   td.className = className;
   parent.appendChild(td);
+  return td;
 }
 
 function getProxy(): OptimizationGuideInternalsBrowserProxy {
@@ -176,18 +184,20 @@ function initialize() {
       (eventTime: Time, logSource: number, sourceFile: string,
        sourceLine: number, message: string) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
-        const sourceLocation = getChromiumSourceLink(sourceFile, sourceLine);
         const logSourceStr = getLogSource(logSource);
         logMessages.push({
           eventTime: eventTimeStr,
           logSource: logSourceStr,
-          sourceLocation,
+          sourceLocation: `${sourceFile}:${sourceLine}`,
           message,
         });
         const logMessage = logMessageContainer.insertRow();
+        logMessage.innerHTML = window.trustedTypes!.emptyHTML;
         appendTD(logMessage, eventTimeStr, 'event-logs-time');
         appendTD(logMessage, logSourceStr, 'event-logs-log-source');
-        appendTD(logMessage, sourceLocation, 'event-logs-source-location');
+        createChromiumSourceLink(
+            sourceFile, sourceLine,
+            appendTD(logMessage, '', 'event-logs-source-location'));
         appendTD(logMessage, message, 'event-logs-message');
       });
 
