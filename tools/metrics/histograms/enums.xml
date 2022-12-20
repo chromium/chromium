@@ -61002,6 +61002,7 @@ from previous Chrome versions.
   <int value="147645817" label="DnsHttpssvc:enabled"/>
   <int value="148142535" label="ShortcutCustomization:disabled"/>
   <int value="149272550" label="OmitCorsClientCert:disabled"/>
+  <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
   <int value="150820177"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
@@ -62545,6 +62546,7 @@ from previous Chrome versions.
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
+  <int value="1064317648" label="UseMojoVideoDecoderForPepper:disabled"/>
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
