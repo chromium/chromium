@@ -134,7 +134,7 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
 
 BASE_FEATURE(kInfoCardAcknowledgementTracking,
              "InfoCardAcknowledgementTracking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShareCrowButton,
              "ShareCrowButton",
