@@ -14,7 +14,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createDefaultAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+import {createStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorEditViewTest', function() {
   let editViewElement: AcceleratorEditViewElement|null = null;
@@ -92,7 +92,7 @@ suite('acceleratorEditViewTest', function() {
   });
 
   test('DetectShortcutConflict', async () => {
-    const acceleratorInfo = createDefaultAcceleratorInfo(
+    const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*key=*/ 221,
         /*keyDisplay=*/ ']');

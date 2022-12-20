@@ -285,11 +285,11 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorInfo =
         (accelViewElement as AcceleratorViewElement).acceleratorInfo;
     const actualAccelerator =
-        acceleratorInfo.layoutProperties.defaultAccelerator.accelerator;
+        acceleratorInfo.layoutProperties.standardAccelerator.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator!.modifiers);
     assertEquals(221, actualAccelerator.keyCode);
     assertEquals(
-        ']', acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay);
+        ']', acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay);
   });
 
   test('AddAccelerator', async () => {
@@ -366,11 +366,11 @@ suite('shortcutCustomizationAppTest', function() {
                                  '#acceleratorItem') as AcceleratorViewElement)
                                 .acceleratorInfo;
     const actualAccelerator =
-        acceleratorInfo.layoutProperties.defaultAccelerator.accelerator;
+        acceleratorInfo.layoutProperties.standardAccelerator.accelerator;
     assertEquals(Modifier.ALT, actualAccelerator.modifiers);
     assertEquals(221, actualAccelerator.keyCode);
     assertEquals(
-        ']', acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay);
+        ']', acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay);
   });
 
   test('RemoveAccelerator', async () => {

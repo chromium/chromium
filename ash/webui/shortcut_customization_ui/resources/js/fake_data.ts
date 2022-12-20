@@ -20,7 +20,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       state: AcceleratorState.kEnabled,
       locked: true,
       layoutProperties: {
-        defaultAccelerator: {
+        standardAccelerator: {
           keyDisplay: stringToMojoString16('['),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -38,7 +38,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       state: AcceleratorState.kEnabled,
       locked: false,
       layoutProperties: {
-        defaultAccelerator: {
+        standardAccelerator: {
           keyDisplay: stringToMojoString16(']'),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -57,7 +57,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       state: AcceleratorState.kEnabled,
       locked: false,
       layoutProperties: {
-        defaultAccelerator: {
+        standardAccelerator: {
           keyDisplay: stringToMojoString16('+'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -76,7 +76,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       state: AcceleratorState.kEnabled,
       locked: false,
       layoutProperties: {
-        defaultAccelerator: {
+        standardAccelerator: {
           keyDisplay: stringToMojoString16('-'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -97,7 +97,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       state: AcceleratorState.kEnabled,
       locked: true,
       layoutProperties: {
-        defaultAccelerator: {
+        standardAccelerator: {
           keyDisplay: stringToMojoString16('t'),
           accelerator: {
             modifiers: Modifier.CONTROL,
@@ -165,7 +165,7 @@ const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
     state: AcceleratorState.kEnabled,
     locked: true,
     layoutProperties: {
-      defaultAccelerator: {
+      standardAccelerator: {
         keyDisplay: stringToMojoString16(keyDisplay),
         accelerator: {
           modifiers: 0,

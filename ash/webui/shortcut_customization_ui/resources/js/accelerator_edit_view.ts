@@ -16,7 +16,7 @@ import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorType, DefaultAcceleratorInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
@@ -33,12 +33,12 @@ const accelerator: Accelerator = {
   keyCode: 0,
 };
 
-const defaultAcceleratorInfoState: DefaultAcceleratorInfo = {
+const standardAcceleratorInfoState: StandardAcceleratorInfo = {
   locked: false,
   state: AcceleratorState.kEnabled,
   type: AcceleratorType.kDefault,
   layoutProperties: {
-    defaultAccelerator: {
+    standardAccelerator: {
       accelerator,
       keyDisplay: '',
     },
@@ -66,7 +66,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     return {
       acceleratorInfo: {
         type: Object,
-        value: defaultAcceleratorInfoState,
+        value: standardAcceleratorInfoState,
       },
 
       isEditView: {
@@ -105,7 +105,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     };
   }
 
-  acceleratorInfo: DefaultAcceleratorInfo;
+  acceleratorInfo: StandardAcceleratorInfo;
   isEditView: boolean;
   viewState: number;
   hasError: boolean;

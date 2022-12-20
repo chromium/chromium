@@ -87,30 +87,37 @@ enum AcceleratorSubcategory {
   kSystemApps,
 };
 
+// Enum of possible options for text accelerators.
 enum TextAcceleratorPartType {
   kPlainText,
   kModifier,
   kKey,
 };
 
+// The text to display as well as its corresponding type which determines how
+// it should be displayed.
 struct TextAcceleratorPart {
   mojo_base.mojom.String16 text;
   TextAcceleratorPartType type;
 };
 
+// An accelerator that can display arbitrary text with optional modifiers/keys
+// interspersed.
 struct TextAcceleratorProperties {
   array<TextAcceleratorPart> text_accelerator;
 };
 
-struct DefaultAcceleratorProperties {
+// An accelerator that has at least one modifier and a set of keys.
+struct StandardAcceleratorProperties {
   // Underlying accelerator struct, contains keycode and modifier.
   ui.mojom.Accelerator accelerator;
   // The user viewable string of the primary activation key for the accelerator.
   mojo_base.mojom.String16 key_display;
 };
 
+// Contains properties specific to an accelerator type.
 union LayoutStyleProperties {
-  DefaultAcceleratorProperties default_accelerator;
+  StandardAcceleratorProperties standard_accelerator;
   TextAcceleratorProperties text_accelerator;
 };
 

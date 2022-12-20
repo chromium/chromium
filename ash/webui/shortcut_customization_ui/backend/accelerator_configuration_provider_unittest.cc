@@ -102,10 +102,10 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
 
   const bool accelerator_equals =
       expected_accelerator ==
-      actual_info->layout_properties->get_default_accelerator()->accelerator;
+      actual_info->layout_properties->get_standard_accelerator()->accelerator;
   const bool key_display_equals =
       shortcut_ui::GetKeyDisplay(expected_accelerator.key_code()) ==
-      actual_info->layout_properties->get_default_accelerator()->key_display;
+      actual_info->layout_properties->get_standard_accelerator()->key_display;
   return accelerator_equals && key_display_equals;
 }
 

@@ -21,7 +21,7 @@
       <input-key key=[[item]] key-state="modifier-selected"></input-key>
     </template>
     <input-key
-        key="[[acceleratorInfo.layoutProperties.defaultAccelerator.keyDisplay]]"
+        key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
         key-state="alpha-numeric-selected">
     </input-key>
   </template>
@@ -29,22 +29,22 @@
     <div id="editContainer" class="flex-row">
       <input-key id="ctrlKey" key="ctrl"
           key-state="[[getCtrlState_(
-            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.accelerator.*
+            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.accelerator.*
             )]]">
       </input-key>
       <input-key id="altKey" key="alt"
           key-state="[[getAltState_(
-            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
             )]]">
       </input-key>
       <input-key id="shiftKey" key="shift"
           key-state="[[getShiftState_(
-            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
             )]]">
       </input-key>
       <input-key id="searchKey" key="search"
           key-state="[[getSearchState_(
-            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
             )]]"
       >
       </input-key>
@@ -53,11 +53,11 @@
       <div id="acceleratorSeparator"> + </div>
       <input-key id="pendingKey"
           key="[[getPendingKey_(
-            pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
             )]]"
           key-state=
               "[[getPendingKeyState_(
-                pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.*
+                pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
                 )]]">
       </input-key>
     </div>

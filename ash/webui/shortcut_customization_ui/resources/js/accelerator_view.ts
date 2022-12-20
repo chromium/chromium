@@ -11,7 +11,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, DefaultAcceleratorInfo, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
@@ -120,13 +120,13 @@ export class AcceleratorViewElement extends PolymerElement {
     };
   }
 
-  acceleratorInfo: DefaultAcceleratorInfo;
+  acceleratorInfo: StandardAcceleratorInfo;
   viewState: ViewState;
   statusMessage: string;
   hasError: boolean;
   action: number;
   source: AcceleratorSource;
-  protected pendingAcceleratorInfo_: DefaultAcceleratorInfo;
+  protected pendingAcceleratorInfo_: StandardAcceleratorInfo;
   private modifiers_: string[];
   private acceleratorOnHold_: string;
   private isCapturing_: boolean;
@@ -230,24 +230,24 @@ export class AcceleratorViewElement extends PolymerElement {
       return;
     }
     this.set(
-        'pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.accelerator',
+        'pendingAcceleratorInfo_.layoutProperties.standardAccelerator.accelerator',
         this.keystrokeToAccelerator_(e));
 
     if (this.isModifierKey_(e)) {
       // Reset the keyDisplay property if the key is a modifier.
       this.set(
-          'pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.keyDisplay',
+          'pendingAcceleratorInfo_.layoutProperties.standardAccelerator.keyDisplay',
           '');
     } else {
       this.set(
-          'pendingAcceleratorInfo_.layoutProperties.defaultAccelerator.keyDisplay',
+          'pendingAcceleratorInfo_.layoutProperties.standardAccelerator.keyDisplay',
           e.key);
     }
 
     // New shortcut matches the current shortcut, end capture.
     if (areAcceleratorsEqual(
             getAccelerator(this.pendingAcceleratorInfo_),
-            this.acceleratorInfo.layoutProperties.defaultAccelerator
+            this.acceleratorInfo.layoutProperties.standardAccelerator
                 .accelerator)) {
       this.endCapture_();
       return;
@@ -263,7 +263,8 @@ export class AcceleratorViewElement extends PolymerElement {
    * Checks that |pendingAccelerator_| is not a pre-existing shortcut. Sets the
    * error message if there is a conflict.
    */
-  private processPendingAccelerator_(pendingAccelInfo: DefaultAcceleratorInfo) {
+  private processPendingAccelerator_(pendingAccelInfo:
+                                         StandardAcceleratorInfo) {
     // Reset status state when processing the new accelerator.
     this.statusMessage = '';
     this.hasError = false;
@@ -315,7 +316,7 @@ export class AcceleratorViewElement extends PolymerElement {
       // Store the pending accelerator.
       this.acceleratorOnHold_ =
           JSON.stringify(this.pendingAcceleratorInfo_.layoutProperties
-                             .defaultAccelerator.accelerator);
+                             .standardAccelerator.accelerator);
       return;
     }
 
@@ -397,7 +398,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * Returns the specified CSS state of the pending key element.
    */
   protected getPendingKeyState_(): string {
-    if (this.pendingAcceleratorInfo_.layoutProperties.defaultAccelerator
+    if (this.pendingAcceleratorInfo_.layoutProperties.standardAccelerator
             .keyDisplay != '') {
       return KeyState.ALPHANUMERIC;
     }
@@ -408,9 +409,9 @@ export class AcceleratorViewElement extends PolymerElement {
    * Returns the specified key to display.
    */
   protected getPendingKey_(): string {
-    if (this.pendingAcceleratorInfo_.layoutProperties.defaultAccelerator
+    if (this.pendingAcceleratorInfo_.layoutProperties.standardAccelerator
             .keyDisplay != '') {
-      return this.pendingAcceleratorInfo_.layoutProperties.defaultAccelerator
+      return this.pendingAcceleratorInfo_.layoutProperties.standardAccelerator
           .keyDisplay.toLowerCase();
     }
     // TODO(jimmyxgong): Reset to a localized default empty state.
@@ -426,12 +427,12 @@ export class AcceleratorViewElement extends PolymerElement {
     return e.ctrlKey || e.altKey || e.metaKey;
   }
 
-  private isValidDefaultAccelerator_(accelInfo: DefaultAcceleratorInfo):
+  private isValidDefaultAccelerator_(accelInfo: StandardAcceleratorInfo):
       boolean {
     // A valid default accelerator is on that has modifier(s) and a key.
-    return accelInfo.layoutProperties.defaultAccelerator.accelerator.modifiers >
-        0 &&
-        accelInfo.layoutProperties.defaultAccelerator.keyDisplay !== '';
+    return accelInfo.layoutProperties.standardAccelerator.accelerator
+               .modifiers > 0 &&
+        accelInfo.layoutProperties.standardAccelerator.keyDisplay !== '';
   }
 
   private showEditView_(): boolean {
@@ -439,7 +440,7 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
   private requestUpdateAccelerator_(newAcceleratorInfo:
-                                        DefaultAcceleratorInfo) {
+                                        StandardAcceleratorInfo) {
     if (this.viewState === ViewState.EDIT) {
       this.shortcutProvider_
           .replaceAccelerator(
@@ -450,7 +451,7 @@ export class AcceleratorViewElement extends PolymerElement {
             if (result === AcceleratorConfigResult.SUCCESS) {
               this.lookupManager_.replaceAccelerator(
                   this.source, this.action,
-                  this.acceleratorInfo.layoutProperties.defaultAccelerator
+                  this.acceleratorInfo.layoutProperties.standardAccelerator
                       .accelerator,
                   newAcceleratorInfo);
               this.fireUpdateEvent_();

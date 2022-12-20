@@ -7,7 +7,7 @@ import '../strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, DefaultAcceleratorInfo, MojoAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, MojoAcceleratorInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
@@ -35,25 +35,25 @@ export const isTextAcceleratorInfo =
                        .layoutProperties.textAccelerator;
         };
 
-export const isDefaultAcceleratorInfo =
+export const isStandardAcceleratorInfo =
     (accelInfo: AcceleratorInfo|MojoAcceleratorInfo):
-        accelInfo is DefaultAcceleratorInfo => {
-          return !!(accelInfo as DefaultAcceleratorInfo)
-                       .layoutProperties.defaultAccelerator;
+        accelInfo is StandardAcceleratorInfo => {
+          return !!(accelInfo as StandardAcceleratorInfo)
+                       .layoutProperties.standardAccelerator;
         };
 
 export const createEmptyAccelInfoFromAccel =
-    (accel: Accelerator): DefaultAcceleratorInfo => {
+    (accel: Accelerator): StandardAcceleratorInfo => {
       return {
         layoutProperties:
-            {defaultAccelerator: {accelerator: accel, keyDisplay: ''}},
+            {standardAccelerator: {accelerator: accel, keyDisplay: ''}},
         locked: false,
         state: AcceleratorState.kEnabled,
         type: AcceleratorType.kUser,
       };
     };
 
-export const createEmptyAcceleratorInfo = (): DefaultAcceleratorInfo => {
+export const createEmptyAcceleratorInfo = (): StandardAcceleratorInfo => {
   return createEmptyAccelInfoFromAccel({modifiers: 0, keyCode: 0});
 };
 
@@ -105,6 +105,6 @@ export const getSubcategoryNameStringId =
     };
 
 export const getAccelerator =
-    (acceleratorInfo: DefaultAcceleratorInfo): Accelerator => {
-      return acceleratorInfo.layoutProperties.defaultAccelerator.accelerator;
+    (acceleratorInfo: StandardAcceleratorInfo): Accelerator => {
+      return acceleratorInfo.layoutProperties.standardAccelerator.accelerator;
     };

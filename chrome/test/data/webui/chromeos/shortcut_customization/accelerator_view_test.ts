@@ -13,7 +13,7 @@ import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js
 import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createDefaultAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
+import {createStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
 suite('acceleratorViewTest', function() {
   let viewElement: AcceleratorViewElement|null = null;
@@ -68,7 +68,7 @@ suite('acceleratorViewTest', function() {
   });
 
   test('EditableAccelerator', async () => {
-    const acceleratorInfo = createDefaultAcceleratorInfo(
+    const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*key=*/ 221,
         /*keyDisplay=*/ ']');

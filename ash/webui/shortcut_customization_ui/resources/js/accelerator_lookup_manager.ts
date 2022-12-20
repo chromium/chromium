@@ -5,8 +5,8 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {mojoString16ToString} from './mojo_utils.js';
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, DefaultAcceleratorInfo, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, TextAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isDefaultAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isStandardAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
 
 /** The name of an {@link Accelerator}, e.g. "Snap Window Left". */
 type AcceleratorName = string;
@@ -16,7 +16,7 @@ type AcceleratorName = string;
  * See getKeyForLookup() in this file for the implementation details.
  */
 type AcceleratorLookupKey = string;
-type AcceleratorLookupMap = Map<AcceleratorId, DefaultAcceleratorInfo[]>;
+type AcceleratorLookupMap = Map<AcceleratorId, StandardAcceleratorInfo[]>;
 type AcceleratorLayoutLookupMap =
     Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
 type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
@@ -72,7 +72,7 @@ export class AcceleratorLookupManager {
   }
 
   getAcceleratorInfos(source: number|string, action: number|string):
-      DefaultAcceleratorInfo[] {
+      StandardAcceleratorInfo[] {
     const uuid: AcceleratorId = getAcceleratorId(source, action);
     const acceleratorInfos = this.acceleratorLookup_.get(uuid);
     assert(acceleratorInfos);
@@ -127,7 +127,7 @@ export class AcceleratorLookupManager {
         }
         accelInfos.forEach((info: MojoAcceleratorInfo) => {
           // Convert from Mojo types to the app types.
-          let sanitizedAccelInfo: DefaultAcceleratorInfo|TextAcceleratorInfo;
+          let sanitizedAccelInfo: StandardAcceleratorInfo|TextAcceleratorInfo;
           if (isTextAcceleratorInfo(info)) {
             sanitizedAccelInfo = {
               layoutProperties: {
@@ -140,19 +140,19 @@ export class AcceleratorLookupManager {
               type: info.type,
             };
           } else {
-            assert(isDefaultAcceleratorInfo(info));
+            assert(isStandardAcceleratorInfo(info));
             const sanitizedAccelerator: Accelerator = {
               keyCode:
-                  info.layoutProperties.defaultAccelerator.accelerator.keyCode,
-              modifiers: info.layoutProperties.defaultAccelerator.accelerator
+                  info.layoutProperties.standardAccelerator.accelerator.keyCode,
+              modifiers: info.layoutProperties.standardAccelerator.accelerator
                              .modifiers,
             };
             sanitizedAccelInfo = {
               layoutProperties: {
-                defaultAccelerator: {
+                standardAccelerator: {
                   accelerator: sanitizedAccelerator,
                   keyDisplay: mojoString16ToString(
-                      info.layoutProperties.defaultAccelerator.keyDisplay),
+                      info.layoutProperties.standardAccelerator.keyDisplay),
                 },
               },
               locked: info.locked,
@@ -161,12 +161,12 @@ export class AcceleratorLookupManager {
             };
             this.reverseAcceleratorLookup_.set(
                 this.getKeyForLookup(
-                    info.layoutProperties.defaultAccelerator.accelerator),
+                    info.layoutProperties.standardAccelerator.accelerator),
                 id);
           }
           this.getAcceleratorInfos(source, actionId)
               .push(Object.assign(
-                  {}, sanitizedAccelInfo as DefaultAcceleratorInfo));
+                  {}, sanitizedAccelInfo as StandardAcceleratorInfo));
         });
       }
     }
@@ -212,7 +212,7 @@ export class AcceleratorLookupManager {
 
   replaceAccelerator(
       source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
-      newAccelInfo: DefaultAcceleratorInfo) {
+      newAccelInfo: StandardAcceleratorInfo) {
     const foundIdx =
         this.getAcceleratorInfoIndex_(source, action, oldAccelerator);
 
@@ -264,7 +264,7 @@ export class AcceleratorLookupManager {
 
   addAccelerator(
       source: AcceleratorSource, action: number,
-      newAccelInfo: DefaultAcceleratorInfo) {
+      newAccelInfo: StandardAcceleratorInfo) {
     // Check to see if there is a pre-existing accelerator to remove first.
     this.maybeRemoveOrDisableAccelerator_(getAccelerator(newAccelInfo));
 
@@ -321,7 +321,8 @@ export class AcceleratorLookupManager {
    * and has been re-enabled.
    */
   maybeReenableDefaultAccelerator(
-      accelInfos: DefaultAcceleratorInfo[], accelerator: Accelerator): boolean {
+      accelInfos: StandardAcceleratorInfo[],
+      accelerator: Accelerator): boolean {
     // Check if `accelerator` matches a default accelerator.
     const defaultIdx = accelInfos.findIndex(accelInfo => {
       return accelInfo.type === AcceleratorType.kDefault &&

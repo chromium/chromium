@@ -89,7 +89,7 @@ class AcceleratorConfigurationProvider
   void NotifyAcceleratorsUpdated();
 
   // Create accelerator info using accelerator and extra properties.
-  mojom::AcceleratorInfoPtr CreateDefaultAcceleratorInfo(
+  mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
       const ui::Accelerator& accelerator,
       bool locked,
       mojom::AcceleratorType type,

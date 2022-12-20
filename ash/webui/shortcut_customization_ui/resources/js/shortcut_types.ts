@@ -87,10 +87,10 @@ export type MojoAccelerator = AcceleratorTypes.Accelerator;
 
 
 
-export type DefaultAcceleratorInfo =
+export type StandardAcceleratorInfo =
     Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
       layoutProperties:
-          {defaultAccelerator: {accelerator: Accelerator, keyDisplay: string}},
+          {standardAccelerator: {accelerator: Accelerator, keyDisplay: string}},
     };
 
 export type TextAcceleratorInfo =
@@ -101,7 +101,7 @@ export type TextAcceleratorInfo =
       },
     };
 
-export type AcceleratorInfo = TextAcceleratorInfo|DefaultAcceleratorInfo;
+export type AcceleratorInfo = TextAcceleratorInfo|StandardAcceleratorInfo;
 
 /**
  * Type alias for the Mojo version of AcceleratorInfo.

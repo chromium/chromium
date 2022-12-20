@@ -73,9 +73,9 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
   return *key_display_map;
 }
 
-mojom::DefaultAcceleratorPropertiesPtr CreateDefaultAcceleratorProps(
+mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
     const ui::Accelerator& accelerator) {
-  return mojom::DefaultAcceleratorProperties::New(
+  return mojom::StandardAcceleratorProperties::New(
       accelerator, shortcut_ui::GetKeyDisplay(accelerator.key_code()));
 }
 
@@ -270,7 +270,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
 }
 
 mojom::AcceleratorInfoPtr
-AcceleratorConfigurationProvider::CreateDefaultAcceleratorInfo(
+AcceleratorConfigurationProvider::CreateStandardAcceleratorInfo(
     const ui::Accelerator& accelerator,
     bool locked,
     mojom::AcceleratorType type,
@@ -280,8 +280,8 @@ AcceleratorConfigurationProvider::CreateDefaultAcceleratorInfo(
   info_mojom->type = type;
   info_mojom->state = state;
   info_mojom->layout_properties =
-      mojom::LayoutStyleProperties::NewDefaultAccelerator(
-          CreateDefaultAcceleratorProps(accelerator));
+      mojom::LayoutStyleProperties::NewStandardAccelerator(
+          CreateStandardAcceleratorProps(accelerator));
 
   return info_mojom;
 }
@@ -291,9 +291,9 @@ AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
     const ui::Accelerator& accelerator) const {
   // TODO(longbowei): Some accelerators should not be locked when customization
   // is allowed.
-  return CreateDefaultAcceleratorInfo(accelerator, /*locked=*/true,
-                                      GetAcceleratorType(accelerator),
-                                      mojom::AcceleratorState::kEnabled);
+  return CreateStandardAcceleratorInfo(accelerator, /*locked=*/true,
+                                       GetAcceleratorType(accelerator),
+                                       mojom::AcceleratorState::kEnabled);
 }
 
 mojom::AcceleratorInfoPtr
