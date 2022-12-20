@@ -1,8 +1,4 @@
 file://chromeos/LACROS_OWNERS
 
-per-file browser_data_back_migrator.cc=janagrill@google.com,vsavu@google.com
-per-file browser_data_back_migrator.h=janagrill@google.com,vsavu@google.com
-per-file browser_data_back_migrator_unittest.cc=janagrill@google.com,vsavu@google.com
-per-file lacros_data_backward_migration_mode_policy_observer.cc=janagrill@google.com,vsavu@google.com
-per-file lacros_data_backward_migration_mode_policy_observer.h=janagrill@google.com,vsavu@google.com
-per-file lacros_data_backward_migration_mode_policy_observer_unittest.cc=janagrill@google.com,vsavu@google.com
+per-file browser_data_back_migrator*.*=janagrill@google.com,vsavu@google.com
+per-file lacros_data_backward_migration_mode_policy_observer*.*=janagrill@google.com,vsavu@google.com
