@@ -105,7 +105,7 @@ void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
       FROM_HERE,
       base::BindOnce(
           &HostChildURLLoaderFactoryBundle::AddObserver,
-          main_thread_host_bundle_->first, base::UnsafeDanglingUntriaged(this),
+          main_thread_host_bundle_->first, reinterpret_cast<ObserverKey>(this),
           std::make_unique<
               HostChildURLLoaderFactoryBundle::ObserverPtrAndTaskRunner>(
               AsWeakPtr(), base::SequencedTaskRunner::GetCurrentDefault())));
@@ -118,7 +118,7 @@ void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
       FROM_HERE,
       base::BindOnce(&HostChildURLLoaderFactoryBundle::RemoveObserver,
                      main_thread_host_bundle_->first,
-                     base::UnsafeDanglingUntriaged(this)));
+                     reinterpret_cast<ObserverKey>(this)));
 }
 
 void TrackedChildURLLoaderFactoryBundle::OnUpdate(
@@ -182,15 +182,14 @@ bool HostChildURLLoaderFactoryBundle::IsHostChildURLLoaderFactoryBundle()
 }
 
 void HostChildURLLoaderFactoryBundle::AddObserver(
-    TrackedChildURLLoaderFactoryBundle* observer,
+    ObserverKey observer,
     std::unique_ptr<ObserverPtrAndTaskRunner> observer_info) {
   DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   (*observer_list_)[observer] = std::move(observer_info);
 }
 
-void HostChildURLLoaderFactoryBundle::RemoveObserver(
-    TrackedChildURLLoaderFactoryBundle* observer) {
+void HostChildURLLoaderFactoryBundle::RemoveObserver(ObserverKey observer) {
   DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   observer_list_->erase(observer);

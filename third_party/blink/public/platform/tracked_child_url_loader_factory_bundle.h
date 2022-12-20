@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TRACKED_CHILD_URL_LOADER_FACTORY_BUNDLE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -15,6 +17,12 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
+
+// Identifier for a `TrackedChildURLLoaderFactoryBundle` to key entries in the
+// list of observers. `ObserverKey` is derived from
+// `TrackedChildURLLoaderFactoryBundle*`, used in comparison only, and are
+// never deferenced.
+using ObserverKey = std::uintptr_t;
 
 class HostChildURLLoaderFactoryBundle;
 
@@ -125,7 +133,7 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
       std::pair<base::WeakPtr<TrackedChildURLLoaderFactoryBundle>,
                 scoped_refptr<base::SequencedTaskRunner>>;
   using ObserverList =
-      std::unordered_map<TrackedChildURLLoaderFactoryBundle*,
+      std::unordered_map<ObserverKey,
                          std::unique_ptr<ObserverPtrAndTaskRunner>>;
 
   explicit HostChildURLLoaderFactoryBundle(
@@ -147,15 +155,11 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
   ~HostChildURLLoaderFactoryBundle() override;
 
   // Must be called by the newly created |TrackedChildURLLoaderFactoryBundle|.
-  // |TrackedChildURLLoaderFactoryBundle*| serves as the key and doesn't have to
-  // remain valid.
-  void AddObserver(TrackedChildURLLoaderFactoryBundle* observer,
+  void AddObserver(ObserverKey observer_key,
                    std::unique_ptr<ObserverPtrAndTaskRunner> observer_info);
 
   // Must be called by the observer before it was destroyed.
-  // |TrackedChildURLLoaderFactoryBundle*| serves as the key and doesn't have to
-  // remain valid.
-  void RemoveObserver(TrackedChildURLLoaderFactoryBundle* observer);
+  void RemoveObserver(ObserverKey observer_key);
 
   // Post an update to the tracked bundle on the worker thread (for Workers) or
   // the main thread (for frames from 'window.open()'). Safe to use after the
