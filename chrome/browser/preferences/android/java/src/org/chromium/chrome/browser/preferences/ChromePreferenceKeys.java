@@ -379,10 +379,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED = "grid_tab_switcher_enabled";
     /**
-     * Key to cache whether immersive ui mode is enabled.
-     */
-    public static final String FLAGS_CACHED_IMMERSIVE_UI_MODE_ENABLED = "immersive_ui_mode_enabled";
-    /**
      * Whether warming up network service is enabled.
      * Default value is false.
      */

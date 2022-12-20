@@ -335,7 +335,6 @@ public abstract class ChromeFeatureList {
     public static final String HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL =
             "HideNonDisplayableAccountEmail";
     public static final String HTTPS_FIRST_MODE = "HttpsOnlyMode";
-    public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =
@@ -618,7 +617,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sFoldableJankFix = new CachedFlag(FOLDABLE_JANK_FIX, true);
     public static final CachedFlag sGridTabSwitcherForTablets =
             new CachedFlag(GRID_TAB_SWITCHER_FOR_TABLETS, true);
-    public static final CachedFlag sImmersiveUiMode = new CachedFlag(IMMERSIVE_UI_MODE, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             new CachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
