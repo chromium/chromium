@@ -1614,9 +1614,12 @@ int32_t RTCVideoEncoder::InitEncode(
 
   has_error_ = false;
 
+  // base::Unretained(this) is safe because |impl_| is synchronously destroyed
+  // in Release() so that |impl_| does not call UpdateEncoderInfo() after this
+  // is destructed.
   Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
-      media::BindToCurrentLoop(
-          base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo, weak_this_));
+      base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
+                          base::Unretained(this));
   base::RepeatingClosure execute_software_fallback = media::BindToCurrentLoop(
       base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
 
@@ -1786,7 +1789,8 @@ webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
 void RTCVideoEncoder::UpdateEncoderInfo(
     media::VideoEncoderInfo media_enc_info,
     std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  // See b/261437029#comment7 why this needs to be done in |gpu_task_runner_|.
+  DCHECK(gpu_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
 
   encoder_info_.implementation_name = media_enc_info.implementation_name;
