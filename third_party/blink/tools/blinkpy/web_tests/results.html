@@ -570,7 +570,7 @@ class PathParser {
     for (let taskId of taskIds) {
       // ResultDB invocations need run_ids which end with '1'.
       if (taskId.endsWith('0'))
-        taskId[taskId.length - 1] = '1';
+        taskId = taskId.substring(0, taskId.length - 1) + '1';
       PathParser.invocations.push(
           'invocations/task-chromium-swarm.appspot.com-' + taskId);
     }
@@ -2903,11 +2903,10 @@ class AudioResultsViewer {
   // 1. For local usage, results.html is expected to be in layout-test-results
   //    directory which contains full_results_jsonp.js and test result
   //    artifacts.
-  // 2. For bot usage, a link to results.html should have the following
-  //    parameters:
-  //    - json=<URI to full_results_jsonp.js>
+  // 2. For bot usage, a link to results.html should have a parameter:
+  //      ?json=<URI to full_results_jsonp.js>
   //    If the full_results_jsonp.js calls SET_TASK_IDS(<list of task_ids>),
-  //    We'll fetch test result artifacts from ResultDB through the
+  //    we'll fetch test result artifacts from ResultDB through the
   //    QueryArtifacts rpc interface. The task ids are ids of the swarming
   //    tasks of the corresponding web tests step that produced the test
   //    that produced the test results. They are used to construct
