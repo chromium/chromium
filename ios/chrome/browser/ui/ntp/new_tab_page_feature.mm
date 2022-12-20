@@ -19,10 +19,6 @@ BASE_FEATURE(kEnableDiscoverFeedPreview,
              "EnableDiscoverFeedPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableDiscoverFeedGhostCards,
-             "EnableDiscoverFeedGhostCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
              "EnableDiscoverFeedStaticResourceServing",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -94,10 +90,6 @@ const char kFeedSettingDiscoverReferrerParameter[] =
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
-}
-
-bool IsDiscoverFeedGhostCardsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedGhostCards);
 }
 
 bool IsNTPViewHierarchyRepairEnabled() {

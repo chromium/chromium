@@ -14,9 +14,6 @@
 // the feed context menu.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedPreview);
 
-// Feature flag to show ghost cards when refreshing the discover feed.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedGhostCards);
-
 // Feature flag to enable static resource serving for the Discover feed.
 // TODO(crbug.com/1385512): Remove this.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
@@ -111,10 +108,6 @@ bool IsDefaultFollowingFeedSortTypeGroupedByPublisher();
 
 // Whether the Discover feed ablation experiment is enabled.
 bool IsFeedAblationEnabled();
-
-// Whether the ghost cards should be shown when refreshing Discover feed
-// content.
-bool IsDiscoverFeedGhostCardsEnabled();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);

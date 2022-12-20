@@ -252,11 +252,6 @@ extern const char kEnableCBDSignOutDescription[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 
-// Title and description for the flag to show ghost cards when refreshing the
-// discover feed.
-extern const char kEnableDiscoverFeedGhostCardsName[];
-extern const char kEnableDiscoverFeedGhostCardsDescription[];
-
 // Title and description for the flag to remove the Feed from the NTP.
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];

@@ -270,11 +270,6 @@ const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
     "Enable using the discofeed endpoint for the discover feed.";
 
-const char kEnableDiscoverFeedGhostCardsName[] =
-    "Enable discover feed ghost cards";
-const char kEnableDiscoverFeedGhostCardsDescription[] =
-    "Show ghost cards when refreshing the discover feed.";
-
 const char kEnableFREDefaultBrowserPromoScreenName[] =
     "Enable FRE default browser screen";
 const char kEnableFREDefaultBrowserPromoScreenDescription[] =
