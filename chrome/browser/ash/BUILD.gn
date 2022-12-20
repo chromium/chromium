@@ -5098,6 +5098,7 @@ source_set("unit_tests") {
     "printing/automatic_usb_printer_configurer_unittest.cc",
     "printing/bulk_printers_calculator_unittest.cc",
     "printing/calculators_policies_binder_unittest.cc",
+    "printing/cups_print_job_notification_manager_unittest.cc",
     "printing/cups_printer_status_creator_unittest.cc",
     "printing/cups_printers_manager_unittest.cc",
     "printing/enterprise_printers_provider_unittest.cc",
