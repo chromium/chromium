@@ -10,7 +10,9 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -64,7 +66,6 @@
 using content::BrowserThread;
 
 namespace ash {
-
 namespace {
 
 constexpr char kKey[] = "key";
@@ -74,10 +75,12 @@ constexpr char kClass[] = "class";
 constexpr const char* const kLogLevelName[] = {"info", "warning", "error"};
 
 size_t SeverityToLogLevelNameIndex(logging::LogSeverity severity) {
-  if (severity <= logging::LOG_INFO)
+  if (severity <= logging::LOG_INFO) {
     return 0;
-  if (severity == logging::LOG_WARNING)
+  }
+  if (severity == logging::LOG_WARNING) {
     return 1;
+  }
   return 2;
 }
 
@@ -93,54 +96,53 @@ size_t LogMarkToLogLevelNameIndex(char mark) {
   }
 }
 
-std::string BulkPinSetupStageToString(drivefs::pinning::SetupStage stage) {
-  using drivefs::pinning::SetupStage;
+std::string ToString(drivefs::pinning::SetupStage stage) {
   switch (stage) {
-    case SetupStage::kFinishedSetup:
-      return "kFinishedSetup";
-    case SetupStage::kFinishedSetupWithError:
-      return "kFinishedSetupWithError";
-    case SetupStage::kCalculatedFreeLocalDiskSpace:
-      return "kCalculatedFreeLocalDiskSpace";
-    case SetupStage::kCalculatedRequiredDiskSpace:
-      return "kCalculatedRequiredDiskSpace";
-    case SetupStage::kNotStarted:
-      return "kNotStarted";
-    case SetupStage::kStarted:
-      return "kStarted";
-    default:
-      return "SetupStage(Unknown)";
+#define PRINT(s)                           \
+  case drivefs::pinning::SetupStage::k##s: \
+    return #s;
+    PRINT(FinishedSetup)
+    PRINT(FinishedSetupWithError)
+    PRINT(CalculatedFreeLocalDiskSpace)
+    PRINT(CalculatedRequiredDiskSpace)
+    PRINT(NotStarted)
+    PRINT(Started)
+#undef PRINT
   }
+
+  std::ostringstream oss;
+  oss << "SetupStage("
+      << static_cast<std::underlying_type_t<drivefs::pinning::SetupStage>>(
+             stage)
+      << ")";
+  return oss.str();
 }
 
-std::string BulkPinSetupErrorToString(drivefs::pinning::SetupError error) {
-  using drivefs::pinning::SetupError;
+std::string ToString(drivefs::pinning::SetupError error) {
   switch (error) {
-    case SetupError::kSuccess:
-      return "kSuccess";
-    case SetupError::kManagerDisabled:
-      return "kManagerDisabled";
-    case SetupError::kErrorCalculatingFreeDiskSpace:
-      return "kErrorCalculatingFreeDiskSpace";
-    case SetupError::kErrorRetrievingSearchResults:
-      return "kErrorRetrievingSearchResults";
-    case SetupError::kErrorResultsReturnedInvalid:
-      return "kErrorResultsReturnedInvalid";
-    case SetupError::kErrorNotEnoughFreeSpace:
-      return "kErrorNotEnoughFreeSpace";
-    case SetupError::kErrorRetrievingSearchResultsForPinning:
-      return "kErrorRetrievingSearchResultsForPinning";
-    case SetupError::kErrorResultsReturnedInvalidForPinning:
-      return "kErrorResultsReturnedInvalidForPinning";
-    case SetupError::kErrorFailedToPinItem:
-      return "kErrorFailedToPinItem";
-    case SetupError::kErrorSearchQueryNotBound:
-      return "kErrorSearchQueryNotBound";
-    case SetupError::kErrorManagerStopped:
-      return "kErrorManagerStopped";
-    default:
-      return "SetupError(Unknown)";
+#define PRINT(s)                           \
+  case drivefs::pinning::SetupError::k##s: \
+    return #s;
+    PRINT(Success)
+    PRINT(ManagerDisabled)
+    PRINT(ErrorCalculatingFreeDiskSpace)
+    PRINT(ErrorRetrievingSearchResults)
+    PRINT(ErrorResultsReturnedInvalid)
+    PRINT(ErrorNotEnoughFreeSpace)
+    PRINT(ErrorRetrievingSearchResultsForPinning)
+    PRINT(ErrorResultsReturnedInvalidForPinning)
+    PRINT(ErrorFailedToPinItem)
+    PRINT(ErrorSearchQueryNotBound)
+    PRINT(ErrorManagerStopped)
+#undef PRINT
   }
+
+  std::ostringstream oss;
+  oss << "SetupError("
+      << static_cast<std::underlying_type_t<drivefs::pinning::SetupError>>(
+             error)
+      << ")";
+  return oss.str();
 }
 
 // Gets metadata of all files and directories in |root_path|
@@ -192,8 +194,9 @@ std::pair<base::Value::List, base::Value::Dict> GetGCacheContents(
 
   std::pair<base::Value::List, base::Value::Dict> result;
   // Convert |files| into response.
-  for (auto& it : files)
+  for (auto& it : files) {
     result.first.Append(std::move(it.second));
+  }
   result.second.Set("total_size", static_cast<double>(total_size));
   return result;
 }
@@ -207,15 +210,17 @@ void AppendKeyValue(base::Value::List& list,
   base::Value::Dict dict;
   dict.Set(kKey, std::move(key));
   dict.Set(kValue, std::move(value));
-  if (!clazz.empty())
+  if (!clazz.empty()) {
     dict.Set(kClass, std::move(clazz));
+  }
   list.Append(std::move(dict));
 }
 
 ino_t GetInodeValue(const base::FilePath& path) {
   struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0)
+  if (stat(path.value().c_str(), &file_stats) != 0) {
     return 0;
+  }
   return file_stats.st_ino;
 }
 
@@ -410,8 +415,9 @@ class DriveInternalsWebUIHandler
     drive::DriveIntegrationService* integration_service =
         GetIntegrationService();
     // |integration_service| may be NULL in the guest/incognito mode.
-    if (!integration_service)
+    if (!integration_service) {
       return;
+    }
 
     UpdateDriveRelatedPreferencesSection();
     UpdateGCacheContentsSection();
@@ -448,8 +454,9 @@ class DriveInternalsWebUIHandler
     drive::DriveIntegrationService* integration_service =
         GetIntegrationService();
     // |integration_service| may be NULL in the guest/incognito mode.
-    if (!integration_service)
+    if (!integration_service) {
       return;
+    }
 
     UpdateEventLogSection();
     UpdateServiceLogSection();
@@ -658,11 +665,10 @@ class DriveInternalsWebUIHandler
   void OnSetupProgress(
       const drivefs::pinning::SetupProgress& progress) override {
     base::Value::Dict setup_progress;
-    setup_progress.Set("stage", BulkPinSetupStageToString(progress.stage));
+    setup_progress.Set("stage", ToString(progress.stage));
     if (progress.stage ==
         drivefs::pinning::SetupStage::kFinishedSetupWithError) {
-      setup_progress.Set("setupError",
-                         BulkPinSetupErrorToString(progress.error));
+      setup_progress.Set("setupError", ToString(progress.error));
     }
     setup_progress.Set("availableDiskSpace",
                        base::NumberToString(progress.available_disk_space));
@@ -741,8 +747,9 @@ class DriveInternalsWebUIHandler
 
     drive::DriveIntegrationService* integration_service =
         GetIntegrationService();
-    if (!integration_service)
+    if (!integration_service) {
       return;
+    }
 
     const std::vector<drive::EventLogger::Event> log =
         integration_service->event_logger()->GetHistory();
@@ -750,8 +757,9 @@ class DriveInternalsWebUIHandler
     base::Value::List list;
     for (const drive::EventLogger::Event& event : log) {
       // Skip events which were already sent.
-      if (event.id <= last_sent_event_id_)
+      if (event.id <= last_sent_event_id_) {
         continue;
+      }
 
       const char* const severity =
           kLogLevelName[SeverityToLogLevelNameIndex(event.severity)];
@@ -769,17 +777,20 @@ class DriveInternalsWebUIHandler
   void UpdateServiceLogSection() {
     SetSectionEnabled("service-log-section", true);
 
-    if (service_log_file_is_processing_)
+    if (service_log_file_is_processing_) {
       return;
+    }
     service_log_file_is_processing_ = true;
 
     drive::DriveIntegrationService* integration_service =
         GetIntegrationService();
-    if (!integration_service)
+    if (!integration_service) {
       return;
+    }
     base::FilePath log_path = integration_service->GetDriveFsLogPath();
-    if (log_path.empty())
+    if (log_path.empty()) {
       return;
+    }
 
     MaybeCallJavascript(
         "updateOtherServiceLogsUrl",
@@ -1023,8 +1034,9 @@ class DriveInternalsWebUIHandler
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     drive::DriveIntegrationService* service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
-    if (!service || !service->is_enabled())
+    if (!service || !service->is_enabled()) {
       return nullptr;
+    }
     return service;
   }
 
