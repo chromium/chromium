@@ -160,8 +160,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 #endif
   // This pre test adds a device successfully to the browser. The next test then
   // ensures the devices was saved when the browsertest starts up again.
-  AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
-                       kAccessCodeCastSavedDeviceScreenplayTag);
 
   // Mock a successful fetch from our server.
   SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
@@ -222,6 +220,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   // This test is run after a saved device was successfully added to the
   // browser. Upon restart it should exists in prefs && it should be added
   // to the media router.
+  AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
+                       kAccessCodeCastSavedDeviceScreenplayTag);
+
   EXPECT_TRUE(
       GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
 
