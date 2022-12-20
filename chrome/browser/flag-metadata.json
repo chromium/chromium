@@ -2810,11 +2810,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "enable-pci-guard-ui",
-    "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-penetrating-image-selection",
     "owners": [ "benwgold@google.com", "flackr" ],
     "expiry_milestone": 95
