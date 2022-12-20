@@ -15,8 +15,6 @@ module blink.mojom;
 //
 // A WebFeature conceptually represents some particular web-exposed API
 // or code path which can be used/triggered by a web page.
-// TODO(rbyers): Add CSS and animated CSS feature types by making this a
-// more sophisticated class.
 enum WebFeature {
   kOBSOLETE_PageDestruction = 0,
   kWorkerStart = 4,
@@ -3248,7 +3246,7 @@ enum WebFeature {
   kXRFrameGetJointPose = 3938,
   kXRFrameFillJointRadii = 3939,
   kXRFrameFillPoses = 3940,
-  kWindowOpenNewPopupBehaviorMismatch = 3941,
+  kOBSOLETE_kWindowOpenNewPopupBehaviorMismatch = 3941,
   kExplicitPointerCaptureClickTargetDiff = 3942,
   // The items above roughly this point are available in the M92 branch.
 
@@ -3708,6 +3706,8 @@ enum WebFeature {
   kSerivceWorkerFallbackMainResource = 4369,
   kGetDisplayMediaWithoutUserActivation = 4370,
   kBackForwardCacheNotRestoredReasons = 4371,
+  // The items above roughly this point are available in the M108 branch.
+
   kCSSNesting = 4372,
   kSandboxIneffectiveAllowOriginAllowScript = 4373,
   kDocumentOpenDifferentWindow = 4374,
@@ -3720,11 +3720,11 @@ enum WebFeature {
   kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381,
   kV8MediaStreamTrack_ApplyConstraints_Method = 4382,
   kViewTransition = 4383,
-  // The items above roughly this point are available in the M108 branch.
-
   kElementTogglePopover = 4384,
   kLayoutMediaInlineChildren = 4385,
   kReduceAcceptLanguage = 4386,
+  // The items above roughly this point are available in the M109 branch.
+
   kUuidInPackageUrlNavigation = 4387,
   kCSSValueAppearanceMediaSliderRendered = 4388,
   kCSSValueAppearanceMediaSliderThumbRendered = 4389,
@@ -3767,6 +3767,8 @@ enum WebFeature {
   kFedCmUserInfo = 4426,
   kIDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
   kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
+  kWindowOpenPopupOnMobile = 4429,
+  kWindowOpenedAsPopupOnMobile = 4430,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

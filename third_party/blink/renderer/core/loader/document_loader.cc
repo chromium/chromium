@@ -2945,6 +2945,15 @@ void DocumentLoader::RecordUseCountersForCommit() {
       !early_hints_preloaded_resources_.empty()) {
     CountUse(WebFeature::kEarlyHintsPreload);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Record whether this window was requested to be opened as a Popup.
+  // Android doesn't treat popup windows any differently from normal windows
+  // today, but we might want to change that.
+  if (frame_->GetPage()->GetWindowFeatures().is_popup) {
+    CountUse(WebFeature::kWindowOpenedAsPopupOnMobile);
+  }
+#endif
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {

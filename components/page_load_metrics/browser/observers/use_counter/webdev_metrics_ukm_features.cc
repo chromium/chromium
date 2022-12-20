@@ -47,6 +47,8 @@ UseCounterMetricsRecorder::GetAllowedWebDevMetricsUkmFeatures() {
            WebFeature::kBlockingAttributeRenderToken,
            WebFeature::kV8MemoryInfo_TotalJSHeapSize_AttributeGetter,
            WebFeature::kV8MemoryInfo_UsedJSHeapSize_AttributeGetter,
-           WebFeature::kV8MemoryInfo_JSHeapSizeLimit_AttributeGetter}));
+           WebFeature::kV8MemoryInfo_JSHeapSizeLimit_AttributeGetter,
+           WebFeature::kWindowOpenPopupOnMobile,
+           WebFeature::kWindowOpenedAsPopupOnMobile}));
   return *opt_in_features;
 }
