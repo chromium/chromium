@@ -43,6 +43,7 @@ class Operation : public RequestManager::HandlerInterface {
   void OnError(int request_id,
                std::unique_ptr<RequestValue> result,
                base::File::Error error) override = 0;
+  void OnAbort(int request_id) override;
 
  protected:
   // Sends an event to the providing extension. Returns false, if the providing

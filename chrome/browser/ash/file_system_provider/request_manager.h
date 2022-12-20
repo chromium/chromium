@@ -76,6 +76,10 @@ class RequestManager {
     virtual void OnError(int request_id,
                          std::unique_ptr<RequestValue> result,
                          base::File::Error error) = 0;
+
+    // Called when the request is aborted due to timeout, before |OnError| is
+    // called.
+    virtual void OnAbort(int request_id) = 0;
   };
 
   // Observes activities in the request manager.

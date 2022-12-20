@@ -127,6 +127,17 @@ class EventLogger {
     base::File::Error error_;
   };
 
+  class AbortEvent {
+   public:
+    explicit AbortEvent(int request_id) : request_id_(request_id) {}
+    virtual ~AbortEvent() = default;
+
+    int request_id() { return request_id_; }
+
+   private:
+    int request_id_;
+  };
+
   EventLogger() {}
 
   EventLogger(const EventLogger&) = delete;
@@ -152,6 +163,10 @@ class EventLogger {
         std::make_unique<ErrorEvent>(request_id, std::move(result), error));
   }
 
+  void OnAbort(int request_id) {
+    abort_events_.push_back(std::make_unique<AbortEvent>(request_id));
+  }
+
   std::vector<std::unique_ptr<ExecuteEvent>>& execute_events() {
     return execute_events_;
   }
@@ -160,6 +175,9 @@ class EventLogger {
   }
   std::vector<std::unique_ptr<ErrorEvent>>& error_events() {
     return error_events_;
+  }
+  std::vector<std::unique_ptr<AbortEvent>>& abort_events() {
+    return abort_events_;
   }
 
   base::WeakPtr<EventLogger> GetWeakPtr() {
@@ -170,6 +188,7 @@ class EventLogger {
   std::vector<std::unique_ptr<ExecuteEvent>> execute_events_;
   std::vector<std::unique_ptr<SuccessEvent>> success_events_;
   std::vector<std::unique_ptr<ErrorEvent>> error_events_;
+  std::vector<std::unique_ptr<AbortEvent>> abort_events_;
   base::WeakPtrFactory<EventLogger> weak_ptr_factory_{this};
 };
 
@@ -204,6 +223,12 @@ class FakeHandler : public RequestManager::HandlerInterface {
                base::File::Error error) override {
     if (logger_.get())
       logger_->OnError(request_id, std::move(result), error);
+  }
+
+  void OnAbort(int request_id) override {
+    if (logger_.get()) {
+      logger_->OnAbort(request_id);
+    }
   }
 
   FakeHandler(const FakeHandler&) = delete;
@@ -707,6 +732,7 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
     EXPECT_EQ(1, request_id);
     EXPECT_EQ(0u, logger.success_events().size());
     EXPECT_EQ(0u, logger.error_events().size());
+    EXPECT_EQ(0u, logger.abort_events().size());
 
     ASSERT_EQ(1u, observer.created().size());
     EXPECT_EQ(request_id, observer.created()[0].request_id());
@@ -727,6 +753,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
   ASSERT_EQ(1u, logger.error_events().size());
   EventLogger::ErrorEvent* event = logger.error_events()[0].get();
   EXPECT_EQ(base::File::FILE_ERROR_ABORT, event->error());
+  ASSERT_EQ(1u, logger.abort_events().size());
+  EXPECT_EQ(request_id, logger.abort_events()[0]->request_id());
 
   EXPECT_EQ(0u, logger.success_events().size());
 
@@ -771,6 +799,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
   ASSERT_EQ(1u, logger.error_events().size());
   EventLogger::ErrorEvent* event = logger.error_events()[0].get();
   EXPECT_EQ(base::File::FILE_ERROR_ABORT, event->error());
+  ASSERT_EQ(1u, logger.abort_events().size());
+  EXPECT_EQ(request_id, logger.abort_events()[0]->request_id());
 
   ASSERT_EQ(1u, observer.rejected().size());
   EXPECT_EQ(request_id, observer.rejected()[0].request_id());
@@ -796,6 +826,7 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   EXPECT_EQ(1, request_id);
   EXPECT_EQ(0u, logger.success_events().size());
   EXPECT_EQ(0u, logger.error_events().size());
+  EXPECT_EQ(0u, logger.abort_events().size());
   EXPECT_EQ(0u, notification_manager_->size());
 
   ASSERT_EQ(1u, observer.created().size());
@@ -816,6 +847,7 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   // The request is still active.
   EXPECT_EQ(0u, logger.success_events().size());
   EXPECT_EQ(0u, logger.error_events().size());
+  EXPECT_EQ(0u, logger.abort_events().size());
 
   // Wait until the request is timeouted again.
   base::RunLoop().RunUntilIdle();

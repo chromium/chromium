@@ -31,6 +31,7 @@ class MountRequestHandler : public RequestManager::HandlerInterface {
   void OnError(int request_id,
                std::unique_ptr<RequestValue> result,
                base::File::Error error) override;
+  void OnAbort(int request_id) override;
 
  private:
   raw_ptr<EventDispatcher> event_dispatcher_;

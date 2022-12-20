@@ -54,4 +54,8 @@ void MountRequestHandler::OnError(int /* request_id */,
   std::move(callback_).Run(error);
 }
 
+void MountRequestHandler::OnAbort(int request_id) {
+  // TODO(b/249182641): plumb through request cancellation to lacros.
+}
+
 }  // namespace ash::file_system_provider

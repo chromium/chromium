@@ -120,6 +120,10 @@ base::File::Error RequestManager::RejectRequest(
   if (request_it == requests_.end())
     return base::File::FILE_ERROR_NOT_FOUND;
 
+  if (error == base::File::FILE_ERROR_ABORT) {
+    request_it->second->handler->OnAbort(request_id);
+  }
+
   for (auto& observer : observers_)
     observer.OnRequestRejected(request_id, *response.get(), error);
   request_it->second->handler->OnError(request_id, std::move(response), error);

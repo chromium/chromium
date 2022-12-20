@@ -37,6 +37,10 @@ bool Operation::SendEvent(int request_id,
       request_id, file_system_info_.file_system_id(), std::move(event));
 }
 
+void Operation::OnAbort(int request_id) {
+  // TODO(b/249182641): plumb through request cancellation to lacros.
+}
+
 }  // namespace operations
 }  // namespace file_system_provider
 }  // namespace ash
