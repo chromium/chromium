@@ -803,9 +803,7 @@ class SelectFileDialogExtensionPolicyTest
   storage::ExternalMountPoints* mount_points_ = nullptr;
 };
 
-// TODO(crbug.com/1395135): Re-enable this test
-IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest,
-                       DISABLED_DlpDownloadAllow) {
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {
   SetupRulesManager();
 
   gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
