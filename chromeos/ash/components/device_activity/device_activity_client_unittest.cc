@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
-#include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -232,25 +231,6 @@ class DailyUseCaseImplUnderTest : public DailyUseCaseImpl {
   ~DailyUseCaseImplUnderTest() override = default;
 };
 
-class MonthlyUseCaseImplUnderTest : public MonthlyUseCaseImpl {
- public:
-  MonthlyUseCaseImplUnderTest(
-      PrefService* local_state,
-      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
-          test_case)
-      : MonthlyUseCaseImpl(
-            kFakePsmDeviceActiveSecret,
-            kFakeChromeParameters,
-            local_state,
-            std::make_unique<FakePsmDelegate>(test_case.ec_cipher_key(),
-                                              test_case.seed(),
-                                              GetPlaintextIds(test_case))) {}
-  MonthlyUseCaseImplUnderTest(const MonthlyUseCaseImplUnderTest&) = delete;
-  MonthlyUseCaseImplUnderTest& operator=(const MonthlyUseCaseImplUnderTest&) =
-      delete;
-  ~MonthlyUseCaseImplUnderTest() override = default;
-};
-
 class TwentyEightDayActiveUseCaseImplUnderTest
     : public TwentyEightDayActiveUseCaseImpl {
  public:
@@ -431,9 +411,7 @@ class DeviceActivityClientTest : public testing::Test {
 
     SetUpDeviceActivityClient(
         {
-            features::kDeviceActiveClientMonthlyCheckIn,
             features::kDeviceActiveClientDailyCheckMembership,
-            features::kDeviceActiveClientMonthlyCheckMembership,
             features::kDeviceActiveClient28DayActiveCheckIn,
             features::kDeviceActiveClient28DayActiveCheckMembership,
         },
@@ -494,13 +472,6 @@ class DeviceActivityClientTest : public testing::Test {
           &local_state_, psm_test_case));
     }
     if (base::FeatureList::IsEnabled(
-            features::kDeviceActiveClientMonthlyCheckIn) ||
-        base::FeatureList::IsEnabled(
-            features::kDeviceActiveClientMonthlyCheckMembership)) {
-      use_cases.push_back(std::make_unique<MonthlyUseCaseImplUnderTest>(
-          &local_state_, psm_test_case));
-    }
-    if (base::FeatureList::IsEnabled(
             features::kDeviceActiveClient28DayActiveCheckIn) ||
         base::FeatureList::IsEnabled(
             features::kDeviceActiveClient28DayActiveCheckMembership)) {
@@ -520,8 +491,6 @@ class DeviceActivityClientTest : public testing::Test {
     // Simulate powerwashing device by removing the local state prefs.
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnownDailyPingTimestamp);
-    local_state_.RemoveUserPref(
-        prefs::kDeviceActiveLastKnownMonthlyPingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnown28DayActivePingTimestamp);
   }
@@ -599,7 +568,7 @@ class DeviceActivityClientTest : public testing::Test {
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {
-  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 3);
+  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 2);
 }
 
 TEST_F(DeviceActivityClientTest,
@@ -988,8 +957,7 @@ TEST_F(DeviceActivityClientTest, DailyCheckInFailsButRemainingUseCasesSucceed) {
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest,
-       MonthlyCheckInFailsButRemainingUseCasesSucceeds) {
+TEST_F(DeviceActivityClientTest, SuccessfulMembershipCheckAndImport) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -1005,31 +973,19 @@ TEST_F(DeviceActivityClientTest,
     EXPECT_EQ(device_activity_client_->GetState(),
               DeviceActivityClient::State::kCheckingMembershipOprf);
 
-    if (use_case->GetPsmUseCase() ==
-        psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
-      // Monthly use case will terminate while failing to parse
-      // this invalid OPRF response.
-      SimulateOprfResponse(std::string(), net::HTTP_OK);
+    // Remaining use cases will return valid psm network request responses.
+    SimulateOprfResponse(GetFresnelOprfResponse(GetPsmNonMemberTestCase()),
+                         net::HTTP_OK);
+    SimulateQueryResponse(GetFresnelQueryResponse(GetPsmNonMemberTestCase()),
+                          net::HTTP_OK);
+    SimulateImportResponse(std::string(), net::HTTP_OK);
 
-      task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
-      // Failed to update the local state since the OPRF response was invalid.
-      EXPECT_FALSE(use_case->IsLastKnownPingTimestampSet());
-    } else {
-      // Remaining use cases will return valid psm network request responses.
-      SimulateOprfResponse(GetFresnelOprfResponse(GetPsmNonMemberTestCase()),
-                           net::HTTP_OK);
-      SimulateQueryResponse(GetFresnelQueryResponse(GetPsmNonMemberTestCase()),
-                            net::HTTP_OK);
-      SimulateImportResponse(std::string(), net::HTTP_OK);
-
-      task_environment_.RunUntilIdle();
-
-      // Successfully imported and updated the last ping timestamp to the
-      // current mocked time for this test.
-      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(),
-                ConvertToPT(base::Time::Now()));
-    }
+    // Successfully imported and updated the last ping timestamp to the
+    // current mocked time for this test.
+    EXPECT_EQ(use_case->GetLastKnownPingTimestamp(),
+              ConvertToPT(base::Time::Now()));
   }
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -1377,24 +1333,19 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextPTMonth) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
 
-  // Return well formed Import response body for daily and monthly use case.
-  // The time was forwarded to a new month, which means the daily and monthly
+  // Return well formed Import response body.
+  // The time was forwarded to a new month, which means the daily and 28DA
   // use cases will report active again.
   for (auto* use_case : device_activity_client_->GetUseCases()) {
     psm_rlwe::RlweUseCase psm_use_case = use_case->GetPsmUseCase();
     SCOPED_TRACE(testing::Message()
                  << "PSM use case: "
                  << psm_rlwe::RlweUseCase_Name(psm_use_case));
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
 
-    if (psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY ||
-        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY ||
-        psm_use_case == psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE) {
-      EXPECT_EQ(device_activity_client_->GetState(),
-                DeviceActivityClient::State::kCheckingIn);
-
-      SimulateImportResponse(std::string(), net::HTTP_OK);
-      task_environment_.RunUntilIdle();
-    }
+    SimulateImportResponse(std::string(), net::HTTP_OK);
+    task_environment_.RunUntilIdle();
   }
 
   // Return back to |kIdle| state after successful check-in of daily use case.

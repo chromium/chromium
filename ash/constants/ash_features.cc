@@ -2203,18 +2203,6 @@ BASE_FEATURE(kDeviceActiveClientDailyCheckMembership,
              "DeviceActiveClientDailyCheckMembership",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables PSM CheckIn for the monthly device active pings
-// on ChromeOS.
-BASE_FEATURE(kDeviceActiveClientMonthlyCheckIn,
-             "DeviceActiveClientMonthlyCheckIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables PSM CheckMembership for monthly device active pings
-// on ChromeOS.
-BASE_FEATURE(kDeviceActiveClientMonthlyCheckMembership,
-             "DeviceActiveClientMonthlyCheckMembership",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 BASE_FEATURE(kDeviceForceScheduledReboot,
              "DeviceForceScheduledReboot",

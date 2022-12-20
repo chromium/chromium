@@ -10,7 +10,6 @@
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
-#include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
@@ -58,11 +57,6 @@ class DeviceActiveUseCaseTest : public testing::Test {
 
     // Each specific use case that will be unit tested is added here.
     use_cases_.push_back(std::make_unique<DailyUseCaseImpl>(
-        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
-        // |FakePsmDelegate| can use any test case parameters.
-        std::make_unique<FakePsmDelegate>(kFakeEcCipherKey, kFakePsmSeed,
-                                          plaintext_ids)));
-    use_cases_.push_back(std::make_unique<MonthlyUseCaseImpl>(
         kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_,
         // |FakePsmDelegate| can use any test case parameters.
         std::make_unique<FakePsmDelegate>(kFakeEcCipherKey, kFakePsmSeed,
@@ -189,14 +183,6 @@ TEST_F(DeviceActiveUseCaseTest, PingRequiredInNonOverlappingPTWindows) {
 
         use_case->SetLastKnownPingTimestamp(last_ts);
         break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
-        EXPECT_TRUE(
-            base::Time::FromString("01 Jan 2022 00:00:00 GMT", &last_ts));
-        EXPECT_TRUE(
-            base::Time::FromString("01 Feb 2022 00:00:00 GMT", &current_ts));
-
-        use_case->SetLastKnownPingTimestamp(last_ts);
-        break;
       default:
         NOTREACHED() << "Unsupported PSM use case";
     }
@@ -221,14 +207,6 @@ TEST_F(DeviceActiveUseCaseTest, PingNotRequiredInOverlappingPTWindows) {
             base::Time::FromString("01 Jan 2022 00:00:00 GMT", &last_ts));
         EXPECT_TRUE(
             base::Time::FromString("01 Jan 2022 23:59:59 GMT", &current_ts));
-
-        use_case->SetLastKnownPingTimestamp(last_ts);
-        break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
-        EXPECT_TRUE(
-            base::Time::FromString("01 Jan 2022 00:00:00 GMT", &last_ts));
-        EXPECT_TRUE(
-            base::Time::FromString("31 Jan 2022 23:59:59 GMT", &current_ts));
 
         use_case->SetLastKnownPingTimestamp(last_ts);
         break;
@@ -259,14 +237,6 @@ TEST_F(DeviceActiveUseCaseTest, CheckPingRequiredInPTBoundaryCases) {
 
         use_case->SetLastKnownPingTimestamp(last_ts);
         break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
-        EXPECT_TRUE(
-            base::Time::FromString("31 Jan 2022 23:59:59 GMT", &last_ts));
-        EXPECT_TRUE(
-            base::Time::FromString("01 Feb 2022 00:00:00 GMT", &current_ts));
-
-        use_case->SetLastKnownPingTimestamp(last_ts);
-        break;
       default:
         NOTREACHED() << "Unsupported PSM use case";
     }
@@ -291,14 +261,6 @@ TEST_F(DeviceActiveUseCaseTest, PingNotRequiredWhenLastTimeAheadOfCurrentTime) {
             base::Time::FromString("02 Jan 2022 00:00:00 GMT", &last_ts));
         EXPECT_TRUE(
             base::Time::FromString("01 Jan 2022 23:59:59 GMT", &current_ts));
-
-        use_case->SetLastKnownPingTimestamp(last_ts);
-        break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY:
-        EXPECT_TRUE(
-            base::Time::FromString("01 Feb 2022 00:00:00 GMT", &last_ts));
-        EXPECT_TRUE(
-            base::Time::FromString("31 Jan 2022 23:59:59 GMT", &current_ts));
 
         use_case->SetLastKnownPingTimestamp(last_ts);
         break;

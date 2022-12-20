@@ -178,10 +178,6 @@ BASE_DECLARE_FEATURE(kDeviceActiveClient28DayActiveCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceActiveClientDailyCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kDeviceActiveClientMonthlyCheckIn);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kDeviceActiveClientMonthlyCheckMembership);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceForceScheduledReboot);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay;

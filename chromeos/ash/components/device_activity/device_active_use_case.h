@@ -79,8 +79,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   PrefService* GetLocalState() const;
 
   // Return the last known ping timestamp from local state pref, by use case.
-  // For example, the monthly use case will return the last known monthly
-  // timestamp from the local state pref.
+  // For example, the 28DA use case will return the last known timestamp
+  // when the device was active.
   base::Time GetLastKnownPingTimestamp() const;
 
   // Set the last known ping timestamp in local state pref.
@@ -217,10 +217,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // |DeviceActiveUseCase| object lifetime.
   const ChromeDeviceMetadataParameters chrome_passed_device_params_;
 
-  // Key used to query the local state pref for the last ping timestamp by use
-  // case.
-  // For example, the monthly use case will store the key mapping to the last
-  // monthly ping timestamp in the local state pref.
+  // Key used to query the local state pref for the last ping timestamp.
   const std::string use_case_pref_key_;
 
   // The PSM dataset on the serverside is segmented by the PSM use case.
