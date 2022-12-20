@@ -17,9 +17,11 @@
 namespace ui {
 
 gl::GLDisplay* GLOzoneEGL::InitializeGLOneOffPlatform(
+    bool supports_angle,
+    std::vector<gl::DisplayType> init_displays,
     uint64_t system_device_id) {
   gl::GLDisplayEGL* display = gl::GetDisplayEGL(system_device_id);
-  if (!display->Initialize(GetNativeDisplay())) {
+  if (!display->Initialize(supports_angle, init_displays, GetNativeDisplay())) {
     LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
     return nullptr;
   }
