@@ -766,4 +766,72 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListFlagChangingValues) {
   }
 }
 
+TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
+  ConfigureService(kConfigCellular);
+
+  // Verify that lists are empty
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
+    EXPECT_DEATH(metadata_store()->GetPreRevampCustomApnList(kCellularkGuid),
+                 "");
+  }
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
+    EXPECT_EQ(nullptr,
+              metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
+  }
+
+  base::Value::List expected_list_feature_disabled;
+  base::Value::Dict test_apn1;
+  test_apn1.Set(::onc::cellular_apn::kAccessPointName, "test_apn1");
+  expected_list_feature_disabled.Append(std::move(test_apn1));
+
+  base::Value::List expected_list_feature_enabled;
+  base::Value::Dict test_apn2;
+  test_apn2.Set(::onc::cellular_apn::kAccessPointName, "test_apn2");
+  base::Value::Dict test_apn3;
+  test_apn3.Set(::onc::cellular_apn::kAccessPointName, "test_apn3");
+  expected_list_feature_enabled.Append(std::move(test_apn2));
+  expected_list_feature_enabled.Append(std::move(test_apn3));
+
+  // Set the custom APN lists
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+    metadata_store()->SetCustomApnList(kCellularkGuid,
+                                       expected_list_feature_disabled.Clone());
+  }
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+    metadata_store()->SetCustomApnList(kCellularkGuid,
+                                       expected_list_feature_enabled.Clone());
+  }
+
+  // Verify that values are returned correctly if the APN revamp flag is
+  // disabled. GetPreRevampCustomApnList should assert in this case.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(expected_list_feature_disabled,
+              *metadata_store()->GetCustomApnList(kCellularkGuid));
+    EXPECT_DEATH(metadata_store()->GetPreRevampCustomApnList(kCellularkGuid),
+                 "");
+  }
+
+  // Verify that values are returned correctly if the APN revamp flag is
+  // enabled. Both called should succeed.
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+    EXPECT_EQ(expected_list_feature_enabled,
+              *metadata_store()->GetCustomApnList(kCellularkGuid));
+    EXPECT_EQ(expected_list_feature_disabled,
+              *metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
+  }
+}
 }  // namespace ash
