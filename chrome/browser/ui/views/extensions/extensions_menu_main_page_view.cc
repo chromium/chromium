@@ -20,6 +20,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -135,7 +136,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               base::Unretained(navigation_handler_))))),
           // Request access section.
           views::Builder<RequestsAccessSection>(
-              std::make_unique<RequestsAccessSection>()))
+              std::make_unique<RequestsAccessSection>()),
+          // TODO(crbug.com/1390952): Remove. Only for testing site permissions
+          // page behavior.
+          views::Builder<views::LabelButton>()
+              .SetText(u"Site Permissions")
+              .SetCallback(base::BindRepeating(
+                  &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
+                  base::Unretained(navigation_handler_))))
       .BuildChildren();
 
   browser_->tab_strip_model()->AddObserver(this);

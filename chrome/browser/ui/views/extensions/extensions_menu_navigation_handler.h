@@ -9,6 +9,8 @@
 // extensions menu.
 class ExtensionsMenuNavigationHandler {
  public:
+  virtual void OpenMainPage() = 0;
+  virtual void OpenSitePermissionsPage() = 0;
   virtual void CloseBubble() = 0;
 };
 

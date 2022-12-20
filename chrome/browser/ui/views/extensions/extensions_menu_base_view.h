@@ -22,9 +22,12 @@ class ExtensionsMenuBaseView : public views::View,
       delete;
 
   // ExtensionsMenuNavigationHandler:
+  void OpenMainPage() override;
+  void OpenSitePermissionsPage() override;
   void CloseBubble() override;
 
  private:
+  const raw_ptr<Browser> browser_;
   raw_ptr<PageSwitcherView> page_container_;
 };
 
