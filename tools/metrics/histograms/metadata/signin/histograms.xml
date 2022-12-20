@@ -1010,6 +1010,17 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SignIn.Completed" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the user signed in to Chrome, and logs the original access
+    point associated with this event.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
     expires_after="2023-10-06">
   <owner>bsazonov@chromium.org</owner>
@@ -1060,6 +1071,19 @@ OAuth Multilogin call. -->
   <summary>
     Logs the original access point that displayed the signin or reauth Gaia
     page, before the page is displayed.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SignOut.Completed" enum="SigninSignoutProfile"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the user signed out of Chrome, and logs the original access
+    point associated with this event. Note that turning off Sync almost always
+    signs the user out, in which case both this histogram and
+    Signin.SyncTurnOff.Completed are recorded.
   </summary>
 </histogram>
 
@@ -1210,6 +1234,19 @@ kept as long as profile signout is possible -->
   <summary>Tracks where FirstSetupComplete bit is set from.</summary>
 </histogram>
 
+<histogram name="Signin.SyncOptIn.Completed" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the sync opt-in was completed by the user, and logs the
+    original access point associated with this event. This is recorded when the
+    user chooses to opt-in, whether they chose to proceed with the default
+    settings or to open the sync settings first.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}" units="counts"
     expires_after="2023-09-22">
   <owner>triploblastic@chromium.org</owner>
@@ -1232,6 +1269,17 @@ kept as long as profile signout is possible -->
     <variant name="RecentTabs" summary="recent tabs page"/>
     <variant name="Settings" summary="settings page"/>
   </token>
+</histogram>
+
+<histogram name="Signin.SyncTurnOff.Completed" enum="SigninSignoutProfile"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the user turned off sync, and logs the original access point
+    associated with this event.
+  </summary>
 </histogram>
 
 <histogram name="Signin.TokenTable.GetAllTokensSqlStatementValidity"

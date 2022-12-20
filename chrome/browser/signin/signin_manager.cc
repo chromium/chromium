@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -114,7 +115,9 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account.account_id, signin::ConsentLevel::kSignin);
+          account.account_id, signin::ConsentLevel::kSignin,
+          // TODO(crbug.com/1261772): Attribute this to actual access points.
+          signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER);
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {

@@ -198,6 +198,10 @@ enum class AccessPoint : int {
   ACCESS_POINT_NTP_SIGNED_OUT_ICON = 41,
   ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO = 42,
   ACCESS_POINT_NTP_FEED_BOTTOM_PROMO = 43,
+  // TODO(crbug.com/1261772): Not a real access point, as this is an internal
+  // component. We should replace its usage with actual access points once we
+  // find ways to attribute the changes accurately.
+  ACCESS_POINT_DESKTOP_SIGNIN_MANAGER = 44,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

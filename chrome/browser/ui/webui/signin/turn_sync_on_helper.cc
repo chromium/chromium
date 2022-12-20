@@ -132,8 +132,9 @@ struct CurrentTurnSyncOnHelperUserData : public base::SupportsUserData::Data {
 TurnSyncOnHelper* GetCurrentTurnSyncOnHelper(Profile* profile) {
   base::SupportsUserData::Data* data =
       profile->GetUserData(kCurrentTurnSyncOnHelperKey);
-  if (!data)
+  if (!data) {
     return nullptr;
+  }
   CurrentTurnSyncOnHelperUserData* wrapper =
       static_cast<CurrentTurnSyncOnHelperUserData*>(data);
   TurnSyncOnHelper* helper = wrapper->current_helper;
@@ -281,8 +282,9 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
 bool TurnSyncOnHelper::HasCanOfferSigninError() {
   SigninUIError can_offer_error =
       CanOfferSignin(profile_, account_info_.gaia, account_info_.email);
-  if (can_offer_error.IsOk())
+  if (can_offer_error.IsOk()) {
     return false;
+  }
 
   // Display the error message
   delegate_->ShowLoginError(can_offer_error);
@@ -497,7 +499,8 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
         signin_manager->CreateAccountSelectionInProgressHandle();
   }
   primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                             signin::ConsentLevel::kSignin);
+                                             signin::ConsentLevel::kSignin,
+                                             signin_access_point_);
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
   signin_metrics::LogSigninReason(signin_reason_);
@@ -510,8 +513,9 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
         profile_, enterprise_account_confirmed_);
     user_accepted_management = enterprise_account_confirmed_;
   }
-  if (user_accepted_management)
+  if (user_accepted_management) {
     signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
+  }
 
   syncer::SyncService* sync_service = GetSyncService();
   if (sync_service) {
@@ -657,20 +661,24 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
   switch (result) {
     case LoginUIService::CONFIGURE_SYNC_FIRST:
       primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                                 signin::ConsentLevel::kSync);
-      if (consent_service)
+                                                 signin::ConsentLevel::kSync,
+                                                 signin_access_point_);
+      if (consent_service) {
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+      }
       delegate_->ShowSyncSettings();
       break;
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
       primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
-                                                 signin::ConsentLevel::kSync);
+                                                 signin::ConsentLevel::kSync,
+                                                 signin_access_point_);
       if (auto* sync_service = GetSyncService()) {
         sync_service->GetUserSettings()->SetFirstSetupComplete(
             syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
       }
-      if (consent_service)
+      if (consent_service) {
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+      }
       break;
     case LoginUIService::ABORT_SYNC:
       AbortAndDelete();
@@ -704,8 +712,9 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
           ->Subscribe(base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                      base::Unretained(this)));
   delegate_->SwitchToProfile(new_profile);
-  if (policy_fetch_tracker_)
+  if (policy_fetch_tracker_) {
     policy_fetch_tracker_->SwitchToProfile(profile_);
+  }
 }
 
 void TurnSyncOnHelper::AttachToProfile() {
@@ -713,8 +722,9 @@ void TurnSyncOnHelper::AttachToProfile() {
   TurnSyncOnHelper* current_helper = GetCurrentTurnSyncOnHelper(profile_);
   if (current_helper) {
     // If the existing flow was using the same account, keep the account.
-    if (current_helper->account_info_.account_id == account_info_.account_id)
+    if (current_helper->account_info_.account_id == account_info_.account_id) {
       current_helper->signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
+    }
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownUserCloudPolicyManager();
     current_helper->AbortAndDelete();

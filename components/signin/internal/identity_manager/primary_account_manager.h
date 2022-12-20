@@ -27,6 +27,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class AccountTrackerService;
 class PrefRegistrySimple;
@@ -99,7 +100,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // user has consented for sync already, then use ClearPrimaryAccount() or
   // RevokeSync() instead.
   void SetPrimaryAccountInfo(const CoreAccountInfo& account_info,
-                             signin::ConsentLevel consent_level);
+                             signin::ConsentLevel consent_level,
+                             signin_metrics::AccessPoint access_point);
 
   // Updates the primary account information from AccountTrackerService.
   void UpdatePrimaryAccountInfo();
@@ -158,7 +160,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Fires OnPrimaryAccountChanged() notifications on all observers.
   void FirePrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent::State& previous_state);
+      const signin::PrimaryAccountChangeEvent::State& previous_state,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source);
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {
 enum ProfileSignout : int;
@@ -53,7 +54,7 @@ class PrimaryAccountMutator {
       delete;
 
   // For ConsentLevel::kSync -
-  // Marks the account with |account_id| as the primary account, and returns
+  // Marks the account with `account_id` as the primary account, and returns
   // whether the operation succeeded or not. To succeed, this requires that:
   //    - the account is known by the IdentityManager.
   // On non-ChromeOS platforms, this additionally requires that:
@@ -64,12 +65,20 @@ class PrimaryAccountMutator {
   // requirements on ChromeOS as well.
   //
   // For ConsentLevel::kSignin -
-  // Sets the account with |account_id| as the unconsented primary account
+  // Sets the account with `account_id` as the unconsented primary account
   // (i.e. without implying browser sync consent). Requires that the account
   // is known by the IdentityManager. See README.md for details on the meaning
   // of "unconsented". Returns whether the operation succeeded or not.
-  virtual PrimaryAccountError SetPrimaryAccount(const CoreAccountId& account_id,
-                                                ConsentLevel consent_level) = 0;
+  //
+  // The account state changes will be recorded in UMA, attributed to the
+  // provided `access_point`.
+  // TODO(crbug.com/1261772): Don't set a default `access_point`. All callsites
+  // should provide a valid value.
+  virtual PrimaryAccountError SetPrimaryAccount(
+      const CoreAccountId& account_id,
+      ConsentLevel consent_level,
+      signin_metrics::AccessPoint access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) = 0;
 
   // Revokes sync consent from the primary account. We distinguish the following
   // cases:

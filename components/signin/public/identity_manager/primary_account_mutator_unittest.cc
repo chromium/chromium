@@ -133,8 +133,9 @@ void RunRevokeConsentTest(
   AccountInfo account_info =
       environment.MakeAccountAvailable(kPrimaryAccountEmail);
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
-      primary_account_mutator->SetPrimaryAccount(account_info.account_id,
-                                                 signin::ConsentLevel::kSync);
+      primary_account_mutator->SetPrimaryAccount(
+          account_info.account_id, signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -274,8 +275,9 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount) {
   EXPECT_FALSE(environment.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSync));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
-      primary_account_mutator->SetPrimaryAccount(account_info.account_id,
-                                                 signin::ConsentLevel::kSync);
+      primary_account_mutator->SetPrimaryAccount(
+          account_info.account_id, signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
@@ -309,7 +311,8 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          CoreAccountId(kUnknownAccountId), signin::ConsentLevel::kSync);
+          CoreAccountId(kUnknownAccountId), signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
       setPrimaryAccountResult);
@@ -336,7 +339,8 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_UnknownAccount) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          CoreAccountId(kUnknownAccountId), signin::ConsentLevel::kSync);
+          CoreAccountId(kUnknownAccountId), signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
       setPrimaryAccountResult);
@@ -366,13 +370,15 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          primary_account_info.account_id, signin::ConsentLevel::kSync);
+          primary_account_info.account_id, signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
-      another_account_info.account_id, signin::ConsentLevel::kSync);
+      another_account_info.account_id, signin::ConsentLevel::kSync,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::
                 kSyncConsentAlreadySet,
             setPrimaryAccountResult);
@@ -411,7 +417,8 @@ TEST_F(PrimaryAccountMutatorTest,
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
-          primary_account_info.account_id, signin::ConsentLevel::kSync);
+          primary_account_info.account_id, signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kSigninNotAllowed,
       setPrimaryAccountResult);

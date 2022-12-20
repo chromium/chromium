@@ -5,6 +5,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -445,6 +446,7 @@ TEST_F(SigninManagerTest,
 }
 
 TEST_F(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
+  base::HistogramTester histogram_tester;
   AccountInfo first_account =
       identity_test_env()->MakeAccountAvailable(kTestEmail);
   AccountInfo second_account =
@@ -455,6 +457,9 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   ASSERT_EQ(first_account,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   ExpectUnconsentedPrimaryAccountSetEvent(first_account);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
 
   std::unique_ptr<AccountSelectionInProgressHandle> handle =
       signin_manager_->CreateAccountSelectionInProgressHandle();
@@ -468,6 +473,11 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
   EXPECT_EQ(second_account,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  // TODO(crbug.com/1261772): The change should be logged in some way.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignOut.Completed", 0);
   observer().Reset();
 
   // Release the handle. The unconsented primary account should be updated to be
@@ -491,6 +501,11 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountUpdatedOnHandleDestroyed) {
 #else
   ExpectUnconsentedPrimaryAccountChangedEvent(second_account, first_account);
 #endif
+  // TODO(crbug.com/1261772): The change should be logged in some way.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignOut.Completed", 0);
 }
 
 TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {

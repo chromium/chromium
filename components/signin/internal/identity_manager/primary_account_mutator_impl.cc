@@ -48,8 +48,10 @@ PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
 PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() {}
 
 PrimaryAccountMutator::PrimaryAccountError
-PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
-                                             ConsentLevel consent_level) {
+PrimaryAccountMutatorImpl::SetPrimaryAccount(
+    const CoreAccountId& account_id,
+    ConsentLevel consent_level,
+    signin_metrics::AccessPoint access_point) {
   DCHECK(!account_id.empty());
   AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
   if (account_info.IsEmpty())
@@ -87,7 +89,8 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
       DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
       break;
   }
-  primary_account_manager_->SetPrimaryAccountInfo(account_info, consent_level);
+  primary_account_manager_->SetPrimaryAccountInfo(account_info, consent_level,
+                                                  access_point);
   return PrimaryAccountError::kNoError;
 }
 

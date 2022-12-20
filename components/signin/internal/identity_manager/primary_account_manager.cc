@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -24,8 +25,69 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using signin::PrimaryAccountChangeEvent;
+
+namespace {
+void LogPrimaryAccountChangeMetrics(
+    PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+
+    case PrimaryAccountChangeEvent::Type::kSet:
+      if (!event_details.GetPreviousState().primary_account.IsEmpty()) {
+        // TODO(crbug.com/1261772): Add dedicated logging for account change
+        // events.
+        DVLOG(1) << "Signin metrics: Not logging account change";
+        break;
+      }
+
+      DCHECK(
+          absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      base::UmaHistogramEnumeration(
+          "Signin.SignIn.Completed",
+          absl::get<signin_metrics::AccessPoint>(event_source),
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      break;
+
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      DCHECK(absl::holds_alternative<signin_metrics::ProfileSignout>(
+          event_source));
+      base::UmaHistogramEnumeration(
+          "Signin.SignOut.Completed",
+          absl::get<signin_metrics::ProfileSignout>(event_source),
+          signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS);
+      break;
+  }
+
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case PrimaryAccountChangeEvent::Type::kNone:
+      break;
+
+    case PrimaryAccountChangeEvent::Type::kSet:
+      DCHECK(
+          absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      base::UmaHistogramEnumeration(
+          "Signin.SyncOptIn.Completed",
+          absl::get<signin_metrics::AccessPoint>(event_source),
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      break;
+
+    case PrimaryAccountChangeEvent::Type::kCleared:
+      DCHECK(absl::holds_alternative<signin_metrics::ProfileSignout>(
+          event_source));
+      base::UmaHistogramEnumeration(
+          "Signin.SyncTurnOff.Completed",
+          absl::get<signin_metrics::ProfileSignout>(event_source),
+          signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS);
+      break;
+  }
+}
+}  // namespace
 
 // A wrapper around PrefService that sets prefs only when updated. It can be
 // configured to commit writes for the updated values on destruction.
@@ -183,7 +245,8 @@ CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
 
 void PrimaryAccountManager::SetPrimaryAccountInfo(
     const CoreAccountInfo& account_info,
-    signin::ConsentLevel consent_level) {
+    signin::ConsentLevel consent_level,
+    signin_metrics::AccessPoint access_point) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync))
         << "Changing the primary sync account is not allowed.";
@@ -200,7 +263,7 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
   switch (consent_level) {
     case signin::ConsentLevel::kSync:
       SetSyncPrimaryAccountInternal(account_info);
-      FirePrimaryAccountChanged(previous_state);
+      FirePrimaryAccountChanged(previous_state, access_point);
       return;
     case signin::ConsentLevel::kSignin:
       bool account_changed = account_info != primary_account_info();
@@ -209,7 +272,7 @@ void PrimaryAccountManager::SetPrimaryAccountInfo(
       SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       if (account_changed)
-        FirePrimaryAccountChanged(previous_state);
+        FirePrimaryAccountChanged(previous_state, access_point);
       return;
   }
 }
@@ -396,7 +459,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   }
 
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
-  FirePrimaryAccountChanged(previous_state);
+  FirePrimaryAccountChanged(previous_state, signout_source_metric);
 }
 
 PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
@@ -409,7 +472,9 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
 }
 
 void PrimaryAccountManager::FirePrimaryAccountChanged(
-    const PrimaryAccountChangeEvent::State& previous_state) {
+    const PrimaryAccountChangeEvent::State& previous_state,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {
   PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();
   PrimaryAccountChangeEvent event_details(previous_state, current_state);
 
@@ -418,6 +483,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
          event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
              PrimaryAccountChangeEvent::Type::kNone)
       << "PrimaryAccountChangeEvent with no change: " << event_details;
+
+  LogPrimaryAccountChangeMetrics(event_details, event_source);
 
   for (Observer& observer : observers_)
     observer.OnPrimaryAccountChanged(event_details);
