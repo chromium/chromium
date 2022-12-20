@@ -310,8 +310,14 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
+// Flaky on linux-chromeos-chrome bot. http://crbug.com/1402697
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_PredictionModelFetchFailed DISABLED_PredictionModelFetchFailed
+#else
+#define MAYBE_PredictionModelFetchFailed PredictionModelFetchFailed
+#endif
 IN_PROC_BROWSER_TEST_P(PredictionManagerBrowserTest,
-                       PredictionModelFetchFailed) {
+                       MAYBE_PredictionModelFetchFailed) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   base::HistogramTester histogram_tester;
