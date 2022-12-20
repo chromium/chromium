@@ -106,7 +106,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
     "//components/crash/core/common:reporter_running_ios",
     "//components/previous_session_info",
     "//ios/chrome/browser/browser_state",

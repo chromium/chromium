@@ -8,14 +8,12 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
-#include "components/breadcrumbs/core/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -67,16 +65,14 @@ size_t GetNumEvents() {
 // Test fixture for BreadcrumbManagerTabHelper class.
 class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
-  BreadcrumbManagerTabHelperTest() {
-    scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     second_web_contents_ = CreateTestWebContents();
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     infobars::ContentInfoBarManager::CreateForWebContents(
         second_web_contents_.get());
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+        browser_context());
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents());
     BreadcrumbManagerTabHelper::CreateForWebContents(
         second_web_contents_.get());
@@ -88,9 +84,6 @@ class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<content::WebContents> second_web_contents_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the identifiers returned for different WebContents are unique.

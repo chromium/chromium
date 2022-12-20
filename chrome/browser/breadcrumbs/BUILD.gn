@@ -5,7 +5,6 @@
 source_set("breadcrumbs") {
   deps = [
     "//base",
-    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/breadcrumbs/core",
@@ -30,7 +29,6 @@ source_set("unit_tests") {
     "//base",
     "//chrome/test:test_support",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
     "//components/crash/core/common:crash_key",
     "//components/infobars/content",
     "//components/infobars/core",

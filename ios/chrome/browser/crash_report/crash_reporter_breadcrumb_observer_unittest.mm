@@ -6,12 +6,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#import "components/breadcrumbs/core/features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
@@ -58,11 +56,7 @@ id StringParameterValidatorWithCountOfSubstring(NSUInteger count,
 // Tests that CrashReporterBreadcrumbObserver attaches observed breadcrumb
 // events to crash reports.
 class CrashReporterBreadcrumbObserverTest : public PlatformTest {
- protected:
-  CrashReporterBreadcrumbObserverTest() {
-    scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
-  }
-
+ public:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -120,6 +114,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
     return "";
   }
 
+ protected:
   id mock_breakpad_controller_;
   std::unique_ptr<ScopedBlockSwizzler>
       breakpad_controller_shared_instance_swizzler_;
@@ -127,9 +122,6 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService
@@ -140,7 +132,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    ASSERT_TRUE(breadcrumb_service);
     breadcrumb_service->AddEvent("Breadcrumb Event");
     const auto& events =
         breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
@@ -176,7 +167,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  ASSERT_TRUE(breadcrumb_service);
   breadcrumb_service->AddEvent("Breadcrumb Event");
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
@@ -189,7 +179,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  ASSERT_TRUE(breadcrumb_service);
 
   // Build a sample breadcrumbs string greater than the maximum allowed size.
   NSMutableString* breadcrumbs = [[NSMutableString alloc] init];
@@ -231,7 +220,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  ASSERT_TRUE(breadcrumb_service);
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
@@ -243,7 +231,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  ASSERT_TRUE(otr_breadcrumb_service);
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
@@ -255,7 +242,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_2 =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_2_.get());
-  ASSERT_TRUE(breadcrumb_service_2);
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(

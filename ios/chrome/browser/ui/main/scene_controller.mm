@@ -19,7 +19,7 @@
 #import "base/time/time.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#import "components/breadcrumbs/core/breadcrumbs_status.h"
+#import "components/breadcrumbs/core/features.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -3300,6 +3300,11 @@ void InjectNTP(Browser* browser) {
     [sceneController incognitoBrowserStateCreated];
   }
 
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+        mainBrowserState->GetOffTheRecordChromeBrowserState());
+  }
+
   // This seems the best place to deem the destroying and rebuilding the
   // incognito browser state to be completed.
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
@@ -3311,7 +3316,7 @@ void InjectNTP(Browser* browser) {
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
 
-  if (breadcrumbs::IsEnabled()) {
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     BreadcrumbManagerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
         ->SetLoggingEnabled(false);
   }

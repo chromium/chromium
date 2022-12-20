@@ -60,11 +60,9 @@ void BreadcrumbManagerBrowserAgent::BrowserDestroyed(Browser* browser) {
 }
 
 void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
-  if (breadcrumb_service)
-    breadcrumb_service->AddEvent(event);
+  BreadcrumbManagerKeyedServiceFactory::GetInstance()
+      ->GetForBrowserState(browser_->GetBrowserState())
+      ->AddEvent(event);
 }
 
 void BreadcrumbManagerBrowserAgent::WebStateInsertedAt(

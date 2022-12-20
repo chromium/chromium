@@ -91,11 +91,9 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
     sequentially_scrolled_ = 0;
   }
 
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          web_state_->GetBrowserState());
-  if (breadcrumb_service)
-    breadcrumb_service->AddEvent(event);
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+      web_state_->GetBrowserState())
+      ->AddEvent(event);
 }
 
 void BreadcrumbManagerTabHelper::DidStartNavigation(

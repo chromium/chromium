@@ -6,14 +6,12 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#include "components/breadcrumbs/core/features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,11 +43,7 @@ std::string GetBreadcrumbsCrashKeyValue() {
 // Tests that CrashReporterBreadcrumbObserver attaches observed breadcrumb
 // events to crash reports.
 class CrashReporterBreadcrumbObserverTest : public PlatformTest {
- protected:
-  CrashReporterBreadcrumbObserverTest() {
-    scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
-  }
-
+ public:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -68,12 +62,10 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile browser_context_;
   TestingProfile browser_context_2_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService

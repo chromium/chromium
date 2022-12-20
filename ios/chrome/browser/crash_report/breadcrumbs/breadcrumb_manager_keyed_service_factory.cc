@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
-#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/web/public/browser_state.h"
 
@@ -30,8 +29,7 @@ BreadcrumbManagerKeyedServiceFactory::BreadcrumbManagerKeyedServiceFactory()
           "BreadcrumbManagerService",
           BrowserStateDependencyManager::GetInstance()) {}
 
-BreadcrumbManagerKeyedServiceFactory::~BreadcrumbManagerKeyedServiceFactory() =
-    default;
+BreadcrumbManagerKeyedServiceFactory::~BreadcrumbManagerKeyedServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 BreadcrumbManagerKeyedServiceFactory::BuildServiceInstanceFor(
@@ -42,13 +40,6 @@ BreadcrumbManagerKeyedServiceFactory::BuildServiceInstanceFor(
 
 web::BrowserState* BreadcrumbManagerKeyedServiceFactory::GetBrowserStateToUse(
     web::BrowserState* browser_state) const {
-  if (!breadcrumbs::IsEnabled())
-    return nullptr;
   // Create the service for both normal and incognito browser states.
   return browser_state;
-}
-
-bool BreadcrumbManagerKeyedServiceFactory::ServiceIsCreatedWithBrowserState()
-    const {
-  return breadcrumbs::IsEnabled();
 }
