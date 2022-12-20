@@ -769,14 +769,14 @@ enum class ClientUaHeaderCallType {
 
 // Implementation of UpdateNavigationRequestClientUaHeaders().
 void UpdateNavigationRequestClientUaHeadersImpl(
-    const url::Origin& origin,
     ClientHintsControllerDelegate* delegate,
     bool override_ua,
     FrameTreeNode* frame_tree_node,
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers,
     const blink::ParsedPermissionsPolicy& container_policy,
-    const absl::optional<GURL>& request_url) {
+    const absl::optional<GURL>& request_url,
+    const ClientHintsExtendedData& data) {
   absl::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
   if (override_ua) {
@@ -801,11 +801,6 @@ void UpdateNavigationRequestClientUaHeadersImpl(
   if (!disable_due_to_custom_ua) {
     if (!ua_metadata.has_value())
       ua_metadata = delegate->GetUserAgentMetadata();
-
-    ClientHintsExtendedData data(origin, frame_tree_node, delegate,
-                                 request_url);
-    UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
-        data, container_policy);
 
     // The `Sec-CH-UA` client hint is attached to all outgoing requests. This is
     // (intentionally) different than other client hints.
@@ -930,9 +925,10 @@ void UpdateNavigationRequestClientUaHeaders(
     return;
   }
 
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
   UpdateNavigationRequestClientUaHeadersImpl(
-      origin, delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers, {}, request_url);
+      delegate, override_ua, frame_tree_node,
+      ClientUaHeaderCallType::kAfterCreated, headers, {}, request_url, data);
 }
 
 namespace {
@@ -991,9 +987,9 @@ void AddRequestClientHintsHeaders(
 
   if (UserAgentClientHintEnabled()) {
     UpdateNavigationRequestClientUaHeadersImpl(
-        origin, delegate, is_ua_override_on, frame_tree_node,
+        delegate, is_ua_override_on, frame_tree_node,
         ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
-        request_url);
+        request_url, data);
   }
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
