@@ -477,6 +477,11 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
       [_POLICIES_DEFINITIONS_PATH, _PRESUBMIT_PATH]):
     return results
 
+  skip_compatibility_check = ('BYPASS_POLICY_COMPATIBILITY_CHECK'
+                                in input_api.change.tags)
+  if skip_compatibility_check:
+    return results
+
   policy_changelist = _GetPolicyChangeList(input_api)
   current_version = _GetCurrentVersion(input_api)
   for policy_changes in policy_changelist:
@@ -523,7 +528,7 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
       # policies.
       if new_policy_platforms[platform]['to'] > current_version:
         previous_version = int(current_version) - 1
-        results.append(output_api.PresubmitError(
+        results.append(output_api.PresubmitPromptWarning(
           f"In policy {policy_name}: Support on platform {platform} can only "
           f"be removed for version {previous_version}. Please remove all "
           "references in the code to that policy since it will not be "
@@ -655,7 +660,8 @@ def CheckPolicyDefinitions(input_api, output_api):
                                 in input_api.change.tags)
   errors, warnings = checker.CheckModifiedPolicies(
     _GetPolicyChangeList(input_api), current_version,
-    _GetKnownFeatures(input_api), _GetCommonSchema(input_api))
+    _GetKnownFeatures(input_api), _GetCommonSchema(input_api),
+    skip_compatibility_check)
 
   # PRESUBMIT won't print warning if there is any error. Append warnings to
   # error for policy_templates.json so that they can always be printed

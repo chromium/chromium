@@ -1531,33 +1531,37 @@ class PolicyTemplateChecker(object):
 
 
   def CheckModifiedPolicies(self, policy_change_list, current_version,
-                            known_features, schemas_by_id):
+                            known_features, schemas_by_id,
+                            skip_compatibility_check):
     '''
       Checks that changes made to policies `policy_change_list` are compatible
       with the `current_version` and previous versions of the policy.
       This also check that the policy definition schema matches the expected
       schema for a policy.
-      'known_features' is a list of faetures that we can find in the feature
+      'known_features' is a list of features that we can find in the feature
       list for policies.
+      'skip_compatibility_check' is a flag used to bypass compatibility checks.
       Returns warnings and errors found in the policies.
     '''
     self.features = known_features
-    modified_policies = [
-        pc['new_policy'] for pc in policy_change_list
-        if pc['new_policy'] is not None
-    ]
-    for policy in modified_policies:
+    for policy_change in policy_change_list:
+      policy = policy_change['new_policy']
+      # Nothing to check if the policy was removed.
+      if policy is None:
+        continue
+
       self._CheckPolicyDefinition(policy, current_version, schemas_by_id)
 
-      self.schema_compatible_errors = []
-      old_schema = None
-      if 'old_policy' in policy:
-        old_schema = policy['old_policy']['schema']
-      new_schema = None
-      if 'new_policy' in policy:
-        new_schema = policy['new_policy']['schema']
+      if skip_compatibility_check:
+        continue
 
-      self._CheckSchemasAreCompatible([policy['name']], old_schema, new_schema)
+      self.schema_compatible_errors = []
+      old_schema = {}
+      if policy_change['old_policy'] is not None:
+        old_schema = policy_change['old_policy']['schema']
+        self._CheckSchemasAreCompatible([policy['name']], old_schema,
+                                        policy['schema'])
+
       if self.schema_compatible_errors:
         schema_compatible_error_message = '\n  '.join(
             self.schema_compatible_errors)
