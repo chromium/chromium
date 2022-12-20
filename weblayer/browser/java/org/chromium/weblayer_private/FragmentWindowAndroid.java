@@ -97,7 +97,7 @@ public class FragmentWindowAndroid extends WindowAndroid {
 
     @Override
     public View getReadbackView() {
-        BrowserViewController viewController = getBrowser().getPossiblyNullViewController();
+        BrowserViewController viewController = mFragment.getPossiblyNullViewController();
         if (viewController == null) return null;
         return viewController.getViewForMagnifierReadback();
     }
@@ -106,8 +106,8 @@ public class FragmentWindowAndroid extends WindowAndroid {
         mModalDialogManager = modalDialogManager;
     }
 
-    public BrowserImpl getBrowser() {
-        return mFragment.getBrowser();
+    public BrowserFragmentImpl getFragment() {
+        return mFragment;
     }
 
     public FragmentManager getFragmentManager() {

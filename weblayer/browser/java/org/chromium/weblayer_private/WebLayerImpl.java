@@ -82,16 +82,14 @@ import org.chromium.ui.base.ResourceBundle;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.ICrashReporterController;
-import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
-import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.media.MediaRouterClientImpl;
 import org.chromium.weblayer_private.media.MediaSessionManager;
 import org.chromium.weblayer_private.media.MediaStreamManager;
@@ -372,18 +370,13 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
-    public IBrowserFragment createBrowserFragmentImpl(IObjectWrapper fragmentArgs) {
+    public IBrowser createBrowser(IObjectWrapper serviceContext, IObjectWrapper fragmentArgs) {
         StrictModeWorkaround.apply();
-        Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        BrowserFragmentImpl fragment = new BrowserFragmentImpl(mProfileManager, unwrappedArgs);
-        return fragment.asIBrowserFragment();
-    }
-
-    @Override
-    public IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() {
-        StrictModeWorkaround.apply();
-        MediaRouteDialogFragmentImpl fragment = new MediaRouteDialogFragmentImpl();
-        return fragment.asIMediaRouteDialogFragment();
+        Bundle unwrappedFragmentArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
+        Context unwrappedServiceContext = ObjectWrapper.unwrap(serviceContext, Context.class);
+        BrowserImpl browser =
+                new BrowserImpl(unwrappedServiceContext, mProfileManager, unwrappedFragmentArgs);
+        return browser;
     }
 
     @Override
@@ -535,6 +528,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
     @Override
     public IObjectWrapper getApplicationContext() {
+        StrictModeWorkaround.apply();
         return ObjectWrapper.wrap(ContextUtils.getApplicationContext());
     }
 

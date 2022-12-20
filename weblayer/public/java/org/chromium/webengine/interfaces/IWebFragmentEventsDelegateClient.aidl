@@ -6,11 +6,9 @@ package org.chromium.webengine.interfaces;
 
 import android.view.SurfaceControlViewHost.SurfacePackage;
 
-import org.chromium.webengine.interfaces.ICookieManagerDelegate;
-import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
-oneway interface IWebFragmentDelegateClient {
+oneway interface IWebFragmentEventsDelegateClient {
     void onSurfacePackageReady(in SurfacePackage surfacePackage) = 1;
 
     // Pre-U/T -devices cannot create an out-of-process Service with privileges needed
@@ -22,8 +20,4 @@ oneway interface IWebFragmentDelegateClient {
     void onContentViewRenderViewReady(in IObjectWrapper contentViewRenderView) = 2;
 
     void onStarted(in Bundle instanceState) = 3;
-
-    void onCookieManagerReady(in ICookieManagerDelegate delegate) = 4;
-
-    void onTabManagerReady(in ITabManagerDelegate delegate) = 5;
 }

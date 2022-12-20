@@ -25,8 +25,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
-import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.IWebLayerClient;
@@ -507,23 +506,10 @@ class WebLayer {
         }
     }
 
-    /**
-     * Returns remote counterpart for the BrowserFragment: an {@link IBrowserFragment}.
-     */
-    /* package */ IBrowserFragment connectFragment(Bundle fragmentArgs) {
+    IBrowser createBrowser(Context serviceContext, Bundle fragmentArgs) {
         try {
-            return mImpl.createBrowserFragmentImpl(ObjectWrapper.wrap(fragmentArgs));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Returns the remote counterpart of MediaRouteDialogFragment.
-     */
-    /* package */ IMediaRouteDialogFragment connectMediaRouteDialogFragment() {
-        try {
-            return mImpl.createMediaRouteDialogFragmentImpl();
+            return mImpl.createBrowser(
+                    ObjectWrapper.wrap(serviceContext), ObjectWrapper.wrap(fragmentArgs));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

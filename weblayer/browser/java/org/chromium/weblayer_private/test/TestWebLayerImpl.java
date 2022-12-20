@@ -7,8 +7,6 @@ package org.chromium.weblayer_private.test;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import androidx.fragment.app.FragmentManager;
-
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.UsedByReflection;
@@ -19,7 +17,6 @@ import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
-import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.MockFido2CredentialRequest;
@@ -40,7 +37,6 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
-import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
 
 import java.util.ArrayList;
@@ -207,9 +203,7 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
 
     @Override
     public IObjectWrapper getMediaRouteButton(String name) {
-        FragmentManager fm =
-                MediaRouteDialogFragmentImpl.getInstanceForTest().getSupportFragmentManager();
-        return ObjectWrapper.wrap(RouterTestUtils.waitForRouteButton(fm, name));
+        return null;
     }
 
     @Override
@@ -248,8 +242,10 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                 ObjectWrapper.unwrap(eventsObserved, ArrayList.class);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowserImpl browserImpl = (BrowserImpl) browser;
-            browserImpl.getViewController().addContentCaptureConsumerForTesting(
-                    new TestContentCaptureConsumer(unwrappedOnNewEvents, unwrappedEventsObserved));
+            browserImpl.getBrowserFragment()
+                    .getPossiblyNullViewController()
+                    .addContentCaptureConsumerForTesting(new TestContentCaptureConsumer(
+                            unwrappedOnNewEvents, unwrappedEventsObserved));
         });
     }
 

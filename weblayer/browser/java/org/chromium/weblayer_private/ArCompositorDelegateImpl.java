@@ -25,21 +25,29 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
 
     @Override
     public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
-        BrowserViewController controller = mBrowser.getViewController();
-        controller.setSurfaceProperties(/*requiresAlphaChannel=*/enabled,
-                /*zOrderMediaOverlay=*/domSurfaceNeedsConfiguring);
+        BrowserViewController controller =
+                mBrowser.getBrowserFragment().getPossiblyNullViewController();
+        if (controller != null) {
+            controller.setSurfaceProperties(/*requiresAlphaChannel=*/enabled,
+                    /*zOrderMediaOverlay=*/domSurfaceNeedsConfiguring);
+        }
     }
 
     @Override
     public void dispatchTouchEvent(MotionEvent ev) {
-        BrowserViewController controller = mBrowser.getViewController();
-        controller.getContentView().dispatchTouchEvent(ev);
+        BrowserViewController controller =
+                mBrowser.getBrowserFragment().getPossiblyNullViewController();
+        if (controller != null) {
+            controller.getContentView().dispatchTouchEvent(ev);
+        }
     }
 
     @Override
     @NonNull
     public ViewGroup getArSurfaceParent() {
-        BrowserViewController controller = mBrowser.getViewController();
+        BrowserViewController controller =
+                mBrowser.getBrowserFragment().getPossiblyNullViewController();
+        if (controller == null) return null;
         return controller.getArViewHolder();
     }
 

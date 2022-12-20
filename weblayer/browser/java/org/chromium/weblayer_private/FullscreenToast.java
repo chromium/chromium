@@ -65,10 +65,10 @@ public final class FullscreenToast {
     }
 
     private void addSystemUiChangedObserver() {
-        if (mTab.getBrowser().getViewAndroidDelegateContainerView() == null) {
+        if (mTab.getBrowser().getBrowserFragment().getViewAndroidDelegateContainerView() == null) {
             return;
         }
-        mView = mTab.getBrowser().getViewAndroidDelegateContainerView();
+        mView = mTab.getBrowser().getBrowserFragment().getViewAndroidDelegateContainerView();
         mSystemUiVisibilityChangeListener = new View.OnSystemUiVisibilityChangeListener() {
             @Override
             public void onSystemUiVisibilityChange(int visibility) {

@@ -227,6 +227,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     /**
+     * Get {@link SelectionPopupController} object used for the given WebContents but does not
+     * create a new one.
+     * @param webContents {@link WebContents} object.
+     * @return {@link SelectionPopupController} object. {@code null} if not available.
+     */
+    public static SelectionPopupControllerImpl fromWebContentsNoCreate(WebContents webContents) {
+        return ((WebContentsImpl) webContents)
+                .getOrSetUserData(SelectionPopupControllerImpl.class, null);
+    }
+
+    /**
      * Create {@link SelectionPopupController} instance. Note that it will create an instance with
      * no link to native side for testing only.
      * @param webContents {@link WebContents} mocked for testing.

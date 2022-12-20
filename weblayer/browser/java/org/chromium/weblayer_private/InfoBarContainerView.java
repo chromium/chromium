@@ -190,8 +190,12 @@ public class InfoBarContainerView extends SwipableOverlayView {
     void addToParentView() {
         // If mTab is null, destroy() was called. This should not be added after destroyed.
         assert mTab != null;
-        super.addToParentViewAtIndex(mParentView,
-                mTab.getBrowser().getViewController().getDesiredInfoBarContainerViewIndex());
+        BrowserViewController viewController =
+                mTab.getBrowser().getBrowserFragment().getPossiblyNullViewController();
+        if (viewController != null) {
+            super.addToParentViewAtIndex(
+                    mParentView, viewController.getDesiredInfoBarContainerViewIndex());
+        }
     }
 
     /**

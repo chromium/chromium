@@ -100,6 +100,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
 
         @Override
         public View onCreateView(String name, Context context, AttributeSet attrs) {
+            StrictModeWorkaround.apply();
             return null;
         }
 
@@ -142,19 +143,15 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         }
     }
 
-    protected FragmentHostingRemoteFragmentImpl() {
+    protected FragmentHostingRemoteFragmentImpl(Context context) {
         super();
+        mContext = createRemoteFragmentContext(context);
     }
 
     @Override
     protected void onAttach(Context embedderContext) {
         StrictModeWorkaround.apply();
         super.onAttach(embedderContext);
-
-        mContext = createRemoteFragmentContext(embedderContext);
-        mFragmentController =
-                FragmentController.createController(new RemoteFragmentHostCallback(this));
-        mFragmentController.attachHost(null);
 
         // Some appcompat functionality depends on Fragments being hosted from within an
         // AppCompatActivity, which performs some static initialization. Even if we're running
@@ -170,6 +167,11 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
     protected void onCreate(Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
         super.onCreate(savedInstanceState);
+
+        mFragmentController =
+                FragmentController.createController(new RemoteFragmentHostCallback(this));
+        mFragmentController.attachHost(null);
+
         mFragmentController.dispatchCreate();
     }
 
@@ -184,18 +186,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
     protected void onDestroy() {
         StrictModeWorkaround.apply();
         super.onDestroy();
-        mFragmentController.dispatchDestroy();
-    }
 
-    @Override
-    protected void onDetach() {
-        StrictModeWorkaround.apply();
-        super.onDetach();
-        mContext = null;
-
-        // If the Fragment is retained, onDestroy won't be called during configuration changes. We
-        // have to create a new FragmentController that's attached to the correct Context when
-        // reattaching this Fragment, so destroy the existing one here.
         if (!mFragmentController.getSupportFragmentManager().isDestroyed()) {
             mFragmentController.dispatchDestroy();
             assert mFragmentController.getSupportFragmentManager().isDestroyed();
@@ -203,7 +194,14 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
     }
 
     @Override
+    protected void onDetach() {
+        StrictModeWorkaround.apply();
+        super.onDetach();
+    }
+
+    @Override
     protected void onStart() {
+        StrictModeWorkaround.apply();
         super.onStart();
 
         if (!mStarted) {
@@ -217,18 +215,21 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
 
     @Override
     protected void onStop() {
+        StrictModeWorkaround.apply();
         super.onStop();
         mFragmentController.dispatchStop();
     }
 
     @Override
     protected void onResume() {
+        StrictModeWorkaround.apply();
         super.onResume();
         mFragmentController.dispatchResume();
     }
 
     @Override
     protected void onPause() {
+        StrictModeWorkaround.apply();
         super.onPause();
         mFragmentController.dispatchPause();
     }

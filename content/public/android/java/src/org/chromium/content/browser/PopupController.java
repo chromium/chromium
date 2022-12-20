@@ -54,8 +54,9 @@ public class PopupController implements UserData {
      */
     public static void hidePopupsAndClearSelection(WebContents webContents) {
         if (webContents == null) return;
+
         SelectionPopupControllerImpl controller =
-                SelectionPopupControllerImpl.fromWebContents(webContents);
+                SelectionPopupControllerImpl.fromWebContentsNoCreate(webContents);
         if (controller != null) controller.destroyActionModeAndUnselect();
         PopupController.hideAll(webContents);
     }

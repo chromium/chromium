@@ -67,7 +67,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean isApplicationInForeground() {
-        return mTab.getBrowser().isResumed();
+        return mTab.getBrowser().getBrowserFragment().isVisible();
     }
 
     @Override
@@ -134,7 +134,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public WindowAndroid getWindowAndroid() {
-        return mTab.getBrowser().getWindowAndroid();
+        return mTab.getBrowser().getBrowserFragment().getWindowAndroid();
     }
 
     @Override

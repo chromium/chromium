@@ -98,7 +98,8 @@ public class ContactsPickerAdapter extends PickerAdapter {
 
     @Nullable
     private IUserIdentityCallbackClient getUserIdentityCallback() {
-        return BrowserImpl.fromWindowAndroid(mWindowAndroid)
+        return BrowserFragmentImpl.fromWindowAndroid(mWindowAndroid)
+                .getBrowser()
                 .getProfile()
                 .getUserIdentityCallbackClient();
     }

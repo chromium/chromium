@@ -13,62 +13,36 @@ import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.WindowManager;
 
-import org.chromium.webengine.interfaces.IFragmentParams;
-import org.chromium.webengine.interfaces.ITabListObserverDelegate;
-import org.chromium.webengine.interfaces.IWebFragmentDelegate;
-import org.chromium.webengine.interfaces.IWebFragmentDelegateClient;
-import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
+import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
+import org.chromium.webengine.interfaces.IWebFragmentEventsDelegateClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
- * This class acts as a proxy between the embedding app's WebFragment and
+ * This class proxies Fragment Lifecycle events from the WebFragment to
  * the WebLayer implementation.
  */
-class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
+class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private Context mContext;
-    private WebLayer mWebLayer;
     private WebFragmentEventHandler mEventHandler;
 
     private WebFragmentTabListDelegate mTabListDelegate;
 
-    private IWebFragmentDelegateClient mClient;
+    private IWebFragmentEventsDelegateClient mClient;
     private SurfaceControlViewHost mSurfaceControlViewHost;
 
-    WebFragmentDelegate(Context context, WebLayer webLayer, IFragmentParams params) {
-        mContext = context;
-        mWebLayer = webLayer;
-        mTabListDelegate = new WebFragmentTabListDelegate();
-
-        WebFragmentCreateParams createParams = (new WebFragmentCreateParams.Builder())
-                                                       .setProfileName(params.profileName)
-                                                       .setPersistenceId(params.persistenceId)
-                                                       .setIsIncognito(params.isIncognito)
-                                                       .build();
-        mHandler.post(() -> { mEventHandler = createWebFragmentEventHandler(createParams); });
-    }
-
-    private WebFragmentEventHandler createWebFragmentEventHandler(WebFragmentCreateParams params) {
+    WebFragmentEventsDelegate(Context context, Browser browser) {
         ThreadCheck.ensureOnUiThread();
-        String profileName = Profile.sanitizeProfileName(params.getProfileName());
-        boolean isIncognito = params.isIncognito() || "".equals(profileName);
-        // Support for named incognito profiles was added in 87. Checking is done in
-        // WebFragment, as this code should not trigger loading WebLayer.
-        Bundle args = new Bundle();
-        args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
-        if (params.getPersistenceId() != null) {
-            args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.getPersistenceId());
-        }
-        args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
-        args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, params.getUseViewModel());
 
-        return new WebFragmentEventHandler(args);
+        mContext = context;
+
+        mEventHandler = new WebFragmentEventHandler(browser);
     }
 
     @Override
-    public void setClient(IWebFragmentDelegateClient client) {
+    public void setClient(IWebFragmentEventsDelegateClient client) {
         mClient = client;
     }
 
@@ -123,15 +97,7 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mHandler.post(() -> {
-            mEventHandler.onCreate(savedInstanceState, mTabListDelegate);
-
-            Profile profile = mEventHandler.getBrowser().getProfile();
-            try {
-                mClient.onCookieManagerReady(new CookieManagerDelegate(profile.getCookieManager()));
-            } catch (RemoteException e) {
-            }
-        });
+        mHandler.post(() -> { mEventHandler.onCreate(savedInstanceState); });
     }
 
     @Override
@@ -161,7 +127,6 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
 
             try {
                 mClient.onStarted(instanceState);
-                mClient.onTabManagerReady(new TabManagerDelegate(mEventHandler.getBrowser()));
             } catch (RemoteException e) {
             }
         });
@@ -180,11 +145,6 @@ class WebFragmentDelegate extends IWebFragmentDelegate.Stub {
     @Override
     public void onPause() {
         mHandler.post(() -> mEventHandler.onPause());
-    }
-
-    @Override
-    public void setTabListObserverDelegate(ITabListObserverDelegate browserObserverDelegate) {
-        mTabListDelegate.setObserver(browserObserverDelegate);
     }
 
     /**

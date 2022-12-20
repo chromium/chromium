@@ -38,6 +38,7 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
         return null;
     }
 
+    // TODO(swestphal): remove this.
     protected final Activity getActivity() {
         return null;
     }

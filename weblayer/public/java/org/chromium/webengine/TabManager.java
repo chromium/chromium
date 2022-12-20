@@ -22,10 +22,10 @@ import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.ITabParams;
 
 /**
- * Class for interaction with WebFragment Tabs.
- * Calls into WebFragmentDelegate which runs on the Binder thread, and requires
+ * Class for interaction with WebEngine Tabs.
+ * Calls into WebEngineDelegate which runs on the Binder thread, and requires
  * finished initialization from onCreate on UIThread.
- * Access only via ListenableFuture through WebFragment.
+ * Access only via ListenableFuture through WebEngine.
  */
 public class TabManager {
     private ITabManagerDelegate mDelegate;

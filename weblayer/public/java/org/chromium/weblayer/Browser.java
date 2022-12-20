@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
+import org.chromium.weblayer_private.interfaces.IBrowserFragment;
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
@@ -103,6 +105,28 @@ class Browser {
 
     IBrowser getIBrowser() {
         return mImpl;
+    }
+
+    /**
+     * Returns remote counterpart for the BrowserFragment: an {@link IBrowserFragment}.
+     */
+    IBrowserFragment connectFragment() {
+        try {
+            return mImpl.getBrowserFragmentImpl();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns the remote counterpart of MediaRouteDialogFragment.
+     */
+    /* package */ IMediaRouteDialogFragment createMediaRouteDialogFragment() {
+        try {
+            return mImpl.createMediaRouteDialogFragmentImpl();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
     /**
@@ -385,6 +409,14 @@ class Browser {
         throwIfDestroyed();
         try {
             return Profile.of(mImpl.getProfile());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public void shutdown() {
+        try {
+            mImpl.shutdown();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

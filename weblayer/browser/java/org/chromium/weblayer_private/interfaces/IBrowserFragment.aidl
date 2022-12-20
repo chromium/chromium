@@ -9,5 +9,4 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 
 interface IBrowserFragment {
   IRemoteFragment asRemoteFragment() = 0;
-  IBrowser getBrowser() = 1;
 }

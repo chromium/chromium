@@ -4,8 +4,9 @@
 
 package org.chromium.weblayer;
 
-import android.content.Context;
+import android.os.RemoteException;
 
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 
 /**
@@ -20,13 +21,13 @@ class MediaRouteDialogFragmentEventHandler extends RemoteFragmentEventHandler {
     }
 
     @Override
-    protected IRemoteFragment createRemoteFragmentEventHandler(Context appContext) {
+    protected IRemoteFragment createRemoteFragmentEventHandler(Browser browser) {
         try {
-            return WebLayer.loadSync(appContext)
-                    .connectMediaRouteDialogFragment()
-                    .asRemoteFragment();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize WebLayer", e);
+            IMediaRouteDialogFragment mediaRouteDialogFragment =
+                    browser.createMediaRouteDialogFragment();
+            return mediaRouteDialogFragment.asRemoteFragment();
+        } catch (RemoteException e) {
+            throw new RuntimeException("Failed to initialize MediaRouteDialogFragment", e);
         }
     }
 }

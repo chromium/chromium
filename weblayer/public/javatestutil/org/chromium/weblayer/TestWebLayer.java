@@ -101,10 +101,6 @@ public final class TestWebLayer {
         mITestWebLayer.setAccessibilityEnabled(enabled);
     }
 
-    public boolean canBrowserControlsScroll(Tab tab) throws RemoteException {
-        return mITestWebLayer.canBrowserControlsScroll(tab.getITab());
-    }
-
     public void addInfoBar(Tab tab, Runnable runnable) throws RemoteException {
         mITestWebLayer.addInfoBar(tab.getITab(), ObjectWrapper.wrap(runnable));
     }

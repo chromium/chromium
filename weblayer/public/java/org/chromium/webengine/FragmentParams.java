@@ -7,7 +7,7 @@ package org.chromium.webengine;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.webengine.interfaces.IFragmentParams;
+import org.chromium.webengine.interfaces.IWebEngineParams;
 
 /**
  * Parameters for {@link WebSandbox#createFragment}.
@@ -21,8 +21,8 @@ public class FragmentParams {
 
     private boolean mIsIncognito;
 
-    IFragmentParams getParcelable() {
-        IFragmentParams params = new IFragmentParams();
+    IWebEngineParams getParcelable() {
+        IWebEngineParams params = new IWebEngineParams();
         params.profileName = mProfileName;
         params.persistenceId = mPersistenceId;
         params.isIncognito = mIsIncognito;

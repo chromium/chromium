@@ -4,7 +4,7 @@
 
 package org.chromium.webengine.interfaces;
 
-parcelable IFragmentParams {
+parcelable IWebEngineParams {
     String profileName;
     String persistenceId;
     boolean isIncognito;

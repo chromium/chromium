@@ -35,6 +35,15 @@ public interface SelectionPopupController {
     }
 
     /**
+     * @param webContents {@link WebContents} object.
+     * @return {@link SelectionPopupController} object used for the given WebContents if created.
+     *         {@code null} if not available.
+     */
+    static SelectionPopupController fromWebContentsNoCreate(WebContents webContents) {
+        return SelectionPopupControllerImpl.fromWebContentsNoCreate(webContents);
+    }
+
+    /**
      * Makes {@link SelectionPopupcontroller} only use the WebContents context when inflating menus.
      */
     static void setMustUseWebContentsContext() {

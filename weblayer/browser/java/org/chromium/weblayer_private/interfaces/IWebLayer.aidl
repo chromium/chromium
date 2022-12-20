@@ -7,6 +7,7 @@ package org.chromium.weblayer_private.interfaces;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -17,14 +18,6 @@ import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 interface IWebLayer {
   // ID 1 was loadAsyncV80 and was removed in M86.
   // ID 2 was loadSyncV80 and was removed in M86.
-
-  // Creates the WebLayer counterpart to a BrowserFragment - a BrowserFragmentImpl
-  //
-  // @param fragmentClient Representative of the Fragment on the client side through which
-  // WebLayer can call methods on Fragment.
-  // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
-  // (see Fragment#setArguments).
-  IBrowserFragment createBrowserFragmentImpl(in IObjectWrapper fragmentArgs) = 3;
 
   // Create or get the profile matching profileName.
   IProfile getProfile(in String profileName) = 4;
@@ -81,7 +74,6 @@ interface IWebLayer {
                                  in IObjectWrapper remoteContext) = 19;
 
   IObjectWrapper getApplicationContext() = 20;
-  IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() = 21;
   IProfile getIncognitoProfile(in String profileName) = 24;
 
   // Added in Version 88.
@@ -96,6 +88,8 @@ interface IWebLayer {
 
   // Added in Version 101.
   String getXClientDataHeader() = 28;
+
+  IBrowser createBrowser(IObjectWrapper serviceContext, IObjectWrapper fragmentArgs) = 29;
 
   // WARNING: when choosing next value make sure you look back for the max, as
   // merges may mean the last function does not have the max value.

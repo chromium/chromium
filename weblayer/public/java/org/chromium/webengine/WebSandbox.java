@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,11 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.webengine.interfaces.ICookieManagerDelegate;
+import org.chromium.webengine.interfaces.ITabManagerDelegate;
+import org.chromium.webengine.interfaces.IWebEngineDelegate;
+import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
+import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
 import org.chromium.webengine.interfaces.IWebSandboxCallback;
 import org.chromium.webengine.interfaces.IWebSandboxService;
 
@@ -30,6 +37,7 @@ import java.util.List;
  * Handle to the browsing Sandbox. Must be created asynchronously.
  */
 public class WebSandbox {
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     // TODO(swestphal): Remove this and its function args and detect which service should be used
     // based on android version.
     private static final String BROWSER_PROCESS_MODE =
@@ -52,7 +60,7 @@ public class WebSandbox {
     private ConnectionSetup mConnection;
     private IWebSandboxService mWebSandboxService;
 
-    private List<WebFragment> mActiveFragments = new ArrayList<>();
+    private List<WebEngine> mActiveWebEngines = new ArrayList<>();
 
     private static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<WebSandbox> mCompleter;
@@ -134,32 +142,57 @@ public class WebSandbox {
         });
     }
 
-    /**
-     * Creates a new WebFragment for displaying web content.
-     */
-    @Nullable
-    public WebFragment createFragment() {
-        FragmentParams params =
-                (new FragmentParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
-        return createFragment(params);
+    private class WebEngineDelegateClient extends IWebEngineDelegateClient.Stub {
+        private CallbackToFutureAdapter.Completer<WebEngine> mWebEngineCompleter;
+        private WebEngine mWebEngine;
+
+        WebEngineDelegateClient(CallbackToFutureAdapter.Completer<WebEngine> completer) {
+            mWebEngineCompleter = completer;
+        }
+
+        @Override
+        public void onWebEngineReady(IWebEngineDelegate delegate,
+                IWebFragmentEventsDelegate fragmentEventsDelegate,
+                ITabManagerDelegate tabManagerDelegate,
+                ICookieManagerDelegate cookieManagerDelegate) {
+            mHandler.post(() -> {
+                mWebEngine = WebEngine.create(WebSandbox.this, delegate, fragmentEventsDelegate,
+                        tabManagerDelegate, cookieManagerDelegate);
+                addWebEngine(mWebEngine);
+                mWebEngineCompleter.set(mWebEngine);
+            });
+        }
     }
 
     /**
-     * Creates a new WebFragment for displaying web content.
+     * Asynchronously creates a new WebEngine with default Profile.
      */
     @Nullable
-    public WebFragment createFragment(FragmentParams params) {
+    public ListenableFuture<WebEngine> createWebEngine() {
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
-        try {
-            WebFragment fragment = new WebFragment();
-            fragment.initialize(
-                    this, mWebSandboxService.createFragmentDelegate(params.getParcelable()));
-            return fragment;
-        } catch (RemoteException e) {
-            return null;
+        FragmentParams params =
+                (new FragmentParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
+        return createWebEngine(params);
+    }
+
+    /**
+     * Asynchronously creates a new WebEngine.
+     */
+    @Nullable
+    public ListenableFuture<WebEngine> createWebEngine(FragmentParams params) {
+        if (mWebSandboxService == null) {
+            throw new IllegalStateException("WebSandbox has been destroyed");
         }
+        ListenableFuture<WebEngine> futureWebEngine =
+                CallbackToFutureAdapter.getFuture(completer -> {
+                    mWebSandboxService.createWebEngineDelegate(
+                            params.getParcelable(), new WebEngineDelegateClient(completer));
+
+                    return "WebEngineClient Future";
+                });
+        return futureWebEngine;
     }
 
     /**
@@ -188,12 +221,19 @@ public class WebSandbox {
         return false;
     }
 
-    void addFragment(WebFragment fragment) {
-        mActiveFragments.add(fragment);
+    void addWebEngine(WebEngine webEngine) {
+        mActiveWebEngines.add(webEngine);
     }
 
-    void removeFragment(WebFragment fragment) {
-        mActiveFragments.remove(fragment);
+    void removeWebEngine(WebEngine webEngine) {
+        mActiveWebEngines.remove(webEngine);
+    }
+
+    /**
+     * Returns all active {@link WebEngine}.
+     */
+    public List<WebEngine> getWebEngines() {
+        return mActiveWebEngines;
     }
 
     boolean isShutdown() {
@@ -206,10 +246,11 @@ public class WebSandbox {
             return;
         }
 
-        for (WebFragment fragment : mActiveFragments) {
-            // This will detach the fragment, save the state, and remove |fragment| from
-            // |mActiveFragments|.
-            fragment.invalidate();
+        for (WebEngine engine : mActiveWebEngines) {
+            // This will shut down the WebEngine, its fragment, and remove {@code engine} from
+            // {@code mActiveWebEngines}.
+            removeWebEngine(engine);
+            engine.invalidate();
         }
 
         mWebSandboxService = null;

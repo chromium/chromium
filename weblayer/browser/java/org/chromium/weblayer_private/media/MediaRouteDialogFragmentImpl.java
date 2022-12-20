@@ -41,8 +41,8 @@ public class MediaRouteDialogFragmentImpl extends FragmentHostingRemoteFragmentI
         }
     }
 
-    public MediaRouteDialogFragmentImpl() {
-        super();
+    public MediaRouteDialogFragmentImpl(Context context) {
+        super(context);
         sInstanceForTest = new WeakReference<MediaRouteDialogFragmentImpl>(this);
     }
 

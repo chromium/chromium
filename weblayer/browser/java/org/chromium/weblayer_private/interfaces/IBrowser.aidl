@@ -5,6 +5,8 @@
 package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
+import org.chromium.weblayer_private.interfaces.IBrowserFragment;
+import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.ITab;
@@ -34,4 +36,10 @@ interface IBrowser {
 
   // Added in 105
   int[] getTabIds() = 20;
+
+  void shutdown() = 22;
+
+  IBrowserFragment getBrowserFragmentImpl() = 23;
+  IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() = 24;
+
 }

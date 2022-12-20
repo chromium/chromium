@@ -75,34 +75,34 @@ public final class BrowserViewController
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
-    public BrowserViewController(
-            FragmentWindowAndroid windowAndroid, boolean recreateForConfigurationChange) {
+    public BrowserViewController(Context embedderContext, FragmentWindowAndroid windowAndroid,
+            boolean recreateForConfigurationChange) {
         mWindowAndroid = windowAndroid;
-        Context context = mWindowAndroid.getContext().get();
-        mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
+        mContentViewRenderView =
+                new ContentViewRenderView(embedderContext, recreateForConfigurationChange);
 
         mContentViewRenderView.onNativeLibraryLoaded(mWindowAndroid);
-        mContentView = ContentViewWithAutofill.createContentView(context, null);
+        mContentView = ContentViewWithAutofill.createContentView(embedderContext, null);
         mContentViewRenderView.addView(mContentView,
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
 
-        mArViewHolder = new FrameLayout(context);
+        mArViewHolder = new FrameLayout(embedderContext);
         mArViewHolder.setVisibility(View.GONE);
         mContentViewRenderView.addView(mArViewHolder,
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        mWebContentsOverlayView = new FrameLayout(context);
+        mWebContentsOverlayView = new FrameLayout(embedderContext);
         RelativeLayout.LayoutParams overlayParams =
                 new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
         mContentViewRenderView.addView(mWebContentsOverlayView, overlayParams);
         mWindowAndroid.setAnimationPlaceholderView(mWebContentsOverlayView);
 
         mModalDialogManager = new ModalDialogManager(
-                new AppModalPresenter(context), ModalDialogManager.ModalDialogType.APP);
+                new AppModalPresenter(embedderContext), ModalDialogManager.ModalDialogType.APP);
         mModalDialogManager.addObserver(this);
         mModalDialogManager.registerPresenter(
-                new WebLayerTabModalPresenter(this, context), ModalDialogType.TAB);
+                new WebLayerTabModalPresenter(this, embedderContext), ModalDialogType.TAB);
         mWindowAndroid.setModalDialogManager(mModalDialogManager);
 
         SystemUiScrimDelegate systemUiDelegate = new SystemUiScrimDelegate() {
@@ -114,9 +114,10 @@ public final class BrowserViewController
             @Override
             public void setNavigationBarScrimFraction(float scrimFraction) {}
         };
-        mScrim = new ScrimCoordinator(context, systemUiDelegate, mContentViewRenderView,
-                context.getResources().getColor(R.color.default_scrim_color));
-        mBottomSheetContainer = new FrameLayout(context);
+        mScrim = new ScrimCoordinator(embedderContext, systemUiDelegate, mContentViewRenderView,
+                mWindowAndroid.getContext().get().getResources().getColor(
+                        R.color.default_scrim_color));
+        mBottomSheetContainer = new FrameLayout(embedderContext);
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mBottomSheetContainer.setClipChildren(false);
@@ -131,7 +132,7 @@ public final class BrowserViewController
         });
         mContentViewRenderView.addView(mBottomSheetContainer);
 
-        Activity activity = ContextUtils.activityFromContext(context);
+        Activity activity = ContextUtils.activityFromContext(embedderContext);
         if (activity == null) {
             // TODO(rayankans): Remove assumptions about Activity from BottomSheetController.
             mBottomSheetController = null;

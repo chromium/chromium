@@ -16,75 +16,48 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
-import org.chromium.webengine.interfaces.ICookieManagerDelegate;
-import org.chromium.webengine.interfaces.ITabManagerDelegate;
-import org.chromium.webengine.interfaces.IWebFragmentDelegate;
-import org.chromium.webengine.interfaces.IWebFragmentDelegateClient;
+import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
+import org.chromium.webengine.interfaces.IWebFragmentEventsDelegateClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
- * Fragment for rendering web content. This is created through `WebSandbox`.
+ * Fragment for rendering web content. This is obtained through WebEngine.
  */
 public class WebFragment extends Fragment {
     private SurfaceView mSurfaceView;
     private WebSandbox mWebSandbox;
-    private IWebFragmentDelegate mDelegate;
-    private final TabListObserverDelegate mTabListObserverDelegate = new TabListObserverDelegate();
-
-    // TabManager
-    private ListenableFuture<TabManager> mFutureTabManager;
-    private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
-    private TabManager mTabManager;
-
-    // CookieManager
-    private ListenableFuture<CookieManager> mFutureCookieManager;
-    private CallbackToFutureAdapter.Completer<CookieManager> mCookieManagerCompleter;
-    private CookieManager mCookieManager;
+    private WebEngine mWebEngine;
+    private IWebFragmentEventsDelegate mDelegate;
 
     private Bundle mInstanceState = new Bundle();
 
-    private final IWebFragmentDelegateClient mClient = new IWebFragmentDelegateClient.Stub() {
-        @Override
-        public void onSurfacePackageReady(SurfacePackage surfacePackage) {
-            SurfaceView surfaceView = (SurfaceView) WebFragment.super.getView();
-            surfaceView.setChildSurfacePackage(surfacePackage);
-        }
+    private final IWebFragmentEventsDelegateClient mClient =
+            new IWebFragmentEventsDelegateClient.Stub() {
+                @Override
+                public void onSurfacePackageReady(SurfacePackage surfacePackage) {
+                    SurfaceView surfaceView = (SurfaceView) WebFragment.super.getView();
+                    surfaceView.setChildSurfacePackage(surfacePackage);
+                }
 
-        @Override
-        public void onStarted(Bundle instanceState) {
-            mInstanceState = instanceState;
-        }
+                @Override
+                public void onStarted(Bundle instanceState) {
+                    mInstanceState = instanceState;
+                }
 
-        @Override
-        public void onTabManagerReady(ITabManagerDelegate delegate) {
-            mTabManager = new TabManager(delegate);
-            mTabManagerCompleter.set(mTabManager);
-        }
-
-        @Override
-        public void onContentViewRenderViewReady(IObjectWrapper wrappedContentViewRenderView) {
-            LinearLayout layout = (LinearLayout) WebFragment.super.getView();
-            layout.addView(ObjectWrapper.unwrap(wrappedContentViewRenderView, View.class));
-        }
-
-        @Override
-        public void onCookieManagerReady(ICookieManagerDelegate delegate) {
-            mCookieManager = new CookieManager(delegate);
-            mCookieManagerCompleter.set(mCookieManager);
-        }
-    };
+                @Override
+                public void onContentViewRenderViewReady(
+                        IObjectWrapper wrappedContentViewRenderView) {
+                    LinearLayout layout = (LinearLayout) WebFragment.super.getView();
+                    layout.addView(ObjectWrapper.unwrap(wrappedContentViewRenderView, View.class));
+                }
+            };
 
     private SurfaceHolder.Callback mSurfaceHolderCallback = new SurfaceHolder.Callback() {
         @Override
@@ -110,22 +83,20 @@ public class WebFragment extends Fragment {
      * This constructor is for the system FragmentManager only. Please use
      * {@link WebSandbox#createFragment}.
      */
-    public WebFragment() {
-        mFutureTabManager = CallbackToFutureAdapter.getFuture(completer -> {
-            mTabManagerCompleter = completer;
-            // Debug string.
-            return "TabManager Future";
-        });
-        mFutureCookieManager = CallbackToFutureAdapter.getFuture(completer -> {
-            mCookieManagerCompleter = completer;
-            // Debug string.
-            return "CookieManager Future";
-        });
+    public WebFragment() {}
+
+    void initialize(WebSandbox webSandbox, WebEngine webEngine, IWebFragmentEventsDelegate delegate)
+            throws RemoteException {
+        mWebSandbox = webSandbox;
+        mWebEngine = webEngine;
+        mDelegate = delegate;
     }
 
-    void initialize(WebSandbox webSandbox, IWebFragmentDelegate delegate) throws RemoteException {
-        mWebSandbox = webSandbox;
-        mDelegate = delegate;
+    /**
+     * Returns the {@link WebEngine} associated with this Fragment.
+     */
+    public WebEngine getWebEngine() {
+        return mWebEngine;
     }
 
     @Override
@@ -138,12 +109,19 @@ public class WebFragment extends Fragment {
             assert mWebSandbox == null;
 
             mWebSandbox = model.mWebSandbox;
+            mWebEngine = model.mWebEngine;
             mDelegate = model.mDelegate;
+
+            // Recreating a WebFragment e.g. after rotating the device creates a new WebFragment
+            // based on the data from the ViewModel. The WebFragment in the WebEngine needs to be
+            // updated as it needs to have the current instance.
+            mWebEngine.updateFragment(this);
         } else {
             // Save to View model.
             assert mWebSandbox != null;
 
             model.mWebSandbox = mWebSandbox;
+            model.mWebEngine = mWebEngine;
             model.mDelegate = mDelegate;
         }
 
@@ -154,13 +132,10 @@ public class WebFragment extends Fragment {
             return;
         }
 
-        mWebSandbox.addFragment(this);
-
         AppCompatDelegate.create(getActivity(), null);
 
         try {
             mDelegate.setClient(mClient);
-            mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
             if (WebSandbox.isInProcessMode(context)) {
                 // Pass the activity context for the in-process mode.
                 // This is because the Autofill Manager is only available with activity contexts.
@@ -201,17 +176,16 @@ public class WebFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        // We intentionally do not forward the onDestroy call here to avoid destroying/recreating
-        // the WebLayer implementations every time.
-        // onDestroy is called once the ViewModel is cleared because that guarantees that the
-        // Fragment will no longer be used.
+        try {
+            mDelegate.onDestroy();
+        } catch (RemoteException e) {
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
 
-        mWebSandbox.removeFragment(this);
         try {
             mDelegate.onDetach();
         } catch (RemoteException e) {
@@ -260,6 +234,11 @@ public class WebFragment extends Fragment {
         outState.putAll(mInstanceState);
     }
 
+    /**
+     * Returns the Sandbox that created this WebFragment.
+     *
+     * @return WebSandbox WebSandbox that created this Fragment.
+     */
     public WebSandbox getWebSandbox() {
         return mWebSandbox;
     }
@@ -271,66 +250,21 @@ public class WebFragment extends Fragment {
         }
     }
 
-    /**
-     * Returns a ListenableFuture to the TabManager, which becomes available after the
-     * WebFragments onStart method finished.
-     */
-    @NonNull
-    public ListenableFuture<TabManager> getTabManager() {
-        return mFutureTabManager;
-    }
-
-    /**
-     * Returns a ListenableFuture to the CookieManager, which becomes available after the
-     * WebFragment's onCreate method finishes.
-     */
-    @NonNull
-    public ListenableFuture<CookieManager> getCookieManager() {
-        return mFutureCookieManager;
-    }
-
-    /**
-     * Registers a browser observer and returns if successful.
-     *
-     * @param tabListObserver The TabListObserver.
-     *
-     * @return true if observer was added to the list of observers.
-     */
-    public boolean registerTabListObserver(@NonNull TabListObserver tabListObserver) {
-        return mTabListObserverDelegate.registerObserver(tabListObserver);
-    }
-
-    /**
-     * Unregisters a browser observer and returns if successful.
-     *
-     * @param tabListObserver The TabListObserver to remove.
-     *
-     * @return true if observer was removed from the list of observers.
-     */
-    public boolean unregisterTabListObserver(@NonNull TabListObserver tabListObserver) {
-        return mTabListObserverDelegate.unregisterObserver(tabListObserver);
-    }
-
     private WebViewModel getViewModel() {
         return new ViewModelProvider(this).get(WebViewModel.class);
     }
 
     void invalidate() {
-        // The fragment is synchronously removed so that the shutdown steps can complete.
-        getParentFragmentManager().beginTransaction().remove(this).commitNow();
-        mDelegate = null;
-        mWebSandbox = null;
-        mFutureTabManager = Futures.immediateFailedFuture(
-                new IllegalStateException("WebSandbox has been destroyed"));
-        if (mTabManager != null) {
-            mTabManager.invalidate();
-            mTabManager = null;
-        }
-        mFutureCookieManager = Futures.immediateFailedFuture(
-                new IllegalStateException("WebSandbox has been destroyed"));
-        if (mCookieManager != null) {
-            mCookieManager.invalidate();
-            mCookieManager = null;
+        try {
+            // The fragment is synchronously removed so that the shutdown steps can complete.
+            getParentFragmentManager().beginTransaction().remove(this).commitNow();
+        } catch (IllegalStateException e) {
+            // Fragment already removed from FragmentManager.
+            return;
+        } finally {
+            mDelegate = null;
+            mWebEngine = null;
+            mWebSandbox = null;
         }
     }
 
@@ -370,7 +304,9 @@ public class WebFragment extends Fragment {
         @Nullable
         private WebSandbox mWebSandbox;
         @Nullable
-        private IWebFragmentDelegate mDelegate;
+        private WebEngine mWebEngine;
+        @Nullable
+        private IWebFragmentEventsDelegate mDelegate;
 
         boolean hasSavedState() {
             return mWebSandbox != null;
@@ -378,14 +314,8 @@ public class WebFragment extends Fragment {
 
         @Override
         public void onCleared() {
-            if (mDelegate != null) {
-                try {
-                    mDelegate.onDestroy();
-                } catch (RemoteException e) {
-                }
-            }
-
             mWebSandbox = null;
+            mWebEngine = null;
             mDelegate = null;
         }
     }
