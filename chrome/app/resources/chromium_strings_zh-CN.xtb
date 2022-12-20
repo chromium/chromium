@@ -335,7 +335,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的帐号，然后开启同步功能</translation>
-<translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8。</translation>
+<translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="8417404458978023919">{0,plural, =1{请于 1 天内重新启动 Chromium}other{请于 # 天内重新启动 Chromium}}</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>

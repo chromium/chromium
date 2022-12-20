@@ -987,7 +987,7 @@
 <translation id="6565007273808762236">eSIM байланысы жоқ</translation>
 <translation id="6570831796530454248">{0,plural, =1{Құрылғыны 1 сағатта жаңарту керек}other{Құрылғыны # сағатта жаңарту керек}}</translation>
 <translation id="6570902864550063460">USB арқылы зарядталып жатыр.</translation>
-<translation id="6574587113394758819"><ph name="APP_TITLE" /> хабарландыруы жасырылған, себебі қауіпсіз қарау режимі қосулы тұр.</translation>
+<translation id="6574587113394758819"><ph name="APP_TITLE" /> хабарландыруы жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6574622320167699133">Құлпы телефон арқылы ашылды. Кіру үшін түртіңіз немесе басыңыз.</translation>
 <translation id="6578407462441924264">Атауы жоқ</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
@@ -996,7 +996,7 @@
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
 <translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
-<translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі қауіпсіз қарау режимі қосулы тұр.</translation>
+<translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> қолданбасы микрофонды пайдалануға рұқсат сұрайды</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
@@ -1307,7 +1307,7 @@
 <translation id="8374601332003098278">Экранды жартылай жазу үшін "Enter" пернесін басыңыз</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> және телефоныңыз автоматты түрде жалғанады</translation>
 <translation id="8380784334203145311">Қайырлы түн!</translation>
-<translation id="8382715499079447151">Қауіпсіз қарау режимі</translation>
+<translation id="8382715499079447151">Көруден қорғау режимі</translation>
 <translation id="8388750414311082622">Соңғы жұмыс үстелін өшіру мүмкін емес.</translation>
 <translation id="8394567579869570560">Ата-анаңыз бұл құрылғыны құлыптады</translation>
 <translation id="8401850874595457088">Тіл мәзіріне кіру</translation>
@@ -1345,7 +1345,7 @@
 <translation id="857201607579416096">Мәзір экранның төменгі оң жақ бұрышына жылжытылды.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Қолданбаларды атауы немесе түсі бойынша сұрыптау</translation>
-<translation id="8614517853887502247"><ph name="APP_1_TITLE" /> және <ph name="APP_2_TITLE" /> хабарландырулары жасырылған, себебі қауіпсіз қарау режимі қосулы тұр.</translation>
+<translation id="8614517853887502247"><ph name="APP_1_TITLE" /> және <ph name="APP_2_TITLE" /> хабарландырулары жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> құрылғысына жалғанған</translation>
 <translation id="8631727435199967028">Арнайы мүмкіндіктер параметрлері</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
