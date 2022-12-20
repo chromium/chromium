@@ -885,6 +885,13 @@ class CONTENT_EXPORT ContentBrowserClient {
                                       const url::Origin& top_frame_origin,
                                       const url::Origin& accessing_origin);
 
+  // Allows the embedder to control if Shared Storage API `selectURL()` can
+  // happen in a given context.
+  virtual bool IsSharedStorageSelectURLAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin);
+
   // Allows the embedder to control if Private Aggregation API operations can
   // happen in a given context.
   virtual bool IsPrivateAggregationAllowed(

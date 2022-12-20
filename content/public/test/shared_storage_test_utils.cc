@@ -38,6 +38,14 @@ std::string GetSharedStorageDisabledMessage() {
   return kSharedStorageDisabledMessage;
 }
 
+std::string GetSharedStorageSelectURLDisabledMessage() {
+  return kSharedStorageSelectURLDisabledMessage;
+}
+
+std::string GetSharedStorageAddModuleDisabledMessage() {
+  return kSharedStorageAddModuleDisabledMessage;
+}
+
 void SetBypassIsSharedStorageAllowed(bool allow) {
   SharedStorageDocumentServiceImpl::
       GetBypassIsSharedStorageAllowedForTesting() = allow;

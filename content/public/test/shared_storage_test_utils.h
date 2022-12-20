@@ -17,6 +17,10 @@ class StoragePartition;
 
 std::string GetSharedStorageDisabledMessage();
 
+std::string GetSharedStorageSelectURLDisabledMessage();
+
+std::string GetSharedStorageAddModuleDisabledMessage();
+
 void SetBypassIsSharedStorageAllowed(bool allow);
 
 size_t GetAttachedSharedStorageWorkletHostsCount(

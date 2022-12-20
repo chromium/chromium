@@ -520,6 +520,15 @@ bool ContentBrowserClient::IsSharedStorageAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsSharedStorageSelectURLAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  // TODO(crbug.com/1325103): Change this to false and override in
+  // relevant content_browsertests and web_tests.
+  return true;
+}
+
 bool ContentBrowserClient::IsPrivateAggregationAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,

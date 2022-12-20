@@ -128,6 +128,18 @@ std::string GetSharedStorageDisabledErrorMessage() {
                        content::GetSharedStorageDisabledMessage(), "\"\n"});
 }
 
+std::string GetSharedStorageSelectURLDisabledErrorMessage() {
+  return base::StrCat({"a JavaScript error: \"Error: ",
+                       content::GetSharedStorageSelectURLDisabledMessage(),
+                       "\"\n"});
+}
+
+std::string GetSharedStorageAddModuleDisabledErrorMessage() {
+  return base::StrCat({"a JavaScript error: \"Error: ",
+                       content::GetSharedStorageAddModuleDisabledMessage(),
+                       "\"\n"});
+}
+
 void DelayBy(base::TimeDelta delta) {
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -405,6 +417,9 @@ class SharedStoragePrefBrowserTest
   }
 
   // Sets prefs as parametrized.
+  //
+  // TODO(crbug.com/1396748): We may need to update how preferences are set once
+  // the Privacy Sandbox settings release 4 is launched (crbug.com/1378703).
   void InitPrefs() override {
     SetPrefs(GetParam().enable_privacy_sandbox,
              GetParam().allow_third_party_cookies);
@@ -535,8 +550,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ("a JavaScript error: \"Error: sharedStorage is disabled\"\n",
-              result.error);
+    EXPECT_EQ(GetSharedStorageAddModuleDisabledErrorMessage(), result.error);
     EXPECT_EQ(0u, console_observer.messages().size());
 
     WaitForHistograms({kErrorTypeHistogram});
@@ -644,7 +658,8 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), run_url_op_result.error);
+    EXPECT_EQ(GetSharedStorageSelectURLDisabledErrorMessage(),
+              run_url_op_result.error);
 
     // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),

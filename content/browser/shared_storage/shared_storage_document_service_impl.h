@@ -23,6 +23,8 @@ class SharedStorageWorkletHost;
 class SharedStorageWorkletHostManager;
 
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
+extern CONTENT_EXPORT const char kSharedStorageSelectURLDisabledMessage[];
+extern CONTENT_EXPORT const char kSharedStorageAddModuleDisabledMessage[];
 
 // Handle renderer-initiated shared storage access and worklet operations. The
 // worklet operations (i.e. `addModule()`, `selectURL()`, `run()`) will be
@@ -86,6 +88,10 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   storage::SharedStorageManager* GetSharedStorageManager();
 
   bool IsSharedStorageAllowed();
+
+  bool IsSharedStorageSelectURLAllowed();
+
+  bool IsSharedStorageAddModuleAllowed();
 
   std::string SerializeLastCommittedOrigin() const;
 

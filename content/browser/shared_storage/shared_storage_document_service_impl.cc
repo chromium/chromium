@@ -38,6 +38,14 @@ bool IsValidFencedFrameReportingURL(const GURL& url) {
 
 const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
 
+const char kSharedStorageSelectURLDisabledMessage[] =
+    "sharedStorage.selectURL is disabled";
+
+const char kSharedStorageAddModuleDisabledMessage[] =
+    "sharedStorage.worklet.addModule is disabled because either sharedStorage "
+    "is disabled or both sharedStorage.selectURL and privateAggregation are "
+    "disabled";
+
 // static
 bool& SharedStorageDocumentServiceImpl::
     GetBypassIsSharedStorageAllowedForTesting() {
@@ -70,9 +78,10 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     return;
   }
 
-  if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage);
+  if (!IsSharedStorageAddModuleAllowed()) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageAddModuleDisabledMessage);
     return;
   }
 
@@ -164,10 +173,10 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
                                 std::move(reporting_metadata));
   }
 
-  if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage,
-                            GURL());
+  if (!IsSharedStorageSelectURLAllowed()) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageSelectURLDisabledMessage, GURL());
     return;
   }
 
@@ -209,8 +218,9 @@ void SharedStorageDocumentServiceImpl::SharedStorageSet(
     bool ignore_if_present,
     SharedStorageSetCallback callback) {
   if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage);
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageDisabledMessage);
     return;
   }
 
@@ -234,8 +244,9 @@ void SharedStorageDocumentServiceImpl::SharedStorageAppend(
     const std::u16string& value,
     SharedStorageAppendCallback callback) {
   if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage);
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageDisabledMessage);
     return;
   }
 
@@ -343,9 +354,49 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed() {
   if (GetBypassIsSharedStorageAllowed())
     return true;
 
+  // Will trigger a call to
+  // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
+  // reporting purposes.
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       render_frame_host().GetBrowserContext(), &render_frame_host(),
       main_frame_origin_, render_frame_host().GetLastCommittedOrigin());
+}
+
+bool SharedStorageDocumentServiceImpl::IsSharedStorageSelectURLAllowed() {
+  if (GetBypassIsSharedStorageAllowed()) {
+    return true;
+  }
+
+  // Will trigger a call to
+  // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
+  // reporting purposes.
+  if (!IsSharedStorageAllowed()) {
+    return false;
+  }
+
+  return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
+      render_frame_host().GetBrowserContext(), main_frame_origin_,
+      render_frame_host().GetLastCommittedOrigin());
+}
+
+bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowed() {
+  if (GetBypassIsSharedStorageAllowed()) {
+    return true;
+  }
+
+  // Will trigger a call to
+  // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
+  // reporting purposes.
+  if (!IsSharedStorageAllowed()) {
+    return false;
+  }
+
+  return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
+             render_frame_host().GetBrowserContext(), main_frame_origin_,
+             render_frame_host().GetLastCommittedOrigin()) ||
+         GetContentClient()->browser()->IsPrivateAggregationAllowed(
+             render_frame_host().GetBrowserContext(), main_frame_origin_,
+             render_frame_host().GetLastCommittedOrigin());
 }
 
 std::string SharedStorageDocumentServiceImpl::SerializeLastCommittedOrigin()
