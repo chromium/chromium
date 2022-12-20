@@ -1,0 +1,50 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.variations";
+
+package variations;
+
+import "study.proto";
+import "variations_seed.proto";
+
+// The VariationsSeed is a protobuf response from the server that contains the
+// list of studies and a serial number to uniquely identify its contents. The
+// serial number allows the client to easily determine if the list of
+// experiments has changed from the previous VariationsSeed seen by the client.
+//
+// Next tag: 4
+message CreateTrialsFromSeedTestCase {
+  // Possible states of the severity filter.
+  // See RestrictionPolicy in client_filterable_state.h
+  enum RestrictionPolicy {
+    NO_RESTRICTIONS = 0;
+    CRITICAL_ONLY = 1;
+    ALL = 2;
+  }
+
+  optional VariationsSeed seed = 1;
+
+  message ClientFilterableState {
+    optional string locale = 1;
+    optional double reference_date_seconds_since_epoch = 2;
+    repeated uint32 version = 3;
+    repeated uint32 os_version = 4;
+    optional Study.Channel channel = 5;
+    optional Study.FormFactor form_factor = 6;
+    optional Study.CpuArchitecture cpu_architecture = 7;
+    optional Study.Platform platform = 8;
+    optional string hardware_class = 9;
+    optional bool is_low_end_device = 10;
+    optional string session_consistency_country = 11;
+    optional string permanent_consistency_country = 12;
+    optional RestrictionPolicy policy_restriction = 13;
+  }
+  optional ClientFilterableState client_filterable_state = 2;
+
+  message EntropyValues {
+    optional string client_id = 1;
+    optional uint32 low_entropy = 2;
+  }
+  optional EntropyValues entropy = 3;
+}

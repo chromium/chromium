@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 mojom("variations_mojom") {
   sources = [ "variations.mojom" ]
@@ -277,6 +278,14 @@ test("variations_unittests") {
 }
 
 if (use_libfuzzer) {
+  fuzzable_proto_library("test_cases_proto") {
+    sources = [ "fuzzers/create_trials_from_seed_test_case.proto" ]
+
+    import_dirs = [ "//components/variations/proto" ]
+
+    proto_deps = [ "//components/variations/proto" ]
+    link_deps = [ "//components/variations/proto" ]
+  }
   fuzzer_test("create_trial_from_study_fuzzer") {
     sources = [ "fuzzers/create_trial_from_study_fuzzer.cc" ]
     deps = [
@@ -294,5 +303,17 @@ if (use_libfuzzer) {
       "//base/test:test_support",
       "//third_party/libprotobuf-mutator",
     ]
+  }
+  fuzzer_test("create_trials_from_seed_fuzzer_v2") {
+    sources = [ "fuzzers/create_trials_from_seed_fuzzer_v2.cc" ]
+    deps = [
+      ":test_cases_proto",
+      ":test_support",
+      ":variations",
+      "proto",
+      "//base/test:test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+    seed_corpus = "fuzzers/testcases/create_trials_from_seed/"
   }
 }

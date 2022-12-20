@@ -1,0 +1,79 @@
+seed {
+    layers {
+        id: 42
+        num_slots: 8000
+        salt: 4000
+        entropy_mode: LOW
+        members {
+            id: 82
+            slot_range {
+                start: 0
+                end: 7999
+            }
+        }
+    }
+    study {
+        name: "SimpleStudy"
+        consistency: PERMANENT
+        layer {
+            layer_id: 42
+            member_id: 82
+        }
+        filters {
+            end_date: 1682001000
+            start_date: 1662001000
+            min_version: "19.*"
+            max_version: "20.*"
+            min_os_version: "3.*"
+            max_os_version: "5.*"
+            channel: STABLE
+            platform: ANDROID
+            exclude_locale: "en-US"
+            exclude_form_factor: TABLET
+            exclude_hardware_class: "cruiser"
+            exclude_country: "US"
+            is_low_end_device: true
+            is_enterprise: false
+            policy_restriction: CRITICAL
+            exclude_cpu_architecture: "ARM64"
+        }
+        experiment {
+            name: "GroupA"
+            probability_weight: 1
+            feature_association {
+                enable_feature: "MyFeature"
+            }
+            google_web_experiment_id: 1234567
+            google_web_visibility: FIRST_PARTY
+        }
+        experiment {
+            name: "ForcingOn"
+            feature_association {
+                forcing_feature_on: "MyFeature"
+            }
+        }
+    }
+}
+client_filterable_state {
+    locale: "en-CA"
+    reference_date_seconds_since_epoch: 1672001000.0
+    version: 20
+    version: 1
+    version: 1000
+    version: 9
+    os_version: 4
+    os_version: 1
+    channel: STABLE
+    form_factor: PHONE
+    cpu_architecture: X86_64
+    platform: ANDROID
+    hardware_class: "remedial"
+    is_low_end_device: true
+    session_consistency_country: "DE"
+    permanent_consistency_country: "JP"
+    policy_restriction: CRITICAL_ONLY
+}
+entropy_values {
+    client_id: "client_id"
+    low_entropy: 7999
+}
