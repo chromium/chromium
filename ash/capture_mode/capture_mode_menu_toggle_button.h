@@ -37,6 +37,9 @@ class CaptureModeMenuToggleButton
       delete;
   ~CaptureModeMenuToggleButton() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;
 
@@ -45,6 +48,8 @@ class CaptureModeMenuToggleButton
  private:
   views::ImageView* icon_view_;
   views::Label* label_view_;
+
+  // Toggles between enabling and disabling the capture mode demo tools feature.
   views::ToggleButton* toggle_button_;
 };
 
