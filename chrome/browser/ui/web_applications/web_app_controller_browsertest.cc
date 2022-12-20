@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -52,9 +51,8 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
   os_hooks_suppress_.emplace();
   scoped_feature_list_.InitWithFeatures({}, {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    features::kWebAppsCrosapi, ash::features::kLacrosPrimary,
+    features::kWebAppsCrosapi, ash::features::kLacrosPrimary
 #endif
-        predictors::kSpeculativePreconnectFeature
   });
 }
 
