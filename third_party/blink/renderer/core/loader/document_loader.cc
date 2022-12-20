@@ -303,7 +303,7 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
-  bool has_fenced_frame_reporting_;
+  absl::optional<blink::FencedFrameReporting> fenced_frame_reporting;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
@@ -504,7 +504,6 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      has_fenced_frame_reporting_(params_->has_fenced_frame_reporting),
       extra_data_(std::move(extra_data)),
       reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
@@ -559,6 +558,18 @@ DocumentLoader::DocumentLoader(
     ad_auction_components_.emplace();
     for (const WebURL& url : *params_->ad_auction_components) {
       ad_auction_components_->emplace_back(KURL(url));
+    }
+  }
+
+  if (params_->fenced_frame_reporting) {
+    fenced_frame_reporting_.emplace();
+    for (const auto& [destination, metadata] :
+         params_->fenced_frame_reporting->metadata) {
+      HashMap<String, KURL> data;
+      for (const auto& [event_type, url] : metadata) {
+        data.insert(String::FromUTF8(event_type), KURL(url));
+      }
+      fenced_frame_reporting_->metadata.insert(destination, std::move(data));
     }
   }
 
@@ -644,7 +655,20 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       params->ad_auction_components->emplace_back(KURL(url));
     }
   }
-  params->has_fenced_frame_reporting = has_fenced_frame_reporting_;
+  if (fenced_frame_reporting_) {
+    params->fenced_frame_reporting.emplace();
+    for (const auto& [destination, metadata] :
+         fenced_frame_reporting_->metadata) {
+      base::flat_map<std::string, GURL> data;
+      for (const auto& [event_type, url] : metadata) {
+        data.emplace(event_type.Utf8(), url);
+      }
+      params->fenced_frame_reporting->metadata.emplace(destination,
+                                                       std::move(data));
+    }
+  }
+  if (fenced_frame_properties_)
+    params->fenced_frame_properties = std::move(fenced_frame_properties_);
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   return params;

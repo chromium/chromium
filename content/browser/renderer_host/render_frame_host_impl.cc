@@ -213,7 +213,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/trust_token_operation_authorization.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -385,53 +384,6 @@ class RenderFrameHostOrProxy {
 };
 
 namespace {
-
-constexpr net::NetworkTrafficAnnotationTag kReportingBeaconNetworkTag =
-    net::DefineNetworkTrafficAnnotation("fenced_frame_reporting_beacon",
-                                        R"(
-        semantics {
-          sender: "Fenced frame reportEvent API"
-          description:
-            "This request sends out reporting beacon data in an HTTP POST "
-            "request. This is initiated by window.fence.reportEvent API."
-          trigger:
-            "When there are events such as impressions, user interactions and "
-            "clicks, fenced frames can invoke window.fence.reportEvent API. It "
-            "tells the browser to send a beacon with event data to a URL "
-            "registered by the worklet in registerAdBeacon. Please see "
-            "https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md#reportevent"
-          data:
-            "Event data given by fenced frame reportEvent API. Please see "
-            "https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md#parameters"
-          destination: OTHER
-          destination_other: "The reporting destination given by FLEDGE's "
-                             "registerAdBeacon API or selectURL's inputs."
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "To use reportEvent API, users need to enable selectURL, "
-          "FLEDGE and FencedFrames features by enabling the Privacy Sandbox "
-          "Ads APIs experiment flag at "
-          "chrome://flags/#privacy-sandbox-ads-apis "
-          policy_exception_justification: "This beacon is sent by fenced frame "
-          "calling window.fence.reportEvent when there are events like user "
-          "interactions."
-        }
-      )");
-
-base::StringPiece ReportingDestinationAsString(
-    const blink::FencedFrame::ReportingDestination& destination) {
-  switch (destination) {
-    case blink::FencedFrame::ReportingDestination::kBuyer:
-      return "Buyer";
-    case blink::FencedFrame::ReportingDestination::kSeller:
-      return "Seller";
-    case blink::FencedFrame::ReportingDestination::kComponentSeller:
-      return "ComponentSeller";
-    case blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl:
-      return "SharedStorageSelectUrl";
-  }
-}
 
 constexpr int kSubframeProcessShutdownDelayInMSec = 2 * 1000;
 static_assert(kSubframeProcessShutdownDelayInMSec +
@@ -7534,101 +7486,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
-}
-
-// TODO(crbug.com/1400992): Move SendFencedFrameReportingBeacon into a separate
-// refcounted class.
-void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
-    const std::string& event_data,
-    const std::string& event_type,
-    blink::FencedFrame::ReportingDestination destination) {
-  // Get the reporting metadata associated with the fenced frame.
-  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
-      frame_tree_node_->GetFencedFrameProperties();
-  if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->reporting_metadata_.has_value() ||
-      fenced_frame_properties->reporting_metadata_->GetValueIgnoringVisibility()
-          .metadata.empty()) {
-    // No associated reporting metadata or empty reporting metadata associated
-    // with the fenced frame.
-    // For no associated reporting metadata case, it should have been captured
-    // in the renderer process at `Fence::reportEvent`.
-    // Both cases imply there is an inconsistency between the browser and the
-    // renderer.
-    mojo::ReportBadMessage(
-        "This frame had reporting metadata registered in its renderer process "
-        "but not in its browser process. The reporting metadata should be "
-        "consistent between the two.");
-    return;
-  }
-
-  const blink::FencedFrame::FencedFrameReporting& fenced_frame_reporting =
-      fenced_frame_properties->reporting_metadata_
-          ->GetValueIgnoringVisibility();
-
-  // Check metadata registration for given destination.
-  const auto metadata_iter = fenced_frame_reporting.metadata.find(destination);
-  if (metadata_iter == fenced_frame_reporting.metadata.end()) {
-    AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        base::StrCat(
-            {"This frame did not register reporting metadata for destination '",
-             ReportingDestinationAsString(destination), "'."}));
-    return;
-  }
-
-  // Check reporting url registration for given destination and event type.
-  const auto url_iter = metadata_iter->second.find(event_type);
-  if (url_iter == metadata_iter->second.end()) {
-    AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        base::StrCat(
-            {"This frame did not register reporting url for destination '",
-             ReportingDestinationAsString(destination), "' and event_type '",
-             event_type, "'."}));
-    return;
-  }
-
-  // Validate the reporting url.
-  GURL url = url_iter->second;
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        base::StrCat(
-            {"This frame registered invalid reporting url for destination '",
-             ReportingDestinationAsString(destination), "' and event_type '",
-             event_type, "'."}));
-    return;
-  }
-
-  // Construct the resource request.
-  auto request = std::make_unique<network::ResourceRequest>();
-
-  request->url = url;
-  request->mode = network::mojom::RequestMode::kCors;
-  request->request_initiator = GetLastCommittedOrigin();
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  request->method = net::HttpRequestHeaders::kPostMethod;
-  request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                             "text/plain;charset=UTF-8");
-  request->trusted_params = network::ResourceRequest::TrustedParams();
-  request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
-
-  // Obtain the `SimpleURLLoader` instance.
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(request),
-                                       kReportingBeaconNetworkTag);
-  simple_url_loader->AttachStringForUpload(event_data);
-
-  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-  auto* shared_url_loader_factory =
-      GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess().get();
-
-  // Send out the reporting beacon.
-  simple_url_loader_ptr->DownloadHeadersOnly(
-      shared_url_loader_factory,
-      base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
 }
 
 void RenderFrameHostImpl::CreatePortal(

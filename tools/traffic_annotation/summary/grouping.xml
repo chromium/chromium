@@ -262,7 +262,6 @@ after discussions on the right group.
       <annotation id="nearby_share_contacts"/>
       <annotation id="nearby_share_list_public_certificates"/>
       <annotation id="managed_acccount_signin_restrictions_secure_connect_chromeos"/>
-      <annotation id="fenced_frame_reporting_beacon"/>
       <annotation id="ntp_custom_background"/>
       <annotation id="iwa_policy_update_manifest"/>
       <annotation id="iwa_policy_signed_web_bundle"/>

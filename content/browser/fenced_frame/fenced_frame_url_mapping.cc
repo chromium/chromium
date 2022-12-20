@@ -105,7 +105,7 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   config.reporting_metadata_.emplace(reporting_metadata,
                                      VisibilityToEmbedder::kOpaque,
-                                     VisibilityToContent::kOpaque);
+                                     VisibilityToContent::kTransparent);
   return urn;
 }
 

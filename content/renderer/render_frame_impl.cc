@@ -1055,8 +1055,12 @@ void FillMiscNavigationParams(
         navigation_params->ad_auction_components->push_back(blink::WebURL(urn));
       }
     }
-    navigation_params->has_fenced_frame_reporting =
-        commit_params.fenced_frame_properties->reporting_metadata().has_value();
+
+    if (commit_params.fenced_frame_properties->reporting_metadata()) {
+      navigation_params->fenced_frame_reporting =
+          commit_params.fenced_frame_properties->reporting_metadata()
+              ->potentially_opaque_value;
+    }
   }
 
   navigation_params->ancestor_or_self_has_cspee =

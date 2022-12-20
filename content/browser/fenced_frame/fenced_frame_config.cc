@@ -90,10 +90,13 @@ FencedFrameConfig::FencedFrameConfig(
                                       shared_storage_budget_metadata,
                                       VisibilityToEmbedder::kOpaque,
                                       VisibilityToContent::kOpaque),
+      // TODO(crbug.com/1381158): Give the reporting metadata
+      // `VisibilityToContent::kOpaque` once it is no longer needed in the
+      // renderer.
       reporting_metadata_(absl::in_place,
                           reporting_metadata,
                           VisibilityToEmbedder::kOpaque,
-                          VisibilityToContent::kOpaque) {}
+                          VisibilityToContent::kTransparent) {}
 
 FencedFrameConfig::FencedFrameConfig(const FencedFrameConfig&) = default;
 FencedFrameConfig::FencedFrameConfig(FencedFrameConfig&&) = default;
