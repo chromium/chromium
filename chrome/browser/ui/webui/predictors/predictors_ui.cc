@@ -17,9 +17,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreatePredictorsUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIPredictorsHost);
+void CreateAndAddPredictorsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIPredictorsHost);
   source->AddResourcePath("autocomplete_action_predictor.js",
                           IDR_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_JS);
   source->AddResourcePath("predictors.js", IDR_PREDICTORS_JS);
@@ -32,7 +32,6 @@ content::WebUIDataSource* CreatePredictorsUIHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
-  return source;
 }
 
 }  // namespace
@@ -40,5 +39,5 @@ content::WebUIDataSource* CreatePredictorsUIHTMLSource() {
 PredictorsUI::PredictorsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   web_ui->AddMessageHandler(std::make_unique<PredictorsHandler>(profile));
-  content::WebUIDataSource::Add(profile, CreatePredictorsUIHTMLSource());
+  CreateAndAddPredictorsUIHTMLSource(profile);
 }

@@ -88,10 +88,9 @@ browser_switcher::BrowserSwitcherService* GetBrowserSwitcherService(
       web_ui->GetWebContents()->GetBrowserContext());
 }
 
-content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
-    content::WebUI* web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIBrowserSwitchHost);
+void CreateAndAddBrowserSwitchUIHTMLSource(content::WebUI* web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIBrowserSwitchHost);
 
   auto* service = GetBrowserSwitcherService(web_ui);
   source->AddInteger("launchDelay", service->prefs().GetDelay());
@@ -203,8 +202,6 @@ content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
       "internals", IDR_BROWSER_SWITCH_INTERNALS_BROWSER_SWITCH_INTERNALS_HTML);
 
   source->UseStringsJs();
-
-  return source;
 }
 
 }  // namespace
@@ -550,7 +547,5 @@ BrowserSwitchUI::BrowserSwitchUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<BrowserSwitchHandler>());
 
   // Set up the chrome://browser-switch source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile,
-                                CreateBrowserSwitchUIHTMLSource(web_ui));
+  CreateAndAddBrowserSwitchUIHTMLSource(web_ui);
 }

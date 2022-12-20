@@ -13,16 +13,14 @@
 
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIOmniboxPopupHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kOmniboxPopupResources, kOmniboxPopupResourcesSize),
       IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 OmniboxPopupUI::~OmniboxPopupUI() = default;

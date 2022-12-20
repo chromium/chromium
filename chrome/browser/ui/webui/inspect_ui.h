@@ -60,8 +60,6 @@ class InspectUI : public content::WebUIController,
   void StartListeningNotifications();
   void StopListeningNotifications();
 
-  content::WebUIDataSource* CreateInspectUIHTMLSource();
-
   void UpdateDiscoverUsbDevicesEnabled();
   void UpdatePortForwardingEnabled();
   void UpdatePortForwardingConfig();

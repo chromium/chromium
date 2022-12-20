@@ -17,8 +17,8 @@
 UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://usb-internals source.
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIUsbInternalsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIUsbInternalsHost);
 
   static constexpr webui::ResourcePath kPaths[] = {
       {"usb_enumeration_options.mojom-webui.js",
@@ -32,8 +32,6 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
       source,
       base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize),
       IDR_USB_INTERNALS_USB_INTERNALS_HTML);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UsbInternalsUI)

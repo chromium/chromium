@@ -19,9 +19,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateConflictsUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIConflictsHost);
+void CreateAndAddConflictsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIConflictsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
@@ -34,7 +34,6 @@ content::WebUIDataSource* CreateConflictsUIHTMLSource() {
   source->AddResourcePath("conflicts.js", IDR_ABOUT_CONFLICTS_JS);
   source->AddResourcePath("warning.svg", IDR_ABOUT_CONFLICTS_WARNING_SVG);
   source->SetDefaultResource(IDR_ABOUT_CONFLICTS_HTML);
-  return source;
 }
 
 }  // namespace
@@ -50,8 +49,7 @@ ConflictsUI::ConflictsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<ConflictsHandler>());
 
   // Set up the about:conflicts source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateConflictsUIHTMLSource());
+  CreateAndAddConflictsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
 // static

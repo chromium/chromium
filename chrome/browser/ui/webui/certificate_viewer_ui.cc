@@ -21,9 +21,9 @@
 
 namespace {
 
-content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
+void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(host);
+      content::WebUIDataSource::CreateAndAdd(profile, host);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"general", IDS_CERT_INFO_GENERAL_TAB_LABEL},
@@ -64,7 +64,6 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
   html_source->AddResourcePath("certificate_viewer.css",
       IDR_CERTIFICATE_VIEWER_CSS);
   html_source->SetDefaultResource(IDR_CERTIFICATE_VIEWER_HTML);
-  return html_source;
 }
 
 }  // namespace
@@ -72,10 +71,8 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
 CertificateViewerUI::CertificateViewerUI(content::WebUI* web_ui)
     : ConstrainedWebDialogUI(web_ui) {
   // Set up the chrome://view-cert source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(
-      profile,
-      GetWebUIDataSource(chrome::kChromeUICertificateViewerHost));
+  CreateAndAddWebUIDataSource(Profile::FromWebUI(web_ui),
+                              chrome::kChromeUICertificateViewerHost);
 }
 
 CertificateViewerUI::~CertificateViewerUI() {

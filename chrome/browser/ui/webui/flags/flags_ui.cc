@@ -63,9 +63,9 @@ using content::WebUIMessageHandler;
 
 namespace {
 
-content::WebUIDataSource* CreateFlagsUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIFlagsHost);
+content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIFlagsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
@@ -262,9 +262,8 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
   handler->set_deprecated_features_only(false);
 
   // Set up the about:flags source.
-  auto* source = CreateFlagsUIHTMLSource();
+  content::WebUIDataSource* source = CreateAndAddFlagsUIHTMLSource(profile);
   AddStrings(source);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 FlagsUI::~FlagsUI() {}
@@ -284,9 +283,8 @@ FlagsDeprecatedUI::FlagsDeprecatedUI(content::WebUI* web_ui)
   handler->set_deprecated_features_only(true);
 
   // Set up the about:flags/deprecated source.
-  auto* source = CreateFlagsUIHTMLSource();
+  content::WebUIDataSource* source = CreateAndAddFlagsUIHTMLSource(profile);
   AddStrings(source);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 FlagsDeprecatedUI::~FlagsDeprecatedUI() {}

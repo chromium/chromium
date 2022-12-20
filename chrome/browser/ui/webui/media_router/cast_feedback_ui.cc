@@ -41,8 +41,8 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICastFeedbackHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile_, chrome::kChromeUICastFeedbackHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"additionalComments", IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS},
@@ -172,8 +172,6 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       base::make_span(kMediaRouterFeedbackResources,
                       kMediaRouterFeedbackResourcesSize),
       IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
-
-  content::WebUIDataSource::Add(profile_, source);
 
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,

@@ -48,16 +48,14 @@ using content::BrowserThread;
 
 namespace {
 
-content::WebUIDataSource* CreateNetInternalsHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
+void CreateAndAddNetInternalsHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUINetInternalsHost);
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kNetInternalsResources, kNetInternalsResourcesSize),
       IDR_NET_INTERNALS_INDEX_HTML);
   webui::EnableTrustedTypesCSP(source);
-
-  return source;
 }
 
 void IgnoreBoolCallback(bool result) {}
@@ -430,8 +428,7 @@ NetInternalsUI::NetInternalsUI(content::WebUI* web_ui)
       std::make_unique<NetInternalsMessageHandler>(web_ui));
 
   // Set up the chrome://net-internals/ source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateNetInternalsHTMLSource());
+  CreateAndAddNetInternalsHTMLSource(Profile::FromWebUI(web_ui));
 }
 
 // static

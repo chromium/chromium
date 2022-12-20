@@ -42,9 +42,9 @@ using content::WebUIMessageHandler;
 
 namespace {
 
-content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIWebRtcLogsHost);
+void CreateAndAddWebRtcLogsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIWebRtcLogsHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"webrtcLogsTitle", IDS_WEBRTC_LOGS_TITLE},
@@ -77,7 +77,6 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
   source->AddResourcePath("webrtc_logs.css", IDR_MEDIA_WEBRTC_LOGS_CSS);
   source->AddResourcePath("webrtc_logs.js", IDR_MEDIA_WEBRTC_LOGS_JS);
   source->SetDefaultResource(IDR_MEDIA_WEBRTC_LOGS_HTML);
-  return source;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -470,5 +469,5 @@ WebRtcLogsUI::WebRtcLogsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<WebRtcLogsDOMHandler>(profile));
 
   // Set up the chrome://webrtc-logs/ source.
-  content::WebUIDataSource::Add(profile, CreateWebRtcLogsUIHTMLSource());
+  CreateAndAddWebRtcLogsUIHTMLSource(profile);
 }

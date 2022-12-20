@@ -71,7 +71,8 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   nearby_service_ = NearbySharingServiceFactory::GetForBrowserContext(profile);
 
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUINearbyShareHost);
+      content::WebUIDataSource::CreateAndAdd(profile,
+                                             chrome::kChromeUINearbyShareHost);
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
@@ -109,8 +110,6 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::move(plural_string_handler));
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-
-  content::WebUIDataSource::Add(profile, html_source);
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   SetAttachmentFromQueryParameter(url);

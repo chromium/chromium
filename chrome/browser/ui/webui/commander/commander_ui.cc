@@ -22,8 +22,8 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
   handler_ = handler.get();
   web_ui->AddMessageHandler(std::move(handler));
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICommanderHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUICommanderHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"placeholder", IDS_QUICK_COMMANDS_PLACEHOLDER},
       {"noResults", IDS_QUICK_COMMANDS_NO_RESULTS},
@@ -34,9 +34,6 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kCommanderResources, kCommanderResourcesSize),
       IDR_COMMANDER_COMMANDER_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 CommanderUI::~CommanderUI() = default;

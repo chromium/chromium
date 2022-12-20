@@ -24,7 +24,8 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://bluetooth-internals source.
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIBluetoothInternalsHost);
+      content::WebUIDataSource::CreateAndAdd(
+          Profile::FromWebUI(web_ui), chrome::kChromeUIBluetoothInternalsHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
@@ -37,9 +38,6 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
       kBluetoothInternalsResources, kBluetoothInternalsResourcesSize));
   html_source->SetDefaultResource(
       IDR_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothInternalsUI)

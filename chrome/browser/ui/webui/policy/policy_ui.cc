@@ -20,9 +20,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreatePolicyUIHtmlSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIPolicyHost);
+void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIPolicyHost);
   PolicyUIHandler::AddCommonLocalizedStringsToSource(source);
 
   static constexpr webui::LocalizedString kStrings[] = {
@@ -111,15 +111,13 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
-  return source;
 }
 
 }  // namespace
 
 PolicyUI::PolicyUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
-                                CreatePolicyUIHtmlSource());
+  CreateAndAddPolicyUIHtmlSource(Profile::FromWebUI(web_ui));
 }
 
 PolicyUI::~PolicyUI() = default;

@@ -181,7 +181,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                         "Settings.LoadCompletedTime.MD") {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUISettingsHost);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          chrome::kChromeUISettingsHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
@@ -421,9 +423,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 
   ManagedUIHandler::Initialize(web_ui, html_source);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

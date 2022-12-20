@@ -25,8 +25,8 @@
 
 PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-  auto* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIPrivacySandboxDialogHost);
+  auto* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxDialogHost);
 
   webui::SetupWebUIDataSource(
       source,
@@ -193,8 +193,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
     // so we force it here.
     InitializeForDebug(source);
   }
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 PrivacySandboxDialogUI::~PrivacySandboxDialogUI() = default;

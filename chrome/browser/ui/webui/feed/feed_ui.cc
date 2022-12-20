@@ -26,8 +26,9 @@ FeedUI::FeedUI(content::WebUI* web_ui)
   web_ui->AddRequestableScheme("http");
 
   // Create a URLDataSource and add resources.
-  auto* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIUntrustedFeedURL);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIUntrustedFeedURL);
   webui::SetupWebUIDataSource(
       source, base::make_span(kFeedResources, kFeedResourcesSize),
       IDR_FEED_FEED_HTML);
@@ -45,10 +46,6 @@ FeedUI::FeedUI(content::WebUI* web_ui)
 
   // Configurable javascript for prototyping purposes.
   source->AddString("feedUrl", kWebUiFeedUrl.Get());
-
-  // Register the URLDataSource
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source);
 }
 
 FeedUI::~FeedUI() = default;

@@ -116,12 +116,11 @@ std::string GetChildDescription(const content::ChildProcessData& data) {
   return content::GetProcessTypeNameInEnglish(data.process_type);
 }
 
-content::WebUIDataSource* CreateMemoryInternalsUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIMemoryInternalsHost);
+void CreateAndAddMemoryInternalsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIMemoryInternalsHost);
   source->SetDefaultResource(IDR_MEMORY_INTERNALS_HTML);
   source->AddResourcePath("memory_internals.js", IDR_MEMORY_INTERNALS_JS);
-  return source;
 }
 
 class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
@@ -379,8 +378,7 @@ MemoryInternalsUI::MemoryInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<MemoryInternalsDOMHandler>(web_ui));
 
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateMemoryInternalsUIHTMLSource());
+  CreateAndAddMemoryInternalsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
 MemoryInternalsUI::~MemoryInternalsUI() {}
