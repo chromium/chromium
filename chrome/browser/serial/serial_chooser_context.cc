@@ -371,7 +371,11 @@ void SerialChooserContext::RevokeObjectPermissionInternal(
   std::set<base::UnguessableToken>& ports = it->second;
 
   DCHECK(IsValidObject(object));
-  ports.erase(DecodeToken(*token));
+  base::UnguessableToken decoded_token = DecodeToken(*token);
+  if (decoded_token.is_empty()) {
+    return;
+  }
+  ports.erase(std::move(decoded_token));
   RecordPermissionRevocation(revoked_by_website
                                  ? SerialPermissionRevoked::kEphemeralByWebsite
                                  : SerialPermissionRevoked::kEphemeralByUser);
