@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_challenge_wrapper.h"
 
 #include "base/bind.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
@@ -19,10 +21,6 @@ const char kChallenge[] = "challenge";
 const char kChannelBindingData[] = "channel binding data";
 const char kUserId[] = "user id";
 const char kSignature[] = "signature";
-
-void SaveResult(std::string* result_out, const std::string& result) {
-  *result_out = result;
-}
 
 class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
  public:
@@ -61,12 +59,15 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
 
     std::move(callback).Run(kSignature);
   }
+
+  base::test::SingleThreadTaskEnvironment env_;
 };
 
 TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   TestableEasyUnlockChallengeWrapper wrapper;
-  std::string wrapped_challenge;
-  wrapper.WrapChallenge(base::BindOnce(&SaveResult, &wrapped_challenge));
+  base::test::TestFuture<const std::string&> future;
+  wrapper.WrapChallenge(future.GetCallback());
+  std::string wrapped_challenge = future.Take();
 
   securemessage::SecureMessage challenge_secure_message;
   ASSERT_TRUE(challenge_secure_message.ParseFromString(wrapped_challenge));
