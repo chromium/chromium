@@ -1712,24 +1712,6 @@ bool DictionaryValue::GetDictionary(StringPiece path,
       path, const_cast<const DictionaryValue**>(out_value));
 }
 
-bool DictionaryValue::GetList(StringPiece path,
-                              const ListValue** out_value) const {
-  const Value* value;
-  bool result = Get(path, &value);
-  if (!result || !value->is_list())
-    return false;
-
-  if (out_value)
-    *out_value = static_cast<const ListValue*>(value);
-
-  return true;
-}
-
-bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
-  return std::as_const(*this).GetList(path,
-                                      const_cast<const ListValue**>(out_value));
-}
-
 ///////////////////// ListValue ////////////////////
 
 // static

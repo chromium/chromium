@@ -2313,15 +2313,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_dict.GetDictionary("dict", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("list", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("DNE", nullptr));
-
-  EXPECT_FALSE(main_dict.GetList("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetList("int", nullptr));
-  EXPECT_FALSE(main_dict.GetList("double", nullptr));
-  EXPECT_FALSE(main_dict.GetList("string", nullptr));
-  EXPECT_FALSE(main_dict.GetList("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetList("dict", nullptr));
-  EXPECT_TRUE(main_dict.GetList("list", nullptr));
-  EXPECT_FALSE(main_dict.GetList("DNE", nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {

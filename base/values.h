@@ -1325,11 +1325,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // otherwise.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
   bool GetDictionary(StringPiece path, DictionaryValue** out_value);
-  // DEPRECATED: prefer `Value::Dict::FindList()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::FindListByDottedPath()`
-  // otherwise.
-  bool GetList(StringPiece path, const ListValue** out_value) const;
-  bool GetList(StringPiece path, ListValue** out_value);
 };
 
 // This type of Value represents a list of other Value values.
