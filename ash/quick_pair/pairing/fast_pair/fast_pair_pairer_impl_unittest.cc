@@ -49,6 +49,8 @@
 
 namespace {
 
+constexpr base::TimeDelta kConfirmPasskeyTimeout = base::Seconds(15);
+
 const std::vector<uint8_t> kResponseBytes = {0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
                                              0x32, 0x1D, 0xA0, 0xBA, 0xF0, 0xBB,
                                              0x95, 0x1F, 0xF7, 0xB6};
@@ -138,8 +140,9 @@ class FakeBluetoothAdapter
     }
 
     for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
+      if (it->GetAddress() == address) {
         return it.get();
+      }
     }
 
     return nullptr;
@@ -162,8 +165,9 @@ class FakeBluetoothAdapter
 
   void DevicePairedChanged(device::BluetoothDevice* device,
                            bool new_paired_status) {
-    for (auto& observer : GetObservers())
+    for (auto& observer : GetObservers()) {
       observer.DevicePairedChanged(this, device, new_paired_status);
+    }
   }
 
   void ConnectDevice(
@@ -270,6 +274,9 @@ using ::testing::Return;
 
 class FastPairPairerImplTest : public AshTestBase {
  public:
+  FastPairPairerImplTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     AshTestBase::SetUp();
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
@@ -2579,6 +2586,38 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
                 kInitialSuccessFunnelMetric,
                 FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
             0);
+}
+
+// There are two paths in the code in which |confirm_passkey_timeout_timer_| can
+// be started which must both be tested. In the first test, because |adapter_|
+// knows the device address, |OnPairConnected| starts the timer. In the second
+// test, because |adapter_| doesn't know the device address, |OnConnectDevice|
+// starts the timer.
+TEST_F(FastPairPairerImplTest, ConfirmPasskeyTimeout_AdapterHasDeviceAddress) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback();
+  task_environment()->FastForwardBy(kConfirmPasskeyTimeout);
+  EXPECT_EQ(GetPairFailure(), PairFailure::kConfirmPasskeyTimeout);
+}
+
+TEST_F(FastPairPairerImplTest,
+       ConfirmPasskeyTimeout_AdapterDoesNotHaveDeviceAddress) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // This call mocks the scenario in which |adapter_| does not know |device_|'s
+  // address.
+  SetGetDeviceNullptr();
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback();
+  task_environment()->FastForwardBy(kConfirmPasskeyTimeout);
+  EXPECT_EQ(GetPairFailure(), PairFailure::kConfirmPasskeyTimeout);
 }
 
 TEST_F(FastPairPairerImplTest, HandshakeReused_Initial) {

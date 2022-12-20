@@ -94,6 +94,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
       stream
           << "[Potential pairing device lost between GATT connection attempts]";
       break;
+    case PairFailure::kConfirmPasskeyTimeout:
+      stream << "[Timed out while waiting for confirm passkey event from "
+                "Bluetooth adapter]";
+      break;
   }
 
   return stream;

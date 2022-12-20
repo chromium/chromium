@@ -70,7 +70,10 @@ enum class PairFailure {
   kCreateBondTimeout = 24,
   // Potential pairing device lost between GATT connection attempts.
   kPairingDeviceLostBetweenGattConnectionAttempts = 25,
-  kMaxValue = kPairingDeviceLostBetweenGattConnectionAttempts,
+  // Timed out while waiting for the Bluetooth adapter event to confirm the
+  // passkey after pairing begins.
+  kConfirmPasskeyTimeout = 26,
+  kMaxValue = kConfirmPasskeyTimeout,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

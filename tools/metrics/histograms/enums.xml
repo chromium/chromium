@@ -36659,6 +36659,9 @@ Called by update_extension_permission.py.-->
       label="Timed out while attempting to create bond with device"/>
   <int value="25"
       label="Potential pairing device lost while attempting GATT connection"/>
+  <int value="26"
+      label="Timed out while waiting for confirm passkey event from Bluetooth
+             adapter"/>
 </enum>
 
 <enum name="FastPairPairingMethod">

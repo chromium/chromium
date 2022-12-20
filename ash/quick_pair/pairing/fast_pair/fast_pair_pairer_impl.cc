@@ -33,8 +33,9 @@
 
 namespace {
 
-// 15s timeout chosen to align with Android's Fast Pair implementation.
+// 15s timeouts chosen to align with Android's Fast Pair implementation.
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
+constexpr base::TimeDelta kConfirmPasskeyTimeout = base::Seconds(15);
 
 std::string MessageTypeToString(
     ash::quick_pair::FastPairMessageType message_type) {
@@ -86,13 +87,14 @@ std::unique_ptr<FastPairPairer> FastPairPairerImpl::Factory::Create(
         account_key_failure_callback,
     base::OnceCallback<void(scoped_refptr<Device>)>
         pairing_procedure_complete) {
-  if (g_test_factory_)
+  if (g_test_factory_) {
     return g_test_factory_->CreateInstance(
         std::move(adapter), std::move(device),
         std::move(handshake_complete_callback), std::move(paired_callback),
         std::move(pair_failed_callback),
         std::move(account_key_failure_callback),
         std::move(pairing_procedure_complete));
+  }
 
   return base::WrapUnique(new FastPairPairerImpl(
       std::move(adapter), std::move(device),
@@ -289,8 +291,9 @@ void FastPairPairerImpl::StartPairing() {
 
 void FastPairPairerImpl::OnPairConnected(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
-  if (!StopCreateBondTimer(__func__))
+  if (!StopCreateBondTimer(__func__)) {
     return;
+  }
 
   QP_LOG(INFO) << __func__;
   RecordPairDeviceResult(/*success=*/!error.has_value());
@@ -308,16 +311,25 @@ void FastPairPairerImpl::OnPairConnected(
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
                             *device_);
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
+  confirm_passkey_timeout_timer_.Start(
+      FROM_HERE, kConfirmPasskeyTimeout,
+      base::BindOnce(&FastPairPairerImpl::OnConfirmPasskeyTimeout,
+                     base::Unretained(this)));
 }
 
 void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
-  if (!StopCreateBondTimer(__func__))
+  if (!StopCreateBondTimer(__func__)) {
     return;
+  }
 
   QP_LOG(INFO) << __func__;
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
                             *device_);
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
+  confirm_passkey_timeout_timer_.Start(
+      FROM_HERE, kConfirmPasskeyTimeout,
+      base::BindOnce(&FastPairPairerImpl::OnConfirmPasskeyTimeout,
+                     base::Unretained(this)));
   RecordConnectDeviceResult(/*success=*/true);
   // The device ID can change between device discovery and connection, so
   // ensure that device images are mapped to the current device ID.
@@ -325,8 +337,9 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
 }
 
 void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
-  if (!StopCreateBondTimer(__func__))
+  if (!StopCreateBondTimer(__func__)) {
     return;
+  }
 
   QP_LOG(WARNING) << __func__ << " " << error_message;
   RecordConnectDeviceResult(/*success=*/false);
@@ -336,6 +349,7 @@ void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
 
 void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
+  confirm_passkey_timeout_timer_.Stop();
   QP_LOG(INFO) << __func__;
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyNegotiated,
                             *device_);
@@ -674,8 +688,9 @@ void FastPairPairerImpl::AuthorizePairing(device::BluetoothDevice* device) {
 void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
                                              device::BluetoothDevice* device,
                                              bool new_paired_status) {
-  if (!new_paired_status || !paired_callback_)
+  if (!new_paired_status || !paired_callback_) {
     return;
+  }
 
   if (device->GetAddress() == device_->ble_address ||
       device->GetAddress() == device_->classic_address()) {
@@ -707,6 +722,14 @@ void FastPairPairerImpl::OnCreateBondTimeout() {
                   << ": Timeout while attempting to create bond with device.";
   std::move(pair_failed_callback_)
       .Run(device_, PairFailure::kCreateBondTimeout);
+}
+
+void FastPairPairerImpl::OnConfirmPasskeyTimeout() {
+  QP_LOG(WARNING)
+      << __func__
+      << ": Timeout while awaiting passkey from GATT connected device.";
+  std::move(pair_failed_callback_)
+      .Run(device_, PairFailure::kConfirmPasskeyTimeout);
 }
 
 bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {

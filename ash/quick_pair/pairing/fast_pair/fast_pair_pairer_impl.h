@@ -131,6 +131,9 @@ class FastPairPairerImpl : public FastPairPairer,
   // StartPairing.
   void OnCreateBondTimeout();
 
+  // Callback for timeout on waiting to confirm |device_|'s passkey.
+  void OnConfirmPasskeyTimeout();
+
   //  FastPairHandshakeLookup::Create callback
   void OnHandshakeComplete(scoped_refptr<Device> device,
                            absl::optional<PairFailure> failure);
@@ -188,6 +191,10 @@ class FastPairPairerImpl : public FastPairPairer,
   // A timer to time the bonding with |device_| in StartPairing and invoke a
   // timeout if necessary.
   base::OneShotTimer create_bond_timeout_timer_;
+
+  // A timer which allows this pairer to time out while waiting to confirm
+  // |device_|'s passkey.
+  base::OneShotTimer confirm_passkey_timeout_timer_;
   base::WeakPtrFactory<FastPairPairerImpl> weak_ptr_factory_{this};
 };
 
