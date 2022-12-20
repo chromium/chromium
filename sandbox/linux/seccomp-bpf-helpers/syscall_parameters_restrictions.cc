@@ -116,8 +116,6 @@ inline bool IsBuggyGlibcSemPost() {
 
 }  // namespace.
 
-#define CASES SANDBOX_BPF_DSL_CASES
-
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::BoolExpr;
@@ -171,7 +169,7 @@ ResultExpr RestrictPrctl() {
   // used by breakpad but not needed anymore.
   const Arg<int> option(0);
   return Switch(option)
-      .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
+      .Cases({PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if BUILDFLAG(IS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
               , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
@@ -203,7 +201,7 @@ ResultExpr RestrictPrctl() {
               , PR_SET_TIMERSLACK_PID_2
               , PR_SET_TIMERSLACK_PID_3
 #endif  // BUILDFLAG(IS_ANDROID)
-              ),
+              },
              Allow())
       .Default(
           If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
@@ -211,7 +209,7 @@ ResultExpr RestrictPrctl() {
 
 ResultExpr RestrictIoctl() {
   const Arg<int> request(1);
-  return Switch(request).CASES((TCGETS, FIONREAD), Allow()).Default(
+  return Switch(request).Cases({TCGETS, FIONREAD}, Allow()).Default(
       CrashSIGSYSIoctl());
 }
 
@@ -270,7 +268,7 @@ ResultExpr RestrictFcntlCommands() {
                                  kOsSpecificSeals;
   // clang-format off
   return Switch(cmd)
-      .CASES((F_GETFL,
+      .Cases({F_GETFL,
               F_GETFD,
               F_GET_SEALS,
               F_SETFD,
@@ -278,7 +276,7 @@ ResultExpr RestrictFcntlCommands() {
               F_SETLKW,
               F_GETLK,
               F_DUPFD,
-              F_DUPFD_CLOEXEC),
+              F_DUPFD_CLOEXEC},
              Allow())
       .Case(F_SETFL,
             If((long_arg & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS()))
@@ -296,14 +294,14 @@ ResultExpr RestrictSocketcallCommand() {
   // worried about, socket(2), remains blocked.
   const Arg<int> call(0);
   return Switch(call)
-      .CASES((SYS_SOCKETPAIR,
+      .Cases({SYS_SOCKETPAIR,
               SYS_SHUTDOWN,
               SYS_RECV,
               SYS_SEND,
               SYS_RECVFROM,
               SYS_SENDTO,
               SYS_RECVMSG,
-              SYS_SENDMSG),
+              SYS_SENDMSG},
              Allow())
       .Default(Error(EPERM));
 }
@@ -328,13 +326,13 @@ ResultExpr RestrictFutex() {
   const uint64_t kAllowedFutexFlags = FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME;
   const Arg<int> op(1);
   return Switch(op & ~kAllowedFutexFlags)
-      .CASES((FUTEX_WAIT, FUTEX_WAKE, FUTEX_REQUEUE, FUTEX_CMP_REQUEUE,
+      .Cases({FUTEX_WAIT, FUTEX_WAKE, FUTEX_REQUEUE, FUTEX_CMP_REQUEUE,
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
               // Enable priority-inheritance operations.
               FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
               FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI,
 #endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-              FUTEX_WAKE_OP, FUTEX_WAIT_BITSET, FUTEX_WAKE_BITSET),
+              FUTEX_WAKE_OP, FUTEX_WAIT_BITSET, FUTEX_WAKE_BITSET},
              Allow())
       .Default(IsBuggyGlibcSemPost() ? Error(EINVAL) : CrashSIGSYSFutex());
 }
@@ -343,7 +341,7 @@ ResultExpr RestrictGetSetpriority(pid_t target_pid) {
   const Arg<int> which(0);
   const Arg<int> who(1);
   return If(which == PRIO_PROCESS,
-            Switch(who).CASES((0, target_pid), Allow()).Default(Error(EPERM)))
+            Switch(who).Cases({0, target_pid}, Allow()).Default(Error(EPERM)))
       .Else(CrashSIGSYS());
 }
 
@@ -364,7 +362,7 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
     case __NR_sched_setscheduler: {
       const Arg<pid_t> pid(0);
       return Switch(pid)
-          .CASES((0, target_pid), Allow())
+          .Cases({0, target_pid}, Allow())
           .Default(RewriteSchedSIGSYS());
     }
     default:
@@ -375,7 +373,7 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
 
 ResultExpr RestrictPrlimit64(pid_t target_pid) {
   const Arg<pid_t> pid(0);
-  return Switch(pid).CASES((0, target_pid), Allow()).Default(CrashSIGSYS());
+  return Switch(pid).Cases({0, target_pid}, Allow()).Default(CrashSIGSYS());
 }
 
 ResultExpr RestrictGetrusage() {
@@ -393,7 +391,7 @@ ResultExpr RestrictClockID() {
 
   return
     If((clockid & kIsPidBit) == 0,
-      Switch(clockid).CASES((
+      Switch(clockid).Cases({
               CLOCK_BOOTTIME,
               CLOCK_MONOTONIC,
               CLOCK_MONOTONIC_COARSE,
@@ -401,7 +399,7 @@ ResultExpr RestrictClockID() {
               CLOCK_PROCESS_CPUTIME_ID,
               CLOCK_REALTIME,
               CLOCK_REALTIME_COARSE,
-              CLOCK_THREAD_CPUTIME_ID),
+              CLOCK_THREAD_CPUTIME_ID},
              Allow())
       .Default(CrashSIGSYS()))
 #if BUILDFLAG(IS_ANDROID)
@@ -442,7 +440,7 @@ ResultExpr RestrictPtrace() {
   const Arg<uintptr_t> addr(2);
 #endif
   return Switch(request)
-      .CASES((
+      .Cases({
 #if !defined(__aarch64__)
                  PTRACE_GETREGS, PTRACE_GETFPREGS, PTRACE_GET_THREAD_AREA,
                  PTRACE_GETREGSET,
@@ -450,7 +448,7 @@ ResultExpr RestrictPtrace() {
 #if defined(__arm__)
                  PTRACE_GETVFPREGS,
 #endif
-                 PTRACE_PEEKDATA, PTRACE_ATTACH, PTRACE_DETACH),
+                 PTRACE_PEEKDATA, PTRACE_ATTACH, PTRACE_DETACH},
              Allow())
 #if defined(__aarch64__)
       .Case(

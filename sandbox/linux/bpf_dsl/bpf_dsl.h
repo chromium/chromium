@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <initializer_list>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -223,16 +224,13 @@ class SANDBOX_EXPORT Caser {
 
   Caser& operator=(const Caser&) = delete;
 
-  ~Caser() {}
+  ~Caser() = default;
 
   // Case adds a single-value "case" clause to the switch.
   Caser<T> Case(T value, ResultExpr result) const;
 
   // Cases adds a multiple-value "case" clause to the switch.
-  // See also the SANDBOX_BPF_DSL_CASES macro below for a more idiomatic way
-  // of using this function.
-  template <typename... Values>
-  Caser<T> CasesImpl(ResultExpr result, const Values&... values) const;
+  Caser<T> Cases(std::initializer_list<T> values, ResultExpr result) const;
 
   // Terminate the switch with a "default" clause.
   ResultExpr Default(ResultExpr result) const;
@@ -246,17 +244,6 @@ class SANDBOX_EXPORT Caser {
   template <typename U>
   friend Caser<U> Switch(const Arg<U>&);
 };
-
-// Recommended usage is to put
-//    #define CASES SANDBOX_BPF_DSL_CASES
-// near the top of the .cc file (e.g., nearby any "using" statements), then
-// use like:
-//    Switch(arg).CASES((3, 5, 7), result)...;
-#define SANDBOX_BPF_DSL_CASES(values, result) \
-  CasesImpl(result, SANDBOX_BPF_DSL_CASES_HELPER values)
-
-// Helper macro to strip parentheses.
-#define SANDBOX_BPF_DSL_CASES_HELPER(...) __VA_ARGS__
 
 // =====================================================================
 // Official API ends here.
@@ -312,18 +299,23 @@ SANDBOX_EXPORT Caser<T> Switch(const Arg<T>& arg) {
 
 template <typename T>
 Caser<T> Caser<T>::Case(T value, ResultExpr result) const {
-  return SANDBOX_BPF_DSL_CASES((value), std::move(result));
+  return Cases({value}, std::move(result));
 }
 
 template <typename T>
-template <typename... Values>
-Caser<T> Caser<T>::CasesImpl(ResultExpr result, const Values&... values) const {
+Caser<T> Caser<T>::Cases(std::initializer_list<T> values,
+                         ResultExpr result) const {
   // Theoretically we could evaluate arg_ just once and emit a more efficient
   // dispatch table, but for now we simply translate into an equivalent
   // If/ElseIf/Else chain.
 
+  BoolExpr values_expr(BoolConst(false));
+  for (T value : values) {
+    values_expr = AnyOf(values_expr, arg_ == value);
+  }
+
   return Caser<T>(arg_,
-                  elser_.ElseIf(AnyOf((arg_ == values)...), std::move(result)));
+                  elser_.ElseIf(std::move(values_expr), std::move(result)));
 }
 
 template <typename T>

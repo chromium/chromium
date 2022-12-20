@@ -59,8 +59,6 @@
 #define PR_CAPBSET_DROP 24
 #endif
 
-#define CASES SANDBOX_BPF_DSL_CASES
-
 namespace sandbox {
 namespace bpf_dsl {
 
@@ -821,7 +819,7 @@ ResultExpr SimpleCondTestPolicy::EvaluateSyscall(int sysno) const {
       // disallow everything else.
       const Arg<int> option(0);
       return Switch(option)
-          .CASES((PR_SET_DUMPABLE, PR_GET_DUMPABLE), Allow())
+          .Cases({PR_SET_DUMPABLE, PR_GET_DUMPABLE}, Allow())
           .Default(Error(ENOMEM));
     }
     default:
@@ -1788,8 +1786,8 @@ ResultExpr PthreadPolicyEquality::EvaluateSyscall(int sysno) const {
                                            CLONE_SYSVSEM;
     const Arg<unsigned long> flags(0);
     return Switch(flags)
-        .CASES((kGlibcCloneMask, (kBaseAndroidCloneMask | CLONE_DETACHED),
-                kBaseAndroidCloneMask),
+        .Cases({kGlibcCloneMask, (kBaseAndroidCloneMask | CLONE_DETACHED),
+                kBaseAndroidCloneMask},
                Allow())
         .Default(Trap(PthreadTrapHandler, "Unknown mask"));
   }

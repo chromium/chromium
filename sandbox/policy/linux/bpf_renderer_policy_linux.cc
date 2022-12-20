@@ -39,17 +39,16 @@ namespace {
 ResultExpr RestrictIoctl() {
   const Arg<unsigned long> request(1);
   return Switch(request)
-      .SANDBOX_BPF_DSL_CASES((static_cast<unsigned long>(TCGETS), FIONREAD),
-                             Allow())
-      .SANDBOX_BPF_DSL_CASES(
-          (static_cast<unsigned long>(LOCAL_DMA_BUF_IOCTL_SYNC)), Allow())
+      .Cases({static_cast<unsigned long>(TCGETS), FIONREAD,
+              static_cast<unsigned long>(LOCAL_DMA_BUF_IOCTL_SYNC)},
+             Allow())
       .Default(CrashSIGSYSIoctl());
 }
 
 }  // namespace
 
-RendererProcessPolicy::RendererProcessPolicy() {}
-RendererProcessPolicy::~RendererProcessPolicy() {}
+RendererProcessPolicy::RendererProcessPolicy() = default;
+RendererProcessPolicy::~RendererProcessPolicy() = default;
 
 ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {

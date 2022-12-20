@@ -36,9 +36,9 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
     {
       const Arg<int> op(1);
       return Switch(op & FUTEX_CMD_MASK)
-          .SANDBOX_BPF_DSL_CASES(
-              (FUTEX_CMP_REQUEUE, FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_WAIT,
-               FUTEX_WAIT_BITSET, FUTEX_WAKE),
+          .Cases(
+              {FUTEX_CMP_REQUEUE, FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_WAIT,
+               FUTEX_WAIT_BITSET, FUTEX_WAKE},
               Allow())
           // Sending ENOSYS tells the Futex backend to use another approach if
           // this fails.

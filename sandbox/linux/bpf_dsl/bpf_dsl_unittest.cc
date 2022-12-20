@@ -31,8 +31,6 @@
 #include "sandbox/linux/system_headers/linux_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#define CASES SANDBOX_BPF_DSL_CASES
-
 namespace sandbox {
 namespace bpf_dsl {
 namespace {
@@ -62,8 +60,7 @@ struct arch_seccomp_data FakeSyscall(int nr,
 
 class PolicyEmulator {
  public:
-  PolicyEmulator(const golden::Golden& golden, const Policy& policy)
-      : program_() {
+  PolicyEmulator(const golden::Golden& golden, const Policy& policy) {
     TestTrapRegistry traps;
     program_ = PolicyCompiler(&policy, &traps).Compile();
 
@@ -86,7 +83,7 @@ class PolicyEmulator {
   PolicyEmulator(const PolicyEmulator&) = delete;
   PolicyEmulator& operator=(const PolicyEmulator&) = delete;
 
-  ~PolicyEmulator() {}
+  ~PolicyEmulator() = default;
 
   void ExpectAllow(const struct arch_seccomp_data& data) const {
     EXPECT_EQ(SECCOMP_RET_ALLOW, Emulate(data));
@@ -402,18 +399,18 @@ TEST(BPFDSL, ElseIfTest) {
 
 class SwitchPolicy : public Policy {
  public:
-  SwitchPolicy() {}
+  SwitchPolicy() = default;
 
   SwitchPolicy(const SwitchPolicy&) = delete;
   SwitchPolicy& operator=(const SwitchPolicy&) = delete;
 
-  ~SwitchPolicy() override {}
+  ~SwitchPolicy() override = default;
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_fcntl) {
       const Arg<int> cmd(1);
       const Arg<unsigned long> long_arg(2);
       return Switch(cmd)
-          .CASES((F_GETFL, F_GETFD), Error(ENOENT))
+          .Cases({F_GETFL, F_GETFD}, Error(ENOENT))
           .Case(F_SETFD, If(long_arg == O_CLOEXEC, Allow()).Else(Error(EINVAL)))
           .Case(F_SETFL, Error(EPERM))
           .Default(Error(EACCES));
