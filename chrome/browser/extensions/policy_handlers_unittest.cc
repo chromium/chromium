@@ -428,7 +428,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = nullptr;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
-  base::DictionaryValue empty_value;
+  base::Value::Dict empty_value;
   EXPECT_EQ(empty_value, *value);
 }
 

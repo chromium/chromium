@@ -2617,10 +2617,10 @@ TEST_F(ExtensionServiceTest,
   ASSERT_FALSE(base::PathExists(manifest_dir));
 
   // First create a correct manifest and Load the extension successfully.
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("version", "1.0");
-  manifest.SetStringKey("name", "malformed manifest reload test");
-  manifest.SetIntKey("manifest_version", 2);
+  base::Value::Dict manifest;
+  manifest.Set("version", "1.0");
+  manifest.Set("name", "malformed manifest reload test");
+  manifest.Set("manifest_version", 2);
 
   JSONFileValueSerializer serializer(manifest_dir);
   ASSERT_TRUE(serializer.Serialize(manifest));
@@ -2636,7 +2636,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_EQ("1.0", loaded_extensions()[0]->VersionString());
 
   // Change the version to a malformed version.
-  manifest.SetStringKey("version", "2.0b");
+  manifest.Set("version", "2.0b");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   std::string extension_id = loaded_extensions()[0]->id();
@@ -2656,7 +2656,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
 
   // Fix the version.
-  manifest.SetStringKey("version", "2.0");
+  manifest.Set("version", "2.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Reload the extension.
@@ -3118,10 +3118,10 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
   ASSERT_FALSE(base::PathExists(manifest_path));
 
   // Start with version 2.0.
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("version", "2.0");
-  manifest.SetStringKey("name", "LOAD Downgrade Test");
-  manifest.SetIntKey("manifest_version", 2);
+  base::Value::Dict manifest;
+  manifest.Set("version", "2.0");
+  manifest.Set("name", "LOAD Downgrade Test");
+  manifest.Set("manifest_version", 2);
 
   JSONFileValueSerializer serializer(manifest_path);
   ASSERT_TRUE(serializer.Serialize(manifest));
@@ -3137,7 +3137,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
   // Now set the version number to 1.0, reload the extensions and verify that
   // the downgrade was accepted.
-  manifest.SetStringKey("version", "1.0");
+  manifest.Set("version", "1.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   UnpackedInstaller::Create(service())->Load(extension_path);
