@@ -280,6 +280,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/color_chooser.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1651,10 +1654,17 @@ void Browser::AddNewContents(
   // On the Mac, the convention is to turn popups into new tabs when in browser
   // fullscreen mode. Only worry about user-initiated fullscreen as showing a
   // popup in HTML5 fullscreen would have kicked the page out of fullscreen.
-  // However if this Browser is for an app, we don't want to turn popups into
-  // new tabs. Popups should open as new app windows instead.
+  // However if this Browser is for an app or the popup is being requested on a
+  // different display, we don't want to turn popups into new tabs. Popups
+  // should open as new windows instead.
+  display::Screen* screen = display::Screen::GetScreen();
+  bool targeting_different_display =
+      screen && source && source->GetContentNativeView() &&
+      screen->GetDisplayNearestView(source->GetContentNativeView()) !=
+          screen->GetDisplayMatching(window_features.bounds);
   if (!app_controller_ && disposition == WindowOpenDisposition::NEW_POPUP &&
-      fullscreen_controller->IsFullscreenForBrowser()) {
+      fullscreen_controller->IsFullscreenForBrowser() &&
+      !targeting_different_display) {
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 #endif
