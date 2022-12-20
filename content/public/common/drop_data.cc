@@ -11,11 +11,9 @@
 
 namespace content {
 
-DropData::Metadata::Metadata() {}
-
 // static
 DropData::Metadata DropData::Metadata::CreateForMimeType(
-    const Kind& kind,
+    Kind kind,
     const std::u16string& mime_type) {
   Metadata metadata;
   metadata.kind = kind;
@@ -50,26 +48,22 @@ DropData::Metadata DropData::Metadata::CreateForBinary(
   return metadata;
 }
 
+DropData::Metadata::Metadata() = default;
 DropData::Metadata::Metadata(const DropData::Metadata& other) = default;
+DropData::Metadata::~Metadata() = default;
 
-DropData::Metadata::~Metadata() {}
-
-DropData::DropData()
-    : did_originate_from_renderer(false),
-      referrer_policy(network::mojom::ReferrerPolicy::kDefault) {}
-
+DropData::DropData() = default;
 DropData::DropData(const DropData& other) = default;
-
-DropData::~DropData() {}
+DropData::~DropData() = default;
 
 absl::optional<base::FilePath> DropData::GetSafeFilenameForImageFileContents()
     const {
   base::FilePath file_name = net::GenerateFileName(
       file_contents_source_url, file_contents_content_disposition,
-      std::string(),   // referrer_charset
-      std::string(),   // suggested_name
-      std::string(),   // mime_type
-      std::string());  // default_name
+      /*referrer_charset=*/std::string(),
+      /*suggested_name=*/std::string(),
+      /*mime_type=*/std::string(),
+      /*default_name=*/std::string());
   std::string mime_type;
   if (net::GetWellKnownMimeTypeFromExtension(file_contents_filename_extension,
                                              &mime_type) &&

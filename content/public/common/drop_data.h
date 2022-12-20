@@ -51,12 +51,13 @@ struct CONTENT_EXPORT DropData {
   };
 
   struct Metadata {
-    Metadata();
-    static Metadata CreateForMimeType(const Kind& kind,
+    static Metadata CreateForMimeType(Kind kind,
                                       const std::u16string& mime_type);
     static Metadata CreateForFilePath(const base::FilePath& filename);
     static Metadata CreateForFileSystemUrl(const GURL& file_system_url);
     static Metadata CreateForBinary(const GURL& file_contents_url);
+
+    Metadata();
     Metadata(const Metadata& other);
     ~Metadata();
 
@@ -78,9 +79,9 @@ struct CONTENT_EXPORT DropData {
   int view_id = MSG_ROUTING_NONE;
 
   // Whether this drag originated from a renderer.
-  bool did_originate_from_renderer;
+  bool did_originate_from_renderer = false;
 
-  // Whether this drag is from a privileged Web Contents.
+  // Whether this drag is from a privileged WebContents.
   bool is_from_privileged = false;
 
   // User is dragging a link or image.
@@ -92,7 +93,8 @@ struct CONTENT_EXPORT DropData {
 
   // Referrer policy to use when dragging a link out of the webview results in
   // a download.
-  network::mojom::ReferrerPolicy referrer_policy;
+  network::mojom::ReferrerPolicy referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
 
   // User is dropping one or more files on the webview. This field is only
   // populated if the drag is not renderer tainted, as this allows File access
