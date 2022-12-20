@@ -129,6 +129,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1402815")
     public void testReaderModePromptShown() {
         waitForReaderModeMessage();
     }
