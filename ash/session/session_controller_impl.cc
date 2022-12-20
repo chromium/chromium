@@ -35,6 +35,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 
 using session_manager::SessionState;
@@ -197,6 +198,11 @@ bool SessionControllerImpl::IsUserFirstLogin() const {
 
 bool SessionControllerImpl::IsEnterpriseManaged() const {
   return client_ && client_->IsEnterpriseManaged();
+}
+
+absl::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
+  return client_ ? absl::optional<int>(client_->GetExistingUsersCount())
+                 : absl::nullopt;
 }
 
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {

@@ -91,6 +91,7 @@ class SessionControllerClientImpl
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
+  absl::optional<int> GetExistingUsersCount() const override;
 
   // Returns true if a multi-profile user can be added to the session or if
   // multiple users are already signed in.

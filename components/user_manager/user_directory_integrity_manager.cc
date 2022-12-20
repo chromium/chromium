@@ -5,6 +5,7 @@
 #include "components/user_manager/user_directory_integrity_manager.h"
 
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
@@ -34,12 +35,19 @@ void UserDirectoryIntegrityManager::RecordCreatingNewUser(
   local_state_->CommitPendingWrite();
 }
 
+void UserDirectoryIntegrityManager::ClearKnownUserPrefs() {
+  absl::optional<AccountId> account_id = GetMisconfiguredUser();
+  DCHECK(account_id);
+  UserManager::Get()->RemoveUserFromList(account_id.value());
+}
+
 void UserDirectoryIntegrityManager::ClearPrefs() {
   local_state_->ClearPref(kUserDirectoryIntegrityAccountPref);
   local_state_->CommitPendingWrite();
 }
 
-absl::optional<AccountId> UserDirectoryIntegrityManager::GetIncompleteUser() {
+absl::optional<AccountId>
+UserDirectoryIntegrityManager::GetMisconfiguredUser() {
   auto incomplete_user_email =
       local_state_->GetString(kUserDirectoryIntegrityAccountPref);
   return incomplete_user_email.empty()

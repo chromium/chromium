@@ -116,6 +116,7 @@ include_rules = [
   "+components/session_manager/session_manager_types.h",
   "-components/user_manager",
   "+components/user_manager/known_user.h",
+  "+components/user_manager/user_directory_integrity_manager.h",
   "+components/user_manager/user_names.h",
   "+components/user_manager/user_type.h",
   "+components/user_manager/user.h",

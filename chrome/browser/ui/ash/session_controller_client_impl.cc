@@ -46,6 +46,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -314,6 +315,12 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
 bool SessionControllerClientImpl::IsEnterpriseManaged() const {
   const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
   return user_manager && user_manager->IsEnterpriseManaged();
+}
+
+absl::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
+  const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
+  return !user_manager ? absl::nullopt
+                       : absl::optional<int>(user_manager->GetUsers().size());
 }
 
 // static

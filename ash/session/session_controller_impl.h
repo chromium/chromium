@@ -128,9 +128,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // device (i.e. first time login on the device).
   bool IsUserFirstLogin() const;
 
-  // Returns true if the device is enterprise managed.
-  bool IsEnterpriseManaged() const;
-
   // Returns true if should display managed icon for current session,
   // and false otherwise.
   bool ShouldDisplayManagedUI() const;
@@ -216,6 +213,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   void AddObserver(SessionObserver* observer) override;
   void RemoveObserver(SessionObserver* observer) override;
   bool IsScreenLocked() const override;
+  bool IsEnterpriseManaged() const override;
+  absl::optional<int> GetExistingUsersCount() const override;
 
   // Test helpers.
   void ClearUserSessionsForTest();

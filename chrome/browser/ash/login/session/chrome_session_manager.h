@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
+#include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace base {
@@ -48,6 +49,7 @@ class ChromeSessionManager : public session_manager::SessionManager {
  private:
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
+  std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 };
 
 }  // namespace ash

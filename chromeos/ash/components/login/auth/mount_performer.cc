@@ -108,6 +108,45 @@ void MountPerformer::RemoveUserDirectory(std::unique_ptr<UserContext> context,
                      std::move(context), std::move(callback)));
 }
 
+void MountPerformer::RemoveUserDirectoryByIdentifier(
+    cryptohome::AccountIdentifier identifier,
+    NoContextOperationCallback callback) {
+  LOGIN_LOG(EVENT) << "Checking for crypthomed's availability before "
+                      "attempting to remove the user using their identifier";
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+      &MountPerformer::OnServiceRunning, weak_factory_.GetWeakPtr(), identifier,
+      std::move(callback)));
+}
+
+void MountPerformer::OnServiceRunning(cryptohome::AccountIdentifier identifier,
+                                      NoContextOperationCallback callback,
+                                      bool service_is_available) {
+  if (!service_is_available) {
+    LOGIN_LOG(ERROR)
+        << "Unable to initiate user removal, service is not available";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  user_data_auth::RemoveRequest request;
+  *request.mutable_identifier() = identifier;
+
+  LOGIN_LOG(EVENT) << "Removing user directory by cryptohome identifier";
+  UserDataAuthClient::Get()->Remove(
+      request, base::BindOnce(&MountPerformer::OnRemoveByIdentifier,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MountPerformer::OnRemoveByIdentifier(
+    NoContextOperationCallback callback,
+    absl::optional<user_data_auth::RemoveReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    std::move(callback).Run(AuthenticationError{error});
+    return;
+  }
+  std::move(callback).Run(absl::nullopt);
+}
+
 // Unmounts all currently mounted directories.
 void MountPerformer::UnmountDirectories(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {

@@ -259,8 +259,9 @@ void AuthSessionAuthenticator::DoCompleteLogin(
     if (challenge_response_auth) {
       // We need to store a user information as it would be used by
       // CryptohomeKeyDelegateServiceProvider.
-      // Note that this might result in orphaned records in LocalState, but
-      // that should be fixed once crbug.com/1334140 is implemented.
+      // If the user creation process is interrupted, the known user record
+      // will be cleared on reboot in
+      // `MisconfiguredUserCleaner::OnCleanMisconfiguredUser`.
       steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
                                      weak_factory_.GetWeakPtr()));
       steps.push_back(

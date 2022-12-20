@@ -141,6 +141,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
+  absl::optional<int> GetExistingUsersCount() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
   // will be created.  If your tests requires the lock screen to be created,
@@ -151,6 +152,10 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
     is_enterprise_managed_ = is_enterprise_managed;
+  }
+
+  void set_existing_users_count(int existing_users_count) {
+    existing_users_count_ = existing_users_count;
   }
 
  private:
@@ -170,6 +175,8 @@ class TestSessionControllerClient : public SessionControllerClient {
   bool should_show_lock_screen_ = false;
 
   bool is_enterprise_managed_ = false;
+
+  int existing_users_count_ = 0;
 
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 

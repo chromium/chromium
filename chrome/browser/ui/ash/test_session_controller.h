@@ -49,6 +49,14 @@ class TestSessionController : public ash::SessionController {
     return set_user_session_order_count_;
   }
 
+  void set_is_enterprise_managed(bool is_enterprise_managed) {
+    is_enterprise_managed_ = is_enterprise_managed;
+  }
+
+  void set_existing_users_count(int existing_users_count) {
+    existing_users_count_ = existing_users_count;
+  }
+
   void SetScreenLocked(bool locked);
 
   // ash::SessionController:
@@ -80,6 +88,8 @@ class TestSessionController : public ash::SessionController {
   void AddObserver(ash::SessionObserver* observer) override;
   void RemoveObserver(ash::SessionObserver* observer) override;
   bool IsScreenLocked() const override;
+  bool IsEnterpriseManaged() const override;
+  absl::optional<int> GetExistingUsersCount() const override;
 
  private:
   absl::optional<ash::SessionInfo> last_session_info_;
@@ -91,6 +101,8 @@ class TestSessionController : public ash::SessionController {
   int set_user_session_order_count_ = 0;
   bool is_screen_locked_ = false;
   base::ObserverList<ash::SessionObserver> observers_;
+  bool is_enterprise_managed_ = false;
+  int existing_users_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_

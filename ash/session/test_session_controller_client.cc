@@ -320,6 +320,10 @@ bool TestSessionControllerClient::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
+absl::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
+  return existing_users_count_;
+}
+
 void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,
                                                bool switch_user) {
   if (!switch_user)

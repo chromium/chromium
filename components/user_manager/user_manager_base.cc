@@ -913,6 +913,18 @@ void UserManagerBase::EnsureUsersLoaded() {
       // Hide legacy supervised users from the login screen if not removed.
       continue;
     }
+
+    UserDirectoryIntegrityManager integrity_manager(GetLocalState());
+    absl::optional<AccountId> incomplete_user =
+        integrity_manager.GetMisconfiguredUser();
+    if (incomplete_user.has_value() &&
+        incomplete_user->GetUserEmail() == it->GetUserEmail()) {
+      // Skip misconfigured user.
+      VLOG(1) << "Encountered misconfigured user while loading list of "
+                 "users, skipping";
+      continue;
+    }
+
     base::UmaHistogramEnumeration(
         kLegacySupervisedUsersHistogramName,
         LegacySupervisedUserStatus::kGaiaUserDisplayed);

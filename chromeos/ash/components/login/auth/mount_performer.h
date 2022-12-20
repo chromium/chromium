@@ -84,6 +84,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
   void RemoveUserDirectory(std::unique_ptr<UserContext> context,
                            AuthOperationCallback callback);
 
+  // Removes home directory for the user identified by `identifier`
+  // It is expected that home directory is not mounted.
+  void RemoveUserDirectoryByIdentifier(cryptohome::AccountIdentifier identifier,
+                                       NoContextOperationCallback callback);
+
   // Unmounts all currently mounted directories.
   // Context is required only for passing to callback.
   void UnmountDirectories(std::unique_ptr<UserContext> context,
@@ -114,9 +119,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::PrepareVaultForMigrationReply> reply);
+  void OnServiceRunning(cryptohome::AccountIdentifier identifier,
+                        NoContextOperationCallback callback,
+                        bool service_is_available);
   void OnRemove(std::unique_ptr<UserContext> context,
                 AuthOperationCallback callback,
                 absl::optional<user_data_auth::RemoveReply> reply);
+  void OnRemoveByIdentifier(NoContextOperationCallback callback,
+                            absl::optional<user_data_auth::RemoveReply> reply);
   void OnUnmount(std::unique_ptr<UserContext> context,
                  AuthOperationCallback callback,
                  absl::optional<user_data_auth::UnmountReply> reply);
