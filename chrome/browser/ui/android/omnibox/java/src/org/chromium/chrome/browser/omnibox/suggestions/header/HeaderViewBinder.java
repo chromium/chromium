@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.header;
 import android.content.res.Resources;
 
 import androidx.core.view.ViewCompat;
-import androidx.core.widget.TextViewCompat;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -25,8 +24,7 @@ public class HeaderViewBinder {
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             final boolean isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
                     == BrandedColorScheme.INCOGNITO;
-            TextViewCompat.setTextAppearance(
-                    view, ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
+            view.setTextAppearance(ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
         } else if (propertyKey == SuggestionCommonProperties.LAYOUT_DIRECTION) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));

@@ -30,7 +30,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -90,8 +89,7 @@ public class AutofillUiUtils {
             OffsetProvider offsetProvider, View anchorView, final Runnable dismissAction) {
         TextView textView = new TextView(context);
         textView.setText(text);
-        TextViewCompat.setTextAppearance(
-                textView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
+        textView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         Resources resources = context.getResources();
         int hPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_horizontal_padding);
         int vPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_vertical_padding);

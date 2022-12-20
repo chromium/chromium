@@ -9,8 +9,6 @@ import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import androidx.core.widget.TextViewCompat;
-
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /**
@@ -27,8 +25,7 @@ public class HeaderView extends TextView {
 
         setMaxLines(1);
         setEllipsize(TruncateAt.END);
-        TextViewCompat.setTextAppearance(
-                this, ChromeColors.getTextMediumThickSecondaryStyle(false));
+        setTextAppearance(ChromeColors.getTextMediumThickSecondaryStyle(false));
         setGravity(Gravity.CENTER_VERTICAL);
         setTextAlignment(TextView.TEXT_ALIGNMENT_VIEW_START);
     }
