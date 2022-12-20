@@ -120,34 +120,95 @@ tools/rust/build_rust.py --fetch-llvm-libs --use-final-llvm-build-dir --run-xpy 
 
 will catch most errors and will be fast.
 
-### Upload CL and build package
+### Upload CL
 
-Upload a CL with the changes, which in the simplest case will only have two
-changes: one line in `//DEPS`, one line in `//tools/rust/update_rust.py`. Add the
-following line to the end of the CL description, which ensures the new toolchain
-will be tested on appropriate Rust tryjobs:
+Run `tools/clang/scripts/upload_revision.py` to roll Clang and Rust to the
+latest revision. It will update `//DEPS` and `/tools/rust/update_rust.py` with
+new Rust version info, upload a CL to gerrit, and start tryjobs to build the
+toolchain.
 
+See [//docs/updating_clang.md](../../docs/updating_clang.md) for more info
+on to roll Clang and Rust.
+
+To roll Rust only, (make sure you are synced to HEAD and) pass the current Clang
+version to `tools/clang/scripts/upload_revision.py`, as:
 ```
-Cq-Include-Trybots: luci.chromium.try:android-rust-arm-dbg,android-rust-arm-rel,linux-rust-x64-dbg,linux-rust-x64-rel
+tools/clang/scripts/upload_revision.py --clang-git-hash HASH --clang-sub-revision SUBREV
 ```
 
-From Gerrit run the `linux_upload_clang` tryjob on the CL and wait for it to
-finish. Check that it's successful; it is **not** sufficient to check the
-result in Gerrit as a Rust failure will not surface here. Check the build page
-(e.g.
+The `HASH` and `SUBREV` can be found from:
+```
+# HASH
+grep ^CLANG_REVISION tools/clang/scripts/update.py | sed -E 's/.*-g([0-9a-z]+).*/\1/'
+# SUBREV
+grep ^CLANG_SUB_REVISION tools/clang/scripts/update.py | sed -E 's/.*([0-9a-z]+).*/\1/'
+```
+
+If you want to use an older version of Rust, use `cipd` to find the version
+you want to use.
+
+To find all instances of the Rust toolchain sources available:
+```
+cipd instances chromium/third_party/rust_src
+```
+
+This will output something like:
+```
+Instance ID                                  │ Timestamp             │ Uploader                  │ Refs
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+6fLkoaoLWCFzVUlkhDevcLHj18bTXF5DxSCQTtNTJaMC │ Dec 15 06:16 EST 2022 │ chromium-cipd-builder@... │ latest
+ohKW73PweFtV25O9vCbRzZoF1nxHGfurbLc0NWV2io8C │ Dec 14 06:13 EST 2022 │ chromium-cipd-builder@... │
+J6zeUMnPfukyu5fo0NFdAH6w9HEDyJzo1D0YhrP15bcC │ Dec 13 06:10 EST 2022 │ chromium-cipd-builder@... │
+pd-8U_6sH8y0dUwfFNUqKcu9GkMYnZmE2e6dOVG7ONUC │ Dec 12 06:12 EST 2022 │ chromium-cipd-builder@... │
+```
+
+From here, you may get the version info for an intance with:
+```
+cipd describe chromium/third_party/rust_src -version INSTANCE_ID
+```
+
+With `INSTANCE_ID` as `ohKW73PweFtV25O9vCbRzZoF1nxHGfurbLc0NWV2io8C`, the
+describe output looks something like:
+```
+Package:       chromium/third_party/rust_src
+Instance ID:   ohKW73PweFtV25O9vCbRzZoF1nxHGfurbLc0NWV2io8C
+Tags:
+  version:2@2022-12-14
+```
+
+The Rust toolchain version is what comes after `version:` in the tags. In this
+case, it would be `2@2022-12-14`.
+
+Then, pass this version to `tools/clang/scripts/upload_revision.py` as in:
+```
+tools/clang/scripts/upload_revision.py --rust-cipd-version 2@2022-12-14
+```
+
+This will generate a patch and upload it to Gerrit with the specified Rust
+toolchain version.
+
+### Verify that Rust compiled
+
+The `tools/clang/scripts/upload_revision.py` starts builders that will compile
+Clang and Rust. At this time, the builders succeed **even if Rust failed**. To
+see if Rust did compile, check the build page (e.g.
 https://ci.chromium.org/ui/p/chromium/builders/try/linux_upload_clang/2611/overview)
 and confirm the "package rust" step succeeded. If it did not, further
 investigation is needed.
 
-After the package is built, a developer with permissions must bless the package
-for use. As of writing this is anyone in [Clang
-OWNERS](/tools/clang/scripts/OWNERS) or collinbaker@chromium.org.
+### Upload to production
 
+After the package is built, a developer with permissions must copy the uploaded
+(Clang and) Rust packages from staging to production, in order for `gclient
+sync` to find them. This must be done before submitting the CL or it will break
+`gclient sync` for all Rust users. As of writing, anyone in [Clang
+OWNERS](/tools/clang/scripts/OWNERS) or collinbaker@chromium.org can perform
+this task.
 
 ### Submit CL
 
-Once the package has been uploaded and blessed, it is ready to be fetched from
-any Chromium checkout.
+Once the package has been uploaded to production (see above), it is ready to be
+fetched from any Chromium checkout.
 
 Submit the CL. CQ tryjobs will use the specified toolchain package
 version. Any build failures will need to be investigated, as these indicate
