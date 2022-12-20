@@ -11,10 +11,11 @@ import './routine_section.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './connectivity_card.html.js';
-import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, getRoutineGroups, strictQuery} from './diagnostics_utils.js';
+import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverReceiver} from './network_health_provider.mojom-webui.js';
 import {RoutineGroup} from './routine_group.js';
@@ -97,8 +98,8 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       null;
 
   private getRoutineSectionElem_(): RoutineSectionElement {
-    const routineSection =
-        strictQuery(this.shadowRoot, 'routine-section', RoutineSectionElement);
+    const routineSection = this.shadowRoot!.querySelector('routine-section');
+    assert(routineSection);
     return routineSection;
   }
 

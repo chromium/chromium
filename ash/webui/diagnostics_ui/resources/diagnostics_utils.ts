@@ -319,16 +319,3 @@ export function getSignalStrength(value: number): string {
 
   return loadTimeData.getStringF('signalStrength_Excellent', value);
 }
-
-/**
- * Queries |selector| on |root| and returns the resulting element. Throws
- * exception if there is no resulting element or if element is not of type
- * |type|.
- */
-type Constructor<T> = new (...args: any[]) => T;
-export function strictQuery<T>(
-    root: Element|ShadowRoot|null, selector: string, type: Constructor<T>): T {
-  const element = root!.querySelector(selector);
-  assert(element && element instanceof type);
-  return element;
-}
