@@ -17,9 +17,10 @@ build_webui("build") {
     "images/privacy_sandbox_confirmation_banner.svg",
     "images/privacy_sandbox_confirmation_banner_dark.svg",
 
-    # TODO(crbug.com/1378703): Add dark versions of images.
-    "images/privacy_sandbox_new_banner.svg",
-    "images/privacy_sandbox_notice_image.svg",
+    "images/topics_banner.svg",
+    "images/topics_banner_dark.svg",
+    "images/fledge_banner.svg",
+    "images/fledge_banner_dark.svg",
     "images/chrome_logo.svg",
   ]
 

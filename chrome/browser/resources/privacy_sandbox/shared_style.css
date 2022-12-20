@@ -121,16 +121,32 @@ li:not(:last-child) {
 }
 
 /* Privacy sandbox banner */
-/* TODO(crbug.com/1378703): Add dark theme styles or use a proper constant */
 .banner {
-  background-color: var(--google-grey-50);
+  height: 160px;
   margin: 16px 0;
   text-align: center;
 }
 
-.banner img {
-  content: url(images/privacy_sandbox_new_banner.svg);
-  height: 184px;
+/* Topics banner image */
+img.topics-banner {
+  content: url(images/topics_banner.svg);
+}
+
+@media (prefers-color-scheme: dark) {
+  img.topics-banner {
+    content: url(images/topics_banner_dark.svg);
+  }
+}
+
+/* Fledge banner image */
+img.fledge-banner {
+  content: url(images/fledge_banner.svg);
+}
+
+@media (prefers-color-scheme: dark) {
+  img.fledge-banner {
+    content: url(images/fledge_banner_dark.svg);
+  }
 }
 
 /* Chrome logo image */
