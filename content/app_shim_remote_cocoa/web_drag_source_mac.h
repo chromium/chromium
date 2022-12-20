@@ -9,11 +9,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
 #include "content/common/content_export.h"
+#include "content/public/common/drop_data.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -29,12 +28,13 @@ class WebContentsNSViewHost;
 CONTENT_EXPORT
 @interface WebDragSource : NSObject <NSPasteboardWriting> {
  @private
-  // The host through which to communicate with the WebContentsImpl. Owns
-  // |self| and resets |host_| via clearHostAndWebContentsView.
+  // The host through which to communicate with the WebContents. Owns
+  // this object. This pointer gets reset when the WebContents goes away with
+  // `webContentsIsGone`.
   raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
 
-  // The drop data. Should only be initialized once.
-  std::unique_ptr<content::DropData> _dropData;
+  // The drop data.
+  content::DropData _dropData;
 
   // The file name to be saved to for a drag-out download.
   base::FilePath _downloadFileName;
@@ -49,9 +49,9 @@ CONTENT_EXPORT
 
 // Initialize a WebDragSource object for a drag.
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-                    dropData:(const content::DropData*)dropData;
+                    dropData:(const content::DropData&)dropData;
 
-// Call when the web contents is gone.
+// Call when the WebContents is gone.
 - (void)webContentsIsGone;
 
 @end

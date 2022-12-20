@@ -38,12 +38,10 @@
 @implementation WebDragSource
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-                    dropData:(const content::DropData*)dropData {
+                    dropData:(const content::DropData&)dropData {
   if ((self = [super init])) {
     _host = host;
-
-    _dropData = std::make_unique<content::DropData>(*dropData);
-    DCHECK(_dropData.get());
+    _dropData = dropData;
   }
 
   return self;
@@ -62,21 +60,21 @@
   [writableTypes addObject:ui::kUTTypeChromiumInitiatedDrag];
 
   // URL (and title).
-  if (_dropData->url.is_valid()) {
+  if (_dropData.url.is_valid()) {
     [writableTypes addObject:NSPasteboardTypeURL];
     [writableTypes addObject:ui::kUTTypeURLName];
   }
 
   // File.
-  if (!_dropData->file_contents.empty() ||
-      !_dropData->download_metadata.empty()) {
+  if (!_dropData.file_contents.empty() ||
+      !_dropData.download_metadata.empty()) {
     std::string mimeType;
 
     // TODO(https://crbug.com/898608): The |downloadFileName_| and
     // |downloadURL_| values should be computed by the caller.
-    if (_dropData->download_metadata.empty()) {
+    if (_dropData.download_metadata.empty()) {
       absl::optional<base::FilePath> suggestedFilename =
-          _dropData->GetSafeFilenameForImageFileContents();
+          _dropData.GetSafeFilenameForImageFileContents();
       if (suggestedFilename) {
         _downloadFileName = std::move(*suggestedFilename);
         net::GetMimeTypeFromFile(_downloadFileName, &mimeType);
@@ -84,7 +82,7 @@
     } else {
       std::u16string mimeType16;
       base::FilePath filename;
-      if (content::ParseDownloadMetadata(_dropData->download_metadata,
+      if (content::ParseDownloadMetadata(_dropData.download_metadata,
                                          &mimeType16, &filename,
                                          &_downloadURL)) {
         // Generate the file name based on both mime type and proposed file
@@ -115,7 +113,7 @@
       }
 
       // Promise both the file's contents...
-      if (!_dropData->file_contents.empty()) {
+      if (!_dropData.file_contents.empty()) {
         [writableTypes addObject:_fileUTType.get()];
       }
 
@@ -138,7 +136,7 @@
   }
 
   // HTML.
-  bool hasHTMLData = _dropData->html && !_dropData->html->empty();
+  bool hasHTMLData = _dropData.html && !_dropData.html->empty();
   // Mail.app and TextEdit accept drags that have both HTML and image flavors on
   // them, but don't process them correctly <http://crbug.com/55879>. Therefore,
   // if there is an image flavor, don't put the HTML data on as HTML, but rather
@@ -148,11 +146,11 @@
   // an image drop, but the MIME time is tested anyway for paranoia's sake.)
   bool hasImageData;
   if (@available(macOS 11, *)) {
-    hasImageData = !_dropData->file_contents.empty() && _fileUTType &&
+    hasImageData = !_dropData.file_contents.empty() && _fileUTType &&
                    [[UTType typeWithIdentifier:_fileUTType.get()]
                        conformsToType:UTTypeImage];
   } else {
-    hasImageData = !_dropData->file_contents.empty() && _fileUTType &&
+    hasImageData = !_dropData.file_contents.empty() && _fileUTType &&
                    UTTypeConformsTo(base::mac::NSToCFCast(_fileUTType.get()),
                                     kUTTypeImage);
   }
@@ -165,11 +163,11 @@
   }
 
   // Plain text.
-  if (_dropData->text && !_dropData->text->empty()) {
+  if (_dropData.text && !_dropData.text->empty()) {
     [writableTypes addObject:NSPasteboardTypeString];
   }
 
-  if (!_dropData->custom_data.empty()) {
+  if (!_dropData.custom_data.empty()) {
     [writableTypes addObject:ui::kUTTypeChromiumWebCustomData];
   }
 
@@ -177,34 +175,28 @@
 }
 
 - (id)pasteboardPropertyListForType:(NSPasteboardType)type {
-  // Be extra paranoid; avoid crashing.
-  if (!_dropData) {
-    NOTREACHED();
-    return nil;
-  }
-
   // HTML.
   if ([type isEqualToString:NSPasteboardTypeHTML] ||
       [type isEqualToString:ui::kUTTypeChromiumImageAndHTML]) {
-    DCHECK(_dropData->html && !_dropData->html->empty());
+    DCHECK(_dropData.html && !_dropData.html->empty());
 
     // NSPasteboardTypeHTML requires the character set to be declared.
     // Otherwise, it assumes US-ASCII. Awesome.
     static constexpr char16_t kHtmlHeader[] =
         u"<meta http-equiv=\"Content-Type\" "
         u"content=\"text/html;charset=UTF-8\">";
-    return base::SysUTF16ToNSString(kHtmlHeader + *_dropData->html);
+    return base::SysUTF16ToNSString(kHtmlHeader + *_dropData.html);
   }
 
   // URL.
   if ([type isEqualToString:NSPasteboardTypeURL]) {
-    DCHECK(_dropData->url.is_valid());
-    NSURL* url = net::NSURLWithGURL(_dropData->url);
+    DCHECK(_dropData.url.is_valid());
+    NSURL* url = net::NSURLWithGURL(_dropData.url);
     // If NSURL creation failed, check for a badly-escaped JavaScript URL.
     // Strip out any existing escapes and then re-escape uniformly.
-    if (!url && _dropData->url.SchemeIs(url::kJavaScriptScheme)) {
+    if (!url && _dropData.url.SchemeIs(url::kJavaScriptScheme)) {
       std::string unescapedUrlString =
-          base::UnescapeBinaryURLComponent(_dropData->url.spec());
+          base::UnescapeBinaryURLComponent(_dropData.url.spec());
       std::string escapedUrlString =
           base::EscapeUrlEncodedData(unescapedUrlString, false);
       url = [NSURL URLWithString:base::SysUTF8ToNSString(escapedUrlString)];
@@ -214,13 +206,13 @@
 
   // URL title.
   if ([type isEqualToString:ui::kUTTypeURLName]) {
-    return base::SysUTF16ToNSString(_dropData->url_title);
+    return base::SysUTF16ToNSString(_dropData.url_title);
   }
 
   // File contents.
   if ([type isEqualToString:_fileUTType]) {
-    return [NSData dataWithBytes:_dropData->file_contents.data()
-                          length:_dropData->file_contents.length()];
+    return [NSData dataWithBytes:_dropData.file_contents.data()
+                          length:_dropData.file_contents.length()];
   }
 
   // File instantiation promise.
@@ -237,36 +229,37 @@
     // set that does no useful bridging.
     NSPasteboard* pasteboard =
         [NSPasteboard pasteboardWithName:NSPasteboardNameDrag];
-    NSURL* dropDestination = [NSURL
-        URLWithString:[pasteboard stringForType:@"com.apple.pastelocation"]];
-    if (dropDestination) {
-      // Be extra paranoid; avoid crashing.
-      if (!_host) {
-        NOTREACHED() << "No drag-and-drop data available for promised file.";
-        return nil;
-      }
-
-      base::FilePath filePath = base::mac::NSURLToFilePath(dropDestination);
-      filePath = filePath.Append(_downloadFileName);
-      _host->DragPromisedFileTo(filePath, *_dropData, _downloadURL, &filePath);
-
-      // The process of writing the file may have altered the value of
-      // `filePath` if, say, an existing file at the drop site already had that
-      // name. Return the actual URL to the file that was written.
-      return base::mac::FilePathToNSURL(filePath).absoluteString;
+    NSString* dropDestination =
+        [pasteboard stringForType:@"com.apple.pastelocation"];
+    if (!dropDestination || !_host) {
+      // Something has gone wrong, but understandably. Chromium leaves the data
+      // around on the pasteboard after the drag, and it's possible that some
+      // app is rummaging around for what it can find. Silently fail in this
+      // case.
+      return [NSData data];
     }
+
+    base::FilePath filePath =
+        base::mac::NSURLToFilePath([NSURL URLWithString:dropDestination]);
+    filePath = filePath.Append(_downloadFileName);
+    _host->DragPromisedFileTo(filePath, _dropData, _downloadURL, &filePath);
+
+    // The process of writing the file may have altered the value of
+    // `filePath` if, say, an existing file at the drop site already had that
+    // name. Return the actual URL to the file that was written.
+    return base::mac::FilePathToNSURL(filePath).absoluteString;
   }
 
   // Plain text.
   if ([type isEqualToString:NSPasteboardTypeString]) {
-    DCHECK(_dropData->text && !_dropData->text->empty());
-    return base::SysUTF16ToNSString(*_dropData->text);
+    DCHECK(_dropData.text && !_dropData.text->empty());
+    return base::SysUTF16ToNSString(*_dropData.text);
   }
 
   // Custom MIME data.
   if ([type isEqualToString:ui::kUTTypeChromiumWebCustomData]) {
     base::Pickle pickle;
-    ui::WriteCustomDataToPickle(_dropData->custom_data, &pickle);
+    ui::WriteCustomDataToPickle(_dropData.custom_data, &pickle);
     return [NSData dataWithBytes:pickle.data() length:pickle.size()];
   }
 
@@ -276,10 +269,9 @@
     return [NSData data];
   }
 
-  // Oops!
-  // Unknown drag pasteboard type.
+  // Oops! Unknown drag pasteboard type.
   NOTREACHED();
-  return nil;
+  return [NSData data];
 }
 
 @end  // @implementation WebDragSource

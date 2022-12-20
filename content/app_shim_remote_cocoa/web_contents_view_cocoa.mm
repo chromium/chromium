@@ -31,14 +31,6 @@ using features::kMacWebContentsOcclusion;
 using remote_cocoa::mojom::DraggingInfo;
 using remote_cocoa::mojom::SelectionDirection;
 
-namespace {
-// Time to delay clearing the pasteboard for after a drag ends. This is
-// required because Safari requests data from multiple processes, and clearing
-// the pasteboard after the first access results in unreliable drag operations
-// (http://crbug.com/1227001).
-const int64_t kPasteboardClearDelay = 0.5 * NSEC_PER_SEC;
-}
-
 namespace remote_cocoa {
 
 // DroppedScreenShotCopierMac is a utility to copy screenshots to a usable
@@ -240,7 +232,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                                           pressure:1.0];
 
   _dragSource.reset([[WebDragSource alloc] initWithHost:_host
-                                               dropData:&dropData]);
+                                               dropData:dropData]);
   NSDraggingItem* draggingItem = [[[NSDraggingItem alloc]
       initWithPasteboardWriter:_dragSource] autorelease];
 
@@ -278,47 +270,30 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
+  // Reconstruct the screen point by removing the offset. It seems like the
+  // underlying drag machinery is measuring from the corner of the dragged
+  // image.
   screenPoint.x += _dragOffset.x;
-  // Deal with Cocoa's flipped coordinate system.
   screenPoint.y += _dragImageHeight - _dragOffset.y;
 
-  // Convert |screenPoint| to view coordinates and flip it.
   NSPoint localPoint = NSZeroPoint;
   if (self.window) {
     NSPoint basePoint =
         ui::ConvertPointFromScreenToWindow(self.window, screenPoint);
     localPoint = [self convertPoint:basePoint fromView:nil];
   }
+
+  // Flip the two points as per Cocoa's coordinate system.
   NSRect viewFrame = self.frame;
-  // Flip |screenPoint|.
   NSRect screenFrame = self.window.screen.frame;
-
-  // If AppKit returns a copy and move operation, mask off the move bit
-  // because WebCore does not understand what it means to do both, which
-  // results in an assertion failure/renderer crash.
-  if (operation == (NSDragOperationMove | NSDragOperationCopy)) {
-    operation &= ~NSDragOperationMove;
-  }
-
   _host->EndDrag(
       operation,
       gfx::PointF(localPoint.x, viewFrame.size.height - localPoint.y),
       gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y));
 
-  NSInteger originalChangeCount =
-      [NSPasteboard pasteboardWithName:NSPasteboardNameDrag].changeCount;
-
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kPasteboardClearDelay),
-                 dispatch_get_main_queue(), ^{
-                   NSPasteboard* draggingPasteboard =
-                       [NSPasteboard pasteboardWithName:NSPasteboardNameDrag];
-                   if (draggingPasteboard.changeCount == originalChangeCount) {
-                     // Clear the drag pasteboard. Explicitly do it because
-                     // NSPasteboard can retain the drag source.
-                     [draggingPasteboard clearContents];
-                     _dragSource.reset();
-                   }
-                 });
+  // The drag is complete. Disconnect the drag source.
+  [_dragSource webContentsIsGone];
+  _dragSource.reset();
 }
 
 // NSDraggingDestination methods
