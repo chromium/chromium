@@ -44,7 +44,7 @@
 
     boolean doesWindowHaveUrlFragment(Window window);
 
-    CSSStyleDeclaration computedStyleIncludingVisitedInfo(Node node);
+    CSSStyleDeclaration computedStyleIncludingVisitedInfo(Element element);
 
     ShadowRoot createUserAgentShadowRoot(Element host);
 

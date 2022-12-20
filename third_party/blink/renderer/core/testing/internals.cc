@@ -1103,10 +1103,10 @@ String Internals::elementLayoutTreeAsText(Element* element,
 }
 
 CSSStyleDeclaration* Internals::computedStyleIncludingVisitedInfo(
-    Node* node) const {
-  DCHECK(node);
+    Element* element) const {
+  DCHECK(element);
   bool allow_visited_style = true;
-  return MakeGarbageCollected<CSSComputedStyleDeclaration>(node,
+  return MakeGarbageCollected<CSSComputedStyleDeclaration>(element,
                                                            allow_visited_style);
 }
 

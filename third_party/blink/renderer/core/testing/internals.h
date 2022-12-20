@@ -115,7 +115,7 @@ class Internals final : public ScriptWrappable {
 
   bool doesWindowHaveUrlFragment(DOMWindow*);
 
-  CSSStyleDeclaration* computedStyleIncludingVisitedInfo(Node*) const;
+  CSSStyleDeclaration* computedStyleIncludingVisitedInfo(Element*) const;
 
   void setBrowserControlsState(float top_height,
                                float bottom_height,
