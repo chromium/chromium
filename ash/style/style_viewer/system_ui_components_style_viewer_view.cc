@@ -165,7 +165,8 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   viewer_view->AddComponent(
       u"RadioButtonGroup",
       base::BindRepeating(&CreateRadioButtonGroupInstancesGridView));
-
+  viewer_view->AddComponent(
+      u"KnobSwitch", base::BindRepeating(&CreateKnobSwitchInstancesGridView));
   // Show PillButton on start.
   viewer_view->ShowComponentInstances(u"PillButton");
 

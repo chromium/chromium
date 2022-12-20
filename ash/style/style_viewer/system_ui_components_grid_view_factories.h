@@ -23,6 +23,7 @@ std::unique_ptr<SystemUIComponentsGridView>
 CreateRadioButtonInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView>
 CreateRadioButtonGroupInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreateKnobSwitchInstancesGridView();
 
 }  // namespace ash
 

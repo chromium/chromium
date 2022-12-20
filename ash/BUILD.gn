@@ -1071,6 +1071,7 @@ component("ash") {
     "style/style_viewer/checkbox_instances_grid_view_factory.cc",
     "style/style_viewer/icon_button_instances_grid_view_factory.cc",
     "style/style_viewer/icon_switch_instances_grid_view_factory.cc",
+    "style/style_viewer/knob_switch_instances_grid_view_factory.cc",
     "style/style_viewer/pill_button_instances_grid_view_factory.cc",
     "style/style_viewer/radio_button_group_instances_grid_view_factory.cc",
     "style/style_viewer/radio_button_instances_grid_view_factory.cc",
