@@ -91,13 +91,18 @@ let prefsEmbargo: SiteSettingsPref;
  */
 let prefsIsolatedWebApp: SiteSettingsPref;
 
-
 /**
  * An example pref with mixed cookies exception types: 2 exceptions with primary
  * pattern wildcard, 2 exceptions with secondary pattern wildcard and 1
  * exception with both patterns set.
  */
 let prefsMixedCookiesExceptionTypes: SiteSettingsPref;
+
+/**
+ * An example pref with mixed cookies exception types: 2 each for 1p allow, 1p
+ * block, 3p allow, and 3p block.
+ */
+let prefsMixedCookiesExceptionTypes2: SiteSettingsPref;
 
 /**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
@@ -321,6 +326,41 @@ function populateTestExceptions() {
           }),
           createRawSiteException('http://mixed-primary-allow.com', {
             embeddingOrigin: 'http://mixed-secondary-allow.com',
+          }),
+        ]),
+  ]);
+
+  prefsMixedCookiesExceptionTypes2 = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.COOKIES,
+        [
+          createRawSiteException('http://1p-foo-allow.com', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException('http://1p-bar-allow.com', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException('http://1p-foo-block.com', {
+            embeddingOrigin: '',
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException('http://1p-bar-block.com', {
+            embeddingOrigin: '',
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3p-foo-allow.com',
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3p-bar-allow.com',
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3p-foo-block.com',
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException(SITE_EXCEPTION_WILDCARD, {
+            embeddingOrigin: 'http://3p-bar-block.com',
+            setting: ContentSetting.BLOCK,
           }),
         ]),
   ]);
@@ -1177,6 +1217,77 @@ suite('SiteList', function() {
           assertTrue(testElement.$.addSite.hidden);
         });
       });
+});
+
+suite('SiteListSearchTests', function() {
+  /** A site list element created before each test. */
+  let testElement: SiteListElement;
+
+  /** The mock proxy object to use during test. */
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  suiteSetup(function() {
+    CrSettingsPrefs.setInitialized();
+  });
+
+  suiteTeardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
+
+  // Initialize a site-list before each test.
+  setup(function() {
+    populateTestExceptions();
+
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('site-list');
+    document.body.appendChild(testElement);
+  });
+
+  /**
+   * Configures the test element for a particular category.
+   * @param category The category to set up.
+   * @param subtype Type of list to use.
+   * @param prefs The prefs to use.
+   */
+  function setUpCategory(
+      category: ContentSettingsTypes, subtype: ContentSetting,
+      prefs: SiteSettingsPref) {
+    browserProxy.setPrefs(prefs);
+    testElement.categorySubtype = subtype;
+    testElement.category = category;
+  }
+
+  test('no search lists all 1p and 3p allow exceptions', async function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    testElement.searchFilter = '';
+    setUpCategory(
+        ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
+        prefsMixedCookiesExceptionTypes2);
+    await browserProxy.whenCalled('getExceptionList');
+    flush();
+
+    // The mock data contains 4 allow exceptions.
+    assertEquals(
+        4,
+        testElement.$.listContainer.querySelectorAll('site-list-entry').length);
+  });
+
+  test('search lists matching 1p and 3p allow exceptions', async function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    testElement.searchFilter = 'foo';
+    setUpCategory(
+        ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
+        prefsMixedCookiesExceptionTypes2);
+    await browserProxy.whenCalled('getExceptionList');
+    flush();
+
+    // The mock data contains 2 foo allow exceptions.
+    assertEquals(
+        2,
+        testElement.$.listContainer.querySelectorAll('site-list-entry').length);
+  });
 });
 
 suite('EditExceptionDialog', function() {

@@ -393,6 +393,10 @@ TEST_F('CrSettingsSiteListTest', 'SiteListCookiesExceptionTypes', function() {
   runMochaSuite('SiteListCookiesExceptionTypes');
 });
 
+TEST_F('CrSettingsSiteListTest', 'SiteListSearchTests', function() {
+  runMochaSuite('SiteListSearchTests');
+});
+
 TEST_F('CrSettingsSiteListTest', 'EditExceptionDialog', function() {
   runMochaSuite('EditExceptionDialog');
 });

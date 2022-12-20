@@ -519,8 +519,9 @@ export class SiteListElement extends SiteListElementBase {
       return this.sites.slice();
     }
 
-    type SearchableProperty = 'displayName'|'origin';
-    const propNames: SearchableProperty[] = ['displayName', 'origin'];
+    type SearchableProperty = 'displayName'|'origin'|'embeddingOrigin';
+    const propNames: SearchableProperty[] =
+        ['displayName', 'origin', 'embeddingOrigin'];
     const searchFilter = this.searchFilter.toLowerCase();
     return this.sites.filter(
         site => propNames.some(
