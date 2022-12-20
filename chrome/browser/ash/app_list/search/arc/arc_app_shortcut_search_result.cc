@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/arc/arc_playstore_app_context_menu.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "ui/base/models/image_model.h"

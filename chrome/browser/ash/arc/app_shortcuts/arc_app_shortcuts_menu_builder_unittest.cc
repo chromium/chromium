@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

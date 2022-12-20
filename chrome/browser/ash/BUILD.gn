@@ -338,6 +338,8 @@ source_set("ash") {
     "arc/fileapi/chrome_content_provider_url_util.h",
     "arc/fileapi/file_stream_forwarder.cc",
     "arc/fileapi/file_stream_forwarder.h",
+    "arc/icon_decode_request.cc",
+    "arc/icon_decode_request.h",
     "arc/idle_manager/arc_cpu_throttle_observer.cc",
     "arc/idle_manager/arc_cpu_throttle_observer.h",
     "arc/idle_manager/arc_display_power_observer.cc",

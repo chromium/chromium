@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"

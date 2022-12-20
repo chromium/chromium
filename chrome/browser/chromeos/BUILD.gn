@@ -620,8 +620,6 @@ source_set("chromeos") {
     "app_mode/startup_app_launcher_update_checker.h",
     "app_mode/web_kiosk_browser_controller_base.cc",
     "app_mode/web_kiosk_browser_controller_base.h",
-    "arc/icon_decode_request.cc",
-    "arc/icon_decode_request.h",
     "extensions/device_local_account_external_policy_loader.cc",
     "extensions/device_local_account_external_policy_loader.h",
     "extensions/info_private_api.cc",
