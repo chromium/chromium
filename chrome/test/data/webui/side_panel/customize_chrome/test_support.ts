@@ -55,6 +55,7 @@ export function createTheme(systemDarkMode = false): Theme {
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
     colorPickerIconColor: {value: 0xffff0000},
+    colorsManagedByPolicy: false,
   };
 }
 

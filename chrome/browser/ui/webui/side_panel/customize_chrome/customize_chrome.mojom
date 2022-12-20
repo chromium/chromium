@@ -33,6 +33,8 @@ struct Theme {
   skia.mojom.SkColor? foreground_color;
   // The color of the color picker icon.
   skia.mojom.SkColor color_picker_icon_color;
+  // True if the colors are managed by a policy.
+  bool colors_managed_by_policy;
 };
 
 struct ChromeColor {

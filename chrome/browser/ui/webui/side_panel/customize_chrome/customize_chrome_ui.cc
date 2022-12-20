@@ -37,6 +37,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"appearanceHeader", IDS_NTP_CUSTOMIZE_APPEARANCE_LABEL},
       {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
+      {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
+      {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
       {"mostVisited", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
       {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
       {"shortcutsCurated", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC},
@@ -50,6 +52,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"uploadImage", IDS_NTP_CUSTOM_BG_UPLOAD_AN_IMAGE},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
       {"chromeColors", IDS_NTP_CUSTOMIZE_CHROME_COLORS_LABEL},
+      // Required by <managed-dialog>.
+      {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
+      {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
+      {"ok", IDS_OK},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -36,6 +36,10 @@
     top: calc(50% - 10px);
     width: 20px;
   }
+
+  managed-dialog {
+    --cr-dialog-width: min(calc(100% - 32px), 512px);
+  }
 </style>
 <!-- TODO(crbug.com/1395210): Make grid adaptive. -->
 <cr-grid columns="4" role="radiogroup"
@@ -104,3 +108,9 @@
         on-change="onCustomColorChange_">
   </div>
 </cr-grid>
+<template is="dom-if" if="[[showManagedDialog_]]" restamp>
+  <managed-dialog on-close="onManagedDialogClosed_"
+      title="$i18n{managedColorsTitle}"
+      body="$i18n{managedColorsBody}">
+  </managed-dialog>
+</template>

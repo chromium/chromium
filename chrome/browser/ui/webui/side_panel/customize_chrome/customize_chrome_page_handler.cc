@@ -172,6 +172,9 @@ void CustomizeChromePageHandler::UpdateTheme() {
       !theme_service_->UsingSystemTheme()) {
     theme->foreground_color =
         web_contents_->GetColorProvider().GetColor(ui::kColorFrameActive);
+    theme->colors_managed_by_policy = theme_service_->UsingPolicyTheme();
+  } else {
+    theme->colors_managed_by_policy = false;
   }
   theme->color_picker_icon_color =
       web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);

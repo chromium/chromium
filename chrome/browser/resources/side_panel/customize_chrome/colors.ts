@@ -4,6 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import './color.js';
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import './strings.m.js'; // Required by <managed-dialog>.
 
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -96,6 +98,7 @@ export class ColorsElement extends PolymerElement {
           foreground: {value: 0xfff1f3f4},
         },
       },
+      showManagedDialog_: Boolean,
     };
   }
 
@@ -111,6 +114,7 @@ export class ColorsElement extends PolymerElement {
   private isCustomColorSelected_: boolean;
   private customColor_: Color;
   private setThemeListenerId_: number|null = null;
+  private showManagedDialog_: boolean;
 
   constructor() {
     super();
@@ -207,20 +211,32 @@ export class ColorsElement extends PolymerElement {
   }
 
   private onDefaultColorClick_() {
+    if (this.handleClickForManagedColors_()) {
+      return;
+    }
     CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
   }
 
   private onMainColorClick_() {
+    if (this.handleClickForManagedColors_()) {
+      return;
+    }
     CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         this.theme_!.backgroundImage!.mainColor!);
   }
 
   private onChromeColorClick_(e: Event) {
+    if (this.handleClickForManagedColors_()) {
+      return;
+    }
     CustomizeChromeApiProxy.getInstance().handler.setSeedColor(
         this.$.chromeColors.itemForElement(e.target as HTMLElement).seed);
   }
 
   private onCustomColorClick_() {
+    if (this.handleClickForManagedColors_()) {
+      return;
+    }
     this.$.colorPicker.focus();
     this.$.colorPicker.click();
   }
@@ -242,6 +258,18 @@ export class ColorsElement extends PolymerElement {
     };
     this.$.colorPickerIcon.style.setProperty(
         'background-color', skColorToRgba(this.theme_.colorPickerIconColor));
+  }
+
+  private onManagedDialogClosed_() {
+    this.showManagedDialog_ = false;
+  }
+
+  private handleClickForManagedColors_(): boolean {
+    if (!this.theme_ || !this.theme_.colorsManagedByPolicy) {
+      return false;
+    }
+    this.showManagedDialog_ = true;
+    return true;
   }
 }
 
