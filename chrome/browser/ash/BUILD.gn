@@ -27,8 +27,6 @@ source_set("ash") {
     defines += [ "USE_CRAS" ]
   }
 
-  public_configs = [ "//build/config/linux/nss" ]
-
   sources = [
     "accessibility/accessibility_event_rewriter_delegate_impl.cc",
     "accessibility/accessibility_event_rewriter_delegate_impl.h",
@@ -5717,7 +5715,6 @@ source_set("unit_tests") {
     "//url",
 
     # Gather unit tests from subdirectories.
-    ":test_with_shadow_variables",
     "//chrome/browser/ash/crosapi:unit_tests",
     "//chrome/browser/ash/login/oobe_quick_start:unit_tests",
     "//chrome/browser/ash/telemetry_extension:unit_tests",
@@ -5753,32 +5750,6 @@ source_set("unit_tests") {
   data = [
     "//chromeos/test/data/",
     "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
-  ]
-}
-
-config("allow_shadow_variables") {
-  cflags = [ "-Wno-shadow" ]
-}
-
-# TODO(b/247823913): Merge this target back into the unit_tests target above
-# when third_party/securemessage code stops generating -Wshadow warnings.
-source_set("test_with_shadow_variables") {
-  testonly = true
-  sources = [ "attestation/soft_bind_attestation_flow_unittest.cc" ]
-  configs += [ ":allow_shadow_variables" ]
-  deps = [
-    ":ash",
-    "//base",
-    "//chrome/browser/ash",
-    "//chrome/test:test_support",
-    "//chromeos/ash/components/attestation:test_support",
-    "//chromeos/ash/components/settings",
-    "//content/test:test_support",
-    "//crypto",
-    "//net",
-    "//testing/gtest",
-    "//third_party/securemessage",
-    "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
 }
 

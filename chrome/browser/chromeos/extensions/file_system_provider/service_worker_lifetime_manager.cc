@@ -11,7 +11,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace extensions::file_system_provider {
 
