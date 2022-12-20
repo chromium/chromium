@@ -37,6 +37,13 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.pbzero.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#include "base/profiler/thread_delegate_posix.h"
+#define INITIALIZE_THREAD_DELEGATE_POSIX 1
+#else  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#define INITIALIZE_THREAD_DELEGATE_POSIX 0
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 #include <dlfcn.h>
 #include "base/debug/elf_reader.h"
@@ -838,6 +845,13 @@ TracingSamplerProfiler::TracingSamplerProfiler(
           std::move(core_unwinders_factory_function)),
       unwinder_type_(unwinder_type) {
   DCHECK_NE(sampled_thread_token_.id, base::kInvalidThreadId);
+#if INITIALIZE_THREAD_DELEGATE_POSIX
+  // Since StackSamplingProfiler is scoped to a tracing session and lives on the
+  // thread where `StartTracing` is called, we use `ThreadDelegatePosix` to
+  // initialize global data, like the thread stack base address, that has to be
+  // created on the profiled thread. See crbug.com/1392158#c26 for details.
+  base::ThreadDelegatePosix::Create(sampled_thread_token_);
+#endif  // INITIALIZE_THREAD_DELEGATE_POSIX
   TracingSamplerProfilerDataSource::Get()->RegisterProfiler(this);
 }
 
