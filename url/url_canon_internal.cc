@@ -49,11 +49,11 @@ size_t FindInitialQuerySafeString(const char* source, size_t length) {
     auto mask = b >= 0x24 && b <= 0x7e && b != 0x27 && b != 0x3c && b != 0x3e;
 
 #ifdef __SSE2__
-    if (_mm_movemask_epi8(mask) != 0xffff) {
+    if (_mm_movemask_epi8(reinterpret_cast<__m128i>(mask)) != 0xffff) {
       return i;
     }
 #else
-    if (vminvq_u8(mask) == 0) {
+    if (vminvq_u8(reinterpret_cast<uint8x16_t>(mask)) == 0) {
       return i;
     }
 #endif
