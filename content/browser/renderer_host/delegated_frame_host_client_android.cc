@@ -30,4 +30,9 @@ void DelegatedFrameHostClientAndroid::OnSurfaceIdChanged() {
   render_widget_host_view_->OnSurfaceIdChanged();
 }
 
+std::vector<viz::SurfaceId>
+DelegatedFrameHostClientAndroid::CollectSurfaceIdsForEviction() const {
+  return render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
+}
+
 }  // namespace content

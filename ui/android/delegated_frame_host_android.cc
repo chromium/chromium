@@ -4,15 +4,20 @@
 
 #include "ui/android/delegated_frame_host_android.h"
 
+#include <iterator>
+
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -201,9 +206,23 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
     return;
   }
 
+  viz::SurfaceId current = viz::SurfaceId(frame_sink_id_, local_surface_id_);
   if (local_surface_id_.is_valid()) {
-    viz::SurfaceId current = viz::SurfaceId(frame_sink_id_, local_surface_id_);
-    surface_ids.push_back(current);
+    if (base::FeatureList::IsEnabled(features::kEvictSubtree)) {
+      auto child_surfaces = client_->CollectSurfaceIdsForEviction();
+      if (current.is_valid() && !child_surfaces.empty()) {
+        auto it =
+            std::find(child_surfaces.begin(), child_surfaces.end(), current);
+        CHECK(it != child_surfaces.end())
+            << "Surface to Evict not in FrameTree: " << current.ToString();
+      }
+      UMA_HISTOGRAM_COUNTS_100("MemoryAndroid.EvictedTreeSize",
+                               child_surfaces.size());
+      std::move(child_surfaces.begin(), child_surfaces.end(),
+                std::back_inserter(surface_ids));
+    } else {
+      surface_ids.push_back(current);
+    }
   }
 
   if (surface_ids.empty())
