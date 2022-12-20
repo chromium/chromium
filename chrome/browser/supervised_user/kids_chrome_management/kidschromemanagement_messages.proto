@@ -13,16 +13,12 @@ message ListFamilyMembersRequest {
   // Next id: 2
 }
 
+// See go/chrome-list-family-members-response (Googlers only).
 message ListFamilyMembersResponse {
-  // Obfuscated Gaia ID of the calling user. Required.
-  optional string self_obfuscated_gaia_id = 1;
-
   // List of family members from the family requested. Required.
   // Contains at least the Head of Household.
   // Throws an exception and fails if the user is not in any family.
-  repeated FamilyMember members = 2;
-
-  // Next id: 3
+  repeated FamilyMember members = 1;
 }
 
 message RequestRestrictedUrlAccessRequest {

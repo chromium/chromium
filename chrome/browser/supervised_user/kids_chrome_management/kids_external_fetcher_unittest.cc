@@ -67,7 +67,6 @@ TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
       "bob@gmail.com", ConsentLevel::kSignin);
   Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
   ListFamilyMembersResponse response;
-  response.set_self_obfuscated_gaia_id("gaia_id");
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
@@ -88,7 +87,6 @@ TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
       pending_request->request.url.spec(), response.SerializeAsString());
 
   ASSERT_TRUE(receiver.GetResult().has_value());
-  EXPECT_EQ(receiver.GetResult().value()->self_obfuscated_gaia_id(), "gaia_id");
 }
 
 TEST_F(KidsExternalFetcherTest, NoAccessToken) {
