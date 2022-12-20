@@ -13,7 +13,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
@@ -117,17 +116,6 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreateDialogHost(
   DCHECK(profile);
   return CreateViewHost(url, profile, nullptr,
                         mojom::ViewType::kExtensionDialog);
-}
-
-// static
-std::unique_ptr<ExtensionViewHost>
-ExtensionViewHostFactory::CreateSidePanelHost(const GURL& url,
-                                              Browser* browser) {
-  DCHECK(browser);
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration));
-  return CreateViewHost(url, browser->profile(), browser,
-                        mojom::ViewType::kExtensionSidePanel);
 }
 
 }  // namespace extensions
