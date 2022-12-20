@@ -74,13 +74,11 @@ XMLPUBFUN void XMLCALL
 XMLPUBFUN xmlGlobalStatePtr XMLCALL
 			xmlGetGlobalState(void);
 
-#ifdef HAVE_PTHREAD_H
-#elif defined(HAVE_WIN32_THREADS) && !defined(HAVE_COMPILER_TLS) && (!defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL))
-#if defined(LIBXML_STATIC_FOR_DLL)
+#if defined(LIBXML_THREAD_ENABLED) && defined(_WIN32) && \
+    !defined(HAVE_COMPILER_TLS) && defined(LIBXML_STATIC_FOR_DLL)
 int XMLCALL
 xmlDllMain(void *hinstDLL, unsigned long fdwReason,
            void *lpvReserved);
-#endif
 #endif
 
 #ifdef __cplusplus

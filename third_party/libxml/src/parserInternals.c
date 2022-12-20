@@ -812,7 +812,7 @@ encoding_error:
  */
 int
 xmlCopyCharMultiByte(xmlChar *out, int val) {
-    if (out == NULL) return(0);
+    if ((out == NULL) || (val < 0)) return(0);
     /*
      * We are supposed to handle UTF8, check it's valid
      * From rfc2044: encoding of the Unicode values on UTF-8:
@@ -838,7 +838,7 @@ xmlCopyCharMultiByte(xmlChar *out, int val) {
 	    *out++= ((val >> bits) & 0x3F) | 0x80 ;
 	return (out - savedout);
     }
-    *out = (xmlChar) val;
+    *out = val;
     return 1;
 }
 
@@ -855,12 +855,12 @@ xmlCopyCharMultiByte(xmlChar *out, int val) {
 
 int
 xmlCopyChar(int len ATTRIBUTE_UNUSED, xmlChar *out, int val) {
-    if (out == NULL) return(0);
+    if ((out == NULL) || (val < 0)) return(0);
     /* the len parameter is ignored */
     if  (val >= 0x80) {
 	return(xmlCopyCharMultiByte (out, val));
     }
-    *out = (xmlChar) val;
+    *out = val;
     return 1;
 }
 

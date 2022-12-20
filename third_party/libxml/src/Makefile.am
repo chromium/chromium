@@ -2,22 +2,22 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = include . doc example fuzz xstc
+SUBDIRS = include . doc example xstc
 if WITH_PYTHON
 SUBDIRS += python
+endif
+if WITH_GLOB
+SUBDIRS += fuzz
 endif
 
 DIST_SUBDIRS = include . doc example fuzz python xstc
 
 AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include -DSYSCONFDIR='"$(sysconfdir)"'
 
-AM_CFLAGS = $(EXTRA_CFLAGS)
-
 check_PROGRAMS = \
 	runsuite \
 	runtest \
 	runxmlconf \
-	testAutomata \
 	testModule \
 	testThreads \
 	testapi \
@@ -31,36 +31,86 @@ bin_PROGRAMS = xmllint xmlcatalog
 bin_SCRIPTS = xml2-config
 
 lib_LTLIBRARIES = libxml2.la
-libxml2_la_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS) $(Z_CFLAGS) $(LZMA_CFLAGS)
+libxml2_la_CFLAGS = $(AM_CFLAGS) $(XML_PRIVATE_CFLAGS)
 libxml2_la_LIBADD = $(XML_PRIVATE_LIBS)
 
-if USE_VERSION_SCRIPT
-LIBXML2_VERSION_SCRIPT = $(VERSION_SCRIPT_FLAGS)$(srcdir)/libxml2.syms
-else
-LIBXML2_VERSION_SCRIPT =
-endif
-
-libxml2_la_LDFLAGS = $(CYGWIN_EXTRA_LDFLAGS) $(WIN32_EXTRA_LDFLAGS) \
-		     $(LIBXML2_VERSION_SCRIPT) \
+libxml2_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined \
 		     -version-info $(LIBXML_VERSION_INFO) \
 		     $(MODULE_PLATFORM_LIBS)
-
-if WITH_TRIO_SOURCES
-trio_sources = triostr.c trio.c
-else
-trio_sources =
+if USE_VERSION_SCRIPT
+libxml2_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libxml2.syms
 endif
 
-libxml2_la_SOURCES = SAX.c entities.c encoding.c error.c parserInternals.c  \
-		parser.c tree.c hash.c list.c xmlIO.c xmlmemory.c uri.c  \
-		valid.c xlink.c HTMLparser.c HTMLtree.c debugXML.c xpath.c  \
-		xpointer.c xinclude.c nanohttp.c nanoftp.c \
-		catalog.c globals.c threads.c c14n.c xmlstring.c buf.c \
-		xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c \
-		$(trio_sources) \
-		xmlreader.c relaxng.c dict.c SAX2.c \
-		xmlwriter.c legacy.c chvalid.c pattern.c xmlsave.c \
-		xmlmodule.c schematron.c xzlib.c
+libxml2_la_SOURCES = buf.c chvalid.c dict.c entities.c encoding.c error.c \
+		     globals.c hash.c list.c parser.c parserInternals.c \
+		     SAX2.c threads.c tree.c uri.c valid.c xmlIO.c \
+		     xmlmemory.c xmlstring.c
+if WITH_C14N_SOURCES
+libxml2_la_SOURCES += c14n.c
+endif
+if WITH_CATALOG_SOURCES
+libxml2_la_SOURCES += catalog.c
+endif
+if WITH_DEBUG_SOURCES
+libxml2_la_SOURCES += debugXML.c
+endif
+if WITH_FTP_SOURCES
+libxml2_la_SOURCES += nanoftp.c
+endif
+if WITH_HTML_SOURCES
+libxml2_la_SOURCES += HTMLparser.c HTMLtree.c
+endif
+if WITH_HTTP_SOURCES
+libxml2_la_SOURCES += nanohttp.c
+endif
+if WITH_LEGACY_SOURCES
+libxml2_la_SOURCES += legacy.c
+if WITH_SAX1_SOURCES
+libxml2_la_SOURCES += SAX.c
+endif
+endif
+if WITH_LZMA_SOURCES
+libxml2_la_SOURCES += xzlib.c
+endif
+if WITH_MODULES_SOURCES
+libxml2_la_SOURCES += xmlmodule.c
+endif
+if WITH_OUTPUT_SOURCES
+libxml2_la_SOURCES += xmlsave.c
+endif
+if WITH_PATTERN_SOURCES
+libxml2_la_SOURCES += pattern.c
+endif
+if WITH_READER_SOURCES
+libxml2_la_SOURCES += xmlreader.c
+endif
+if WITH_REGEXPS_SOURCES
+libxml2_la_SOURCES += xmlregexp.c xmlunicode.c
+endif
+if WITH_SCHEMAS_SOURCES
+libxml2_la_SOURCES += relaxng.c xmlschemas.c xmlschemastypes.c
+if !WITH_XPATH_SOURCES
+libxml2_la_SOURCES += xpath.c
+endif
+endif
+if WITH_SCHEMATRON_SOURCES
+libxml2_la_SOURCES += schematron.c
+endif
+if WITH_TRIO_SOURCES
+libxml2_la_SOURCES += triostr.c trio.c
+endif
+if WITH_WRITER_SOURCES
+libxml2_la_SOURCES += xmlwriter.c
+endif
+if WITH_XINCLUDE_SOURCES
+libxml2_la_SOURCES += xinclude.c
+endif
+if WITH_XPATH_SOURCES
+libxml2_la_SOURCES += xpath.c
+endif
+if WITH_XPTR_SOURCES
+libxml2_la_SOURCES += xlink.c xpointer.c
+endif
 
 DEPS = $(top_builddir)/libxml2.la
 LDADDS = $(top_builddir)/libxml2.la
@@ -70,65 +120,52 @@ m4datadir = $(datadir)/aclocal
 dist_m4data_DATA = libxml.m4
 
 runtest_SOURCES=runtest.c
-runtest_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS)
-runtest_LDFLAGS = 
+runtest_CFLAGS = $(AM_CFLAGS) $(THREAD_CFLAGS)
 runtest_DEPENDENCIES = $(DEPS)
 runtest_LDADD= $(BASE_THREAD_LIBS) $(THREAD_LIBS) $(LDADDS)
 
 testrecurse_SOURCES=testrecurse.c
-testrecurse_LDFLAGS = 
 testrecurse_DEPENDENCIES = $(DEPS)
 testrecurse_LDADD= $(LDADDS)
 
 testlimits_SOURCES=testlimits.c
-testlimits_LDFLAGS = 
 testlimits_DEPENDENCIES = $(DEPS)
 testlimits_LDADD= $(LDADDS)
 
 testchar_SOURCES=testchar.c
-testchar_LDFLAGS = 
 testchar_DEPENDENCIES = $(DEPS)
 testchar_LDADD= $(LDADDS)
 
 testdict_SOURCES=testdict.c
-testdict_LDFLAGS = 
 testdict_DEPENDENCIES = $(DEPS)
 testdict_LDADD= $(LDADDS)
 
 runsuite_SOURCES=runsuite.c
-runsuite_LDFLAGS = 
 runsuite_DEPENDENCIES = $(DEPS)
 runsuite_LDADD= $(LDADDS)
 
 xmllint_SOURCES=xmllint.c
-xmllint_LDFLAGS = 
+xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS)
 xmllint_DEPENDENCIES = $(DEPS)
 xmllint_LDADD=  $(RDL_LIBS) $(LDADDS)
 
 xmlcatalog_SOURCES=xmlcatalog.c
-xmlcatalog_LDFLAGS = 
 xmlcatalog_DEPENDENCIES = $(DEPS)
 xmlcatalog_LDADD = $(RDL_LIBS) $(LDADDS)
 
 testThreads_SOURCES = testThreads.c
-testThreads_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS)
-testThreads_LDFLAGS = 
+testThreads_CFLAGS = $(AM_CFLAGS) $(THREAD_CFLAGS)
 testThreads_DEPENDENCIES = $(DEPS)
 testThreads_LDADD= $(BASE_THREAD_LIBS) $(THREAD_LIBS) $(LDADDS)
 
-testAutomata_SOURCES=testAutomata.c
-testAutomata_LDFLAGS = 
-testAutomata_DEPENDENCIES = $(DEPS)
-testAutomata_LDADD= $(LDADDS)
-
 testModule_SOURCES=testModule.c
-testModule_LDFLAGS = 
 testModule_DEPENDENCIES = $(DEPS)
 testModule_LDADD= $(LDADDS)
 
 noinst_LTLIBRARIES = testdso.la
 testdso_la_SOURCES = testdso.c
-testdso_la_LDFLAGS = -module -no-undefined -avoid-version -rpath $(libdir)
+testdso_la_LDFLAGS = $(AM_LDFLAGS) \
+		     -module -no-undefined -avoid-version -rpath $(libdir)
 
 # that one forces the rebuild when "make rebuild" is run on doc/
 rebuild_testapi:
@@ -136,17 +173,14 @@ rebuild_testapi:
 	    $(PYTHON) $(srcdir)/gentest.py $(srcdir) ; fi )
 
 testapi_SOURCES=testapi.c
-testapi_LDFLAGS = 
 testapi_DEPENDENCIES = $(DEPS)
 testapi_LDADD= $(LDADDS)
 
 runxmlconf_SOURCES=runxmlconf.c
-runxmlconf_LDFLAGS = 
 runxmlconf_DEPENDENCIES = $(DEPS)
 runxmlconf_LDADD= $(LDADDS)
 
 #testOOM_SOURCES=testOOM.c testOOMlib.h testOOMlib.c
-#testOOM_LDFLAGS = 
 #testOOM_DEPENDENCIES = $(DEPS)
 #testOOM_LDADD= $(LDADDS)
 
@@ -175,7 +209,27 @@ asan:
 	./configure CFLAGS="-fsanitize=address,undefined -Wformat -Werror=format-security -Werror=array-bounds -g" CXXFLAGS="-fsanitize=address,undefined -Wformat -Werror=format-security -Werror=array-bounds -g" LDFLAGS="-fsanitize=address,undefined" CC="clang" CXX="clang++" --disable-shared ; OptimOff  ; $(MAKE) clean ; $(MAKE)
 
 # Old test suite. This should be ported to C.
-tests: $(TEST_DEBUG) $(TEST_CATALOG) $(TEST_REGEXPS) $(TEST_SCHEMATRON) Timingtests $(TEST_VTIME) $(PYTHON_TESTS)
+
+OLD_TESTS = Timingtests
+if WITH_CATALOG_SOURCES
+OLD_TESTS += Catatests
+endif
+if WITH_DEBUG_SOURCES
+OLD_TESTS += Scripttests
+endif
+if WITH_SCHEMAS_SOURCES
+if WITH_PYTHON
+OLD_TESTS += RelaxNGPythonTests SchemasPythonTests
+endif
+endif
+if WITH_SCHEMATRON_SOURCES
+OLD_TESTS += Schematrontests
+endif
+if WITH_VALID_SOURCES
+OLD_TESTS += VTimingtests
+endif
+
+tests: $(OLD_TESTS)
 
 Scripttests : xmllint$(EXEEXT)
 	@(echo > .memdump)
@@ -251,24 +305,6 @@ Catatests : xmlcatalog$(EXEEXT)
 	diff result/catalogs/mycatalog.empty $(srcdir)/result/catalogs/mycatalog; \
 	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	rm -f $(srcdir)/result/catalogs/mycatalog)
-
-Automatatests: testAutomata$(EXEEXT)
-	@(echo > .memdump)
-	@echo "## Automata regression tests"
-	-@(for i in $(srcdir)/test/automata/* ; do \
-	  name=`basename $$i`; \
-	  if [ ! -d $$i ] ; then \
-	  if [ ! -f $(srcdir)/result/automata/$$name ] ; then \
-	      echo New test file $$name ; \
-	      $(CHECKER) $(top_builddir)/testAutomata $$i > $(srcdir)/result/automata/$$name; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
-	  else \
-	      log=`$(CHECKER) $(top_builddir)/testAutomata $$i 2>&1 > result.$$name ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
-	      diff $(srcdir)/result/automata/$$name result.$$name` ; \
-	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
-	      rm result.$$name ; \
-	  fi ; fi ; done)
 
 dba100000.xml: dbgenattr.pl
 	@echo "## generating dba100000.xml"
@@ -423,7 +459,7 @@ LCOV = /usr/bin/lcov
 GENHTML = /usr/bin/genhtml
 
 cov: clean-cov
-	if [ "`echo $(LDFLAGS) | grep coverage`" = "" ] ; then \
+	if [ "`echo $(AM_LDFLAGS) | grep coverage`" = "" ] ; then \
 	    echo not configured with coverage; exit 1 ; fi
 	if [ ! -x $(LCOV) -o ! -x $(GENHTML) ] ; then \
 	    echo Need $(LCOV) and $(GENHTML) excecutables; exit 1 ; fi

@@ -4,17 +4,8 @@
 /* Define if __attribute__((destructor)) is accepted */
 #cmakedefine ATTRIBUTE_DESTRUCTOR @ATTRIBUTE_DESTRUCTOR@
 
-/* Type cast for the gethostbyname() argument */
-#cmakedefine GETHOSTBYNAME_ARG_CAST @GETHOSTBYNAME_ARG_CAST@
-
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #cmakedefine HAVE_ARPA_INET_H 1
-
-/* Define to 1 if you have the <arpa/nameser.h> header file. */
-#cmakedefine HAVE_ARPA_NAMESER_H 1
-
-/* Whether struct sockaddr::__ss_family exists */
-#cmakedefine HAVE_BROKEN_SS_FAMILY 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H 1
@@ -30,9 +21,6 @@
 
 /* Define to 1 if you have the `ftime' function. */
 #cmakedefine HAVE_FTIME 1
-
-/* Define if getaddrinfo is there */
-#cmakedefine HAVE_GETADDRINFO 1
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #cmakedefine HAVE_GETTIMEOFDAY 1
@@ -78,9 +66,6 @@
 /* Define to 1 if you have the `rand_r' function. */
 #cmakedefine HAVE_RAND_R 1
 
-/* Define to 1 if you have the <resolv.h> header file. */
-#cmakedefine HAVE_RESOLV_H 1
-
 /* Have shl_load based dso */
 #cmakedefine HAVE_SHLLOAD 1
 
@@ -107,9 +92,6 @@
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #cmakedefine HAVE_SYS_TIME_H 1
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#cmakedefine HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
@@ -147,9 +129,6 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
 
-/* Type cast for the send() function 2nd arg */
-#cmakedefine SEND_ARG2_CAST @SEND_ARG2_CAST@
-
 /* Support for IPv6 */
 #cmakedefine SUPPORT_IP6 1
 
@@ -166,9 +145,6 @@
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 #cmakedefine _UINT32_T @_UINT32_T@
-
-/* ss_family is not defined here, use __ss_family instead */
-#cmakedefine ss_family @ss_family@
 
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
    such a type exists and the standard includes do not define it. */

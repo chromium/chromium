@@ -3,20 +3,11 @@
 /* A form that will not confuse apibuild.py */
 #undef ATTRIBUTE_DESTRUCTOR
 
-/* Type cast for the gethostbyname() argument */
-#undef GETHOSTBYNAME_ARG_CAST
-
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
-/* Define to 1 if you have the <arpa/nameser.h> header file. */
-#undef HAVE_ARPA_NAMESER_H
-
 /* Define if __attribute__((destructor)) is accepted */
 #undef HAVE_ATTRIBUTE_DESTRUCTOR
-
-/* Whether struct sockaddr::__ss_family exists */
-#undef HAVE_BROKEN_SS_FAMILY
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -33,11 +24,11 @@
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
 
-/* Define if getaddrinfo is there */
-#undef HAVE_GETADDRINFO
-
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the <glob.h> header file. */
+#undef HAVE_GLOB_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -74,7 +65,7 @@
 /* Define to 1 if you have the <poll.h> header file. */
 #undef HAVE_POLL_H
 
-/* Define if <pthread.h> is there */
+/* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
 /* Define to 1 if you have the `putenv' function. */
@@ -82,9 +73,6 @@
 
 /* Define to 1 if you have the `rand_r' function. */
 #undef HAVE_RAND_R
-
-/* Define to 1 if you have the <resolv.h> header file. */
-#undef HAVE_RESOLV_H
 
 /* Have shl_load based dso */
 #undef HAVE_SHLLOAD
@@ -170,9 +158,6 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Type cast for the send() function 2nd arg */
-#undef SEND_ARG2_CAST
-
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
@@ -194,9 +179,6 @@
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 #undef _UINT32_T
-
-/* ss_family is not defined here, use __ss_family instead */
-#undef ss_family
 
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
    such a type exists and the standard includes do not define it. */

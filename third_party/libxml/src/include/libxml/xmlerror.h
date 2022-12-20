@@ -864,6 +864,7 @@ typedef void (XMLCALL *xmlStructuredErrorFunc) (void *userData, xmlErrorPtr erro
 XMLPUBFUN void XMLCALL
     xmlSetGenericErrorFunc	(void *ctx,
 				 xmlGenericErrorFunc handler);
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
     initGenericErrorDefaultFunc	(xmlGenericErrorFunc *handler);
 

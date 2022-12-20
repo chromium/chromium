@@ -46,7 +46,6 @@ var withZlib = false;
 var withLzma = false;
 var withDebug = true;
 var withMemDebug = false;
-var withRunDebug = false;
 var withSchemas = true;
 var withSchematron = true;
 var withRegExps = true;
@@ -132,7 +131,6 @@ function usage()
 	txt += "  lzma:       Enable lzma support (" + (withLzma? "yes" : "no")  + ")\n";
 	txt += "  xml_debug:  Enable XML debbugging module (" + (withDebug? "yes" : "no")  + ")\n";
 	txt += "  mem_debug:  Enable memory debugger (" + (withMemDebug? "yes" : "no")  + ")\n";
-	txt += "  run_debug:  Enable memory debugger (" + (withRunDebug? "yes" : "no")  + ")\n";
 	txt += "  regexps:    Enable regular expressions (" + (withRegExps? "yes" : "no") + ")\n";
 	txt += "  modules:    Enable module support (" + (withModules? "yes" : "no") + ")\n";
 	txt += "  tree:       Enable tree api (" + (withTree? "yes" : "no") + ")\n";
@@ -229,7 +227,6 @@ function discoverVersion()
 	vf.WriteLine("WITH_LZMA=" + (withLzma? "1" : "0"));
 	vf.WriteLine("WITH_DEBUG=" + (withDebug? "1" : "0"));
 	vf.WriteLine("WITH_MEM_DEBUG=" + (withMemDebug? "1" : "0"));
-	vf.WriteLine("WITH_RUN_DEBUG=" + (withRunDebug? "1" : "0"));
 	vf.WriteLine("WITH_SCHEMAS=" + (withSchemas? "1" : "0"));
 	vf.WriteLine("WITH_SCHEMATRON=" + (withSchematron? "1" : "0"));
 	vf.WriteLine("WITH_REGEXPS=" + (withRegExps? "1" : "0"));
@@ -337,8 +334,6 @@ function configureLibxml()
 			of.WriteLine(s.replace(/\@WITH_DEBUG\@/, withDebug? "1" : "0"));
 		} else if (s.search(/\@WITH_MEM_DEBUG\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_MEM_DEBUG\@/, withMemDebug? "1" : "0"));
-		} else if (s.search(/\@WITH_RUN_DEBUG\@/) != -1) {
-			of.WriteLine(s.replace(/\@WITH_RUN_DEBUG\@/, withRunDebug? "1" : "0"));
 		} else if (s.search(/\@WITH_SCHEMAS\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_SCHEMAS\@/, withSchemas? "1" : "0"));
 		} else if (s.search(/\@WITH_SCHEMATRON\@/) != -1) {
@@ -492,8 +487,6 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			withDebug = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "mem_debug")
 			withMemDebug = strToBool(arg.substring(opt.length + 1, arg.length));
-		else if (opt == "run_debug")
-			withRunDebug = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "schemas")
 			withSchemas = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "schematron")
@@ -672,7 +665,6 @@ txtOut += "      zlib support: " + boolToStr(withZlib) + "\n";
 txtOut += "      lzma support: " + boolToStr(withLzma) + "\n";
 txtOut += "  Debugging module: " + boolToStr(withDebug) + "\n";
 txtOut += "  Memory debugging: " + boolToStr(withMemDebug) + "\n";
-txtOut += " Runtime debugging: " + boolToStr(withRunDebug) + "\n";
 txtOut += "    Regexp support: " + boolToStr(withRegExps) + "\n";
 txtOut += "    Module support: " + boolToStr(withModules) + "\n";
 txtOut += "      Tree support: " + boolToStr(withTree) + "\n";

@@ -25,11 +25,14 @@
 /* Check if ws2tcpip.h is a recent version which provides getaddrinfo() */
 #if defined(GetAddrInfo)
 #include <wspiapi.h>
-#define HAVE_GETADDRINFO
+#ifndef SUPPORT_IP6
+  #define SUPPORT_IP6
+#endif
 #endif
 
-#undef XML_SOCKLEN_T
+#ifndef XML_SOCKLEN_T
 #define XML_SOCKLEN_T int
+#endif
 
 #ifndef ECONNRESET
 #define ECONNRESET WSAECONNRESET
