@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
@@ -27,8 +26,6 @@ NotificationSystemObserver::NotificationSystemObserver(
       browser_shutdown::AddAppTerminatingCallback(
           base::BindOnce(&NotificationSystemObserver::OnAppTerminating,
                          base::Unretained(this)));
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::NotificationService::AllSources());
   for (auto* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
     if (extensions::ChromeContentBrowserClientExtensionsPart::
@@ -41,21 +38,19 @@ NotificationSystemObserver::NotificationSystemObserver(
     DCHECK(registry);
     extension_registry_observations_.AddObservation(registry);
   }
+
+  g_browser_process->profile_manager()->AddObserver(this);
 }
 
 NotificationSystemObserver::~NotificationSystemObserver() {
+  g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
 void NotificationSystemObserver::OnAppTerminating() {
   ui_manager_->StartShutdown();
 }
 
-void NotificationSystemObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK(type == chrome::NOTIFICATION_PROFILE_ADDED);
-  Profile* profile = content::Source<Profile>(source).ptr();
+void NotificationSystemObserver::OnProfileAdded(Profile* profile) {
   DCHECK(!profile->IsOffTheRecord());
 
   if (extensions::ChromeContentBrowserClientExtensionsPart::
