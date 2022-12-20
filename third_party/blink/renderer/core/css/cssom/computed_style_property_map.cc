@@ -23,10 +23,10 @@ unsigned int ComputedStylePropertyMap::size() const {
   if (!style)
     return 0;
 
-  DCHECK(StyledNode());
-  const Document& document = StyledNode()->GetDocument();
+  DCHECK(StyledElement());
+  const Document& document = StyledElement()->GetDocument();
   return CSSComputedStyleDeclaration::ComputableProperties(
-             StyledNode()->GetExecutionContext())
+             StyledElement()->GetExecutionContext())
              .size() +
          ComputedStyleCSSValueMapping::GetVariables(
              *style, document.GetPropertyRegistry())
@@ -47,37 +47,39 @@ bool ComputedStylePropertyMap::ComparePropertyNames(
   return b.StartsWith("-") || WTF::CodeUnitCompareLessThan(a, b);
 }
 
-Node* ComputedStylePropertyMap::StyledNode() const {
-  DCHECK(node_);
-  if (!pseudo_id_)
-    return node_;
-  if (auto* element_node = DynamicTo<Element>(node_.Get())) {
-    if (PseudoElement* element = element_node->GetPseudoElement(pseudo_id_)) {
-      return element;
-    }
+Element* ComputedStylePropertyMap::StyledElement() const {
+  DCHECK(element_);
+  if (!pseudo_id_) {
+    return element_;
+  }
+  if (PseudoElement* pseudo_element = element_->GetPseudoElement(pseudo_id_)) {
+    return pseudo_element;
   }
   return nullptr;
 }
 
 const ComputedStyle* ComputedStylePropertyMap::UpdateStyle() const {
-  Node* node = StyledNode();
-  if (!node || !node->InActiveDocument())
+  Element* element = StyledElement();
+  if (!element || !element->InActiveDocument()) {
     return nullptr;
+  }
 
   // Update style before getting the value for the property
-  // This could cause the node to be blown away. This code is copied from
+  // This could cause the element to be blown away. This code is copied from
   // CSSComputedStyleDeclaration::GetPropertyCSSValue.
-  node->GetDocument().UpdateStyleAndLayoutTreeForNode(node);
-  node = StyledNode();
-  if (!node)
+  element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
+  element = StyledElement();
+  if (!element) {
     return nullptr;
+  }
   // This is copied from CSSComputedStyleDeclaration::computeComputedStyle().
   // PseudoIdNone must be used if node() is a PseudoElement.
-  const ComputedStyle* style = node->EnsureComputedStyle(
-      node->IsPseudoElement() ? kPseudoIdNone : pseudo_id_);
-  node = StyledNode();
-  if (!node || !node->InActiveDocument() || !style)
+  const ComputedStyle* style = element->EnsureComputedStyle(
+      element->IsPseudoElement() ? kPseudoIdNone : pseudo_id_);
+  element = StyledElement();
+  if (!element || !element->InActiveDocument() || !style) {
     return nullptr;
+  }
   return style;
 }
 
@@ -96,7 +98,7 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
   const ComputedStyle* style = UpdateStyle();
   if (!style)
     return nullptr;
-  CSSPropertyRef ref(property_name, node_->GetDocument());
+  CSSPropertyRef ref(property_name, element_->GetDocument());
   return ref.GetProperty().CSSValueFromComputedStyle(
       *style, nullptr /* layout_object */, false /* allow_visited_style */);
 }
@@ -106,14 +108,14 @@ void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   if (!style)
     return;
 
-  DCHECK(StyledNode());
-  const Document& document = StyledNode()->GetDocument();
+  DCHECK(StyledElement());
+  const Document& document = StyledElement()->GetDocument();
   // Have to sort by all properties by code point, so we have to store
   // them in a buffer first.
   HeapVector<std::pair<CSSPropertyName, Member<const CSSValue>>> values;
   for (const CSSProperty* property :
        CSSComputedStyleDeclaration::ComputableProperties(
-           StyledNode()->GetExecutionContext())) {
+           StyledElement()->GetExecutionContext())) {
     DCHECK(property);
     DCHECK(!property->IDEquals(CSSPropertyID::kVariable));
     const CSSValue* value = property->CSSValueFromComputedStyle(
