@@ -44,6 +44,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -485,15 +487,17 @@ public class MinidumpUploadJobTest {
         int numMinidumps = 0;
         for (int n = 0; n < minidumps.length; n++) {
             File[] currentMinidumps = minidumps[n];
+            ArrayList<Map<String, String>> crashInfos = new ArrayList<>();
             numMinidumps += currentMinidumps.length;
             fileDescriptors[n] = new ParcelFileDescriptor[currentMinidumps.length];
             for (int m = 0; m < currentMinidumps.length; m++) {
                 fileDescriptors[n][m] = ParcelFileDescriptor.open(
                         currentMinidumps[m], ParcelFileDescriptor.MODE_READ_ONLY);
                 Assert.assertTrue(currentMinidumps[m].delete());
+                crashInfos.add(null);
             }
             crashReceiverService.performMinidumpCopyingSerially(
-                    uids[n] /* uid */, fileDescriptors[n], null, false /* scheduleUploads */);
+                    uids[n] /* uid */, fileDescriptors[n], crashInfos, false /* scheduleUploads */);
         }
 
         final CrashReportingPermissionManager permManager =
