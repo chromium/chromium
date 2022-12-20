@@ -4687,18 +4687,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kXsurfaceMetricsReportingName,
      flag_descriptions::kXsurfaceMetricsReportingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kXsurfaceMetricsReporting)},
-    {"interest-feed-v1-clicks-and-views-cond-upload",
-     flag_descriptions::kInterestFeedV1ClickAndViewActionsConditionalUploadName,
-     flag_descriptions::
-         kInterestFeedV1ClickAndViewActionsConditionalUploadDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedV1ClicksAndViewsConditionalUpload)},
-    {"interest-feed-v2-clicks-and-views-cond-upload",
-     flag_descriptions::kInterestFeedV2ClickAndViewActionsConditionalUploadName,
-     flag_descriptions::
-         kInterestFeedV2ClickAndViewActionsConditionalUploadDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedV2ClicksAndViewsConditionalUpload)},
     {"feed-close-refresh", flag_descriptions::kFeedCloseRefreshName,
      flag_descriptions::kFeedCloseRefreshDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedCloseRefresh,

@@ -50,13 +50,6 @@ const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess{
     &kInterestFeedContentSuggestions,
     "only_set_last_refresh_attempt_on_success", true};
 
-BASE_FEATURE(kInterestFeedV1ClicksAndViewsConditionalUpload,
-             "InterestFeedV1ClickAndViewActionsConditionalUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kInterestFeedV2ClicksAndViewsConditionalUpload,
-             "InterestFeedV2ClickAndViewActionsConditionalUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kInterestFeedNoticeCardAutoDismiss,
              "InterestFeedNoticeCardAutoDismiss",
