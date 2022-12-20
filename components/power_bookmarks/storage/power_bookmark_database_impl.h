@@ -9,7 +9,6 @@
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "url/gurl.h"
@@ -23,8 +22,7 @@ constexpr base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PowerBookmarks.db");
 
 // Holds the SQL connection for the main Power Bookmarks tables.
-class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase,
-                                  public PowerBookmarkSyncBridge::Delegate {
+class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
  public:
   explicit PowerBookmarkDatabaseImpl(const base::FilePath& database_dir);
   PowerBookmarkDatabaseImpl(const PowerBookmarkDatabaseImpl&) = delete;
@@ -49,16 +47,14 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase,
   bool DeletePowersForURL(
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
-
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() {
-    return sync_db_.get();
-  }
-
-  // PowerBookmarkSyncBridge::Delegate
   std::vector<std::unique_ptr<Power>> GetAllPowers() override;
   std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
       const std::vector<std::string>& guids) override;
   std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
+
+  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() {
+    return sync_db_.get();
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerBookmarkDatabaseImplTest,

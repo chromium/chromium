@@ -10,6 +10,7 @@
 
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
+#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "url/gurl.h"
 
 namespace power_bookmarks {
@@ -17,7 +18,7 @@ namespace power_bookmarks {
 struct SearchParams;
 
 // Interface for the database layer of the Power Bookmark database.
-class PowerBookmarkDatabase {
+class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
  public:
   virtual ~PowerBookmarkDatabase() = default;
 

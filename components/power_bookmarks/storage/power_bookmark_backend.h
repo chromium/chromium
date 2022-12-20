@@ -10,17 +10,17 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
+#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 namespace power_bookmarks {
 
 struct SearchParams;
-class PowerBookmarkSyncBridge;
 
 // Class responsible for marshalling calls from the browser thread which the
 // service is called from and the background thread which the database is
 // run on. Calls to this class should be posted on the background task_runner.
-class PowerBookmarkBackend {
+class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
  public:
   // Constructs the backend, should be called form the browser thread.
   // Subsequent calls to the backend should be posted to the given
@@ -28,7 +28,7 @@ class PowerBookmarkBackend {
   explicit PowerBookmarkBackend(const base::FilePath& database_dir);
   PowerBookmarkBackend(const PowerBookmarkBackend&) = delete;
   PowerBookmarkBackend& operator=(const PowerBookmarkBackend&) = delete;
-  ~PowerBookmarkBackend();
+  virtual ~PowerBookmarkBackend();
 
   void Init(bool use_database);
   void Shutdown();
@@ -62,6 +62,12 @@ class PowerBookmarkBackend {
   bool DeletePowersForURL(
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type);
+
+  // PowerBookmarkSyncBridge::Delegate
+  std::vector<std::unique_ptr<Power>> GetAllPowers() override;
+  std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
+      const std::vector<std::string>& guids) override;
+  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
 
  private:
   const base::FilePath database_dir_;

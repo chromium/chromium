@@ -40,6 +40,10 @@ class EmptyPowerBookmarkDatabase : public PowerBookmarkDatabase {
   bool DeletePowersForURL(
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
+  std::vector<std::unique_ptr<Power>> GetAllPowers() override;
+  std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
+      const std::vector<std::string>& guids) override;
+  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
 };
 
 }  // namespace power_bookmarks

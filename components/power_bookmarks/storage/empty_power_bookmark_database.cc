@@ -58,4 +58,19 @@ bool EmptyPowerBookmarkDatabase::DeletePowersForURL(
   return false;
 }
 
+std::vector<std::unique_ptr<Power>> EmptyPowerBookmarkDatabase::GetAllPowers() {
+  return std::vector<std::unique_ptr<Power>>();
+}
+
+std::vector<std::unique_ptr<Power>>
+EmptyPowerBookmarkDatabase::GetPowersForGUIDs(
+    const std::vector<std::string>& guids) {
+  return std::vector<std::unique_ptr<Power>>();
+}
+
+std::unique_ptr<Power> EmptyPowerBookmarkDatabase::GetPowerForGUID(
+    const std::string& guid) {
+  return nullptr;
+}
+
 }  // namespace power_bookmarks

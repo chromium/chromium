@@ -39,8 +39,7 @@ void PowerBookmarkBackend::Init(bool use_database) {
         std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
             syncer::POWER_BOOKMARK, /*dump_stack=*/base::RepeatingClosure());
     bridge_ = std::make_unique<PowerBookmarkSyncBridge>(
-        database->GetSyncMetadataDatabase(), database.get(),
-        std::move(change_processor));
+        database->GetSyncMetadataDatabase(), this, std::move(change_processor));
     db_ = std::move(database);
   } else {
     db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
@@ -96,6 +95,23 @@ bool PowerBookmarkBackend::DeletePowersForURL(
     const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->DeletePowersForURL(url, power_type);
+}
+
+std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetAllPowers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetAllPowers();
+}
+
+std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForGUIDs(
+    const std::vector<std::string>& guids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetPowersForGUIDs(guids);
+}
+
+std::unique_ptr<Power> PowerBookmarkBackend::GetPowerForGUID(
+    const std::string& guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetPowerForGUID(guid);
 }
 
 }  // namespace power_bookmarks
