@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/ime/text_input_client.h"
@@ -45,14 +46,85 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#define HANDLE_WAYLAND_FAILURE 1
+#else
+#define HANDLE_WAYLAND_FAILURE 0
+#endif
+
+#if HANDLE_WAYLAND_FAILURE
+#include "base/threading/thread_task_runner_handle.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/widget/widget_observer.h"
+#endif
+
 namespace views::test {
 
-InteractionTestUtilSimulatorViews::InteractionTestUtilSimulatorViews() =
-    default;
-InteractionTestUtilSimulatorViews::~InteractionTestUtilSimulatorViews() =
-    default;
-
 namespace {
+
+#if HANDLE_WAYLAND_FAILURE
+
+// On Wayland on Linux, window activation isn't guaranteed to work (based on
+// what compositor extensions are installed). So instead, make a best effort to
+// wait for the widget to activate, and if it fails, skip the test as it cannot
+// possibly pass.
+class WidgetActivationWaiterWayland final : public WidgetObserver {
+ public:
+  // A more than reasonable amount of time to wait for a window to activate.
+  static constexpr base::TimeDelta kTimeout = base::Seconds(1);
+
+  // Constructs an activation waiter for the given widget.
+  explicit WidgetActivationWaiterWayland(Widget* widget)
+      : active_(widget->IsActive()) {
+    if (!active_) {
+      widget_observation_.Observe(widget);
+    }
+  }
+  ~WidgetActivationWaiterWayland() override = default;
+
+  // Waits for the widget to become active or the operation to time out; returns
+  // true on success. Returns immediately if the widget is already active.
+  bool Wait() {
+    if (!active_) {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WidgetActivationWaiterWayland::OnTimeout,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kTimeout);
+      run_loop_.Run();
+    }
+    return active_;
+  }
+
+ private:
+  // WidgetObserver:
+  void OnWidgetDestroyed(Widget* widget) override {
+    widget_observation_.Reset();
+    run_loop_.Quit();
+    NOTREACHED() << "Widget destroyed before observation.";
+  }
+  void OnWidgetActivationChanged(Widget* widget, bool active) override {
+    if (!active) {
+      return;
+    }
+    active_ = true;
+    widget_observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  void OnTimeout() {
+    widget_observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  bool active_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+  base::WeakPtrFactory<WidgetActivationWaiterWayland> weak_ptr_factory_{this};
+};
+
+#endif  // HANDLE_WAYLAND_FAILURE
 
 // Waits for the dropdown pop-up and selects the specified item from the list.
 class DropdownItemSelector {
@@ -254,6 +326,11 @@ bool SendKeyPress(View* view, ui::KeyboardCode code, int flags = ui::EF_NONE) {
 }
 
 }  // namespace
+
+InteractionTestUtilSimulatorViews::InteractionTestUtilSimulatorViews() =
+    default;
+InteractionTestUtilSimulatorViews::~InteractionTestUtilSimulatorViews() =
+    default;
 
 ui::test::ActionResult InteractionTestUtilSimulatorViews::PressButton(
     ui::TrackedElement* element,
@@ -533,6 +610,20 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
     return ui::test::ActionResult::kNotAttempted;
 
   auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
+#if HANDLE_WAYLAND_FAILURE
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    WidgetActivationWaiterWayland waiter(widget);
+    widget->Activate();
+    if (!waiter.Wait()) {
+      LOG(WARNING)
+          << "Unable to activate widget due to lack of Wayland support for "
+             "widget activation; test is not meaningful on this platform.";
+      return ui::test::ActionResult::kKnownIncompatible;
+    }
+    return ui::test::ActionResult::kSucceeded;
+  }
+#endif  // HANDLE_WAYLAND_FAILURE
+
   views::test::WidgetActivationWaiter waiter(widget, true);
   widget->Activate();
   waiter.Wait();

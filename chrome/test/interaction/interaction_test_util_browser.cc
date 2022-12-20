@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -107,6 +109,47 @@ class InteractionTestUtilSimulatorBrowser
     return ui::test::ActionResult::kSucceeded;
   }
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Chrome has better and more thorough functionality for bringing a browser
+  // window to the front, but it's expensive, so only actually use it for
+  // browser windows on platforms where activation requires extra steps.
+  ui::test::ActionResult ActivateSurface(ui::TrackedElement* el) override {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    if (!el->IsA<views::TrackedElementViews>()) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+
+    // Get the browser and browser window associated with the current context.
+    // If there is none, do not use this implementation.
+    auto* const browser =
+        InteractionTestUtilBrowser::GetBrowserFromContext(el->context());
+    if (!browser) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (!browser_view) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+
+    // If the target widget is not the primary window widget, do not use this
+    // implementation.
+    if (browser_view->GetWidget() !=
+        el->AsA<views::TrackedElementViews>()->view()->GetWidget()) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+
+    // Bring the browser window to the front using the most aggressive method
+    // for the current platform. If this is not done, then mouse events might
+    // not get routed to the correct surface.
+    if (!ui_test_utils::BringBrowserWindowToFront(browser)) {
+      LOG(ERROR) << "BringBrowserWindowToFront() failed.";
+      return ui::test::ActionResult::kFailed;
+    }
+    return ui::test::ActionResult::kSucceeded;
+#else
+    return ui::test::ActionResult::kNotAttempted;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  }
 
   ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,
                                    size_t index,

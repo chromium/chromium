@@ -197,6 +197,27 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                             }))))));
 }
 
+// Tests whether ActivateSurface() can correctly bring a browser window to the
+// front so that mouse input can be sent to it.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
+  auto* const incognito = CreateIncognitoBrowser();
+
+  RunTestSequence(
+      InContext(incognito->window()->GetElementContext(),
+                Steps(ActivateSurface(kBrowserViewElementId),
+                      MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+      FlushEvents(),
+      SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
+                              "Some Linux window managers do not allow "
+                              "programmatically raising/activating windows. "
+                              "This invalidates the rest of the test."),
+      ActivateSurface(kBrowserViewElementId),
+      MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+      WaitForShow(AppMenuModel::kDownloadsMenuItem));
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        WebPageNavigateStateAndLocation) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);

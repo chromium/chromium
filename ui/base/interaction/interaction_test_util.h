@@ -239,7 +239,10 @@ class InteractionTestUtil {
                          std::u16string text,
                          TextEntryMode mode = TextEntryMode::kReplaceAll);
 
-  // Activates the surface containing `element`.
+  // Activates the surface containing `element`. Prefer to use only in
+  // single-process test fixtures like interactive_ui_tests, especially for
+  // browser windows (as bringing a browser window to the front may require some
+  // very aggressive system calls in certain cases and on certain platforms).
   ActionResult ActivateSurface(TrackedElement* element);
 
 #if !BUILDFLAG(IS_IOS)

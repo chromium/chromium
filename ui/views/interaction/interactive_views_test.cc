@@ -138,6 +138,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
         }
       },
       base::Unretained(this), button, release));
+  step.SetMustRemainVisible(false);
   return step;
 }
 
@@ -188,6 +189,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
         }
       },
       base::Unretained(this), button));
+  step.SetMustRemainVisible(false);
   return step;
 }
 
