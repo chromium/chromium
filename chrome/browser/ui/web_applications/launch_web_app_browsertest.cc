@@ -20,39 +20,15 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/browser_test_util.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace web_app {
 
 class LaunchWebAppBrowserTest : public WebAppControllerBrowserTest {
  public:
   LaunchWebAppBrowserTest() = default;
   ~LaunchWebAppBrowserTest() override = default;
-
-  bool IsServiceAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // If ash is does not contain the relevant test controller functionality,
-    // then there's nothing to do for this test.
-    if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-            crosapi::mojom::TestController::Uuid_) <
-        static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                             kDoesItemExistInShelfMinVersion)) {
-      LOG(WARNING) << "Unsupported ash version.";
-      return false;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return true;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
-  if (!IsServiceAvailable())
-    return;
-
   const GURL start_url("https://app.site.test/example/index");
   const AppId app_id = InstallPWA(start_url);
   AppReadinessWaiter(profile(), app_id).Await();
