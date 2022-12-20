@@ -1439,25 +1439,30 @@ const char kFedCmIframeSupportDescription[] =
     "Enables the 'identity-credentials-get' Permissions-Policy for the FedCM "
     "API.";
 
-const char kFedCmWithoutThirdPartyCookiesName[] =
-    "FedCmWithoutThirdPartyCookies";
-const char kFedCmWithoutThirdPartyCookiesDescription[] =
-    "Allows the FedCM API to be enabled when third party cookies are disabled.";
+const char kFedCmLoginHintName[] = "FedCmLoginHint";
+const char kFedCmLoginHintDescription[] =
+    "Allows the FedCM API to be used with a login hint which specifies a "
+    "specific IDP account that needs to be displayed in the FedCM UI.";
 
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
     "Allows the FedCM API to send performance measurement to the metrics "
     "endpoint on the identity provider side. Requires FedCM to be enabled.";
 
+const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
+const char kFedCmMultiIdpDescription[] =
+    "Allows the FedCM API to request multiple identity providers "
+    "simultaneously. Requires FedCM to be enabled as well.";
+
 const char kFedCmUserInfoName[] = "FedCmUserInfo";
 const char kFedCmUserInfoDescription[] =
     "Allows an identity provider to request user info instead of token from "
     "its own iframe. Requires FedCM to be enabled.";
 
-const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
-const char kFedCmMultiIdpDescription[] =
-    "Allows the FedCM API to request multiple identity providers "
-    "simultaneously. Requires FedCM to be enabled as well.";
+const char kFedCmWithoutThirdPartyCookiesName[] =
+    "FedCmWithoutThirdPartyCookies";
+const char kFedCmWithoutThirdPartyCookiesDescription[] =
+    "Allows the FedCM API to be enabled when third party cookies are disabled.";
 
 const char kFileHandlingAPIName[] = "File Handling API";
 const char kFileHandlingAPIDescription[] =

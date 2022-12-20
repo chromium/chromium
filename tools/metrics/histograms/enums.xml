@@ -57339,6 +57339,7 @@ from previous Chrome versions.
   <int value="-1962588488" label="SpeculativePreconnect:disabled"/>
   <int value="-1962394664"
       label="ChromeOSAmbientModeThrottleAnimation:disabled"/>
+  <int value="-1961971787" label="FedCmLoginHint:enabled"/>
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961755742" label="LightweightReactions:enabled"/>
   <int value="-1961648833" label="show_summary"/>
@@ -60118,6 +60119,7 @@ from previous Chrome versions.
   <int value="-362821234" label="ExperimentalUi:enabled"/>
   <int value="-362022976" label="disable-quirks-client"/>
   <int value="-361948582" label="material-security-verbose"/>
+  <int value="-361767063" label="FedCmLoginHint:disabled"/>
   <int value="-361053631" label="CaptivePortalUI2022:disabled"/>
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>

@@ -803,8 +803,8 @@ extern const char kFedCmDescription[];
 extern const char kFedCmIframeSupportName[];
 extern const char kFedCmIframeSupportDescription[];
 
-extern const char kFedCmWithoutThirdPartyCookiesName[];
-extern const char kFedCmWithoutThirdPartyCookiesDescription[];
+extern const char kFedCmLoginHintName[];
+extern const char kFedCmLoginHintDescription[];
 
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
@@ -814,6 +814,9 @@ extern const char kFedCmMultiIdpDescription[];
 
 extern const char kFedCmUserInfoName[];
 extern const char kFedCmUserInfoDescription[];
+
+extern const char kFedCmWithoutThirdPartyCookiesName[];
+extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];

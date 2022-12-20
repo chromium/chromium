@@ -7970,10 +7970,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmIframeSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmIframeSupport)},
 
-    {"fedcm-without-third-party-cookies",
-     flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
-     flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
+    {"fedcm-login-hint", flag_descriptions::kFedCmLoginHintName,
+     flag_descriptions::kFedCmLoginHintDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmLoginHint)},
 
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
@@ -7986,6 +7985,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-user-info", flag_descriptions::kFedCmUserInfoName,
      flag_descriptions::kFedCmUserInfoDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmUserInfo)},
+
+    {"fedcm-without-third-party-cookies",
+     flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
+     flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"bluetooth-sessionized-metrics",

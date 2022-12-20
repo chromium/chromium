@@ -1211,6 +1211,12 @@
       status: "stable",
     },
     {
+      name: "FedCmLoginHint",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+    },
+    {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
       public: true,

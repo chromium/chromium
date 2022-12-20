@@ -3645,6 +3645,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-login-hint",
+    "owners": ["npm", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu", "web-identity-eng@google.com"],
     "expiry_milestone": 120

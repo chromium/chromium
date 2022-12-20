@@ -315,6 +315,26 @@ FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
       render_frame_host->GetPage());
 }
 
+void FilterAccountsWithLoginHint(
+    const std::string& login_hint,
+    IdpNetworkRequestManager::AccountList& accounts) {
+  if (login_hint.empty()) {
+    return;
+  }
+
+  // Remove all accounts whose ID and whose email do not match the login hint.
+  // Note that it is technically possible for us to end up with more than one
+  // account afterwards, in which case the multiple account chooser would be
+  // shown.
+  accounts.erase(
+      std::remove_if(accounts.begin(), accounts.end(),
+                     [&login_hint](const IdentityRequestAccount& account) {
+                       return account.id != login_hint &&
+                              account.email != login_hint;
+                     }),
+      accounts.end());
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
@@ -905,6 +925,18 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      if (IsFedCmLoginHintEnabled()) {
+        FilterAccountsWithLoginHint(idp_info->provider.login_hint, accounts);
+        if (accounts.empty()) {
+          // TODO(crbug.com/1356021): send the right errors here. Also determine
+          // the right behavior with respect to the IDP Sign-In status.
+          HandleAccountsFetchFailure(
+              std::move(idp_info),
+              FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+              TokenStatus::kAccountsInvalidResponse);
+          return;
+        }
+      }
       ComputeLoginStateAndReorderAccounts(idp_info->provider, accounts);
 
       if (!idp_info->has_failing_idp_signin_status) {

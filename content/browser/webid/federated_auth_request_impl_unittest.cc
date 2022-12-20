@@ -81,43 +81,47 @@ constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
+constexpr char kAccountIdNicolas[] = "nico_id";
+constexpr char kAccountIdPeter[] = "peter_id";
+constexpr char kAccountIdZach[] = "zach_id";
+constexpr char kEmail[] = "ken@idp.example";
 
 // Values will be added here as token introspection is implemented.
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
 static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    kAccountId,         // id
-    "ken@idp.example",  // email
-    "Ken R. Example",   // name
-    "Ken",              // given_name
-    GURL()              // picture
+    kAccountId,        // id
+    kEmail,            // email
+    "Ken R. Example",  // name
+    "Ken",             // given_name
+    GURL()             // picture
 }};
 
 static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
     {
-        "nico_the_great",                 // id
-        "nicolas_the_great@idp.example",  // email
-        "Nicolas The Great",              // name
-        "Nicolas",                        // given_name
-        GURL(),                           // picture
-        LoginState::kSignUp               // login_state
-    },
-    {
-        "account_id",         // id
-        "email@idp.example",  // email
-        "This Is Me",         // name
-        "Name",               // given_name
+        kAccountIdNicolas,    // id
+        "nicolas@email.com",  // email
+        "Nicolas P",          // name
+        "Nicolas",            // given_name
         GURL(),               // picture
-        LoginState::kSignIn   // login_state
+        LoginState::kSignUp   // login_state
     },
     {
-        "other_account_id",         // id
-        "other_email@idp.example",  // email
-        "Name",                     // name
-        "Given Name",               // given_name
-        GURL(),                     // picture
-        LoginState::kSignUp         // login_state
+        kAccountIdPeter,     // id
+        "peter@email.com",   // email
+        "Peter K",           // name
+        "Peter",             // given_name
+        GURL(),              // picture
+        LoginState::kSignIn  // login_state
+    },
+    {
+        kAccountIdZach,      // id
+        "zach@email.com",    // email
+        "Zachary T",         // name
+        "Zach",              // given_name
+        GURL(),              // picture
+        LoginState::kSignUp  // login_state
     }};
 
 static const std::set<std::string> kWellKnown{kProviderUrlFull};
@@ -126,6 +130,7 @@ struct IdentityProviderParameters {
   const char* provider;
   const char* client_id;
   const char* nonce;
+  const char* login_hint;
 };
 
 // Parameters for a call to RequestToken.
@@ -215,7 +220,7 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
     kTermsOfServiceUrl};
 
 static const IdentityProviderParameters kDefaultIdentityProviderConfig{
-    kProviderUrlFull, kClientId, kNonce};
+    kProviderUrlFull, kClientId, kNonce, /*login_hint=*/""};
 
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
@@ -274,8 +279,8 @@ static const RequestExpectations kExpectationSuccessMultiIdp{
 
 static const RequestParameters kDefaultMultiIdpRequestParameters{
     std::vector<IdentityProviderParameters>{
-        {kProviderUrlFull, kClientId, kNonce},
-        {kProviderTwoUrlFull, kClientId, kNonce}},
+        {kProviderUrlFull, kClientId, kNonce, /*login_hint=*/""},
+        {kProviderTwoUrlFull, kClientId, kNonce, /*login_hint=*/""}},
     /*prefer_auto_sign_in=*/false};
 
 MockConfiguration kConfigurationMultiIdpValid{
@@ -618,7 +623,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       blink::mojom::IdentityProviderConfigPtr idp_ptr =
           blink::mojom::IdentityProviderConfig::New(
               GURL(identity_provider.provider), identity_provider.client_id,
-              identity_provider.nonce);
+              identity_provider.nonce, identity_provider.login_hint);
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
@@ -1097,8 +1102,8 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
 
 // Test that request fails if the idp is not https.
 TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
-  IdentityProviderParameters identity_provider{"http://idp.example/fedcm.json",
-                                               kClientId, kNonce};
+  IdentityProviderParameters identity_provider{
+      "http://idp.example/fedcm.json", kClientId, kNonce, /*login_hint=*/""};
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
       /*prefer_auto_sign_in=*/false};
@@ -2120,15 +2125,15 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
 
   AccountList multiple_accounts = kMultipleAccounts;
   blink::mojom::IdentityProviderConfigPtr identity_provider =
-      blink::mojom::IdentityProviderConfig::New(GURL(kProviderUrlFull),
-                                                kClientId, kNonce);
+      blink::mojom::IdentityProviderConfig::New(
+          GURL(kProviderUrlFull), kClientId, kNonce, /*login_hint=*/"");
   ComputeLoginStateAndReorderAccounts(*identity_provider, multiple_accounts);
 
   // Check the account order using the account ids.
   ASSERT_EQ(multiple_accounts.size(), 3u);
-  EXPECT_EQ(multiple_accounts[0].id, "account_id");
-  EXPECT_EQ(multiple_accounts[1].id, "nico_the_great");
-  EXPECT_EQ(multiple_accounts[2].id, "other_account_id");
+  EXPECT_EQ(multiple_accounts[0].id, kAccountIdPeter);
+  EXPECT_EQ(multiple_accounts[1].id, kAccountIdNicolas);
+  EXPECT_EQ(multiple_accounts[2].id, kAccountIdZach);
 }
 
 // Test that first API call with a given IDP is not affected by the
@@ -2629,6 +2634,106 @@ TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdpFail) {
       metrics_recorder->get_metrics_endpoints_notified_success().empty());
   EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
               ElementsAre(kMetricsEndpoint, "https://idp2.example/metrics"));
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountIdMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = kAccountId;
+
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  EXPECT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountEmailMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = kEmail;
+
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  EXPECT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].email, kEmail);
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "incorrect_login_hint";
+  const RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_statuses=*/{},
+      /*selected_idp_config_url=*/absl::nullopt,
+      FetchedEndpoint::CONFIG | FetchedEndpoint::WELL_KNOWN |
+          FetchedEndpoint::ACCOUNTS};
+
+  MockConfiguration configuration = kConfigurationValid;
+  // We should not expect ShowAccountsDialog() because there are no accounts
+  // matching the provided login hint.
+  configuration.customized_dialog = true;
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
+      .Times(0);
+  RunAuthTest(parameters, expectations, configuration);
+  EXPECT_EQ(displayed_accounts().size(), 0u);
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintFirstAccountMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = kAccountIdNicolas;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunAuthTest(parameters, kExpectationSuccess, configuration);
+  EXPECT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdNicolas);
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintLastAccountMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = kAccountIdZach;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunAuthTest(parameters, kExpectationSuccess, configuration);
+  EXPECT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdZach);
+}
+
+TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLoginHint);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "incorrect_login_hint";
+  const RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_statuses=*/{},
+      /*selected_idp_config_url=*/absl::nullopt,
+      FetchedEndpoint::CONFIG | FetchedEndpoint::WELL_KNOWN |
+          FetchedEndpoint::ACCOUNTS};
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+  // We should not expect ShowAccountsDialog() because there are no accounts
+  // matching the provided login hint.
+  configuration.customized_dialog = true;
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _))
+      .Times(0);
+  RunAuthTest(parameters, expectations, configuration);
+  EXPECT_EQ(displayed_accounts().size(), 0u);
 }
 
 }  // namespace content

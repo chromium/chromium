@@ -698,6 +698,10 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
   mojo_provider->nonce = provider.getNonceOr("");
+  mojo_provider->login_hint =
+      blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled()
+          ? provider.getLoginHintOr("")
+          : "";
   return mojo_provider;
 }
 

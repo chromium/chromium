@@ -215,6 +215,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
     {wf::EnableFedCmIframeSupport, features::kFedCmIframeSupport,
      kSetOnlyIfOverridden},
+    {wf::EnableFedCmLoginHint, features::kFedCmLoginHint, kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      features::kFedCmMultipleIdentityProviders, kDefault},
     {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kDefault},
