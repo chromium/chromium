@@ -27,8 +27,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetContentsBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetGridBackgroundCardActiveColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetGridBackgroundCardInactiveColor(

@@ -33,11 +33,6 @@ SkColor TestAppListColorProvider::GetFolderNotificationBadgeColor(
   return SK_ColorWHITE;
 }
 
-SkColor TestAppListColorProvider::GetContentsBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey200;
-}
-
 SkColor TestAppListColorProvider::GetGridBackgroundCardActiveColor(
     const views::Widget* app_list_widget) const {
   return SkColorSetA(SK_ColorWHITE, 26 /* 10% */);

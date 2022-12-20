@@ -26,8 +26,6 @@ class TestAppListColorProvider : public AppListColorProvider {
       const views::Widget* app_list_widget) const override;
   SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const override;
-  SkColor GetContentsBackgroundColor(
-      const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardActiveColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardInactiveColor(

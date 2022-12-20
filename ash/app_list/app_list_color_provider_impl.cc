@@ -67,14 +67,6 @@ SkColor AppListColorProviderImpl::GetFolderNotificationBadgeColor(
       cros_tokens::kIconColorBlue);
 }
 
-SkColor AppListColorProviderImpl::GetContentsBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshControlBackgroundColorInactive);
-}
-
 SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
