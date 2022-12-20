@@ -189,7 +189,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
         synchronized (mLock) {
             if (mInWhichUserCallback == UserCallback.NOT_IN_CALLBACK) {
                 throw new IllegalStateException(
-                        "There is no read or rewind or length check in progress.");
+                        "There is no read or rewind or length check in progress.",
+                        exception);
             }
             sendClose = mInWhichUserCallback == UserCallback.GET_LENGTH;
             mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
