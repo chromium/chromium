@@ -57,11 +57,11 @@ function checkThatNoDialogIsShown(exportDialog: PasswordsExportDialogElement) {
 
 function updateExportStatus(
     passwordManager: TestPasswordManagerProxy,
-    status: chrome.passwordsPrivate.ExportProgressStatus) {
+    progress: chrome.passwordsPrivate.PasswordExportProgress) {
   const progressCallback =
       passwordManager.listeners.passwordsFileExportProgressListener;
   assertTrue(!!progressCallback);
-  progressCallback({status});
+  progressCallback(progress);
 }
 
 suite('PasswordsExportDialog', function() {
@@ -107,10 +107,10 @@ suite('PasswordsExportDialog', function() {
 
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
     await eventToPromise('passwords-export-dialog-close', exportDialog);
   });
 
@@ -126,10 +126,10 @@ suite('PasswordsExportDialog', function() {
     clickExportPasswordsButton(exportDialog);
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
 
     flush();
     // When we are done, the export dialog closes completely.
@@ -149,7 +149,7 @@ suite('PasswordsExportDialog', function() {
     clickExportPasswordsButton(exportDialog);
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
     flush();
     assertDialogIsShown(exportDialog, '#dialogStart');
 
@@ -165,7 +165,7 @@ suite('PasswordsExportDialog', function() {
     assertDialogIsShown(exportDialog, '#dialogProgress');
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
     flush();
     assertDialogIsShown(exportDialog, '#dialogProgress');
 
@@ -193,7 +193,7 @@ suite('PasswordsExportDialog', function() {
     clickExportPasswordsButton(exportDialog);
     updateExportStatus(
         passwordManager,
-        chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS);
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
     // The progress bar only appears after 100ms.
     mockTimer.tick(100);
     flush();
@@ -209,5 +209,64 @@ suite('PasswordsExportDialog', function() {
     flush();
     // The dialog should be dismissed entirely.
     checkThatNoDialogIsShown(exportDialog);
+  });
+
+  // The error view is shown when an error occurs.
+  test('exportFlowError', function() {
+    const exportDialog = createExportPasswordsDialog();
+
+    // Use this to freeze the delayed progress bar and avoid flakiness.
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    clickExportPasswordsButton(exportDialog);
+    updateExportStatus(
+        passwordManager,
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
+    updateExportStatus(passwordManager, {
+      status: chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
+      folderName: 'tmp',
+    });
+    flush();
+    assertDialogIsShown(exportDialog, '#dialogError');
+
+    // Test that the error dialog can be dismissed.
+    const cancelErrorButton =
+        exportDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#cancelErrorButton');
+    assertTrue(!!cancelErrorButton);
+    cancelErrorButton.click();
+    flush();
+
+    checkThatNoDialogIsShown(exportDialog);
+  });
+
+  // The error view allows to retry.
+  test('exportFlowErrorRetry', async function() {
+    const exportDialog = createExportPasswordsDialog();
+
+    // Use this to freeze the delayed progress bar and avoid flakiness.
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    clickExportPasswordsButton(exportDialog);
+    updateExportStatus(
+        passwordManager,
+        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
+
+    updateExportStatus(passwordManager, {
+      status: chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
+      folderName: 'tmp',
+    });
+    flush();
+    // Test that the error dialog is shown.
+    assertDialogIsShown(exportDialog, '#dialogError');
+
+    // Test that clicking retry will start a new export.
+    const tryAgainButton =
+        exportDialog.shadowRoot!.querySelector<HTMLElement>('#tryAgainButton');
+    assertTrue(!!tryAgainButton);
+    tryAgainButton.click();
+    await passwordManager.whenCalled('requestExportProgressStatus');
   });
 });

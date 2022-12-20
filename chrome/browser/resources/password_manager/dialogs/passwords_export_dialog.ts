@@ -54,13 +54,24 @@ export class PasswordsExportDialogElement extends
 
   static get properties() {
     return {
+      /**
+       * Do not change these variables directly to show dialogs, call
+       * switchToDialog_ which guarantees two dialogs are not shown at the same
+       * time.
+       */
       showStartDialog_: Boolean,
       showProgressDialog_: Boolean,
+      showErrorDialog_: Boolean,
+
+      /** The error that occurred while exporting. */
+      exportErrorMessage: String,
     };
   }
 
+  exportErrorMessage: string;
   private showStartDialog_: boolean;
   private showProgressDialog_: boolean;
+  private showErrorDialog_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
   private onPasswordsFileExportProgressListener_:
@@ -153,6 +164,7 @@ export class PasswordsExportDialogElement extends
         this.onPasswordsFileExportProgressListener_!);
     this.showStartDialog_ = false;
     this.showProgressDialog_ = false;
+    this.showErrorDialog_ = false;
     assert(this.onPasswordsFileExportProgressListener_);
     this.passwordManager_.removePasswordsFileExportProgressListener(
         this.onPasswordsFileExportProgressListener_);
@@ -172,8 +184,7 @@ export class PasswordsExportDialogElement extends
         // Exporting was started by a different call to exportPasswords() and is
         // is still in progress. This UI needs to be updated to the current
         // status.
-        // TODO(crbug/1394416): Switch to the progress dialog once it's
-        // implemented.
+        this.switchToDialog_(States.IN_PROGRESS);
       }
     });
   }
@@ -194,7 +205,9 @@ export class PasswordsExportDialogElement extends
       return;
     }
     if (progress.status === ProgressStatus.FAILED_WRITE_FAILED) {
-      // TODO(crbug/1394416): Show error message once implemneted.
+      this.exportErrorMessage =
+          this.i18n('exportPasswordsFailTitle', progress.folderName!);
+      this.switchToDialog_(States.ERROR);
       return;
     }
   }
@@ -206,6 +219,7 @@ export class PasswordsExportDialogElement extends
   private switchToDialog_(state: States) {
     this.showStartDialog_ = state === States.START;
     this.showProgressDialog_ = state === States.IN_PROGRESS;
+    this.showErrorDialog_ = state === States.ERROR;
   }
 
   /**
