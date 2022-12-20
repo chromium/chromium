@@ -1973,6 +1973,24 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PERMISSIONS_CAMERA" desc="Usually used to show whether user has enabled a site's permission to use the device camera.">
         Camera
       </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
+        Don't Allow
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT" desc="Button text to allow access to permissions. This should match the iOS built-in alert for permissions access.">
+        Allow
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE" desc="Message shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
+        Allow "<ph name="SITE_NAME">$1<ex>permission.site</ex></ph>" to use your <ph name="PERMISSION">$2<ex>camera and microphone</ex></ph>?
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA" desc="Name of permission shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
+        camera
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE" desc="Name of permission shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
+        camera and microphone
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE" desc="Name of permission shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
+        microphone
+      </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE" desc="Message shown in the infobar when camera access is enabled.">
         Camera Access Allowed
       </message>
