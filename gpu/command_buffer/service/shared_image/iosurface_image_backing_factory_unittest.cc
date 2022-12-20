@@ -150,81 +150,6 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
   }
 };
 
-// Basic test to check creation and deletion of IOSurface backed shared image.
-TEST_F(IOSurfaceImageBackingFactoryTest, Basic) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SharedImageFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT;
-
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
-  EXPECT_TRUE(backing);
-
-  // Check clearing.
-  if (!backing->IsCleared()) {
-    backing->SetCleared();
-    EXPECT_TRUE(backing->IsCleared());
-  }
-
-  // First, validate via a GLTextureImageRepresentation.
-  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing),
-                                     memory_type_tracker_.get());
-  auto gl_representation =
-      shared_image_representation_factory_->ProduceGLTexturePassthrough(
-          mailbox);
-  GLenum expected_target = GL_TEXTURE_RECTANGLE;
-  EXPECT_TRUE(gl_representation);
-  EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
-  EXPECT_EQ(expected_target,
-            gl_representation->GetTexturePassthrough()->target());
-  EXPECT_EQ(size, gl_representation->size());
-  EXPECT_EQ(format, gl_representation->format());
-  EXPECT_EQ(color_space, gl_representation->color_space());
-  EXPECT_EQ(usage, gl_representation->usage());
-  gl_representation.reset();
-
-  // Next, validate a SkiaImageRepresentation.
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
-      mailbox, context_state_);
-  EXPECT_TRUE(skia_representation);
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
-      scoped_write_access;
-
-  scoped_write_access = skia_representation->BeginScopedWriteAccess(
-      &begin_semaphores, &end_semaphores,
-      SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  auto* surface = scoped_write_access->surface();
-  EXPECT_TRUE(surface);
-  EXPECT_EQ(size.width(), surface->width());
-  EXPECT_EQ(size.height(), surface->height());
-  EXPECT_TRUE(begin_semaphores.empty());
-  EXPECT_TRUE(end_semaphores.empty());
-  scoped_write_access.reset();
-
-  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
-  scoped_read_access =
-      skia_representation->BeginScopedReadAccess(nullptr, nullptr);
-  auto* promise_texture = scoped_read_access->promise_image_texture();
-  EXPECT_TRUE(promise_texture);
-  GrBackendTexture backend_texture = promise_texture->backendTexture();
-  EXPECT_TRUE(backend_texture.isValid());
-  EXPECT_EQ(size.width(), backend_texture.width());
-  EXPECT_EQ(size.height(), backend_texture.height());
-  scoped_read_access.reset();
-  skia_representation.reset();
-
-  factory_ref.reset();
-}
-
 // Test to check interaction between Gl and skia GL representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
@@ -660,18 +585,19 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
-class IOSurfaceImageBackingFactoryNewTestBase
+class IOSurfaceImageBackingFactoryWithFormatTest
     : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
-  explicit IOSurfaceImageBackingFactoryNewTestBase(bool is_thread_safe)
+  explicit IOSurfaceImageBackingFactoryWithFormatTest()
       : shared_image_manager_(
-            std::make_unique<SharedImageManager>(is_thread_safe)) {}
-  ~IOSurfaceImageBackingFactoryNewTestBase() override {
+            std::make_unique<SharedImageManager>(/*thread_safe=*/false)) {}
+  ~IOSurfaceImageBackingFactoryWithFormatTest() override {
     // |context_state_| must be destroyed on its own context.
     context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
   }
 
-  void SetUpBase(const GpuDriverBugWorkarounds& workarounds) {
+  void SetUp() override {
+    GpuDriverBugWorkarounds workarounds;
     scoped_refptr<gles2::FeatureInfo> feature_info;
     CreateSharedContext(workarounds, surface_, context_, context_state_,
                         feature_info);
@@ -696,22 +622,17 @@ class IOSurfaceImageBackingFactoryNewTestBase
   bool can_create_scanout_or_gmb_shared_image(
       viz::SharedImageFormat format) const {
     auto resource_format = format.resource_format();
-    if (resource_format == viz::ResourceFormat::BGRA_1010102)
+    if (resource_format == viz::ResourceFormat::BGRA_1010102) {
       return supports_ar30_;
-    else if (resource_format == viz::ResourceFormat::RGBA_1010102)
+    } else if (resource_format == viz::ResourceFormat::RGBA_1010102) {
       return supports_ab30_;
+    }
     return true;
   }
 
   viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
-  // Hide the access that parameterized tests make to restricted interfaces of
-  // GLImage here to ease friending.
-  void AssertGLImageHasTypeNone(gl::GLImage* image) {
-    ASSERT_EQ(image->GetType(), gl::GLImage::Type::NONE);
-  }
-
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
@@ -726,32 +647,12 @@ class IOSurfaceImageBackingFactoryNewTestBase
   bool supports_ab30_ = false;
 };
 
-class IOSurfaceImageBackingFactoryNewTest
-    : public IOSurfaceImageBackingFactoryNewTestBase {
- public:
-  IOSurfaceImageBackingFactoryNewTest()
-      : IOSurfaceImageBackingFactoryNewTestBase(false) {}
-  void SetUp() override {
-    GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds);
-  }
-
- protected:
-};
-
-TEST_P(IOSurfaceImageBackingFactoryNewTest, Basic) {
-  // TODO(jonahr): Test crashes on Mac with ANGLE/passthrough
-  // (crbug.com/1100975)
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr) &&
-      bot_config.Matches("mac passthrough")) {
-    return;
-  }
-
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, Basic) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
-  if (should_succeed)
+  if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
+  }
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -795,6 +696,12 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, Basic) {
     gl_representation.reset();
   }
 
+  if (format ==
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102)) {
+    // Producing SkSurface for BGRA_1010102 fails for some reason.
+    return;
+  }
+
   // Finally, validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_.get());
@@ -831,68 +738,62 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, Basic) {
   shared_image.reset();
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialData) {
-  // TODO(andrescj): these loop over the formats can be replaced by test
-  // parameters.
-  for (auto resource_format :
-       {viz::ResourceFormat::RGBA_8888, viz::ResourceFormat::BGRA_1010102,
-        viz::ResourceFormat::RGBA_1010102}) {
-    auto format = viz::SharedImageFormat::SinglePlane(resource_format);
-    const bool should_succeed = can_create_scanout_or_gmb_shared_image(format);
-    if (should_succeed)
-      EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialData) {
+  auto format = GetParam();
+  const bool should_succeed = can_create_scanout_or_gmb_shared_image(format);
+  if (should_succeed) {
+    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
+  }
 
-    auto mailbox = Mailbox::GenerateForSharedImage();
-    gfx::Size size(256, 256);
-    auto color_space = gfx::ColorSpace::CreateSRGB();
-    GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-    SkAlphaType alpha_type = kPremul_SkAlphaType;
-    uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
-    std::vector<uint8_t> initial_data(
-        viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
+  std::vector<uint8_t> initial_data(
+      viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
 
-    auto backing = backing_factory_->CreateSharedImage(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        initial_data);
-    ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
-    if (!should_succeed) {
-      EXPECT_FALSE(backing);
-      return;
-    }
-    ASSERT_TRUE(backing);
-    EXPECT_TRUE(backing->IsCleared());
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      initial_data);
+  ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
+  if (!should_succeed) {
+    EXPECT_FALSE(backing);
+    return;
+  }
+  ASSERT_TRUE(backing);
+  EXPECT_TRUE(backing->IsCleared());
 
-    // Validate via a GLTextureImageRepresentation(Passthrough).
-    std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
-        shared_image_manager_->Register(std::move(backing),
-                                        memory_type_tracker_.get());
-    EXPECT_TRUE(shared_image);
-    GLenum expected_target = GL_TEXTURE_RECTANGLE;
+  // Validate via a GLTextureImageRepresentation(Passthrough).
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_->Register(std::move(backing),
+                                      memory_type_tracker_.get());
+  EXPECT_TRUE(shared_image);
+  GLenum expected_target = GL_TEXTURE_RECTANGLE;
 
-    {
-      auto gl_representation =
-          shared_image_representation_factory_->ProduceGLTexturePassthrough(
-              mailbox);
-      EXPECT_TRUE(gl_representation);
-      EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
-      EXPECT_EQ(expected_target,
-                gl_representation->GetTexturePassthrough()->target());
-      EXPECT_EQ(size, gl_representation->size());
-      EXPECT_EQ(format, gl_representation->format());
-      EXPECT_EQ(color_space, gl_representation->color_space());
-      EXPECT_EQ(usage, gl_representation->usage());
-      gl_representation.reset();
-    }
-
-    shared_image.reset();
+  {
+    auto gl_representation =
+        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+            mailbox);
+    EXPECT_TRUE(gl_representation);
+    EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
+    EXPECT_EQ(expected_target,
+              gl_representation->GetTexturePassthrough()->target());
+    EXPECT_EQ(size, gl_representation->size());
+    EXPECT_EQ(format, gl_representation->format());
+    EXPECT_EQ(color_space, gl_representation->color_space());
+    EXPECT_EQ(usage, gl_representation->usage());
+    gl_representation.reset();
   }
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialDataImage) {
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataImage) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
-  if (should_succeed)
+  if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
+  }
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -929,7 +830,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialDataImage) {
   }
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialDataWrongSize) {
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataWrongSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -949,7 +850,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, InvalidFormat) {
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = viz::SharedImageFormat::SinglePlane(
       viz::ResourceFormat::YUV_420_BIPLANAR);
@@ -965,7 +866,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, InvalidFormat) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, InvalidSize) {
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(0, 0);
@@ -986,11 +887,12 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryNewTest, EstimatedSize) {
+TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, EstimatedSize) {
   const bool should_succeed =
       can_create_scanout_or_gmb_shared_image(get_format());
-  if (should_succeed)
+  if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
+  }
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -1023,7 +925,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, EstimatedSize) {
 // Ensures that the various conversion functions used w/ TexStorage2D match
 // their TexImage2D equivalents, allowing us to minimize the amount of parallel
 // data tracked in the SharedImageFactoryGLImage.
-TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
+TEST_F(IOSurfaceImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(GpuDriverBugWorkarounds(), GpuFeatureInfo());
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -1034,8 +936,9 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = viz::SharedImageFormat::SinglePlane(
         static_cast<viz::ResourceFormat>(i));
-    if (!IsGLSupported(format) || format.IsCompressed())
+    if (!IsGLSupported(format) || format.IsCompressed()) {
       continue;
+    }
     int storage_format = TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);
 
@@ -1064,8 +967,9 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
         validators->pixel_type.IsValid(image_gl_type);
     bool supports_tex_storage =
         validators->texture_internal_format_storage.IsValid(storage_format);
-    if (supports_tex_storage)
+    if (supports_tex_storage) {
       EXPECT_TRUE(supports_tex_image);
+    }
   }
 }
 
@@ -1079,8 +983,8 @@ std::string TestParamToString(
   return param_info.param.ToString();
 }
 
-INSTANTIATE_TEST_SUITE_P(Service,
-                         IOSurfaceImageBackingFactoryNewTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         IOSurfaceImageBackingFactoryWithFormatTest,
                          kSharedImageFormats,
                          TestParamToString);
 

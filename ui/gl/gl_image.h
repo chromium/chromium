@@ -43,7 +43,6 @@ class GpuMemoryBufferFactoryAndroidHardwareBuffer;
 class GpuMemoryBufferFactoryDXGI;
 class GpuMemoryBufferFactoryIOSurface;
 class IOSurfaceImageBackingFactory;
-class IOSurfaceImageBackingFactoryNewTestBase;
 class OverlayD3DImageRepresentation;
 class TestOverlayImageRepresentation;
 unsigned GetDataFormatOfGLImage(gl::GLImage* gl_image);
@@ -214,7 +213,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class gpu::GpuMemoryBufferFactoryDXGI;
   friend class gpu::GpuMemoryBufferFactoryIOSurface;
   friend class gpu::IOSurfaceImageBackingFactory;
-  friend class gpu::IOSurfaceImageBackingFactoryNewTestBase;
   friend class gpu::OverlayD3DImageRepresentation;
   friend class gpu::TestOverlayImageRepresentation;
   friend class gpu::gles2::BackTexture;
