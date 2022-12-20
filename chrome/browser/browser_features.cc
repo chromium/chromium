@@ -20,12 +20,6 @@ BASE_FEATURE(kClosedTabCache,
              "ClosedTabCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether or not to delegate color queries from the ThemeProvider to the
-// ColorProvider.
-BASE_FEATURE(kColorProviderRedirectionForThemeProvider,
-             "ColorProviderRedirectionForThemeProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 BASE_FEATURE(kDestroyProfileOnBrowserClose,

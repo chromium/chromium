@@ -1034,11 +1034,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "color-provider-redirection-for-theme-provider",
-    "owners": [ "//ui/color/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "colr-v1-fonts",
     "owners": [ "drott", "layout-dev@chromium.org" ],
     "expiry_milestone": 100

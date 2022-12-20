@@ -20,8 +20,6 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kClosedTabCache);
 
-BASE_DECLARE_FEATURE(kColorProviderRedirectionForThemeProvider);
-
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 

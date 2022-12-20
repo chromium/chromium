@@ -7328,12 +7328,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaFoundationVideoCapture)},
 #endif  // BUILDFLAG(IS_WIN)
 
-    {"color-provider-redirection-for-theme-provider",
-     flag_descriptions::kColorProviderRedirectionForThemeProviderName,
-     flag_descriptions::kColorProviderRedirectionForThemeProviderDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kColorProviderRedirectionForThemeProvider)},
-
     {"private-state-tokens", flag_descriptions::kPrivateStateTokensName,
      flag_descriptions::kPrivateStateTokensDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kPrivateStateTokens)},

@@ -880,12 +880,6 @@ const char kEnableBrowsingDataLifetimeManagerDescription[] =
     "Enables the BrowsingDataLifetimeManager service to run and periodically "
     "delete browsing data as specified by the BrowsingDataLifetime policy.";
 
-const char kColorProviderRedirectionForThemeProviderName[] =
-    "Color Provider Redirection For Theme Provider";
-const char kColorProviderRedirectionForThemeProviderDescription[] =
-    "Redirects color requests from the ThemeProvider to the ColorProvider "
-    "where possible.";
-
 const char kDesktopPWAsAdditionalWindowingControlsName[] =
     "Desktop PWA Window Minimize/maximize/restore";
 const char kDesktopPWAsAdditionalWindowingControlsDescription[] =
