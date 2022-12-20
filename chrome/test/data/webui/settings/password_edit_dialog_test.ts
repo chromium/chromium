@@ -691,44 +691,60 @@ suite('PasswordEditDialog', function() {
     assertTrue(!noteElement.readonly);
   });
 
-  test('changesPasswordWithNote', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
-    loadTimeData.overrideValues({enablePasswordViewPage: true});
-    const entry = createPasswordEntry(
-        {url: 'goo.gl', username: 'bart', id: 42, note: 'some note'});
-    const editDialog = elementFactory.createPasswordEditDialog(entry);
-    const noteElement =
-        editDialog.shadowRoot!.querySelector<CrTextareaElement>('#note')!;
+  [{newNote: 'some note', expectedNote: 'some note'},
+   {newNote: '    \n     ', expectedNote: ''},
+   {newNote: '   hello world  ! ', expectedNote: 'hello world  !'}]
+      .forEach(
+          testCase => test(
+              `changesPasswordWithNote "${testCase.newNote}"`,
+              async function() {
+                loadTimeData.overrideValues({enablePasswordNotes: true});
+                loadTimeData.overrideValues({enablePasswordViewPage: true});
+                const entry = createPasswordEntry({
+                  url: 'goo.gl',
+                  username: 'bart',
+                  id: 42,
+                  note: 'some note',
+                });
+                const editDialog =
+                    elementFactory.createPasswordEditDialog(entry);
+                const noteElement =
+                    editDialog.shadowRoot!.querySelector<CrTextareaElement>(
+                        '#note')!;
 
-    const expectedParams: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
-      username: 'new_username',
-      password: 'new_password',
-      note: 'some note',
-    };
+                const expectedParams:
+                    chrome.passwordsPrivate.ChangeSavedPasswordParams = {
+                  username: 'new_username',
+                  password: 'new_password',
+                  note: testCase.newNote,
+                };
 
-    editDialog.$.usernameInput.value = expectedParams.username;
-    editDialog.$.passwordInput.value = expectedParams.password;
-    noteElement.value = expectedParams.note!;
-    assertFalse(editDialog.$.passwordInput.invalid);
-    assertFalse(editDialog.$.actionButton.disabled);
+                editDialog.$.usernameInput.value = expectedParams.username;
+                editDialog.$.passwordInput.value = expectedParams.password;
+                noteElement.value = expectedParams.note!;
+                assertFalse(editDialog.$.passwordInput.invalid);
+                assertFalse(editDialog.$.actionButton.disabled);
 
-    passwordManager.setChangeSavedPasswordResponse(43);
-    editDialog.$.actionButton.click();
+                passwordManager.setChangeSavedPasswordResponse(43);
+                editDialog.$.actionButton.click();
 
-    // Check that the changeSavedPassword is called with the right arguments.
-    const dispatchedEvent = eventToPromise('saved-password-edited', editDialog);
-    const {params} = await passwordManager.whenCalled('changeSavedPassword');
-    assertEquals(expectedParams.password, params.password);
-    assertEquals(expectedParams.username, params.username);
-    assertEquals(expectedParams.note, params.note);
+                // Check that the changeSavedPassword is called with the right
+                // arguments.
+                const dispatchedEvent =
+                    eventToPromise('saved-password-edited', editDialog);
+                const {params} =
+                    await passwordManager.whenCalled('changeSavedPassword');
+                assertEquals(expectedParams.password, params.password);
+                assertEquals(expectedParams.username, params.username);
+                assertEquals(testCase.newNote, params.note);
 
-    await dispatchedEvent.then((event) => {
-      assertEquals(43, event.detail.id);
-      assertEquals(expectedParams.username, event.detail.username);
-      assertEquals(expectedParams.password, event.detail.password);
-      assertEquals(expectedParams.note, event.detail.note);
-    });
-  });
+                await dispatchedEvent.then((event) => {
+                  assertEquals(43, event.detail.id);
+                  assertEquals(expectedParams.username, event.detail.username);
+                  assertEquals(expectedParams.password, event.detail.password);
+                  assertEquals(testCase.expectedNote, event.detail.note);
+                });
+              }));
 
   test('noChangesWhenNotesIsNotEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: false});

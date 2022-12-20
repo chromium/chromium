@@ -510,7 +510,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           url: this.$.websiteInput.value,
           username: this.username_,
           password: this.password_,
-          note: this.note_,
+          note: this.note_.trim(),
           useAccountStore: useAccountStore,
         })
         .finally(() => {
@@ -535,7 +535,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
               ...this.existingEntry!,
               username: this.username_,
               password: this.password_,
-              note: this.note_,
+              note: this.note_.trim(),
               id: newId,
             };
             this.dispatchChangePasswordEvent_(newEntry);
