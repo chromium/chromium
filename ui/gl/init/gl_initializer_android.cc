@@ -14,7 +14,6 @@
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_display_initializer.h"
 
 namespace gl {
 namespace init {
@@ -82,8 +81,7 @@ GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-      if (!InitializeDisplay(display,
-                             EGLDisplayPlatform(EGL_DEFAULT_DISPLAY))) {
+      if (!display->Initialize(EGLDisplayPlatform(EGL_DEFAULT_DISPLAY))) {
         LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
         return nullptr;
       }

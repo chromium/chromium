@@ -10,14 +10,12 @@ component("init") {
 
   public = [
     "create_gr_gl_interface.h",
-    "gl_display_initializer.h",
     "gl_factory.h",
   ]
 
   sources = [
     "create_gr_gl_interface.cc",
     "create_gr_gl_interface.h",
-    "gl_display_initializer.cc",
     "gl_factory.cc",
     "gl_factory.h",
     "gl_init_export.h",
@@ -70,7 +68,6 @@ component("init") {
       "gl_initializer_ozone.cc",
       "ozone_util.h",
     ]
-
     deps += [ "//ui/ozone" ]
   }
 }
