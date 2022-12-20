@@ -1662,26 +1662,13 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
                       WebFeature::kOpenerNavigationWithoutGesture);
   }
 
-  const bool target_escapes_fenced_frame =
-      IsInFencedFrameTree() && (Tree().Top() != Tree().Top());
-
-  // If the target frame is outside the fenced frame, the only way that should
-  // be possible is through the '_unfencedTop' reserved frame name.
-  if (target_escapes_fenced_frame) {
-    CHECK(target_frame == Tree().Top());
-  }
-
   if (destination_url.ProtocolIsJavaScript() &&
       (!GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-           target_frame.GetSecurityContext()->GetSecurityOrigin()) ||
-       target_escapes_fenced_frame)) {
+          target_frame.GetSecurityContext()->GetSecurityOrigin()))) {
     PrintNavigationErrorMessage(
         target_frame,
-        target_escapes_fenced_frame
-            ? "The frame attempting navigation must be in the same fenced "
-              "frame tree as the target if navigating to a javascript: url"
-            : "The frame attempting navigation must be same-origin with the "
-              "target if navigating to a javascript: url");
+        "The frame attempting navigation must be same-origin with the target "
+        "if navigating to a javascript: url");
     return false;
   }
 
@@ -1764,15 +1751,6 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
               "flag, but has no user activation (aka gesture). See "
               "https://www.chromestatus.com/feature/5629582019395584.");
           return false;
-        }
-
-        // If we are in a fenced frame and there is user activation, then we
-        // know the navigation is allowed. Fenced frames do not propagate
-        // user activation into their ancestors outside of the fence, but we
-        // want to pretend that they do; upon recursing it would pass the check
-        // below for whether the source frame has sticky activation.
-        if (target_escapes_fenced_frame) {
-          return true;
         }
       }
 
