@@ -1772,18 +1772,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     public void setTabSwitcherMode(boolean inTabSwitcherMode, boolean showToolbar,
             boolean delayAnimation, MenuButtonCoordinator menuButtonCoordinator) {
-        setTabSwitcherMode(inTabSwitcherMode, showToolbar, delayAnimation, true);
-    }
-
-    /**
-     * See {@link #setTabSwitcherMode(boolean, boolean, boolean, MenuButtonCoordinator)}.
-     */
-    public void setTabSwitcherMode(boolean inTabSwitcherMode, boolean showToolbar,
-            boolean delayAnimation, boolean animate) {
         // This method is only used for grid tab switcher with the start surface disabled. When
         // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
         // is always called before setTabSwitcherMode(), so skip here.
-        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) return;
+        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
+            // Prevent pressing the tab switcher button until after transition finishes.
+            mToggleTabStackButton.setClickable(false);
+            return;
+        }
 
         // If setting tab switcher mode to true and the browser is already animating or in the tab
         // switcher skip.
@@ -1798,6 +1794,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 && (mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER)) {
             return;
         }
+        // Prevent pressing the tab switcher button until after transition finishes.
+        mToggleTabStackButton.setClickable(false);
+
         mTabSwitcherState = inTabSwitcherMode ? ENTERING_TAB_SWITCHER : EXITING_TAB_SWITCHER;
 
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
@@ -1829,7 +1828,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         updateButtonsTranslationY();
 
-        if (DeviceClassManager.enableAccessibilityLayout(getContext()) || !animate) {
+        if (DeviceClassManager.enableAccessibilityLayout(getContext())) {
             finishAnimations();
         }
 
@@ -1892,6 +1891,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
         if (mTabSwitcherState == ENTERING_TAB_SWITCHER) {
             mTabSwitcherState = TAB_SWITCHER;
+            mToggleTabStackButton.setClickable(false);
+        }
+        // Ensure clickable if in STATIC_TAB mode. This handles both when the state transitions
+        // are ignored in favor of onStartSurfaceStateChanged() and when normal transitions occur.
+        if (mTabSwitcherState == STATIC_TAB) {
+            mToggleTabStackButton.setClickable(true);
         }
 
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
