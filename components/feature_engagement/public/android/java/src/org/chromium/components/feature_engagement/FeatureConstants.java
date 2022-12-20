@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP,
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE, FeatureConstants.EPHEMERAL_TAB_FEATURE,
-        FeatureConstants.EXPLORE_SITES_TILE_FEATURE, FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
+        FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
         FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE, FeatureConstants.INSTANCE_SWITCHER,
         FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
@@ -115,7 +115,6 @@ public @interface FeatureConstants {
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
     String PREVIEWS_OMNIBOX_UI_FEATURE = "IPH_PreviewsOmniboxUI";
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
-    String EXPLORE_SITES_TILE_FEATURE = "IPH_ExploreSitesTile";
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";
     String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";
     String READ_LATER_APP_MENU_BOOKMARKS_FEATURE = "IPH_ReadLaterAppMenuBookmarks";

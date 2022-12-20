@@ -171,9 +171,6 @@ public final class EventConstants {
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
 
-    /** The Explore Sites tile was tapped. */
-    public static final String EXPLORE_SITES_TILE_TAPPED = "explore_sites_tile_tapped";
-
     /** User has finished drop-to-merge to create a group. */
     public static final String TAB_DRAG_AND_DROP_TO_GROUP = "tab_drag_and_drop_to_group";
 

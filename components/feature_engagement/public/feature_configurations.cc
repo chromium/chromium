@@ -283,22 +283,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("download_home_opened", Comparator(EQUAL, 0), 90, 360);
     return config;
   }
-  if (kIPHExploreSitesTileFeature.name == feature->name) {
-    // A config that allows the ExploreSites IPH to be shown:
-    // * Once per day
-    // * Up to 3 times but only if unused in the last 90 days.
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->trigger = EventConfig("explore_sites_tile_iph_trigger",
-                                  Comparator(LESS_THAN, 3), 90, 360);
-    config->used =
-        EventConfig("explore_sites_tile_tapped", Comparator(EQUAL, 0), 90, 360);
-    config->event_configs.insert(EventConfig("explore_sites_tile_iph_trigger",
-                                             Comparator(LESS_THAN, 1), 1, 360));
-    return config;
-  }
   if (kIPHContextualPageActionsQuietVariantFeature.name == feature->name) {
     // A config that allows the contextual page action IPH to be shown:
     // * Once per day. 3 times max in 90 days
