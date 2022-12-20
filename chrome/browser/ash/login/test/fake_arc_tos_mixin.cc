@@ -15,8 +15,8 @@ namespace {
 
 using ::net::test_server::BasicHttpResponse;
 
-constexpr char kArcTosPath[] = "/about/play-terms.html";
-constexpr char kPrivacyPolicyPath[] = "/policies/privacy/";
+constexpr char kArcTosPath[] = "/about/play-terms/embedded/";
+constexpr char kPrivacyPolicyPath[] = "/policies/privacy/embedded";
 
 }  // namespace
 
@@ -33,7 +33,9 @@ void FakeArcTosMixin::SetUp() {
 
 void FakeArcTosMixin::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kArcTosHostForTests,
-                                  TestServerBaseUrl());
+                                  TestServerBaseUrl() + kArcTosPath);
+  command_line->AppendSwitchASCII(switches::kPrivacyPolicyHostForTests,
+                                  TestServerBaseUrl() + kPrivacyPolicyPath);
 }
 
 // Returns the base URL of the embedded test server.
@@ -54,19 +56,7 @@ std::unique_ptr<HttpResponse> FakeArcTosMixin::HandleRequest(
 
   std::string content;
   if (request.relative_url == kArcTosPath) {
-    // The terms of service screen determines the URL of the privacy policy
-    // by scanning the terms of service http response. It looks for an <a> tag
-    // with with href that matches '/policies/privacy/' that is also a child of
-    // an element with class 'play-footer'.
-    std::string href = TestServerBaseUrl() + kPrivacyPolicyPath;
     content = kArcTosContent;
-    if (serve_tos_with_privacy_policy_footer_) {
-      std::string footer = base::StringPrintf(
-          "<div class='play-footer'><a href='%s'>Privacy Policy</a></div>",
-          href.c_str());
-
-      content += footer;
-    }
   } else {
     content = kPrivacyPolicyContent;
   }

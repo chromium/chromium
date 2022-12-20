@@ -51,7 +51,6 @@ const ConsolidatedConsentScreenState = {
  * @type {string}
  */
 const GOOGLE_EULA_TERMS_URL = 'chrome://terms';
-const ARC_TERMS_URL = 'chrome://terms/arc/terms';
 const PRIVACY_POLICY_URL = 'chrome://terms/arc/privacy_policy';
 
 /**
@@ -182,7 +181,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   constructor() {
     super();
 
-    this.isArcTosInitialized_ = false;
+    this.areWebviewsInitialized_ = false;
 
     // Text displayed in the Arc Terms of Service webview.
     this.arcTosContent_ = '';
@@ -190,19 +189,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     // Flag that ensures that OOBE configuration is applied only once.
     this.configuration_applied_ = false;
 
-    /**
-     * The hostname of the url where the terms of service will be fetched.
-     * Overwritten by tests to load terms of service from local test server.
-     */
-    this.arcTosHostName_ = 'https://play.google.com';
-
     // Online URLs
     this.googleEulaUrl_ = '';
     this.crosEulaUrl_ = '';
     this.arcTosUrl_ = '';
-
-    // Used for loading ARC ToS.
-    this.countryCode_ = '';
+    this.privacyPolicyUrl_ = '';
 
     // When Google EULA and/or ARC ToS need to be shown to the user,
     // it must be loaded before the loaded step is shown.
@@ -242,12 +233,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     super.ready();
     this.initializeLoginScreen('ConsolidatedConsentScreen');
     this.updateLocalizedContent();
-
-    if (loadTimeData.valueExists(
-            'consolidatedConsentArcTosHostNameForTesting')) {
-      this.setArcTosHostNameForTesting_(loadTimeData.getString(
-          'consolidatedConsentArcTosHostNameForTesting'));
-    }
   }
 
   onBeforeShow(data) {
@@ -257,7 +242,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.isDemo_ = data['isDemo'];
     this.isChildAccount_ = data['isChildAccount'];
     this.isTosHidden_ = data['isTosHidden'];
-    this.countryCode_ = data['countryCode'];
 
     this.recoveryVisible_ = data['showRecoveryOption'];
     this.recoveryChecked = data['recoveryOptionDefault'];
@@ -275,8 +259,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     this.googleEulaUrl_ = data['googleEulaUrl'];
     this.crosEulaUrl_ = data['crosEulaUrl'];
-    this.arcTosUrl_ = this.arcTosHostName_ + '/about/play-terms.html';
-
+    this.arcTosUrl_ = data['arcTosUrl'];
+    this.privacyPolicyUrl_ = data['privacyPolicyUrl'];
     this.maybeLoadWebviews_(this.isTosHidden_, this.isArcEnabled_);
 
     if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
@@ -316,52 +300,28 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return !isTosHidden && isArcEnabled;
   }
 
-  initializeArcTos_(countryCode) {
-    if (this.isArcTosInitialized_) {
+  preventNewWindows_(webview) {
+    webview.addEventListener('newwindow', (event) => {
+      event.preventDefault();
+    });
+  }
+
+  initializeTosWebivews_() {
+    if (this.areWebviewsInitialized_) {
       return;
     }
 
-    this.isArcTosInitialized_ = true;
-    const webview = this.$.consolidatedConsentArcTosWebview;
-    webview.removeContentScripts(['preProcess']);
+    this.areWebviewsInitialized_ = true;
 
-    var language = this.getCurrentLanguage_();
-    countryCode = countryCode.toLowerCase();
-
-    var scriptSetParameters = 'document.countryCode = \'' + countryCode + '\';';
-    scriptSetParameters += 'document.language = \'' + language + '\';';
-    scriptSetParameters += 'document.viewMode = \'large-view\';';
-
-    webview.addContentScripts([{
-      name: 'preProcess',
-      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
-      js: {code: scriptSetParameters},
-      run_at: 'document_start',
-    }]);
-
-    webview.addContentScripts([{
-      name: 'postProcess',
-      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
-      css: {files: ['arc_support/playstore.css']},
-      js: {files: ['arc_support/playstore.js']},
-      run_at: 'document_end',
-    }]);
-
-    this.$.arcTosOverlayWebview.addContentScripts([{
-      name: 'postProcess',
-      matches: ['https://support.google.com/*'],
-      css: {files: ['arc_support/overlay.css']},
-      run_at: 'document_end',
-    }]);
-
-    webview.addEventListener('newwindow', (event) => {
-      event.preventDefault();
-      this.showArcTosOverlay(event.targetUrl);
-    });
+    this.preventNewWindows_(this.$.consolidatedConsentGoogleEulaWebview);
+    this.preventNewWindows_(this.$.consolidatedConsentCrosEulaWebview);
+    this.preventNewWindows_(this.$.consolidatedConsentArcTosWebview);
+    this.preventNewWindows_(this.$.consolidatedConsentPrivacyPolicyWebview);
   }
 
   maybeLoadWebviews_(isTosHidden, isArcEnabled) {
     if (!isTosHidden) {
+      this.initializeTosWebivews_();
       this.googleEulaLoading_ = true;
       this.crosEulaLoading_ = true;
       this.loadEulaWebview_(
@@ -375,8 +335,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     if (this.shouldShowArcTos_(isTosHidden, isArcEnabled)) {
       this.arcTosLoading_ = true;
       this.privacyPolicyLoading_ = true;
-      this.initializeArcTos_(this.countryCode_);
       this.loadArcTosWebview_(this.arcTosUrl_);
+      this.loadPrivacyPolicyWebview_(this.privacyPolicyUrl_);
     }
   }
 
@@ -395,46 +355,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   loadArcTosWebview_(online_tos_url) {
     const webview = this.$.consolidatedConsentArcTosWebview;
 
-    var loadFailureCallback = () => {
+    const loadFailureCallback = () => {
       this.setUIStep(ConsolidatedConsentScreenState.ERROR);
     };
 
-    var tosLoader = new WebViewLoader(
+    const tosLoader = new WebViewLoader(
         webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
-        loadFailureCallback, this.isDemo_ /* clear_anchors */,
-        false /* inject_css */);
+        loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
-  }
-
-  /**
-   * Returns a match pattern compatible version of termsOfServiceHostName_ by
-   * stripping the port number part of the hostname. During tests
-   * termsOfServiceHostName_ will contain a port number part.
-   * @return {string}
-   * @private
-   */
-  getArcTosHostNameForMatchPattern_() {
-    return this.arcTosHostName_.replace(/:[0-9]+/, '');
-  }
-
-  /**
-   * Returns current language that can be updated in OOBE flow. If OOBE flow
-   * does not exist then use navigator.language.
-   * @private
-   */
-  getCurrentLanguage_() {
-    const LANGUAGE_LIST_ID = 'languageList';
-    if (loadTimeData.valueExists(LANGUAGE_LIST_ID)) {
-      var languageList = /** @type {!Array<OobeTypes.LanguageDsc>} */ (
-          loadTimeData.getValue(LANGUAGE_LIST_ID));
-      if (languageList) {
-        var language = getSelectedValue(languageList);
-        if (language) {
-          return language;
-        }
-      }
-    }
-    return navigator.language;
   }
 
   loadPrivacyPolicyWebview_(online_tos_url) {
@@ -449,8 +377,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     var tosLoader = new WebViewLoader(
         webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
-        loadFailureCallback, this.isDemo_ /* clear_anchors */,
-        false /* inject_css */);
+        loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
   }
 
@@ -474,22 +401,10 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
   onArcTosContentLoad_() {
     const webview = this.$.consolidatedConsentArcTosWebview;
-    webview.executeScript({code: 'getPrivacyPolicyLink();'}, (results) => {
-      if (results && results.length == 1 && typeof results[0] == 'string') {
-        this.loadPrivacyPolicyWebview_(results[0]);
-      } else {
-        var defaultLink = 'https://www.google.com/intl/' +
-            this.getCurrentLanguage_() + '/policies/privacy/';
-        this.loadPrivacyPolicyWebview_(defaultLink);
-      }
-    });
-
     // In demo mode, consents are not recorded, so no need to store the ToS
     // Content.
     if (!this.isDemo_) {
-      // Process online ToS.
-      var getToSContent = {code: 'getToSContent();'};
-      webview.executeScript(getToSContent, (results) => {
+      webview.executeScript({code: 'document.body.innerHTML;'}, (results) => {
         if (!results || results.length != 1 || typeof results[0] !== 'string') {
           return;
         }
@@ -499,6 +414,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     this.arcTosLoading_ = false;
     this.maybeSetLoadedStep_();
+    this.$.consolidatedConsentArcTosWebview.insertCSS(
+        {code: 'header{display:none !important}'});
   }
 
   onPrivacyPolicyContentLoad_() {
@@ -760,27 +677,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       result,
       ConsolidatedConsentUserAction.MAX,
     ]);
-  }
-
-  /**
-   * Sets Play Store hostname url used to fetch terms of service for testing.
-   * @param {string} hostname hostname used to fetch terms of service.
-   * @suppress {missingProperties} as WebView type has no addContentScripts
-   */
-  setArcTosHostNameForTesting_(hostname) {
-    this.arcTosHostName_ = hostname;
-
-    // Enable loading content script 'arc_support/playstore.js' when fetching
-    // ToS from the test server.
-    var termsView = this.$.consolidatedConsentArcTosWebview;
-    termsView.removeContentScripts(['postProcess']);
-    termsView.addContentScripts([{
-      name: 'postProcess',
-      matches: [this.getArcTosHostNameForMatchPattern_() + '/*'],
-      css: {files: ['arc_support/playstore.css']},
-      js: {files: ['arc_support/playstore.js']},
-      run_at: 'document_end',
-    }]);
   }
 }
 

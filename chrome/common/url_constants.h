@@ -409,6 +409,12 @@ extern const char kGoogleEulaOnlineURLPath[];
 // The URL path to Online Chrome and Chrome OS terms of service.
 extern const char kCrosEulaOnlineURLPath[];
 
+// The URL path to online ARC++ terms of service.
+extern const char kArcTosOnlineURLPath[];
+
+// The URL path to online privacy policy.
+extern const char kPrivacyPolicyOnlineURLPath[];
+
 // The URL for the "learn more" link for TPM firmware update.
 extern const char kTPMFirmwareUpdateLearnMoreURL[];
 

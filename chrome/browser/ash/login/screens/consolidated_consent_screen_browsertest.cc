@@ -558,7 +558,6 @@ class ConsolidatedConsentScreenParametrizedTest
 // When TOS are accepted we should also record whether backup restores and
 // location services are enabled.
 IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
-  fake_arc_tos_.set_serve_tos_with_privacy_policy_footer(false);
   LoginAsRegularUser();
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();

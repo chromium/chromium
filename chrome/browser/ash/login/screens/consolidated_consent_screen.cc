@@ -63,26 +63,33 @@ using ::sync_pb::UserConsentTypes;
 constexpr const char kBackDemoButtonClicked[] = "back";
 constexpr const char kAcceptButtonClicked[] = "tos-accept";
 
-std::string GetGoogleEulaOnlineUrl() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kOobeEulaUrlForTests)) {
+enum class ToS { GOOGLE_EULA, CROS_EULA, ARC, PRIVACY_POLICY };
+
+static constexpr auto kTermsTypeToUrlAndSwitch =
+    base::MakeFixedFlatMap<ToS, std::pair<const char*, const char*>>(
+        {{ToS::GOOGLE_EULA,
+          {chrome::kGoogleEulaOnlineURLPath, switches::kOobeEulaUrlForTests}},
+         {ToS::CROS_EULA,
+          {chrome::kCrosEulaOnlineURLPath, switches::kOobeEulaUrlForTests}},
+         {ToS::ARC,
+          {chrome::kArcTosOnlineURLPath, switches::kArcTosHostForTests}},
+         {ToS::PRIVACY_POLICY,
+          {chrome::kPrivacyPolicyOnlineURLPath,
+           switches::kPrivacyPolicyHostForTests}}});
+
+std::string GetTosHost(ToS terms_type) {
+  const char* ash_switch = kTermsTypeToUrlAndSwitch.at(terms_type).second;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(ash_switch)) {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kOobeEulaUrlForTests);
+        ash_switch);
   }
 
-  return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
-                            g_browser_process->GetApplicationLocale().c_str());
-}
-
-std::string GetCrosEulaOnlineUrl() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kOobeEulaUrlForTests)) {
-    return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kOobeEulaUrlForTests);
+  const char* url_path = kTermsTypeToUrlAndSwitch.at(terms_type).first;
+  if (terms_type == ToS::GOOGLE_EULA || terms_type == ToS::CROS_EULA) {
+    return base::StringPrintf(
+        url_path, g_browser_process->GetApplicationLocale().c_str());
   }
-
-  return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
-                            g_browser_process->GetApplicationLocale().c_str());
+  return url_path;
 }
 
 ConsolidatedConsentScreen::RecoveryOptInResult GetRecoveryOptInResult(
@@ -207,13 +214,13 @@ void ConsolidatedConsentScreen::ShowImpl() {
   // hidden.
   data.Set("isTosHidden",
            chrome::enterprise_util::IsProfileAffiliated(profile));
-  // Country code is needed to load the ARC ToS.
-  data.Set("countryCode", base::CountryCodeForCurrentTimezone());
-  // URL for EULA, the URL should include the locale.
-  data.Set("googleEulaUrl", GetGoogleEulaOnlineUrl());
-  // URL for Chrome and ChromeOS additional terms of service, the URL should
-  // include the locale.
-  data.Set("crosEulaUrl", GetCrosEulaOnlineUrl());
+
+  // ToS URLs.
+  data.Set("googleEulaUrl", GetTosHost(ToS::GOOGLE_EULA));
+  data.Set("crosEulaUrl", GetTosHost(ToS::CROS_EULA));
+  data.Set("arcTosUrl", GetTosHost(ToS::ARC));
+  data.Set("privacyPolicyUrl", GetTosHost(ToS::PRIVACY_POLICY));
+
   // Option that controls if Recovery factor opt-in should be shown for the
   // user.
   data.Set("showRecoveryOption",

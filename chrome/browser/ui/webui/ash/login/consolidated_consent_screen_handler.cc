@@ -107,13 +107,6 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_ARC_TITLE);
   builder->Add("consolidatedConsentPrivacyTitle",
                IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kArcTosHostForTests)) {
-    builder->Add("consolidatedConsentArcTosHostNameForTesting",
-                 base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                     switches::kArcTosHostForTests));
-  }
 }
 
 void ConsolidatedConsentScreenHandler::Show(base::Value::Dict data) {

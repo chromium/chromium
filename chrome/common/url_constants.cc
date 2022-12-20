@@ -425,6 +425,12 @@ const char kGoogleEulaOnlineURLPath[] =
 const char kCrosEulaOnlineURLPath[] =
     "https://www.google.com/intl/%s/chrome/terms/";
 
+const char kArcTosOnlineURLPath[] =
+    "https://play.google.com/about/play-terms/embedded/";
+
+const char kPrivacyPolicyOnlineURLPath[] =
+    "https://policies.google.com/privacy/embedded";
+
 const char kOsSettingsSearchHelpURL[] =
     "https://support.google.com/chromebook/?p=settings_search_help";
 
