@@ -6,6 +6,7 @@ package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -106,6 +107,7 @@ public class StartSurfaceDelegate {
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
+     * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(@NonNull Activity activity,
@@ -129,7 +131,8 @@ public class StartSurfaceDelegate {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
             @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @NonNull OnClickListener tabSwitcherClickHandler) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
@@ -137,6 +140,6 @@ public class StartSurfaceDelegate {
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
                 multiWindowModeStateDispatcher, jankTracker, toolbarSupplier, crowButtonDelegate,
-                backPressManager, incognitoReauthControllerSupplier);
+                backPressManager, incognitoReauthControllerSupplier, tabSwitcherClickHandler);
     }
 }

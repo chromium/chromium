@@ -495,6 +495,23 @@ public class StartSurfaceTestUtils {
     }
 
     /**
+     * Click "more_tabs" to navigate to tab switcher surface.
+     * @param cta The ChromeTabbedActivity under test.
+     */
+    public static void clickMoreTabs(ChromeTabbedActivity cta) {
+        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
+        // percent of the view's area is displayed to the users. However, this view has negative
+        // margin which makes the percentage is less than 90.
+        // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> cta.findViewById(R.id.more_tabs).performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+    }
+
+    /**
      * Set MV tiles on start surface by setting suggestionsDeps.
      * @param suggestionsDeps The SuggestionsDependenciesRule under test.
      * @return The MostVisitedSites the test used.

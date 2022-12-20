@@ -51,6 +51,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SU
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -198,6 +199,8 @@ public class StartSurfaceMediatorUnitTest {
     private TemplateUrlService mTemplateUrlService;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock
+    private OnClickListener mTabSwitcherClickHandler;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -1754,7 +1757,7 @@ public class StartSurfaceMediatorUnitTest {
                 mStartSurfaceSupplier, hadWarmStart, new DummyJankTracker(),
                 mInitializeMVTilesRunnable, mParentTabSupplier, mLogoContainerView,
                 mBackPressManager, null /* feedPlaceholderParentView */,
-                mActivityLifecycleDispatcher);
+                mActivityLifecycleDispatcher, mTabSwitcherClickHandler);
     }
 
     private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {

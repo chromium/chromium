@@ -34,6 +34,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOL
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -208,6 +209,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     // The timestamp at which the Start Surface was last shown to the user.
     private long mLastShownTimeMs = LAST_SHOW_TIME_NOT_SET;
     private boolean mIsStartSurfaceRefactorEnabled;
+    private OnClickListener mTabSwitcherClickHandler;
 
     StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
             TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
@@ -219,7 +221,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             JankTracker jankTracker, Runnable initializeMVTilesRunnable,
             Supplier<Tab> parentTabSupplier, View logoContainerView,
             BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            OnClickListener tabSwitcherClickHandler) {
         mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabModelSelector = tabModelSelector;
@@ -246,6 +249,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mIsFeedGoneImprovementEnabled =
                 ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
+        mTabSwitcherClickHandler = tabSwitcherClickHandler;
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -1023,14 +1027,18 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     public void onClick(View v) {
         assert isHomepageShown();
 
-        if (mSecondaryTasksSurfacePropertyModel == null) {
-            TabSwitcher.Controller controller = mSecondaryTasksSurfaceInitializer.initialize();
-            assert mSecondaryTasksSurfacePropertyModel != null;
-            setSecondaryTasksSurfaceController(controller);
-        }
+        if (mIsStartSurfaceRefactorEnabled) {
+            mTabSwitcherClickHandler.onClick(v);
+        } else {
+            if (mSecondaryTasksSurfacePropertyModel == null) {
+                TabSwitcher.Controller controller = mSecondaryTasksSurfaceInitializer.initialize();
+                assert mSecondaryTasksSurfacePropertyModel != null;
+                setSecondaryTasksSurfaceController(controller);
+            }
 
+            setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        }
         RecordUserAction.record("StartSurface.SinglePane.MoreTabs");
-        setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
     }
 
     // StartSurface.OnTabSelectingListener

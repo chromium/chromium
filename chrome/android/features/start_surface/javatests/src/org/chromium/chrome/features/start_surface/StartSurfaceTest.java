@@ -197,7 +197,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.carousel_tab_switcher_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
 
-        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
+        StartSurfaceTestUtils.clickMoreTabs(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         waitForView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                 withId(R.id.tab_list_view)));
@@ -243,7 +243,7 @@ public class StartSurfaceTest {
         // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
         onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
 
-        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
+        StartSurfaceTestUtils.clickMoreTabs(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(VISIBLE)));
 
@@ -289,7 +289,7 @@ public class StartSurfaceTest {
         // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
         onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
 
-        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
+        StartSurfaceTestUtils.clickMoreTabs(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(VISIBLE)));
 

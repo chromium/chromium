@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -233,6 +234,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
+     * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -255,7 +257,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
             @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @NonNull OnClickListener tabSwitcherClickHandler) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -318,7 +321,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView,
-                mActivityLifecycleDispatcher);
+                mActivityLifecycleDispatcher, tabSwitcherClickHandler);
 
         mayUpdateLayoutParams(ApiCompatibilityUtils.isInMultiWindowMode(mActivity));
         startSurfaceOneshotSupplier.set(this);

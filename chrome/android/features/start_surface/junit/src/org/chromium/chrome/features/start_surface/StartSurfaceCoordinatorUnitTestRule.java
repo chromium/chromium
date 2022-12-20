@@ -284,7 +284,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 Mockito.mock(MenuOrKeyboardActionController.class),
                 new MultiWindowModeStateDispatcherImpl(mActivity), new DummyJankTracker(),
                 new ObservableSupplierImpl<>(), new CrowButtonDelegateImpl(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier);
+                new BackPressManager(), mIncognitoReauthControllerSupplier, null);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);
