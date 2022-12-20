@@ -7,11 +7,14 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 mojom("mojom") {
   sources = [
+    "eligibility_error.mojom",
     "os_support.mojom",
+    "registration_type.mojom",
     "source_registration_error.mojom",
     "trigger_registration_error.mojom",
   ]
   webui_module_path = "/"
+  generate_java = true
 }
 
 component("attribution_reporting") {
@@ -24,6 +27,8 @@ component("attribution_reporting") {
     "aggregation_keys.h",
     "bounded_list.h",
     "constants.h",
+    "eligibility.cc",
+    "eligibility.h",
     "event_trigger_data.cc",
     "event_trigger_data.h",
     "filters.cc",
@@ -64,6 +69,7 @@ source_set("unit_tests") {
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
     "bounded_list_unittest.cc",
+    "eligibility_unittest.cc",
     "event_trigger_data_unittest.cc",
     "filters_unittest.cc",
     "os_registration_unittest.cc",

@@ -2,10 +2,7 @@ specific_include_rules = {
   "ad_tracker_test\.cc": [
     "+base/run_loop.h",
   ],
-  "attribution_src_loader\.cc": [
-    "+components/attribution_reporting",
-  ],
-  "attribution_src_loader_test\.cc": [
+  "attribution_src_loader(\.cc|\.h|_test\.cc)": [
     "+components/attribution_reporting",
   ],
   "child_frame_compositing_helper\.h": [

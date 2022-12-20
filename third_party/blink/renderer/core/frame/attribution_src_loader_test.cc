@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -152,7 +153,7 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
 
   void RegisterDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      blink::mojom::AttributionRegistrationType) override {
+      attribution_reporting::mojom::RegistrationType) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 

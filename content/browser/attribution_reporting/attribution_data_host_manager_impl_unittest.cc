@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -52,10 +53,10 @@ namespace {
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerRegistration;
+using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using ::blink::mojom::AttributionNavigationType;
-using ::blink::mojom::AttributionRegistrationType;
 
 using AttributionFilters = ::attribution_reporting::Filters;
 
@@ -166,8 +167,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
-        /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -218,8 +218,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
-        /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
     SourceRegistration source_data(destination_origin);
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
@@ -292,7 +291,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
         destination_origin, /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        RegistrationType::kSourceOrTrigger);
 
     TriggerRegistration trigger_data;
     trigger_data.debug_key = 789;
@@ -350,7 +349,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
         destination_origin, /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        RegistrationType::kSourceOrTrigger);
 
     TriggerRegistration trigger_data;
 
@@ -423,8 +422,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
-        /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
     SourceRegistration source_data(destination_origin);
 
@@ -564,8 +562,7 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(), page_origin,
-        /*is_within_fenced_frame=*/false,
-        AttributionRegistrationType::kSourceOrTrigger);
+        /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
   }
 
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
@@ -574,9 +571,9 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceModeReceiverConnected_TriggerDelayed) {
-  constexpr AttributionRegistrationType kTestCases[] = {
-      AttributionRegistrationType::kSourceOrTrigger,
-      AttributionRegistrationType::kSource,
+  constexpr RegistrationType kTestCases[] = {
+      RegistrationType::kSourceOrTrigger,
+      RegistrationType::kSource,
   };
 
   for (auto registration_type : kTestCases) {
@@ -603,8 +600,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       data_host_manager_.RegisterDataHost(
           trigger_data_host_remote.BindNewPipeAndPassReceiver(),
           *SuitableOrigin::Deserialize("https://page2.example"),
-          /*is_within_fenced_frame=*/false,
-          AttributionRegistrationType::kSourceOrTrigger);
+          /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
       task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -649,13 +645,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       data_host_remote1.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false, AttributionRegistrationType::kTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote2;
   data_host_manager_.RegisterDataHost(
       data_host_remote2.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false, AttributionRegistrationType::kTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kTrigger);
 
   // Because there is no data host in source mode, this trigger should not be
   // delayed.
@@ -693,8 +689,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   // Because there is a connected data host in source mode, this trigger should
   // be delayed.
@@ -834,8 +829,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   // Because there is a connected data host in source mode, this trigger should
   // be delayed.
@@ -893,8 +887,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -940,8 +933,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -961,15 +953,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   source_data_host_remote.reset();
 
@@ -990,15 +980,13 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote1.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote2;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote2.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   auto reporting_origin = *SuitableOrigin::Deserialize("https://report.test");
 
@@ -1045,8 +1033,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -1096,15 +1083,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     trigger_data_host_remote->TriggerDataAvailable(reporting_origin,
@@ -1143,15 +1128,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -1185,15 +1168,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     trigger_data_host_remote->TriggerDataAvailable(reporting_origin,
@@ -1248,15 +1229,13 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
   data_host_manager_.RegisterDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page1.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
       trigger_data_host_remote.BindNewPipeAndPassReceiver(),
       *SuitableOrigin::Deserialize("https://page2.example"),
-      /*is_within_fenced_frame=*/false,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger);
 
   SourceRegistration source_data(
       *SuitableOrigin::Deserialize("https://dest.test"));
@@ -1397,8 +1376,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), page_origin,
-      /*is_within_fenced_frame=*/true,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/true, RegistrationType::kSourceOrTrigger);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -1424,8 +1402,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), destination_origin,
-      /*is_within_fenced_frame=*/true,
-      AttributionRegistrationType::kSourceOrTrigger);
+      /*is_within_fenced_frame=*/true, RegistrationType::kSourceOrTrigger);
 
   data_host_remote->TriggerDataAvailable(reporting_origin,
                                          TriggerRegistration());

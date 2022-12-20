@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -107,7 +108,7 @@ class MockAttributionHost : public AttributionHost {
       void,
       RegisterDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       blink::mojom::AttributionRegistrationType),
+       attribution_reporting::mojom::RegistrationType),
       (override));
 
   MOCK_METHOD(

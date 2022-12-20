@@ -313,6 +313,7 @@ component("core") {
     ":generated_settings_macros",
     "//build:chromeos_buildflags",
     "//components/attribution_reporting",
+    "//components/attribution_reporting:mojom_blink",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/power_scheduler",

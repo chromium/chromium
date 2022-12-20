@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -37,9 +38,9 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::blink::mojom::AttributionNavigationType;
-using ::blink::mojom::AttributionRegistrationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -100,7 +101,7 @@ constexpr size_t kMaxDelayedTriggers = 30;
 class AttributionDataHostManagerImpl::ReceiverContext {
  public:
   ReceiverContext(SuitableOrigin context_origin,
-                  AttributionRegistrationType registration_type,
+                  RegistrationType registration_type,
                   base::TimeTicks register_time,
                   bool is_within_fenced_frame,
                   absl::optional<AttributionInputEvent> input_event,
@@ -111,8 +112,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
         is_within_fenced_frame_(is_within_fenced_frame),
         input_event_(input_event),
         nav_type_(nav_type) {
-    DCHECK(!nav_type_ ||
-           registration_type_ == AttributionRegistrationType::kSource);
+    DCHECK(!nav_type_ || registration_type_ == RegistrationType::kSource);
   }
 
   ~ReceiverContext() = default;
@@ -125,12 +125,10 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   const SuitableOrigin& context_origin() const { return context_origin_; }
 
-  AttributionRegistrationType registration_type() const {
-    return registration_type_;
-  }
+  RegistrationType registration_type() const { return registration_type_; }
 
-  void set_registration_type(AttributionRegistrationType type) {
-    DCHECK_NE(type, AttributionRegistrationType::kSourceOrTrigger);
+  void set_registration_type(RegistrationType type) {
+    DCHECK_NE(type, RegistrationType::kSourceOrTrigger);
     registration_type_ = type;
   }
 
@@ -151,7 +149,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   // Logically const.
   SuitableOrigin context_origin_;
 
-  AttributionRegistrationType registration_type_;
+  RegistrationType registration_type_;
 
   size_t num_data_registered_ = 0;
 
@@ -233,7 +231,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     SuitableOrigin context_origin,
     bool is_within_fenced_frame,
-    AttributionRegistrationType registration_type) {
+    RegistrationType registration_type) {
   receivers_.Add(this, std::move(data_host),
                  ReceiverContext(std::move(context_origin), registration_type,
                                  /*register_time=*/base::TimeTicks::Now(),
@@ -242,11 +240,11 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
                                  /*nav_type=*/absl::nullopt));
 
   switch (registration_type) {
-    case AttributionRegistrationType::kSourceOrTrigger:
-    case AttributionRegistrationType::kSource:
+    case RegistrationType::kSourceOrTrigger:
+    case RegistrationType::kSource:
       data_hosts_in_source_mode_++;
       break;
-    case AttributionRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       break;
   }
 }
@@ -320,12 +318,11 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 
   if (it != navigation_data_host_map_.end()) {
     // Source navigations need to navigate the primary main frame to be valid.
-    receivers_.Add(
-        this, std::move(it->second.data_host),
-        ReceiverContext(source_origin, AttributionRegistrationType::kSource,
-                        it->second.register_time,
-                        /*is_within_fenced_frame=*/false,
-                        it->second.input_event, nav_type));
+    receivers_.Add(this, std::move(it->second.data_host),
+                   ReceiverContext(source_origin, RegistrationType::kSource,
+                                   it->second.register_time,
+                                   /*is_within_fenced_frame=*/false,
+                                   it->second.input_event, nav_type));
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -385,13 +382,13 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   ReceiverContext& context = receivers_.current_context();
 
-  if (context.registration_type() == AttributionRegistrationType::kTrigger) {
+  if (context.registration_type() == RegistrationType::kTrigger) {
     RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for sources.");
     return;
   }
 
-  context.set_registration_type(AttributionRegistrationType::kSource);
+  context.set_registration_type(RegistrationType::kSource);
 
   RecordSourceDataHandleStatus(DataHandleStatus::kSuccess);
 
@@ -421,15 +418,15 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   ReceiverContext& context = receivers_.current_context();
 
   switch (context.registration_type()) {
-    case AttributionRegistrationType::kSource:
+    case RegistrationType::kSource:
       RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
       mojo::ReportBadMessage("AttributionDataHost: Not eligible for triggers.");
       return;
-    case AttributionRegistrationType::kSourceOrTrigger:
+    case RegistrationType::kSourceOrTrigger:
       OnSourceEligibleDataHostFinished(context.register_time());
-      context.set_registration_type(AttributionRegistrationType::kTrigger);
+      context.set_registration_type(RegistrationType::kTrigger);
       break;
-    case AttributionRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       break;
   }
 
@@ -504,14 +501,14 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
 
   const char* histogram_name = nullptr;
   switch (context.registration_type()) {
-    case AttributionRegistrationType::kSourceOrTrigger:
+    case RegistrationType::kSourceOrTrigger:
       OnSourceEligibleDataHostFinished(context.register_time());
       DCHECK_EQ(context.num_data_registered(), 0u);
       return;
-    case AttributionRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       histogram_name = "Conversions.RegisteredTriggersPerDataHost";
       break;
-    case AttributionRegistrationType::kSource:
+    case RegistrationType::kSource:
       OnSourceEligibleDataHostFinished(context.register_time());
       histogram_name = "Conversions.RegisteredSourcesPerDataHost";
       break;

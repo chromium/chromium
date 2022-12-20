@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -35,11 +35,6 @@ struct Impression;
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
-  static constexpr const char* kAttributionEligibleEventSource = "event-source";
-  static constexpr const char* kAttributionEligibleNavigationSource =
-      "navigation-source";
-  static constexpr const char* kAttributionEligibleTrigger = "trigger";
-
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader& operator=(const AttributionSrcLoader&) = delete;
@@ -95,7 +90,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   ResourceClient* DoRegistration(
       const KURL& src_url,
-      mojom::blink::AttributionRegistrationType,
+      attribution_reporting::mojom::blink::RegistrationType,
       absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
@@ -111,14 +106,14 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* CreateAndSendRequest(
       const KURL& src_url,
       HTMLElement* element,
-      mojom::blink::AttributionRegistrationType,
+      attribution_reporting::mojom::blink::RegistrationType,
       absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
 
   void RegisterAttributionHeaders(
-      mojom::blink::AttributionRegistrationType,
+      attribution_reporting::mojom::blink::RegistrationType,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AtomicString& source_json,
       const AtomicString& trigger_json,
