@@ -135,10 +135,16 @@ suite('HotspotSubpageTest', function() {
         hotspotSubpage.shadowRoot.querySelector('#hotspotToggleText');
     const enableToggle =
         hotspotSubpage.shadowRoot.querySelector('#enableHotspotToggle');
+    const hotspotNameElement =
+        hotspotSubpage.shadowRoot.querySelector('#hotspotSSID');
+    const connectedClientCount =
+        hotspotSubpage.shadowRoot.querySelector('#connectedDeviceCount');
 
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOff'),
         hotspotOnOffLabel.textContent.trim());
+    assertEquals('test_ssid', hotspotNameElement.textContent.trim());
+    assertEquals('0', connectedClientCount.textContent.trim());
     assertFalse(enableToggle.checked);
 
     // Simulate turning on hotspot.
@@ -180,5 +186,20 @@ suite('HotspotSubpageTest', function() {
         hotspotSubpage.i18n('hotspotSummaryStateOff'),
         hotspotOnOffLabel.textContent.trim());
     assertFalse(enableToggle.checked);
+
+    hotspotConfig.setFakeHotspotActiveClientCount(6);
+    await flushAsync();
+    assertEquals('6', connectedClientCount.textContent.trim());
+
+    hotspotConfig.setFakeHotspotConfig({
+      ssid: 'new_ssid',
+    });
+    await flushAsync();
+    assertEquals('new_ssid', hotspotNameElement.textContent.trim());
+
+    // Verifies UI with null hotspot config
+    hotspotConfig.setFakeHotspotConfig(null);
+    await flushAsync();
+    assertEquals('', hotspotNameElement.textContent.trim());
   });
 });

@@ -29,4 +29,26 @@
       aria-label="$i18n{hotspotToggleA11yLabel}">
   </cr-toggle>
 </div>
+<div id="hotspotConfigurationRow" class="settings-box two-line">
+  <div class="link-wrapper">
+    <div id="hotspotSSIDLabel" class="settings-box-text">
+        $i18n{hotspotNameLabel}
+      <div id="hotspotSSID" class="secondary">
+          [[getHotspotConfigSSID_(hotspotInfo)]]
+      </div>
+    </div>
+  </div>
+  <cr-button id="configureButton">
+    $i18n{hotspotConfigureButton}
+  </cr-button>
+</div>
+<div id="connectedDeviceCountRow"
+    class="settings-box settings-box-text two-line single-column stretch">
+  <div id="connectedDeviceCountLabel">
+      $i18n{hotspotConnectedDeviceCountLabel}
+  </div>
+  <div id="connectedDeviceCount" class="secondary">
+      [[getHotspotConnectedDeviceCount_(hotspotInfo.clientCount)]]
+  </div>
+</div>
 <div class="separator-line"></div>

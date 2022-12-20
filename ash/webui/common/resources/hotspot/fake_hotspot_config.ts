@@ -53,6 +53,14 @@ export class FakeHotspotConfig implements CrosHotspotConfigInterface {
     this.notifyHotspotInfoUpdated_();
   }
 
+  // Update the hotspot connected client count and notify observers.
+  setFakeHotspotActiveClientCount(clientCount: number): void {
+    assert(this.hotspotInfo_);
+    this.hotspotInfo_.clientCount = clientCount;
+    this.hotspotInfo_ = {...this.hotspotInfo_};
+    this.notifyHotspotInfoUpdated_();
+  }
+
   // Update the hotspot config and notify observers.
   setFakeHotspotConfig(config: HotspotConfig): void {
     assert(this.hotspotInfo_);

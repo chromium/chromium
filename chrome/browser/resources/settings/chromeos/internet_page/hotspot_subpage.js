@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {HotspotAllowStatus, HotspotControlResult, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -125,6 +125,22 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     getAnnouncerInstance().announce(
         this.isHotspotToggleOn_ ? this.i18n('hotspotEnabledA11yLabel') :
                                   this.i18n('hotspotDisabledA11yLabel'));
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getHotspotConfigSSID_() {
+    return this.hotspotInfo?.config?.ssid || '';
+  }
+
+  /**
+   * @return {number}
+   * @private
+   */
+  getHotspotConnectedDeviceCount_() {
+    return this.hotspotInfo?.clientCount || 0;
   }
 }
 

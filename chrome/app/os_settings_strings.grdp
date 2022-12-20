@@ -2903,6 +2903,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_DISABLED_A11Y_LABEL" desc="Accessibility announcement when Hotspot is disabled.">
     Hotspot disabled
   </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_NAME_LABEL" desc="Label for showing the hotspot name in the hotspot subpage.">
+    Hotspot name
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIGURE_BUTTON" desc="Text for button that opens the hotspot configuration dialog.">
+    Configure
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONNECTED_DEVICE_COUNT_LABEL" desc="Label for showing the current connected device count in the hotspot subpage.">
+    Devices currently connected to hotspot
+  </message>
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORKS" desc="Name of the settings page which displays a list of Wi-Fi networks which the user can choose to connect to.">
     Wi-Fi networks
   </message>
