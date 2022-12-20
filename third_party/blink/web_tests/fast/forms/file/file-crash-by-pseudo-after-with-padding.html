@@ -30,6 +30,15 @@
   margin-left: -100000000%;
   padding-right: 2000000000%;
 }
+
+.c8 {
+  zoom: 0.1;
+}
+.c8::after {
+  border-style: ridge;
+  content: "1";
+  padding-left: 100%;
+}
 </style>
 <input type="file">
 <script>
@@ -54,4 +63,11 @@ test(() => {
   fileInput.offsetWidth;
   // Ok if no crash.
 }, ':after with huge negative margin should not cause a crash.');
+
+// crbug.com/1279061
+test(() => {
+  const fileInput = document.querySelector('input');
+  fileInput.className = 'c8';
+  fileInput.offsetWidth;
+}, '::after with padding and border should not cause a crash.');
 </script>
