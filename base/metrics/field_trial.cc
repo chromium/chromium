@@ -202,7 +202,12 @@ bool DeserializeGUIDFromStringPieces(StringPiece first,
   if (!StringToUint64(first, &high) || !StringToUint64(second, &low))
     return false;
 
-  *guid = UnguessableToken::Deserialize(high, low);
+  UnguessableToken token = UnguessableToken::Deserialize(high, low);
+  if (token.is_empty()) {
+    return false;
+  }
+
+  *guid = std::move(token);
   return true;
 }
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
