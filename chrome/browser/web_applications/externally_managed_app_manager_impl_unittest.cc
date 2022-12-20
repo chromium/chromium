@@ -281,7 +281,6 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
         : ExternallyManagedAppInstallTask(
               profile,
               test_url_loader,
-              externally_managed_app_manager_impl->registrar(),
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
               externally_managed_app_manager_impl->command_scheduler(),

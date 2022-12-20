@@ -926,6 +926,7 @@ TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
 TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   if (ShouldSkipPWASpecificTest())
     return;
+
   // Simulate two policy apps and a regular app that were installed in the
   // previous session.
   SimulatePreviouslyInstalledApp(GURL(kWindowedUrl),

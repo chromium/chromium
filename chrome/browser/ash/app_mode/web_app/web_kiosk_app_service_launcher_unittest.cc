@@ -103,9 +103,8 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     externally_managed_app_manager().SetSubsystems(
-        &app_registrar(), /*ui_manager=*/nullptr,
-        /*finalizer=*/nullptr, /*command_manager=*/nullptr,
-        /*sync_bridge=*/nullptr);
+        /*ui_manager=*/nullptr, /*finalizer=*/nullptr,
+        /*command_scheduler=*/nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const web_app::ExternalInstallOptions& install_options)
