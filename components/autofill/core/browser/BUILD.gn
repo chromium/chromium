@@ -269,6 +269,8 @@ static_library("browser") {
     "metrics/form_events/form_event_logger_base.cc",
     "metrics/form_events/form_event_logger_base.h",
     "metrics/form_events/form_events.h",
+    "metrics/payments/better_auth_metrics.cc",
+    "metrics/payments/better_auth_metrics.h",
     "metrics/payments/card_metadata_metrics.cc",
     "metrics/payments/card_metadata_metrics.h",
     "metrics/payments/card_unmask_authentication_metrics.cc",

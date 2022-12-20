@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -172,7 +173,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
   is_user_verifiable_ = is_user_verifiable;
 
   if (is_user_verifiable_called_timestamp_.has_value()) {
-    AutofillMetrics::LogUserVerifiabilityCheckDuration(
+    autofill_metrics::LogUserVerifiabilityCheckDuration(
         AutofillTickClock::NowTicks() -
         is_user_verifiable_called_timestamp_.value());
   }
@@ -188,7 +189,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        weak_ptr_factory_.GetWeakPtr()),
         personal_data_manager_->app_locale());
-    AutofillMetrics::LogCardUnmaskPreflightCalled();
+    autofill_metrics::LogCardUnmaskPreflightCalled();
   }
 }
 
@@ -197,7 +198,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
     payments::PaymentsClient::UnmaskDetails& unmask_details) {
   // Log latency for preflight call.
   if (preflight_call_timestamp_.has_value()) {
-    AutofillMetrics::LogCardUnmaskPreflightDuration(
+    autofill_metrics::LogCardUnmaskPreflightDuration(
         AutofillTickClock::NowTicks() - *preflight_call_timestamp_);
   }
 
@@ -289,8 +290,8 @@ void CreditCardAccessManager::FetchCreditCard(
 #if !BUILDFLAG(IS_IOS)
     // Latency metrics should only be logged if the user is verifiable.
     if (is_user_verifiable_.value_or(false)) {
-      AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
-          AutofillMetrics::PreflightCallEvent::kDidNotChooseMaskedCard,
+      autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
+          autofill_metrics::PreflightCallEvent::kDidNotChooseMaskedCard,
           GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
     }
 #endif
@@ -451,8 +452,8 @@ void CreditCardAccessManager::Authenticate(
   // actually used.
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kFido: {
-      AutofillMetrics::LogCardUnmaskTypeDecision(
-          AutofillMetrics::CardUnmaskTypeDecisionMetric::kFidoOnly);
+      autofill_metrics::LogCardUnmaskTypeDecision(
+          autofill_metrics::CardUnmaskTypeDecisionMetric::kFidoOnly);
 #if BUILDFLAG(IS_IOS)
       NOTREACHED();
 #else
@@ -485,8 +486,8 @@ void CreditCardAccessManager::Authenticate(
       break;
     }
     case UnmaskAuthFlowType::kCvcThenFido:
-      AutofillMetrics::LogCardUnmaskTypeDecision(
-          AutofillMetrics::CardUnmaskTypeDecisionMetric::kCvcThenFido);
+      autofill_metrics::LogCardUnmaskTypeDecision(
+          autofill_metrics::CardUnmaskTypeDecisionMetric::kCvcThenFido);
       ABSL_FALLTHROUGH_INTENDED;
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido: {
@@ -926,11 +927,11 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
   // Latency metrics should only be logged if the user is verifiable.
 #if !BUILDFLAG(IS_IOS)
   if (is_user_verifiable_.value_or(false)) {
-    AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
+    autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
         get_unmask_details_returned
-            ? AutofillMetrics::PreflightCallEvent::
+            ? autofill_metrics::PreflightCallEvent::
                   kPreflightCallReturnedBeforeCardChosen
-            : AutofillMetrics::PreflightCallEvent::
+            : autofill_metrics::PreflightCallEvent::
                   kCardChosenBeforePreflightCallReturned,
         GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
   }
@@ -1099,10 +1100,10 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
     bool get_unmask_details_returned) {
   // If the user had to wait for Unmask Details, log the latency.
   if (card_selected_without_unmask_details_timestamp_.has_value()) {
-    AutofillMetrics::LogUserPerceivedLatencyOnCardSelectionDuration(
+    autofill_metrics::LogUserPerceivedLatencyOnCardSelectionDuration(
         AutofillTickClock::NowTicks() -
         card_selected_without_unmask_details_timestamp_.value());
-    AutofillMetrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
+    autofill_metrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
         /*did_time_out=*/!get_unmask_details_returned);
     card_selected_without_unmask_details_timestamp_ = absl::nullopt;
   }

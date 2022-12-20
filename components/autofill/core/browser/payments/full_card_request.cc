@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -268,7 +269,7 @@ void FullCardRequest::OnDidGetRealPan(
         AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
         card_type);
   } else if (request_->fido_assertion_info.has_value()) {
-    AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
+    autofill_metrics::LogCardUnmaskDurationAfterWebauthn(
         AutofillTickClock::NowTicks() - real_pan_request_timestamp_, result,
         card_type);
   }

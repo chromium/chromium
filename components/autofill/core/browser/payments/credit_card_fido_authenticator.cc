@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/fido_authentication_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
@@ -226,7 +227,7 @@ void CreditCardFIDOAuthenticator::OnWebauthnOfferDialogRequested(
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  AutofillMetrics::LogWebauthnOptInPromoShown(
+  autofill_metrics::LogWebauthnOptInPromoShown(
       /*is_checkout_flow=*/!card_authorization_token_.empty());
 
   // At this point, it must be the case that the user is opted-out, otherwise
@@ -248,12 +249,12 @@ void CreditCardFIDOAuthenticator::OnWebauthnOfferDialogUserResponse(
   } else {
     // If user declined, log user decision. User may have initially accepted the
     // dialog, but then chose to cancel while the challenge was being fetched.
-    AutofillMetrics::LogWebauthnOptInPromoUserDecision(
+    autofill_metrics::LogWebauthnOptInPromoUserDecision(
         /*is_checkout_flow=*/!card_authorization_token_.empty(),
         current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW
-            ? AutofillMetrics::WebauthnOptInPromoUserDecisionMetric::
+            ? autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedAfterAccepting
-            : AutofillMetrics::WebauthnOptInPromoUserDecisionMetric::
+            : autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedImmediately);
     payments_client_->CancelRequest();
     card_authorization_token_ = std::string();
@@ -288,9 +289,9 @@ void CreditCardFIDOAuthenticator::GetAssertion(
     if (autofill_client_->CloseWebauthnDialog()) {
       // Now that the dialog has closed and will proceed to a WebAuthn prompt,
       // the user must have accepted the dialog without cancelling.
-      AutofillMetrics::LogWebauthnOptInPromoUserDecision(
+      autofill_metrics::LogWebauthnOptInPromoUserDecision(
           /*is_checkout_flow=*/!card_authorization_token_.empty(),
-          AutofillMetrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
+          autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
     } else {
       current_flow_ = NONE_FLOW;
       return;
@@ -313,9 +314,9 @@ void CreditCardFIDOAuthenticator::MakeCredential(
   if (autofill_client_->CloseWebauthnDialog()) {
     // Now that the dialog has closed and will proceed to a WebAuthn prompt,
     // the user must have accepted the dialog without cancelling.
-    AutofillMetrics::LogWebauthnOptInPromoUserDecision(
+    autofill_metrics::LogWebauthnOptInPromoUserDecision(
         /*is_checkout_flow=*/!card_authorization_token_.empty(),
-        AutofillMetrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
+        autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
   } else {
     current_flow_ = NONE_FLOW;
     return;
@@ -360,7 +361,7 @@ void CreditCardFIDOAuthenticator::OptChange(
   // If |authenticator_response| is not set, that means the user was fetching a
   // challenge, in which case |card_authorization_token_| will be required for
   // the subsequent OptChange call.
-  AutofillMetrics::WebauthnOptInParameters opt_change_metric;
+  autofill_metrics::WebauthnOptInParameters opt_change_metric;
   bool is_checkout_flow = !card_authorization_token_.empty();
   if (authenticator_response.is_dict()) {
     request_details.fido_authenticator_response =
@@ -368,15 +369,15 @@ void CreditCardFIDOAuthenticator::OptChange(
     opt_change_metric =
         request_details.fido_authenticator_response->FindKey(
             "fido_assertion_info")
-            ? AutofillMetrics::WebauthnOptInParameters::kWithRequestChallenge
-            : AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge;
+            ? autofill_metrics::WebauthnOptInParameters::kWithRequestChallenge
+            : autofill_metrics::WebauthnOptInParameters::kWithCreationChallenge;
     if (!card_authorization_token_.empty()) {
       request_details.card_authorization_token = card_authorization_token_;
       card_authorization_token_ = std::string();
     }
   } else {
     opt_change_metric =
-        AutofillMetrics::WebauthnOptInParameters::kFetchingChallenge;
+        autofill_metrics::WebauthnOptInParameters::kFetchingChallenge;
   }
   payments_client_->OptChange(
       request_details,
@@ -386,7 +387,7 @@ void CreditCardFIDOAuthenticator::OptChange(
   // Logging call if user was attempting to change their opt-in state.
   if (current_flow_ != FOLLOWUP_AFTER_CVC_AUTH_FLOW) {
     bool request_to_opt_in = (current_flow_ != OPT_OUT_FLOW);
-    AutofillMetrics::LogWebauthnOptChangeCalled(
+    autofill_metrics::LogWebauthnOptChangeCalled(
         request_to_opt_in, is_checkout_flow, opt_change_metric);
   }
 }
@@ -708,18 +709,18 @@ bool CreditCardFIDOAuthenticator::IsValidCreationOptions(
 
 void CreditCardFIDOAuthenticator::LogWebauthnResult(
     blink::mojom::AuthenticatorStatus status) {
-  AutofillMetrics::WebauthnFlowEvent event;
+  autofill_metrics::WebauthnFlowEvent event;
   switch (current_flow_) {
     case AUTHENTICATION_FLOW:
-      event = AutofillMetrics::WebauthnFlowEvent::kImmediateAuthentication;
+      event = autofill_metrics::WebauthnFlowEvent::kImmediateAuthentication;
       break;
     case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
-      event = AutofillMetrics::WebauthnFlowEvent::kAuthenticationAfterCvc;
+      event = autofill_metrics::WebauthnFlowEvent::kAuthenticationAfterCvc;
       break;
     case OPT_IN_WITH_CHALLENGE_FLOW:
       event = card_authorization_token_.empty()
-                  ? AutofillMetrics::WebauthnFlowEvent::kSettingsPageOptIn
-                  : AutofillMetrics::WebauthnFlowEvent::kCheckoutOptIn;
+                  ? autofill_metrics::WebauthnFlowEvent::kSettingsPageOptIn
+                  : autofill_metrics::WebauthnFlowEvent::kCheckoutOptIn;
       break;
     default:
       NOTREACHED();
@@ -727,19 +728,19 @@ void CreditCardFIDOAuthenticator::LogWebauthnResult(
   }
 
   // TODO(crbug.com/949269): Add metrics for revoked pending WebAuthn requests.
-  AutofillMetrics::WebauthnResultMetric metric;
+  autofill_metrics::WebauthnResultMetric metric;
   switch (status) {
     case blink::mojom::AuthenticatorStatus::SUCCESS:
-      metric = AutofillMetrics::WebauthnResultMetric::kSuccess;
+      metric = autofill_metrics::WebauthnResultMetric::kSuccess;
       break;
     case blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR:
-      metric = AutofillMetrics::WebauthnResultMetric::kNotAllowedError;
+      metric = autofill_metrics::WebauthnResultMetric::kNotAllowedError;
       break;
     default:
-      metric = AutofillMetrics::WebauthnResultMetric::kOtherError;
+      metric = autofill_metrics::WebauthnResultMetric::kOtherError;
       break;
   }
-  AutofillMetrics::LogWebauthnResult(event, metric);
+  autofill_metrics::LogWebauthnResult(event, metric);
 }
 
 void CreditCardFIDOAuthenticator::UpdateUserPref() {

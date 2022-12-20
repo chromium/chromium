@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
@@ -506,7 +507,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_PaymentsResponseError) {
   EXPECT_FALSE(fido_authenticator_->IsUserOptedIn());
   histogram_tester.ExpectUniqueSample(
       histogram_name,
-      AutofillMetrics::WebauthnOptInParameters::kFetchingChallenge, 1);
+      autofill_metrics::WebauthnOptInParameters::kFetchingChallenge, 1);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_Success) {
@@ -528,7 +529,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_Success) {
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
   histogram_tester.ExpectUniqueSample(
       histogram_name,
-      AutofillMetrics::WebauthnOptInParameters::kFetchingChallenge, 1);
+      autofill_metrics::WebauthnOptInParameters::kFetchingChallenge, 1);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, Register_BadCreationOptions) {
@@ -584,7 +585,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, Register_Success) {
 
   histogram_tester.ExpectUniqueSample(
       histogram_name,
-      AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
+      autofill_metrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest,
@@ -618,10 +619,10 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   histogram_tester.ExpectTotalCount(histogram_name, 2);
   histogram_tester.ExpectBucketCount(
       histogram_name,
-      AutofillMetrics::WebauthnOptInParameters::kFetchingChallenge, 1);
+      autofill_metrics::WebauthnOptInParameters::kFetchingChallenge, 1);
   histogram_tester.ExpectBucketCount(
       histogram_name,
-      AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
+      autofill_metrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
