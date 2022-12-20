@@ -3677,7 +3677,7 @@
   {
     "name": "feed-background-refresh-ios",
     "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "feed-close-refresh",
