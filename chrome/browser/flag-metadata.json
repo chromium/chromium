@@ -4354,11 +4354,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "keyboard-based-display-arrangement-in-settings",
-    "owners": [ "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 118
-  },
-  {
     "name": "keyboard-shortcuts-menu",
     "owners": [ "lpromero", "bling-flags@google.com" ],
     "expiry_milestone": 112
