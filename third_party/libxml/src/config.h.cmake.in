@@ -150,9 +150,6 @@
 /* Type cast for the send() function 2nd arg */
 #cmakedefine SEND_ARG2_CAST @SEND_ARG2_CAST@
 
-/* Define to 1 if you have the ANSI C header files. */
-#cmakedefine STDC_HEADERS 1
-
 /* Support for IPv6 */
 #cmakedefine SUPPORT_IP6 1
 

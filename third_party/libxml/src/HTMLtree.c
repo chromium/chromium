@@ -299,7 +299,7 @@ create:
  * output as <option selected>, as per XSLT 1.0 16.2 "HTML Output Method"
  *
  */
-static const char* htmlBooleanAttrs[] = {
+static const char* const htmlBooleanAttrs[] = {
   "checked", "compact", "declare", "defer", "disabled", "ismap",
   "multiple", "nohref", "noresize", "noshade", "nowrap", "readonly",
   "selected", NULL

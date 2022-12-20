@@ -2153,10 +2153,10 @@ fdParseTest(const char *filename, const char *result, const char *err,
              int options) {
     xmlDocPtr doc;
     const char *base = NULL;
-    int size, res = 0;
+    int size, res = 0, fd;
 
     nb_tests++;
-    int fd = open(filename, RD_FLAGS);
+    fd = open(filename, RD_FLAGS);
 #ifdef LIBXML_HTML_ENABLED
     if (options & XML_PARSE_HTML) {
         doc = htmlReadFd(fd, filename, NULL, options);
@@ -2619,23 +2619,24 @@ xptrDocTest(const char *filename,
     glob_t globbuf;
     size_t i;
     int ret = 0, res;
+    const char *subdir = options == -1 ? "xptr-xp1" : "xptr";
 
     xpathDocument = xmlReadFile(filename, NULL,
-                                options | XML_PARSE_DTDATTR | XML_PARSE_NOENT);
+                                XML_PARSE_DTDATTR | XML_PARSE_NOENT);
     if (xpathDocument == NULL) {
         fprintf(stderr, "Failed to load %s\n", filename);
 	return(-1);
     }
 
-    res = snprintf(pattern, 499, "./test/XPath/xptr/%s*",
-            baseFilename(filename));
+    res = snprintf(pattern, 499, "./test/XPath/%s/%s*",
+            subdir, baseFilename(filename));
     if (res >= 499)
         pattern[499] = 0;
     globbuf.gl_offs = 0;
     glob(pattern, GLOB_DOOFFS, NULL, &globbuf);
     for (i = 0;i < globbuf.gl_pathc;i++) {
-        res = snprintf(result, 499, "result/XPath/xptr/%s",
-	         baseFilename(globbuf.gl_pathv[i]));
+        res = snprintf(result, 499, "result/XPath/%s/%s",
+	         subdir, baseFilename(globbuf.gl_pathv[i]));
         if (res >= 499)
             result[499] = 0;
 	res = xpathCommonTest(globbuf.gl_pathv[i], &result[0], 1, 0);
@@ -4530,6 +4531,11 @@ testDesc testDescriptions[] = {
 #ifdef LIBXML_XPTR_ENABLED
     { "XPointer document queries regression tests" ,
       xptrDocTest, "./test/XPath/docs/*", NULL, NULL, NULL,
+      -1 },
+#endif
+#ifdef LIBXML_XPTR_LOCS_ENABLED
+    { "XPointer xpointer() queries regression tests" ,
+      xptrDocTest, "./test/XPath/docs/*", NULL, NULL, NULL,
       0 },
 #endif
 #ifdef LIBXML_VALID_ENABLED
@@ -4782,6 +4788,6 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     fprintf(stderr, "runtest requires output to be enabled in libxml2\n");
-    return(1);
+    return(0);
 }
 #endif

@@ -99,7 +99,7 @@ at parse time or later once the document has been modified.
 
 mkdir py3doc
 cp doc/*.py py3doc
-sed -i 's|#!/usr/bin/python |#!%{__python3} |' py3doc/*.py
+sed -i 's|#!/usr/bin/env python|#!/usr/bin/env %{__python3}|' py3doc/*.py
 
 %build
 %configure

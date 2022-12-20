@@ -248,6 +248,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #endif
 
 /**
+ * LIBXML_XPTR_LOCS_ENABLED:
+ *
+ * Whether support for XPointer locations is configured in
+ */
+#if 0
+#define LIBXML_XPTR_LOCS_ENABLED
+#endif
+
+/**
  * LIBXML_XINCLUDE_ENABLED:
  *
  * Whether XInclude is configured in

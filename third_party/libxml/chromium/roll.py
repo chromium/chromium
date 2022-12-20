@@ -113,6 +113,7 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-valid', 'valid=no'),
     ('--without-xinclude', 'xinclude=no'),
     ('--without-xptr', 'xptr=no'),
+    ('--without-xptr-locs', 'xptr_locs=no'),
     ('--without-zlib', 'zlib=no'),
 ]
 
