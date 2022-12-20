@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
@@ -24,11 +26,6 @@ const char kSymmetricKey[] = "symmetric key";
 const char kResponderAuthMessage[] = "responder_auth_message";
 const SecureContext::ProtocolVersion kProtocolVersion =
     SecureContext::PROTOCOL_VERSION_THREE_ONE;
-
-// Callback saving |result| to |result_out|.
-void SaveResultEncode(std::string* result_out, const std::string& result) {
-  *result_out = result;
-}
 
 // Callback saving |result| to |result_out|.
 void SaveResultDecode(std::list<std::string>* result_out_list,
@@ -67,6 +64,9 @@ class SecureChannelDeviceToDeviceSecureContextTest : public testing::Test {
             kProtocolVersion) {}
 
   DeviceToDeviceSecureContext secure_context_;
+
+ private:
+  base::test::SingleThreadTaskEnvironment env_;
 };
 
 TEST_F(SecureChannelDeviceToDeviceSecureContextTest, GetProperties) {
@@ -76,9 +76,9 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, GetProperties) {
 
 TEST_F(SecureChannelDeviceToDeviceSecureContextTest, CheckEncodedHeader) {
   std::string message = "encrypt this message";
-  std::string encoded_message;
-  secure_context_.Encode(message,
-                         base::BindOnce(&SaveResultEncode, &encoded_message));
+  base::test::TestFuture<const std::string&> future;
+  secure_context_.Encode(message, future.GetCallback());
+  std::string encoded_message = future.Take();
 
   securemessage::SecureMessage secure_message;
   ASSERT_TRUE(secure_message.ParseFromString(encoded_message));
@@ -118,9 +118,9 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, EncodeAndDecode) {
 
   // Pass some messages between the two secure contexts.
   for (int i = 0; i < 3; ++i) {
-    std::string encoded_message;
-    secure_context_.Encode(message,
-                           base::BindOnce(&SaveResultEncode, &encoded_message));
+    base::test::TestFuture<const std::string&> future;
+    secure_context_.Encode(message, future.GetCallback());
+    std::string encoded_message = future.Take();
     EXPECT_NE(message, encoded_message);
 
     std::list<std::string> decoded_messages;
@@ -143,8 +143,9 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
   std::string message = "encrypt this message";
   std::string encoded1;
   for (int i = 0; i < 3; ++i) {
-    secure_context_.Encode(message,
-                           base::BindOnce(&SaveResultEncode, &encoded1));
+    base::test::TestFuture<const std::string&> future;
+    secure_context_.Encode(message, future.GetCallback());
+    encoded1 = future.Take();
   }
 
   // Second secure channel should not decode the message with an invalid
@@ -164,13 +165,13 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, DecodeOutOfOrderMessages) {
 
   // Send a few messages over the first secure context.
   std::string message1 = "encrypt this message 1";
-  std::string encoded1;
   std::string message2 = "encrypt this message 2";
-  std::string encoded2;
-  secure_context_.Encode(message1,
-                         base::BindOnce(&SaveResultEncode, &encoded1));
-  secure_context_.Encode(message2,
-                         base::BindOnce(&SaveResultEncode, &encoded2));
+  base::test::TestFuture<const std::string&> future1;
+  base::test::TestFuture<const std::string&> future2;
+  secure_context_.Encode(message1, future1.GetCallback());
+  secure_context_.Encode(message2, future2.GetCallback());
+  std::string encoded1 = future1.Take();
+  std::string encoded2 = future2.Take();
 
   // Second secure channel should queue out of order message and trigger when
   // old message is received.
@@ -194,17 +195,17 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
 
   // Send a few messages over the first secure context.
   std::string message1 = "encrypt this message 1";
-  std::string encoded1;
   std::string message2 = "encrypt this message 2";
-  std::string encoded2;
   std::string message3 = "encrypt this message 3";
-  std::string encoded3;
-  secure_context_.Encode(message1,
-                         base::BindOnce(&SaveResultEncode, &encoded1));
-  secure_context_.Encode(message2,
-                         base::BindOnce(&SaveResultEncode, &encoded2));
-  secure_context_.Encode(message3,
-                         base::BindOnce(&SaveResultEncode, &encoded3));
+  base::test::TestFuture<const std::string&> future1;
+  base::test::TestFuture<const std::string&> future2;
+  base::test::TestFuture<const std::string&> future3;
+  secure_context_.Encode(message1, future1.GetCallback());
+  secure_context_.Encode(message2, future2.GetCallback());
+  secure_context_.Encode(message3, future3.GetCallback());
+  std::string encoded1 = future1.Take();
+  std::string encoded2 = future2.Take();
+  std::string encoded3 = future3.Take();
 
   // Second secure channel should not decode the message without first missing
   // message is received
@@ -234,22 +235,21 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
 
   // Send a few messages over the first secure context.
   std::string message1 = "encrypt this message 1";
-  std::string encoded1;
   std::string message2 = "encrypt this message 2";
-  std::string encoded2;
   std::string message3 = "encrypt this message 3";
-  std::string encoded3;
-  std::string message4 = "encrypt this message 4";
-  std::string encoded4;
-
-  secure_context_.Encode(message1,
-                         base::BindOnce(&SaveResultEncode, &encoded1));
-  secure_context_.Encode(message2,
-                         base::BindOnce(&SaveResultEncode, &encoded2));
-  secure_context_.Encode(message3,
-                         base::BindOnce(&SaveResultEncode, &encoded3));
-  secure_context_.Encode(message4,
-                         base::BindOnce(&SaveResultEncode, &encoded4));
+  std::string message4 = "encrypt this message 3";
+  base::test::TestFuture<const std::string&> future1;
+  base::test::TestFuture<const std::string&> future2;
+  base::test::TestFuture<const std::string&> future3;
+  base::test::TestFuture<const std::string&> future4;
+  secure_context_.Encode(message1, future1.GetCallback());
+  secure_context_.Encode(message2, future2.GetCallback());
+  secure_context_.Encode(message3, future3.GetCallback());
+  secure_context_.Encode(message4, future4.GetCallback());
+  std::string encoded1 = future1.Take();
+  std::string encoded2 = future2.Take();
+  std::string encoded3 = future3.Take();
+  std::string encoded4 = future4.Take();
 
   // Second secure channel should not decode the messages with multiple out of
   // order messages
