@@ -120,9 +120,4 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::AudioOutputProviderImpl;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_OUTPUT_PROVIDER_IMPL_H_

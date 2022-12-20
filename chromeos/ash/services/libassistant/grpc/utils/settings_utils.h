@@ -37,9 +37,4 @@ std::string UnwrapUpdateAssistantSettingsResponse(
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::UnwrapGetAssistantSettingsResponse;
-using ::ash::libassistant::UnwrapUpdateAssistantSettingsResponse;
-}  // namespace chromeos::libassistant
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_SETTINGS_UTILS_H_

@@ -149,14 +149,14 @@ class V1InteractionBuilder {
 bool ShouldPutLogsInHomeDirectory() {
   const bool redirect_logging =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::assistant::switches::kRedirectLibassistantLogging);
+          assistant::switches::kRedirectLibassistantLogging);
   return !redirect_logging;
 }
 
 bool ShouldLogToFile() {
   const bool disable_logfile =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::assistant::switches::kDisableLibAssistantLogfile);
+          assistant::switches::kDisableLibAssistantLogfile);
   return !disable_logfile;
 }
 

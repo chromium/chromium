@@ -760,7 +760,7 @@ class AutotestPrivateSetAssistantEnabledFunction
 
   // ash::AssistantStateObserver overrides:
   void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+      ash::assistant::AssistantStatus status) override;
 
   // Called when the Assistant service does not respond in a timely fashion. We
   // will respond with an error.

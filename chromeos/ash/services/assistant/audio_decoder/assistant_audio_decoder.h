@@ -80,9 +80,4 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
 
 }  // namespace ash::assistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::assistant {
-using ::ash::assistant::AssistantAudioDecoder;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_H_

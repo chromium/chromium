@@ -44,11 +44,4 @@ std::vector<assistant::AssistantTimer> GetAllCurrentTimersFromEvents(
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::ConstructAssistantTimersFromProto;
-using ::ash::libassistant::CreateOnAlarmTimerEventRequestProtoForV1;
-using ::ash::libassistant::GetAllCurrentTimersFromEvents;
-}  // namespace chromeos::libassistant
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_TIMER_UTILS_H_

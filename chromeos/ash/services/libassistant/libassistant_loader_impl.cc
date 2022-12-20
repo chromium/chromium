@@ -27,8 +27,8 @@ namespace ash::libassistant {
 
 namespace {
 
-using InstallResult = chromeos::assistant::LibassistantDlcInstallResult;
-using LoadStatus = chromeos::assistant::LibassistantDlcLoadStatus;
+using InstallResult = assistant::LibassistantDlcInstallResult;
+using LoadStatus = assistant::LibassistantDlcLoadStatus;
 
 base::TaskTraits GetTaskTraits() {
   return {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -48,7 +48,7 @@ base::FilePath GetLibassisantPath(const std::string& root_path) {
   DCHECK(root_path == kLibAssistantDlcRootPath);
   base::FilePath libassistant_dlc_root =
       base::FilePath(root_path).AsEndingWithSeparator();
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV2DlcPath));
   }
 
@@ -89,7 +89,7 @@ void RecordLibassistantDlcLoadStatus(const LoadStatus& status) {
 }  // namespace
 
 void LibassistantLoaderImpl::Load(LoadCallback callback) {
-  if (!chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
+  if (!assistant::features::IsLibAssistantDlcEnabled()) {
     std::move(callback).Run(/*success=*/true);
     return;
   }
@@ -159,7 +159,7 @@ void LibassistantLoaderImpl::OnInstallDlcComplete(
     return;
   }
 
-  if (chromeos::assistant::features::IsLibAssistantSandboxEnabled()) {
+  if (assistant::features::IsLibAssistantSandboxEnabled()) {
     // Will load the library later in the utility process.
     RunCallback(/*success=*/true);
     return;

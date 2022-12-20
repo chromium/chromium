@@ -31,11 +31,4 @@ void ConvertMediaStatusToV2FromMojom(const mojom::MediaState& state,
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::ConvertMediaStatusToMojomFromV2;
-using ::ash::libassistant::ConvertMediaStatusToV2FromMojom;
-using ::ash::libassistant::MediaStatus;
-}  // namespace chromeos::libassistant
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_MEDIA_STATUS_UTILS_H_

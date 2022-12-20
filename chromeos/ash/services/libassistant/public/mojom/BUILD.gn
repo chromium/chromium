@@ -75,7 +75,7 @@ mojom("mojom") {
         },
         {
           mojom = "ash.libassistant.mojom.AssistantInteractionResolution"
-          cpp = "::chromeos::assistant::AssistantInteractionResolution"
+          cpp = "::ash::assistant::AssistantInteractionResolution"
         },
         {
           mojom = "ash.libassistant.mojom.AssistantInteractionType"

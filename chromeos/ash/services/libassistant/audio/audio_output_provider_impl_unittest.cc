@@ -25,11 +25,11 @@
 
 namespace ash::libassistant {
 namespace {
+using assistant::FakePlatformDelegate;
 using assistant::mojom::AssistantAudioDecoderFactory;
 using ::assistant_client::OutputStreamMetadata;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
-using ::chromeos::assistant::FakePlatformDelegate;
 
 constexpr char kFakeDeviceId[] = "device_id";
 }  // namespace

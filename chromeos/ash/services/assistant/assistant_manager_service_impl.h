@@ -283,9 +283,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 }  // namespace assistant
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::assistant {
-using ::ash::assistant::AssistantManagerServiceImpl;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_ASSISTANT_MANAGER_SERVICE_IMPL_H_

@@ -22,9 +22,4 @@ class GrpcServicesObserver : public base::CheckedObserver {
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::GrpcServicesObserver;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_GRPC_SERVICES_OBSERVER_H_

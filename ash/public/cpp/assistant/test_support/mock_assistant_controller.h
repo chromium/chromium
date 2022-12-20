@@ -35,7 +35,7 @@ class MockAssistantController : public AssistantController {
 
   MOCK_METHOD(void,
               SetAssistant,
-              (chromeos::assistant::Assistant * assistant),
+              (assistant::Assistant * assistant),
               (override));
 
   MOCK_METHOD(void, StartSpeakerIdEnrollmentFlow, (), (override));

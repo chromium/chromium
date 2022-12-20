@@ -53,7 +53,6 @@ using assistant::AssistantInteractionType;
 using assistant::AssistantQuerySource;
 using assistant::AssistantSuggestion;
 using assistant::AssistantSuggestionType;
-using chromeos::assistant::Assistant;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -86,7 +85,7 @@ void FindDescendentByClassName(views::View* parent, T** result) {
 class MockAssistantInteractionSubscriber
     : public testing::NiceMock<assistant::AssistantInteractionSubscriber> {
  public:
-  explicit MockAssistantInteractionSubscriber(Assistant* service) {
+  explicit MockAssistantInteractionSubscriber(assistant::Assistant* service) {
     scoped_subscriber_.Observe(service);
   }
 

@@ -233,7 +233,7 @@ void ConversationController::AddAuthenticationStateObserver(
 
 void ConversationController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
     // Registers ActionModule when AssistantClient has been created but not yet
     // started.
     assistant_client->RegisterActionModule(action_module_.get());
@@ -246,7 +246,7 @@ void ConversationController::OnAssistantClientRunning(
   assistant_client_ = assistant_client;
   requests_are_allowed_ = true;
 
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     // Register the action module when all libassistant services are ready.
     // `action_module_` outlives gRPC services.
     assistant_client->RegisterActionModule(action_module_.get());
@@ -565,7 +565,7 @@ void ConversationController::OnInteractionStarted(
 }
 
 void ConversationController::OnInteractionFinished(
-    chromeos::assistant::AssistantInteractionResolution resolution) {
+    assistant::AssistantInteractionResolution resolution) {
   stop_interaction_closure_.reset();
 }
 

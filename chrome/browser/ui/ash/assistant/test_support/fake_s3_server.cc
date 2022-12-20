@@ -24,8 +24,8 @@ namespace ash::assistant {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after internal assistant code is
-// migrated to namespace ash.
+// TODO(b/258750971): remove when internal assistant codes are migrated to
+// namespace ash.
 using ::chromeos::assistant::kFakeS3ServerBinary;
 using ::chromeos::assistant::kGenerateTokenInstructions;
 

@@ -31,10 +31,4 @@ class ServicesStatusObserver : public base::CheckedObserver {
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::ServicesStatus;
-using ::ash::libassistant::ServicesStatusObserver;
-}  // namespace chromeos::libassistant
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_SERVICES_STATUS_OBSERVER_H_

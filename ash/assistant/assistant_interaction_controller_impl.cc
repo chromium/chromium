@@ -109,7 +109,7 @@ void AssistantInteractionControllerImpl::RegisterProfilePrefs(
 }
 
 void AssistantInteractionControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+    assistant::Assistant* assistant) {
   if (assistant_)
     assistant_->RemoveAssistantInteractionSubscriber(this);
 

@@ -123,7 +123,7 @@ void ServiceController::Initialize(
   assistant_client::AssistantManagerInternal* assistant_manager_internal =
       nullptr;
 
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
     assistant_manager_internal =
         libassistant_factory_.UnwrapAssistantManagerInternal(
             assistant_manager.get());
@@ -142,7 +142,7 @@ void ServiceController::Initialize(
   settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
     SetServerExperiments(assistant_client_.get());
   }
 
@@ -278,7 +278,7 @@ AssistantClient* ServiceController::assistant_client() {
 void ServiceController::OnAllServicesReady() {
   DVLOG(1) << "Libassistant services are ready.";
 
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     SetServerExperiments(assistant_client_.get());
   }
 
@@ -295,7 +295,7 @@ void ServiceController::OnServicesBootingUp() {
   // We set one precondition of BootupState to reach `INITIALIZING_INTERNAL`
   // is to wait for the gRPC HttpConnection be ready. Only after the BootupState
   // meets the state, can AssistantManager start.
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     assistant_client_->StartGrpcHttpConnectionClient(
         chromium_api_delegate_->GetHttpConnectionFactory());
   }
@@ -337,7 +337,7 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
     assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
   }
 }

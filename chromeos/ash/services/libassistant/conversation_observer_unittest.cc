@@ -85,7 +85,7 @@ class ConversationObserverMock : public mojom::ConversationObserver {
               (const ::ash::assistant::AssistantInteractionMetadata& metadata));
   MOCK_METHOD(void,
               OnInteractionFinished,
-              (chromeos::assistant::AssistantInteractionResolution resolution));
+              (assistant::AssistantInteractionResolution resolution));
   MOCK_METHOD(void, OnTtsStarted, (bool due_to_error));
   MOCK_METHOD(void,
               OnHtmlResponse,
@@ -157,10 +157,9 @@ class AssistantConversationObserverTest : public ::testing::Test {
 
 TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTurnFinishedEventWhenFinishedNormally) {
-  EXPECT_CALL(
-      observer_mock(),
-      OnInteractionFinished(
-          chromeos::assistant::AssistantInteractionResolution::kNormal));
+  EXPECT_CALL(observer_mock(),
+              OnInteractionFinished(
+                  assistant::AssistantInteractionResolution::kNormal));
 
   conversation_state_listener().OnConversationTurnFinished(
       assistant_client::ConversationStateListener::Resolution::NORMAL);
@@ -169,10 +168,9 @@ TEST_F(AssistantConversationObserverTest,
 
 TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTurnFinishedEventWhenBeingInterrupted) {
-  EXPECT_CALL(
-      observer_mock(),
-      OnInteractionFinished(
-          chromeos::assistant::AssistantInteractionResolution::kInterruption));
+  EXPECT_CALL(observer_mock(),
+              OnInteractionFinished(
+                  assistant::AssistantInteractionResolution::kInterruption));
 
   conversation_state_listener().OnConversationTurnFinished(
       assistant_client::ConversationStateListener::Resolution::BARGE_IN);

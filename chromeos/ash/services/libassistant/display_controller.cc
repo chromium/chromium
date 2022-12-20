@@ -79,7 +79,7 @@ void DisplayController::SetDeviceAppsEnabled(bool enabled) {
 
   DCHECK(action_module_);
   action_module_->SetAppSupportEnabled(
-      chromeos::assistant::features::IsAppSupportEnabled() && enabled);
+      assistant::features::IsAppSupportEnabled() && enabled);
 }
 
 void DisplayController::SetRelatedInfoEnabled(bool enabled) {

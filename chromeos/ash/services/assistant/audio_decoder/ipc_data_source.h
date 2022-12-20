@@ -63,9 +63,4 @@ class IPCDataSource : public media::DataSource {
 
 }  // namespace ash::assistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::assistant {
-using ::ash::assistant::IPCDataSource;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_

@@ -78,7 +78,8 @@ std::string ToOnboardingModeString(AssistantOnboardingMode onboarding_mode);
 
 }  // namespace ash::assistant::prefs
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
+// TODO(b/258750971): remove when internal assistant codes are migrated to
+// namespace ash.
 namespace chromeos::assistant {
 namespace prefs = ::ash::assistant::prefs;
 }

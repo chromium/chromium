@@ -144,9 +144,4 @@ class AudioInputImpl : public assistant_client::AudioInput {
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::AudioInputImpl;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_INPUT_IMPL_H_

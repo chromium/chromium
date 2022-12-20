@@ -103,8 +103,7 @@ class AssistantOptInFlowScreenHandler
  private:
   // AssistantStateObserver:
   void OnAssistantSettingsEnabled(bool enabled) override;
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
 
   // Send GetSettings request for the opt-in UI.
   void SendGetSettingsRequest();

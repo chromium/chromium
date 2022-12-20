@@ -63,9 +63,4 @@ class FakePlatformDelegate : public libassistant::mojom::PlatformDelegate {
 
 }  // namespace ash::assistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::assistant {
-using ::ash::assistant::FakePlatformDelegate;
-}
-
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_

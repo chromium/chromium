@@ -205,8 +205,7 @@ class AssistantPageViewTest : public AssistantAshTestBase {
 class AssistantInteractionCounter
     : private assistant::AssistantInteractionSubscriber {
  public:
-  explicit AssistantInteractionCounter(
-      chromeos::assistant::Assistant* service) {
+  explicit AssistantInteractionCounter(assistant::Assistant* service) {
     interaction_observer_.Observe(service);
   }
   AssistantInteractionCounter(AssistantInteractionCounter&) = delete;

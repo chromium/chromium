@@ -529,32 +529,30 @@ std::string SetAllowedPref(Profile* profile,
     return std::string();
   }
 
-  if (pref_name == chromeos::assistant::prefs::kAssistantEnabled) {
+  if (pref_name == ash::assistant::prefs::kAssistantEnabled) {
     if (!value.is_bool())
       return "Invalid value type.";
     // Validate the Assistant service allowed state.
-    chromeos::assistant::AssistantAllowedState allowed_state =
+    ash::assistant::AssistantAllowedState allowed_state =
         assistant::IsAssistantAllowedForProfile(profile);
-    if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED) {
+    if (allowed_state != ash::assistant::AssistantAllowedState::ALLOWED) {
       return base::StringPrintf("Assistant not allowed - state: %d",
                                 allowed_state);
     }
-  } else if (pref_name == chromeos::assistant::prefs::kAssistantConsentStatus) {
+  } else if (pref_name == ash::assistant::prefs::kAssistantConsentStatus) {
     if (!value.is_int())
       return "Invalid value type.";
     if (!profile->GetPrefs()->GetBoolean(
-            chromeos::assistant::prefs::kAssistantEnabled)) {
+            ash::assistant::prefs::kAssistantEnabled)) {
       return "Unable to set the pref because Assistant has not been enabled.";
     }
-  } else if (pref_name ==
-                 chromeos::assistant::prefs::kAssistantContextEnabled ||
-             pref_name ==
-                 chromeos::assistant::prefs::kAssistantHotwordEnabled) {
+  } else if (pref_name == ash::assistant::prefs::kAssistantContextEnabled ||
+             pref_name == ash::assistant::prefs::kAssistantHotwordEnabled) {
     if (!value.is_bool())
       return "Invalid value type.";
     // Assistant service must be enabled first for those prefs to take effect.
     if (!profile->GetPrefs()->GetBoolean(
-            chromeos::assistant::prefs::kAssistantEnabled)) {
+            ash::assistant::prefs::kAssistantEnabled)) {
       return std::string(
           "Unable to set the pref because Assistant has not been enabled.");
     }
@@ -997,8 +995,8 @@ void ForwardFrameRateDataAndReset(
 }
 
 std::string ResolutionToString(
-    chromeos::assistant::AssistantInteractionResolution resolution) {
-  using chromeos::assistant::AssistantInteractionResolution;
+    ash::assistant::AssistantInteractionResolution resolution) {
+  using ash::assistant::AssistantInteractionResolution;
   switch (resolution) {
     case AssistantInteractionResolution::kNormal:
       return "kNormal";
@@ -3234,14 +3232,14 @@ AutotestPrivateSetAssistantEnabledFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg =
-      SetAllowedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
+      SetAllowedPref(profile, ash::assistant::prefs::kAssistantEnabled,
                      base::Value(params->enabled));
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));
 
   // Any state that's not |NOT_READY| would be considered a ready state.
   const bool not_ready = (ash::AssistantState::Get()->assistant_status() ==
-                          chromeos::assistant::AssistantStatus::NOT_READY);
+                          ash::assistant::AssistantStatus::NOT_READY);
   const bool success = (params->enabled != not_ready);
   if (success)
     return RespondNow(NoArguments());
@@ -3258,7 +3256,7 @@ AutotestPrivateSetAssistantEnabledFunction::Run() {
 }
 
 void AutotestPrivateSetAssistantEnabledFunction::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+    ash::assistant::AssistantStatus status) {
   // Must check if the Optional contains value first to avoid possible
   // segmentation fault caused by Respond() below being called before
   // RespondLater() in Run(). This will happen due to AddObserver() call
@@ -3266,8 +3264,7 @@ void AutotestPrivateSetAssistantEnabledFunction::OnAssistantStatusChanged(
   if (!enabled_.has_value())
     return;
 
-  const bool not_ready =
-      (status == chromeos::assistant::AssistantStatus::NOT_READY);
+  const bool not_ready = (status == ash::assistant::AssistantStatus::NOT_READY);
   const bool success = (enabled_.value() != not_ready);
   if (!success)
     return;
@@ -3297,23 +3294,22 @@ AutotestPrivateEnableAssistantAndWaitForReadyFunction::Run() {
   DVLOG(1) << "AutotestPrivateEnableAssistantAndWaitForReadyFunction";
 
   if (ash::AssistantState::Get()->assistant_status() ==
-      chromeos::assistant::AssistantStatus::READY) {
+      ash::assistant::AssistantStatus::READY) {
     return RespondNow(Error("Assistant is already enabled."));
   }
 
   // We can set this callback only when assistant status is NOT_READY. We should
   // call this before we try to enable Assistant to avoid causing some timing
   // issue.
-  chromeos::assistant::AssistantManagerServiceImpl::
+  ash::assistant::AssistantManagerServiceImpl::
       SetInitializedInternalCallbackForTesting(base::BindOnce(
           &AutotestPrivateEnableAssistantAndWaitForReadyFunction::
               OnInitializedInternal,
           this));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string& err_msg =
-      SetAllowedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
-                     base::Value(true));
+  const std::string& err_msg = SetAllowedPref(
+      profile, ash::assistant::prefs::kAssistantEnabled, base::Value(true));
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));
 
@@ -3330,7 +3326,7 @@ void AutotestPrivateEnableAssistantAndWaitForReadyFunction::
 // |AutotestPrivateSendAssistantTextQueryFunction| and
 // |AutotestPrivateWaitForAssistantQueryStatusFunction|.
 class AssistantInteractionHelper
-    : public chromeos::assistant::AssistantInteractionSubscriber {
+    : public ash::assistant::AssistantInteractionSubscriber {
  public:
   using OnInteractionFinishedCallback =
       base::OnceCallback<void(const absl::optional<std::string>& error)>;
@@ -3365,18 +3361,18 @@ class AssistantInteractionHelper
 
   base::Value::Dict GetQueryStatus() { return std::move(query_status_); }
 
-  chromeos::assistant::Assistant* GetAssistant() {
-    auto* assistant_service = chromeos::assistant::AssistantService::Get();
+  ash::assistant::Assistant* GetAssistant() {
+    auto* assistant_service = ash::assistant::AssistantService::Get();
     return assistant_service ? assistant_service->GetAssistant() : nullptr;
   }
 
  private:
-  // chromeos::assistant::AssistantInteractionSubscriber:
+  // ash::assistant::AssistantInteractionSubscriber:
   using AssistantSuggestion = ash::assistant::AssistantSuggestion;
   using AssistantInteractionMetadata =
       ash::assistant::AssistantInteractionMetadata;
   using AssistantInteractionResolution =
-      chromeos::assistant::AssistantInteractionResolution;
+      ash::assistant::AssistantInteractionResolution;
 
   void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) override {
@@ -3500,9 +3496,9 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  chromeos::assistant::AssistantAllowedState allowed_state =
+  ash::assistant::AssistantAllowedState allowed_state =
       assistant::IsAssistantAllowedForProfile(profile);
-  if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED) {
+  if (allowed_state != ash::assistant::AssistantAllowedState::ALLOWED) {
     return RespondNow(Error(base::StringPrintf(
         "Assistant not allowed - state: %d", allowed_state)));
   }
@@ -3601,9 +3597,9 @@ AutotestPrivateWaitForAssistantQueryStatusFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  chromeos::assistant::AssistantAllowedState allowed_state =
+  ash::assistant::AssistantAllowedState allowed_state =
       assistant::IsAssistantAllowedForProfile(profile);
-  if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED) {
+  if (allowed_state != ash::assistant::AssistantAllowedState::ALLOWED) {
     return RespondNow(Error(base::StringPrintf(
         "Assistant not allowed - state: %d", allowed_state)));
   }

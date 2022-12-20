@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
       public AssistantClientObserver,
       public chromeos::assistant::action::AssistantActionObserver,
-      public chromeos::assistant::ConversationObserver {
+      public assistant::ConversationObserver {
  public:
   using AssistantNotification = assistant::AssistantNotification;
   using AssistantQuerySource = assistant::AssistantQuerySource;
@@ -93,11 +93,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnShowNotification(
       const chromeos::assistant::action::Notification& notification) override;
 
-  // chromeos::assistant::ConversationObserver:
+  // assistant::ConversationObserver:
   void OnInteractionStarted(
       const assistant::AssistantInteractionMetadata& metadata) override;
   void OnInteractionFinished(
-      chromeos::assistant::AssistantInteractionResolution resolution) override;
+      assistant::AssistantInteractionResolution resolution) override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;

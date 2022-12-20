@@ -127,8 +127,8 @@ struct StructTraits<
 
 template <>
 struct EnumTraits<ash::libassistant::mojom::AssistantInteractionResolution,
-                  chromeos::assistant::AssistantInteractionResolution> {
-  using NativeType = chromeos::assistant::AssistantInteractionResolution;
+                  ash::assistant::AssistantInteractionResolution> {
+  using NativeType = ash::assistant::AssistantInteractionResolution;
   using MojomType = ash::libassistant::mojom::AssistantInteractionResolution;
 
   static MojomType ToMojom(NativeType input);
