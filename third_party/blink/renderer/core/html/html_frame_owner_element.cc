@@ -97,8 +97,7 @@ bool IsFrameLazyLoadable(ExecutionContext* context,
                          const KURL& url,
                          bool is_loading_attr_lazy,
                          bool should_lazy_load_children) {
-  if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled() &&
-      !RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled()) {
+  if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled()) {
     return false;
   }
 
@@ -484,9 +483,6 @@ void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
 }
 
 void HTMLFrameOwnerElement::DispatchLoad() {
-  if (lazy_load_frame_observer_)
-    lazy_load_frame_observer_->RecordMetricsOnLoadFinished();
-
   DispatchScopedEvent(*Event::Create(event_type_names::kLoad));
 }
 
@@ -598,9 +594,6 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
 
   lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
       *this, LazyLoadFrameObserver::LoadType::kSubsequent);
-
-  if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
-    lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
 
   // TODO(crbug.com/1341892) Remove having multiple booleans here. We eventually
   // select one reason to decide the timeout, so essentially we don't have to

@@ -233,8 +233,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableLazyInitializeMediaControls,
      features::kLazyInitializeMediaControls},
     {wf::EnableLazyFrameLoading, features::kLazyFrameLoading},
-    {wf::EnableLazyFrameVisibleLoadTimeMetrics,
-     features::kLazyFrameVisibleLoadTimeMetrics},
     {wf::EnableLazyImageLoading, features::kLazyImageLoading},
     {wf::EnableLazyImageVisibleLoadTimeMetrics,
      features::kLazyImageVisibleLoadTimeMetrics},

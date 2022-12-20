@@ -578,14 +578,7 @@ BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
 BASE_FEATURE(kLazyFrameLoading,
              "LazyFrameLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLazyFrameVisibleLoadTimeMetrics,
-             "LazyFrameVisibleLoadTimeMetrics",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+
 BASE_FEATURE(kLazyImageLoading,
              "LazyImageLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);

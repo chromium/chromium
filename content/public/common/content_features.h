@@ -123,7 +123,6 @@ CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayGrouping);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptExperimentalSharedMemory);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameLoading);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameVisibleLoadTimeMetrics);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageVisibleLoadTimeMetrics);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyInitializeMediaControls);

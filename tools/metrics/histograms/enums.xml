@@ -55596,12 +55596,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="6" label="= 100%"/>
 </enum>
 
-<enum name="LazyLoad.FrameInitialDeferralAction">
-  <int value="0" label="Deferred"/>
-  <int value="1" label="Loaded because near or in viewport"/>
-  <int value="2" label="Loaded because hidden"/>
-</enum>
-
 <enum name="LCDTextDisallowedReason">
   <int value="0" label="None"/>
   <int value="1" label="Setting"/>

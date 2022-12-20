@@ -1648,10 +1648,6 @@
       status: "stable",
     },
     {
-      name: "LazyFrameVisibleLoadTimeMetrics",
-      public: true,
-    },
-    {
       name: "LazyImageLoading",
       public: true,
       status: "stable",

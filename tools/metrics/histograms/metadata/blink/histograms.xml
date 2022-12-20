@@ -1891,53 +1891,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Blink.LazyLoad.CrossOriginFrames.InitialDeferralAction{BlinkLazyLoadEffectiveConnectionTypeSuffixes}"
-    enum="LazyLoad.FrameInitialDeferralAction" expires_after="2021-03-07">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Records the initial lazy loading action taken for a cross-origin iframe.
-    {BlinkLazyLoadEffectiveConnectionTypeSuffixes}
-  </summary>
-  <token key="BlinkLazyLoadEffectiveConnectionTypeSuffixes">
-    <variant name=""/>
-    <variant name=".2G" summary="2G effective connection type"/>
-    <variant name=".3G" summary="3G effective connection type"/>
-    <variant name=".4G" summary="4G effective connection type"/>
-    <variant name=".Offline" summary="Offline effective connection type"/>
-    <variant name=".Slow2G" summary="Slow-2G effective connection type"/>
-    <variant name=".Unknown" summary="Unknown effective connection type"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred"
-    enum="NQEEffectiveConnectionType" expires_after="2021-02-21">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Records the effective connection type whenever a lazily-loaded iframe that
-    wasn't initially hidden or near the viewport starts loading. The count for
-    an effective connection type in this histogram can be subtracted from the
-    'Deferred' bucket from the
-    Blink.LazyLoad.CrossOriginFrames.InitialDeferralAction.* histogram for the
-    corresponding effective connection type to determine the number of iframes
-    that LazyLoad is avoiding to load altogether.
-  </summary>
-</histogram>
-
-<histogram name="Blink.LazyLoad.CrossOriginFrames.VisibleAfterBeingDeferred"
-    enum="NQEEffectiveConnectionType" expires_after="2021-02-21">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Records the effective connection type whenever a lazily-loaded iframe that
-    wasn't initially hidden or near the viewport becomes visible. The count for
-    an effective connection type in this histogram can be subtracted from the
-    corresponding count in
-    Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred to determine
-    how many iframes were loaded unnecessarily by LazyLoad.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.LazyLoadIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2023-12-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
@@ -3312,16 +3265,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2021-02-21">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Records the effective connection type whenever a lazyload-eligible (i.e.
-    cross-origin and non-hidden) iframe that was initially below the fold
-    becomes visible before it finishes loading.
-  </summary>
-</histogram>
-
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold"
     enum="NQEEffectiveConnectionType" expires_after="2023-09-01">
   <owner>sclittle@chromium.org</owner>
@@ -3342,36 +3285,6 @@ chromium-metrics-reviews@google.com.
     Records the effective connection type whenever a lazily loaded image that
     was initially below the fold becomes visible before it finishes loading.
   </summary>
-</histogram>
-
-<histogram
-    name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2021-08-29">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Milliseconds spent waiting for an above the fold iframe to load. Only fires
-    for iframes that would be eligible for lazy loading, i.e. cross-origin and
-    non-hidden. {BlinkVisibleLoadTimeSuffixes}
-  </summary>
-  <token key="BlinkVisibleLoadTimeSuffixes"
-      variants="BlinkVisibleLoadTimeSuffixes">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.BelowTheFold{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2021-02-21">
-  <owner>sclittle@chromium.org</owner>
-  <summary>
-    Milliseconds spent waiting for a below the fold iframe to load. Only fires
-    for iframes that would be eligible for lazy loading, i.e. cross-origin and
-    non-hidden. {BlinkVisibleLoadTimeSuffixes}
-  </summary>
-  <token key="BlinkVisibleLoadTimeSuffixes"
-      variants="BlinkVisibleLoadTimeSuffixes">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
