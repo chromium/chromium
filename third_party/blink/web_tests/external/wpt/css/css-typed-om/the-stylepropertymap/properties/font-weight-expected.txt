@@ -8,7 +8,7 @@ PASS Can set 'font-weight' to the 'normal' keyword: normal
 PASS Can set 'font-weight' to the 'bold' keyword: bold
 PASS Can set 'font-weight' to the 'bolder' keyword: bolder
 PASS Can set 'font-weight' to the 'lighter' keyword: lighter
-PASS Can set 'font-weight' to a number: 0
+FAIL Can set 'font-weight' to a number: 0 assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 FAIL Can set 'font-weight' to a number: -3.14 assert_approx_equals: expected -3.14 +/- 0.000001 but got -3
 FAIL Can set 'font-weight' to a number: 3.14 assert_approx_equals: expected 3.14 +/- 0.000001 but got 3
 PASS Can set 'font-weight' to a number: calc(2 + 3)

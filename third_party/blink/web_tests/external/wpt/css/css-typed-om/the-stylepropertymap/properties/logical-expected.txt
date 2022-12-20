@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1468 tests; 1264 PASS, 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1468 tests; 1248 PASS, 220 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Can set 'margin-block-start' to CSS-wide keywords: initial
 PASS Can set 'margin-block-start' to CSS-wide keywords: inherit
 PASS Can set 'margin-block-start' to CSS-wide keywords: unset
@@ -186,6 +186,192 @@ PASS Setting 'margin-inline' to a number: calc(2 + 3) throws TypeError
 PASS Setting 'margin-inline' to a transform: translate(50%, 50%) throws TypeError
 PASS Setting 'margin-inline' to a transform: perspective(10em) throws TypeError
 PASS Setting 'margin-inline' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+PASS Can set 'padding-block-start' to CSS-wide keywords: initial
+PASS Can set 'padding-block-start' to CSS-wide keywords: inherit
+PASS Can set 'padding-block-start' to CSS-wide keywords: unset
+PASS Can set 'padding-block-start' to CSS-wide keywords: revert
+PASS Can set 'padding-block-start' to var() references:  var(--A)
+PASS Can set 'padding-block-start' to a percent: 0%
+FAIL Can set 'padding-block-start' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-block-start' to a percent: 3.14%
+PASS Can set 'padding-block-start' to a percent: calc(0% + 0%)
+PASS Can set 'padding-block-start' to a length: 0px
+FAIL Can set 'padding-block-start' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-block-start' to a length: 3.14cm
+PASS Can set 'padding-block-start' to a length: calc(0px + 0em)
+PASS Setting 'padding-block-start' to a time: 0s throws TypeError
+PASS Setting 'padding-block-start' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-block-start' to a time: 3.14s throws TypeError
+PASS Setting 'padding-block-start' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-block-start' to an angle: 0deg throws TypeError
+PASS Setting 'padding-block-start' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-block-start' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-block-start' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-block-start' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-block-start' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-block-start' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-block-start' to a number: 0 throws TypeError
+PASS Setting 'padding-block-start' to a number: -3.14 throws TypeError
+PASS Setting 'padding-block-start' to a number: 3.14 throws TypeError
+PASS Setting 'padding-block-start' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-block-start' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-block-start' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-block-start' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+PASS Can set 'padding-block-end' to CSS-wide keywords: initial
+PASS Can set 'padding-block-end' to CSS-wide keywords: inherit
+PASS Can set 'padding-block-end' to CSS-wide keywords: unset
+PASS Can set 'padding-block-end' to CSS-wide keywords: revert
+PASS Can set 'padding-block-end' to var() references:  var(--A)
+PASS Can set 'padding-block-end' to a percent: 0%
+FAIL Can set 'padding-block-end' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-block-end' to a percent: 3.14%
+PASS Can set 'padding-block-end' to a percent: calc(0% + 0%)
+PASS Can set 'padding-block-end' to a length: 0px
+FAIL Can set 'padding-block-end' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-block-end' to a length: 3.14cm
+PASS Can set 'padding-block-end' to a length: calc(0px + 0em)
+PASS Setting 'padding-block-end' to a time: 0s throws TypeError
+PASS Setting 'padding-block-end' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-block-end' to a time: 3.14s throws TypeError
+PASS Setting 'padding-block-end' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-block-end' to an angle: 0deg throws TypeError
+PASS Setting 'padding-block-end' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-block-end' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-block-end' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-block-end' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-block-end' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-block-end' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-block-end' to a number: 0 throws TypeError
+PASS Setting 'padding-block-end' to a number: -3.14 throws TypeError
+PASS Setting 'padding-block-end' to a number: 3.14 throws TypeError
+PASS Setting 'padding-block-end' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-block-end' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-block-end' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-block-end' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+PASS Can set 'padding-inline-start' to CSS-wide keywords: initial
+PASS Can set 'padding-inline-start' to CSS-wide keywords: inherit
+PASS Can set 'padding-inline-start' to CSS-wide keywords: unset
+PASS Can set 'padding-inline-start' to CSS-wide keywords: revert
+PASS Can set 'padding-inline-start' to var() references:  var(--A)
+PASS Can set 'padding-inline-start' to a percent: 0%
+FAIL Can set 'padding-inline-start' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-inline-start' to a percent: 3.14%
+PASS Can set 'padding-inline-start' to a percent: calc(0% + 0%)
+PASS Can set 'padding-inline-start' to a length: 0px
+FAIL Can set 'padding-inline-start' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-inline-start' to a length: 3.14cm
+PASS Can set 'padding-inline-start' to a length: calc(0px + 0em)
+PASS Setting 'padding-inline-start' to a time: 0s throws TypeError
+PASS Setting 'padding-inline-start' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-inline-start' to a time: 3.14s throws TypeError
+PASS Setting 'padding-inline-start' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-inline-start' to an angle: 0deg throws TypeError
+PASS Setting 'padding-inline-start' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-inline-start' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-inline-start' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-inline-start' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-inline-start' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-inline-start' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-inline-start' to a number: 0 throws TypeError
+PASS Setting 'padding-inline-start' to a number: -3.14 throws TypeError
+PASS Setting 'padding-inline-start' to a number: 3.14 throws TypeError
+PASS Setting 'padding-inline-start' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-inline-start' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-inline-start' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-inline-start' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+PASS Can set 'padding-inline-end' to CSS-wide keywords: initial
+PASS Can set 'padding-inline-end' to CSS-wide keywords: inherit
+PASS Can set 'padding-inline-end' to CSS-wide keywords: unset
+PASS Can set 'padding-inline-end' to CSS-wide keywords: revert
+PASS Can set 'padding-inline-end' to var() references:  var(--A)
+PASS Can set 'padding-inline-end' to a percent: 0%
+FAIL Can set 'padding-inline-end' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-inline-end' to a percent: 3.14%
+PASS Can set 'padding-inline-end' to a percent: calc(0% + 0%)
+PASS Can set 'padding-inline-end' to a length: 0px
+FAIL Can set 'padding-inline-end' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
+PASS Can set 'padding-inline-end' to a length: 3.14cm
+PASS Can set 'padding-inline-end' to a length: calc(0px + 0em)
+PASS Setting 'padding-inline-end' to a time: 0s throws TypeError
+PASS Setting 'padding-inline-end' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-inline-end' to a time: 3.14s throws TypeError
+PASS Setting 'padding-inline-end' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-inline-end' to an angle: 0deg throws TypeError
+PASS Setting 'padding-inline-end' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-inline-end' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-inline-end' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-inline-end' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-inline-end' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-inline-end' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-inline-end' to a number: 0 throws TypeError
+PASS Setting 'padding-inline-end' to a number: -3.14 throws TypeError
+PASS Setting 'padding-inline-end' to a number: 3.14 throws TypeError
+PASS Setting 'padding-inline-end' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-inline-end' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-inline-end' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-inline-end' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+FAIL Can set 'padding-block' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-block' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-block' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-block' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-block' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
+FAIL Can set 'padding-block' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-block' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Setting 'padding-block' to a time: 0s throws TypeError
+PASS Setting 'padding-block' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-block' to a time: 3.14s throws TypeError
+PASS Setting 'padding-block' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-block' to an angle: 0deg throws TypeError
+PASS Setting 'padding-block' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-block' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-block' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-block' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-block' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-block' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-block' to a number: 0 throws TypeError
+PASS Setting 'padding-block' to a number: -3.14 throws TypeError
+PASS Setting 'padding-block' to a number: 3.14 throws TypeError
+PASS Setting 'padding-block' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-block' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-block' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-block' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+FAIL Can set 'padding-inline' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-inline' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-inline' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-inline' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'padding-inline' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
+FAIL Can set 'padding-inline' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+FAIL Can set 'padding-inline' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Setting 'padding-inline' to a time: 0s throws TypeError
+PASS Setting 'padding-inline' to a time: -3.14ms throws TypeError
+PASS Setting 'padding-inline' to a time: 3.14s throws TypeError
+PASS Setting 'padding-inline' to a time: calc(0s + 0ms) throws TypeError
+PASS Setting 'padding-inline' to an angle: 0deg throws TypeError
+PASS Setting 'padding-inline' to an angle: 3.14rad throws TypeError
+PASS Setting 'padding-inline' to an angle: -3.14deg throws TypeError
+PASS Setting 'padding-inline' to an angle: calc(0rad + 0deg) throws TypeError
+PASS Setting 'padding-inline' to a flexible length: 0fr throws TypeError
+PASS Setting 'padding-inline' to a flexible length: 1fr throws TypeError
+PASS Setting 'padding-inline' to a flexible length: -3.14fr throws TypeError
+PASS Setting 'padding-inline' to a number: 0 throws TypeError
+PASS Setting 'padding-inline' to a number: -3.14 throws TypeError
+PASS Setting 'padding-inline' to a number: 3.14 throws TypeError
+PASS Setting 'padding-inline' to a number: calc(2 + 3) throws TypeError
+PASS Setting 'padding-inline' to a transform: translate(50%, 50%) throws TypeError
+PASS Setting 'padding-inline' to a transform: perspective(10em) throws TypeError
+PASS Setting 'padding-inline' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 PASS Can set 'inset-block-start' to CSS-wide keywords: initial
 PASS Can set 'inset-block-start' to CSS-wide keywords: inherit
 PASS Can set 'inset-block-start' to CSS-wide keywords: unset
@@ -372,192 +558,6 @@ PASS Setting 'inset-inline' to a number: calc(2 + 3) throws TypeError
 PASS Setting 'inset-inline' to a transform: translate(50%, 50%) throws TypeError
 PASS Setting 'inset-inline' to a transform: perspective(10em) throws TypeError
 PASS Setting 'inset-inline' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'padding-block-start' to CSS-wide keywords: initial
-PASS Can set 'padding-block-start' to CSS-wide keywords: inherit
-PASS Can set 'padding-block-start' to CSS-wide keywords: unset
-PASS Can set 'padding-block-start' to CSS-wide keywords: revert
-PASS Can set 'padding-block-start' to var() references:  var(--A)
-PASS Can set 'padding-block-start' to a percent: 0%
-PASS Can set 'padding-block-start' to a percent: -3.14%
-PASS Can set 'padding-block-start' to a percent: 3.14%
-PASS Can set 'padding-block-start' to a percent: calc(0% + 0%)
-PASS Can set 'padding-block-start' to a length: 0px
-PASS Can set 'padding-block-start' to a length: -3.14em
-PASS Can set 'padding-block-start' to a length: 3.14cm
-PASS Can set 'padding-block-start' to a length: calc(0px + 0em)
-PASS Setting 'padding-block-start' to a time: 0s throws TypeError
-PASS Setting 'padding-block-start' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-block-start' to a time: 3.14s throws TypeError
-PASS Setting 'padding-block-start' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-block-start' to an angle: 0deg throws TypeError
-PASS Setting 'padding-block-start' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-block-start' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-block-start' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-block-start' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-block-start' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-block-start' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-block-start' to a number: 0 throws TypeError
-PASS Setting 'padding-block-start' to a number: -3.14 throws TypeError
-PASS Setting 'padding-block-start' to a number: 3.14 throws TypeError
-PASS Setting 'padding-block-start' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-block-start' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-block-start' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-block-start' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'padding-block-end' to CSS-wide keywords: initial
-PASS Can set 'padding-block-end' to CSS-wide keywords: inherit
-PASS Can set 'padding-block-end' to CSS-wide keywords: unset
-PASS Can set 'padding-block-end' to CSS-wide keywords: revert
-PASS Can set 'padding-block-end' to var() references:  var(--A)
-PASS Can set 'padding-block-end' to a percent: 0%
-PASS Can set 'padding-block-end' to a percent: -3.14%
-PASS Can set 'padding-block-end' to a percent: 3.14%
-PASS Can set 'padding-block-end' to a percent: calc(0% + 0%)
-PASS Can set 'padding-block-end' to a length: 0px
-PASS Can set 'padding-block-end' to a length: -3.14em
-PASS Can set 'padding-block-end' to a length: 3.14cm
-PASS Can set 'padding-block-end' to a length: calc(0px + 0em)
-PASS Setting 'padding-block-end' to a time: 0s throws TypeError
-PASS Setting 'padding-block-end' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-block-end' to a time: 3.14s throws TypeError
-PASS Setting 'padding-block-end' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-block-end' to an angle: 0deg throws TypeError
-PASS Setting 'padding-block-end' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-block-end' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-block-end' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-block-end' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-block-end' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-block-end' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-block-end' to a number: 0 throws TypeError
-PASS Setting 'padding-block-end' to a number: -3.14 throws TypeError
-PASS Setting 'padding-block-end' to a number: 3.14 throws TypeError
-PASS Setting 'padding-block-end' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-block-end' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-block-end' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-block-end' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'padding-inline-start' to CSS-wide keywords: initial
-PASS Can set 'padding-inline-start' to CSS-wide keywords: inherit
-PASS Can set 'padding-inline-start' to CSS-wide keywords: unset
-PASS Can set 'padding-inline-start' to CSS-wide keywords: revert
-PASS Can set 'padding-inline-start' to var() references:  var(--A)
-PASS Can set 'padding-inline-start' to a percent: 0%
-PASS Can set 'padding-inline-start' to a percent: -3.14%
-PASS Can set 'padding-inline-start' to a percent: 3.14%
-PASS Can set 'padding-inline-start' to a percent: calc(0% + 0%)
-PASS Can set 'padding-inline-start' to a length: 0px
-PASS Can set 'padding-inline-start' to a length: -3.14em
-PASS Can set 'padding-inline-start' to a length: 3.14cm
-PASS Can set 'padding-inline-start' to a length: calc(0px + 0em)
-PASS Setting 'padding-inline-start' to a time: 0s throws TypeError
-PASS Setting 'padding-inline-start' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-inline-start' to a time: 3.14s throws TypeError
-PASS Setting 'padding-inline-start' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-inline-start' to an angle: 0deg throws TypeError
-PASS Setting 'padding-inline-start' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-inline-start' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-inline-start' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-inline-start' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-inline-start' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-inline-start' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-inline-start' to a number: 0 throws TypeError
-PASS Setting 'padding-inline-start' to a number: -3.14 throws TypeError
-PASS Setting 'padding-inline-start' to a number: 3.14 throws TypeError
-PASS Setting 'padding-inline-start' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-inline-start' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-inline-start' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-inline-start' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'padding-inline-end' to CSS-wide keywords: initial
-PASS Can set 'padding-inline-end' to CSS-wide keywords: inherit
-PASS Can set 'padding-inline-end' to CSS-wide keywords: unset
-PASS Can set 'padding-inline-end' to CSS-wide keywords: revert
-PASS Can set 'padding-inline-end' to var() references:  var(--A)
-PASS Can set 'padding-inline-end' to a percent: 0%
-PASS Can set 'padding-inline-end' to a percent: -3.14%
-PASS Can set 'padding-inline-end' to a percent: 3.14%
-PASS Can set 'padding-inline-end' to a percent: calc(0% + 0%)
-PASS Can set 'padding-inline-end' to a length: 0px
-PASS Can set 'padding-inline-end' to a length: -3.14em
-PASS Can set 'padding-inline-end' to a length: 3.14cm
-PASS Can set 'padding-inline-end' to a length: calc(0px + 0em)
-PASS Setting 'padding-inline-end' to a time: 0s throws TypeError
-PASS Setting 'padding-inline-end' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-inline-end' to a time: 3.14s throws TypeError
-PASS Setting 'padding-inline-end' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-inline-end' to an angle: 0deg throws TypeError
-PASS Setting 'padding-inline-end' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-inline-end' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-inline-end' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-inline-end' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-inline-end' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-inline-end' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-inline-end' to a number: 0 throws TypeError
-PASS Setting 'padding-inline-end' to a number: -3.14 throws TypeError
-PASS Setting 'padding-inline-end' to a number: 3.14 throws TypeError
-PASS Setting 'padding-inline-end' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-inline-end' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-inline-end' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-inline-end' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-FAIL Can set 'padding-block' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-block' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-block' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-block' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-block' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-FAIL Can set 'padding-block' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-block' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Setting 'padding-block' to a time: 0s throws TypeError
-PASS Setting 'padding-block' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-block' to a time: 3.14s throws TypeError
-PASS Setting 'padding-block' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-block' to an angle: 0deg throws TypeError
-PASS Setting 'padding-block' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-block' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-block' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-block' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-block' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-block' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-block' to a number: 0 throws TypeError
-PASS Setting 'padding-block' to a number: -3.14 throws TypeError
-PASS Setting 'padding-block' to a number: 3.14 throws TypeError
-PASS Setting 'padding-block' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-block' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-block' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-block' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-FAIL Can set 'padding-inline' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-inline' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-inline' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-inline' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'padding-inline' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
-FAIL Can set 'padding-inline' to a percent: 0% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a percent: -3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a percent: 3.14% Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a percent: calc(0% + 0%) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a length: 0px Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a length: -3.14em Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a length: 3.14cm Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-FAIL Can set 'padding-inline' to a length: calc(0px + 0em) Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Setting 'padding-inline' to a time: 0s throws TypeError
-PASS Setting 'padding-inline' to a time: -3.14ms throws TypeError
-PASS Setting 'padding-inline' to a time: 3.14s throws TypeError
-PASS Setting 'padding-inline' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'padding-inline' to an angle: 0deg throws TypeError
-PASS Setting 'padding-inline' to an angle: 3.14rad throws TypeError
-PASS Setting 'padding-inline' to an angle: -3.14deg throws TypeError
-PASS Setting 'padding-inline' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'padding-inline' to a flexible length: 0fr throws TypeError
-PASS Setting 'padding-inline' to a flexible length: 1fr throws TypeError
-PASS Setting 'padding-inline' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'padding-inline' to a number: 0 throws TypeError
-PASS Setting 'padding-inline' to a number: -3.14 throws TypeError
-PASS Setting 'padding-inline' to a number: 3.14 throws TypeError
-PASS Setting 'padding-inline' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'padding-inline' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'padding-inline' to a transform: perspective(10em) throws TypeError
-PASS Setting 'padding-inline' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 FAIL Can set 'border-block-start' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 FAIL Can set 'border-block-start' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 FAIL Can set 'border-block-start' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
@@ -1350,11 +1350,11 @@ PASS Can set 'border-start-start-radius' to CSS-wide keywords: unset
 PASS Can set 'border-start-start-radius' to CSS-wide keywords: revert
 PASS Can set 'border-start-start-radius' to var() references:  var(--A)
 PASS Can set 'border-start-start-radius' to a percent: 0%
-PASS Can set 'border-start-start-radius' to a percent: -3.14%
+FAIL Can set 'border-start-start-radius' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-start-start-radius' to a percent: 3.14%
 PASS Can set 'border-start-start-radius' to a percent: calc(0% + 0%)
 PASS Can set 'border-start-start-radius' to a length: 0px
-PASS Can set 'border-start-start-radius' to a length: -3.14em
+FAIL Can set 'border-start-start-radius' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-start-start-radius' to a length: 3.14cm
 PASS Can set 'border-start-start-radius' to a length: calc(0px + 0em)
 PASS Setting 'border-start-start-radius' to a time: 0s throws TypeError
@@ -1381,11 +1381,11 @@ PASS Can set 'border-start-end-radius' to CSS-wide keywords: unset
 PASS Can set 'border-start-end-radius' to CSS-wide keywords: revert
 PASS Can set 'border-start-end-radius' to var() references:  var(--A)
 PASS Can set 'border-start-end-radius' to a percent: 0%
-PASS Can set 'border-start-end-radius' to a percent: -3.14%
+FAIL Can set 'border-start-end-radius' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-start-end-radius' to a percent: 3.14%
 PASS Can set 'border-start-end-radius' to a percent: calc(0% + 0%)
 PASS Can set 'border-start-end-radius' to a length: 0px
-PASS Can set 'border-start-end-radius' to a length: -3.14em
+FAIL Can set 'border-start-end-radius' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-start-end-radius' to a length: 3.14cm
 PASS Can set 'border-start-end-radius' to a length: calc(0px + 0em)
 PASS Setting 'border-start-end-radius' to a time: 0s throws TypeError
@@ -1412,11 +1412,11 @@ PASS Can set 'border-end-start-radius' to CSS-wide keywords: unset
 PASS Can set 'border-end-start-radius' to CSS-wide keywords: revert
 PASS Can set 'border-end-start-radius' to var() references:  var(--A)
 PASS Can set 'border-end-start-radius' to a percent: 0%
-PASS Can set 'border-end-start-radius' to a percent: -3.14%
+FAIL Can set 'border-end-start-radius' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-end-start-radius' to a percent: 3.14%
 PASS Can set 'border-end-start-radius' to a percent: calc(0% + 0%)
 PASS Can set 'border-end-start-radius' to a length: 0px
-PASS Can set 'border-end-start-radius' to a length: -3.14em
+FAIL Can set 'border-end-start-radius' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-end-start-radius' to a length: 3.14cm
 PASS Can set 'border-end-start-radius' to a length: calc(0px + 0em)
 PASS Setting 'border-end-start-radius' to a time: 0s throws TypeError
@@ -1443,11 +1443,11 @@ PASS Can set 'border-end-end-radius' to CSS-wide keywords: unset
 PASS Can set 'border-end-end-radius' to CSS-wide keywords: revert
 PASS Can set 'border-end-end-radius' to var() references:  var(--A)
 PASS Can set 'border-end-end-radius' to a percent: 0%
-PASS Can set 'border-end-end-radius' to a percent: -3.14%
+FAIL Can set 'border-end-end-radius' to a percent: -3.14% assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-end-end-radius' to a percent: 3.14%
 PASS Can set 'border-end-end-radius' to a percent: calc(0% + 0%)
 PASS Can set 'border-end-end-radius' to a length: 0px
-PASS Can set 'border-end-end-radius' to a length: -3.14em
+FAIL Can set 'border-end-end-radius' to a length: -3.14em assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 PASS Can set 'border-end-end-radius' to a length: 3.14cm
 PASS Can set 'border-end-end-radius' to a length: calc(0px + 0em)
 PASS Setting 'border-end-end-radius' to a time: 0s throws TypeError
