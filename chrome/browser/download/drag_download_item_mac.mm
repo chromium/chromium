@@ -6,12 +6,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/strings/sys_string_conversions.h"
+#include "base/mac/foundation_util.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
-// Cocoa intends a smart dragging source, while DragDownloadItem() is a simple
+// Cocoa intends a smart dragging source, while `DragDownloadItem()` is a simple
 // "start dragging this" fire-and-forget. This is a generic source just good
 // enough to satisfy AppKit.
 @interface DragDownloadItemSource : NSObject<NSDraggingSource>
@@ -27,19 +27,19 @@
 @end
 
 namespace {
-
 id<NSDraggingSource> GetDraggingSource() {
   static id<NSDraggingSource> source = [[DragDownloadItemSource alloc] init];
   return source;
 }
-}
+}  // namespace
 
 void DragDownloadItem(const download::DownloadItem* download,
                       const gfx::Image* icon,
                       gfx::NativeView native_view) {
   DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
+  DCHECK(native_view);
   NSView* view = native_view.GetNativeNSView();
-  NSPoint current_position = [[view window] mouseLocationOutsideOfEventStream];
+  NSPoint current_position = view.window.mouseLocationOutsideOfEventStream;
   current_position =
       [view backingAlignedRect:NSMakeRect(current_position.x,
                                           current_position.y, 0, 0)
@@ -53,9 +53,7 @@ void DragDownloadItem(const download::DownloadItem* download,
   if (widget)
     widget->ReleaseCapture();
 
-  NSURL* file_url =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(
-                                 download->GetTargetFilePath().value())];
+  NSURL* file_url = base::mac::FilePathToNSURL(download->GetTargetFilePath());
   NSDraggingItem* file_item =
       [[[NSDraggingItem alloc] initWithPasteboardWriter:file_url] autorelease];
   if (icon) {
@@ -69,16 +67,15 @@ void DragDownloadItem(const download::DownloadItem* download,
 
   // Synthesize a drag event, since we don't have access to the actual event
   // that initiated a drag (possibly consumed by the Web UI, for example).
-  NSEvent* dragEvent =
-      [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
-                         location:current_position
-                    modifierFlags:0
-                        timestamp:[[NSApp currentEvent] timestamp]
-                     windowNumber:[[view window] windowNumber]
-                          context:nil
-                      eventNumber:0
-                       clickCount:1
-                         pressure:1.0];
+  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
+                                          location:current_position
+                                     modifierFlags:0
+                                         timestamp:NSApp.currentEvent.timestamp
+                                      windowNumber:view.window.windowNumber
+                                           context:nil
+                                       eventNumber:0
+                                        clickCount:1
+                                          pressure:1.0];
 
   // Run the drag operation.
   [view beginDraggingSessionWithItems:@[ file_item ]
