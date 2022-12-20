@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <array>
 
+#include "base/containers/flat_map.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace display {
@@ -294,6 +295,12 @@ constexpr struct Data {
 
     // clang-format on
 };
+
+// A map of DRM formats and modifiers that are supported by the hardware planes
+// of the display.
+// See third_party/libdrm/src/include/drm/drm_fourcc.h for the canonical list of
+// formats and modifiers
+using DrmFormatsAndModifiers = base::flat_map<uint32_t, std::vector<uint64_t>>;
 
 }  // namespace display
 

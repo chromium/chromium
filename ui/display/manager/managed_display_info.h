@@ -329,6 +329,15 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // display modes.
   std::string ToFullString() const;
 
+  const DrmFormatsAndModifiers& GetDRMFormatsAndModifiers() const {
+    return drm_formats_and_modifiers_;
+  }
+
+  void SetDRMFormatsAndModifiers(
+      const DrmFormatsAndModifiers& drm_formats_and_modifiers) {
+    drm_formats_and_modifiers_ = drm_formats_and_modifiers;
+  }
+
  private:
   // Return the rotation with the panel orientation applied.
   Display::Rotation GetRotationWithPanelOrientation(
@@ -423,6 +432,8 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   // Radii for the corners of the display. The default radii is (0, 0, 0, 0).
   gfx::RoundedCornersF rounded_corners_radii_;
+
+  DrmFormatsAndModifiers drm_formats_and_modifiers_;
 
   // If you add a new member, you need to update Copy().
 };

@@ -266,6 +266,15 @@ class DISPLAY_EXPORT Display final {
   bool operator==(const Display& rhs) const;
   bool operator!=(const Display& rhs) const { return !(*this == rhs); }
 
+  const DrmFormatsAndModifiers& GetDRMFormatsAndModifiers() const {
+    return drm_formats_and_modifiers_;
+  }
+
+  void SetDRMFormatsAndModifiers(
+      const DrmFormatsAndModifiers& drm_formats_and_modifiers) {
+    drm_formats_and_modifiers_ = drm_formats_and_modifiers;
+  }
+
  private:
   friend struct mojo::StructTraits<mojom::DisplayDataView, Display>;
 
@@ -288,6 +297,7 @@ class DISPLAY_EXPORT Display final {
   int display_frequency_ = 0;
   std::string label_;
   uint32_t audio_formats_ = 0;
+  DrmFormatsAndModifiers drm_formats_and_modifiers_;
 };
 
 }  // namespace display

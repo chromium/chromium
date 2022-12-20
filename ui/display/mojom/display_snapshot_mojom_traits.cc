@@ -155,6 +155,13 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
   if (!data.ReadVerticalDisplayRangeLimits(&vertical_display_range_limits))
     return false;
 
+  display::DrmFormatsAndModifiers drm_formats_and_modifiers;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!data.ReadDrmFormatsAndModifiers(&drm_formats_and_modifiers)) {
+    return false;
+  }
+#endif
+
   *out = std::make_unique<display::DisplaySnapshot>(
       data.display_id(), data.port_display_id(), data.edid_display_id(),
       data.connector_index(), origin, physical_size, type,
@@ -166,7 +173,7 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
       std::move(modes), panel_orientation, std::move(edid), current_mode,
       native_mode, data.product_code(), data.year_of_manufacture(),
       maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits);
+      vertical_display_range_limits, drm_formats_and_modifiers);
   return true;
 }
 

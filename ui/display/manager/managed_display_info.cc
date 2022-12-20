@@ -436,6 +436,8 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   native_ = native_info.native_;
   rounded_corners_radii_ = native_info.rounded_corners_radii_;
 
+  drm_formats_and_modifiers_ = native_info.drm_formats_and_modifiers_;
+
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
   // DisplayChangeObserver.

@@ -29,7 +29,7 @@ class WaylandDmabufFeedbackTranche;
 class WaylandDmabufSurfaceFeedback;
 }  // namespace
 
-using DrmFormatsAndModifiers =
+using IndexedDrmFormatsAndModifiers =
     base::flat_map<uint32_t, base::flat_map<size_t, uint64_t>>;
 
 class WaylandDmabufFeedbackManager {
@@ -58,6 +58,7 @@ class WaylandDmabufFeedbackManager {
 
   void AddSurfaceToScanoutCandidates(Surface* surface);
   void RemoveSurfaceFromScanoutCandidates(Surface* surface);
+  void MaybeResendFeedback(Surface* surface);
 
  private:
   void SendFeedback(WaylandDmabufFeedback* feedback, wl_resource* resource);
@@ -66,7 +67,7 @@ class WaylandDmabufFeedbackManager {
 
   Display* const display_;
   uint32_t version_;
-  DrmFormatsAndModifiers drm_formats_and_modifiers_;
+  IndexedDrmFormatsAndModifiers drm_formats_and_modifiers_;
   std::unique_ptr<base::ReadOnlySharedMemoryRegion> shared_memory_region_;
   std::unique_ptr<WaylandDmabufFeedback> default_feedback_;
   base::flat_map<Surface*, std::unique_ptr<WaylandDmabufSurfaceFeedback>>

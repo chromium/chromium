@@ -46,4 +46,6 @@ struct Display {
   bool is_monochrome;
   int32 display_frequency;
   string label;
+  [EnableIf=is_chromeos]
+  map<uint32, array<uint64>> drm_formats_and_modifiers;
 };

@@ -173,7 +173,7 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       std::move(modes_), current_mode_, native_mode_, product_code_,
       maximum_cursor_size_, color_space_, bits_per_channel_,
       hdr_static_metadata_, variable_refresh_rate_state_,
-      vertical_display_range_limits_);
+      vertical_display_range_limits_, DrmFormatsAndModifiers());
 }
 
 Builder& Builder::SetId(int64_t id) {
@@ -378,7 +378,8 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     uint32_t bits_per_channel,
     const gfx::HDRStaticMetadata& hdr_static_metadata,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<gfx::Range>& vertical_display_range_limits)
+    const absl::optional<gfx::Range>& vertical_display_range_limits,
+    const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : DisplaySnapshot(display_id,
                       port_display_id,
                       edid_display_id,
@@ -407,7 +408,8 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       2018 /*year_of_manufacture */,
                       maximum_cursor_size,
                       variable_refresh_rate_state,
-                      vertical_display_range_limits) {}
+                      vertical_display_range_limits,
+                      drm_formats_and_modifiers) {}
 
 FakeDisplaySnapshot::~FakeDisplaySnapshot() {}
 

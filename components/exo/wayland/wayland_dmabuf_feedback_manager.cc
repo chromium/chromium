@@ -18,6 +18,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 
 namespace exo {
@@ -54,7 +55,7 @@ class WaylandDmabufFeedbackTranche {
   explicit WaylandDmabufFeedbackTranche(
       dev_t target_device_id,
       TrancheFlags flags,
-      DrmFormatsAndModifiers drm_formats_and_modifiers)
+      IndexedDrmFormatsAndModifiers drm_formats_and_modifiers)
       : target_device_id_(target_device_id),
         flags_(flags),
         drm_formats_and_modifiers_(drm_formats_and_modifiers) {}
@@ -73,14 +74,14 @@ class WaylandDmabufFeedbackTranche {
   dev_t GetTargetDeviceId() const { return target_device_id_; }
   TrancheFlags GetFlags() const { return flags_; }
 
-  const DrmFormatsAndModifiers GetFormatsAndModifiers() const {
+  const IndexedDrmFormatsAndModifiers GetFormatsAndModifiers() const {
     return drm_formats_and_modifiers_;
   }
 
  private:
   const dev_t target_device_id_;
   const TrancheFlags flags_;
-  const DrmFormatsAndModifiers drm_formats_and_modifiers_;
+  const IndexedDrmFormatsAndModifiers drm_formats_and_modifiers_;
 };
 
 // A feedback is a set of information that is send to the client. It consists of
@@ -124,13 +125,13 @@ class WaylandDmabufFeedback {
     return scanout_tranche_.get();
   }
 
-  void MaybeAddScanoutTranche() {
+  void MaybeAddScanoutTranche(Surface* surface) {
     DCHECK(!scanout_tranche_);
 
-    // TODO: dummy for now.
-    base::flat_map<uint32_t, std::vector<uint64_t>>
-        display_formats_and_modifiers;
-    DrmFormatsAndModifiers scanout_formats_and_modifiers;
+    const display::Display surface_display = surface->GetDisplay();
+    display::DrmFormatsAndModifiers display_formats_and_modifiers =
+        surface_display.GetDRMFormatsAndModifiers();
+    IndexedDrmFormatsAndModifiers scanout_formats_and_modifiers;
 
     for (const auto& [format, modifier_entries] :
          default_tranche_->GetFormatsAndModifiers()) {
@@ -195,6 +196,12 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
 
   void OnSurfaceDestroying(Surface* surface) override {
     feedback_manager_->RemoveSurfaceFeedback(surface_);
+  }
+
+  void OnDisplayChanged(Surface* surface,
+                        int64_t old_display,
+                        int64_t new_display) override {
+    feedback_manager_->MaybeResendFeedback(surface_);
   }
 
   void AddSurfaceFeedbackRef(
@@ -413,7 +420,7 @@ void WaylandDmabufFeedbackManager::GetSurfaceFeedback(
 
   auto* feedback = surface_feedback->GetFeedback();
   if (base::Contains(scanout_candidates_, surface))
-    feedback->MaybeAddScanoutTranche();
+    feedback->MaybeAddScanoutTranche(surface);
 
   SendFeedback(feedback, feedback_resource);
 }
@@ -438,7 +445,7 @@ void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
   if (feedback->GetScanoutTranche())
     return;
 
-  feedback->MaybeAddScanoutTranche();
+  feedback->MaybeAddScanoutTranche(surface);
   if (!feedback->GetScanoutTranche())
     return;
 
@@ -463,6 +470,21 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
     return;
 
   feedback->ClearScanoutTranche();
+  for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
+    SendFeedback(feedback, feedback_ref->GetFeedbackResource());
+  }
+}
+
+void WaylandDmabufFeedbackManager::MaybeResendFeedback(Surface* surface) {
+  if (!base::Contains(scanout_candidates_, surface) ||
+      !base::Contains(surface_feedbacks_, surface)) {
+    return;
+  }
+
+  const auto& surface_feedback = surface_feedbacks_[surface];
+  auto* feedback = surface_feedback->GetFeedback();
+  feedback->MaybeAddScanoutTranche(surface);
+
   for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
   }

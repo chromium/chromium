@@ -101,7 +101,7 @@ class Surface final : public ui::PropertyHandler {
   // Type-checking downcast routine.
   static Surface* AsSurface(const aura::Window* window);
 
-  aura::Window* window() { return window_.get(); }
+  aura::Window* window() const { return window_.get(); }
 
   void set_leave_enter_callback(LeaveEnterCallback callback) {
     leave_enter_callback_ = callback;
@@ -110,6 +110,8 @@ class Surface final : public ui::PropertyHandler {
   // Called when the display the surface is on has changed.
   // Returns true if successful, and false if it fails.
   bool UpdateDisplay(int64_t old_id, int64_t new_id);
+
+  display::Display GetDisplay() const;
 
   // Called when the output is added for new display.
   void OnNewOutputAdded();

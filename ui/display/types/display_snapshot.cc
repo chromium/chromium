@@ -90,7 +90,8 @@ DisplaySnapshot::DisplaySnapshot(
     int32_t year_of_manufacture,
     const gfx::Size& maximum_cursor_size,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<gfx::Range>& vertical_display_range_limits)
+    const absl::optional<gfx::Range>& vertical_display_range_limits,
+    const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : display_id_(display_id),
       port_display_id_(port_display_id),
       edid_display_id_(edid_display_id),
@@ -119,7 +120,8 @@ DisplaySnapshot::DisplaySnapshot(
       year_of_manufacture_(year_of_manufacture),
       maximum_cursor_size_(maximum_cursor_size),
       variable_refresh_rate_state_(variable_refresh_rate_state),
-      vertical_display_range_limits_(vertical_display_range_limits) {
+      vertical_display_range_limits_(vertical_display_range_limits),
+      drm_formats_and_modifiers_(drm_formats_and_modifiers) {
   // We must explicitly clear out the bytes that represent the serial number.
   const size_t end = std::min(
       kSerialNumberBeginingByte + kSerialNumberLengthInBytes, edid_.size());
@@ -153,7 +155,7 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
       sys_path_, std::move(clone_modes), panel_orientation_, edid_,
       cloned_current_mode, cloned_native_mode, product_code_,
       year_of_manufacture_, maximum_cursor_size_, variable_refresh_rate_state_,
-      vertical_display_range_limits_);
+      vertical_display_range_limits_, drm_formats_and_modifiers_);
 }
 
 std::string DisplaySnapshot::ToString() const {

@@ -151,6 +151,12 @@ bool StructTraits<display::mojom::DisplayDataView, display::Display>::Read(
   if (!data.ReadLabel(&out->label_))
     return false;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!data.ReadDrmFormatsAndModifiers(&out->drm_formats_and_modifiers_)) {
+    return false;
+  }
+#endif
+
   return true;
 }
 

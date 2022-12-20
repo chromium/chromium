@@ -900,6 +900,10 @@ bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
   return true;
 }
 
+display::Display Surface::GetDisplay() const {
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+}
+
 void Surface::CommitSurfaceHierarchy(bool synchronized) {
   TRACE_EVENT0("exo", "Surface::CommitSurfaceHierarchy");
   if (needs_commit_surface_ && (synchronized || !IsSynchronized())) {

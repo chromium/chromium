@@ -61,7 +61,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       int32_t year_of_manufacture,
       const gfx::Size& maximum_cursor_size,
       VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<gfx::Range>& vertical_display_range_limits);
+      const absl::optional<gfx::Range>& vertical_display_range_limits,
+      const DrmFormatsAndModifiers& drm_formats_and_modifiers_);
 
   DisplaySnapshot(const DisplaySnapshot&) = delete;
   DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
@@ -117,6 +118,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   }
   const absl::optional<gfx::Range>& vertical_display_range_limits() const {
     return vertical_display_range_limits_;
+  }
+  const DrmFormatsAndModifiers& GetDRMFormatsAndModifiers() const {
+    return drm_formats_and_modifiers_;
   }
 
   void add_mode(const DisplayMode* mode) { modes_.push_back(mode->Clone()); }
@@ -251,6 +255,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // The supported vrefresh frequency range for this display. Omitted if this
   // display is not VRR capable.
   const absl::optional<gfx::Range> vertical_display_range_limits_;
+
+  // A list of supported Linux DRM formats and corresponding lists of modifiers
+  // for each one.
+  const DrmFormatsAndModifiers drm_formats_and_modifiers_;
 };
 
 }  // namespace display

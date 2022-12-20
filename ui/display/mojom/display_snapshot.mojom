@@ -46,4 +46,8 @@ struct DisplaySnapshot {
   gfx.mojom.Size maximum_cursor_size;
   VariableRefreshRateState variable_refresh_rate_state;
   gfx.mojom.Range? vertical_display_range_limits;
+  // |drm_formats_and_modifiers| contains a list of supported Linux DRM formats
+  // and corresponding lists of modifiers for each one.
+  [EnableIf=is_chromeos]
+  map<uint32, array<uint64>> drm_formats_and_modifiers;
 };

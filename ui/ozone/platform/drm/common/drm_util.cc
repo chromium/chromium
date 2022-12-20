@@ -537,7 +537,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    uint8_t device_index) {
+    uint8_t device_index,
+    const display::DrmFormatsAndModifiers& drm_formats_and_modifiers) {
   const uint8_t display_index = ConnectorIndex8(device_index, info->index());
   const uint16_t connector_index =
       ConnectorIndex16(device_index, info->index());
@@ -630,7 +631,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,
       sys_path, std::move(modes), panel_orientation, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vertical_display_range_limits);
+      variable_refresh_rate_state, vertical_display_range_limits,
+      drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

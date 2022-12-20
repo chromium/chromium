@@ -148,7 +148,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
       uint32_t bits_per_channel,
       const gfx::HDRStaticMetadata& hdr_static_metadata,
       VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<gfx::Range>& vertical_display_range_limits);
+      const absl::optional<gfx::Range>& vertical_display_range_limits,
+      const DrmFormatsAndModifiers& drm_formats_and_modifiers);
 
   FakeDisplaySnapshot(const FakeDisplaySnapshot&) = delete;
   FakeDisplaySnapshot& operator=(const FakeDisplaySnapshot&) = delete;

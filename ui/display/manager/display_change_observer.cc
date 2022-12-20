@@ -371,6 +371,9 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
     new_info.set_rounded_corners_radii(
         gfx::RoundedCornersF(kRoundedDisplayRadius));
   }
+
+  new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
+
   return new_info;
 }
 

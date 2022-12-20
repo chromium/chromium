@@ -167,6 +167,11 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->vertical_display_range_limits();
   }
 
+  static const display::DrmFormatsAndModifiers& drm_formats_and_modifiers(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->GetDRMFormatsAndModifiers();
+  }
+
   static bool Read(display::mojom::DisplaySnapshotDataView data,
                    std::unique_ptr<display::DisplaySnapshot>* out);
 };
