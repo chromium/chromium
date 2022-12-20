@@ -10,6 +10,7 @@
   }
 
   .header {
+    color: var(--cr-primary-text-color);
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -22,7 +23,12 @@
     background-color: var(--horizontal-rule-color);
     border: none;
     height: 2px;
+    margin: 0;
     width: 100%;
+  }
+
+  customize-chrome-appearance {
+    margin-bottom: 16px;
   }
 </style>
 <iron-pages selected="[[page_]]" attr-for-selected="page-name">

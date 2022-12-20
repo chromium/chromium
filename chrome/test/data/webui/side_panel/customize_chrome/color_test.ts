@@ -28,6 +28,8 @@ suite('ColorTest', () => {
 
   test('color can be checked', () => {
     colorElement.checked = true;
+    colorElement.style.width = '66px';
+    colorElement.style.height = '66px';
 
     const wrapper = colorElement.shadowRoot!.querySelector(
         'customize-chrome-check-mark-wrapper')!;
@@ -41,6 +43,8 @@ suite('ColorTest', () => {
 
   test('color can be unchecked', () => {
     colorElement.checked = false;
+    colorElement.style.width = '66px';
+    colorElement.style.height = '66px';
 
     const wrapper = colorElement.shadowRoot!.querySelector(
         'customize-chrome-check-mark-wrapper')!;

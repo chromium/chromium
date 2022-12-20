@@ -1,28 +1,29 @@
 <style>
   :host {
-    align-items: center;
+    box-sizing: border-box;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
+    display: block;
+    outline: none;
+    padding: 8px;
+    width: 100%;
   }
 
-  :host,
+  :host(:focus) {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
   svg {
-    height: 50px;
-    width: 50px;
+    border-radius: 50%;
+    display: block;
+    width: 100%;
   }
 
   :host([checked]) svg {
-    height: 46px;
-    width: 46px;
+    width: calc(100% - 4px);
   }
 
   customize-chrome-check-mark {
     --customize-chrome-check-mark-wrapper-end: -1px;
-  }
-
-  svg {
-    border-radius: 25px;
   }
 
   #background {

@@ -58,6 +58,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
       {"ok", IDS_OK},
+      {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
+      {"resetToClassicChrome",
+       IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

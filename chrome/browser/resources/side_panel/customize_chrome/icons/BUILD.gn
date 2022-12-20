@@ -12,7 +12,9 @@ generate_grd("build_grdp") {
   input_files = [
     "chrome_web_store.svg",
     "corner_new_tab_page.svg",
+    "image.svg",
     "mini_new_tab_page.svg",
+    "reset.svg",
     "upload.svg",
     "uploaded_image.svg",
   ]
