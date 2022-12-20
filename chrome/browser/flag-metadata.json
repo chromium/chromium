@@ -7014,6 +7014,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "wallpaper-google-photos-shared-albums",
+    "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "web-apps-crosapi",
     "owners": [ "mxcai", "ericwilligers", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 115

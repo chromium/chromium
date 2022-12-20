@@ -2116,6 +2116,11 @@ BASE_FEATURE(kWallpaperFullScreenPreview,
              "WallpaperFullScreenPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable using google photos shared albums for wallpaper.
+BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
+             "WallpaperGooglePhotosSharedAlbums",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable different wallpapers per desk.
 BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
@@ -3198,6 +3203,10 @@ bool IsWallpaperFastRefreshEnabled() {
 }
 
 bool IsWallpaperFullScreenPreviewEnabled() {
+  return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
+}
+
+bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
 }
 

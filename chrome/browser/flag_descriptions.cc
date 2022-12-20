@@ -3094,6 +3094,12 @@ const char kWallpaperFullScreenPreviewDescription[] =
     "Allows users to minimize all active windows to preview their current "
     "wallpaper";
 
+const char kWallpaperGooglePhotosSharedAlbumsName[] =
+    "Enable Google Photos shared albums for wallpaper";
+const char kWallpaperGooglePhotosSharedAlbumsDescription[] =
+    "Allow users to set shared Google Photos albums as the source for their "
+    "wallpaper.";
+
 const char kWallpaperPerDeskName[] =
     "Enable setting different wallpapers per desk";
 const char kWallpaperPerDeskDescription[] =
