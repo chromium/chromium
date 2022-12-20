@@ -8,12 +8,16 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "base/barrier_closure.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
@@ -207,6 +211,17 @@ class OverviewDeskNavigationTest : public AshTestBase {
       delete;
   ~OverviewDeskNavigationTest() override = default;
 
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // Begin each test with two desks.
+    NewDesk();
+    auto* desks_controller = DesksController::Get();
+    ASSERT_EQ(2u, desks_controller->desks().size());
+    EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -217,11 +232,6 @@ TEST_F(OverviewDeskNavigationTest, SwitchDesksWithoutExitingOverview) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  NewDesk();
-  auto* desks_controller = DesksController::Get();
-  ASSERT_EQ(2u, desks_controller->desks().size());
-  EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
-
   EnterOverview();
   auto* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
@@ -229,11 +239,114 @@ TEST_F(OverviewDeskNavigationTest, SwitchDesksWithoutExitingOverview) {
   // Switch to the next desk while in overview and wait for the desk switch
   // animation.
   DeskSwitchAnimationWaiter waiter;
+  auto* desks_controller = DesksController::Get();
   desks_controller->ActivateAdjacentDesk(
       /*going_left=*/false, DesksSwitchSource::kDeskSwitchShortcut);
   waiter.Wait();
 
   // Verify that we have switched desks and are still in overview.
+  EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+}
+
+// Tests that clicking on the miniview preserves the previously expected
+// functionality to exit overview.
+TEST_F(OverviewDeskNavigationTest, ClickingMiniViewExitsOverview) {
+  // Enter overview mode, and expect the desk bar is shown with exactly two
+  // desks mini views.
+  EnterOverview();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+
+  // Activate the second desk by clicking on its mini view and wait for the desk
+  // switch animation.
+  auto* desks_controller = DesksController::Get();
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
+  auto* mini_view = desks_bar_view->mini_views().back();
+  EXPECT_EQ(desk_2, mini_view->desk());
+  DeskSwitchAnimationWaiter waiter;
+  LeftClickOn(mini_view);
+  waiter.Wait();
+
+  // Expect that the second desk is now active, and overview mode exited.
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+}
+
+// Tests that overview is not exited when a short desk swipe is detected during
+// a desk activation animation.
+TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  EnterOverview();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Start a swipe animation, but only swipe to show 1/10 of the next desk. This
+  // will cause the animation to animate back to the starting desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->StartSwipeAnimation(/*move_left=*/false);
+  DeskActivationAnimation* animation =
+      static_cast<DeskActivationAnimation*>(desks_controller->animation());
+  ASSERT_TRUE(animation);
+  animation->set_skip_notify_controller_on_animation_finished_for_testing(true);
+  // This ensures a fast swipe is not triggered.
+  animation->last_start_or_replace_time_ =
+      base::TimeTicks::Now() - base::Seconds(2);
+  desks_controller->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange /
+                                         10);
+  WaitUntilEndingScreenshotTaken(animation);
+
+  // Checks that as part of the animation, we have already activated the
+  // expected ending desk.
+  EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // End the swipe animation and wait for the desk activation animation to
+  // finish. This is required to prevent flakiness.
+  base::RunLoop run_loop;
+  animation->on_animation_finished_callback_for_testing_ =
+      run_loop.QuitClosure();
+  desks_controller->EndSwipeAnimation();
+  run_loop.Run();
+
+  // Verify that the original active desk is once again activated (meaning that
+  // we animated back to it), and are still in overview.
+  EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+}
+
+// Tests that inputs to exit overview are ignored during the desk switch
+// animation.
+TEST_F(OverviewDeskNavigationTest, CannotToggleOverviewDuringAnimation) {
+  EnterOverview();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Start a swipe animation.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->StartSwipeAnimation(/*move_left=*/false);
+  DeskActivationAnimation* animation =
+      static_cast<DeskActivationAnimation*>(desks_controller->animation());
+  ASSERT_TRUE(animation);
+  animation->set_skip_notify_controller_on_animation_finished_for_testing(true);
+  desks_controller->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  WaitUntilEndingScreenshotTaken(animation);
+
+  // Attempt to exit overview during the animation. This should do nothing.
+  ExitOverview();
+
+  // End the swipe animation and verify that we have animated to the correct
+  // desk (not the original active desk) and that the attempt to exit overview
+  // during the animation was unsuccessful.
+  desks_controller->EndSwipeAnimation();
   EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
 }

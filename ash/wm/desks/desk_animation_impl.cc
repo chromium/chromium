@@ -269,6 +269,9 @@ void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // proper desk here.
   ActivateDeskDuringAnimation(controller_->desks()[ending_desk_index_].get(),
                               update_window_activation_);
+
+  if (on_animation_finished_callback_for_testing_)
+    std::move(on_animation_finished_callback_for_testing_).Run();
 }
 
 DeskAnimationBase::LatencyReportCallback
