@@ -197,6 +197,12 @@ The video license is [libaom LICENSE].
 The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command.
 `ffmpeg -i blackwhite_yuv444p.mp4 -strict -2 -vcodec av1 -vframes 1 blackwhite_yuv444p-frame.av1.ivf`
 
+#### blackwhite_yuv444p_av1.mp4
+`ffmpeg -i blackwhite_yuv444p-frame.av1.ivf -y -vcodec copy blackwhite_yuv444p_av1.mp4`
+
+#### blackwhite_yuv444p_av1.webm
+`ffmpeg -i blackwhite_yuv444p-frame.av1.ivf -y -vcodec copy blackwhite_yuv444p_av1.webm`
+
 #### av1-film\_grain.ivf
 AV1 data where film grain feature is used.
 This is the same as av1-1-b8-23-film\_grain-50.ivf in [libaom test vectors].

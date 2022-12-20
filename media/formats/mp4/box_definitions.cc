@@ -688,7 +688,6 @@ bool AVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
 
 bool AVCDecoderConfigurationRecord::Parse(const uint8_t* data, int data_size) {
   BufferReader reader(data, data_size);
-  // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);
 }
@@ -868,8 +867,7 @@ bool VPCodecConfigurationRecord::Parse(BoxReader* reader) {
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-AV1CodecConfigurationRecord::AV1CodecConfigurationRecord()
-    : profile(VIDEO_CODEC_PROFILE_UNKNOWN) {}
+AV1CodecConfigurationRecord::AV1CodecConfigurationRecord() = default;
 
 AV1CodecConfigurationRecord::AV1CodecConfigurationRecord(
     const AV1CodecConfigurationRecord& other) = default;
@@ -878,6 +876,16 @@ AV1CodecConfigurationRecord::~AV1CodecConfigurationRecord() = default;
 
 FourCC AV1CodecConfigurationRecord::BoxType() const {
   return FOURCC_AV1C;
+}
+
+bool AV1CodecConfigurationRecord::Parse(BoxReader* reader) {
+  return ParseInternal(reader, reader->media_log());
+}
+
+bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, int data_size) {
+  BufferReader reader(data, data_size);
+  NullMediaLog media_log;
+  return ParseInternal(&reader, &media_log);
 }
 
 // Parse the AV1CodecConfigurationRecord, which has the following format:
@@ -902,18 +910,19 @@ FourCC AV1CodecConfigurationRecord::BoxType() const {
 // }
 //
 // unsigned int (8)[] configOBUs;
-bool AV1CodecConfigurationRecord::Parse(BoxReader* reader) {
+bool AV1CodecConfigurationRecord::ParseInternal(BufferReader* reader,
+                                                MediaLog* media_log) {
   uint8_t av1c_byte = 0;
   RCHECK(reader->Read1(&av1c_byte));
-  const uint8_t av1c_marker =  av1c_byte >> 7;
+  const uint8_t av1c_marker = av1c_byte >> 7;
   if (!av1c_marker) {
-    MEDIA_LOG(ERROR, reader->media_log()) << "Unsupported av1C: marker unset.";
+    MEDIA_LOG(ERROR, media_log) << "Unsupported av1C: marker unset.";
     return false;
   }
 
   const uint8_t av1c_version = av1c_byte & 0b01111111;
   if (av1c_version != 1) {
-    MEDIA_LOG(ERROR, reader->media_log())
+    MEDIA_LOG(ERROR, media_log)
         << "Unsupported av1C: unexpected version number: " << av1c_version;
     return false;
   }
@@ -931,7 +940,7 @@ bool AV1CodecConfigurationRecord::Parse(BoxReader* reader) {
       profile = AV1PROFILE_PROFILE_PRO;
       break;
     default:
-      MEDIA_LOG(ERROR, reader->media_log())
+      MEDIA_LOG(ERROR, media_log)
           << "Unsupported av1C: unknown profile 0x" << std::hex << seq_profile;
       return false;
   }
