@@ -4,7 +4,8 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
@@ -14,10 +15,22 @@ generate_grd("build_grd") {
   grd_prefix = "multidevice_internals"
   out_grd = resources_grd_file
   input_files = [
+    "browser_tabs_metadata_form.js",
+    "browser_tabs_model_form.js",
+    "camera_roll_manager_form.js",
     "i18n_setup.js",
     "index.html",
+    "logging_tab.js",
+    "log_object.js",
+    "multidevice_internals.js",
     "multidevice_logs_browser_proxy.js",
     "multidevice_phonehub_browser_proxy.js",
+    "notification_form.js",
+    "notification_manager.js",
+    "phonehub_tab.js",
+    "phone_name_form.js",
+    "phone_status_model_form.js",
+    "quick_action_controller_form.js",
     "types.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
@@ -32,29 +45,30 @@ generate_grd("build_grdp") {
   out_grd = generated_grdp_file
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [
-    "browser_tabs_metadata_form.js",
-    "browser_tabs_model_form.js",
-    "camera_roll_manager_form.js",
-    "logging_tab.js",
-    "log_object.js",
-    "multidevice_internals.js",
-    "notification_form.js",
-    "notification_manager.js",
-    "phonehub_tab.js",
-    "phone_name_form.js",
-    "phone_status_model_form.js",
-    "quick_action_controller_form.js",
-    "shared_style.js",
+    "browser_tabs_metadata_form.html.js",
+    "browser_tabs_model_form.html.js",
+    "camera_roll_manager_form.html.js",
+    "logging_tab.html.js",
+    "log_object.html.js",
+    "multidevice_internals.html.js",
+    "notification_form.html.js",
+    "notification_manager.html.js",
+    "phonehub_tab.html.js",
+    "phone_name_form.html.js",
+    "phone_status_model_form.html.js",
+    "quick_action_controller_form.html.js",
+    "shared_style.css.js",
+  ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
   ]
 }
 
 grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = resources_grd_file
-  deps = [
-    ":build_grd",
-    ":web_components",
-  ]
+  deps = [ ":build_grd" ]
   outputs = [
     "grit/multidevice_internals_resources.h",
     "grit/multidevice_internals_resources_map.cc",
@@ -204,23 +218,25 @@ js_library("phonehub_tab") {
 js_library("types") {
 }
 
-js_library("shared_style") {
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "log_object.html",
+    "logging_tab.html",
+    "multidevice_internals.html",
+    "phonehub_tab.html",
+    "phone_name_form.html",
+    "quick_action_controller_form.html",
+    "phone_status_model_form.html",
+    "browser_tabs_metadata_form.html",
+    "browser_tabs_model_form.html",
+    "notification_form.html",
+    "notification_manager.html",
+    "camera_roll_manager_form.html",
+  ]
+  use_js = true
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "log_object.js",
-    "logging_tab.js",
-    "multidevice_internals.js",
-    "phonehub_tab.js",
-    "phone_name_form.js",
-    "quick_action_controller_form.js",
-    "phone_status_model_form.js",
-    "shared_style.js",
-    "browser_tabs_metadata_form.js",
-    "browser_tabs_model_form.js",
-    "notification_form.js",
-    "notification_manager.js",
-    "camera_roll_manager_form.js",
-  ]
+css_to_wrapper("css_wrapper_files") {
+  in_files = [ "shared_style.css" ]
+  use_js = true
 }

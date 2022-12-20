@@ -12,14 +12,15 @@ import './i18n_setup.js';
 import './phone_name_form.js';
 import './phone_status_model_form.js';
 import './notification_manager.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './quick_action_controller_form.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
+import {getTemplate} from './phonehub_tab.html.js';
 import {FeatureStatus} from './types.js';
 
 /**
@@ -46,7 +47,7 @@ const featureStatusToStringMap = new Map([
 Polymer({
   is: 'phonehub-tab',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [
     WebUIListenerBehavior,

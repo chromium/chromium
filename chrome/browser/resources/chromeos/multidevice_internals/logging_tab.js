@@ -6,11 +6,12 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './log_object.js';
-import './shared_style.js';
+import './shared_style.css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './logging_tab.html.js';
 import {MultideviceLogsBrowserProxy} from './multidevice_logs_browser_proxy.js';
 import {LogMessage, Severity} from './types.js';
 
@@ -46,7 +47,7 @@ function logToSavedString_(log) {
 Polymer({
   is: 'logging-tab',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [
     WebUIListenerBehavior,
