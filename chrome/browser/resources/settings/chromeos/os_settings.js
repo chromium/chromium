@@ -12,6 +12,7 @@ import './device_page/display_overscan_dialog.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
 import './device_page/per_device_mouse.js';
+import './device_page/per_device_touchpad.js';
 import './device_page/pointers.js';
 import './device_page/power.js';
 import './device_page/storage.js';

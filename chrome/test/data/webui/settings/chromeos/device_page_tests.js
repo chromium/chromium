@@ -24,6 +24,7 @@ const TestNames = {
   Display: 'display',
   Keyboard: 'keyboard',
   PerDeviceMouse: 'per-device mouse',
+  PerDeviceTouchpad: 'per-device touchpad',
   NightLight: 'night light',
   PerDeviceKeyboard: 'per-device keyboard',
   Pointers: 'pointers',
@@ -635,6 +636,32 @@ suite('SettingsDevicePage', function() {
           routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
           '#perDeviceMouseSubpageTitle')));
+    });
+  });
+
+  suite(assert(TestNames.PerDeviceTouchpad), function() {
+    let perDeviceTouchpadPage;
+
+    setup(async function() {
+      await init();
+      const row = assert(
+          devicePage.shadowRoot.querySelector(`#main #perDeviceTouchpadRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+      const page =
+          devicePage.shadowRoot.querySelector('settings-per-device-touchpad');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDeviceTouchpadPage = page;
+      });
+    });
+
+    test('per-device touchpad subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
+          '#perDeviceTouchpadSubpageTitle')));
     });
   });
 
