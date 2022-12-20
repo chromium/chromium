@@ -78,6 +78,11 @@ struct StructTraits<
     return profile.scalability_modes;
   }
 
+  static bool is_software_codec(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.is_software_codec;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);

@@ -82,6 +82,8 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
     return false;
   out->scalability_modes = std::move(scalability_modes);
 
+  out->is_software_codec = data.is_software_codec();
+
   return true;
 }
 

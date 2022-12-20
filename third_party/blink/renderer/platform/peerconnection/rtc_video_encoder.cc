@@ -35,9 +35,11 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/capture/capture_switches.h"
+#include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/h264_parser.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
@@ -774,7 +776,7 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 
     preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kNV12};
   }
-  const media::VideoEncodeAccelerator::Config config(
+  media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, profile,
       media::Bitrate::ConstantBitrate(bitrate_bps), absl::nullopt,
       absl::nullopt, absl::nullopt, is_constrained_h264, storage_type,
@@ -782,6 +784,15 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
           ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
           : media::VideoEncodeAccelerator::Config::ContentType::kCamera,
       spatial_layers, inter_layer_pred);
+
+  // When we don't have built in H264 software encoding, allow usage of any
+  // software encoders provided by the platform.
+#if !BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(RTC_USE_H264)
+  if (profile >= media::H264PROFILE_MIN && profile <= media::H264PROFILE_MAX) {
+    config.required_encoder_type =
+        media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
+  }
+#endif
   if (!video_encoder_->Initialize(config, this,
                                   std::make_unique<media::NullMediaLog>())) {
     LogAndNotifyError(FROM_HERE, "Error initializing video_encoder",

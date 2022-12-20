@@ -109,8 +109,6 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   void NotifyMediaCodecError(std::string message, media_status_t status);
   void NotifyError(base::StringPiece message, Error code);
 
-  bool IsThereGoodMediaCodecFor(VideoCodec codec);
-
   base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
   base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);
 

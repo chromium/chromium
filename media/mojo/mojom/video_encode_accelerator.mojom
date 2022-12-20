@@ -51,6 +51,7 @@ struct VideoEncodeAcceleratorSupportedProfile {
   uint32 max_framerate_denominator;
   array<VideoEncodeAcceleratorSupportedRateControlMode> rate_control_modes;
   array<SVCScalabilityMode> scalability_modes;
+  bool is_software_codec;
 };
 
 // A renderer process calls this interface's functions. GPU process implements

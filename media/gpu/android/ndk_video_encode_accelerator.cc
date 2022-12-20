@@ -5,12 +5,14 @@
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include "base/android/build_info.h"
+#include "base/android/jni_string.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
@@ -21,6 +23,8 @@
 #include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
+
+using EncoderType = VideoEncodeAccelerator::Config::EncoderType;
 
 namespace {
 
@@ -119,11 +123,122 @@ bool InitMediaCodec() {
   return true;
 }
 
+struct CodecInfo {
+  VideoEncodeAccelerator::SupportedProfile profile;
+  std::string name;
+};
+
+const std::vector<CodecInfo>& GetCodecInfoCache() {
+  static const base::NoDestructor<std::vector<CodecInfo>> infos([] {
+    // Sadly the NDK doesn't provide a mechanism for accessing the equivalent of
+    // the SDK's MediaCodecList, so we must call into Java to enumerate support.
+    JNIEnv* env = base::android::AttachCurrentThread();
+    auto java_profiles =
+        Java_VideoEncodeAcceleratorUtil_getSupportedProfiles(env);
+    std::vector<CodecInfo> cpp_infos;
+    if (!java_profiles) {
+      return cpp_infos;
+    }
+
+    for (auto java_profile : java_profiles.ReadElements<jobject>()) {
+      CodecInfo info;
+      info.profile.profile = static_cast<VideoCodecProfile>(
+          Java_SupportedProfileAdapter_getProfile(env, java_profile));
+      info.profile.min_resolution = gfx::Size(
+          Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
+          Java_SupportedProfileAdapter_getMinHeight(env, java_profile));
+      info.profile.max_resolution = gfx::Size(
+          Java_SupportedProfileAdapter_getMaxWidth(env, java_profile),
+          Java_SupportedProfileAdapter_getMaxHeight(env, java_profile));
+      info.profile.max_framerate_numerator =
+          Java_SupportedProfileAdapter_getMaxFramerateNumerator(env,
+                                                                java_profile);
+      info.profile.max_framerate_denominator =
+          Java_SupportedProfileAdapter_getMaxFramerateDenominator(env,
+                                                                  java_profile);
+      if (Java_SupportedProfileAdapter_supportsCbr(env, java_profile)) {
+        info.profile.rate_control_modes |=
+            NdkVideoEncodeAccelerator::kConstantMode;
+      }
+      if (Java_SupportedProfileAdapter_supportsVbr(env, java_profile)) {
+        info.profile.rate_control_modes |=
+            NdkVideoEncodeAccelerator::kVariableMode;
+      }
+      info.profile.is_software_codec =
+          Java_SupportedProfileAdapter_isSoftwareCodec(env, java_profile);
+
+      info.name = base::android::ConvertJavaStringToUTF8(
+          Java_SupportedProfileAdapter_getName(env, java_profile));
+      cpp_infos.push_back(info);
+    }
+    return cpp_infos;
+  }());
+  return *infos;
+}
+
+absl::optional<std::string> FindMediaCodecFor(
+    const VideoEncodeAccelerator::Config& config) {
+  absl::optional<std::string> encoder_name;
+  for (const auto& info : GetCodecInfoCache()) {
+    const auto& profile = info.profile;
+    if (profile.profile != config.output_profile) {
+      continue;
+    }
+
+    const auto& input_size = config.input_visible_size;
+    if (profile.min_resolution.width() > input_size.width()) {
+      continue;
+    }
+    if (profile.min_resolution.height() > input_size.height()) {
+      continue;
+    }
+    if (profile.max_resolution.width() < input_size.width()) {
+      continue;
+    }
+    if (profile.max_resolution.height() < input_size.height()) {
+      continue;
+    }
+
+    // NOTE: We don't check bitrate mode here since codecs don't
+    // always specify the bitrate mode. Per code inspection, VBR
+    // support is announced if a codec doesn't specify anything.
+
+    if (config.initial_framerate) {
+      double max_supported_framerate =
+          static_cast<double>(profile.max_framerate_numerator) /
+          profile.max_framerate_denominator;
+      if (config.initial_framerate.value() > max_supported_framerate) {
+        continue;
+      }
+    }
+
+    if (profile.is_software_codec) {
+      if (config.required_encoder_type == EncoderType::kSoftware) {
+        return info.name;
+      }
+
+      // Note the encoder name in case we don't find a hardware encoder.
+      if (config.required_encoder_type == EncoderType::kNoPreference &&
+          !encoder_name) {
+        encoder_name = info.name;
+      }
+    } else {
+      // Always prefer the hardware encoder if it exists.
+      if (config.required_encoder_type == EncoderType::kHardware ||
+          config.required_encoder_type == EncoderType::kNoPreference) {
+        return info.name;
+      }
+    }
+  }
+  return encoder_name;
+}
+
 }  // namespace
 
 NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
     scoped_refptr<base::SequencedTaskRunner> runner)
-    : task_runner_(runner) {}
+    : task_runner_(std::move(runner)) {}
+
 NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   // It's supposed to be cleared by Destroy(), it basically checks
   // that we destroy `this` correctly.
@@ -143,34 +258,8 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   if (!IsSupported())
     return profiles;
 
-  // Sadly the NDK doesn't provide a mechanism for accessing the equivalent of
-  // the SDK's MediaCodecList, so we must call into Java to enumerate support.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  auto java_profiles =
-      Java_VideoEncodeAcceleratorUtil_getSupportedProfiles(env);
-  if (java_profiles) {
-    for (auto java_profile : java_profiles.ReadElements<jobject>()) {
-      VideoEncodeAccelerator::SupportedProfile result;
-      result.profile = static_cast<VideoCodecProfile>(
-          Java_SupportedProfileAdapter_getProfile(env, java_profile));
-      result.min_resolution = gfx::Size(
-          Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
-          Java_SupportedProfileAdapter_getMinHeight(env, java_profile));
-      result.max_resolution = gfx::Size(
-          Java_SupportedProfileAdapter_getMaxWidth(env, java_profile),
-          Java_SupportedProfileAdapter_getMaxHeight(env, java_profile));
-      result.max_framerate_numerator =
-          Java_SupportedProfileAdapter_getMaxFramerateNumerator(env,
-                                                                java_profile);
-      result.max_framerate_denominator =
-          Java_SupportedProfileAdapter_getMaxFramerateDenominator(env,
-                                                                  java_profile);
-      if (Java_SupportedProfileAdapter_supportsCbr(env, java_profile))
-        result.rate_control_modes |= kConstantMode;
-      if (Java_SupportedProfileAdapter_supportsVbr(env, java_profile))
-        result.rate_control_modes |= kVariableMode;
-      profiles.push_back(result);
-    }
+  for (auto& info : GetCodecInfoCache()) {
+    profiles.push_back(info.profile);
   }
   return profiles;
 }
@@ -195,6 +284,11 @@ bool NdkVideoEncodeAccelerator::Initialize(
   log_ = std::move(media_log);
   VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
 
+  // These should already be filtered out by VideoEncodeAcceleratorUtil.
+  if (codec != VideoCodec::kH264 && codec == VideoCodec::kHEVC) {
+    config_.required_encoder_type = EncoderType::kHardware;
+  }
+
   if (config.input_format != PIXEL_FORMAT_I420 &&
       config.input_format != PIXEL_FORMAT_NV12) {
     MEDIA_LOG(ERROR, log_) << "Unexpected combo: " << config.input_format
@@ -202,12 +296,14 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
-  if (!IsThereGoodMediaCodecFor(codec)) {
-    MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: " << mime;
+  auto name = FindMediaCodecFor(config_);
+  if (!name) {
+    MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: "
+                           << config_.AsHumanReadableString();
     return false;
   }
 
+  auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   effective_framerate_ = config.initial_framerate.value_or(kDefaultFramerate);
   auto media_format = CreateVideoFormat(mime, config, effective_framerate_,
                                         COLOR_FORMAT_YUV420_SEMIPLANAR);
@@ -216,10 +312,11 @@ bool NdkVideoEncodeAccelerator::Initialize(
   // if it doesn't unaligned resolutions.
   auto configured_size = config_.input_visible_size;
   do {
-    media_codec_.reset(AMediaCodec_createEncoderByType(mime.c_str()));
+    media_codec_.reset(AMediaCodec_createCodecByName(name->c_str()));
     if (!media_codec_) {
       MEDIA_LOG(ERROR, log_)
-          << "Can't create media codec for mime type: " << mime;
+          << "Can't create media codec (" << name.value()
+          << ") for config: " << config_.AsHumanReadableString();
       return false;
     }
     media_status_t status =
@@ -293,6 +390,8 @@ bool NdkVideoEncodeAccelerator::Initialize(
                      client_ptr_factory_->GetWeakPtr(), 1,
                      config.input_visible_size, output_buffer_capacity));
 
+  MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
+                        << ") for config: " << config_.AsHumanReadableString();
   return true;
 }
 
@@ -733,17 +832,6 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
                      metadata));
   AMediaCodec_releaseOutputBuffer(media_codec_.get(),
                                   output_buffer.buffer_index, false);
-}
-
-bool NdkVideoEncodeAccelerator::IsThereGoodMediaCodecFor(VideoCodec codec) {
-  // GetSupportedProfiles() already accounts for codec support, so if the codec
-  // is listed it's supported.
-  static const SupportedProfiles kSupportedProfiles = GetSupportedProfiles();
-  for (const auto& profile : kSupportedProfiles) {
-    if (codec == VideoCodecProfileToVideoCodec(profile.profile))
-      return true;
-  }
-  return false;
 }
 
 }  // namespace media

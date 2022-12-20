@@ -89,12 +89,14 @@ class CodecProfileLevelList {
             case VideoCodec.H264:
                 switch (profile) {
                     case CodecProfileLevel.AVCProfileBaseline:
+                    case CodecProfileLevel.AVCProfileConstrainedBaseline:
                         return VideoCodecProfile.H264PROFILE_BASELINE;
                     case CodecProfileLevel.AVCProfileMain:
                         return VideoCodecProfile.H264PROFILE_MAIN;
                     case CodecProfileLevel.AVCProfileExtended:
                         return VideoCodecProfile.H264PROFILE_EXTENDED;
                     case CodecProfileLevel.AVCProfileHigh:
+                    case CodecProfileLevel.AVCProfileConstrainedHigh:
                         return VideoCodecProfile.H264PROFILE_HIGH;
                     case CodecProfileLevel.AVCProfileHigh10:
                         return VideoCodecProfile.H264PROFILE_HIGH10PROFILE;
@@ -120,6 +122,7 @@ class CodecProfileLevelList {
                         return VideoCodecProfile.VP9PROFILE_PROFILE1;
                     case CodecProfileLevel.VP9Profile2:
                     case CodecProfileLevel.VP9Profile2HDR:
+                    case CodecProfileLevel.VP9Profile2HDR10Plus:
                         return VideoCodecProfile.VP9PROFILE_PROFILE2;
                     case CodecProfileLevel.VP9Profile3:
                     case CodecProfileLevel.VP9Profile3HDR:

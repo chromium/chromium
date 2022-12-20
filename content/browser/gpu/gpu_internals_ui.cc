@@ -653,11 +653,12 @@ base::Value::List GetVideoAcceleratorsInfo() {
     std::string codec_string =
         base::StringPrintf("Encode %s", GetProfileName(profile.profile));
     std::string resolution_string = base::StringPrintf(
-        "%s to %s pixels, and/or %.3f fps",
+        "%s to %s pixels, and/or %.3f fps%s.",
         profile.min_resolution.ToString().c_str(),
         profile.max_resolution.ToString().c_str(),
         static_cast<double>(profile.max_framerate_numerator) /
-            profile.max_framerate_denominator);
+            profile.max_framerate_denominator,
+        profile.is_software_codec ? " (software codec)" : "");
     info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
   }
   return info;

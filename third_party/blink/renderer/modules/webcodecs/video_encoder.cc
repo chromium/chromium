@@ -104,6 +104,8 @@ struct CrossThreadCopier<media::EncoderStatus>
 
 namespace blink {
 
+using EncoderType = media::VideoEncodeAccelerator::Config::EncoderType;
+
 namespace {
 
 constexpr const char kCategory[] = "media";
@@ -113,9 +115,10 @@ bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    bool allow_software_codecs) {
-  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled())
+    EncoderType required_encoder_type) {
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
     return false;
+  }
 
   auto supported_profiles =
       gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
@@ -123,17 +126,21 @@ bool IsAcceleratedConfigurationSupported(
 
   bool found_supported_profile = false;
   for (auto& supported_profile : supported_profiles) {
-    if (supported_profile.profile != profile)
+    if (supported_profile.profile != profile) {
       continue;
+    }
 
-    // TODO(crbug.com/1383643): We should retrieve a separate list of supported
-    // profiles tagged with software capabilities instead of just ignoring the
-    // minimum resolution, but the practical outcome ends up the same, so for
-    // now just do the simple thing.
-    if (!allow_software_codecs && (supported_profile.min_resolution.width() >
-                                       options.frame_size.width() ||
-                                   supported_profile.min_resolution.height() >
-                                       options.frame_size.height())) {
+    if (supported_profile.is_software_codec) {
+      if (required_encoder_type == EncoderType::kHardware) {
+        continue;
+      }
+    } else if (required_encoder_type == EncoderType::kSoftware) {
+      continue;
+    }
+
+    if (supported_profile.min_resolution.width() > options.frame_size.width() ||
+        supported_profile.min_resolution.height() >
+            options.frame_size.height()) {
       continue;
     }
 
@@ -483,12 +490,12 @@ bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
   // Note: Since we don't enumerate OS software encoders this may still fail and
   // trigger fallback to our bundled software encoder (if any).
   //
-  // Note 2: It's not ideal to have this logic live here, but to move it to the
-  // accelerator we'd need to always wait for GpuFactories enumeration.
+  // Note 2: It's not ideal to have this logic live here, but otherwise we need
+  // to always wait for GpuFactories enumeration.
   //
-  // TODO(crbug.com/1383643): Add IS_ANDROID, IS_WIN here once we can force
-  // selection of a software encoder on those platforms.
-#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1383643): Add IS_WIN here once we can force
+  // selection of a software encoder there.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   const auto codec = media::VideoCodecProfileToVideoCodec(profile);
   return codec == media::VideoCodec::kHEVC ||
 #if BUILDFLAG(ENABLE_OPENH264)
@@ -499,7 +506,18 @@ bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
 #endif  // BUILDFLAG(ENABLE_OPENH264)
 #else
   return false;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+}
+
+EncoderType GetRequiredEncoderType(media::VideoCodecProfile profile,
+                                   HardwarePreference hw_pref) {
+  if (hw_pref != HardwarePreference::kPreferHardware &&
+      MayHaveOSSoftwareEncoder(profile)) {
+    return hw_pref == HardwarePreference::kPreferSoftware
+               ? EncoderType::kSoftware
+               : EncoderType::kNoPreference;
+  }
+  return EncoderType::kHardware;
 }
 
 }  // namespace
@@ -561,20 +579,9 @@ VideoEncoder::CreateAcceleratedVideoEncoder(
     const media::VideoEncoder::Options& options,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     HardwarePreference hw_pref) {
-  bool allow_software_codecs = false;
-  auto required_encoder_type =
-      media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
-  if (hw_pref != HardwarePreference::kPreferHardware &&
-      MayHaveOSSoftwareEncoder(profile)) {
-    required_encoder_type =
-        hw_pref == HardwarePreference::kPreferSoftware
-            ? media::VideoEncodeAccelerator::Config::EncoderType::kSoftware
-            : media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
-    allow_software_codecs = true;
-  }
-
+  auto required_encoder_type = GetRequiredEncoderType(profile, hw_pref);
   if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories,
-                                           allow_software_codecs)) {
+                                           required_encoder_type)) {
     return nullptr;
   }
 
@@ -1198,12 +1205,10 @@ static void isConfigSupportedWithHardwareOnly(
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
-  const bool allow_software_codecs =
-      config->hw_pref != HardwarePreference::kPreferHardware &&
-      MayHaveOSSoftwareEncoder(config->profile);
-
+  auto required_encoder_type =
+      GetRequiredEncoderType(config->profile, config->hw_pref);
   bool supported = IsAcceleratedConfigurationSupported(
-      config->profile, config->options, gpu_factories, allow_software_codecs);
+      config->profile, config->options, gpu_factories, required_encoder_type);
   support->setSupported(supported);
   resolver->Resolve(support);
 }

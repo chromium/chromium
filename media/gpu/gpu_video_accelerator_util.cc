@@ -139,6 +139,7 @@ GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
     profile.max_framerate_denominator = gpu_profile.max_framerate_denominator;
     // If VBR is supported in the future, remove this hard-coding of CBR.
     profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
+    profile.is_software_codec = gpu_profile.is_software_codec;
     profiles.push_back(profile);
   }
   return profiles;
@@ -157,6 +158,7 @@ GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
     profile.max_resolution = media_profile.max_resolution;
     profile.max_framerate_numerator = media_profile.max_framerate_numerator;
     profile.max_framerate_denominator = media_profile.max_framerate_denominator;
+    profile.is_software_codec = media_profile.is_software_codec;
     profiles.push_back(profile);
   }
   return profiles;

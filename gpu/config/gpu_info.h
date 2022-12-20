@@ -154,6 +154,7 @@ struct GPU_EXPORT VideoEncodeAcceleratorSupportedProfile {
   gfx::Size max_resolution;
   uint32_t max_framerate_numerator;
   uint32_t max_framerate_denominator;
+  bool is_software_codec;
 };
 using VideoEncodeAcceleratorSupportedProfiles =
     std::vector<VideoEncodeAcceleratorSupportedProfile>;

@@ -12,6 +12,7 @@ import android.util.Range;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -25,7 +26,7 @@ import java.util.HashSet;
  */
 @JNINamespace("media")
 class VideoEncodeAcceleratorUtil {
-    private static final String TAG = "VideoEncodeAcceleratorUtil";
+    private static final String TAG = "VEAUtil";
 
     private static final String[] SUPPORTED_TYPES = {
             MediaCodecUtil.MimeTypes.VIDEO_VP8,
@@ -44,6 +45,8 @@ class VideoEncodeAcceleratorUtil {
         public int maxFramerateDenominator;
         public boolean supportsCbr;
         public boolean supportsVbr;
+        public String name;
+        public boolean isSoftwareCodec;
 
         @CalledByNative("SupportedProfileAdapter")
         public int getProfile() {
@@ -89,6 +92,16 @@ class VideoEncodeAcceleratorUtil {
         public boolean supportsVbr() {
             return this.supportsVbr;
         }
+
+        @CalledByNative("SupportedProfileAdapter")
+        public String getName() {
+            return this.name;
+        }
+
+        @CalledByNative("SupportedProfileAdapter")
+        public boolean isSoftwareCodec() {
+            return this.isSoftwareCodec;
+        }
     }
 
     // Currently our encoder only supports NV12.
@@ -126,10 +139,10 @@ class VideoEncodeAcceleratorUtil {
                 new ArrayList<SupportedProfileAdapter>();
         ArrayList<SupportedProfileAdapter> softwareProfiles =
                 new ArrayList<SupportedProfileAdapter>();
-        HashSet<Integer> hardwareProfileSet = new HashSet<Integer>();
 
         for (String type : SUPPORTED_TYPES) {
             for (MediaCodecInfo info : codecList) {
+                if (info.isAlias()) continue; // Skip duplicates.
                 if (!info.isEncoder()) continue;
                 if (!info.isHardwareAccelerated() && requiresHardware(type)) continue;
 
@@ -177,11 +190,12 @@ class VideoEncodeAcceleratorUtil {
                                 CodecProfileLevelList.mediaCodecProfileToChromiumMediaProfile(
                                         codec, cpl.profile));
                     } catch (RuntimeException e) {
+                        // This means mediaCodecProfileToChromiumMediaProfile() needs updating.
+                        Log.w(TAG, "Unknown profile: " + cpl.profile);
                         continue;
                     }
                 }
 
-                if (info.isHardwareAccelerated()) hardwareProfileSet.addAll(supportedProfiles);
                 ArrayList<SupportedProfileAdapter> profiles =
                         info.isHardwareAccelerated() ? hardwareProfiles : softwareProfiles;
                 for (int mediaProfile : supportedProfiles) {
@@ -196,6 +210,8 @@ class VideoEncodeAcceleratorUtil {
                     profile.maxFramerateDenominator = 1;
                     profile.supportsCbr = supportsCbr;
                     profile.supportsVbr = supportsVbr;
+                    profile.name = info.getName();
+                    profile.isSoftwareCodec = info.isSoftwareOnly();
                     profiles.add(profile);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
@@ -211,18 +227,17 @@ class VideoEncodeAcceleratorUtil {
                         profile.maxFramerateDenominator = 1;
                         profile.supportsCbr = supportsCbr;
                         profile.supportsVbr = supportsVbr;
+                        profile.name = info.getName();
+                        profile.isSoftwareCodec = info.isSoftwareOnly();
                         profiles.add(profile);
                     }
                 }
             }
         }
 
-        // For allowed software codecs, if we don't also have hardware support, add the software
-        // capabilities.
+        // Insert all software codecs after the hardware support.
         ArrayList<SupportedProfileAdapter> profiles = hardwareProfiles;
-        for (SupportedProfileAdapter profile : softwareProfiles) {
-            if (!hardwareProfileSet.contains(profile.profile)) profiles.add(profile);
-        }
+        profiles.addAll(softwareProfiles);
 
         SupportedProfileAdapter[] profileArray = new SupportedProfileAdapter[profiles.size()];
         profiles.toArray(profileArray);

@@ -98,6 +98,19 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
     str += base::StringPrintf(", is_constrained_h264: %u", is_constrained_h264);
   }
 
+  str += ", required_encoder_type: ";
+  switch (required_encoder_type) {
+    case EncoderType::kHardware:
+      str += "hardware";
+      break;
+    case EncoderType::kSoftware:
+      str += "software";
+      break;
+    case EncoderType::kNoPreference:
+      str += "no-preference";
+      break;
+  }
+
   if (spatial_layers.empty())
     return str;
 
@@ -111,20 +124,19 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
         sl.num_of_temporal_layers);
   }
 
+  str += ", InterLayerPredMode::";
   switch (inter_layer_pred) {
     case Config::InterLayerPredMode::kOff:
-      str += base::StringPrintf(", InterLayerPredMode::kOff");
+      str += "kOff";
       break;
     case Config::InterLayerPredMode::kOn:
-      str += base::StringPrintf(", InterLayerPredMode::kOn");
+      str += "kOn";
       break;
     case Config::InterLayerPredMode::kOnKeyPic:
-      str += base::StringPrintf(", InterLayerPredMode::kOnKeyPic");
-      break;
-    default:
-      str += base::StringPrintf(", Unknown InterLayerPredMode");
+      str += "kOnKeyPic";
       break;
   }
+
   return str;
 }
 
@@ -201,7 +213,8 @@ bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
          l.max_framerate_numerator == r.max_framerate_numerator &&
          l.max_framerate_denominator == r.max_framerate_denominator &&
          l.rate_control_modes == r.rate_control_modes &&
-         l.scalability_modes == r.scalability_modes;
+         l.scalability_modes == r.scalability_modes &&
+         l.is_software_codec == r.is_software_codec;
 }
 
 bool operator==(const H264Metadata& l, const H264Metadata& r) {

@@ -241,6 +241,13 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
         profile.min_resolution = min_resolution;
         profile.profile = supported_profile;
         profiles.push_back(profile);
+
+        // macOS doesn't provide a way to enumerate codec details, so just
+        // assume software codec support is the same as hardware, but with
+        // the lowest possible minimum resolution.
+        profile.min_resolution = gfx::Size(2, 2);
+        profile.is_software_codec = true;
+        profiles.push_back(profile);
       }
     }
   }
@@ -272,6 +279,13 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
       if (VideoCodecProfileToVideoCodec(supported_profile) ==
           VideoCodec::kHEVC) {
         profile.profile = supported_profile;
+        profiles.push_back(profile);
+
+        // macOS doesn't provide a way to enumerate codec details, so just
+        // assume software codec support is the same as hardware, but with
+        // the lowest possible minimum resolution.
+        profile.min_resolution = gfx::Size(2, 2);
+        profile.is_software_codec = true;
         profiles.push_back(profile);
       }
     }

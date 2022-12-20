@@ -185,6 +185,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     uint32_t max_framerate_denominator{0};
     SupportedRateControlMode rate_control_modes = kNoMode;
     std::vector<SVCScalabilityMode> scalability_modes;
+    bool is_software_codec = false;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
