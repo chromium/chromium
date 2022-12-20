@@ -54,6 +54,40 @@ void LogStatus(Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.OsSettingsProvider.Error", status);
 }
 
+// Various icon-related states at different branches of the OsSettingsProvider.
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+//
+// TODO(b/261867385) this histogram is to investigate the bug that settings
+// search results may not appear in launcher search due to the lack of icon. It
+// can be removed once the associated bug is resolved.
+enum class IconLoadStatus {
+  // Construction
+  kNoAppServiceProxy = 0,
+  kBindOnLoadIconFromConstructor = 1,
+  // On App Update
+  kBindOnLoadIconFromOnAppUpdate = 2,
+  kReadinessUnknown = 3,
+  kIconKeyNotChanged = 4,
+  // On Load Icon (from Constructor)
+  kOkFromConstructor = 5,
+  kNoValueFromConstructor = 6,
+  kNotStandardFromConstructor = 7,
+  // On Load Icon (from OnAppUpdate)
+  kOkFromOnAppUpdate = 8,
+  kNoValueFromOnAppUpdate = 9,
+  kNotStandardFromOnAppUpdate = 10,
+  // On App Registry Cache Will Be Destroyed
+  kIconExistOnDestroyed = 11,
+  kIconNotExistOnDestroyed = 12,
+  kMaxValue = kIconNotExistOnDestroyed,
+};
+
+void LogIconLoadStatus(IconLoadStatus icon_load_status) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.OsSettingsProvider.IconLoadStatus",
+                            icon_load_status);
+}
+
 bool ContainsBetterAncestor(Subpage subpage,
                             const double score,
                             const ash::settings::Hierarchy* hierarchy,
@@ -188,9 +222,12 @@ OsSettingsProvider::OsSettingsProvider(
         web_app::kOsSettingsAppId, apps::IconType::kStandard, kAppIconDimension,
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       /*is_from_constructor=*/true));
+    LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromConstructor);
   } else {
     LogStatus(Status::kNoAppServiceProxy);
+    LogIconLoadStatus(IconLoadStatus::kNoAppServiceProxy);
   }
 }
 
@@ -272,13 +309,27 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
                                  apps::IconType::kStandard, kAppIconDimension,
                                  /*allow_placeholder_icon=*/false,
                                  base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                                                weak_factory_.GetWeakPtr()));
+                                                weak_factory_.GetWeakPtr(),
+                                                /*is_from_constructor=*/false));
+    LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromOnAppUpdate);
+  } else {
+    if (!update.ReadinessChanged()) {
+      LogIconLoadStatus(IconLoadStatus::kReadinessUnknown);
+    }
+    if (!update.IconKeyChanged()) {
+      LogIconLoadStatus(IconLoadStatus::kIconKeyNotChanged);
+    }
   }
 }
 
 void OsSettingsProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
+  if (icon_.isNull()) {
+    LogIconLoadStatus(IconLoadStatus::kIconNotExistOnDestroyed);
+  } else {
+    LogIconLoadStatus(IconLoadStatus::kIconExistOnDestroyed);
+  }
 }
 
 void OsSettingsProvider::OnSearchResultsChanged() {
@@ -351,9 +402,20 @@ std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
   return clean_results;
 }
 
-void OsSettingsProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
+void OsSettingsProvider::OnLoadIcon(bool is_from_constructor,
+                                    apps::IconValuePtr icon_value) {
   if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
     icon_ = icon_value->uncompressed;
+    LogIconLoadStatus(is_from_constructor ? IconLoadStatus::kOkFromConstructor
+                                          : IconLoadStatus::kOkFromOnAppUpdate);
+  } else if (!icon_value) {
+    LogIconLoadStatus(is_from_constructor
+                          ? IconLoadStatus::kNoValueFromConstructor
+                          : IconLoadStatus::kNoValueFromOnAppUpdate);
+  } else {
+    LogIconLoadStatus(is_from_constructor
+                          ? IconLoadStatus::kNotStandardFromConstructor
+                          : IconLoadStatus::kNotStandardFromOnAppUpdate);
   }
 }
 

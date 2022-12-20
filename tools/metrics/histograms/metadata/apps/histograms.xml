@@ -731,9 +731,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
     Emitted either the case of an unexpected error or an successful non-empty
-    query search. the bucket proportion is not meaningful as overlaps can occur
+    query search. The bucket proportion is not meaningful as overlaps can occur
     among errors. Instead, the ratio between each error bucket and the
     successful query search can be used to calculate the accurate error rate.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
+    enum="OsSettingsProviderError" expires_after="2023-02-24">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>chenjih@chromium.org</owner>
+  <summary>
+    Various states of the icon related parameters for OS settings in the cros
+    launcher. Emitted at each branch to help investigate the cause of icon load
+    failures. The bucket proportion is not meaningful as overlaps can occur
+    among status. Instead, the ratio between states can be used to calculate how
+    the flow is divided into sub-branches.
   </summary>
 </histogram>
 

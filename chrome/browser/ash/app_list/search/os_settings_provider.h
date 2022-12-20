@@ -108,7 +108,7 @@ class OsSettingsProvider : public SearchProvider,
       const std::vector<ash::settings::mojom::SearchResultPtr>& results,
       const ash::settings::Hierarchy* hierarchy);
 
-  void OnLoadIcon(apps::IconValuePtr icon_value);
+  void OnLoadIcon(bool is_from_constructor, apps::IconValuePtr icon_value);
 
   // Scoring and filtering parameters.
   bool accept_alternate_matches_ = false;
