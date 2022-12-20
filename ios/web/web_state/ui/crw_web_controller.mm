@@ -83,6 +83,10 @@ using web::WebStateImpl;
 using web::wk_navigation_util::IsRestoreSessionUrl;
 using web::wk_navigation_util::IsWKInternalUrl;
 
+namespace {
+char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
+}  // namespace
+
 // TODO(crbug.com/1174560): Allow usage of iOS15 interactionState on iOS 14 SDK
 // based builds.
 #if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_15_0
@@ -1911,9 +1915,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 - (void)fullscreenStateDidChange {
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
-    [_containerView updateWebViewContentViewFullscreenState:
-                        CrFullscreenStateFromWKFullscreenState(
-                            self.webView.fullscreenState)];
+    CrFullscreenState fullScreenState =
+        CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
+    [_containerView updateWebViewContentViewFullscreenState:fullScreenState];
+    base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
   }
 #endif  // defined (__IPHONE_16_0)
 }

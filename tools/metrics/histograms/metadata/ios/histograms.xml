@@ -828,6 +828,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
+    expires_after="2023-04-18">
+  <owner>joemerramos@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Logs when a user triggers a fullscreen state change for Chrome on iOS. The
+    enumeration indicates the fullscreen state. This is for the web-exposed
+    Fullscreen API not the fullscreen that happens when users scroll down and
+    hides the toolbar.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Handoff.Origin" enum="IOSHandoffOrigin"
     expires_after="M77">
   <owner>erikchen@chromium.org</owner>
