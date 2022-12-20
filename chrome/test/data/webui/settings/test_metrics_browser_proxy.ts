@@ -37,7 +37,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   recordSafetyCheckNotificationsModuleInteractionsHistogram(
       interaction: SafetyCheckNotificationsModuleInteractions) {
     this.methodCalled(
-        'recordSafetyCheckNotificationsModuleInteractionHistogram',
+        'recordSafetyCheckNotificationsModuleInteractionsHistogram',
         interaction);
   }
 

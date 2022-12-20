@@ -186,7 +186,7 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
-   * SafetyCheck.NotificationsModule.Interactions histogram
+   * Settings.SafetyCheck.NotificationsModuleInteractions histogram
    */
   recordSafetyCheckNotificationsModuleInteractionsHistogram(
       interaction: SafetyCheckNotificationsModuleInteractions): void;
@@ -249,7 +249,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordSafetyCheckNotificationsModuleInteractionsHistogram(
       interaction: SafetyCheckNotificationsModuleInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'SafetyCheck.NotificationsModule.Interactions',
+      'Settings.SafetyCheck.NotificationsModuleInteractions',
       interaction,
       SafetyCheckNotificationsModuleInteractions.COUNT,
     ]);
