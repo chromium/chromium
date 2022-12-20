@@ -205,8 +205,7 @@
   E_CPONLY(kColorOmniboxAnswerIconForeground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
   E_CPONLY(kColorOmniboxBubbleOutlineExperimentalKeywordMode) \
-  E_CPONLY(kColorOmniboxChipBackgroundLowVisibility) \
-  E_CPONLY(kColorOmniboxChipBackgroundNormalVisibility) \
+  E_CPONLY(kColorOmniboxChipBackground) \
   E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
   E_CPONLY(kColorOmniboxKeywordSelected) \

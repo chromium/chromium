@@ -333,12 +333,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorButtonBackgroundProminent};
   mixer[kColorOmniboxAnswerIconForeground] = {
       ui::kColorButtonForegroundProminent};
-  mixer[kColorOmniboxChipBackgroundLowVisibility] = {
-      kColorTabBackgroundActiveFrameActive};
-  mixer[kColorOmniboxChipBackgroundNormalVisibility] = {
-      ui::kColorButtonBackground};
-  mixer[kColorOmniboxChipForegroundLowVisibility] = {
-      kColorTabForegroundActiveFrameActive};
+  mixer[kColorOmniboxChipBackground] = {kColorTabBackgroundActiveFrameActive};
+  mixer[kColorOmniboxChipForegroundLowVisibility] = {kColorToolbarButtonIcon};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {
       ui::kColorButtonForeground};
   mixer[kColorPageInfoChosenObjectDeleteButtonIcon] = {ui::kColorIcon};
