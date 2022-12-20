@@ -635,16 +635,9 @@ TEST_F(
       runMochaSuite('PrivacySandboxPageTests');
     });
 
-// TODO(crbug.com/1400768): Flaky on Mac.
-GEN('#if BUILDFLAG(IS_MAC)');
-GEN('#define MAYBE_TopicsSubpageTests DISABLED_TopicsSubpageTests');
-GEN('#else');
-GEN('#define MAYBE_TopicsSubpageTests TopicsSubpageTests');
-GEN('#endif');
-TEST_F(
-    'CrSettingsPrivacySandboxPageTest', 'MAYBE_TopicsSubpageTests', function() {
-      runMochaSuite('PrivacySandboxTopicsSubpageTests');
-    });
+TEST_F('CrSettingsPrivacySandboxPageTest', 'TopicsSubpageTests', function() {
+  runMochaSuite('PrivacySandboxTopicsSubpageTests');
+});
 
 TEST_F('CrSettingsPrivacySandboxPageTest', 'FledgeSubpageTests', function() {
   runMochaSuite('PrivacySandboxFledgeSubpageTests');
