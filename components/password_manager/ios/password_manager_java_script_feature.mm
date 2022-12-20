@@ -38,17 +38,16 @@ int FieldRendererIdToJsParameter(autofill::FieldRendererId field_id) {
   return field_id.value();
 }
 
-std::unique_ptr<base::Value> SerializeFillData(
-    const GURL& origin,
-    autofill::FormRendererId form_renderer_id,
-    autofill::FieldRendererId username_element,
-    const std::u16string& username_value,
-    autofill::FieldRendererId password_element,
-    const std::u16string& password_value) {
-  auto root_dict = std::make_unique<base::DictionaryValue>();
-  root_dict->SetString("origin", origin.spec());
-  root_dict->SetInteger("unique_renderer_id",
-                        FormRendererIdToJsParameter(form_renderer_id));
+base::Value::Dict SerializeFillData(const GURL& origin,
+                                    autofill::FormRendererId form_renderer_id,
+                                    autofill::FieldRendererId username_element,
+                                    const std::u16string& username_value,
+                                    autofill::FieldRendererId password_element,
+                                    const std::u16string& password_value) {
+  base::Value::Dict root_dict;
+  root_dict.Set("origin", origin.spec());
+  root_dict.Set("unique_renderer_id",
+                FormRendererIdToJsParameter(form_renderer_id));
 
   base::Value::List fieldList;
 
@@ -64,7 +63,7 @@ std::unique_ptr<base::Value> SerializeFillData(
   passwordField.Set("value", password_value);
   fieldList.Append(std::move(passwordField));
 
-  root_dict->GetDict().Set("fields", std::move(fieldList));
+  root_dict.Set("fields", std::move(fieldList));
 
   return root_dict;
 }
@@ -72,9 +71,8 @@ std::unique_ptr<base::Value> SerializeFillData(
 // Serializes |fill_data| so it can be used by the JS side of
 // PasswordController. Includes both username and password data if
 // |fill_username|, and only password data otherwise.
-std::unique_ptr<base::Value> SerializeFillData(
-    const password_manager::FillData& fill_data,
-    BOOL fill_username) {
+base::Value::Dict SerializeFillData(const password_manager::FillData& fill_data,
+                                    BOOL fill_username) {
   return SerializeFillData(fill_data.origin, fill_data.form_id,
                            fill_username ? fill_data.username_element_id
                                          : autofill::FieldRendererId(),
@@ -138,11 +136,10 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     base::OnceCallback<void(BOOL)> callback) {
   DCHECK(!callback.is_null());
 
-  std::unique_ptr<base::Value> form_value =
-      SerializeFillData(fill_data, fill_username);
+  base::Value::Dict form_value = SerializeFillData(fill_data, fill_username);
 
   std::vector<base::Value> parameters;
-  parameters.push_back(std::move(*form_value));
+  parameters.emplace_back(std::move(form_value));
   parameters.emplace_back(std::move(username));
   parameters.emplace_back(std::move(password));
   CallJavaScriptFunction(frame, "passwords.fillPasswordForm", parameters,
