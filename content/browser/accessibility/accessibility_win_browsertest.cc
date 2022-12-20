@@ -4895,6 +4895,67 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
+                       OffscreenNodeNotClickable) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+        <div style="height:200vh"></div>
+        <button>offscreen</button>
+      </html>)HTML");
+
+  BrowserAccessibility* target =
+      FindNode(ax::mojom::Role::kButton, "offscreen");
+  EXPECT_NE(nullptr, target);
+  BrowserAccessibilityComWin* accessibility_com_win =
+      ToBrowserAccessibilityWin(target)->GetCOM();
+  EXPECT_NE(nullptr, accessibility_com_win);
+
+  base::win::ScopedVariant result;
+  
+  accessibility_com_win->GetPropertyValue(UIA_IsOffscreenPropertyId,
+                                          result.Receive());
+
+  EXPECT_EQ(VARIANT_TRUE, result.ptr()->boolVal);
+
+  result.Release();
+
+  accessibility_com_win->GetPropertyValue(UIA_ClickablePointPropertyId,
+                                          result.Receive());
+
+  EXPECT_EQ(VT_EMPTY, result.type());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
+                       OnscreenNodeClickable) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+        <button>onscreen</button>
+      </html>)HTML");
+
+  BrowserAccessibility* target =
+      FindNode(ax::mojom::Role::kButton, "onscreen");
+  EXPECT_NE(nullptr, target);
+  BrowserAccessibilityComWin* accessibility_com_win =
+      ToBrowserAccessibilityWin(target)->GetCOM();
+  EXPECT_NE(nullptr, accessibility_com_win);
+
+  base::win::ScopedVariant result;
+
+  accessibility_com_win->GetPropertyValue(UIA_IsOffscreenPropertyId,
+                                          result.Receive());
+
+  EXPECT_EQ(VARIANT_FALSE, result.ptr()->boolVal);
+
+  result.Release();
+
+  accessibility_com_win->GetPropertyValue(UIA_ClickablePointPropertyId,
+                                          result.Receive());
+
+  EXPECT_NE(VT_EMPTY, result.type());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
                        TestIFrameRootNodeChange) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>

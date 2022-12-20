@@ -5055,8 +5055,10 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     case UIA_ClickablePointPropertyId:
-      result->vt = VT_ARRAY | VT_R8;
-      result->parray = CreateClickablePointArray();
+      if (!GetDelegate()->IsOffscreen()) {
+        result->vt = VT_ARRAY | VT_R8;
+        result->parray = CreateClickablePointArray();
+      }
       break;
 
     case UIA_ControllerForPropertyId:
