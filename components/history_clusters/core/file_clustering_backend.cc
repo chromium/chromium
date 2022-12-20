@@ -237,4 +237,11 @@ void FileClusteringBackend::GetClusters(
       base::BindOnce(std::move(callback)));
 }
 
+void FileClusteringBackend::GetClustersForUI(
+    ClustersCallback callback,
+    std::vector<history::Cluster> clusters) {
+  // TODO(b/259466296): Implement this - just invoke the callback as is for now.
+  std::move(callback).Run(std::move(clusters));
+}
+
 }  // namespace history_clusters

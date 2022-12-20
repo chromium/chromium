@@ -163,6 +163,22 @@ void OnDeviceClusteringBackend::GetClusters(
                      base::TimeTicks::Now(), std::move(callback)));
 }
 
+void OnDeviceClusteringBackend::GetClustersForUI(
+    ClustersCallback callback,
+    std::vector<history::Cluster> clusters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(b/259466296): Fetch entity metadata before computing clusters.
+  base::flat_map<std::string, optimization_guide::EntityMetadata>
+      entity_metadata_map;
+  user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread,
+          std::move(clusters), base::OwnedRef(std::move(entity_metadata_map))),
+      std::move(callback));
+}
+
 void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     ClusteringRequestSource clustering_request_source,
     optimization_guide::BatchEntityMetadataTask* completed_task,

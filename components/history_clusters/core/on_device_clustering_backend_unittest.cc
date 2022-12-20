@@ -172,6 +172,28 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     return clusters;
   }
 
+  std::vector<history::Cluster> GetClustersForUI(
+      const std::vector<history::Cluster>& in_clusters) {
+    std::vector<history::Cluster> clusters;
+
+    base::RunLoop run_loop;
+    clustering_backend_->GetClustersForUI(
+        base::BindOnce(
+            [](base::RunLoop* run_loop,
+               std::vector<history::Cluster>* out_clusters,
+               std::vector<history::Cluster> clusters) {
+              *out_clusters = std::move(clusters);
+              run_loop->Quit();
+            },
+            &run_loop, &clusters),
+        in_clusters);
+    run_loop.Run();
+
+    // Sort clusters here for easier verification.
+    SortClusters(&clusters);
+    return clusters;
+  }
+
   size_t GetSiteEngagementGetScoreInvocationCount() const {
     return test_site_engagement_provider_.count_get_score_invocations();
   }
@@ -271,6 +293,34 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterTwoVisitsTiedByURL) {
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(
                   2, 1.0, {history::DuplicateClusterVisit{1}}))));
+}
+
+TEST_F(OnDeviceClusteringWithoutContentBackendTest,
+       GetClustersForUISimpleCase) {
+  std::vector<history::Cluster> clusters;
+
+  // Cluster processors and finalizers should be run.
+
+  // The below clusters contain the exact same visit so should be merged and
+  // then deduped.
+
+  history::Cluster cluster1;
+  cluster1.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://google.com/"), base::Time::FromTimeT(1))));
+  clusters.push_back(cluster1);
+
+  history::Cluster cluster2;
+  cluster2.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          2, GURL("https://google.com/"), base::Time::FromTimeT(2))));
+  clusters.push_back(cluster2);
+
+  std::vector<history::Cluster> result_clusters = GetClustersForUI(clusters);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
+  EXPECT_FALSE(result_clusters[0].label->empty());
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, DedupeClusters) {

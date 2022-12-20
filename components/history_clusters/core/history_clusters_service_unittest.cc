@@ -58,6 +58,12 @@ class TestClusteringBackend : public ClusteringBackend {
     std::move(wait_for_get_clusters_closure_).Run();
   }
 
+  void GetClustersForUI(ClustersCallback callback,
+                        std::vector<history::Cluster> clusters) override {
+    // TODO(b/259466296): Implement this when we incorporate the new method into
+    // `QueryClusters()`.
+  }
+
   void FulfillCallback(const std::vector<history::Cluster>& clusters) {
     std::move(callback_).Run(clusters);
   }

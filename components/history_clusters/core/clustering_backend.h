@@ -21,11 +21,23 @@ class ClusteringBackend {
   virtual ~ClusteringBackend() = default;
 
   // The backend clusters `visits` and returns the results asynchronously via
-  // `callback`. See `SortClusters()` in on_device_clustering_util.cc for
-  // ordering details.
+  // `callback`.
+  //
+  // This method will get removed after persisting context clusters at
+  // navigation is rolled out.
   virtual void GetClusters(ClusteringRequestSource clustering_request_source,
                            ClustersCallback callback,
                            std::vector<history::AnnotatedVisit> visits) = 0;
+
+  // Gets the displayable variant of `clusters` that will be shown on various UI
+  // surfaces. This will merge similar clusters, rank visits within the cluster,
+  // as well as provide a label. Will return results asynchronously via
+  // `callback`.
+  //
+  // TODO(sophiechang): When we support more than one surface, add an enum for
+  //   which UI surface we want to calculate for.
+  virtual void GetClustersForUI(ClustersCallback callback,
+                                std::vector<history::Cluster> clusters) = 0;
 };
 
 }  // namespace history_clusters

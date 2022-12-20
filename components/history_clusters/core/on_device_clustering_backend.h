@@ -49,6 +49,8 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   void GetClusters(ClusteringRequestSource clustering_request_source,
                    ClustersCallback callback,
                    std::vector<history::AnnotatedVisit> visits) override;
+  void GetClustersForUI(ClustersCallback callback,
+                        std::vector<history::Cluster> clusters) override;
 
  private:
   // Callback invoked when batch entity metadata has been received from
