@@ -4690,11 +4690,6 @@ const char kArcUpdateO4CListViaA2C2Name[] = "Update the O4C list via A2C2";
 const char kArcUpdateO4CListViaA2C2Desc[] =
     "When enabled, the O4C list is allowed to be updated via A2C2.";
 
-const char kArcUsbDeviceDefaultAttachToVmName[] =
-    "Attach unclaimed USB devices to ARCVM";
-const char kArcUsbDeviceDefaultAttachToVmDescription[] =
-    "When ARCVM is enabled, always attach unclaimed USB devices to ARCVM";
-
 const char kArcEnableUsapName[] =
     "Enable ARC Unspecialized Application Processes";
 const char kArcEnableUsapDesc[] =

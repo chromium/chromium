@@ -59313,7 +59313,6 @@ from previous Chrome versions.
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
-  <int value="-824829316" label="UsbDeviceDefaultAttachToArcVm:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
@@ -63134,7 +63133,6 @@ from previous Chrome versions.
   <int value="1429031731"
       label="CrossOriginEmbedderPolicyCredentialless:enabled"/>
   <int value="1429923065" label="enable-media-internals:enabled"/>
-  <int value="1430421070" label="UsbDeviceDefaultAttachToArcVm:disabled"/>
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>

@@ -237,11 +237,6 @@ BASE_FEATURE(kArcUpdateO4CListViaA2C2,
              "ArcUpdateO4CListViaA2C2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, unclaimed USB device will be attached to ARCVM by default.
-BASE_FEATURE(kUsbDeviceDefaultAttachToArcVm,
-             "UsbDeviceDefaultAttachToArcVm",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
