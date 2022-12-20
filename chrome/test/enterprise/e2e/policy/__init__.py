@@ -11,7 +11,8 @@ from .extension_blocklist.extension_blocklist import *
 from .extension_forcelist.extension_forcelist import *
 from .extension_allowlist.extension_allowlist import *
 from .force_google_safe_search.force_google_safe_search import *
-from .fullscreen_allowed.fullscreen_allowed import *
+# Disable fullscreenallowed test due to pywinauto infra issue http://b/259118140
+# from .fullscreen_allowed.fullscreen_allowed import *
 from .homepage.homepage import *
 from .password_manager_enabled.password_manager_enabled import *
 from .popups_allowed.popups_allowed import *

@@ -19,9 +19,10 @@ def main(argv):
     for desc in w.descendants():
       print("item: %s" % desc)
 
-    print("Closing info bar.")
-    container = w.child_window(best_match="Infobar Container")
-    container.child_window(best_match="Close").click_input()
+    print("Closing info bar if exists.")
+    if w.child_window(best_match="Infobar Container").exists():
+      w.child_window(best_match="Infobar Container").child_window(
+          best_match="Close").click_input()
 
     print("press F11 to enter full screen mode.")
     w.type_keys('{F11}')
