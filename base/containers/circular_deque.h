@@ -208,7 +208,8 @@ class circular_deque_const_iterator {
   friend std::ptrdiff_t operator-(const circular_deque_const_iterator& lhs,
                                   const circular_deque_const_iterator& rhs) {
     lhs.CheckComparable(rhs);
-    return lhs.OffsetFromBegin() - rhs.OffsetFromBegin();
+    return static_cast<std::ptrdiff_t>(lhs.OffsetFromBegin() -
+                                       rhs.OffsetFromBegin());
   }
 
   // Comparisons.
