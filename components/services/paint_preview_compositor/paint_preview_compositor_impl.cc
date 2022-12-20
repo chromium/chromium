@@ -76,6 +76,10 @@ absl::optional<PaintPreviewFrame> BuildFrame(
     mojom::SubframeClipRect rect;
     rect.frame_guid = base::UnguessableToken::Deserialize(
         id_pair.embedding_token_high(), id_pair.embedding_token_low());
+    if (rect.frame_guid.is_empty()) {
+      continue;
+    }
+
     rect.clip_rect = rect_it->second;
 
     if (!results.count(rect.frame_guid))
@@ -324,7 +328,7 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
                 paint_preview->root_frame().has_scroll_offset_y()
                     ? paint_preview->root_frame().scroll_offset_y()
                     : 0);
-  response->frames.insert({root_frame_guid, std::move(frame_data)});
+  response->frames.insert({std::move(root_frame_guid), std::move(frame_data)});
 
   std::move(callback).Run(
       subframes_failed
@@ -378,6 +382,9 @@ bool PaintPreviewCompositorImpl::AddFrame(
     mojom::PaintPreviewBeginCompositeResponsePtr* response) {
   base::UnguessableToken guid = base::UnguessableToken::Deserialize(
       frame_proto.embedding_token_high(), frame_proto.embedding_token_low());
+  if (guid.is_empty()) {
+    return false;
+  }
 
   absl::optional<PaintPreviewFrame> maybe_frame =
       BuildFrame(guid, frame_proto, skp_map);
@@ -396,7 +403,7 @@ bool PaintPreviewCompositorImpl::AddFrame(
     frame_data->subframes.push_back(subframe_clip_rect.Clone());
 
   (*response)->frames.insert({guid, std::move(frame_data)});
-  frames_.insert({guid, std::move(maybe_frame.value())});
+  frames_.insert({std::move(guid), std::move(maybe_frame.value())});
   return true;
 }
 
@@ -434,6 +441,9 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
     bool* subframe_failed) {
   auto frame_guid = base::UnguessableToken::Deserialize(
       frame_proto.embedding_token_high(), frame_proto.embedding_token_low());
+  if (frame_guid.is_empty()) {
+    return nullptr;
+  }
   TRACE_EVENT1("paint_preview",
                "PaintPreviewCompositorImpl::DeserializeFrameRecursive",
                "frame_guid", frame_guid.ToString());
@@ -453,6 +463,11 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
     auto subframe_embedding_token = base::UnguessableToken::Deserialize(
         id_pair.embedding_token_high(), id_pair.embedding_token_low());
 
+    if (subframe_embedding_token.is_empty()) {
+      DVLOG(1) << "Subframe has invalid embedding token";
+      continue;
+    }
+
     // This subframe is already loaded.
     if (loaded_frames->contains(subframe_embedding_token)) {
       DVLOG(1) << "Subframe already loaded: " << subframe_embedding_token;
@@ -464,9 +479,13 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
     auto subframe_proto_it =
         base::ranges::find(subframes, subframe_embedding_token,
                            [](const PaintPreviewFrameProto& frame_proto) {
-                             return base::UnguessableToken::Deserialize(
+                             auto token = base::UnguessableToken::Deserialize(
                                  frame_proto.embedding_token_high(),
                                  frame_proto.embedding_token_low());
+                             if (token.is_empty()) {
+                               return base::UnguessableToken::Create();
+                             }
+                             return token;
                            });
     if (subframe_proto_it == subframes.end()) {
       DVLOG(1) << "Frame embeds subframe that does not exist: "
