@@ -189,13 +189,9 @@ class Manifest final {
   // Note: only use this when you KNOW you don't need the validation.
   const base::Value::Dict* value() const { return &value_; }
 
-  // Gets the underlying DictionaryValue representing the manifest with all
+  // Gets the underlying `base::Value::Dict` representing the manifest with all
   // unavailable manifest keys removed.
-  const base::DictionaryValue& available_values() const {
-    return base::Value::AsDictionaryValue(available_values_);
-  }
-
-  // Same as previous but returns `base::Value::Dict`.
+  // TODO(alexmt): Rename to `available_values()`.
   const base::Value::Dict& available_values_dict() const {
     return available_values_.GetDict();
   }

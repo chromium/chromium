@@ -29,16 +29,14 @@ const std::string& OmniboxInfo::GetKeyword(const Extension* extension) {
   return info ? info->keyword : base::EmptyString();
 }
 
-OmniboxHandler::OmniboxHandler() {
-}
+OmniboxHandler::OmniboxHandler() = default;
 
-OmniboxHandler::~OmniboxHandler() {
-}
+OmniboxHandler::~OmniboxHandler() = default;
 
 bool OmniboxHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          extension->manifest()->available_values_dict(), &manifest_keys,
           error)) {
     return false;
   }

@@ -49,7 +49,7 @@ bool RequirementsHandler::AlwaysParseForType(Manifest::Type type) const {
 bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          extension->manifest()->available_values_dict(), &manifest_keys,
           error)) {
     return false;
   }

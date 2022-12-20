@@ -803,7 +803,7 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
   // more strictly.
   bool key_exists = false;
   if (const base::Value* version_value =
-          manifest_->available_values().FindKey(keys::kManifestVersion)) {
+          manifest_->available_values_dict().Find(keys::kManifestVersion)) {
     if (!version_value->is_int()) {
       *error = InvalidManifestVersionError(
           errors::kInvalidManifestVersionUnsupported, is_platform_app());

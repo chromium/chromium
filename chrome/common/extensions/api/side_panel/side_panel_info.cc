@@ -27,7 +27,7 @@ std::unique_ptr<SidePanelInfo> ParseFromDictionary(const Extension& extension,
                                                    std::u16string* error) {
   SidePanelManifestKeys manifest_keys;
   if (!SidePanelManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values().GetDict(), &manifest_keys,
+          extension.manifest()->available_values_dict(), &manifest_keys,
           error)) {
     return nullptr;
   }

@@ -197,9 +197,9 @@ URLPatternSet ContentScriptsInfo::GetScriptableHosts(
   return scriptable_hosts;
 }
 
-ContentScriptsHandler::ContentScriptsHandler() {}
+ContentScriptsHandler::ContentScriptsHandler() = default;
 
-ContentScriptsHandler::~ContentScriptsHandler() {}
+ContentScriptsHandler::~ContentScriptsHandler() = default;
 
 base::span<const char* const> ContentScriptsHandler::Keys() const {
   static constexpr const char* kKeys[] = {ContentScriptsKeys::kContentScripts};
@@ -209,7 +209,7 @@ base::span<const char* const> ContentScriptsHandler::Keys() const {
 bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
   ContentScriptsKeys manifest_keys;
   if (!ContentScriptsKeys::ParseFromDictionary(
-          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          extension->manifest()->available_values_dict(), &manifest_keys,
           error)) {
     return false;
   }

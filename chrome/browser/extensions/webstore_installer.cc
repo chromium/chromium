@@ -314,7 +314,7 @@ void WebstoreInstaller::Start() {
   InstallVerifier::Get(profile_)->AddProvisional(ids);
 
   const std::string* name =
-      approval_->manifest->available_values().GetDict().FindString(
+      approval_->manifest->available_values_dict().FindString(
           manifest_keys::kName);
   if (!name) {
     NOTREACHED();
