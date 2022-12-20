@@ -49,6 +49,10 @@ class CORE_EXPORT PictureInPictureController
     kDisabledByPermissionsPolicy,
     kDisabledByAttribute,
     kAutoPipAndroid,
+
+    // An active document that's already a picture-in-picture document may not
+    // re-enter picture-in-picture mode.
+    kDocumentPip,
   };
 
   // Enter Picture-in-Picture for a video element and resolve promise if any.

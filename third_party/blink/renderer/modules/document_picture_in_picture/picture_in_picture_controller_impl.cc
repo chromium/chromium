@@ -74,6 +74,13 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
   if (!frame)
     return Status::kFrameDetached;
 
+  // Picture-in-Picture is not allowed if the window is a document
+  // Picture-in-Picture window.
+  if (RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled() &&
+      DomWindow() && DomWindow()->IsPictureInPictureWindow()) {
+    return Status::kDocumentPip;
+  }
+
   // `GetPictureInPictureEnabled()` returns false when the embedder or the
   // system forbids the page from using Picture-in-Picture.
   DCHECK(GetSupplementable()->GetSettings());
