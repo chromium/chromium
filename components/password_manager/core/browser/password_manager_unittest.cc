@@ -3051,11 +3051,7 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   FormStructure form_structure(form.form_data);
   form_structure.field(1)->set_server_predictions(
       {CreateFieldPrediction(autofill::PASSWORD)});
-#if !BUILDFLAG(IS_IOS)
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
-#else  // On iOS predictions are propagated with nullptr driver.
-  manager()->ProcessAutofillPredictions(nullptr, {&form_structure});
-#endif
 
   EXPECT_CALL(driver_, SetPasswordFillData);
 
@@ -3088,14 +3084,12 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
   form_structure2.field(1)->set_server_predictions(
       {CreateFieldPrediction(autofill::PASSWORD)});
 
-#if !BUILDFLAG(IS_IOS)
   manager()->ProcessAutofillPredictions(&driver_,
                                         {&form_structure1, &form_structure2});
+#if !BUILDFLAG(IS_IOS)
   // Both forms should be filled.
   EXPECT_CALL(driver_, SetPasswordFillData).Times(2);
-#else  // On iOS predictions are propagated with nullptr driver.
-  manager()->ProcessAutofillPredictions(nullptr,
-                                        {&form_structure1, &form_structure2});
+#else
   // Only one form should be filled, as username first flow is not supported
   // yet on iOS.
   EXPECT_CALL(driver_, SetPasswordFillData);
@@ -3425,7 +3419,6 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   task_environment_.RunUntilIdle();
 }
 
-#if !BUILDFLAG(IS_IOS)
 // Check that on successful login the credentials are checked for leak.
 TEST_P(PasswordManagerTest, StartLeakDetection) {
   auto mock_factory =
@@ -3457,13 +3450,13 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
+// Filling on username first flow is not supported on iOS.
+#if !BUILDFLAG(IS_IOS)
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsername) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   const PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
 
@@ -3483,7 +3476,6 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
   form_structure.field(0)->set_server_predictions(
       {CreateFieldPrediction(SINGLE_USERNAME)});
 
-#if !BUILDFLAG(IS_IOS)
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
@@ -3493,10 +3485,8 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
   EXPECT_EQ(field_id, fill_data.username_field.unique_renderer_id);
   EXPECT_EQ(saved_match.password_value, fill_data.password_field.value);
   EXPECT_TRUE(fill_data.password_field.unique_renderer_id.is_null());
-#else   // BUILDFLAG(IS_IOS)
-  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
-#endif  // !BUILDFLAG(IS_IOS)
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Checks that a password form with a clear-text account creation field results
 // in marking the password field as eligible for password generation.
@@ -3694,20 +3684,19 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
       submitted_form_manager->GetPendingCredentials().username_value.empty());
 }
 
+// Filling on username first flow is not supported on iOS.
 #if !BUILDFLAG(IS_IOS)
-//  Checks that username is filled on username first flow based on server and
-//  local predictions.
-TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
+//  Checks that username is filled on username first flow based on the
+//  combination of server and local predictions.
+TEST_P(PasswordManagerTest, UsernameFirstFlowFillingWithLocalData) {
   store_->AddLogin(MakeSavedForm());
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
-
-  constexpr FieldRendererId kFieldRendererId(1);
 
   FormData non_password_form;
   non_password_form.url = MakeSavedForm().url;
   FormFieldData field;
   field.form_control_type = "text";
-  field.unique_renderer_id = kFieldRendererId;
+  field.unique_renderer_id = FieldRendererId(1);
   non_password_form.fields.push_back(field);
 
   MockFieldInfoManager mock_field_manager;
@@ -3721,12 +3710,11 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
                    << "local_type=" << local_type);
       manager()->OnPasswordFormsParsed(&driver_, {} /* observed */);
       task_environment_.RunUntilIdle();
-      EXPECT_CALL(mock_field_manager, GetFieldType(_, _))
+      EXPECT_CALL(mock_field_manager, GetFieldType)
           .WillOnce(Return(local_type));
 
       // Simulate filling of different forms on each iteration.
       non_password_form.unique_renderer_id.value() += 1;
-      non_password_form.name += u"1";  // for iOS.
 
       FormStructure form_structure(non_password_form);
       form_structure.field(0)->set_server_predictions(
@@ -3962,6 +3950,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   manager()->OnPasswordFormCleared(&driver_, form_data);
 }
 
+// kDetectFormSubmissionOnFormClear was launched on all platforms but iOS.
 #if !BUILDFLAG(IS_IOS)
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
   base::test::ScopedFeatureList feature_list;

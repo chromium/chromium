@@ -1232,7 +1232,7 @@ void PasswordManager::ProcessAutofillPredictions(
   }
 
   for (const FormStructure* form : forms) {
-    // |driver| might be empty on iOS or in tests.
+    // |driver| might be empty in tests.
     int driver_id = driver ? driver->GetId() : 0;
     predictions_[form->form_signature()] =
         ConvertToFormPredictions(driver_id, *form);
