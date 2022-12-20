@@ -1142,10 +1142,7 @@ static bool HasPropertyThatCreatesStackingContext(
   return false;
 }
 
-void ComputedStyle::UpdateIsStackingContextWithoutContainment(
-    bool is_document_element,
-    bool is_in_top_layer,
-    bool is_svg_stacking) {
+void ComputedStyle::UpdateIsStackingContextWithoutContainment() {
   if (IsStackingContextWithoutContainment())
     return;
 
@@ -1160,8 +1157,8 @@ void ComputedStyle::UpdateIsStackingContextWithoutContainment(
     return;
   }
 
-  if (is_document_element || is_in_top_layer || is_svg_stacking ||
-      StyleType() == kPseudoIdBackdrop || HasTransformRelatedProperty() ||
+  if (ForcesStackingContext() || StyleType() == kPseudoIdBackdrop ||
+      HasTransformRelatedProperty() ||
       HasStackingGroupingProperty(BoxReflect()) ||
       GetPosition() == EPosition::kFixed ||
       GetPosition() == EPosition::kSticky ||

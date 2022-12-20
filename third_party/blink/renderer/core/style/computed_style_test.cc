@@ -100,9 +100,11 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
   EXPECT_EQ(*builder1.TakeStyle(), *builder2.TakeStyle());
 }
 
-TEST_F(ComputedStyleTest, SVGStackingContext) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->UpdateIsStackingContextWithoutContainment(false, false, true);
+TEST_F(ComputedStyleTest, ForcesStackingContext) {
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetForcesStackingContext(true);
+  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
 }
 
@@ -111,8 +113,7 @@ TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
   builder.SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
   builder.SetOverflowX(EOverflow::kHidden);
   builder.SetOverflowY(EOverflow::kHidden);
-  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment(
-      false, false, false);
+  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(ETransformStyle3D::kFlat, style->UsedTransformStyle3D());
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
@@ -124,8 +125,7 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
 
   ComputedStyleBuilder builder(*style);
   builder.SetContain(kContainsLayout);
-  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment(
-      false, false, false);
+  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
   style = builder.TakeStyle();
   // Containment doesn't change IsStackingContextWithoutContainment
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());

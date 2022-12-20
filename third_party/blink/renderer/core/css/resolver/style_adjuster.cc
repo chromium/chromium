@@ -168,6 +168,22 @@ void AdjustAnchorQueryStyles(ComputedStyleBuilder& builder) {
   }
 }
 
+bool ElementForcesStackingContext(Element* element) {
+  if (!element) {
+    return false;
+  }
+  if (element == element->GetDocument().documentElement()) {
+    return true;
+  }
+  if (element->IsInTopLayer()) {
+    return true;
+  }
+  if (IsA<SVGForeignObjectElement>(*element)) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
@@ -870,6 +886,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   } else if (!builder.HasAutoZIndex()) {
     builder.SetIsStackingContextWithoutContainment(true);
   }
+
+  builder.SetForcesStackingContext(ElementForcesStackingContext(element));
 
   if (builder.OverflowX() != EOverflow::kVisible ||
       builder.OverflowY() != EOverflow::kVisible) {

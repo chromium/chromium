@@ -2995,9 +2995,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
 
-  style->UpdateIsStackingContextWithoutContainment(
-      this == GetDocument().documentElement(), IsInTopLayer(),
-      IsA<SVGForeignObjectElement>(*this));
+  style->UpdateIsStackingContextWithoutContainment();
 
   auto* context = GetDisplayLockContext();
   // The common case for most elements is that we don't have a context and have

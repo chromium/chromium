@@ -770,6 +770,18 @@
       default_value: "false",
       writable: true,
     },
+    // A stacking context is forced a few situations, e.g.:
+    //
+    // - The element is the document element.
+    // - The element is in the top layer.
+    // - The element is a <foreignObject>.
+    {
+      name: "ForcesStackingContext",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
     // Plugins require accelerated compositing for reasons external to blink.
     // In which case, we need to update the ComputedStyle on the
     // LayoutEmbeddedObject, so store this bit so that the style actually changes
