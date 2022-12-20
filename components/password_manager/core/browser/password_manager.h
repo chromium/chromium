@@ -88,16 +88,15 @@ class PasswordManager : public PasswordManagerInterface {
       autofill::FormRendererId form_id,
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) override;
+  void OnPresaveGeneratedPassword(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const std::u16string& generated_password) override;
 
   PasswordManagerClient* GetClient() override;
 #if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
-  void PresaveGeneratedPassword(
-      PasswordManagerDriver* driver,
-      const autofill::FormData& form,
-      const std::u16string& generated_password,
-      autofill::FieldRendererId generation_element) override;
   void UpdateStateOnUserInput(PasswordManagerDriver* driver,
                               autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
@@ -123,12 +122,6 @@ class PasswordManager : public PasswordManagerInterface {
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password);
-
-  // Presaves the form with generated password. |driver| is needed to find the
-  // matched form manager.
-  void OnPresaveGeneratedPassword(PasswordManagerDriver* driver,
-                                  const autofill::FormData& form,
-                                  const std::u16string& generated_password);
 
   // Stops treating a password as generated. |driver| is needed to find the
   // matched form manager.

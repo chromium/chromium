@@ -504,11 +504,9 @@ bool PasswordFormManager::IsPendingCredentialsPublicSuffixMatch() const {
 
 void PasswordFormManager::PresaveGeneratedPassword(
     const FormData& form_data,
-    const std::u16string& password_value) {
-  // TODO(https://crbug.com/831123): Propagate generated password independently
-  // of PasswordForm when PasswordForm goes away from the renderer process.
-  PresaveGeneratedPasswordInternal(form_data,
-                                   password_value /*generated_password*/);
+    const std::u16string& generated_password) {
+  *mutable_observed_form() = form_data;
+  PresaveGeneratedPasswordInternal(form_data, generated_password);
 }
 
 void PasswordFormManager::PasswordNoLongerGenerated() {
@@ -558,16 +556,6 @@ const PasswordForm* PasswordFormManager::GetSubmittedForm() const {
 }
 
 #if BUILDFLAG(IS_IOS)
-void PasswordFormManager::PresaveGeneratedPassword(
-    PasswordManagerDriver* driver,
-    const FormData& form,
-    const std::u16string& generated_password,
-    FieldRendererId generation_element) {
-  *mutable_observed_form() = form;
-  PresaveGeneratedPasswordInternal(form, generated_password);
-  votes_uploader_.set_generation_element(generation_element);
-}
-
 void PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,

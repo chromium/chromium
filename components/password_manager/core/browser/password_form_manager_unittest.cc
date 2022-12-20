@@ -2134,12 +2134,12 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   // generated password is saved.
   const std::u16string generated_password = u"gen_pw";
   FieldRendererId generation_element = password_field.unique_renderer_id;
+  form_manager_->SetGenerationElement(generation_element);
 
   PasswordForm saved_form;
   EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
-  form_manager_->PresaveGeneratedPassword(
-      &driver_, form_to_presave, generated_password, generation_element);
+  form_manager_->PresaveGeneratedPassword(form_to_presave, generated_password);
   EXPECT_EQ(generated_password, saved_form.password_value);
 
   Mock::VerifyAndClearExpectations(&form_saver);

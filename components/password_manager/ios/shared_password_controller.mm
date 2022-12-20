@@ -865,9 +865,9 @@ BOOL canProcessCrossOriginIframes() {
   if (!_passwordManager)
     return;
 
-  _passwordManager->PresaveGeneratedPassword(
+  _passwordManager->OnPresaveGeneratedPassword(
       [_driverHelper PasswordManagerDriver:frame], formData,
-      SysNSStringToUTF16(generatedPassword), newPasswordUniqueId);
+      SysNSStringToUTF16(generatedPassword));
 }
 
 // Checks that all fields with |fieldIds| have user input recorded by

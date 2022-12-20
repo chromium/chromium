@@ -86,15 +86,14 @@ class MockPasswordManager : public PasswordManagerInterface {
                autofill::password_generation::PasswordGenerationType),
               (override));
   MOCK_METHOD(void,
-              OnSubframeFormSubmission,
-              (PasswordManagerDriver*, const autofill::FormData&),
-              (override));
-  MOCK_METHOD(void,
-              PresaveGeneratedPassword,
+              OnPresaveGeneratedPassword,
               (PasswordManagerDriver*,
                const autofill::FormData&,
-               const std::u16string&,
-               autofill::FieldRendererId),
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              OnSubframeFormSubmission,
+              (PasswordManagerDriver*, const autofill::FormData&),
               (override));
   MOCK_METHOD(void,
               UpdateStateOnUserInput,
@@ -653,7 +652,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   OCMStub([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword);
 
-  EXPECT_CALL(password_manager_, PresaveGeneratedPassword);
+  EXPECT_CALL(password_manager_, OnPresaveGeneratedPassword);
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ didSelectSuggestion:suggestion

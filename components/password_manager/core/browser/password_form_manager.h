@@ -190,15 +190,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   int driver_id() { return driver_id_; }
 
 #if BUILDFLAG(IS_IOS)
-  // Presaves the form with |generated_password|. This function is called once
-  // when the user accepts the generated password. The password was generated in
-  // the field with identifier |generation_element|. |driver| corresponds to the
-  // |form| parent frame.
-  void PresaveGeneratedPassword(PasswordManagerDriver* driver,
-                                const autofill::FormData& form,
-                                const std::u16string& generated_password,
-                                autofill::FieldRendererId generation_element);
-
   // Sets a value of the field with |field_identifier| of |observed_form()|
   // to |field_value|. In case if there is a presaved credential this function
   // updates the presaved credential.

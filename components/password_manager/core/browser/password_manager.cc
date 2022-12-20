@@ -378,19 +378,6 @@ void PasswordManager::OnGeneratedPasswordAccepted(
   }
 }
 
-void PasswordManager::OnPresaveGeneratedPassword(
-    PasswordManagerDriver* driver,
-    const FormData& form_data,
-    const std::u16string& generated_password) {
-  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
-  PasswordFormManager* form_manager =
-      GetMatchedManager(driver, form_data.unique_renderer_id);
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
-                        !form_manager);
-  if (form_manager)
-    form_manager->PresaveGeneratedPassword(form_data, generated_password);
-}
-
 void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                                   const FormData& form_data) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
@@ -411,6 +398,28 @@ void PasswordManager::SetGenerationElementAndTypeForForm(
     DCHECK(client_->IsSavingAndFillingEnabled(form_manager->GetURL()));
     form_manager->SetGenerationElement(generation_element);
     form_manager->SetGenerationPopupWasShown(type);
+  }
+}
+
+void PasswordManager::OnPresaveGeneratedPassword(
+    PasswordManagerDriver* driver,
+    const FormData& form_data,
+    const std::u16string& generated_password) {
+  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
+  PasswordFormManager* form_manager =
+      GetMatchedManager(driver, form_data.unique_renderer_id);
+  UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
+                        !form_manager);
+  if (form_manager) {
+    form_manager->PresaveGeneratedPassword(form_data, generated_password);
+#if BUILDFLAG(IS_IOS)
+    // On iOS some field values are not propagated to PasswordManager timely.
+    // Provisionally save entire |form_data| to make sure the form is parsed
+    // properly afterwards (crbug.com/1170351).
+    // TODO(crbug/1399524): Invoke this from SharedPasswordController.
+    form_manager->ProvisionallySave(form_data, driver,
+                                    base::OptionalToPtr(possible_username_));
+#endif
   }
 }
 
@@ -847,26 +856,6 @@ void PasswordManager::NotifyStorePasswordCalled() {
 }
 
 #if BUILDFLAG(IS_IOS)
-void PasswordManager::PresaveGeneratedPassword(
-    PasswordManagerDriver* driver,
-    const FormData& form,
-    const std::u16string& generated_password,
-    FieldRendererId generation_element) {
-  PasswordFormManager* form_manager =
-      GetMatchedManager(driver, form.unique_renderer_id);
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
-                        !form_manager);
-
-  // TODO(https://crbug.com/886583): Create form manager if not found.
-  if (form_manager) {
-    form_manager->PresaveGeneratedPassword(driver, form, generated_password,
-                                           generation_element);
-
-    form_manager->ProvisionallySave(form, driver,
-                                    base::OptionalToPtr(possible_username_));
-  }
-}
-
 void PasswordManager::UpdateStateOnUserInput(
     PasswordManagerDriver* driver,
     FormRendererId form_id,

@@ -55,6 +55,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) = 0;
 
+  // Presaves the form with generated password. |driver| is needed to find the
+  // matched form manager.
+  virtual void OnPresaveGeneratedPassword(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const std::u16string& generated_password) = 0;
+
   // Getter for the PasswordManagerClient.
   virtual PasswordManagerClient* GetClient() = 0;
 
@@ -67,16 +74,6 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnSubframeFormSubmission(
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data) = 0;
-
-  // Presaves the form with |generated_password|. This function is called once
-  // when the user accepts the generated password. The password was generated in
-  // the field with identifier |generation_element|. |driver| corresponds to the
-  // |form| parent frame.
-  virtual void PresaveGeneratedPassword(
-      PasswordManagerDriver* driver,
-      const autofill::FormData& form,
-      const std::u16string& generated_password,
-      autofill::FieldRendererId generation_element) = 0;
 
   // Updates the state in the PasswordFormManager which corresponds to the form
   // with |form_identifier|. In case there is a presaved credential, it
