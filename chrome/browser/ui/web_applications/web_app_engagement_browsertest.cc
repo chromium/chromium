@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
 }
 
 // TODO(crbug.com/1401607): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DefaultApp DISABLED_DefaultApp
 #else
 #define MAYBE_DefaultApp DefaultApp
