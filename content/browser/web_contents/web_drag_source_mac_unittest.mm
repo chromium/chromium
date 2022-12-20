@@ -4,39 +4,27 @@
 
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 
-#include "base/memory/ref_counted.h"
-#include "content/browser/web_contents/web_contents_impl.h"
+#include "base/mac/foundation_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#import "ui/base/clipboard/clipboard_util_mac.h"
-#include "url/gurl.h"
+#include "testing/gtest_mac.h"
 
 namespace content {
 
-typedef RenderViewHostTestHarness WebDragSourceMacTest;
+using WebDragSourceMacTest = RenderViewHostTestHarness;
 
 TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
-  std::unique_ptr<WebContents> contents(CreateTestWebContents());
-  base::scoped_nsobject<NSView> view(
-      [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)]);
+  DropData drop_data;
+  drop_data.url = GURL("javascript:%");
 
-  std::unique_ptr<DropData> dropData(new DropData);
-  dropData->url = GURL("javascript:%");
+  base::scoped_nsobject<WebDragSource> source(
+      [[WebDragSource alloc] initWithHost:nullptr dropData:&drop_data]);
 
-  scoped_refptr<ui::UniquePasteboard> pasteboard1 = new ui::UniquePasteboard;
-  base::scoped_nsobject<WebDragSource> source([[WebDragSource alloc]
-           initWithHost:nullptr
-                   view:view
-               dropData:dropData.get()
-                  image:nil
-                 offset:NSZeroPoint
-             pasteboard:pasteboard1->get()
-      dragOperationMask:NSDragOperationCopy]);
-
-  // Test that this call doesn't throw any exceptions: http://crbug.com/128371
-  scoped_refptr<ui::UniquePasteboard> pasteboard2 = new ui::UniquePasteboard;
-  [source pasteboard:pasteboard2->get() provideDataForType:NSPasteboardTypeURL];
+  // Test that asking for the data of an invalidly-escaped URL doesn't throw any
+  // exceptions. http://crbug.com/128371
+  id result = [source pasteboardPropertyListForType:NSPasteboardTypeURL];
+  NSString* result_string = base::mac::ObjCCast<NSString>(result);
+  EXPECT_NSEQ(@"javascript:%25", result_string);
 }
 
 }  // namespace content

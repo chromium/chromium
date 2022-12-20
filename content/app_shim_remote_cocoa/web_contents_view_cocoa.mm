@@ -23,6 +23,8 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/gfx/image/image.h"
+#include "ui/resources/grit/ui_resources.h"
 
 using content::DropData;
 using features::kMacWebContentsOcclusion;
@@ -226,57 +228,97 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   if (!_host)
     return;
 
-  NSPasteboard* pasteboard =
-      [NSPasteboard pasteboardWithName:NSPasteboardNameDrag];
-  [pasteboard clearContents];
+  NSPoint mouseLocation = [self.window mouseLocationOutsideOfEventStream];
+  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
+                                          location:mouseLocation
+                                     modifierFlags:0
+                                         timestamp:NSApp.currentEvent.timestamp
+                                      windowNumber:self.window.windowNumber
+                                           context:nil
+                                       eventNumber:0
+                                        clickCount:1
+                                          pressure:1.0];
 
   _dragSource.reset([[WebDragSource alloc] initWithHost:_host
-                                                   view:self
-                                               dropData:&dropData
-                                                  image:image
-                                                 offset:offset
-                                             pasteboard:pasteboard
-                                      dragOperationMask:operationMask]);
-  [_dragSource startDrag];
+                                               dropData:&dropData]);
+  NSDraggingItem* draggingItem = [[[NSDraggingItem alloc]
+      initWithPasteboardWriter:_dragSource] autorelease];
+
+  if (!image) {
+    image = content::GetContentClient()
+                ->GetNativeImageNamed(IDR_DEFAULT_FAVICON)
+                .ToNSImage();
+  }
+
+  NSRect imageRect = NSMakeRect(mouseLocation.x, mouseLocation.y,
+                                image.size.width, image.size.height);
+  imageRect.origin.x -= offset.x;
+  // Deal with Cocoa's flipped coordinate system.
+  imageRect.origin.y -= image.size.height - offset.y;
+  [draggingItem setDraggingFrame:imageRect contents:image];
+
+  _dragOperation = operationMask;
+  _dragOffset = offset;
+  _dragImageHeight = image.size.height;
+
+  // Run the drag operation.
+  [self beginDraggingSessionWithItems:@[ draggingItem ]
+                                event:dragEvent
+                               source:self];
 }
 
 // NSDraggingSource methods
 
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal {
-  if (_dragSource)
-    return [_dragSource draggingSourceOperationMaskForLocal:isLocal];
-  // No web drag source - this is the case for dragging a file from the
-  // downloads manager. Default to copy operation. Note: It is desirable to
-  // allow the user to either move or copy, but this requires additional
-  // plumbing to update the download item's path once its moved.
-  return NSDragOperationCopy;
+- (NSDragOperation)draggingSession:(NSDraggingSession*)session
+    sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
+  return _dragOperation;
 }
 
 // Called when a drag initiated in our view ends.
-- (void)draggedImage:(NSImage*)anImage
-             endedAt:(NSPoint)screenPoint
-           operation:(NSDragOperation)operation {
-  [_dragSource
-      endDragAt:screenPoint
-      operation:ui::DragDropTypes::NSDragOperationToDragOperation(operation)];
+- (void)draggingSession:(NSDraggingSession*)session
+           endedAtPoint:(NSPoint)screenPoint
+              operation:(NSDragOperation)operation {
+  screenPoint.x += _dragOffset.x;
+  // Deal with Cocoa's flipped coordinate system.
+  screenPoint.y += _dragImageHeight - _dragOffset.y;
 
-  WebDragSource* currentDragSource = _dragSource.get();
+  // Convert |screenPoint| to view coordinates and flip it.
+  NSPoint localPoint = NSZeroPoint;
+  if (self.window) {
+    NSPoint basePoint =
+        ui::ConvertPointFromScreenToWindow(self.window, screenPoint);
+    localPoint = [self convertPoint:basePoint fromView:nil];
+  }
+  NSRect viewFrame = self.frame;
+  // Flip |screenPoint|.
+  NSRect screenFrame = self.window.screen.frame;
 
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)kPasteboardClearDelay),
-      dispatch_get_main_queue(), ^{
-        if (_dragSource.get() == currentDragSource) {
-          // Clear the drag pasteboard. Even though this is called in dealloc,
-          // we need an explicit call because NSPasteboard can retain the drag
-          // source.
-          [_dragSource clearPasteboard];
-          _dragSource.reset();
-        }
-      });
-}
+  // If AppKit returns a copy and move operation, mask off the move bit
+  // because WebCore does not understand what it means to do both, which
+  // results in an assertion failure/renderer crash.
+  if (operation == (NSDragOperationMove | NSDragOperationCopy)) {
+    operation &= ~NSDragOperationMove;
+  }
 
-// Called when a drag initiated in our view moves.
-- (void)draggedImage:(NSImage*)draggedImage movedTo:(NSPoint)screenPoint {
+  _host->EndDrag(
+      operation,
+      gfx::PointF(localPoint.x, viewFrame.size.height - localPoint.y),
+      gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y));
+
+  NSInteger originalChangeCount =
+      [NSPasteboard pasteboardWithName:NSPasteboardNameDrag].changeCount;
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kPasteboardClearDelay),
+                 dispatch_get_main_queue(), ^{
+                   NSPasteboard* draggingPasteboard =
+                       [NSPasteboard pasteboardWithName:NSPasteboardNameDrag];
+                   if (draggingPasteboard.changeCount == originalChangeCount) {
+                     // Clear the drag pasteboard. Explicitly do it because
+                     // NSPasteboard can retain the drag source.
+                     [draggingPasteboard clearContents];
+                     _dragSource.reset();
+                   }
+                 });
 }
 
 // NSDraggingDestination methods
@@ -334,8 +376,9 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)setHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host {
-  if (!host)
-    [_dragSource clearHostAndWebContentsView];
+  if (!host) {
+    [_dragSource webContentsIsGone];
+  }
   _host = host;
 }
 

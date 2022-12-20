@@ -26,17 +26,16 @@ class WebContentsNSViewHost;
 @class WebDragSource;
 
 CONTENT_EXPORT
-@interface WebContentsViewCocoa : BaseView <ViewsHostable> {
+@interface WebContentsViewCocoa
+    : BaseView <ViewsHostable, NSDraggingSource, NSDraggingDestination> {
  @private
-  // Instances of this class are owned by both host_ and AppKit. It is
-  // possible for an instance to outlive its webContentsView_. The host_ must
-  // call -clearHostAndView in its destructor.
+  // Instances of this class are owned by both `_host` and AppKit. The `_host`
+  // must call `-setHost:nil` in its destructor.
   raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
 
   // The interface exported to views::Views that embed this as a sub-view.
   raw_ptr<ui::ViewsHostableView> _viewsHostableView;
 
-  base::scoped_nsobject<WebDragSource> _dragSource;
   BOOL _mouseDownCanMoveWindow;
 
   // Utility to copy screenshots to a usable directory for PWAs. This utility
@@ -45,6 +44,12 @@ CONTENT_EXPORT
   // https://crbug.com/1148078
   std::unique_ptr<remote_cocoa::DroppedScreenShotCopierMac>
       _droppedScreenShotCopier;
+
+  // Drag variables.
+  base::scoped_nsobject<WebDragSource> _dragSource;
+  NSDragOperation _dragOperation;
+  NSPoint _dragOffset;
+  CGFloat _dragImageHeight;
 }
 
 // Set or un-set the mojo interface through which to communicate with the
@@ -56,11 +61,6 @@ CONTENT_EXPORT
 // Enable the workaround for https://crbug.com/1148078. This is called by
 // in-PWA-process instances, to limit the workaround's effect to just PWAs.
 - (void)enableDroppedScreenShotCopier;
-
-// Returns the available drag operations. This is a required method for
-// NSDraggingSource. It is supposedly deprecated, but the non-deprecated API
-// -[NSWindow dragImage:...] still relies on it.
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
 
 // Private interface.
 // TODO(ccameron): Document these functions.
