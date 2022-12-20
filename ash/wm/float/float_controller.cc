@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
@@ -290,18 +292,17 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
                    preferred_width, preferred_height);
 }
 
+// static
 gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
-    aura::Window* floated_window) const {
-  gfx::Rect work_area =
-      WorkAreaInsets::ForWindow(floated_window->GetRootWindow())
-          ->user_work_area_bounds();
-  wm::ConvertRectFromScreen(floated_window->GetRootWindow(), &work_area);
+    aura::Window* window) {
+  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                            ->user_work_area_bounds();
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
 
-  const bool landscape =
-      chromeos::wm::IsLandscapeOrientationForWindow(floated_window);
+  const bool landscape = chromeos::wm::IsLandscapeOrientationForWindow(window);
   const gfx::Size preferred_size =
       chromeos::wm::GetPreferredFloatedWindowTabletSize(work_area, landscape);
-  const gfx::Size minimum_size = floated_window->delegate()->GetMinimumSize();
+  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
 
   const int width = std::max(preferred_size.width(), minimum_size.width());
 
@@ -310,17 +311,24 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   DCHECK_GT(preferred_size.height(), minimum_size.height());
   const int height = preferred_size.height();
 
-  // Get `floated_window_info` from `floated_window_info_map_`, `window` must be
-  // floated before calling into this function.
-  auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
-  DCHECK(floated_window_info);
+  // Get `floated_window_info` from the float controller. For non ARC apps, it
+  // is expected we call this function on already floated windows.
+  auto* floated_window_info =
+      Shell::Get()->float_controller()->MaybeGetFloatedWindowInfo(window);
+#if DCHECK_IS_ON()
+  if (window->GetProperty(aura::client::kAppType) !=
+      static_cast<int>(AppType::ARC_APP)) {
+    DCHECK(floated_window_info);
+  }
+#endif
 
   // Update the origin of the floated window based on whichever corner it is
   // magnetized to.
   gfx::Point origin;
 
   const MagnetismCorner magnetism_corner =
-      floated_window_info->magnetism_corner();
+      floated_window_info ? floated_window_info->magnetism_corner()
+                          : MagnetismCorner::kBottomRight;
   const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
   switch (magnetism_corner) {
     case MagnetismCorner::kTopLeft:
@@ -342,7 +350,7 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   }
 
   // If the window is tucked, shift it so the window is offscreen.
-  if (floated_window_info->is_tucked_for_tablet()) {
+  if (floated_window_info && floated_window_info->is_tucked_for_tablet()) {
     int x_offset;
     switch (magnetism_corner) {
       case MagnetismCorner::kTopLeft:

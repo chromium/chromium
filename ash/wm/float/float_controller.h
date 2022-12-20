@@ -57,10 +57,9 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // Returns float window bounds in clamshell mode in root window coordinates.
   static gfx::Rect GetPreferredFloatWindowClamshellBounds(aura::Window* window);
 
-  // Gets the ideal float bounds of `floated_window` in tablet mode if it were
-  // to be floated, in root window coordinates.
-  gfx::Rect GetPreferredFloatWindowTabletBounds(
-      aura::Window* floated_window) const;
+  // Gets the ideal float bounds of `window` in tablet mode if it were to be
+  // floated, in root window coordinates.
+  static gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
 
   // Untucks `floated_window`. Does nothing if the window is already untucked.
   void MaybeUntuckFloatedWindowForTablet(aura::Window* floated_window);

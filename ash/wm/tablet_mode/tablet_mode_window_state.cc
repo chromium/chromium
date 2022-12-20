@@ -112,9 +112,7 @@ gfx::Rect GetBoundsInTabletMode(WindowState* state_object,
 
   if (chromeos::wm::features::IsFloatWindowEnabled() &&
       state_object->IsFloated()) {
-    return Shell::Get()
-        ->float_controller()
-        ->GetPreferredFloatWindowTabletBounds(window);
+    return FloatController::GetPreferredFloatWindowTabletBounds(window);
   }
 
   gfx::Rect bounds_in_parent;
