@@ -326,11 +326,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1402582
   "inputs.VirtualKeyboardAccent",
 
-  # https://crbug.com/1402592
-  "crostini.ShareDownloads.bullseye_stable",
-  "crostini.ShareFilesOK.buster_stable",
-  "crostini.ShareFolders.bullseye_stable",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
