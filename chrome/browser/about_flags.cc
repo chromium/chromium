@@ -7717,10 +7717,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeferredFontShapingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDeferredShaping)},
 
-    {"permission-predictions", flag_descriptions::kPermissionPredictionsName,
-     flag_descriptions::kPermissionPredictionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPermissionPredictions)},
-
     {"show-performance-metrics-hud",
      flag_descriptions::kShowPerformanceMetricsHudName,
      flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,

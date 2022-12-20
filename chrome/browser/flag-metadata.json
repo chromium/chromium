@@ -5532,11 +5532,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "permission-predictions",
-    "owners": [ "andypaicu", "engedy", "ravjit", "mkwst", "hkamila", "elklm" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "permission-quiet-chip",
     "owners": [ "elklm", "engedy"],
     "expiry_milestone": 110
