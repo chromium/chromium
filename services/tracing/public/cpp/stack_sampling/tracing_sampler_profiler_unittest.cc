@@ -22,6 +22,7 @@
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/buildflags.h"
@@ -44,7 +45,8 @@
 namespace tracing {
 namespace {
 
-using base::trace_event::TraceLog;
+using ::base::trace_event::TraceLog;
+using ::perfetto::protos::TracePacket;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
@@ -595,7 +597,6 @@ TEST_F(TracingProfileBuilderTest, TransformELFModuleIDToBreakpadFormat) {
   EXPECT_TRUE(found_build_id);
 }
 #endif
-#endif
 
 #if BUILDFLAG(IS_ANDROID) && \
     (ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED)
@@ -632,5 +633,29 @@ TEST_F(TracingProfileBuilderTest, FullPathForJavaModulesWithMissingBuildId) {
   EXPECT_TRUE(has_full_path);
 }
 #endif
+
+TEST_F(TracingProfileBuilderTest, SetPidFromTraceLog) {
+  constexpr int kExpectedPid = 1234;
+  TraceLog::GetInstance()->SetProcessID(kExpectedPid);
+
+  TracingSamplerProfiler::TracingProfileBuilder profile_builder(
+      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      /*should_enable_filtering=*/false);
+  profile_builder.OnSampleCompleted(
+      {base::Frame(/*instruction_pointer=*/0, /*module=*/nullptr)},
+      base::TimeTicks());
+  EXPECT_GT(producer()->GetFinalizedPacketCount(), 0u);
+
+  bool found_pid = false;
+  for (const std::unique_ptr<TracePacket>& packet :
+       producer()->finalized_packets()) {
+    if (packet->thread_descriptor().has_pid()) {
+      found_pid = true;
+      EXPECT_EQ(packet->thread_descriptor().pid(), kExpectedPid);
+    }
+  }
+  EXPECT_TRUE(found_pid);
+}
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace tracing

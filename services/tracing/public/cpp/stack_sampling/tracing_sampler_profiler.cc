@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
-#include "base/process/process_handle.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/strings/strcat.h"
@@ -25,6 +24,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/buildflags.h"
@@ -499,7 +499,8 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
       // metadata events to be emitted from the JSON exporter which conflict
       // with the metadata events emitted by the regular TrackEventDataSource.
       auto* thread_descriptor = trace_packet->set_thread_descriptor();
-      thread_descriptor->set_pid(base::GetCurrentProcId());
+      thread_descriptor->set_pid(
+          base::trace_event::TraceLog::GetInstance()->process_id());
       thread_descriptor->set_tid(sampled_thread_id_);
       last_timestamp_ = sample.timestamp;
       thread_descriptor->set_reference_timestamp_us(
