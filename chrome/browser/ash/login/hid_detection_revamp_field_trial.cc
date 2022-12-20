@@ -58,7 +58,7 @@ std::string CreateFreshTrial(
       enabled_percent = 50;
       break;
     case version_info::Channel::STABLE:
-      enabled_percent = 1;
+      enabled_percent = 0;
       break;
   }
   int disabled_percent = enabled_percent;
