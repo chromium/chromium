@@ -2393,6 +2393,10 @@ if (!is_android) {
       sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
     }
 
+    if (is_chrome_for_testing_branded) {
+      sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
+    }
+
     if (enable_reporting) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
     }
