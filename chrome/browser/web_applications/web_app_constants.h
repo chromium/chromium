@@ -229,6 +229,8 @@ enum class ApiApprovalState {
   kDisallowed = 2,
 };
 
+std::ostream& operator<<(std::ostream& os, ApiApprovalState state);
+
 // State concerning whether a particular feature has been enabled at the OS
 // level. For example, with File Handling, this indicates whether an app should
 // be/has been registered with the OS to handle opening certain file types.

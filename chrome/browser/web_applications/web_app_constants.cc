@@ -46,6 +46,17 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 
+std::ostream& operator<<(std::ostream& os, ApiApprovalState state) {
+  switch (state) {
+    case ApiApprovalState::kAllowed:
+      return os << "Allowed";
+    case ApiApprovalState::kDisallowed:
+      return os << "Disallowed";
+    case ApiApprovalState::kRequiresPrompt:
+      return os << "RequiresPrompt";
+  }
+}
+
 std::string ConvertUninstallSourceToStringType(
     const webapps::WebappUninstallSource& uninstall_source) {
   switch (uninstall_source) {

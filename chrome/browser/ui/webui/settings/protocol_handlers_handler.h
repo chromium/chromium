@@ -125,13 +125,9 @@ class ProtocolHandlersHandler
   // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
   void UpdateAllDisallowedLaunchProtocols();
 
-  // Remove an approved app handler.
+  // Used to remove a protocol handler from the approved or disapproved list.
   // |args| is a list of [protocol, url, app_id].
-  void HandleRemoveAllowedAppHandler(const base::Value::List& args);
-
-  // Remove a disallowed app handler.
-  // |args| is a list of [protocol, url, app_id].
-  void HandleRemoveDisallowedAppHandler(const base::Value::List& args);
+  void ResetProtocolHandlerUserApproval(const base::Value::List& args);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<web_app::WebAppProvider> web_app_provider_;

@@ -36,6 +36,7 @@
 namespace web_app {
 
 using ::testing::Eq;
+enum class ApiApprovalState;
 
 namespace {
 
@@ -199,7 +200,8 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureProtocolHandlerDisallowed) {
   {
     base::test::TestFuture<void> disallowed_future;
     provider().scheduler().UpdateProtocolHandlerUserApproval(
-        app_id, "web+test", /*allowed=*/false, disallowed_future.GetCallback());
+        app_id, "web+test", ApiApprovalState::kDisallowed,
+        disallowed_future.GetCallback());
     EXPECT_TRUE(disallowed_future.Wait());
   }
 

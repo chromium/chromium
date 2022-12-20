@@ -134,9 +134,12 @@ void UserChoiceDialogCompleted(
 
   if (remember_user_choice) {
     WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+    ApiApprovalState approval_state =
+        allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed;
     if (protocol_url) {
       provider->scheduler().UpdateProtocolHandlerUserApproval(
-          app_id, protocol_url->scheme(), allowed, std::move(persist_done));
+          app_id, protocol_url->scheme(), approval_state,
+          std::move(persist_done));
     } else {
       DCHECK(is_file_launch);
       provider->scheduler().PersistFileHandlersUserChoice(

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -27,7 +28,7 @@ namespace web_app {
 UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
     const AppId& app_id,
     const std::string& protocol_scheme,
-    bool allowed,
+    ApiApprovalState approval_state,
     base::OnceClosure callback)
     : WebAppCommandTemplate<AppLock>("UpdateProtocolHandlerApprovalCommand"),
       lock_description_(
@@ -35,11 +36,12 @@ UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
               {app_id})),
       app_id_(app_id),
       protocol_scheme_(protocol_scheme),
-      allowed_(allowed),
+      approval_state_(approval_state),
       callback_(std::move(callback)) {
   debug_info_.Set("name", "UpdateProtocolHandlerApprovalCommand");
   debug_info_.Set("app_id", app_id_);
-  debug_info_.Set("allowed", allowed);
+  debug_info_.Set("api_approval_state",
+                  base::StreamableToString(approval_state_));
   debug_info_.Set("protocol_scheme", protocol_scheme);
   DCHECK(!protocol_scheme.empty());
 }
@@ -63,21 +65,36 @@ void UpdateProtocolHandlerApprovalCommand::StartWithLock(
   {
     ScopedRegistryUpdate update(&lock_->sync_bridge());
     WebApp* app_to_update = update->UpdateApp(app_id_);
+    if (!app_to_update) {
+      // If this command is scheduled after an uninstallation, the
+      // app will no longer exist, in which case we should gracefully terminate
+      // the command and run the final callback.
+      debug_info_.Set("failure_reason", "app_not_found");
+      SignalCompletionAndSelfDestruct(CommandResult::kFailure,
+                                      std::move(callback_));
+      return;
+    }
 
     base::flat_set<std::string> allowed_protocols(
         app_to_update->allowed_launch_protocols());
     base::flat_set<std::string> disallowed_protocols(
         app_to_update->disallowed_launch_protocols());
 
-    if (allowed_) {
-      DCHECK(!base::Contains(allowed_protocols, protocol_scheme_));
-      allowed_protocols.insert(protocol_scheme_);
-      disallowed_protocols.erase(protocol_scheme_);
-    } else {
-      DCHECK(!base::Contains(disallowed_protocols, protocol_scheme_));
-      allowed_protocols.erase(protocol_scheme_);
-      disallowed_protocols.insert(protocol_scheme_);
+    switch (approval_state_) {
+      case ApiApprovalState::kAllowed:
+        allowed_protocols.insert(protocol_scheme_);
+        disallowed_protocols.erase(protocol_scheme_);
+        break;
+      case ApiApprovalState::kDisallowed:
+        allowed_protocols.erase(protocol_scheme_);
+        disallowed_protocols.insert(protocol_scheme_);
+        break;
+      case ApiApprovalState::kRequiresPrompt:
+        allowed_protocols.erase(protocol_scheme_);
+        disallowed_protocols.erase(protocol_scheme_);
+        break;
     }
+
     app_to_update->SetAllowedLaunchProtocols(std::move(allowed_protocols));
     app_to_update->SetDisallowedLaunchProtocols(
         std::move(disallowed_protocols));
@@ -103,8 +120,7 @@ void UpdateProtocolHandlerApprovalCommand::
   if (original_protocol_handlers ==
       os_integration_manager.GetAppProtocolHandlers(app_id_)) {
     debug_info_.Set("was_update_required", false);
-    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                    std::move(callback_));
+    OnProtocolHandlersUpdated();
     return;
   }
   debug_info_.Set("was_update_required", true);

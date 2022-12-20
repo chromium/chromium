@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -329,7 +330,7 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
 void WebAppCommandScheduler::UpdateProtocolHandlerUserApproval(
     const AppId& app_id,
     const std::string& protocol_scheme,
-    bool allowed,
+    ApiApprovalState approval_state,
     base::OnceClosure callback) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
@@ -339,7 +340,7 @@ void WebAppCommandScheduler::UpdateProtocolHandlerUserApproval(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<UpdateProtocolHandlerApprovalCommand>(
-          app_id, protocol_scheme, allowed, std::move(callback)));
+          app_id, protocol_scheme, approval_state, std::move(callback)));
 }
 
 void WebAppCommandScheduler::ClearWebAppBrowsingData(

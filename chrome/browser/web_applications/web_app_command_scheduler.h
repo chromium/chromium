@@ -37,6 +37,7 @@ class WebAppDataRetriever;
 class WebAppProvider;
 struct IsolationData;
 class WebApp;
+enum class ApiApprovalState;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -151,7 +152,7 @@ class WebAppCommandScheduler {
   // necessary, it also updates the protocol registration with the OS.
   void UpdateProtocolHandlerUserApproval(const AppId& app_id,
                                          const std::string& protocol_scheme,
-                                         bool allowed,
+                                         ApiApprovalState approval_state,
                                          base::OnceClosure callback);
 
   // Set app to disabled, This is Chrome OS specific and no-op on other
