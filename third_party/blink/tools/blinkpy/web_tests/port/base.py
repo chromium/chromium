@@ -1175,8 +1175,8 @@ class Port(object):
         """Returns the WPT-style fuzzy metadata for the given test.
 
         The metadata is a pair of lists, (maxDifference, totalPixels), where
-        each list is a [min, max] range, inclusive. If the test has no fuzzy metadata,
-        returns (None, None).
+        each list is a [min, max] range, inclusive, adjusted by the device
+        scale factor. If the test has no fuzzy metadata, returns (None, None).
 
         See https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
         """
@@ -1186,8 +1186,10 @@ class Port(object):
             # This is an actual WPT test, so we can get the metadata from the manifest.
             wpt_path = match.group(1)
             path_in_wpt = match.group(2)
-            return self.wpt_manifest(wpt_path).extract_fuzzy_metadata(
-                path_in_wpt)
+            return self._adjust_fuzzy_metadata_by_dsf(
+                test_name,
+                self.wpt_manifest(wpt_path).extract_fuzzy_metadata(
+                    path_in_wpt))
 
         # This is not a WPT test, so we will parse the metadata ourselves.
         if not self.test_isfile(test_name):
@@ -1210,18 +1212,26 @@ class Port(object):
         if not tot_pix_min:
             tot_pix_min = tot_pix_max
 
+        return self._adjust_fuzzy_metadata_by_dsf(
+            test_name,
+            ([int(max_diff_min), int(max_diff_max)
+              ], [int(tot_pix_min), int(tot_pix_max)]))
+
+    def _adjust_fuzzy_metadata_by_dsf(self, test_name, metadata):
+        if metadata == (None, None):
+            return metadata
+
+        ([max_diff_min, max_diff_max], [tot_pix_min, tot_pix_max]) = metadata
         for flag in reversed(self._specified_additional_driver_flags() +
                              self.args_for_test(test_name)):
-            if "--force-device-scale-factor" in flag:
+            if "--force-device-scale-factor=" in flag:
                 _, scale_factor = flag.split("=")
                 dsf = float(scale_factor)
-                tot_pix_min = float(tot_pix_min) * dsf * dsf
-                tot_pix_max = float(tot_pix_max) * dsf * dsf
+                tot_pix_min = int(tot_pix_min * dsf * dsf)
+                tot_pix_max = int(tot_pix_max * dsf * dsf)
                 break
 
-        return ([int(max_diff_min),
-                 int(max_diff_max)], [int(tot_pix_min),
-                                      int(tot_pix_max)])
+        return ([max_diff_min, max_diff_max], [tot_pix_min, tot_pix_max])
 
     def get_file_path_for_wpt_test(self, test_name):
         """Returns the real file path for the given WPT test.

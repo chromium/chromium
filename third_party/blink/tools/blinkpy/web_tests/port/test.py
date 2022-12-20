@@ -566,7 +566,10 @@ def add_manifest_to_mock_filesystem(port):
                                                 '/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html',
                                                 '=='
                                             ]], {
-                                                'timeout': 'long'
+                                                'timeout':
+                                                'long',
+                                                'fuzzy':
+                                                [[None, [[0, 255], [0, 200]]]]
                                             }
                                         ],
                                     ]

@@ -1184,6 +1184,30 @@ class PortTest(LoggingTestCase):
         result = port.get_wpt_fuzzy_metadata("passes/reftest.html")
         self.assertEqual(result, ([0, 0], [4, 800]))
 
+    def test_get_wpt_fuzzy_metadata_for_wpt_test(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        result = port.get_wpt_fuzzy_metadata(
+            'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html'
+        )
+        self.assertEqual(result, ([0, 255], [0, 200]))
+        result = port.get_wpt_fuzzy_metadata(
+            'external/wpt/dom/ranges/Range-attributes.html')
+        self.assertEqual(result, (None, None))
+
+    def test_get_wpt_fuzzy_metadata_for_wpt_test_with_dsf(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        port.args_for_test = unittest.mock.MagicMock(
+            return_value=['--force-device-scale-factor=2'])
+        result = port.get_wpt_fuzzy_metadata(
+            'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html'
+        )
+        self.assertEqual(result, ([0, 255], [0, 800]))
+        result = port.get_wpt_fuzzy_metadata(
+            'external/wpt/dom/ranges/Range-attributes.html')
+        self.assertEqual(result, (None, None))
+
     def test_get_file_path_for_wpt_test(self):
         port = self.make_port(with_tests=True)
         add_manifest_to_mock_filesystem(port)
