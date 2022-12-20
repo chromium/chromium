@@ -15,6 +15,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
+#include "sql/meta_table.h"
 #include "sql/statement.h"
 
 // TODO(crbug.com/1342228): This is currently in-memory only. Add support for a
@@ -38,12 +39,19 @@ class DIPSDatabase {
   DIPSDatabase(const DIPSDatabase&) = delete;
   DIPSDatabase& operator=(const DIPSDatabase&) = delete;
 
+  // Updates `db_` to use the latest schema.
+  // Returns whether the migration was successful.
+  bool UpdateSchema();
+
+  // Migrates from v1 to v2 of the DIPS database schema.
+  bool MigrateToVersion2();
+
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
              const TimestampRange& storage_times,
              const TimestampRange& interaction_times,
              const TimestampRange& stateful_bounce_times,
-             const TimestampRange& stateless_bounce_times);
+             const TimestampRange& bounce_times);
 
   absl::optional<StateValue> Read(const std::string& site);
 
@@ -160,6 +168,7 @@ class DIPSDatabase {
   const base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+  sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   mutable base::Time last_health_metrics_time_
       GUARDED_BY_CONTEXT(sequence_checker_) = base::Time::Min();
   SEQUENCE_CHECKER(sequence_checker_);

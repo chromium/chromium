@@ -14,6 +14,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":golden_dbs_bundle_data",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -24,6 +25,16 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  data = [ "//chrome/test/data/dips/v1.sql" ]
+}
+
+bundle_data("golden_dbs_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//chrome/test/data/dips/v1.sql" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("browser_tests") {

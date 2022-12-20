@@ -26,6 +26,17 @@ bool TimestampRange::Update(base::Time time) {
   return modified;
 }
 
+bool TimestampRange::IsNullOrWithin(TimestampRange other) const {
+  if (!first.has_value()) {
+    return true;
+  }
+  if (!other.first.has_value()) {
+    return false;
+  }
+  return first.value() >= other.first.value() &&
+         last.value() <= other.last.value();
+}
+
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
   switch (type) {

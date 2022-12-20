@@ -83,8 +83,8 @@ DIPSState DIPSStorage::ReadSite(std::string site) {
            state->user_interaction_times.last.has_value() ||
            state->stateful_bounce_times.first.has_value() ||
            state->stateful_bounce_times.last.has_value() ||
-           state->stateless_bounce_times.first.has_value() ||
-           state->stateless_bounce_times.last.has_value());
+           state->bounce_times.first.has_value() ||
+           state->bounce_times.last.has_value());
 
     return DIPSState(this, std::move(site), state.value());
   }
@@ -97,7 +97,7 @@ void DIPSStorage::Write(const DIPSState& state) {
 
   db_->Write(state.site(), state.site_storage_times(),
              state.user_interaction_times(), state.stateful_bounce_times(),
-             state.stateless_bounce_times());
+             state.bounce_times());
 }
 
 void DIPSStorage::RemoveEvents(base::Time delete_begin,
@@ -108,8 +108,9 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
   DCHECK(db_);
   DCHECK(delete_end.is_null() || delete_begin <= delete_end);
 
-  if (delete_end.is_null())
+  if (delete_end.is_null()) {
     delete_end = base::Time::Max();
+  }
 
   if (filter.is_null()) {
     db_->RemoveEventsByTime(delete_begin, delete_end, type);
@@ -123,8 +124,9 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
     // necessary.
     // Time ranges aren't currently supported for site-filtered
     // deletion of DIPS Events.
-    if (delete_begin != base::Time() || delete_end != base::Time::Max())
+    if (delete_begin != base::Time() || delete_end != base::Time::Max()) {
       return;
+    }
 
     bool preserve =
         (filter->type == network::mojom::ClearDataFilter::Type::KEEP_MATCHES);
@@ -176,16 +178,16 @@ void DIPSStorage::RecordInteraction(const GURL& url,
   state.update_user_interaction_time(time);
 }
 
-void DIPSStorage::RecordStatefulBounce(const GURL& url, base::Time time) {
+void DIPSStorage::RecordBounce(const GURL& url,
+                               base::Time time,
+                               bool stateful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
-  Read(url).update_stateful_bounce_time(time);
-}
-
-void DIPSStorage::RecordStatelessBounce(const GURL& url, base::Time time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  Read(url).update_stateless_bounce_time(time);
+  DIPSState state = Read(url);
+  state.update_bounce_time(time);
+  if (stateful) {
+    state.update_stateful_bounce_time(time);
+  }
 }
 
 /* static */

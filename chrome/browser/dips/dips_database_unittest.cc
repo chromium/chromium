@@ -10,13 +10,18 @@
 #include "chrome/browser/dips/dips_database.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "sql/database.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
@@ -29,6 +34,9 @@ using base::Time;
 class DIPSDatabase;
 
 namespace {
+
+int kCurrentVersionNumber = 2;
+
 class TestDatabase : public DIPSDatabase {
  public:
   explicit TestDatabase(const absl::optional<base::FilePath>& db_path)
@@ -36,12 +44,7 @@ class TestDatabase : public DIPSDatabase {
   void ComputeDatabaseMetricsForTesting() { ComputeDatabaseMetrics(); }
 };
 
-enum ColumnType {
-  kSiteStorage,
-  kUserInteraction,
-  kStatefulBounce,
-  kStatelessBounce
-};
+enum ColumnType { kSiteStorage, kUserInteraction, kStatefulBounce, kBounce };
 }  // namespace
 class DIPSDatabaseTest : public testing::Test {
  public:
@@ -108,15 +111,19 @@ class DIPSDatabaseAllColumnTest
   }
 
  protected:
+  bool IsBounce(ColumnType column) {
+    return column == kBounce || column == kStatefulBounce;
+  }
+
   // Uses `times` to write  to the first and last columns for `column_` in the
   // `site` row in `db`. This also writes the empty time stamps to all other
-  // columns in `db`
+  // columns in `db` that are unrelated.
   bool WriteToVariableColumn(const std::string& site,
                              const TimestampRange& times) {
     return db_->Write(site, column_ == kSiteStorage ? times : TimestampRange(),
                       column_ == kUserInteraction ? times : TimestampRange(),
                       column_ == kStatefulBounce ? times : TimestampRange(),
-                      column_ == kStatelessBounce ? times : TimestampRange());
+                      IsBounce(column_) ? times : TimestampRange());
   }
 
   TimestampRange ReadValueForVariableColumn(absl::optional<StateValue> value) {
@@ -127,8 +134,8 @@ class DIPSDatabaseAllColumnTest
         return value->user_interaction_times;
       case ColumnType::kStatefulBounce:
         return value->stateful_bounce_times;
-      case ColumnType::kStatelessBounce:
-        return value->stateless_bounce_times;
+      case ColumnType::kBounce:
+        return value->bounce_times;
     }
   }
 
@@ -224,7 +231,7 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(ColumnType::kSiteStorage,
                                          ColumnType::kUserInteraction,
                                          ColumnType::kStatefulBounce,
-                                         ColumnType::kStatelessBounce)));
+                                         ColumnType::kBounce)));
 
 // A test class that verifies the behavior DIPSDatabase with respect to
 // interactions.
@@ -240,17 +247,17 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
     DCHECK(db_);
     db_->Write("storage-only.test", storage_times,
                {interaction_for_storage, interaction_for_storage},
-               /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
+               /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
     db_->Write(
         "stateful-bounce.test", stateful_bounce_times,
         {interaction_for_stateful_bounce, interaction_for_stateful_bounce},
         stateful_bounce_times,
-        /*stateless_bounce_times=*/{});
+        /*bounce_times=*/stateful_bounce_times);
     db_->Write(
         "stateless-bounce.test",
         /*storage_times=*/{},
         {interaction_for_stateless_bounce, interaction_for_stateless_bounce},
-        /*stateful_bounce_times=*/{}, stateless_bounce_times);
+        /*stateful_bounce_times=*/{}, bounce_times);
   }
 
  protected:
@@ -268,7 +275,7 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
 
   TimestampRange storage_times = {storage, storage};
   TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
-  TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
+  TimestampRange bounce_times = {stateless_bounce, stateless_bounce};
 };
 
 TEST_P(DIPSDatabaseInteractionTest, ClearExpiredInteractions) {
@@ -341,13 +348,13 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
     // - a site redirects the user (without regard to storage access)
     //  All of these entries include a user interaction.
     db_->Write("storage-only.test", storage_times, interaction_times,
-               /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
+               /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
     db_->Write("stateful-bounce.test", storage_times, interaction_times,
                stateful_bounce_times,
-               /*stateless_bounce_times=*/{});
+               /*bounce_times=*/stateful_bounce_times);
     db_->Write("stateless-bounce.test",
                /*storage_times=*/{}, interaction_times,
-               /*stateful_bounce_times=*/{}, stateless_bounce_times);
+               /*stateful_bounce_times=*/{}, bounce_times);
   }
 
  protected:
@@ -355,13 +362,13 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
   void ClearAllInteractions() {
     db_->Write("storage-only.test", storage_times,
                /*interaction_times=*/{},
-               /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
+               /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
     db_->Write("stateful-bounce.test", storage_times,
                /*interaction_times=*/{}, stateful_bounce_times,
-               /*stateless_bounce_times=*/{});
+               /*bounce_times=*/stateful_bounce_times);
     db_->Write("stateless-bounce.test",
                /*storage_times=*/{}, /*interaction_times=*/{},
-               /*stateful_bounce_times=*/{}, stateless_bounce_times);
+               /*stateful_bounce_times=*/{}, bounce_times);
   }
   // For ease of testings if a site has an entry in its `user_interaction`
   // column the timestamp is at t=1 and so on.
@@ -383,7 +390,7 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
   TimestampRange interaction_times = {interaction, interaction};
   TimestampRange storage_times = {storage, storage};
   TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
-  TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
+  TimestampRange bounce_times = {stateless_bounce, stateless_bounce};
 };
 
 TEST_P(DIPSDatabaseQueryTest, VerifyInteractionsNonNull) {
@@ -521,19 +528,15 @@ class DIPSDatabaseGarbageCollectionTest
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    features_.InitAndEnableFeatureWithParameters(
-        dips::kFeature,
-        {{"interaction_ttl",
-          base::StringPrintf("%dh", base::Days(180).InHours())}});
-    ASSERT_EQ(dips::kInteractionTtl.Get(), base::Days(180));
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
 
     DCHECK(db_);
     db_->SetMaxEntriesForTesting(200);
     db_->SetPurgeEntriesForTesting(20);
-    clock_.Advance(dips::kInteractionTtl.Get());
 
     recent_interaction = Now();
-    old_interaction = Now() - dips::kInteractionTtl.Get() - base::Days(1);
+    old_interaction = Now() - base::Days(180);
 
     recent_interaction_times = {recent_interaction, recent_interaction};
     old_interaction_times = {old_interaction, old_interaction};
@@ -546,14 +549,14 @@ class DIPSDatabaseGarbageCollectionTest
       db_->Write(
           base::StrCat({"recent_interaction.test", base::NumberToString(i)}),
           storage_times, recent_interaction_times, stateful_bounce_times,
-          stateless_bounce_times);
+          bounce_times);
     }
 
     for (int i = 0; i < num_old_entries; i++) {
       db_->Write(
           base::StrCat({"old_interaction.test", base::NumberToString(i)}),
           storage_times, old_interaction_times, stateful_bounce_times,
-          stateless_bounce_times);
+          bounce_times);
     }
   }
 
@@ -568,7 +571,7 @@ class DIPSDatabaseGarbageCollectionTest
   TimestampRange old_interaction_times;
   TimestampRange storage_times = {storage, storage};
   TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
-  TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
+  TimestampRange bounce_times = {stateful_bounce, stateless_bounce};
 };
 
 // More than |max_entries_| entries with recent user interaction; garbage
@@ -732,4 +735,213 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 1);
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseErrors",
                                   sql::SqliteLoggedResultCode::kCorrupt, 1);
+}
+
+class DIPSDatabaseMigrationTest : public testing::Test {
+ public:
+  DIPSDatabaseMigrationTest() {
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+
+ protected:
+  void MigrateDatabase() { TestDatabase db(db_path_); }
+
+  int GetDatabaseVersion(sql::Database* db) {
+    sql::Statement kGetVersionSql(
+        db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
+    if (!kGetVersionSql.Step()) {
+      return 0;
+    }
+    return kGetVersionSql.ColumnInt(0);
+  }
+
+  std::vector<std::string> GetFirstAndLastColumnForSite(sql::Database* db,
+                                                        const char* column,
+                                                        const char* site) {
+    std::string both_times = sql::test::ExecuteWithResults(
+        db,
+        base::StringPrintf("SELECT first_%s_time,last_%s_time FROM bounces "
+                           "WHERE site='%s'",
+                           column, column, site)
+            .c_str(),
+        "|", ",");
+
+    return base::SplitString(both_times, "|", base::KEEP_WHITESPACE,
+                             base::SPLIT_WANT_ALL);
+  }
+
+  std::vector<std::string> GetStorageTimes(sql::Database* db,
+                                           const char* site) {
+    return GetFirstAndLastColumnForSite(db, "site_storage", site);
+  }
+
+  std::vector<std::string> GetInteractionTimes(sql::Database* db,
+                                               const char* site) {
+    return GetFirstAndLastColumnForSite(db, "user_interaction", site);
+  }
+
+  std::vector<std::string> GetStatefulBounceTimes(sql::Database* db,
+                                                  const char* site) {
+    return GetFirstAndLastColumnForSite(db, "stateful_bounce", site);
+  }
+
+  // Note: Only works if db is using the v1 schema.
+  std::vector<std::string> GetStatelessBounceTimes(sql::Database* db,
+                                                   const char* site) {
+    DCHECK(GetDatabaseVersion(db) == 1);
+    return GetFirstAndLastColumnForSite(db, "stateless_bounce", site);
+  }
+
+  // Note: Only works if db is using the v2 schema.
+  std::vector<std::string> GetBounceTimes(sql::Database* db, const char* site) {
+    DCHECK(GetDatabaseVersion(db) == 2);
+    return GetFirstAndLastColumnForSite(db, "bounce", site);
+  }
+
+  base::FilePath db_path() { return db_path_; }
+
+ private:
+  std::unique_ptr<TestDatabase> db_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+  // Test setup.
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_path_ = temp_dir_.GetPath().AppendASCII("DIPS.db");
+  }
+
+  void TearDown() override {
+    db_.reset();
+    ASSERT_TRUE(temp_dir_.Delete());
+  }
+};
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateEmptyToCurrentVersion) {
+  { DIPSDatabase db(db_path()); }
+
+  // Validate aspects of current schema.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_TRUE(db.DoesTableExist("bounces"));
+
+    // The "stateless_bounce" columns should be removed, and replaced by just
+    // "bounce" columns.
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_bounce_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_bounce_time"));
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
+  base::FilePath root;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root));
+  base::FilePath path_to_v1 = root.AppendASCII("chrome")
+                                  .AppendASCII("test")
+                                  .AppendASCII("data")
+                                  .AppendASCII("dips")
+                                  .AppendASCII("v1.sql");
+  EXPECT_TRUE(base::PathExists(path_to_v1));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), path_to_v1));
+
+  // Verify preconditions of the v1 database.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 1);
+
+    // These values are all set in v1.sql.
+    EXPECT_EQ(sql::test::ExecuteWithResults(
+                  &db, "SELECT * FROM bounces ORDER BY site", "|", "\n"),
+              "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
+              "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
+              "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
+              "storage.test|1|1|4|4|0|0|0|0");
+
+    // Note: that the stateful bounce happens earlier than the stateless bounce
+    // this should be reflected in the first/last bounce times for this in v2.
+    EXPECT_THAT(GetStatefulBounceTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("1", "4"));
+    EXPECT_THAT(GetStatelessBounceTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("2", "6"));
+    EXPECT_THAT(GetInteractionTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetStatefulBounceTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetStatelessBounceTimes(&db, "stateless-bounce.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "stateless-bounce.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetStorageTimes(&db, "storage.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "storage.test"),
+                testing::ElementsAre("4", "4"));
+  }
+
+  MigrateDatabase();
+
+  // Validate aspects of the database after migrating to the current version.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(GetDatabaseVersion(&db), 2);
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+
+    // The "stateless_bounce" columns should be removed, and replaced by
+    // just "bounce" columns.
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_bounce_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_bounce_time"));
+    // Verify that data is preserved across the migration.
+    // Notably - all zeros are transformed to NULL and the final two
+    // columns represent the first & last bounce times now.
+    EXPECT_EQ(sql::test::ExecuteWithResults(
+                  &db, "SELECT * FROM bounces ORDER BY site", "|", "\n"),
+              "both-bounce-kinds.test|||4|4|1|4|1|6\n"
+              "stateful-bounce.test|||4|4|1|1|1|1\n"
+              "stateless-bounce.test|||4|4|||1|1\n"
+              "storage.test|1|1|4|4||||");
+
+    EXPECT_THAT(GetStatefulBounceTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("1", "4"));
+    // The new bounce column should be populated correctly.
+    EXPECT_THAT(GetBounceTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("1", "6"));
+    EXPECT_THAT(GetInteractionTimes(&db, "both-bounce-kinds.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetStatefulBounceTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("1", "1"));
+    // The new bounce column should be populated correctly.
+    EXPECT_THAT(GetBounceTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetBounceTimes(&db, "stateless-bounce.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+                testing::ElementsAre("4", "4"));
+
+    EXPECT_THAT(GetStorageTimes(&db, "storage.test"),
+                testing::ElementsAre("1", "1"));
+    EXPECT_THAT(GetInteractionTimes(&db, "storage.test"),
+                testing::ElementsAre("4", "4"));
+  }
 }

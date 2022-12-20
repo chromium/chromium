@@ -216,10 +216,7 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
 void DIPSService::RecordBounce(bool stateful,
                                const GURL& url,
                                base::Time time) {
-  storage_
-      .AsyncCall(stateful ? &DIPSStorage::RecordStatefulBounce
-                          : &DIPSStorage::RecordStatelessBounce)
-      .WithArgs(url, time);
+  storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
 }
 
 /*static*/
