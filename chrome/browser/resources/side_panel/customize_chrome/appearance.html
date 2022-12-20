@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style">
   #editThemeButton {
     margin-bottom: 24px;
   }
@@ -6,3 +6,8 @@
 <customize-chrome-theme-snapshot></customize-chrome-theme-snapshot>
 <button id="editThemeButton" on-click="onEditThemeClicked_">Edit Theme</button>
 <customize-chrome-colors></customize-chrome-colors>
+<button hidden$="[[!showClassicChromeButton_]]" id="setClassicChromeButton"
+    on-click="onSetClassicChromeClicked_">
+  Reset to Classic Chrome
+</button>
+
