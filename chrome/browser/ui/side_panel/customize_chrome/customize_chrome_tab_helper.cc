@@ -18,9 +18,10 @@ void CustomizeChromeTabHelper::DeregisterEntry() {
   delegate_->DeregisterEntry();
 }
 
-void CustomizeChromeTabHelper::ShowCustomizeChromeSidePanel() {
+void CustomizeChromeTabHelper::SetCustomizeChromeSidePanelVisible(
+    bool visible) {
   DCHECK(delegate_);
-  delegate_->ShowCustomizeChromeSidePanel();
+  delegate_->SetCustomizeChromeSidePanelVisible(visible);
 }
 
 bool CustomizeChromeTabHelper::IsCustomizeChromeEntryShowing() const {

@@ -31,7 +31,7 @@ class CustomizeChromeSidePanelController
   // CustomizeChromeTabHelper::Delegate
   void CreateAndRegisterEntry() override;
   void DeregisterEntry() override;
-  void ShowCustomizeChromeSidePanel() override;
+  void SetCustomizeChromeSidePanelVisible(bool visible) override;
   bool IsCustomizeChromeEntryShowing() const override;
   bool IsCustomizeChromeEntryAvailable() const override;
 

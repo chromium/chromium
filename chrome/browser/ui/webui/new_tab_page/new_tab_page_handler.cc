@@ -812,10 +812,10 @@ void NewTabPageHandler::LogModulesFreOptInStatus(
   }
 }
 
-void NewTabPageHandler::ShowCustomizeChromeSidePanel() {
+void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(bool visible) {
   auto* customize_chrome_tab_helper =
       CustomizeChromeTabHelper::FromWebContents(web_contents_);
-  customize_chrome_tab_helper->ShowCustomizeChromeSidePanel();
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible);
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

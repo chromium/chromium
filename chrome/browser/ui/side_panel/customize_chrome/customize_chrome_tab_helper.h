@@ -23,7 +23,7 @@ class CustomizeChromeTabHelper
    public:
     virtual void CreateAndRegisterEntry() = 0;
     virtual void DeregisterEntry() = 0;
-    virtual void ShowCustomizeChromeSidePanel() = 0;
+    virtual void SetCustomizeChromeSidePanelVisible(bool visible) = 0;
     virtual bool IsCustomizeChromeEntryShowing() const = 0;
     virtual bool IsCustomizeChromeEntryAvailable() const = 0;
     virtual ~Delegate() = default;
@@ -42,8 +42,8 @@ class CustomizeChromeTabHelper
   // Deregisters the customize chrome side panel entry.
   void DeregisterEntry();
 
-  // Opens Side Panel to the customize chrome entry.
-  void ShowCustomizeChromeSidePanel();
+  // Opens and closes Side Panel to the customize chrome entry.
+  void SetCustomizeChromeSidePanelVisible(bool visible);
 
   // True if the side panel is open and showing the customize chrome entry.
   bool IsCustomizeChromeEntryShowing() const;

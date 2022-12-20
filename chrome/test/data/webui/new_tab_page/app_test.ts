@@ -11,7 +11,7 @@ import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_comma
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -637,28 +637,59 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
-    test('customize chrome button shown initially', () => {
-      // Assert.
-      assertFalse($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
-    });
-
-    test('customize chrome button hidden when side panel shown', async () => {
+    test('clicking customize button opens side panel', () => {
       // Act.
       $$<HTMLElement>(app, '#customizeButton')!.click();
-      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(true);
-      await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
-      assertTrue($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+      const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
+      assertGE(args.length, 1);
+      assertTrue(args.at(-1));
     });
 
-    test('customize chrome button shown when side panel hidden', async () => {
+    test('clicking customize button hides side panel', async () => {
       // Act.
-      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(false);
+      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(true);
       await callbackRouterRemote.$.flushForTesting();
+      $$<HTMLElement>(app, '#customizeButton')!.click();
 
       // Assert.
-      assertFalse($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+      const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
+      assertGE(args.length, 1);
+      assertFalse(args.at(-1));
+    });
+
+    suite('modules', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          modulesEnabled: true,
+        });
+      });
+
+      test('modules can open side panel', async () => {
+        // Act.
+        $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
+
+        // Assert.
+        const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
+        assertGE(args.length, 1);
+        assertTrue(args.at(-1));
+      });
+    });
+
+    suite('customize URL', () => {
+      suiteSetup(() => {
+        // We inject the URL param in this suite setup so that the URL is
+        // updated before the app element gets created.
+        url.searchParams.append('customize', CustomizeDialogPage.THEMES);
+      });
+
+      test('URL opens side panel', () => {
+        // Assert.
+        const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
+        assertGE(args.length, 1);
+        assertTrue(args.at(-1));
+      });
     });
   });
 

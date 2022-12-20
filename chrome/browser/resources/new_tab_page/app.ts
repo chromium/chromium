@@ -116,10 +116,17 @@ export class AppElement extends PolymerElement {
         type: Object,
       },
 
-      showCustomizeDialog_: {
+      showCustomize_: {
         type: Boolean,
         value: () =>
             WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
+        observer: 'onShowCustomizeUpdate_',
+      },
+
+      showCustomizeDialog_: {
+        type: Boolean,
+        computed:
+            'computeShowCustomizeDialog_(customizeChromeEnabled_, showCustomize_)',
       },
 
       selectedCustomizeDialogPage_: {
@@ -280,6 +287,7 @@ export class AppElement extends PolymerElement {
   private oneGoogleBarIframePath_: string;
   private oneGoogleBarLoaded_: boolean;
   private theme_: Theme;
+  private showCustomize_: boolean;
   private showCustomizeDialog_: boolean;
   private selectedCustomizeDialogPage_: string|null;
   private showVoiceSearchOverlay_: boolean;
@@ -432,6 +440,10 @@ export class AppElement extends PolymerElement {
     }
   }
 
+  private computeShowCustomizeDialog_(): boolean {
+    return !this.customizeChromeEnabled_ && this.showCustomize_;
+  }
+
   private computeBackgroundImageAttribution1_(): string {
     return this.theme_ && this.theme_.backgroundImageAttribution1 || '';
   }
@@ -484,10 +496,19 @@ export class AppElement extends PolymerElement {
 
   private onCustomizeClick_() {
     if (this.customizeChromeEnabled_) {
-      this.pageHandler_.showCustomizeChromeSidePanel();
+      this.showCustomize_ = !this.customizeChromeSidePanelShowing_;
     } else {
-      this.showCustomizeDialog_ = true;
+      this.showCustomize_ = true;
     }
+  }
+
+  private onShowCustomizeUpdate_() {
+    if (!this.customizeChromeEnabled_) {
+      return;
+    }
+    this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
+    // TODO(crbug.com/1402251): Scroll to section requested by
+    // |this.selectedCustomizeDialogPage_|.
   }
 
   private onCustomizeChromeSidePanelVisibilityChanged_(visible: boolean) {
@@ -495,7 +516,7 @@ export class AppElement extends PolymerElement {
   }
 
   private onCustomizeDialogClose_() {
-    this.showCustomizeDialog_ = false;
+    this.showCustomize_ = false;
     // Let customize dialog decide what page to show on next open.
     this.selectedCustomizeDialogPage_ = null;
   }
@@ -683,7 +704,7 @@ export class AppElement extends PolymerElement {
   }
 
   private onCustomizeModule_() {
-    this.showCustomizeDialog_ = true;
+    this.showCustomize_ = true;
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
   }
 

@@ -286,8 +286,8 @@ interface PageHandler {
   UpdateModulesFreVisibility();
   // Log user's FRE |optInStatus|.
   LogModulesFreOptInStatus(OptInStatus opt_in_status);
-  // Shows customize chrome in unified side panel.
-  ShowCustomizeChromeSidePanel();
+  // Shows or hides the customize chrome in unified side panel.
+  SetCustomizeChromeSidePanelVisible(bool visible);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

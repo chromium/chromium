@@ -120,7 +120,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void UpdateModulesFreVisibility() override;
   void LogModulesFreOptInStatus(
       new_tab_page::mojom::OptInStatus opt_in_status) override;
-  void ShowCustomizeChromeSidePanel() override;
+  void SetCustomizeChromeSidePanelVisible(bool visible) override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,

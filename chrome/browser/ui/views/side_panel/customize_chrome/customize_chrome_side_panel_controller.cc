@@ -64,13 +64,18 @@ void CustomizeChromeSidePanelController::DeregisterEntry() {
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
 }
 
-void CustomizeChromeSidePanelController::ShowCustomizeChromeSidePanel() {
+void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
+    bool visible) {
   auto* browser_view = GetBrowserView();
   if (!browser_view)
     return;
   DCHECK(IsCustomizeChromeEntryAvailable());
-  browser_view->side_panel_coordinator()->Show(
-      SidePanelEntry::Id::kCustomizeChrome);
+  if (visible) {
+    browser_view->side_panel_coordinator()->Show(
+        SidePanelEntry::Id::kCustomizeChrome);
+  } else {
+    browser_view->side_panel_coordinator()->Close();
+  }
 }
 
 bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {
