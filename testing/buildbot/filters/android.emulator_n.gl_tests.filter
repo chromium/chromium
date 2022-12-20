@@ -1,8 +1,7 @@
 # https://crbug.com/1342710
 -CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureCubeMap/0
 -CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureLevel/0
--CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/0
--CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/1
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations*
 -CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/0
 -CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/1
 
