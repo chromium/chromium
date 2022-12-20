@@ -12,9 +12,10 @@ build_webui("build") {
     "browsing_topics_internals.css",
   ]
   non_web_component_files = [ "browsing_topics_internals.ts" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/components/browsing_topics/mojom/browsing_topics_internals.mojom-webui.js" ]
+  mojo_files = [ "$root_gen_dir/components/browsing_topics/mojom/browsing_topics_internals.mojom-webui.ts" ]
   mojo_files_deps =
-      [ "//components/browsing_topics/mojom:mojo_bindings_js__generator" ]
+      [ "//components/browsing_topics/mojom:mojo_bindings_ts__generator" ]
 
   ts_deps = [ "//ui/webui/resources:library" ]
+  ts_use_local_config = false
 }

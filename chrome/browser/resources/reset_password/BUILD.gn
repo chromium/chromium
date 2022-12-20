@@ -11,9 +11,9 @@ assert(safe_browsing_mode == 1)
 # ts_library.
 copy("copy_src_and_mojo") {
   deps =
-      [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_js__generator" ]
+      [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_ts__generator" ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/reset_password/reset_password.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/reset_password/reset_password.mojom-webui.ts",
     "reset_password.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
@@ -22,10 +22,9 @@ copy("copy_src_and_mojo") {
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "reset_password.ts",
-    "reset_password.mojom-webui.js",
+    "reset_password.mojom-webui.ts",
   ]
   deps = [
     "//third_party/polymer/v3_0:library",

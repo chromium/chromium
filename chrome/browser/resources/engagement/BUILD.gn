@@ -6,9 +6,9 @@ import("//tools/typescript/ts_library.gni")
 
 copy("copy_src_and_mojo") {
   deps =
-      [ "//components/site_engagement/core/mojom:mojo_bindings_js__generator" ]
+      [ "//components/site_engagement/core/mojom:mojo_bindings_ts__generator" ]
   sources = [
-    "$root_gen_dir/mojom-webui/components/site_engagement/core/mojom/site_engagement_details.mojom-webui.js",
+    "$root_gen_dir/components/site_engagement/core/mojom/site_engagement_details.mojom-webui.ts",
     "site_engagement.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
@@ -17,10 +17,9 @@ copy("copy_src_and_mojo") {
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "site_engagement.ts",
-    "site_engagement_details.mojom-webui.js",
+    "site_engagement_details.mojom-webui.ts",
   ]
 
   deps = [

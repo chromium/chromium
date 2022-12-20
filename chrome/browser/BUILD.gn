@@ -8117,7 +8117,6 @@ grit("dev_ui_browser_resources") {
     "//chrome/browser/resources/memory_internals:build_ts",
     "//chrome/browser/resources/predictors:build_ts",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js",
-    "//components/site_engagement/core/mojom:mojo_bindings_js__generator",
   ]
 
   if (is_android || is_linux || is_chromeos || is_win) {
