@@ -330,8 +330,7 @@ class SettingsCursorAndTouchpadPageElement extends
      * Gets the bool pref value for the provided pref key.
      */
     const getBoolPrefValue = (key: string): boolean => {
-      const pref = this.get(key, this.prefs) as
-          chrome.settingsPrivate.PrefObject<boolean>;
+      const pref = this.getPref(key);
       return pref && !!pref.value;
     };
 
@@ -355,9 +354,8 @@ class SettingsCursorAndTouchpadPageElement extends
       };
     }
 
-    return this.get(
-               'settings.a11y.tablet_mode_shelf_nav_buttons_enabled',
-               this.prefs) as chrome.settingsPrivate.PrefObject<boolean>;
+    return this.getPref<boolean>(
+        'settings.a11y.tablet_mode_shelf_nav_buttons_enabled');
   }
 
   private onShelfNavigationButtonsLearnMoreClicked_(): void {
@@ -378,9 +376,8 @@ class SettingsCursorAndTouchpadPageElement extends
     const enabled = this.shadowRoot!
                         .querySelector<SettingsToggleButtonElement>(
                             '#shelfNavigationButtonsEnabledControl')!.checked;
-    this.set(
-        'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value',
-        enabled);
+    this.setPrefValue(
+        'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', enabled);
     this.cursorAndTouchpadBrowserProxy_
         .recordSelectedShowShelfNavigationButtonValue(enabled);
   }
@@ -388,7 +385,7 @@ class SettingsCursorAndTouchpadPageElement extends
   private onA11yCursorColorChange_(): void {
     // Custom cursor color is enabled when the color is not set to black.
     const a11yCursorColorOn =
-        this.get('prefs.settings.a11y.cursor_color.value') !==
+        this.getPref<number>('settings.a11y.cursor_color').value !==
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
