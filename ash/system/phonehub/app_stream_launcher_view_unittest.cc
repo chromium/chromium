@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
+#include "ash/system/phonehub/app_stream_launcher_list_item.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -65,6 +66,12 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
 
   AppStreamLauncherItem* GetItemView(int index) {
     return static_cast<AppStreamLauncherItem*>(
+        app_stream_launcher_view()->items_container_for_test()->children().at(
+            index));
+  }
+
+  AppStreamLauncherListItem* GetListItemView(int index) {
+    return static_cast<AppStreamLauncherListItem*>(
         app_stream_launcher_view()->items_container_for_test()->children().at(
             index));
   }
@@ -131,6 +138,35 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
                     .size());
 
   EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetText());
+}
+
+TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
+                            features::kEcheLauncherListView},
+      /*disabled_features=*/{});
+
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+  auto app1 = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, CreateTestImage(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      phonehub::proto::AppStreamabilityStatus::STREAMABLE);
+  std::vector<phonehub::Notification::AppMetadata> apps;
+  apps.push_back(app1);
+
+  phonehub::AppStreamLauncherDataModel* data_model =
+      fake_phone_hub_manager()->fake_app_stream_launcher_data_model();
+  data_model->SetAppList(apps);
+
+  EXPECT_EQ(1U, app_stream_launcher_view()
+                    ->items_container_for_test()
+                    ->children()
+                    .size());
+
+  EXPECT_EQ(u"Fake App", GetListItemView(0)->GetAppButtonForTest()->GetText());
 }
 
 TEST_F(AppStreamLauncherViewTest, RemoveItem) {

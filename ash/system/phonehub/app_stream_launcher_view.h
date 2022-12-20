@@ -58,6 +58,8 @@ class ASH_EXPORT AppStreamLauncherView
   std::unique_ptr<views::View> CreateAppListView();
   std::unique_ptr<views::View> CreateItemView(
       const phonehub::Notification::AppMetadata& app);
+  std::unique_ptr<views::View> CreateListItemView(
+      const phonehub::Notification::AppMetadata& app);
   std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::Button> CreateButton(
       views::Button::PressedCallback callback,
@@ -71,6 +73,11 @@ class ASH_EXPORT AppStreamLauncherView
 
   // Handles the click on the "back" arrow in the header.
   void OnArrowBackActivated();
+
+  void CreateListView(
+      const std::vector<phonehub::Notification::AppMetadata>* apps_list);
+  void CreateGridView(
+      const std::vector<phonehub::Notification::AppMetadata>* apps_list);
 
   views::Button* arrow_back_button_ = nullptr;
   phonehub::PhoneHubManager* phone_hub_manager_;

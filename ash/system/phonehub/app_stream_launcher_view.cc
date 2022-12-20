@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
+#include "ash/system/phonehub/app_stream_launcher_list_item.h"
 #include "ash/system/phonehub/app_stream_launcher_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
@@ -74,6 +75,9 @@ constexpr int kHeaderChildrenSpacing = 20;
 // The padding between different sections within the apps page. Also used for
 // interior apps page container margin.
 constexpr int kVerticalPaddingBetweenSections = 16;
+
+constexpr int kAppListItemHorizontalMargin = 16;
+constexpr int kAppListItemSpacing = 8;
 
 }  // namespace
 
@@ -148,9 +152,15 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
   auto* layout =
       scroll_contents->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
-                                         kHorizontalInteriorMargin));
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  if (features::IsEcheLauncherListViewEnabled()) {
+    layout->SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
+                                              kAppListItemHorizontalMargin));
+  } else {
+    layout->SetInteriorMargin(gfx::Insets::VH(kVerticalPaddingBetweenSections,
+                                              kHorizontalInteriorMargin));
+  }
 
   // All apps section.
   items_container_ =
@@ -182,29 +192,25 @@ void AppStreamLauncherView::UpdateFromDataModel() {
   const std::vector<phonehub::Notification::AppMetadata>* apps_list =
       phone_hub_manager_->GetAppStreamLauncherDataModel()
           ->GetAppsListSortedByName();
-  auto* table_layout = items_container_->SetLayoutManager(
-      std::make_unique<views::TableLayout>());
-  int spacing = (kTrayMenuWidth - kHorizontalInteriorMargin * 2 -
-                 kAppViewWidth * kColumns) /
-                (kColumns - 1);
-  for (int i = 0; i < kColumns; i++) {
-    table_layout->AddColumn(
-        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
-        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-    if (i != kColumns - 1)
-      table_layout->AddPaddingColumn(1.0, spacing);
-  }
-  table_layout->AddRows(ceil((double)apps_list->size() / kColumns),
-                        views::TableLayout::kFixedSize, kRowHeight);
 
-  for (auto& app : *apps_list) {
-    items_container_->AddChildView(CreateItemView(app));
+  if (features::IsEcheLauncherListViewEnabled()) {
+    CreateListView(apps_list);
+  } else {
+    CreateGridView(apps_list);
   }
 }
 
 std::unique_ptr<views::View> AppStreamLauncherView::CreateItemView(
     const phonehub::Notification::AppMetadata& app) {
   return std::make_unique<AppStreamLauncherItem>(
+      base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
+                          base::Unretained(this), app),
+      app);
+}
+
+std::unique_ptr<views::View> AppStreamLauncherView::CreateListItemView(
+    const phonehub::Notification::AppMetadata& app) {
+  return std::make_unique<AppStreamLauncherListItem>(
       base::BindRepeating(&AppStreamLauncherView::AppIconActivated,
                           base::Unretained(this), app),
       app);
@@ -293,6 +299,39 @@ void AppStreamLauncherView::OnAppListChanged() {
   if (!features::IsEcheSWAEnabled() || !features::IsEcheLauncherEnabled())
     return;
   UpdateFromDataModel();
+}
+
+void AppStreamLauncherView::CreateListView(
+    const std::vector<phonehub::Notification::AppMetadata>* apps_list) {
+  items_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 0),
+      kAppListItemSpacing));
+  for (auto& app : *apps_list) {
+    items_container_->AddChildView(CreateListItemView(app));
+  }
+}
+
+void AppStreamLauncherView::CreateGridView(
+    const std::vector<phonehub::Notification::AppMetadata>* apps_list) {
+  auto* table_layout = items_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  int spacing = (kTrayMenuWidth - kHorizontalInteriorMargin * 2 -
+                 kAppViewWidth * kColumns) /
+                (kColumns - 1);
+  for (int i = 0; i < kColumns; i++) {
+    table_layout->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0,
+        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+    if (i != kColumns - 1) {
+      table_layout->AddPaddingColumn(1.0, spacing);
+    }
+  }
+  table_layout->AddRows(ceil((double)apps_list->size() / kColumns),
+                        views::TableLayout::kFixedSize, kRowHeight);
+
+  for (auto& app : *apps_list) {
+    items_container_->AddChildView(CreateItemView(app));
+  }
 }
 
 }  // namespace ash
