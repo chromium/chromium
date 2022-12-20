@@ -864,13 +864,23 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
+  bool is_visible = (render_frame_host().IsActive() &&
+                     render_frame_host().GetVisibilityState() ==
+                         content::PageVisibilityState::kVisible);
+  if (!is_visible) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kErrorRpPageNotVisible,
+                             TokenStatus::kRpPageNotVisible,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
   // TODO(crbug.com/1357790): we should figure out how to handle multiple IDP
   // w.r.t. showing a static failure UI. e.g. one IDP is always successful and
   // one always returns 404.
   WebContents* rp_web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
-  DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
-
+  // RenderFrameHost should be in the primary page (ex not in the BFCache).
+  DCHECK(render_frame_host().GetPage().IsPrimary());
   // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.
   request_dialog_controller_->ShowFailureDialog(
       rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
