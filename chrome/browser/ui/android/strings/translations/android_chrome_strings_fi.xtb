@@ -517,6 +517,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3830886834687455630">Päivitä Google Play Palvelut, niin voit tarkistaa salasanasi</translation>
 <translation id="3845098929839618392">Avaa incognito-välilehdellä</translation>
 <translation id="3856096718352044181">Varmista, että tämä on kelvollinen palveluntarjoaja, tai yritä myöhemmin uudelleen</translation>
+<translation id="3858127568696903256">Täältä löydät seuraamasi sisällön</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861633093716975811">Suositut videot</translation>
 <translation id="3874520961715512166">Sivusto poistettu</translation>
@@ -552,7 +553,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4045764304651014138">Käyttödata</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
-<translation id="4060598801229743805">Toimintoja on käytettävissä näytön yläosassa.</translation>
 <translation id="4062305924942672200">Oikeudelliset tiedot</translation>
 <translation id="4072805772816336153">Yritä myöhemmin uudelleen</translation>
 <translation id="4084682180776658562">Kirjanmerkki</translation>
@@ -642,7 +642,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4554077758708533499">Yhdistetty USB-johdolla</translation>
 <translation id="4558311620361989323">Verkkosivun pikanäppäimet</translation>
 <translation id="4561730552726921821">Rekisteröinti onnistui</translation>
-<translation id="4561979708150884304">Ei yhteyttä</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4572422548854449519">Kirjaudu hallinnoidulle tilille</translation>
 <translation id="4576892426230499203">Kokeile toista vahvistustapaa</translation>
@@ -1351,7 +1350,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8261506727792406068">Poista</translation>
 <translation id="82619448491672958">Katso muut välilehdet</translation>
 <translation id="8266862848225348053">Lataussijainti</translation>
-<translation id="8274165955039650276">Näytä lataukset</translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282297628636750033">Käytä tummaa teemaa sivustoilla</translation>
 <translation id="829672787777123339">Muodostetaan yhteyttä laitteeseen…</translation>

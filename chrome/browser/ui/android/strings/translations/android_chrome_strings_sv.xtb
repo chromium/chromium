@@ -518,6 +518,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3845098929839618392">Öppna i inkognitoflik
 </translation>
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
+<translation id="3858127568696903256">Här kan du se innehåll du följer</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861633093716975811">Populära videor</translation>
 <translation id="3874520961715512166">Webbplatsen har tagits bort</translation>
@@ -553,7 +554,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4045764304651014138">Data om användning</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Alternativ finns högt upp på skärmen</translation>
 <translation id="4062305924942672200">Juridisk information</translation>
 <translation id="4072805772816336153">Försök igen senare</translation>
 <translation id="4084682180776658562">Infoga bokmärke</translation>
@@ -643,7 +643,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4554077758708533499">Ansluten med USB-kabel</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
 <translation id="4561730552726921821">Registreringen lyckades</translation>
-<translation id="4561979708150884304">Ingen anslutning</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4572422548854449519">Logga in på hanterat konto</translation>
 <translation id="4576892426230499203">Försök med ett annat verifieringsalternativ</translation>
@@ -1352,7 +1351,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8261506727792406068">Radera</translation>
 <translation id="82619448491672958">Se andra flikar</translation>
 <translation id="8266862848225348053">Nedladdningsplats</translation>
-<translation id="8274165955039650276">Visa nedladdningar</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="829672787777123339">Ansluter till enheten …</translation>

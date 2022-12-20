@@ -120,6 +120,7 @@
 <translation id="15373452373711364">Голям курсор на мишката</translation>
 <translation id="1546492247443594934">Работен кът 2</translation>
 <translation id="1546930421365146760">Помолете администратора си да настрои това устройство в Google Admin Console</translation>
+<translation id="1550406609415860283">Налични устройства</translation>
 <translation id="1550523713251050646">Кликнете за още опции</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
@@ -127,6 +128,7 @@
 <translation id="1611993646327628135">Вкл.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
+<translation id="163517899691012366">Известията са спрени, когато режимът „Не безпокойте“ е включен</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> устройства</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
@@ -373,6 +375,7 @@
 <translation id="3047761520276763270">Опитайте да кажете:</translation>
 <translation id="3051189971848907985">Профилът за мобилна мрежа се преименува. Изчакайте няколко минути.</translation>
 <translation id="3055162170959710888">Днес използвахте това устройство <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Не се поддържа</translation>
 <translation id="3068711042108640621">Лавицата е вляво</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Разгъване на менюто</translation>
@@ -407,6 +410,7 @@
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Настройване</translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
+<translation id="3260969790895726815">Говорът се обработва локално и функцията за диктуване работи офлайн, но някои гласови команди няма да се поддържат.</translation>
 <translation id="3269597722229482060">Кликване с десния бутон</translation>
 <translation id="3289544412142055976">Понастоящем приложенията за Linux не се поддържат</translation>
 <translation id="3289674678944039601">Зарежда се през адаптера</translation>
@@ -457,6 +461,7 @@
 <translation id="3542066395059568317">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да кликнете с десния бутон върху дадена препоръка, за да я премахнете.</translation>
 <translation id="3552189655002856821">Функцията за Wi-Fi е изключена</translation>
 <translation id="3554637740840164787">Фиксирахте <ph name="ITEM_TITLE" /></translation>
+<translation id="3560174576767922131">Записване на видеоклип</translation>
 <translation id="3563775809269155755">Активиране на точката за достъп</translation>
 <translation id="3566240529365775567">Отворено току-що</translation>
 <translation id="3571734092741541777">Настройване</translation>
@@ -648,6 +653,7 @@
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Показване на визуализации</translation>
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
+<translation id="458210817642223147">Записване на GIF</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4611292653554630842">Вход</translation>
@@ -727,6 +733,7 @@
 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Работен кът 16</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
+<translation id="5004607513195820459">Мрежата се управлява</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Достъпът до микрофона на устройството е разрешен</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
@@ -786,9 +793,11 @@
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
 <translation id="533282197239610265">Показване на устройствата Cast.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (дясна)</translation>
+<translation id="5351427059191534258">Искате ли да забраните достъпа до камерата?</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5356963482258194581">Превключвайте между тъмната и светлата тема. Кликнете с десния бутон върху работния плот и изберете „Тапет и стил“.</translation>
 <translation id="536019650977002321">Администраторът ви не разрешава записване на аудио. За повече информация се обърнете към него.</translation>
+<translation id="5361524080961918551">Файловете за говор на <ph name="LANGUAGE" /> са изтеглени частично</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Към този раздел</translation>
 <translation id="5377367976106153749">Да се включи ли достъпът до камерата?</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
@@ -898,6 +907,7 @@
 <translation id="5980301590375426705">Изход като гост</translation>
 <translation id="598407983968395253">Използване на шаблон</translation>
 <translation id="598882571027504733">За да инсталирате актуализацията, рестартирайте своя Chromebook, докато клавиатурата е прикачена.</translation>
+<translation id="6002179289567220515">Използвахте физическия превключвател, за да изключите 1 камера. Можете също да забраните достъпа до всички камери.</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> от <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Излиза се от огледалния режим</translation>
 <translation id="602001110135236999">Превъртане наляво</translation>
@@ -938,9 +948,11 @@
 <translation id="619279033188484792">Преглед на скорошните снимки, мултимедийни файлове и известия от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Пълно зареждане сега</translation>
 <translation id="6193431488227440296">За програмисти</translation>
+<translation id="6200515304866777730">Не се поддържа от приложението</translation>
 <translation id="6210042900243040400">Свържете устройството <ph name="NAME" />, запазено преди това в(ъв) <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
+<translation id="623116199192908855">Предаване на екрана ви от вашия Chromebook</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +994,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> изисква да актуализирате устройството си <ph name="DEVICE_TYPE" /> преди крайния срок</translation>
 <translation id="649452524636452238">ПИН за смарткартата</translation>
 <translation id="6495400115277918834">Режимът „Картина в картината“ стартира. Натиснете Alt+Shift+V за поставяне на фокуса</translation>
+<translation id="6497418457565568043">Режимът „Не безпокойте“ е включен</translation>
 <translation id="6500896621837555595">Актуализиране</translation>
 <translation id="6501401484702599040">Екранът се предава към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6508923215158854599">Уверете се, че вашият Chromebook и устройството ви Chromecast са свързани с една и съща Wi-Fi мрежа.</translation>
 <translation id="6515727200518652613">Връзката с камерата бе прекъсната. Прави се опит за възстановяването ѝ.</translation>
 <translation id="6520517963145875092">Изберете прозореца, който да се заснеме</translation>
 <translation id="652139407789908527">По време на тази актуализация екранът ще остане празен по-дълго от обичайното (до една минута). Моля, не натискайте бутона за захранване, докато тя се извършва.</translation>
@@ -1065,6 +1079,7 @@
 <translation id="6901883536534621389">Изпробвайте жестове за навигиране</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6931576957638141829">Запазване във</translation>
+<translation id="6942518653766415536">Меню за формата на записа</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6960565108681981554">Не е активирана. Свържете се с оператора си.</translation>
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>

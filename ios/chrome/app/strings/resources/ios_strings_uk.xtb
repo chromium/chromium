@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">Продовжити редагувати</translation>
 <translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2451654228769116489">Закріпити вкладку</translation>
 <translation id="2461070143328828326">Налаштування паролю</translation>
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6064824697233747382">Адміністратор вашої організації вимагає, щоб ви вимкнули синхронізацію.</translation>
 <translation id="6066301408025741299">Торкніться, щоб скасувати.</translation>
+<translation id="6071409777669089905">Відкріпити вкладку</translation>
 <translation id="60829778314739003">Прийняти та продовжити</translation>
 <translation id="6084848228346514841">Виберіть вкладки</translation>
 <translation id="6103540626693881831">Шифрування на пристрої</translation>
@@ -1097,6 +1099,7 @@
 <translation id="9219154867334666734">Шукати вкладки…</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>
 <translation id="941747855997058526">Вибрати пароль…</translation>
+<translation id="948048872540558976">Створити нову вкладку</translation>
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="953008885340860025">Ви вийшли з облікового запису Chrome</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>

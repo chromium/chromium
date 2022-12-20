@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
 <translation id="2597774443162333062">Файлы будуць адпраўлены ў Google на адладку</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка.}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка.}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі.}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак.}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі.}}</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Каб атрымаць дадатковую інфармацыю, наведайце <ph name="BEGIN_LINK" />Даведачны цэнтр<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгарытм сціскання</translation>
 <translation id="4794140124556169553">Выкананне праверкі ЦП можа паўплываць на прадукцыйнасць сістэмы</translation>
+<translation id="4798078634453489142">Каб дадаць новую APN, выдаліце існуючую</translation>
 <translation id="4800589996161293643">Супольнасць Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Заданне друку "<ph name="DOCUMENT_TITLE" />" скасавана</translation>

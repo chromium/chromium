@@ -148,6 +148,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2080769225927880590">Logg på med en gyldig konto</translation>
+<translation id="2090878303988764231">Logg på for å administrere innholdet du ser</translation>
 <translation id="2103075008456228677">Åpne history.google.com</translation>
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer er flyttet</translation>
@@ -973,6 +974,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8197543752516192074">Oversett siden</translation>
 <translation id="8205564605687841303">Avbryt</translation>
 <translation id="8206354486702514201">Denne innstillingen håndheves av administratoren din.</translation>
+<translation id="821809831108207540">For å gi Discover-feeden og Chrome et personlig preg, logg på og slå på synkronisering.</translation>
 <translation id="8225985093977202398">Bufrede bilder og filer</translation>
 <translation id="8237382152611443140">Åpne innstillinger for autofylling av passord</translation>
 <translation id="8261506727792406068">Slett</translation>

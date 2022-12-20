@@ -120,6 +120,7 @@
 <translation id="15373452373711364">Большой курсор мыши</translation>
 <translation id="1546492247443594934">Рабочий стол 2</translation>
 <translation id="1546930421365146760">Попросите администратора настроить это устройство в консоли администратора Google</translation>
+<translation id="1550406609415860283">Доступные устройства</translation>
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
@@ -460,6 +461,7 @@
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
+<translation id="3560174576767922131">Записать видео</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
 <translation id="3566240529365775567">Открыто только что</translation>
 <translation id="3571734092741541777">Настроить</translation>
@@ -651,6 +653,7 @@
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
 <translation id="4578906031062871102">Меню настроек открыто</translation>
+<translation id="458210817642223147">Записать GIF</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4611292653554630842">Войти</translation>
@@ -730,6 +733,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Рабочий стол 16</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
+<translation id="5004607513195820459">Сетью управляет администратор</translation>
 <translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Доступ к микрофону разрешен.</translation>
 <translation id="5030687792513154421">Время вышло</translation>
@@ -1075,6 +1079,7 @@
 <translation id="6901883536534621389">Используйте жесты для навигации</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
+<translation id="6942518653766415536">Меню форматов записи</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>

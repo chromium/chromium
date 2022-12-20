@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
 <translation id="2597774443162333062">Enviaranse os ficheiros a Google para proceder á depuración</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Explorouse 1 páxina}other{A operación rematou. Exploráronse {NUMBER_OF_PAGES} páxinas}}</translation>
 <translation id="2619761439309613843">Actualización diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2638662041295312666">Imaxe de inicio de sesión</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Para obter máis axuda, vai ao <ph name="BEGIN_LINK" />Centro de Axuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
+<translation id="4798078634453489142">Quita un APN para engadir un novo</translation>
 <translation id="4800589996161293643">Comunidade de Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>

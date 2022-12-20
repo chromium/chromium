@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1559447966090556585">要接收通知嗎？</translation>
+<translation id="1559486004335285648">自動填入付款資訊</translation>
 <translation id="1559528461873125649">找不到你所指定的檔案或目錄</translation>
 <translation id="1559572115229829303">&lt;p&gt;您裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="181000283860817563">追蹤多個網站上的價格</translation>
+<translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1813414402673211292">清除瀏覽資料</translation>
 <translation id="182139138257690338">自動下載</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
 <translation id="1871284979644508959">必填欄位</translation>
 <translation id="1873899211667975540">搖滾音樂</translation>
+<translation id="1874224422119691492">你可以在 <ph name="SETTINGS" /> 中變更是否要使用螢幕鎖定功能填入密碼</translation>
 <translation id="1875025161375567525">相片匣</translation>
 <translation id="1875512691959384712">Google 表單</translation>
 <translation id="187918866476621466">開啟起始網頁</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="2878197950673342043">十字摺</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">使用螢幕鎖定功能填入密碼</translation>
 <translation id="2881276955470682203">要儲存卡片嗎？</translation>
 <translation id="2882949212241984732">觀音摺</translation>
 <translation id="2893773853358652045">第四卷</translation>
@@ -1408,6 +1412,7 @@
 <translation id="4541810033354695636">擴增實境</translation>
 <translation id="4542971377163063093">紙匣 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">你正在使用螢幕鎖定功能填入密碼</translation>
 <translation id="4558551763791394412">試試看停用擴充功能。</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4567686777917670400">你的系統管理員可從遠端變更瀏覽器設定。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2926,6 +2931,7 @@
 <translation id="8396522675989118466">這是<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼</translation>
 <translation id="8398790343843005537">搜尋你的手機</translation>
 <translation id="8405579342203358118">在 Chrome 設定中管理要同步處理哪些資訊</translation>
+<translation id="8406071103346257942">停止使用螢幕鎖定功能填入密碼</translation>
 <translation id="8409413588194360210">付款處理常式</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">你必須輸入兩次相同的通關密語。</translation>
@@ -3195,6 +3201,7 @@
 <translation id="9128016270925453879">已載入政策</translation>
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
+<translation id="9133985615769429248">如果你與其他人共用這部裝置，可以使用螢幕鎖定功能，讓系統在你使用已儲存的密碼時驗證身分</translation>
 <translation id="9136861683332321024">豪華房車</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137248913990643158">使用這個應用程式前，請先啟動 Chrome 並登入帳戶。</translation>

@@ -37,6 +37,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1175572348579024023">Tatal</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
+<translation id="1182225749592316782">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="1183863904939664422">Tidak berminat dengan cadangan ini</translation>
 <translation id="118437560755358292">Masukkan kata laluan atau PIN untuk meningkatkan keselamatan</translation>
 <translation id="118532027333893379">Ketik mana-mana bahagian untuk menangkap skrin penuh</translation>
@@ -120,6 +121,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="15373452373711364">Kursor tetikus besar</translation>
 <translation id="1546492247443594934">Meja 2</translation>
 <translation id="1546930421365146760">Minta pentadbir anda menyediakan peranti ini dalam konsol Pentadbir Google</translation>
+<translation id="1550406609415860283">Peranti tersedia</translation>
 <translation id="1550523713251050646">Klik untuk mendapatkan lagi pilihan</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
@@ -127,6 +129,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1611993646327628135">Hidup</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
+<translation id="163517899691012366">Pemberitahuan diredam apabila Jangan ganggu dihidupkan</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1654477262762802994">Mulakan pertanyaan suara</translation>
@@ -373,6 +376,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3047761520276763270">Cuba sebut:</translation>
 <translation id="3051189971848907985">Menamakan semula profil. Tunggu beberapa minit.</translation>
 <translation id="3055162170959710888">Anda menggunakan peranti ini selama <ph name="USED_TIME" /> hari ini</translation>
+<translation id="3062298103034426069">Tidak disokong</translation>
 <translation id="3068711042108640621">Rak di sebelah kiri</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Kembangkan menu</translation>
@@ -407,6 +411,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Persediaan</translation>
 <translation id="3255483164551725916">Apakah yang boleh anda lakukan?</translation>
+<translation id="3260969790895726815">Pertuturan diproses secara setempat dan pengimlakan berfungsi di luar talian, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3289544412142055976">Apl Linux tidak disokong pada masa ini</translation>
 <translation id="3289674678944039601">Mengecas melalui penyesuai</translation>
@@ -454,9 +459,12 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Kemas kini peranti dalam masa 1 minit}other{Kemas kini peranti dalam masa # minit}}</translation>
 <translation id="353086728817903341">Disambungkan kepada <ph name="NUM_DEVICES" /> peranti</translation>
+<translation id="3533126039236445965">Apl dalam rak</translation>
 <translation id="3542066395059568317">Anda akan melihat pengesyoran supaya anda boleh meneruskan dari tempat anda berhenti. Anda boleh klik kanan untuk mengalih keluar pengesyoran.</translation>
 <translation id="3552189655002856821">Wi-Fi dimatikan</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> telah disemat</translation>
+<translation id="3558768885091059911">Hidupkan akses kamera dan mikrofon?</translation>
+<translation id="3560174576767922131">Rakam video</translation>
 <translation id="3563775809269155755">Dayakan tempat liputan</translation>
 <translation id="3566240529365775567">Dibuka sebentar tadi</translation>
 <translation id="3571734092741541777">Sediakan</translation>
@@ -649,6 +657,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4577274620589681794">Masa tamat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tunjukkan pratonton</translation>
 <translation id="4578906031062871102">Menu tetapan dibuka</translation>
+<translation id="458210817642223147">Rakam GIF</translation>
 <translation id="4585337515783392668">Berhenti menghantar pada penerima yang tidak diketahui</translation>
 <translation id="4596144739579517758">Tema gelap dimatikan</translation>
 <translation id="4611292653554630842">Log masuk</translation>
@@ -728,6 +737,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Meja 16</translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
+<translation id="5004607513195820459">Rangkaian diurus</translation>
 <translation id="5016558321564993266">Togol penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Akses mikrofon peranti dihidupkan</translation>
 <translation id="5030687792513154421">Masa sudah tamat</translation>
@@ -787,9 +797,11 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
 <translation id="533282197239610265">Tunjukkan peranti cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
+<translation id="5351427059191534258">Matikan akses kamera?</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
 <translation id="5356963482258194581">Beralih antara tema gelap dengan cerah. Klik kanan pada desktop dan pilih Kertas dinding &amp; gaya.</translation>
 <translation id="536019650977002321">Pentadbir anda tidak membenarkan rakaman audio. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
+<translation id="5361524080961918551">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun sebahagiannya</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pergi ke tab ini</translation>
 <translation id="5377367976106153749">Hidupkan akses kamera?</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
@@ -862,6 +874,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5763928712329149804">Mod Shelf Party dimatikan.</translation>
 <translation id="576453121877257266">Cahaya Malam dihidupkan.</translation>
 <translation id="5769373120130404283">Skrin privasi</translation>
+<translation id="5773950591113557721">Tindakan ini akan membenarkan akses kepada <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="5777841717266010279">Hentikan perkongsian skrin?</translation>
 <translation id="5779721926447984944">Fail disemat</translation>
 <translation id="5788127256798019331">Fail Play</translation>
@@ -899,6 +912,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5980301590375426705">Keluar dari tetamu</translation>
 <translation id="598407983968395253">Gunakan templat</translation>
 <translation id="598882571027504733">Untuk mendapatkan kemas kini, mulakan semula Chromebook dengan papan kekunci yang dipasang.</translation>
+<translation id="6002179289567220515">Anda menggunakan suis fizikal untuk mematikan 1 kamera. Anda juga boleh mematikan akses untuk semua kamera.</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> daripada <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Keluar daripada mod cermin</translation>
 <translation id="602001110135236999">Tatal ke kiri</translation>
@@ -939,9 +953,11 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="619279033188484792">Lihat foto, media dan pemberitahuan baru-baru ini telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="619335566042889110">Caskan penuh sekarang</translation>
 <translation id="6193431488227440296">Pembangun</translation>
+<translation id="6200515304866777730">Tidak disokong oleh apl</translation>
 <translation id="6210042900243040400">Sambungkan <ph name="NAME" /> yang disimpan sebelum ini di <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
+<translation id="623116199192908855">Hantar skrin anda daripada Chromebook anda</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -983,8 +999,10 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> menghendaki anda mengemas kini <ph name="DEVICE_TYPE" /> anda sebelum tarikh akhir</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
 <translation id="6495400115277918834">Gambar dalam gambar dimulakan, Alt+Shift+V untuk fokus</translation>
+<translation id="6497418457565568043">Jangan ganggu dihidupkan</translation>
 <translation id="6500896621837555595">Kemas kini</translation>
 <translation id="6501401484702599040">Menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Pastikan Chromebook anda bersambung kepada rangkaian Wi-Fi yang sama dengan rangkaian pada peranti Chromecast anda.</translation>
 <translation id="6515727200518652613">Kamera terputus, cuba menyambung semula.</translation>
 <translation id="6520517963145875092">Pilih tetingkap untuk menangkap imej</translation>
 <translation id="652139407789908527">Skrin anda akan menjadi kosong lebih lama daripada biasa (sehingga seminit) semasa kemas kini ini. Jangan tekan butang kuasa semasa kemas kini sedang berlangsung.</translation>
@@ -1044,6 +1062,7 @@ Pemasangan baharu</translation>
 <translation id="6787595647772650851">Memulihkan sesi terakhir</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
+<translation id="6802687695197837794">Tindakan ini akan membenarkan akses kepada <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="6803622936009808957">Tidak dapat membalikkan paparan memandangkan tiada peleraian disokong ditemui. Sebaliknya, memasuki mod desktop yang dilanjutkan.</translation>
 <translation id="6812232930908427253">Tidak dapat menyimpan meja. Terlalu banyak tetingkap atau tab.</translation>
 <translation id="6818242057446442178">Undur satu perkataan</translation>
@@ -1066,6 +1085,7 @@ Pemasangan baharu</translation>
 <translation id="6901883536534621389">Cuba gerak isyarat untuk menavigasi</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="6931576957638141829">Simpan pada</translation>
+<translation id="6942518653766415536">Menu format rakaman</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi pembawa anda.</translation>
 <translation id="6961121602502368900">Ciri Senyapkan telefon tidak tersedia pada profil kerja</translation>
@@ -1075,6 +1095,7 @@ Pemasangan baharu</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Bermula</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Hidupkan akses</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="698231206551913481">Semua fail dan data yang berkaitan dengan pengguna ini akan dipadamkan secara kekal selepas pengguna ini dialih keluar.</translation>
 <translation id="7005239792648594238">Buka apl untuk bermula</translation>

@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="1559447966090556585">सूचना मिळवायच्या आहेत का?</translation>
+<translation id="1559486004335285648">पेमेंट माहिती ऑटोफिल करा</translation>
 <translation id="1559528461873125649">अशी कोणतीही फाइल किंवा डिरेक्टरी नाही</translation>
 <translation id="1559572115229829303">&lt;p&gt;आपल्या डिव्हाइसची तारीख आणि वेळ (<ph name="DATE_AND_TIME" />) चुकीची असल्यामुळे <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> सह खाजगी कनेक्शन इंस्टॉल केले जाऊ शकत नाही.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1807528111851433570">शीट सुरू करा</translation>
 <translation id="181000283860817563">एकाहून अधिक साइटवरील किमती ट्रॅक करा</translation>
+<translation id="1810391395243432441">तुमचे स्क्रीन लॉक वापरून पासवर्ड संरक्षित करा</translation>
 <translation id="1812527064848182527">लॅंडस्केप</translation>
 <translation id="1813414402673211292">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="182139138257690338">ऑटोमॅटिक डाउनलोड</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">प्रॉक्सी निश्चित प्रॉक्सी सर्व्हर वापरण्‍यास सेट करण्‍यात आले आहे, .pac स्क्रिप्ट URL नव्हे.</translation>
 <translation id="1871284979644508959">या जागा भरणे आवश्यक</translation>
 <translation id="1873899211667975540">रॉक संगीत</translation>
+<translation id="1874224422119691492">पासवर्ड भरण्यासाठी तुम्ही स्क्रीन लॉक वापरायचे की नाही हे तुम्ही <ph name="SETTINGS" /> मध्ये बदलू शकता</translation>
 <translation id="1875025161375567525">फोटो ट्रे</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">सुरू पृष्ठ उघडा</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमचे सुरक्षित ब्राउझिंग आणि आणखी बरेच काही व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर दाबा</translation>
 <translation id="2878197950673342043">पोस्टर फोल्ड</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरा</translation>
 <translation id="2881276955470682203">कार्ड सेव्ह करायचे?</translation>
 <translation id="2882949212241984732">डबल-गेट फोल्ड</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
@@ -1010,6 +1014,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> ला तुमचा मायक्रोफोन वापरायचा आहे</translation>
 <translation id="3533328374079021623">मेलबॉक्स ५</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">कार्ड इमेज</translation>
 <translation id="3542768452570884558">नवीन विंडो मध्ये लिंक उघडा</translation>
 <translation id="3547746132308051926">२० x २४ इं</translation>
 <translation id="3550112004925580947">आदरातिथ्याशी संबंधित उद्योग</translation>
@@ -1100,6 +1105,7 @@
 <translation id="3745099705178523657">तुम्ही निश्चित केल्यानंतर, तुमच्या Google खात्यामधील कार्ड तपशील या साइटसोबत शेअर केला जाईल.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वरील हल्लेखोर कदाचित तुम्हाला सॉफ्टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्डे) उघड करणे यासारख्या काही धोकादायक गोष्टी करण्यासाठी तुम्हाला फसवू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">हवाई वाहतूक उद्योग</translation>
+<translation id="3752543821772132562"><ph name="POLICY_NAME" /> सेट केले नसल्याने दुर्लक्ष केले.</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
 <translation id="3759461132968374835">तुम्ही अलीकडे कोणतेही क्रॅश नोंदवले नाहीत. क्रॅश नोंदवणे अक्षम असताना झालेले क्रॅश येथे दिसून येणार नाहीत.</translation>
 <translation id="3760561303380396507">CVC ऐवजी Windows Hello वापरायचे का?</translation>
@@ -1406,6 +1412,7 @@
 <translation id="4541810033354695636">ऑगमेंटेड रीअ‍ॅलिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">पासवर्ड भरण्यासाठी तुम्ही तुमचे स्क्रीन लॉक वापरत आहात</translation>
 <translation id="4558551763791394412">तुमचे विस्तार अक्षम करून पहा.</translation>
 <translation id="4566017918361049074">आउटडोअर फिटनेस ॲक्टिव्हिटी</translation>
 <translation id="4567686777917670400">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chromium च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -2912,6 +2919,7 @@
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
 <translation id="8364627913115013041">सेट केलेले नाही.</translation>
+<translation id="836616551641291797">तुमचा ब्राउझर कसा व्यवस्थापित केला जातो याबद्दल अधिक जाणून घ्या</translation>
 <translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
 <translation id="8368027906805972958">अज्ञात किंवा सपोर्ट नसलेले डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play सेवा</translation>
@@ -2924,6 +2932,7 @@
 <translation id="8396522675989118466">हा <ph name="SIDE_OF_CARD" /> असलेला <ph name="NUMBER_OF_DIGITS" /> अंकी कोड आहे</translation>
 <translation id="8398790343843005537">तुमचा फोन शोधा</translation>
 <translation id="8405579342203358118">Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करा</translation>
+<translation id="8406071103346257942">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरणे थांबवा</translation>
 <translation id="8409413588194360210">पेमेंट हँडलर</translation>
 <translation id="8412145213513410671">क्रॅश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे.</translation>
@@ -3193,6 +3202,7 @@
 <translation id="9128016270925453879">धोरणे लोड केलेली आहेत</translation>
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="9131119348384879525">गोपनीय आशय कॅप्चर करायचा आहे का?</translation>
+<translation id="9133985615769429248">तुम्ही हे डिव्हाइस इतरांसोबत शेअर करत असल्यास, तुम्ही सेव्ह केलेले पासवर्ड वापरता, तेव्हा ते तुम्हीच असल्याची पडताळणी करण्यासाठी तुमचे स्क्रीन लॉक वापरू शकता</translation>
 <translation id="9136861683332321024">लक्झरी वाहने</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
 <translation id="9137248913990643158">कृपया हा ॲप वापरण्‍यापूर्वी सुरू करा आणि Chrome मध्‍ये साइन इन करा.</translation>

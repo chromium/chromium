@@ -2388,7 +2388,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3132896062549112541">Regula</translation>
 <translation id="3132996321662585180">Actualizează zilnic</translation>
 <translation id="3134393957315651797">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />. Descrierea experimentului: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Se descarcă, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar galben prestabilit</translation>
 <translation id="3141093262818886744">Deschide oricum</translation>
 <translation id="3141318088920353606">Se ascultă...</translation>
@@ -5027,7 +5026,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5632059346822207074">Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
 <translation id="5632221585574759616">Află mai multe despre permisiunile pentru extensii</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
-<translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">Află mai multe despre cerințele de sistem</translation>
 <translation id="563371367637259496">Mobilă</translation>
 <translation id="5634446357546764049">Vezi amintiri cu călătoriile recente și altele</translation>

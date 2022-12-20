@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">Ενημερώστε τις υπηρεσίες Google Play για να ελέγξετε τους κωδικούς πρόσβασής σας.</translation>
 <translation id="3845098929839618392">Άνοιγμα σε ανών. περιήγ.</translation>
 <translation id="3856096718352044181">Βεβαιωθείτε ότι πρόκειται για έγκυρο πάροχο ή δοκιμάστε ξανά αργότερα</translation>
+<translation id="3858127568696903256">Δείτε το περιεχόμενο που ακολουθείτε εδώ</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3861633093716975811">Δημοφιλή βίντεο</translation>
 <translation id="3874520961715512166">Ο ιστότοπος καταργήθηκε</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
-<translation id="4060598801229743805">Διαθέσιμες επιλογές κοντά στην κορυφή της οθόνης</translation>
 <translation id="4062305924942672200">Νομικές πληροφορίες</translation>
 <translation id="4072805772816336153">Δοκιμάστε ξανά αργότερα</translation>
 <translation id="4084682180776658562">Σελιδοδείκτης</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">Συνδέθηκε με καλώδιο USB</translation>
 <translation id="4558311620361989323">Συντομεύσεις ιστοσελίδας</translation>
 <translation id="4561730552726921821">Η εγγραφή ήταν επιτυχής</translation>
-<translation id="4561979708150884304">Δεν υπάρχει σύνδεση</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4572422548854449519">Συνδεθείτε στον διαχειριζόμενο λογαριασμό</translation>
 <translation id="4576892426230499203">Δοκιμάστε μια διαφορετική επιλογή επαλήθευσης</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="82619448491672958">Δείτε άλλες καρτέλες</translation>
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
-<translation id="8274165955039650276">Εμφάνιση λήψεων</translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8282297628636750033">Σκούρο θέμα σε ιστοτ., όταν είναι δυνατό</translation>
 <translation id="829672787777123339">Σύνδεση με τη συσκευή σας…</translation>

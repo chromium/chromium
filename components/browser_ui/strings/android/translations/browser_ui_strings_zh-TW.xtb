@@ -243,6 +243,7 @@
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">控管這個網站對裝置的存取權</translation>
+<translation id="6018815681665454784">要清除並重設嗎？</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多</translation>
 <translation id="6064125863973209585">下載完成</translation>
@@ -322,6 +323,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
 <translation id="7690549345586282764">顯示縮放比例</translation>
+<translation id="7695658402549134106"><ph name="SITE_NAME" /> 的網站偏好設定</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>

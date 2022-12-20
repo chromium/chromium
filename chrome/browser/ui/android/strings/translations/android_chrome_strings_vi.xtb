@@ -517,6 +517,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3830886834687455630">Cập nhật Dịch vụ Google Play để kiểm tra mật khẩu của bạn</translation>
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
+<translation id="3858127568696903256">Xem nội dung bạn theo dõi tại đây</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3861633093716975811">Video phổ biến</translation>
 <translation id="3874520961715512166">Trang web đã bị xóa</translation>
@@ -552,7 +553,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4045764304651014138">Dữ liệu sử dụng</translation>
 <translation id="405399507749852140">Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ</translation>
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
-<translation id="4060598801229743805">Có các tùy chọn ở gần đầu màn hình</translation>
 <translation id="4062305924942672200">Thông tin pháp lý</translation>
 <translation id="4072805772816336153">Thử lại sau</translation>
 <translation id="4084682180776658562">Dấu trang</translation>
@@ -642,7 +642,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4554077758708533499">Đã kết nối bằng cáp USB</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
 <translation id="4561730552726921821">Đã đăng ký thành công</translation>
-<translation id="4561979708150884304">Không có kết nối</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4572422548854449519">Đăng nhập vào tài khoản được quản lý</translation>
 <translation id="4576892426230499203">Hãy thử một cách xác minh khác</translation>
@@ -1351,7 +1350,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="82619448491672958">Xem các thẻ khác</translation>
 <translation id="8266862848225348053">Vị trí tải xuống</translation>
-<translation id="8274165955039650276">Xem tệp đã tải xuống</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282297628636750033">Áp dụng giao diện tối khi có thể</translation>
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>

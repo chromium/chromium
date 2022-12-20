@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
 <translation id="2597774443162333062">ファイルはデバッグのため Google に送信されます</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">その他ご不明な点がある場合は、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="4793756956024303490">圧縮アルゴリズム</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
+<translation id="4798078634453489142">新しい APN を追加するには、APN を削除してください</translation>
 <translation id="4800589996161293643">Chromebook コミュニティ</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>

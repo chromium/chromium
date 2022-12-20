@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">ચાલુ</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
+<translation id="163517899691012366">ખલેલ પાડશો નહીં સુવિધા ચાલુ હોય ત્યારે નોટિફિકેશન મ્યૂટ કરેલા હોય છે</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1654477262762802994">વૉઇસ ક્વેરી શરૂ કરો</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">આ પ્રમાણે બોલીને જુઓ:</translation>
 <translation id="3051189971848907985">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. થોડીવાર રાહ જુઓ.</translation>
 <translation id="3055162170959710888">આજે તમે <ph name="USED_TIME" /> માટે આ ડિવાઇસનો ઉપયોગ કર્યો છે</translation>
+<translation id="3062298103034426069">સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="3068711042108640621">શેલ્ફ ડાબી બાજુએ છે</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">મેનૂ વિસ્તૃત કરો</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925">વિડો <ph name="WINDOW_TITLE" />ને ડેસ્ક <ph name="ACTIVE_DESK" />માંથી ડેસ્ક <ph name="TARGET_DESK" />માં ખસેડી</translation>
 <translation id="3252573918265662711">સેટઅપ</translation>
 <translation id="3255483164551725916">તમે શું કરી શકો?</translation>
+<translation id="3260969790895726815">સ્પીચની પ્રક્રિયા સ્થાનિક લેવલ પર જ કરવામાં આવે છે અને ડિક્ટેશન ઑફલાઇન કામ કરે છે, પરંતુ કેટલાક વૉઇસ આદેશો કામ કરશે નહીં.</translation>
 <translation id="3269597722229482060">રાઇટ ક્લિક કરો</translation>
 <translation id="3289544412142055976">હાલમાં Linux ઍપને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="3289674678944039601">અડૅપ્ટર વડે ચાર્જિંગ</translation>
@@ -455,6 +458,7 @@
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ડિવાઇસ સાથે કનેક્ટેડ</translation>
+<translation id="3533126039236445965">શેલ્ફમાં ઉપલબ્ધ ઍપ</translation>
 <translation id="3542066395059568317">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું, ત્યાંથી તમે ચાલુ કરી શકો. તમે સુઝાવોને કાઢી નાખવા માટે, રાઇટ ક્લિક કરી શકો છો.</translation>
 <translation id="3552189655002856821">વાઇ-ફાઇ બંધ છે</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> પિન કરી હતી</translation>
@@ -790,9 +794,11 @@
 <translation id="5331975486040154427">USB-C ડિવાઇસ (ડાબી બાજુનું પાછળનું પોર્ટ)</translation>
 <translation id="533282197239610265">કાસ્ટ કરી શકતા ડિવાઇસ બતાવો</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (જમણે)</translation>
+<translation id="5351427059191534258">કૅમેરાનો ઍક્સેસ બંધ કરીએ?</translation>
 <translation id="5352250171825660495">ઘેરી થીમ ચાલુ છે</translation>
 <translation id="5356963482258194581">ઘેરી અને ઝાંખી થીમ વચ્ચે સ્વિચ કરો. ડેસ્કટૉપ આઇકન પર રાઇટ ક્લિક કરો અને વૉલપેપર અને સ્ટાઇલ પસંદ કરો.</translation>
 <translation id="536019650977002321">તમારા ઍડમિનિસ્ટ્રેટર ઑડિયો કૅપ્ચર કરવાની મંજૂરી આપતા નથી. વધુ માહિતી માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> સ્પીચની ફાઇલો આંશિક રીતે ડાઉનલોડ કરી</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> આ ટૅબ પર જાઓ</translation>
 <translation id="5377367976106153749">શું કૅમેરાનો ઍક્સેસ ચાલુ કરીએ?</translation>
 <translation id="5379115545237091094">ઘણા બધા પ્રયાસો</translation>
@@ -902,6 +908,7 @@
 <translation id="5980301590375426705">અતિથિથી બહાર નીકળો</translation>
 <translation id="598407983968395253">નમૂનાનો ઉપયોગ કરો</translation>
 <translation id="598882571027504733">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરો.</translation>
+<translation id="6002179289567220515">તમે 1 કૅમેરો બંધ કરવા માટે વાસ્તવિક સ્વિચનો ઉપયોગ કર્યો છે. તમે બધા કૅમેરા માટેનો ઍક્સેસ પણ બંધ કરી શકો છો.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> પેજમાંનું <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">મીરર મોડથી બહાર નીકળે છે</translation>
 <translation id="602001110135236999">ડાબે સ્ક્રોલ કરો</translation>
@@ -942,9 +949,11 @@
 <translation id="619279033188484792">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જુઓ</translation>
 <translation id="619335566042889110">હવે પૂર્ણ ચાર્જ કરો</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">ઍપ દ્વારા સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="6210042900243040400">અગાઉ <ph name="EMAIL" /> પર સાચવેલા <ph name="NAME" />ને કનેક્ટ કરો</translation>
 <translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="623116199192908855">તમારી Chromebookમાંથી તમારી સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="6231419273573514727">પેરિફેરલનું કાર્યપ્રદર્શન કદાચ મર્યાદિત કરવામાં આવી શકે</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> દ્વારા હાલમાં તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -986,8 +995,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
 <translation id="649452524636452238">સ્માર્ટ કાર્ડ પિન</translation>
 <translation id="6495400115277918834">ચિત્ર-માં-ચિત્ર સુવિધા ચાલુ થઈ ગઈ છે, ફોકસ કરવા માટે Alt+Shift+V દબાવો</translation>
+<translation id="6497418457565568043">ખલેલ પાડશો નહીં ચાલુ છે</translation>
 <translation id="6500896621837555595">અપડેટ કરો</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરી રહ્યાં છીએ</translation>
+<translation id="6508923215158854599">ખાતરી કરો કે તમારી Chromebook એ જ વાઇ-ફાઇ નેટવર્ક સાથે જોડાયેલી હોય જેની સાથે તમારું Chromecast ડિવાઇસ જોડાયેલું છે.</translation>
 <translation id="6515727200518652613">કૅમેરા સાથેનું કનેક્શન ગુમાવ્યું, ફરીથી કનેક્ટ કરવાનો પ્રયાસ કરી રહ્યાં છીએ.</translation>
 <translation id="6520517963145875092">કૅપ્ચર કરવા માટે વિન્ડો પસંદ કરો</translation>
 <translation id="652139407789908527">આ અપડેટ દરમ્યાન, સામાન્ય કરતાં વધુ વાર માટે (એક મિનિટ સુધી) તમારી સ્ક્રીન પર કંઈ દેખાશે નહીં. અપડેટની પ્રક્રિયા ચાલી રહી હોય, ત્યારે કૃપા કરીને પાવર બટન દબાવશો નહીં.</translation>

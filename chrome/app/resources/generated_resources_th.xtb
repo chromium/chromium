@@ -1259,6 +1259,7 @@
 <translation id="212862741129535676">เปอร์เซ็นต์การเกิดขึ้นของสถานะความถี่</translation>
 <translation id="212876957201860463">กำลังเตรียมตั้งค่าอุปกรณ์มือถือ...</translation>
 <translation id="2131077480075264">ไม่สามารถติดตั้ง "<ph name="APP_NAME" />" เนื่องจากไม่ได้รับอนุญาตจาก "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2133857665503360653">ลอง <ph name="FILE_NAME" /> อีกครั้ง</translation>
 <translation id="21354425047973905">ซ่อน PIN</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2135787500304447609">&amp;ทำต่อ</translation>
@@ -2385,7 +2386,6 @@
 <translation id="3132896062549112541">กฎ</translation>
 <translation id="3132996321662585180">รีเฟรชทุกวัน</translation>
 <translation id="3134393957315651797">เลือกสถานะการทดสอบสำหรับการทดสอบ <ph name="EXPERIMENT_NAME" /> คำอธิบายการทดสอบ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">กำลังดาวน์โหลด <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">รูปโปรไฟล์เริ่มต้นสีเหลือง</translation>
 <translation id="3141093262818886744">เปิดต่อไป</translation>
 <translation id="3141318088920353606">กำลังฟัง...</translation>
@@ -2839,11 +2839,13 @@
 <translation id="3584169441612580296">อ่านและเปลี่ยนแปลงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
 <translation id="3586787825263265024">แอปพลิเคชัน <ph name="APPLICATION_NAME" /> ต้องใช้ OneDrive จึงจะแสดงได้</translation>
 <translation id="3586806079541226322">เปิดไฟล์นี้ไม่ได้</translation>
+<translation id="3587438013689771191">ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3588790464166520201">ได้รับอนุญาตให้ติดตั้งเครื่องจัดการการชำระเงิน</translation>
 <translation id="3589766037099229847">บล็อกเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="3590194807845837023">ปลดล็อกโปรไฟล์และเปิดใหม่</translation>
 <translation id="3590295622232282437">กำลังเข้าสู่เซสชันที่มีการจัดการ</translation>
+<translation id="3591057288287063271">เก็บ <ph name="FILE_NAME" /> ไว้</translation>
 <translation id="3592260987370335752">&amp;ดูข้อมูลเพิ่มเติม</translation>
 <translation id="3593152357631900254">เปิดการใช้งานโหมด Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">ข้อจำกัดของชื่อใบรับรอง</translation>
@@ -3745,6 +3747,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" /> ผู้ดูแลระบบต้องการให้คุณเปลี่ยนรหัสผ่าน</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />การอนุญาตให้อุปกรณ์ Chrome OS ส่งรายงานอัตโนมัติจะช่วยให้เราจัดลำดับความสำคัญของสิ่งที่ต้องแก้ไขและปรับปรุงใน Chrome OS ได้ รายงานเหล่านี้ประกอบด้วยข้อมูลต่างๆ เช่น เวลาที่ ChromeOS ขัดข้อง ฟีเจอร์ที่ใช้ และจำนวนหน่วยความจำที่ใช้โดยปกติ<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ Chrome หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">ลบ <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">ในการเริ่มต้นใช้งาน โปรดตรวจสอบว่า USB หรือสวิตช์บลูทูธเชื่อมต่ออยู่กับ Chromebook คุณจะใช้ปุ่มบนแป้นพิมพ์แทนก็ได้</translation>
 <translation id="4426508677408162512">บุ๊กมาร์กทั้งหมด</translation>
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
@@ -4015,6 +4018,7 @@
 <translation id="4666472247053585787">ดูการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667027203988048332">ข้อมูลที่ใช้</translation>
+<translation id="4672759829555593783">เปิด <ph name="FILE_NAME" /> เลย</translation>
 <translation id="46733273239502219">ระบบจะล้างข้อมูลออฟไลน์ในแอปที่ติดตั้งไว้ด้วย</translation>
 <translation id="4673442866648850031">เปิดเครื่องมือสไตลัสเมื่อมีการถอดสไตลัสออก</translation>
 <translation id="4675065861091108046">คุณเคยเลือกที่จะอนุญาตให้ใช้งานส่วนขยายทั้งหมดบน <ph name="ORIGIN" /></translation>
@@ -5022,7 +5026,6 @@
 <translation id="5632059346822207074">ขอสิทธิ์ กด Ctrl + ไปข้างหน้าเพื่อตอบกลับ</translation>
 <translation id="5632221585574759616">ดูข้อมูลเพิ่มเติมเกี่ยวกับสิทธิ์ของส่วนขยาย</translation>
 <translation id="5632566673632479864">บัญชี <ph name="EMAIL" /> ของคุณไม่ได้รับอนุญาตในฐานะบัญชีหลักอีกต่อไป เนื่องจากบัญชีนี้จัดการโดย <ph name="DOMAIN" /> ระบบจะล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ของคุณจากอุปกรณ์นี้</translation>
-<translation id="5632592977009207922">กำลังดาวน์โหลด เหลือ <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อกำหนดของระบบ</translation>
 <translation id="563371367637259496">มือถือ</translation>
 <translation id="5634446357546764049">ดูความทรงจำเกี่ยวกับการเดินทางครั้งล่าสุดและอื่นๆ</translation>
@@ -5904,6 +5907,7 @@
 <translation id="6465841119675156448">ไม่ใช้อินเทอร์เน็ต</translation>
 <translation id="6466258437571594570">เว็บไซต์ถูกบล็อกไม่ให้รบกวนคุณด้วยการขอส่งการแจ้งเตือน</translation>
 <translation id="6466988389784393586">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
+<translation id="6467230443178397264">สแกน <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">เพิ่มประสิทธิภาพวิดีโอเต็มหน้าจอ</translation>
 <translation id="6467377768028664108">จากนั้น <ph name="DEVICE_TYPE" /> จะสามารถ</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
@@ -6651,6 +6655,7 @@
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="7152478047064750137">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
 <translation id="7154130902455071009">เปลี่ยนหน้าเริ่มต้นของคุณเป็น: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">แปลงรูปภาพเป็นข้อความ</translation>
 <translation id="7159953856712257647">ติดตั้งโดยค่าเริ่มต้นแล้ว</translation>
 <translation id="7160182524506337403">ตอนนี้คุณดูการแจ้งเตือนในโทรศัพท์ได้แล้ว</translation>
 <translation id="7163202347044721291">กำลังตรวจสอบรหัสเปิดใช้งาน...</translation>
@@ -6912,6 +6917,7 @@
 <translation id="7412226954991670867">หน่วยความจำ GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">การตั้งค่าเสร็จสมบูรณ์</translation>
+<translation id="7416091793702109803">ตรวจสอบ <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">โหลดข้อกำหนดในการให้บริการไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่</translation>
 <translation id="7416362041876611053">ข้อผิดพลาดของเครือข่ายที่ไม่รู้จัก</translation>
 <translation id="741906494724992817">แอปนี้ไม่ต้องการสิทธิ์พิเศษ</translation>

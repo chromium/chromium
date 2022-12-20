@@ -1317,6 +1317,8 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2165102982098084499">Você vinculou estes dispositivos usando um código QR.</translation>
 <translation id="2165177462441582039">Escolha por quanto tempo o destaque deve permanecer em cada item</translation>
 <translation id="2166369534954157698">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />O gerenciamento de dispositivos Chrome com <ph name="MS_AD_NAME" /> parou de ter suporte. Para fazer login, use outro dispositivo ou entre em contato com o administrador do aparelho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Fazer login assim mesmo</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2173801458090845390">Adicionar código de requisição para este dispositivo</translation>
@@ -2401,7 +2403,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3132896062549112541">Regra</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3134393957315651797">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />. Descrição do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Fazendo o download, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo padrão</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141318088920353606">Ouvindo...</translation>
@@ -5043,7 +5044,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais sobre as permissões de extensões</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
-<translation id="5632592977009207922">Download em andamento, <ph name="PERCENT_REMAINING" />% restante(s)</translation>
 <translation id="5633149627228920745">Saiba mais sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Celular</translation>
 <translation id="5634446357546764049">Ver recordações das suas viagens recentes e mais</translation>
@@ -6244,6 +6244,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6770042910635026163">Sites que você visita que definem seus interesses</translation>
 <translation id="6770602306803890733">Melhora a segurança para você e para todos na Web</translation>
 <translation id="6771503742377376720">É uma Autoridade de certificação</translation>
+<translation id="6774710250118040929">Adicionar nova senha</translation>
 <translation id="6775163072363532304">Os dispositivos disponíveis serão exibidos aqui.</translation>
 <translation id="677646486571529447">Adicionar uma observação</translation>
 <translation id="6776729248872343918">Ativar "Pareamento rápido"</translation>

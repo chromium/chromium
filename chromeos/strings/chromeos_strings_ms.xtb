@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
+<translation id="1962550982027027473">APN lalai diperlukan</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
 <translation id="2597774443162333062">Fail akan dihantar kepada Google untuk dinyahpepijat</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
 <translation id="2619761439309613843">Muat Semula Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Imej log masuk</translation>
@@ -392,6 +394,7 @@
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lanjut, pergi ke <ph name="BEGIN_LINK" />Pusat bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritma pemampatan</translation>
 <translation id="4794140124556169553">Tindakan menjalankan ujian CPU mungkin menjejaskan prestasi sistem anda</translation>
+<translation id="4798078634453489142">Alih keluar APN untuk menambah APN baharu</translation>
 <translation id="4800589996161293643">Komuniti Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Tugas cetak <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
@@ -633,6 +636,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6791471867139427246">warna cerah papan kekunci</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
+<translation id="6838167112108853532">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN didayakan yang dilampirkan ini dilumpuhkan atau dialih keluar.</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>

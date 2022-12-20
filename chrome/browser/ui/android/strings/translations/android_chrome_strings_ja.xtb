@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">Google Play 開発者サービスを更新してパスワードを確認する</translation>
 <translation id="3845098929839618392">シークレット タブで開く</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
+<translation id="3858127568696903256">フォロー中のコンテンツがここに表示されます</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3861633093716975811">人気の動画</translation>
 <translation id="3874520961715512166">サイトを削除しました</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">使用状況データ</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
-<translation id="4060598801229743805">画面の上部にあるオプション</translation>
 <translation id="4062305924942672200">法的情報</translation>
 <translation id="4072805772816336153">しばらくしてからもう一度お試しください</translation>
 <translation id="4084682180776658562">ブックマーク</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">USB ケーブルで接続しました</translation>
 <translation id="4558311620361989323">ウェブページのショートカット</translation>
 <translation id="4561730552726921821">登録が完了しました</translation>
-<translation id="4561979708150884304">接続されていません</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4572422548854449519">管理対象アカウントにログイン</translation>
 <translation id="4576892426230499203">別の確認オプションをお試しください</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">削除</translation>
 <translation id="82619448491672958">他のタブを表示</translation>
 <translation id="8266862848225348053">ダウンロード場所</translation>
-<translation id="8274165955039650276">ダウンロードを表示</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282297628636750033">可能な場合はダークモードをサイトに適用する</translation>
 <translation id="829672787777123339">デバイスに接続しています…</translation>

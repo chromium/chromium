@@ -2400,7 +2400,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3132896062549112541">Эреже</translation>
 <translation id="3132996321662585180">Күндө жаңыртылсын</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> тажрыйбасы үчүн абалды тандаңыз. Тажрыйбанын сүрөттөмөсү: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Жүктөлүп алынууда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Демейки сары аватар</translation>
 <translation id="3141093262818886744">Баары бир ачылсын</translation>
 <translation id="3141318088920353606">Угуп жатат…</translation>
@@ -5040,7 +5039,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5632059346822207074">Уруксат суралды. Жооп берүү үчүн Ctrl + Алдыга баскычтарын басыңыз</translation>
 <translation id="5632221585574759616">Кеңейтүү уруксаттары жөнүндө кененирээк маалымат алыңыз</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> аккаунтуңуз негизги аккаунт болбой калды. Бул аккаунт <ph name="DOMAIN" /> тарабынан башкарылгандыктан, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр бул түзмөктөн тазаланат.</translation>
-<translation id="5632592977009207922">Жүктөлүп алынууда, <ph name="PERCENT_REMAINING" />% калды</translation>
 <translation id="5633149627228920745">Тутумга коюлган талаптар жөнүндө кеңири маалымат</translation>
 <translation id="563371367637259496">Мобилдик</translation>
 <translation id="5634446357546764049">Акыркы сапарларыңыз жана башкалар жөнүндө эстен кеткис көз ирмемдерди көрүңүз</translation>

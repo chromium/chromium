@@ -37,6 +37,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="1182225749592316782">Dette gir tilgang til alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="1183863904939664422">Ikke interessert i dette forslaget</translation>
 <translation id="118437560755358292">Oppgi passordet eller PIN-koden for høyere sikkerhet</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -462,6 +463,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
+<translation id="3558768885091059911">Vil du slå på kamera- og mikrofontilgang?</translation>
 <translation id="3560174576767922131">Ta opp video</translation>
 <translation id="3563775809269155755">Slå på wifi-sone</translation>
 <translation id="3566240529365775567">Åpnet nå nettopp</translation>
@@ -871,6 +873,7 @@ Koble enheten til strøm.</translation>
 <translation id="5763928712329149804">Hyllegruppen er av.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
+<translation id="5773950591113557721">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5779721926447984944">Festede filer</translation>
 <translation id="5788127256798019331">Play-filer</translation>
@@ -1058,6 +1061,7 @@ Nylig installert</translation>
 <translation id="6787595647772650851">Gjenopprett forrige økt</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6801878137098616817">Redigert nylig</translation>
+<translation id="6802687695197837794">Dette gir tilgang til <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="6803622936009808957">Kunne ikke speile skjermene fordi ingen støttede oppløsninger ble funnet. Utvidet skrivebord ble brukt i stedet.</translation>
 <translation id="6812232930908427253">Kunne ikke lagre skrivebordet. For mange vinduer eller faner.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
@@ -1090,6 +1094,7 @@ Nylig installert</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6981291220124935078">Slå på tilgang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698231206551913481">Alle filer og lokale data som er tilknyttet denne brukeren, slettes permanent når brukeren fjernes.</translation>
 <translation id="7005239792648594238">Åpne en app for å komme i gang</translation>

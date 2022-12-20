@@ -458,6 +458,7 @@
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
 <translation id="353086728817903341">已連接 <ph name="NUM_DEVICES" /> 部裝置</translation>
+<translation id="3533126039236445965">捷徑列中的應用程式</translation>
 <translation id="3542066395059568317">系統會顯示建議，讓您繼續使用上次開啟的內容。只要在建議上按一下右鍵即可移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554637740840164787">已經將<ph name="ITEM_TITLE" />置頂</translation>

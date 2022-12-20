@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1559447966090556585">বিজ্ঞপ্তি পেতে চান?</translation>
+<translation id="1559486004335285648">আপনা-আপনি পূরণ হওয়া পেমেন্টের তথ্য</translation>
 <translation id="1559528461873125649">এমন কোন ফাইল বা ডিরেক্টরি নেই</translation>
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার ডিভাইসের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1807528111851433570">শুরুর শিট</translation>
 <translation id="181000283860817563">একাধিক সাইটে দাম ট্র্যাক করুন</translation>
+<translation id="1810391395243432441">স্ক্রিন লক দিয়ে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="1812527064848182527">ল্যান্ডস্কেপ</translation>
 <translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
 <translation id="182139138257690338">অটোমেটিক ডাউনলোড</translation>
@@ -386,6 +388,7 @@
 প্রক্সি স্থির প্রক্সি সার্ভারগুলি ব্যবহার করতে সেট করা আছে কোনো .pac স্ক্রিপ্ট URL নয়৷</translation>
 <translation id="1871284979644508959">আবশ্যক ক্ষেত্র</translation>
 <translation id="1873899211667975540">রক মিউজিক</translation>
+<translation id="1874224422119691492"><ph name="SETTINGS" />-এ পাসওয়ার্ড পূরণ করার জন্য আপনার স্ক্রিন লক ব্যবহার করবেন কিনা তা আপনি পরিবর্তন করতে পারেন</translation>
 <translation id="1875025161375567525">ফটো ট্রে</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">শুরুর পৃষ্ঠাগুলি খুলুন</translation>
@@ -754,6 +757,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="2878197950673342043">পোস্টার ফোল্ড</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">পাসওয়ার্ড পূরণ করার জন্য আপনার স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="2881276955470682203">কার্ড সেভ করবেন?</translation>
 <translation id="2882949212241984732">ডবল-গেট ফোল্ড</translation>
 <translation id="2893773853358652045">Fourth Roll</translation>
@@ -1410,6 +1414,7 @@
 <translation id="4541810033354695636">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="4542971377163063093">ট্রে ৬</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">পাসওয়ার্ড পূরণ করার জন্য আপনি স্ক্রিন লক ব্যবহার করছেন</translation>
 <translation id="4558551763791394412">আপনার এক্সটেনশানগুলি অক্ষম করে দেখুন।</translation>
 <translation id="4566017918361049074">আউটডোর</translation>
 <translation id="4567686777917670400">আপনার অ্যাডমিনিস্ট্রেটর দূরবর্তী স্থান থেকে আপনার ব্রাউজারের সেটআপ পরিবর্তন করতে পারেন। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -2927,6 +2932,7 @@
 <translation id="8396522675989118466"><ph name="SIDE_OF_CARD" />-এ দেখানো <ph name="NUMBER_OF_DIGITS" />-ডিজিট কোড</translation>
 <translation id="8398790343843005537">আপনার ফোন খুঁজুন</translation>
 <translation id="8405579342203358118">Chrome সেটিংসে আপনি কী ধরনের তথ্য সিঙ্ক করবেন, তা ম্যানেজ করুন</translation>
+<translation id="8406071103346257942">পাসওয়ার্ড পূরণ করার জন্য আপনার স্ক্রিন লক ব্যবহার করা বন্ধ করুন</translation>
 <translation id="8409413588194360210">পেমেন্ট হ্যান্ডলার</translation>
 <translation id="8412145213513410671">ক্র্যাশ (<ph name="CRASH_COUNT" />টি)</translation>
 <translation id="8412392972487953978">আপনাকে একই পাসফ্রেজ অবশ্যই দু'বার প্রবেশ করাতে হবে৷</translation>
@@ -3196,6 +3202,7 @@
 <translation id="9128016270925453879">নীতি লোড হয়েছে</translation>
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="9131119348384879525">গোপনীয় কন্টেন্ট ক্যাপচার করবেন?</translation>
+<translation id="9133985615769429248">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে আপনার স্ক্রিন লক ব্যবহার করতে পারেন</translation>
 <translation id="9136861683332321024">বিলাসবহুল যানবাহন</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9137248913990643158">এই অ্যাপ্লিকেশানটি ব্যবহার করার আগে অনুগ্রহ করে শুরু করুন এবং Chrome এ প্রবেশ করুন।</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paketet är ogiltigt: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Vänd mot omgivningen</translation>
 <translation id="1196338895211115272">Det gick inte att exportera den privata nyckeln.</translation>
+<translation id="132960226125594336">Det gick inte att läsa in filen <ph name="RELATIVE_PATH" /> för innehållsskriptet eftersom den skulle överskrida den maximala skriptstorleken eller tilläggets maximala totala skriptstorlek.</translation>
 <translation id="1420684932347524586">Oj! Det gick inte att generera en slumpmässig privat RSA-nyckel.</translation>
 <translation id="1445572445564823378">Detta tillägg gör <ph name="PRODUCT_NAME" /> långsammare. Om du vill utnyttja den fulla prestandan i <ph name="PRODUCT_NAME" /> bör du inaktivera tillägget.</translation>
 <translation id="1468038450257740950">WebGL stöds inte.</translation>

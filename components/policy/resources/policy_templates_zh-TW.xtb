@@ -2203,6 +2203,7 @@
 <translation id="3092059499596000593">將系統預設印表機設為列印預覽的預設選項</translation>
 <translation id="309416443108680956">指定當透過安全性權杖 (例如智慧型卡片) 驗證的使用者在工作階段中將該權杖移除時，系統要執行的動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不執行任何動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：鎖定螢幕，直到使用者再次驗證為止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：結束工作階段，並將使用者登出。如果不設定這項政策，系統會預設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">啟用的外掛程式清單</translation>
+<translation id="309885424548342662">啟用 Microsoft® 雲端驗證</translation>
 <translation id="3101035417394748390">可透過剪貼簿同步功能在用戶端和主機之間傳輸的大小上限 (以位元組為單位)</translation>
 <translation id="3101501961102569744">選擇如何指定 Proxy 伺服器設定</translation>
 <translation id="3101709781009526431">日期與時間</translation>
@@ -2866,6 +2867,7 @@
       如果你啟用這項設定或未設定任何值，使用者就能自行管理自動填入功能。也就是說，使用者可以設定自動填入設定檔，並可自行決定是否要開啟自動填入功能。</translation>
 <translation id="3733014427925403568">限制時段的開始及結束時間分別是星期幾。</translation>
 <translation id="3736879847913515635">允許在使用者管理工具中新增使用者</translation>
+<translation id="3744984310825999317">允許 <ph name="PEPPER_NAME" /> 使用新的解碼器進行硬體加速影片解碼。</translation>
 <translation id="3749259744154402564">不支援</translation>
 <translation id="3749511622128647337">停用音訊輸出</translation>
 <translation id="3750220015372671395">禁止在這些網站上使用金鑰產生功能</translation>
@@ -2932,6 +2934,7 @@
 
       如要進一步瞭解 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段，請參閱 <ph name="WEBXR_AR_MODULE_API_NAME" />規範。</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
+<translation id="3788876528643861853">停用 Microsoft® 雲端驗證</translation>
 <translation id="3790085888761753785">如果啟用這項設定，使用者將可透過 Smart Lock 登入帳戶。一般 Smart Lock 只能讓使用者解鎖螢幕畫面，相較之下這項設定提供了更高的權限。
 
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
@@ -3780,6 +3783,7 @@
 <translation id="4660356908994631271">在「新分頁」頁面的搜尋框中顯示 Google 智慧鏡頭按鈕。</translation>
 <translation id="4661889655253181651">內容設定可讓你指定特定內容類型 (例如 Cookie、圖片或 JavaScript) 的處理方式。</translation>
 <translation id="4663509616441994711">禁止合併使用者層級的雲端政策。</translation>
+<translation id="4663588423815449593">強制 <ph name="PEPPER_NAME" /> 使用舊版影片解碼器。</translation>
 <translation id="4665897631924472251">擴充功能管理設定</translation>
 <translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
 
@@ -4365,6 +4369,7 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="5293285950307241933">清除所有本機使用者資料</translation>
+<translation id="5293619885162445352">允許 <ph name="PEPPER_NAME" /> 使用新版影片解碼器。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
 <translation id="5297948043665200363">允許使用者在帳戶驗證狀態失效後保持登入狀態</translation>
 <translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
@@ -5287,6 +5292,12 @@
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
 <translation id="6276087670023098167">停用機器識別資訊報告功能</translation>
 <translation id="627672037430076089">禁止與這部裝置建立遠端支援連線</translation>
+<translation id="6277043520666738324">這項政策會控管 <ph name="PEPPER_NAME" /> 外掛程式是否可使用新版解碼器 (而非舊版影片解碼器) 與硬體解碼器進行通訊。
+
+遷移作業只會影響內部實作詳細資料，且不應該變更任何行為。不過，如有任何 PPAPI 應用程式未正常運作，也可以使用這項政策。
+
+如果這項政策未設定或設為啟用，瀏覽器就會判斷要使用的影片解碼器。
+如果將這項政策設為停用，瀏覽器就會在這項政策失效前使用舊版影片解碼器。</translation>
 <translation id="6277314550042130537">在 HTTP 驗證期間使用 KDC 政策的核准結果</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6279722058145292462">你可以透過這項政策，指定用戶端變更本機帳戶密碼的頻率 (以天為單位)。這個密碼是由用戶端隨機產生，不會向使用者顯示。如果停用這項政策或設定較長的天數，潛在的攻擊者就有較多時間找出本機帳戶密碼並加以利用，這樣可能會對安全性造成負面影響。
@@ -5643,6 +5654,7 @@
 <translation id="6575944031719151455">你可以透過這項政策指定裝置本機帳戶清單，系統會在登入畫面上顯示這些帳戶。可透過 ID 來分辨不同的裝置本機帳戶。
 
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
+<translation id="6577760914164385949">允許自動登入 Microsoft® 雲端識別資訊提供者</translation>
 <translation id="6580851705156412587">在裝置暫停或機蓋蓋上時鎖定裝置</translation>
 <translation id="6581048059229620221">如果停用這項政策，就無法啟動遠端支援主機，也無法將主機設為接受外來連線。
 

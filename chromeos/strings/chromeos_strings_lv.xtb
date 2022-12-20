@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2584559707064218956">Lai iestatītu, pārejiet uz iestatījumiem.</translation>
 <translation id="2597774443162333062">Fails tiks nosūtīts Google serveriem atkļūdošanai.</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skenēšana pabeigta. Skenēta viena lapa.}zero{Skenēšana pabeigta. Skenētas {NUMBER_OF_PAGES} lapas.}one{Skenēšana pabeigta. Skenēta {NUMBER_OF_PAGES} lapa.}other{Skenēšana pabeigta. Skenētas {NUMBER_OF_PAGES} lapas.}}</translation>
 <translation id="2619761439309613843">Nomainīt katru dienu</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2638662041295312666">Pierakstīšanās attēls</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Lai iegūtu papildu palīdzību, pārejiet uz <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Saspiešanas algoritms</translation>
 <translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
+<translation id="4798078634453489142">Lai pievienotu jaunu APN, noņemiet kādu APN</translation>
 <translation id="4800589996161293643">Chromebook datoru kopiena</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>

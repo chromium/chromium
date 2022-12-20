@@ -190,6 +190,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2421044535038393232">Edytuj dalej</translation>
 <translation id="2434405374328098816">Masz już zapisane hasło do strony <ph name="WEBSITE" /> powiązane z nazwą użytkownika „<ph name="USERNAME" />”</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
+<translation id="2451654228769116489">Przypnij kartę</translation>
 <translation id="2461070143328828326">Ustawienia hasła</translation>
 <translation id="2469960372084740698">Wyłączyć Bezpieczne przeglądanie?</translation>
 <translation id="2473876017985765807">Masz już zapisane hasło do strony <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
 <translation id="6064824697233747382">Twoja organizacja wymaga wyłączenia synchronizacji.</translation>
 <translation id="6066301408025741299">Kliknij, by anulować.</translation>
+<translation id="6071409777669089905">Odepnij kartę</translation>
 <translation id="60829778314739003">Zaakceptuj i kontynuuj</translation>
 <translation id="6084848228346514841">Wybierz karty</translation>
 <translation id="6103540626693881831">Szyfrowanie na urządzeniu</translation>

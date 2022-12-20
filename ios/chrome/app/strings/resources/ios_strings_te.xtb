@@ -148,6 +148,7 @@
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2080769225927880590">చెల్లుబాటు అయ్యే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
+<translation id="2090878303988764231">సైన్ ఇన్ చేసి, మీరు చూసే కంటెంట్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2103075008456228677">history.google.com తెరువు</translation>
 <translation id="21133533946938348">ట్యాబ్‌ను పిన్ చేయి</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తరలించబడ్డాయి</translation>
@@ -190,6 +191,7 @@
 <translation id="2421044535038393232">ఎడిట్‌ను కొనసాగించండి</translation>
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
+<translation id="2451654228769116489">ట్యాబ్‌ను పిన్ చేయండి</translation>
 <translation id="2461070143328828326">పాస్‌వర్డ్ సెట్టింగ్‌లు</translation>
 <translation id="2469960372084740698">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" />లో మీరు ఇప్పటికే పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
@@ -672,6 +674,7 @@
 <translation id="6059830886158432458">ఇక్కడ మీ కథనాలు, యాక్టివిటీని కంట్రోల్ చేయండి</translation>
 <translation id="6064824697233747382">మీరు సింక్‌ను ఆఫ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.</translation>
 <translation id="6066301408025741299">రద్దు చేయడానికి నొక్కండి.</translation>
+<translation id="6071409777669089905">ట్యాబ్‌కు ఉన్న పిన్ తీసివేయండి</translation>
 <translation id="60829778314739003">అంగీకరించి, కొనసాగించండి</translation>
 <translation id="6084848228346514841">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6103540626693881831">పరికరంలో ఎన్‌క్రిప్షన్</translation>
@@ -971,6 +974,7 @@
 <translation id="8197543752516192074">పేజీని అనువదించు</translation>
 <translation id="8205564605687841303">రద్దు చేయండి</translation>
 <translation id="8206354486702514201">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా అమలు చేయబడింది.</translation>
+<translation id="821809831108207540">మీ డిస్కవర్ ఫీడ్‌ను, అలాగే Chromeను వ్యక్తిగతీకరించడానికి, సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="8225985093977202398">కాష్ చిత్రాలు, ఫైళ్లు</translation>
 <translation id="8237382152611443140">ఆటోఫిల్ పాస్‌వర్డ్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Package is invalid: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Environment-facing</translation>
 <translation id="1196338895211115272">Failed to export private key.</translation>
+<translation id="132960226125594336">Could not load file '<ph name="RELATIVE_PATH" />' for content script as it would exceed the maximum script size or the extension's maximum total content script size.</translation>
 <translation id="1420684932347524586">Yikes! Failed to generate random RSA private key.</translation>
 <translation id="1445572445564823378">This extension is slowing down <ph name="PRODUCT_NAME" />. You should disable it to restore <ph name="PRODUCT_NAME" />'s performance.</translation>
 <translation id="1468038450257740950">WebGL is not supported.</translation>

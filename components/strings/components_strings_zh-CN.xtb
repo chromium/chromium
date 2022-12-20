@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1559447966090556585">接收通知？</translation>
+<translation id="1559486004335285648">自动填写付款信息</translation>
 <translation id="1559528461873125649">不存在此类文件或目录</translation>
 <translation id="1559572115229829303">&lt;p&gt;您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="181000283860817563">跟踪多个网站上的价格</translation>
+<translation id="1810391395243432441">使用屏幕锁定功能保护密码</translation>
 <translation id="1812527064848182527">横向</translation>
 <translation id="1813414402673211292">清除浏览数据</translation>
 <translation id="182139138257690338">自动下载内容</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">代理已设置为使用固定的代理服务器，而不是 .pac 脚本网址。</translation>
 <translation id="1871284979644508959">必填字段</translation>
 <translation id="1873899211667975540">摇滚乐</translation>
+<translation id="1874224422119691492">您可以在<ph name="SETTINGS" />中更改是否使用屏幕锁定功能填充密码</translation>
 <translation id="1875025161375567525">照片匣</translation>
 <translation id="1875512691959384712">Google 表单</translation>
 <translation id="187918866476621466">打开启动页</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="2878197950673342043">海报折</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">使用屏幕锁定功能填充密码</translation>
 <translation id="2881276955470682203">保存卡片？</translation>
 <translation id="2882949212241984732">关门再对折</translation>
 <translation id="2893773853358652045">第 4 卷</translation>
@@ -1405,6 +1409,7 @@
 <translation id="4541810033354695636">增强现实</translation>
 <translation id="4542971377163063093">纸匣 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">您正在使用屏幕锁定功能填充密码</translation>
 <translation id="4558551763791394412">尝试停用扩展程序。</translation>
 <translation id="4566017918361049074">户外活动</translation>
 <translation id="4567686777917670400">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -2922,6 +2927,7 @@
 <translation id="8396522675989118466">这是<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数代码</translation>
 <translation id="8398790343843005537">查找您的手机</translation>
 <translation id="8405579342203358118">在 Chrome 设置中管理您要同步的信息</translation>
+<translation id="8406071103346257942">停止使用屏幕锁定功能填充密码</translation>
 <translation id="8409413588194360210">付款处理程序</translation>
 <translation id="8412145213513410671">崩溃次数（<ph name="CRASH_COUNT" /> 次）</translation>
 <translation id="8412392972487953978">您两次输入的密码必须相同。</translation>
@@ -3192,6 +3198,7 @@
 <translation id="9128016270925453879">政策已加载完毕</translation>
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9131119348384879525">截取机密内容？</translation>
+<translation id="9133985615769429248">如果您与他人共用此设备，那么您每次使用已保存的密码时，都可以使用屏幕锁定功能来验证您的身份</translation>
 <translation id="9136861683332321024">豪华车</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9137248913990643158">在使用此应用前，请先启动并登录 Chrome。</translation>

@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1559447966090556585">അറിയിപ്പുകൾ സ്വീകരിക്കാമോ?</translation>
+<translation id="1559486004335285648">പേയ്മെന്റ് വിവരങ്ങൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1559528461873125649">അത്തരത്തിലുള്ള ഫയലോ ഡയറക്റ്ററിയോ ഇല്ല</translation>
 <translation id="1559572115229829303">&lt;p&gt;നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്ക് ഒരു സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാകില്ല.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1807528111851433570">ആദ്യ ഷീറ്റ്</translation>
 <translation id="181000283860817563">ഒന്നിലധികം സൈറ്റുകളിലെ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
+<translation id="1810391395243432441">നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="1813414402673211292">ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
 <translation id="182139138257690338">സ്വയമേവയുള്ള ഡൗൺലോഡുകൾ</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായി പ്രോക്‌സി സജ്ജീകരിച്ചിരിക്കുന്നു, ഒരു .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനല്ല.</translation>
 <translation id="1871284979644508959">ഇത് പൂരിപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="1873899211667975540">റോക്ക് സംഗീതം</translation>
+<translation id="1874224422119691492">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കണോ എന്നത് <ph name="SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് മാറ്റാം</translation>
 <translation id="1875025161375567525">ഫോട്ടോ ട്രേ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">ആരംഭ പേജുകൾ തുറക്കുക</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="2878197950673342043">പോസ്‌റ്റർ മടക്ക്</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="2881276955470682203">കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="2882949212241984732">ഡബിൾ-ഗേറ്റ് മടക്ക്</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
@@ -1408,6 +1412,7 @@
 <translation id="4541810033354695636">അനുബന്ധയാഥാർത്ഥ്യം</translation>
 <translation id="4542971377163063093">ട്രേ 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ നിങ്ങൾ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നു</translation>
 <translation id="4558551763791394412">നിങ്ങളുടെ വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കുന്നത് പരീക്ഷിക്കുക.</translation>
 <translation id="4566017918361049074">ഔട്ട്ഡോർ</translation>
 <translation id="4567686777917670400">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -2924,6 +2929,7 @@
 <translation id="8396522675989118466"><ph name="SIDE_OF_CARD" /> എന്നതിലെ <ph name="NUMBER_OF_DIGITS" />-അക്ക കോഡാണിത്</translation>
 <translation id="8398790343843005537">നിങ്ങളുടെ ഫോൺ കണ്ടെത്തുക</translation>
 <translation id="8405579342203358118">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="8406071103346257942">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നത് നിർത്തുക</translation>
 <translation id="8409413588194360210">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ</translation>
 <translation id="8412145213513410671">ക്രാഷുകള്‍ <ph name="CRASH_COUNT" /></translation>
 <translation id="8412392972487953978">നിങ്ങള്‍ സമാന പാസ്ഫ്രെയ്സ് രണ്ടുതവണ നല്‍കണം.</translation>
@@ -3193,6 +3199,7 @@
 <translation id="9128016270925453879">നയങ്ങൾ ലോഡ് ചെയ്തു</translation>
 <translation id="9128870381267983090">നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="9131119348384879525">രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യണോ?</translation>
+<translation id="9133985615769429248">നിങ്ങൾ ഈ ഉപകരണം മറ്റുള്ളവരുമായി പങ്കിടുകയാണെങ്കിൽ, സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുമ്പോഴെല്ലാം അത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കാം</translation>
 <translation id="9136861683332321024">ആഡംബര വാഹനങ്ങൾ</translation>
 <translation id="9137013805542155359">യഥാര്‍ത്ഥമായത് കാണിക്കുക</translation>
 <translation id="9137248913990643158">ഈ ആപ്പ് ഉപയോഗിക്കുന്നതിന് മുമ്പ് ആരംഭിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>

@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">तुमचे पासवर्ड तपासण्यासाठी Google Play सेवा अपडेट करा</translation>
 <translation id="3845098929839618392">गुप्त टॅबमध्ये उघडा</translation>
 <translation id="3856096718352044181">कृपया हा वैध पुरवठादार आहे याची पडताळणी करा किंवा नंतर पुन्हा प्रयत्न करा</translation>
+<translation id="3858127568696903256">तुम्ही फॉलो करत असलेला आशय येथे पहा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3861633093716975811">लोकप्रिय व्हिडिओ</translation>
 <translation id="3874520961715512166">साइट काढून टाकली</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">वापर डेटा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
-<translation id="4060598801229743805">स्क्रीनच्या शीर्षावर पर्याय उपलब्ध आहेत</translation>
 <translation id="4062305924942672200">कायदेशीर माहिती</translation>
 <translation id="4072805772816336153">नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">USB केबल वापरून कनेक्ट केला</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
 <translation id="4561730552726921821">नोंदणी यशस्वीरीत्या पूर्ण केली</translation>
-<translation id="4561979708150884304">कनेक्शन नाही</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
 <translation id="4572422548854449519">व्यवस्थापित केलेल्या खात्यामध्ये साइन इन करा</translation>
 <translation id="4576892426230499203">पडताळणी करण्याचा दुसरा पर्याय वापरून पहा</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="82619448491672958">इतर टॅब पहा</translation>
 <translation id="8266862848225348053">डाउनलोड करण्याचे स्थान</translation>
-<translation id="8274165955039650276">डाउनलोड पहा</translation>
 <translation id="8281886186245836920">वगळा</translation>
 <translation id="8282297628636750033">शक्य असेल तेव्हा, साइटवर गडद थीम लागू करा</translation>
 <translation id="829672787777123339">तुमच्या डिव्हाइसशी कनेक्ट करत आहे…</translation>

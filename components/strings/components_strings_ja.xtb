@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1559447966090556585">通知を受け取りますか？</translation>
+<translation id="1559486004335285648">お支払い情報の自動入力</translation>
 <translation id="1559528461873125649">該当するファイルまたはディレクトリがありません</translation>
 <translation id="1559572115229829303">&lt;p&gt;デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
 <translation id="181000283860817563">複数のサイトで価格をトラッキングする</translation>
+<translation id="1810391395243432441">画面ロックを使用したパスワードの保護</translation>
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1813414402673211292">閲覧履歴データを削除</translation>
 <translation id="182139138257690338">自動ダウンロード</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">プロキシは .pac スクリプト URL ではなく固定プロキシ サーバーを使用するように設定されています。</translation>
 <translation id="1871284979644508959">必須フィールド</translation>
 <translation id="1873899211667975540">ロック ミュージック</translation>
+<translation id="1874224422119691492">パスワード入力で画面ロックを使用するかどうかは、<ph name="SETTINGS" /> で変更できます</translation>
 <translation id="1875025161375567525">フォトトレイ</translation>
 <translation id="1875512691959384712">Google フォーム</translation>
 <translation id="187918866476621466">起動ページを開く</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
 <translation id="2878197950673342043">ポスター折り</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">パスワード入力で画面ロックを使用しようとしています</translation>
 <translation id="2881276955470682203">カードを保存しますか？</translation>
 <translation id="2882949212241984732">両観音折り</translation>
 <translation id="2893773853358652045">ロール 4</translation>
@@ -1011,6 +1015,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
 <translation id="3537165859691846083">レター プラス</translation>
+<translation id="3542628208405253498">カードの画像</translation>
 <translation id="3542768452570884558">新しいウィンドウでリンクを開く</translation>
 <translation id="3547746132308051926">20x24 インチ</translation>
 <translation id="3550112004925580947">サービス業</translation>
@@ -1101,6 +1106,7 @@
 <translation id="3745099705178523657">確認後、Google アカウントのカード情報がこのサイトと共有されます。</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導される可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空産業</translation>
+<translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
 <translation id="3760561303380396507">CVC の代わりに Windows Hello を使用しますか？</translation>
@@ -1407,6 +1413,7 @@
 <translation id="4541810033354695636">拡張現実</translation>
 <translation id="4542971377163063093">トレイ 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">パスワード入力で画面ロックを使用しています</translation>
 <translation id="4558551763791394412">拡張機能を無効にしてみてください。</translation>
 <translation id="4566017918361049074">アウトドア</translation>
 <translation id="4567686777917670400">管理者はブラウザの設定をリモートで変更できます。このデバイス上のアクティビティは、Chromium の外部でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2738,6 +2745,7 @@
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943397946612013052">ダウンロードがブロックされました</translation>
 <translation id="7943893128817522649">複数のファイルの自動ダウンロードを要求できる</translation>
+<translation id="7946724693008564269">検出された言語</translation>
 <translation id="7947285636476623132">有効期限の「年」を確認してもう一度お試しください</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の機能を確認します</translation>
 <translation id="7950027195171824198">Chrome の設定で Cookie の設定を管理する</translation>
@@ -2912,6 +2920,7 @@
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
 <translation id="8364627913115013041">未設定</translation>
+<translation id="836616551641291797">ブラウザの管理方法の詳細</translation>
 <translation id="8368001212524806591">価格のトラッキング</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8368476060205742148">Google Play 開発者サービス</translation>
@@ -2924,6 +2933,7 @@
 <translation id="8396522675989118466"><ph name="SIDE_OF_CARD" /> の <ph name="NUMBER_OF_DIGITS" /> 桁のコードです</translation>
 <translation id="8398790343843005537">スマートフォンを検出</translation>
 <translation id="8405579342203358118">Chrome の設定で同期する情報を管理します</translation>
+<translation id="8406071103346257942">パスワード入力で画面ロックを使用するのをやめようとしています</translation>
 <translation id="8409413588194360210">支払いハンドラ</translation>
 <translation id="8412145213513410671">障害数（<ph name="CRASH_COUNT" />）</translation>
 <translation id="8412392972487953978">同じパスフレーズを 2 回入力する必要があります。</translation>
@@ -3194,6 +3204,7 @@
 <translation id="9128016270925453879">ポリシーが読み込まれました</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9131119348384879525">機密コンテンツをキャプチャしますか？</translation>
+<translation id="9133985615769429248">このデバイスを他のユーザーと共有している場合、画面ロックを使用すると、保存したパスワードを使用するたびに本人確認を行うことができます</translation>
 <translation id="9136861683332321024">高級車</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9137248913990643158">このアプリを使用するには、Chrome を起動してログインしてください。</translation>

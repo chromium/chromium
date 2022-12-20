@@ -120,6 +120,7 @@
 <translation id="15373452373711364">Nagy egérmutató</translation>
 <translation id="1546492247443594934">2. asztal</translation>
 <translation id="1546930421365146760">Kérje meg a rendszergazdát, hogy állítsa be ezt az eszközt a Google Felügyeleti Konzolban</translation>
+<translation id="1550406609415860283">Rendelkezésre álló eszközök</translation>
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
@@ -460,6 +461,7 @@
 <translation id="3542066395059568317">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Jobb gombbal való kattintással eltávolíthatja az ajánlásokat.</translation>
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> rögzítve</translation>
+<translation id="3560174576767922131">Videó rögzítése</translation>
 <translation id="3563775809269155755">Hotspot engedélyezése</translation>
 <translation id="3566240529365775567">Éppen most nyitotta meg</translation>
 <translation id="3571734092741541777">Beállítás</translation>
@@ -652,6 +654,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4577274620589681794">Az idő lejárt · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Előnézetek megjelenítése</translation>
 <translation id="4578906031062871102">Beállítások menü megnyitva</translation>
+<translation id="458210817642223147">GIF rögzítése</translation>
 <translation id="4585337515783392668">Ismeretlen fogadó eszközre történő átküldés leállítása</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
 <translation id="4611292653554630842">Bejelentkezés</translation>
@@ -731,6 +734,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">16. asztal</translation>
 <translation id="5003993274120026347">Következő mondat</translation>
+<translation id="5004607513195820459">Felügyelt hálózat</translation>
 <translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Az eszköz mikrofon-hozzáférése be van kapcsolva</translation>
 <translation id="5030687792513154421">Lejárt az idő</translation>
@@ -1076,6 +1080,7 @@ Frissen telepítve</translation>
 <translation id="6901883536534621389">Kézmozdulatok kipróbálása a navigáláshoz</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
 <translation id="6931576957638141829">Mentés ide</translation>
+<translation id="6942518653766415536">Rögzítési formátum menüje</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>

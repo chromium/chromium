@@ -2067,6 +2067,7 @@ Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezio
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
+<translation id="2979696534869541158">Forza implementazione precedente</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -2204,6 +2205,7 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="3092059499596000593">Usa la stampante di sistema come scelta predefinita in Anteprima di stampa</translation>
 <translation id="309416443108680956">Consente di specificare cosa succede quando un utente che sta effettuando l'autenticazione tramite un token di sicurezza (ad esempio con una smart card) rimuove il token durante una sessione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: non accade nulla. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: lo schermo viene bloccato finché l'utente non ripete l'autenticazione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sessione viene terminata e l'utente viene disconnesso. Se questo criterio non viene configurato, per impostazione predefinita viene usata l'opzione <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Elenco dei plug-in attivati</translation>
+<translation id="309885424548342662">Attiva l'autenticazione cloud di Microsoft®</translation>
 <translation id="3101035417394748390">Le dimensioni massime, in byte, che è possibile trasferire tra client e host tramite la sincronizzazione degli appunti</translation>
 <translation id="3101501961102569744">Scegli come specificare le impostazioni del server proxy</translation>
 <translation id="3101709781009526431">Data e ora</translation>
@@ -2801,6 +2803,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
 <translation id="3612809274815536412">Impostazioni del posizionamento delle finestre</translation>
+<translation id="3622463490728773174">Consenti nuova implementazione</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
@@ -2958,6 +2961,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Per ulteriori informazioni sulle sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la specifica <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Impostazioni di gestione dell'alimentazione quando l'utente diventa inattivo</translation>
+<translation id="3788876528643861853">Disattiva l'autenticazione cloud di Microsoft®</translation>
 <translation id="3790085888761753785">Se questa impostazione viene attivata, gli utenti potranno accedere ai propri account con Smart Lock. Questa impostazione è più permissiva rispetto al normale comportamento di Smart Lock che consente agli utenti soltanto di sbloccare lo schermo.
 
       Se questa impostazione viene disattivata, gli utenti non potranno usare l'accesso tramite Smart Lock.
@@ -3326,6 +3330,16 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       un errore adeguato.
 
       Questo criterio è disponibile esclusivamente per le istanze di Windows aggiunte a un dominio <ph name="MS_AD_NAME" />, per le istanze di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi e per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="4135805680586226327">Questo criterio consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
+
+La migrazione interessa solo i dettagli di implementazione interni e non
+deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni
+PPAPI non funzionino come previsto.
+
+Se il criterio non viene configurato o se viene impostato su Enabled, il browser deciderà quale
+implementazione usare.
+Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia implementazione
+fino alla scadenza del criterio.</translation>
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
@@ -5724,6 +5738,7 @@ Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia im
 <translation id="6575944031719151455">La configurazione del criterio consente di specificare l'elenco di account locali del dispositivo da visualizzare nella schermata di accesso. Gli identificatori fanno distinzione tra i diversi account locali del dispositivo.
 
       Se il criterio non viene configurato o se l'elenco è vuoto, non vengono visualizzati account locali del dispositivo.</translation>
+<translation id="6577760914164385949">Consenti l'accesso automatico ai provider di identità cloud Microsoft®</translation>
 <translation id="6580851705156412587">Blocca il dispositivo quando viene sospeso o il coperchio viene chiuso</translation>
 <translation id="6581048059229620221">Se questo criterio viene disattivato, non è possibile avviare o configurare l'host di assistenza da remoto per accettare le connessioni in arrivo.
 
@@ -5977,6 +5992,7 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 <translation id="6815483833848348029">Se il criterio viene impostato su Attivato o non viene configurato e se un account locale del dispositivo è configurato per l'accesso automatico senza ritardo, quando un dispositivo è offline <ph name="PRODUCT_OS_NAME" /> mostra una richiesta di configurazione della rete.
 
       Se il criterio viene impostato su Disattivato, viene visualizzato invece un messaggio di errore.</translation>
+<translation id="6815628711329903153">Consenti l'allocazione del buffer moderno per il plug-in PPAPI delle API Graphics3D.</translation>
 <translation id="6819838337315703072">Se le app <ph name="LINUX_OS_NAME" /> sono supportate, l'impostazione del criterio su Attivato consente di inviare al server le informazioni relative all'utilizzo delle app <ph name="LINUX_OS_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>

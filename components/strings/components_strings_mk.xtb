@@ -1015,6 +1015,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> сака да го користи вашиот микрофон</translation>
 <translation id="3533328374079021623">Поштенско сандаче 5</translation>
 <translation id="3537165859691846083">Писмо плус</translation>
+<translation id="3542628208405253498">Слика на картичка</translation>
 <translation id="3542768452570884558">Отвори го линкот во нов прозорец</translation>
 <translation id="3547746132308051926">20 x 24 инчи</translation>
 <translation id="3550112004925580947">Угостителска индустрија</translation>
@@ -1105,6 +1106,7 @@
 <translation id="3745099705178523657">Откако ќе потврдите, деталите за картичката од вашата сметка на Google ќе се споделат со сајтов.</translation>
 <translation id="3748148204939282805">Напаѓачите на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> може да ве измамат да направите нешто опасно, како што е инсталирање софтвер или откривање лични информации (на пример, лозинки, телефонски броеви или кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авијациска индустрија</translation>
+<translation id="3752543821772132562">Се игнорира бидејќи не е поставено <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Излези од „Слика во слика“</translation>
 <translation id="3759461132968374835">Немате неодамна пријавени падови. Падовите што настанале кога било исклучено пријавувањето падови нема да се појават тука.</translation>
 <translation id="3760561303380396507">Да се користи Windows Hello наместо CVC?</translation>
@@ -2743,6 +2745,7 @@
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943397946612013052">Блокирано преземање</translation>
 <translation id="7943893128817522649">Може да прашува за да презема повеќе датотеки автоматски</translation>
+<translation id="7946724693008564269">Откриен јазик</translation>
 <translation id="7947285636476623132">Проверете ја годината на истекување и обидете се повторно</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да дознаете за функциите на Chrome</translation>
 <translation id="7950027195171824198">Управувајте со поставките за колачиња во поставките на Chrome</translation>
@@ -2917,6 +2920,7 @@
 <translation id="8355270400102541638">Контекст на локален пад:</translation>
 <translation id="8363502534493474904">Да го исклучите авионскиот режим</translation>
 <translation id="8364627913115013041">Не е поставено.</translation>
+<translation id="836616551641291797">Дознајте повеќе за тоа како се управува со вашиот прелистувач</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Услуги на Google Play</translation>

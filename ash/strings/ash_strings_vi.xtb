@@ -121,6 +121,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1546930421365146760">Hãy yêu cầu quản trị viên thiết lập thiết bị này trong Bảng điều khiển dành cho quản trị viên của Google</translation>
+<translation id="1550406609415860283">Có sẵn thiết bị</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
@@ -458,10 +459,12 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
+<translation id="3533126039236445965">Ứng dụng trong kệ</translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
 <translation id="3558768885091059911">Bật quyền truy cập vào máy ảnh và micrô?</translation>
+<translation id="3560174576767922131">Quay video</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
 <translation id="3566240529365775567">Vừa mới mở</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
@@ -653,6 +656,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
 <translation id="4578906031062871102">Đã mở trình đơn Cài đặt</translation>
+<translation id="458210817642223147">Ghi GIF</translation>
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
@@ -732,6 +736,7 @@ Hãy sạc thiết bị.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Không gian làm việc 16</translation>
 <translation id="5003993274120026347">Câu tiếp theo</translation>
+<translation id="5004607513195820459">Mạng được quản lý</translation>
 <translation id="5016558321564993266">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Quyền truy cập vào micrô trên thiết bị đang bật</translation>
 <translation id="5030687792513154421">Đã hết thời gian</translation>
@@ -1079,6 +1084,7 @@ Mới cài đặt</translation>
 <translation id="6901883536534621389">Thử một số cử chỉ để thao tác</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6931576957638141829">Lưu vào</translation>
+<translation id="6942518653766415536">Trình đơn định dạng bản ghi</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="6961121602502368900">Bạn không dùng được tính năng Tắt tiếng điện thoại trên hồ sơ công việc</translation>

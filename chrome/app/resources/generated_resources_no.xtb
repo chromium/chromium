@@ -1310,6 +1310,8 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2165102982098084499">Du tilknyttet disse enhetene ved å skanne en QR-kode.</translation>
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Administrering av Chrome-enheter med <ph name="MS_AD_NAME" /> støttes ikke lenger. Logg på med en annen enhet, eller kontakt enhetsadministratoren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2173801458090845390">Legg til en rekvisisjons-ID for denne enheten</translation>
@@ -2394,7 +2396,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Oppdater daglig</translation>
 <translation id="3134393957315651797">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet. Beskrivelse av eksperimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Laster ned, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gult standardbrukerbilde</translation>
 <translation id="3141093262818886744">Åpne likevel</translation>
 <translation id="3141318088920353606">Lytter …</translation>
@@ -5030,7 +5031,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5632059346822207074">Nettstedet ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
 <translation id="5632221585574759616">Finn ut mer om utvidelsestillatelser</translation>
 <translation id="5632566673632479864">Kontoen din (<ph name="EMAIL" />) er ikke tillatt som primærkonto lenger. Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten.</translation>
-<translation id="5632592977009207922">Laster ned, <ph name="PERCENT_REMAINING" /> % gjenstår</translation>
 <translation id="5633149627228920745">Finn ut mer om systemkrav</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Se minner fra nylige reiser med mer</translation>

@@ -124,6 +124,7 @@
 <translation id="3140883423282498090">変更内容は次に Google Chrome を再起動したときに有効になります。</translation>
 <translation id="3149510190863420837">Chrome アプリ</translation>
 <translation id="3169523567916669830">テスト期間中、サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome は HID デバイスに接続されています}other{Google Chrome は HID デバイスに接続されています}}</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>

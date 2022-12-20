@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">සංස්කරණ කර ගෙන යන්න</translation>
 <translation id="2434405374328098816">ඔබ දැනටමත් "<ph name="USERNAME" />" සඳහා මුරපදයක් <ph name="WEBSITE" /> හි සුරැක ඇත</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
+<translation id="2451654228769116489">පටිත්ත අමුණන්න</translation>
 <translation id="2461070143328828326">මුරපද සැකසීම්</translation>
 <translation id="2469960372084740698">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කරන්නද?</translation>
 <translation id="2473876017985765807">ඔබ දැනටමත් <ph name="WEBSITE" /> සඳහා මුරපදයක් සුරැක ඇත</translation>
@@ -672,6 +673,7 @@
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6064824697233747382">ඔබගේ සංවිධානයට ඔබ සමමුහුර්තය ක්‍රියාවිරහිත කිරීම අවශ්‍ය වේ.</translation>
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
+<translation id="6071409777669089905">පටිත්ත ගලවන්න</translation>
 <translation id="60829778314739003">පිළිගෙන ඉදිරියට යන්න</translation>
 <translation id="6084848228346514841">ටැබ තෝරන්න</translation>
 <translation id="6103540626693881831">උපාංගයේ සංකේතනය</translation>
@@ -1097,6 +1099,7 @@
 <translation id="9219154867334666734">පටිති සොයන්න…</translation>
 <translation id="9223358826628549784">බිඳ වැටීම් වාර්තාව යවන ලදි.</translation>
 <translation id="941747855997058526">මුරපදය තෝරන්න...</translation>
+<translation id="948048872540558976">නව පටිත්තක් තනන්න</translation>
 <translation id="952704832371081537">අවලංගු කරන්න</translation>
 <translation id="953008885340860025">Chrome වරනය වී ඇත</translation>
 <translation id="959066944189734975">ඔබ <ph name="CHANNEL_NAME" /> අනුගමනය කරයි</translation>

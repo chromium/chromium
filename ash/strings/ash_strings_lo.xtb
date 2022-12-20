@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">ເປີດ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
+<translation id="163517899691012366">ປິດສຽງການແຈ້ງເຕືອນເມື່ອຄຸນສົມບັດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">ລອງເວົ້າວ່າ:</translation>
 <translation id="3051189971848907985">ກຳລັງປ່ຽນຊື່ໂປຣໄຟລ໌. ກະລຸນາລໍຖ້າສອງສາມນາທີ.</translation>
 <translation id="3055162170959710888">ທ່ານໄດ້ໃຊ້ອຸປະກອນນີ້ເປັນເວລາ <ph name="USED_TIME" /> ໃນມື້ນີ້</translation>
+<translation id="3062298103034426069">ບໍ່ຮອງຮັບ</translation>
 <translation id="3068711042108640621">ຊັ້ນວາງຢູ່ເບື້ອງຊ້າຍ</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ຂະຫຍາຍເມນູ</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925">ຍ້າຍໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຈາກເດັສ <ph name="ACTIVE_DESK" /> ໄປຫາເດັສ <ph name="TARGET_DESK" /> ແລ້ວ</translation>
 <translation id="3252573918265662711">ຕັ້ງ</translation>
 <translation id="3255483164551725916">ທ່ານເຮັດຫຍັງໄດ້ແດ່?</translation>
+<translation id="3260969790895726815">ຄຳເວົ້າຈະຖືກປະມວນຜົນໃນເຄື່ອງ ແລະ ການປ້ອນຂໍ້ມູນດ້ວຍສຽງຈະເຮັດວຽກແບບອອບລາຍ, ແຕ່ບາງຄຳສັ່ງສຽງຈະບໍ່ເຮັດວຽກ.</translation>
 <translation id="3269597722229482060">ຄລິກຂວາ</translation>
 <translation id="3289544412142055976">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ</translation>
 <translation id="3289674678944039601">ກຳລັງສາກຜ່ານອະແດັບເຕີ</translation>
@@ -791,9 +794,11 @@
 <translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
 <translation id="533282197239610265">ສະແດງອຸປະກອນ Chromecast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ຂວາ)</translation>
+<translation id="5351427059191534258">ປິດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="5352250171825660495">ຮູບແບບສີສັນມືດເປີດຢູ່</translation>
 <translation id="5356963482258194581">ສະຫຼັບລະຫວ່າງຮູບແບບສີສັນມືດ ແລະ ແຈ້ງ. ຄລິກຂວາຢູ່ເດັສທັອບແລ້ວເລືອກຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ.</translation>
 <translation id="536019650977002321">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ບັນທຶກສຽງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
+<translation id="5361524080961918551">ດາວໂຫຼດໄຟລ໌ຄຳເວົ້າພາສາ <ph name="LANGUAGE" /> ແລ້ວບາງສ່ວນ</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ໄປຫາແຖບນີ້</translation>
 <translation id="5377367976106153749">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="5379115545237091094">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ</translation>
@@ -903,6 +908,7 @@
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
 <translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="598882571027504733">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
+<translation id="6002179289567220515">ທ່ານໄດ້ໃຊ້ສະວິດແທ້ເພື່ອເປີດກ້ອງຖ່າຍຮູບ 1 ເຄື່ອງ. ນອກຈາກນັ້ນ, ທ່ານສາມາດປິດສິດເຂົ້າເຖິງສຳລັບກ້ອງຖ່າຍຮູບທັງໝົດໄດ້ນຳ.</translation>
 <translation id="6012623610530968780">ໜ້າທີ <ph name="SELECTED_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">ກຳລັງອອກຈາກໂໝດແວ່ນສະທ້ອນ</translation>
 <translation id="602001110135236999">ເລື່ອນໄປຊ້າຍ</translation>
@@ -943,9 +949,11 @@
 <translation id="619279033188484792">ເບິ່ງຮູບພາບ, ມີເດຍ ແລະ ການແຈ້ງເຕືອນຫຼ້າສຸດຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="619335566042889110">ສາກໃຫ້ເຕັມຕອນນີ້</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">ແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="6210042900243040400">ເຊື່ອມຕໍ່ <ph name="NAME" /> ທີ່ບັນທຶກໄວ້ກ່ອນໜ້ານີ້ໃສ່ <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">ຕອນນີ້ທ່ານສາມາດບັນທຶກຕົວທ່ານເອງ ແລະ ໜ້າຈໍຂອງທ່ານພ້ອມກັນໄດ້ແລ້ວ</translation>
 <translation id="622484624075952240">ລົງ</translation>
+<translation id="623116199192908855">ສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຈາກ Chromebook ຂອງທ່ານ</translation>
 <translation id="6231419273573514727">ປະສິດທິພາບອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໄວ້</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -987,8 +995,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກ່ອນເວລາທີ່ກຳນົດໄວ້</translation>
 <translation id="649452524636452238">PIN ບັດອັດສະລິຍະ</translation>
 <translation id="6495400115277918834">ເລີ່ມການສະແດງຜົນຊ້ອນກັນແລ້ວ, ກົດ Alt+Shift+V ເພື່ອໂຟກັສ</translation>
+<translation id="6497418457565568043">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="6500896621837555595">ອັບເດດ</translation>
 <translation id="6501401484702599040">ກຳລັງ​ສົ່ງສັນຍານໜ້າ​ຈໍ​ຫາ <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">ກວດສອບໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນກັບອຸປະກອນ Chromecast ຂອງທ່ານ.</translation>
 <translation id="6515727200518652613">ກ້ອງຖ່າຍຮູບຂາດການເຊື່ອມຕໍ່, ກຳລັງພະຍາຍາມເຊື່ອມຕໍ່ຄືນໃໝ່.</translation>
 <translation id="6520517963145875092">ເລືອກໜ້າຈໍທີ່ຈະຖ່າຍຮູບ</translation>
 <translation id="652139407789908527">ໜ້າຈໍຂອງທ່ານຈະບໍ່ສະແດງຜົນເປັນເວລາດົນກວ່າປົກກະຕິ (ສູງສຸດໜຶ່ງນາທີ) ໃນລະຫວ່າງການອັບເດດນີ້. ກະລຸນາຢ່າກົດປຸ່ມເປີດປິດໃນຂະນະທີ່ການອັບເດດພວມດຳເນີນຢູ່.</translation>

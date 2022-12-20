@@ -2403,7 +2403,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3132896062549112541">Taisyklė</translation>
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
 <translation id="3134393957315651797">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“. Eksperimento aprašas: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Atsisiunčiama: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Numatytasis geltonas pseudoportretas</translation>
 <translation id="3141093262818886744">Vis tiek atidaryti</translation>
 <translation id="3141318088920353606">Klausoma…</translation>
@@ -5044,7 +5043,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5632059346822207074">Pateikta užklausa dėl leidimo; paspauskite Ctrl + pirmyn, kad atsakytumėte</translation>
 <translation id="5632221585574759616">Sužinokite daugiau apie plėtinių leidimus</translation>
 <translation id="5632566673632479864">Jūsų paskyra <ph name="EMAIL" /> nebeleidžiama kaip pagrindinė paskyra. Kadangi ši paskyra tvarkoma <ph name="DOMAIN" />, jūsų žymės, istorija, slaptažodžiai ir kiti nustatymai bus išvalyti iš šio įrenginio.</translation>
-<translation id="5632592977009207922">Atsisiunčiama, liko <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="5633149627228920745">Sužinokite daugiau apie sistemos reikalavimus</translation>
 <translation id="563371367637259496">Mobiliojo ryšio tinklas</translation>
 <translation id="5634446357546764049">Naujausių kelionių ir kitų prisiminimų peržiūra</translation>

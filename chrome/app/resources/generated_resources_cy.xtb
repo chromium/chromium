@@ -2402,7 +2402,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3132896062549112541">Rheol</translation>
 <translation id="3132996321662585180">Adnewyddu'n ddyddiol</translation>
 <translation id="3134393957315651797">Dewiswch gyflwr arbrofi ar gyfer yr arbrawf <ph name="EXPERIMENT_NAME" />. Disgrifiad arbrawf: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Wrthi'n lawrlwytho, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Rhithffurf melyn diofyn</translation>
 <translation id="3141093262818886744">Agor beth bynnag</translation>
 <translation id="3141318088920353606">Wrthi'n gwrando…</translation>
@@ -5042,7 +5041,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5632059346822207074">Gofynnwyd am ganiatâd, pwyswch Ctrl + Forward i ymateb</translation>
 <translation id="5632221585574759616">Dysgu rhagor am ganiatadau estyniad</translation>
 <translation id="5632566673632479864">Ni chaniateir eich cyfrif <ph name="EMAIL" /> fel y prif gyfrif mwyach. Oherwydd bod y cyfrif hwn yn cael ei reoli gan <ph name="DOMAIN" />, bydd eich nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill yn cael eu clirio o'r ddyfais hon.</translation>
-<translation id="5632592977009207922">Wrthi'n lawrlwytho, mae <ph name="PERCENT_REMAINING" />% ar ôl</translation>
 <translation id="5633149627228920745">Dysgu rhagor am ofynion system</translation>
 <translation id="563371367637259496">Symudol</translation>
 <translation id="5634446357546764049">Gweld atgofion o'ch teithiau diweddar a rhagor</translation>

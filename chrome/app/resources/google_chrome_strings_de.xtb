@@ -125,6 +125,7 @@
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3169523567916669830">Während die Tests laufen, kannst du Themen von Interesse sehen, die von Websites verwendet werden, um dir Werbung anzuzeigen, und diese Themen entfernen. Chrome schätzt auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome ist mit einem HID-Gerät verbunden}other{Google Chrome ist mit HID-Geräten verbunden}}</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>

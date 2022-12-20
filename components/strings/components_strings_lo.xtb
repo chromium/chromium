@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1559447966090556585">ຮັບການແຈ້ງເຕືອນບໍ?</translation>
+<translation id="1559486004335285648">ຕື່ມຂໍ້ມູນການຈ່າຍເງິນອັດຕະໂນມັດ</translation>
 <translation id="1559528461873125649">ບໍ່ມີໄຟລ໌ ຫຼືໄດເຣັກຕໍຣີດັ່ງກ່າວ</translation>
 <translation id="1559572115229829303">&lt;p&gt;ບໍ່​ສາ​ມາດ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ສ່ວນ​ຕົວ​ກັບ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ໄດ້ ເພາະ​ວ່າ​ວັນ​ທີ ແລະ ​ເວ​ລາ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ (<ph name="DATE_AND_TIME" />) ບໍ່​ຖືກ​ຕ້ອງ.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1807528111851433570">ແຜ່ນວຽກເລີ່ມຕົ້ນ</translation>
 <translation id="181000283860817563">ຕິດຕາມລາຄາຢູ່ຫຼາຍເວັບໄຊ</translation>
+<translation id="1810391395243432441">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍການລັອກໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="1812527064848182527">ແນວນອນ</translation>
 <translation id="1813414402673211292">ລຶບ​ຂໍ້​ມູນ​ການ​ທ່ອງ​ເນັດ</translation>
 <translation id="182139138257690338">ດາວໂຫຼດອັດຕະໂນມັດ</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">ພຣັອກຊີໄດ້ຖືກຕັ້ງຂຶ້ນ ເພື່ອໃຊ້ເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້, ບໍ່ແມ່ນ URL ຕົວໜັງສື  .pac.</translation>
 <translation id="1871284979644508959">ຊ່ອງຂໍ້ມູນທີ່ຕ້ອງລະບຸ</translation>
 <translation id="1873899211667975540">ເພງຣັອກ</translation>
+<translation id="1874224422119691492">ທ່ານສາມາດປ່ຽນວ່າຈະໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານຫຼືບໍ່ໃນ <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">ຖາດຮູບພາບ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">ເປີດໜ້າເລີ່ມຕົ້ນ</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2878197950673342043">ພັບແບບໂປສເຕີ</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">ໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="2881276955470682203">ບັນທຶກບັດບໍ?</translation>
 <translation id="2882949212241984732">ພົບທົບສີ່ຕອນ</translation>
 <translation id="2893773853358652045">ມ້ວນທີສີ່</translation>
@@ -1409,6 +1413,7 @@
 <translation id="4541810033354695636">ອາກິວເມັນ ຣີອາລິຕີ</translation>
 <translation id="4542971377163063093">ຖາດ 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">ທ່ານກຳລັງໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="4558551763791394412">ລອງປິດໃຊ້ສ່ວນຂະຫຍາຍຂອງທ່ານ.</translation>
 <translation id="4566017918361049074">ກາງແຈ້ງ</translation>
 <translation id="4567686777917670400">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້ເຊັ່ນກັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -2927,6 +2932,7 @@
 <translation id="8396522675989118466">ນີ້ແມ່ນລະຫັດ <ph name="NUMBER_OF_DIGITS" /> ຕົວເລກຢູ່ <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">ຊອກຫາໂທລະສັບຂອງທ່ານ</translation>
 <translation id="8405579342203358118">ຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
+<translation id="8406071103346257942">ຢຸດໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="8409413588194360210">ຕົວຈັດການການຈ່າຍເງິນ</translation>
 <translation id="8412145213513410671">ການຂັດຂ້ອງ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ທ່ານຕ້ອງປ້ອນລະຫັດຜ່ານອັນດຽວກັນສອງຄັ້ງ.</translation>
@@ -3196,6 +3202,7 @@
 <translation id="9128016270925453879">ໂຫຼດນະໂຍບາຍແລ້ວ</translation>
 <translation id="9128870381267983090">ເຊື່ອມ​ຕໍ່ກັບ​ເຄືອ​ຂ່າຍ</translation>
 <translation id="9131119348384879525">ບັນທຶກເນື້ອຫາທີ່ເປັນຄວາມລັບບໍ?</translation>
+<translation id="9133985615769429248">ຫາກທ່ານແບ່ງປັນອຸປະກອນນີ້ກັບຄົນອື່ນ, ທ່ານສາມາດໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານເມື່ອທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="9136861683332321024">ແທັກຊີລົດແພງ</translation>
 <translation id="9137013805542155359">ສະແດງຕົ້ນສະບັບ</translation>
 <translation id="9137248913990643158">ກະລຸນາເລີ່ມຕົ້ນ ແລະ ເຂົ້າສູ່ລະບົບ Chrome ກ່ອນໃຊ້ແອັບນີ້.</translation>

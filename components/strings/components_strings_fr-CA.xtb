@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1559447966090556585">Recevoir des notifications?</translation>
+<translation id="1559486004335285648">Données de remplissage automatique pour les paiements</translation>
 <translation id="1559528461873125649">Aucun fichier ou répertoire correspondant</translation>
 <translation id="1559572115229829303">&lt;p&gt;Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car la date et l'heure de votre appareil (<ph name="DATE_AND_TIME" />) sont incorrects.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1807528111851433570">Feuille de début</translation>
 <translation id="181000283860817563">Suivre les prix sur plusieurs sites</translation>
+<translation id="1810391395243432441">Protégez les mots de passe avec votre verrouillage d'écran</translation>
 <translation id="1812527064848182527">paysage</translation>
 <translation id="1813414402673211292">Effacer données navig.</translation>
 <translation id="182139138257690338">Téléchargements automatiques</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">Le mandataire est configuré pour utiliser des serveurs mandataires fixes et non une adresse URL de script .pac.</translation>
 <translation id="1871284979644508959">Champ obligatoire</translation>
 <translation id="1873899211667975540">Musique rock</translation>
+<translation id="1874224422119691492">Vous pouvez choisir d'utiliser ou non votre verrouillage d'écran pour remplir les mots de passe dans <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Plateau photo</translation>
 <translation id="1875512691959384712">Google Formulaires</translation>
 <translation id="187918866476621466">Ouvrir les pages de démarrage</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer votre navigation sécurisée et plus dans les paramètres de Chrome</translation>
 <translation id="2878197950673342043">Pli au format affiche</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">utilisez votre verrouillage d'écran pour remplir les mots de passe</translation>
 <translation id="2881276955470682203">Enregistrer la carte?</translation>
 <translation id="2882949212241984732">Pli portefeuille</translation>
 <translation id="2893773853358652045">Quatrième rouleau</translation>
@@ -1407,6 +1411,7 @@
 <translation id="4541810033354695636">Réalité augmentée</translation>
 <translation id="4542971377163063093">Bac 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Vous utilisez votre verrouillage d'écran pour remplir les mots de passe</translation>
 <translation id="4558551763791394412">Essayez de désactiver vos extensions.</translation>
 <translation id="4566017918361049074">Activités en plein air</translation>
 <translation id="4567686777917670400">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -2738,6 +2743,7 @@ Détails supplémentaires :
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943397946612013052">Téléchargement bloqué</translation>
 <translation id="7943893128817522649">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
+<translation id="7946724693008564269">Langue détectée</translation>
 <translation id="7947285636476623132">Vérifiez l'année d'expiration et réessayez</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="7950027195171824198">Gérez vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
@@ -2924,6 +2930,7 @@ Détails supplémentaires :
 <translation id="8396522675989118466">Il s'agit du code à <ph name="NUMBER_OF_DIGITS" /> chiffres qui se trouve au <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Rechercher votre téléphone</translation>
 <translation id="8405579342203358118">Gérez les données que vous synchronisez dans les paramètres de Chrome</translation>
+<translation id="8406071103346257942">arrêtez d'utiliser le verrouillage de l'écran pour remplir les mots de passe</translation>
 <translation id="8409413588194360210">Modules de traitement des paiements</translation>
 <translation id="8412145213513410671">Plantages (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez entrer deux fois la même phrase de passe.</translation>
@@ -3193,6 +3200,7 @@ Détails supplémentaires :
 <translation id="9128016270925453879">Les politiques ont été chargées</translation>
 <translation id="9128870381267983090">Connexion au réseau</translation>
 <translation id="9131119348384879525">Capturer le contenu confidentiel?</translation>
+<translation id="9133985615769429248">Si vous partagez cet appareil avec d'autres personnes, vous pouvez utiliser le verrouillage d'écran pour vérifier qu'il s'agit bien de vous lorsque que vous utilisez un mot de passe enregistré</translation>
 <translation id="9136861683332321024">Véhicules de luxe</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9137248913990643158">Veuillez démarrer Chrome et vous connecter avant d'utiliser cette application.</translation>

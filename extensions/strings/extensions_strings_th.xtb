@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">แพ็กเกจไม่ถูกต้อง: "<ph name="ERROR_CODE" />"</translation>
 <translation id="1140871961407805696">กล้องหลัง</translation>
 <translation id="1196338895211115272">ไม่สามารถส่งออกคีย์ส่วนตัว</translation>
+<translation id="132960226125594336">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้เนื่องจากมีขนาดเกินขนาดสคริปต์หรือขนาดสคริปต์เนื้อหารวมของส่วนขยายสูงสุด</translation>
 <translation id="1420684932347524586">อ้าว! ไม่สามารถสร้างคีย์ส่วนตัว RSA แบบสุ่มได้</translation>
 <translation id="1445572445564823378">ส่วนขยายนี้จะทำให้ <ph name="PRODUCT_NAME" /> ทำงานช้าลง คุณควรปิดใช้งานส่วนขยายเพื่อให้ประสิทธิภาพการทำงานของ <ph name="PRODUCT_NAME" /> กลับมาเป็นปกติ</translation>
 <translation id="1468038450257740950">WebGL ไม่ไ้ด้รับการสนับสนุน</translation>

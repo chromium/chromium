@@ -1262,7 +1262,7 @@
 <translation id="212876957201860463">आपका मोबाइल डिवाइस सेटअप किया जा रहा है...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" इंस्‍टॉल करने में असमर्थ क्‍योंकि "<ph name="IMPORT_NAME" />" द्वारा इसकी अनुमति नहीं है</translation>
 <translation id="21354425047973905">पिन छिपाएं</translation>
-<translation id="2135456203358955318">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
+<translation id="2135456203358955318">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="2135787500304447609">&amp;फिर से शुरू करें</translation>
 <translation id="2136372518715274136">नया पासवर्ड डालें</translation>
 <translation id="2136476978468204130">आपने जो 'पासफ़्रेज़' डाला है, वह गलत है</translation>
@@ -1273,7 +1273,7 @@
 <translation id="2142582065325732898">Chrome पर हाल ही में खोले गए टैब देखने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> की सुविधा चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">टूलबार को हमेशा फ़ुल स्क्रीन में दिखाएं</translation>
 <translation id="2143778271340628265">मैन्‍युअल प्रॉक्सी कॉन्फ़िगरेशन</translation>
-<translation id="2143915448548023856">प्रदर्शन सेटिंग</translation>
+<translation id="2143915448548023856">डिसप्ले सेटिंग</translation>
 <translation id="2144536955299248197">प्रमाणपत्र व्यूअर: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux के लिए Android ऐप्लिकेशन बनाना</translation>
 <translation id="2146263598007866206">साइटें समय बचाने के लिए, संबंधित फ़ाइलों को अपने-आप डाउनलोड कर सकती हैं</translation>
@@ -2383,7 +2383,6 @@
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">फ़ाइल डाउनलोड हो रही है, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
 <translation id="3141318088920353606">सुन रही है...</translation>
@@ -2397,7 +2396,7 @@
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3151539355209957474">शुरू होने का समय</translation>
 <translation id="3151562827395986343">इतिहास, कुकी, कैश वगैरह मिटाएं</translation>
-<translation id="3151786313568798007">अभिविन्‍यास</translation>
+<translation id="3151786313568798007">ओरिएंटेशन</translation>
 <translation id="3152356229013609796">फ़ोन पर मिलने वाली सूचनाओं को देखें, उन्हें खारिज करें, और उनका जवाब दें</translation>
 <translation id="3157387275655328056">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="3157931365184549694">वापस लाएं</translation>
@@ -2721,7 +2720,7 @@
 <translation id="3470392222765168737">साइट को फ़ॉलो करें</translation>
 <translation id="3471876058939596279">वीडियो के लिए एचडीएमआई पोर्ट और यूएसबी टाइप-सी पोर्ट को एक ही समय में इस्तेमाल नहीं किया जा सकता. कोई अलग पोर्ट इस्तेमाल करें.</translation>
 <translation id="3473241910002674503">टैबलेट मोड में बटन की मदद से, होम पेज पर जाएं, वापस जाएं, और एक ऐप्लिकेशन से दूसरे पर जाएं.</translation>
-<translation id="3473479545200714844">स्क्रीन आवर्द्धक</translation>
+<translation id="3473479545200714844">स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="3474218480460386727">नए शब्दों के लिए 99 अक्षरों या उससे कम का इस्तेमाल करें</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> के रूप में जारी रखें</translation>
 <translation id="3475843873335999118">माफ़ कीजिए, आपके फ़िंगरप्रिंट की अब भी पहचान नहीं हुई हैैै. कृपया अपना पासवर्ड डालें.</translation>
@@ -2791,7 +2790,7 @@
 <translation id="3536492240554502321">रंग बदलने की सुविधा चालू करें</translation>
 <translation id="3537881477201137177">इसे 'सेटिंग' में जाकर बाद में बदला जा सकता है</translation>
 <translation id="3538066758857505094">Linux अनइंस्टॉल करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
-<translation id="354060433403403521">AC एडॉप्‍टर</translation>
+<translation id="354060433403403521">AC अडैप्टर</translation>
 <translation id="354068948465830244">यह साइट डेटा पढ़ सकता है और बदल सकता है</translation>
 <translation id="3541823293333232175">असाइन किया गया</translation>
 <translation id="3543393733900874979">अपडेट नहीं हो पाया (गड़बड़ी: <ph name="ERROR_NUMBER" />)</translation>
@@ -3490,7 +3489,7 @@
 <translation id="4190828427319282529">कीबोर्ड के फ़ोकस को हाइलाइट करें</translation>
 <translation id="4193836101014293726">डिफ़ॉल्ट प्रोफ़ाइल होने की वजह से इसे मिटाया नहीं जा सकता</translation>
 <translation id="419427585139779713">एक बार में एक शब्दांश डालें</translation>
-<translation id="4194570336751258953">क्लिक-के-लिए-टैप करना चालू करें</translation>
+<translation id="4194570336751258953">टैप-टू-क्लिक सुविधा चालू करें</translation>
 <translation id="4195378859392041564">माउस से किसी भी कुंजी पर क्लिक करें. इसके बाद, अपनी पसंद के मुताबिक बनाने के लिए कीबोर्ड की कुंजी को दबाएं</translation>
 <translation id="4195421689821407315">डाउनलोड करना सुरक्षित नहीं है</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
@@ -3742,7 +3741,7 @@
 <translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
 <translation id="4427365070557649936">पुष्टिकरण कोड की पुष्टि की जा रही है...</translation>
 <translation id="4429163740524851942">फ़िज़िकल कीबोर्ड लेआउट</translation>
-<translation id="4430019312045809116">मात्रा</translation>
+<translation id="4430019312045809116">आवाज़</translation>
 <translation id="4430369329743628066">बुकमार्क जोड़ा गया</translation>
 <translation id="4430422687972614133">वर्चुअल कार्ड चालू करें</translation>
 <translation id="4432621511648257259">पासवर्ड गलत है</translation>
@@ -3817,7 +3816,7 @@
 <translation id="450552327874992444">शब्द पहले ही जोड़ा जा चुका है</translation>
 <translation id="4507128560633489176">डेटा मिटाया गया.</translation>
 <translation id="4507373251891673233">आपने <ph name="HOST" /> के लिए, सभी एक्सटेंशन को ब्लॉक कर दिया है</translation>
-<translation id="450867954911715010">ऐक्सेस-योग्यता विकल्प</translation>
+<translation id="450867954911715010">सुलभता सेटिंग</translation>
 <translation id="4508765956121923607">स्रोत देखें</translation>
 <translation id="4509421746503122514">अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="4510195992002502722">फ़ीडबैक (सुझाव, शिकायत या राय) नहीं भेजा जा सका. दोबारा कोशिश की जा रही है...</translation>
@@ -5009,7 +5008,6 @@
 <translation id="5632059346822207074">अनुमति मांगी गई है, जवाब देने के लिए Ctrl + Forward बटन दबाएं</translation>
 <translation id="5632221585574759616">एक्सटेंशन को दी गई अनुमतियों के बारे में ज़्यादा जानें</translation>
 <translation id="5632566673632479864">आपका खाता <ph name="EMAIL" /> अब प्राथमिक खाते के रूप में काम नहीं कर सकता. इस खाते का प्रबंधन <ph name="DOMAIN" /> करता है. इसलिए, आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी सेटिंग को इस डिवाइस से हटा दिया जाएगा.</translation>
-<translation id="5632592977009207922">डाउनलोड हो रहा है, <ph name="PERCENT_REMAINING" />% बचा है</translation>
 <translation id="5633149627228920745">सिस्टम से जुड़ी ज़रूरतों के बारे में ज़्यादा जानें</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5634446357546764049">हाल ही में की गई अपनी यात्राओं से जुड़ी यादें वगैरह देखें</translation>
@@ -6571,7 +6569,7 @@
 <translation id="7086672505018440886">संग्रह में Chrome लॉग फ़ाइलों को शामिल करें.</translation>
 <translation id="7088434364990739311">अपडेट की जाँच शुरू नहीं की जा सकी (गड़बड़ी कोड <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">इस डिवाइस को एडमिन ने इस्तेमाल से बाहर रखे जाने की स्थिति में रखा है. नाम दर्ज करने के लिए इसे चालू करने के लिए, कृपया अपने एडमिन से डिवाइस को 'मंज़ूरी बाकी' स्थिति में रहने दें.</translation>
-<translation id="7088960765736518739">ऐक्सेस करने का तरीका बदलने की सुविधा</translation>
+<translation id="7088960765736518739">ऐक्सेस का तरीका बदलें</translation>
 <translation id="7089253021944603172">टैब फिर से चालू हो गया है</translation>
 <translation id="7090160970140261931">वेबसाइटों और Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए, <ph name="DEVICE_TYPE" /> में अतिरिक्त खाते जोड़े जा सकते हैं. साथ ही, यह भी कंट्रोल किया जा सकता है कि Android ऐप्लिकेशन के साथ किन खातों का इस्तेमाल किया जाए.</translation>
 <translation id="7093220653036489319">हाज़िर जवाब</translation>
@@ -7231,7 +7229,7 @@
 <translation id="7724603315864178912">काटें</translation>
 <translation id="7726391492136714301">अपने फ़ोन पर मिलने वाली सूचनाएं और ऐप्लिकेशन देखें</translation>
 <translation id="7728465250249629478">डिवाइस की भाषा बदलें</translation>
-<translation id="7728570244950051353">नींद मोड में स्क्रीन लॉक करने की सुविधा</translation>
+<translation id="7728570244950051353">स्लीप मोड में स्क्रीन लॉक करने की सुविधा</translation>
 <translation id="7728668285692163452">चैनल बदलाव बाद में लागू किया जाएगा</translation>
 <translation id="7730449930968088409">अपनी स्क्रीन की सामग्री कैप्चर करें</translation>
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
@@ -8386,7 +8384,7 @@
 <translation id="879413103056696865">हॉटस्पॉट चालू होने पर, आपका <ph name="PHONE_NAME" /> यह काम करेगा:</translation>
 <translation id="8795916974678578410">नई विंडो</translation>
 <translation id="8797459392481275117">इस साइट का कभी भी अनुवाद ना करें</translation>
-<translation id="8798099450830957504">सामान्य</translation>
+<translation id="8798099450830957504">डिफ़ॉल्ट</translation>
 <translation id="8800034312320686233">साइट काम नहीं कर रही है?</translation>
 <translation id="8803526663383843427">यह सुविधा चालू होने पर</translation>
 <translation id="8803953437405899238">एक क्लिक में नया टैब खोलें</translation>

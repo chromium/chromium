@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1962550982027027473">Výchozí APN je povinný</translation>
 <translation id="1977994649430373166">Profilová fotka Google</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1999615961760456652">Captive portál</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Konfiguraci lze provést v sekci Nastavení</translation>
 <translation id="2597774443162333062">Soubory budou odeslány do Googlu k ladění</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Byla naskenována 1 stránka}few{Skenování bylo dokončeno. Byly naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Bylo naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Bylo naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="2619761439309613843">Denní obnovení</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2638662041295312666">Přihlašovací obrázek</translation>
@@ -392,6 +394,7 @@
 <translation id="4793710386569335688">Další informace naleznete v <ph name="BEGIN_LINK" />centru nápovědy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Kompresní algoritmus</translation>
 <translation id="4794140124556169553">Test procesoru může mít vliv na výkon systému</translation>
+<translation id="4798078634453489142">Pokud chcete přidat nový název přístupového bodu (APN), některý odstraňte</translation>
 <translation id="4800589996161293643">Komunita Chromebooků</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
@@ -633,6 +636,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6791471867139427246">barva světla klávesnice</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
+<translation id="6838167112108853532">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit připojené APN.</translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>
 <translation id="6889786074662672253">Během restartování neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>

@@ -128,6 +128,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3140883423282498090">Vos modifications seront appliquées au prochain redémarrage de Google Chrome.</translation>
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3169523567916669830">Pendant les essais, vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome est connecté à un appareil HID}one{Google Chrome est connecté à un appareil HID}other{Google Chrome est connecté à des appareils HID}}</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>

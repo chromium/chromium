@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">开启</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
+<translation id="163517899691012366">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">试着说：</translation>
 <translation id="3051189971848907985">正在重命名配置文件。请稍等几分钟。</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">不支持</translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925">窗口“<ph name="WINDOW_TITLE" />”已由桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">设置</translation>
 <translation id="3255483164551725916">你能做些什么？</translation>
+<translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
@@ -455,6 +458,7 @@
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="352245152354538528">{0,plural, =1{请在 1 分钟内更新此设备}other{请在 # 分钟内更新此设备}}</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
+<translation id="3533126039236445965">任务栏中的应用</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
@@ -790,9 +794,11 @@
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="533282197239610265">显示投放设备</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
+<translation id="5351427059191534258">关闭摄像头使用权限？</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
+<translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
@@ -902,6 +908,7 @@
 <translation id="5980301590375426705">退出访客模式</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
+<translation id="6002179289567220515">您使用实物开关关闭了 1 个摄像头。您还可以关闭所有摄像头的使用权限。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="602001110135236999">向左滚动</translation>
@@ -942,9 +949,11 @@
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体和收到的通知</translation>
 <translation id="619335566042889110">立即充满电</translation>
 <translation id="6193431488227440296">开发者</translation>
+<translation id="6200515304866777730">应用不支持</translation>
 <translation id="6210042900243040400">关联已保存到 <ph name="EMAIL" /> 的“<ph name="NAME" />”</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
+<translation id="623116199192908855">从 Chromebook 中投放屏幕</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -986,8 +995,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在截止日期之前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
+<translation id="6497418457565568043">“勿扰”模式已开启</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6508923215158854599">确保您的 Chromebook 与 Chromecast 设备连接到同一个 Wi-Fi 网络。</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>

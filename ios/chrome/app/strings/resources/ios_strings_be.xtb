@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">Працягнуць рэдагаванне</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2451654228769116489">Замацаваць укладку</translation>
 <translation id="2461070143328828326">Налады пароляў</translation>
 <translation id="2469960372084740698">Выключыць Бяспечны прагляд?</translation>
 <translation id="2473876017985765807">Вы ўжо захавалі пароль для вэб-сайта <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
 <translation id="6064824697233747382">Палітыка вашай арганізацыі патрабуе, каб вы выключылі сінхранізацыю.</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
+<translation id="6071409777669089905">Адмацаваць укладку</translation>
 <translation id="60829778314739003">Прыняць і працягнуць</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
 <translation id="6103540626693881831">Шыфраванне на прыладзе</translation>
@@ -1097,6 +1099,7 @@
 <translation id="9219154867334666734">Пошук укладак…</translation>
 <translation id="9223358826628549784">Справаздача аб збоях адпраўлена.</translation>
 <translation id="941747855997058526">Выбраць пароль…</translation>
+<translation id="948048872540558976">Стварыць новую ўкладку</translation>
 <translation id="952704832371081537">Скасаваць</translation>
 <translation id="953008885340860025">Уваход у Chrome не выкананы</translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>

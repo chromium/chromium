@@ -2401,7 +2401,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3132896062549112541">Isimiso</translation>
 <translation id="3132996321662585180">Vuselela nsuku zonke</translation>
 <translation id="3134393957315651797">Khetha isimo sokuhlola sohlolo lwe-<ph name="EXPERIMENT_NAME" />. Incazelo yokuhlola: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Iyalanda, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Isithombe esizenzakalelayo esiliphuzi</translation>
 <translation id="3141093262818886744">Vula noma kunjalo</translation>
 <translation id="3141318088920353606">Ukulalela...</translation>
@@ -5043,7 +5042,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5632059346822207074">Imvume iceliwe, cindezela u-Ctrl + Forward ukuze uphendule</translation>
 <translation id="5632221585574759616">Funda kabanzi mayelana nezimvume zesandiso</translation>
 <translation id="5632566673632479864">I-akhawunti yakho <ph name="EMAIL" /> ayisavunyelwe njenge-akhawunti eyinhloko. Ngoba le akhawunti iphethwe i-<ph name="DOMAIN" />, amabhukhimakhi akho, umlando, amaphasiwedi, nezinye izilungiselelo kuzosulwa kusuka kule divayisi.</translation>
-<translation id="5632592977009207922">Iyalanda, <ph name="PERCENT_REMAINING" />% esele</translation>
 <translation id="5633149627228920745">Funda kabanzi mayelana nezidingo zesistimu</translation>
 <translation id="563371367637259496">Iselula</translation>
 <translation id="5634446357546764049">Bona izinkumbulo zohambo lwakho lwakamuva nokuningi</translation>

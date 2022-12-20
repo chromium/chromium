@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="1559447966090556585">Атрымліваць апавяшчэнні?</translation>
+<translation id="1559486004335285648">Аўтазапаўненне плацежнай інфармацыі</translation>
 <translation id="1559528461873125649">Няма такога файла або каталога</translation>
 <translation id="1559572115229829303">&lt;p&gt;Немагчыма ўстанавіць прыватнае падключэнне да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, бо дата і час на прыладзе (<ph name="DATE_AND_TIME" />) няправільныя.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1807528111851433570">Пачатковы аркуш</translation>
 <translation id="181000283860817563">Адсочваць цэны на некалькіх сайтах</translation>
+<translation id="1810391395243432441">Абараніце паролі з дапамогай блакіроўкі экрана</translation>
 <translation id="1812527064848182527">альбомная</translation>
 <translation id="1813414402673211292">Выдаленне гісторыі праглядаў</translation>
 <translation id="182139138257690338">аўтаматычнае спампоўванне</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">Канфігурацыяй проксі зададзена выкарыстоўваць фіксаваныя проксі-серверы, а не URL-адрас сцэнарыя .pac.</translation>
 <translation id="1871284979644508959">Абавязковае поле</translation>
 <translation id="1873899211667975540">Рок-музыка</translation>
+<translation id="1874224422119691492">Наладзіць выкарыстанне блакіроўкі экрана для ўводу пароляў можна ў раздзеле "<ph name="SETTINGS" />"</translation>
 <translation id="1875025161375567525">Фоталаток</translation>
 <translation id="1875512691959384712">Формы Google</translation>
 <translation id="187918866476621466">Адкрыць пачатковыя старонкі</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць параметрамі Бяспечнага прагляду і выконваць іншыя дзеянні праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2878197950673342043">Плакатны згіб</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>
 <translation id="2881276955470682203">Захаваць картку?</translation>
 <translation id="2882949212241984732">Згіб "двайныя вароты"</translation>
 <translation id="2893773853358652045">Чацвёрты рулон</translation>
@@ -1010,6 +1014,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="3533328374079021623">Паштовая скрынка 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Відарыс карткі</translation>
 <translation id="3542768452570884558">Адкрыць спасылку ў новым акне</translation>
 <translation id="3547746132308051926">20 x 24 цалі</translation>
 <translation id="3550112004925580947">Індустрыя гасціннасці</translation>
@@ -1100,6 +1105,7 @@
 <translation id="3745099705178523657">Пасля вашага пацвярджэння даныя карткі з Уліковага запісу Google будуць абагулены з гэтым сайтам.</translation>
 <translation id="3748148204939282805">Зламыснікі на сайце <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могуць падмануць вас і прымусіць зрабіць што-небудзь небяспечнае – напрыклад, усталяваць ПЗ або выдаць асабістую інфармацыю (паролі, нумары тэлефонаў або даныя крэдытных картак і падобнае). <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авіяцыйная прамысловасць</translation>
+<translation id="3752543821772132562">Праігнаравана: палітыка <ph name="POLICY_NAME" /> не зададзена.</translation>
 <translation id="3754210790023674521">Выйсці з рэжыму "Відарыс у відарысе"</translation>
 <translation id="3759461132968374835">Няма даных аб нядаўніх збоях.  Інфармацыя пра збоі, якія адбываюцца, калі стварэнне справаздач аб збоях выключана, тут не паказваецца.</translation>
 <translation id="3760561303380396507">Выкарыстоўваць Windows Hello замест CVC?</translation>
@@ -1406,6 +1412,7 @@
 <translation id="4541810033354695636">дапоўненая рэальнасць</translation>
 <translation id="4542971377163063093">Латок 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Блакіроўка экрана выкарыстоўваецца для ўводу пароляў</translation>
 <translation id="4558551763791394412">Паспрабуйце выключыць пашырэнні.</translation>
 <translation id="4566017918361049074">На вольным паветры</translation>
 <translation id="4567686777917670400">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -2912,6 +2919,7 @@
 <translation id="8355270400102541638">Лакальны ідэнтыфікатар збою:</translation>
 <translation id="8363502534493474904">Выключыць рэжым палёту</translation>
 <translation id="8364627913115013041">Не зададзена</translation>
+<translation id="836616551641291797">Даведацца больш пра тое, як ажыццяўляецца кіраванне браўзерам</translation>
 <translation id="8368001212524806591">Адсочваць цану</translation>
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Сэрвісы Google Play</translation>
@@ -2924,6 +2932,7 @@
 <translation id="8396522675989118466">Гэта <ph name="NUMBER_OF_DIGITS" />-значны код тут: <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Пошук тэлефона</translation>
 <translation id="8405579342203358118">Вызначайце, якая іменна інфармацыя будзе сінхранізавацца, праз налады Chrome</translation>
+<translation id="8406071103346257942">перастаць выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>
 <translation id="8409413588194360210">апрацоўшчыкі плацяжоў</translation>
 <translation id="8412145213513410671">Збоі (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Вам трэба двойчы ўвесці аднолькавую фразу-пароль.</translation>
@@ -3193,6 +3202,7 @@
 <translation id="9128016270925453879">Палітыкі загружаны</translation>
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>
 <translation id="9131119348384879525">Зняць канфідэнцыяльнае змесціва?</translation>
+<translation id="9133985615769429248">Калі гэтай прыладай апроч вас карыстаецца нехта яшчэ, уключыце блакіроўку экрана, каб карыстацца вашымі захаванымі паролямі маглі толькі вы</translation>
 <translation id="9136861683332321024">Люксавыя аўтамабілі</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9137248913990643158">Каб карыстацца гэтай праграмай, запусціце Chrome і ўвайдзіце ў свой уліковы запіс.</translation>

@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
+<translation id="1182225749592316782">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="1183863904939664422">ఈ సూచనపై ఆసక్తి లేదు</translation>
 <translation id="118437560755358292">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్ లేదా PINను ఎంటర్ చేయండి</translation>
 <translation id="118532027333893379">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
@@ -120,6 +121,7 @@
 <translation id="15373452373711364">పెద్ద మౌస్ కర్సర్</translation>
 <translation id="1546492247443594934">డెస్క్ 2</translation>
 <translation id="1546930421365146760">Google అడ్మిన్ కన్సోల్‌లో ఈ పరికరాన్ని సెటప్ చేయమని మీ అడ్మినిస్ట్రేటర్‌ను అడగండి</translation>
+<translation id="1550406609415860283">పరికరాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1550523713251050646">మరిన్ని ఎంపికల కోసం క్లిక్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
@@ -461,6 +463,8 @@
 <translation id="3542066395059568317">మీకు సిఫార్సులు కనిపిస్తాయి, కాబట్టి మీరు ఆపివేసిన చోటు నుండే కొనసాగించవచ్చు. మీరు కుడి క్లిక్ ఇచ్చి, సిఫార్సులను తీసివేయవచ్చు.</translation>
 <translation id="3552189655002856821">Wi-Fi ఆఫ్ చేయబడింది</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> పిన్ చేయబడింది</translation>
+<translation id="3558768885091059911">కెమెరా, మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
+<translation id="3560174576767922131">వీడియోను రికార్డ్ చేయండి</translation>
 <translation id="3563775809269155755">హాట్‌స్పాట్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3566240529365775567">ఇప్పుడే తెరిచారు</translation>
 <translation id="3571734092741541777">సెటప్ చేయి</translation>
@@ -653,6 +657,7 @@
 <translation id="4577274620589681794">సమయం ముగిసింది · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ప్రివ్యూలను చూపు</translation>
 <translation id="4578906031062871102">సెట్టింగ్‌ల మెనూ తెరవబడింది</translation>
+<translation id="458210817642223147">GIFను రికార్డ్ చేయండి</translation>
 <translation id="4585337515783392668">తెలియని రిసీవర్‌లో ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="4596144739579517758">ముదురు రంగు రూపం ఆఫ్‌లో ఉంది</translation>
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
@@ -732,6 +737,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">డెస్క్ 16</translation>
 <translation id="5003993274120026347">తర్వాతి వాక్యం</translation>
+<translation id="5004607513195820459">నెట్‌వర్క్ మేనేజ్ చేయబడుతోంది</translation>
 <translation id="5016558321564993266">మార్కర్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">పరికర మైక్రోఫోన్ యాక్సెస్ ఆన్‌లో ఉంది</translation>
 <translation id="5030687792513154421">సమయం ముగిసింది</translation>
@@ -868,6 +874,7 @@
 <translation id="5763928712329149804">షెల్ఫ్ పార్టీ మోడ్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="576453121877257266">రాత్రి కాంతి ఆన్‌లో ఉంది.</translation>
 <translation id="5769373120130404283">గోప్యతా స్క్రీన్</translation>
+<translation id="5773950591113557721">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది <ph name="APP_NAME" />‌తో పాటు, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="5777841717266010279">స్క్రీన్ భాగస్వామ్యాన్ని ఆపివేయాలా?</translation>
 <translation id="5779721926447984944">పిన్ చేయబడిన ఫైళ్లు</translation>
 <translation id="5788127256798019331">Play ఫైళ్లు</translation>
@@ -1055,6 +1062,7 @@
 <translation id="6787595647772650851">చివరి సెషన్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6801878137098616817">ఇటీవల ఎడిట్ చేశారు</translation>
+<translation id="6802687695197837794">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది <ph name="APP1_NAME" />, <ph name="APP2_NAME" />‌తో పాటు, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="6803622936009808957">మద్దతు ఉన్న రిజల్యూషన్‌లు కనుగొనబడనందున ప్రదర్శనలను ప్రతిబింబించడం సాధ్యపడలేదు. దానికి బదులుగా విస్తారిత డెస్క్‌టాప్‌కు మారారు.</translation>
 <translation id="6812232930908427253">డెస్క్‌ను సేవ్ చేయడం సాధ్యం కాదు. చాలా ఎక్కువ విండోలు లేదా ట్యాబ్‌లు ఉన్నాయి.</translation>
 <translation id="6818242057446442178">ఒక పదం వెనుకకు</translation>
@@ -1077,6 +1085,7 @@
 <translation id="6901883536534621389">నావిగేట్ చేయడానికి సంజ్ఞలను ట్రై చేయండి</translation>
 <translation id="6919251195245069855">మీ స్మార్ట్ కార్డ్‌ను గుర్తించడం సాధ్యం కాలేదు. మళ్ళీ ప్రయత్నించండి.</translation>
 <translation id="6931576957638141829">దీనిలో సేవ్ చేయండి</translation>
+<translation id="6942518653766415536">రికార్డింగ్ ఫార్మాట్ మెనూ</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6960565108681981554">యాక్టివేట్ చేయబడలేదు. మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="6961121602502368900">వర్క్ ప్రొఫైల్‌లో ఫోన్‌ను సైలెంట్‌లో పెట్టే ఫీచర్ అందుబాటులో లేదు</translation>
@@ -1086,6 +1095,7 @@
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6972754398087986839">ప్రారంభించండి</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="698231206551913481">ఈ వినియోగదారును తీసివేసిన తర్వాత ఈ వినియోగదారుతో అనుబంధించిన అన్ని ఫైళ్లు మరియు స్థానిక డేటా శాశ్వతంగా తొలగించబడతాయి.</translation>
 <translation id="7005239792648594238">యాప్‌ను తెరిచి ప్రారంభించండి</translation>

@@ -187,6 +187,7 @@
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
 <translation id="2597774443162333062">Файловете ще бъдат изпратени до Google за отстраняване на грешки</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканирането завърши. Сканирана бе 1 страница}other{Сканирането завърши. Сканирани бяха {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="2619761439309613843">Ежедневно опресняване</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение при вход</translation>
@@ -393,6 +394,7 @@
 <translation id="4793710386569335688">За още помощ отворете <ph name="BEGIN_LINK" />Помощния център<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритъм за компресиране</translation>
 <translation id="4794140124556169553">Провеждането на тест за процесора може да повлияе на производителността на системата ви</translation>
+<translation id="4798078634453489142">Премахнете име на точка за достъп (APN), за да добавите ново</translation>
 <translation id="4800589996161293643">Общността на Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>

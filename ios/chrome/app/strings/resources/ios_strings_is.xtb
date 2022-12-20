@@ -190,6 +190,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2421044535038393232">Halda áfram að breyta</translation>
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
+<translation id="2451654228769116489">Festa flipa</translation>
 <translation id="2461070143328828326">Stillingar fyrir aðgangsorð</translation>
 <translation id="2469960372084740698">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="2473876017985765807">Þú hefur þegar vistað aðgangsorð fyrir <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
 <translation id="6064824697233747382">Fyrirtækið þitt krefst þess að þú slökkvir á samstillingu.</translation>
 <translation id="6066301408025741299">Ýttu til að hætta við.</translation>
+<translation id="6071409777669089905">Losa flipa</translation>
 <translation id="60829778314739003">Samþykkja og halda áfram</translation>
 <translation id="6084848228346514841">Velja flipa</translation>
 <translation id="6103540626693881831">Dulkóðun í tækinu</translation>
@@ -1097,6 +1099,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="941747855997058526">Veldu aðgangsorð…</translation>
+<translation id="948048872540558976">Búa til nýjan flipa</translation>
 <translation id="952704832371081537">Hætta við</translation>
 <translation id="953008885340860025">Chrome er útskráður</translation>
 <translation id="959066944189734975">Þú fylgir <ph name="CHANNEL_NAME" /></translation>

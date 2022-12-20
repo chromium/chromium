@@ -2400,7 +2400,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3132896062549112541">Reël</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
 <translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Laai nou af: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
 <translation id="3141093262818886744">Maak nogtans oop</translation>
 <translation id="3141318088920353606">Luister tans …</translation>
@@ -5041,7 +5040,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5632059346822207074">Toestemming is versoek; druk Ctrl + Forward om te antwoord</translation>
 <translation id="5632221585574759616">Kom meer te wete oor uitbreidingtoestemmings</translation>
 <translation id="5632566673632479864">Jou rekening <ph name="EMAIL" /> word nie meer as die primêre rekening toegelaat nie. Omdat hierdie rekening deur <ph name="DOMAIN" /> bestuur word, sal jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel uitgevee word.</translation>
-<translation id="5632592977009207922">Laai tans af; <ph name="PERCENT_REMAINING" />% oor</translation>
 <translation id="5633149627228920745">Kom meer te wete oor stelselvereistes</translation>
 <translation id="563371367637259496">Mobiel</translation>
 <translation id="5634446357546764049">Sien herinneringe aan jou onlangse reise en meer</translation>
@@ -6240,6 +6238,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6770042910635026163">Werwe wat jy besoek wat jou belangstellings definieer</translation>
 <translation id="6770602306803890733">Verbeter sekuriteit vir jou en almal op die web</translation>
 <translation id="6771503742377376720">Is 'n sertifikaatoutoriteit</translation>
+<translation id="6774710250118040929">Voeg nuwe wagwoord by</translation>
 <translation id="6775163072363532304">Beskikbare toestelle sal hier verskyn.</translation>
 <translation id="677646486571529447">Voeg ’n nota by</translation>
 <translation id="6776729248872343918">Aktiveer Kitsbind</translation>

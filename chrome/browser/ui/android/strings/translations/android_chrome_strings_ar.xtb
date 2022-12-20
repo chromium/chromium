@@ -518,6 +518,7 @@
 <translation id="3830886834687455630">‏يجب تحديث "خدمات Google Play" للتحقّق من كلمات المرور.</translation>
 <translation id="3845098929839618392">فتح في علامة تبويب تصفّح متخفي</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
+<translation id="3858127568696903256">اطّلِع هنا على المحتوى الذي تتابعه.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3861633093716975811">الفيديوهات الرائجة</translation>
 <translation id="3874520961715512166">تمت إزالة الموقع الإلكتروني.</translation>
@@ -553,7 +554,6 @@
 <translation id="4045764304651014138">بيانات الاستخدام</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
-<translation id="4060598801229743805">الخيارات متاحة بالقرب من أعلى الشاشة</translation>
 <translation id="4062305924942672200">المعلومات القانونية</translation>
 <translation id="4072805772816336153">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4084682180776658562">إشارة</translation>
@@ -643,7 +643,6 @@
 <translation id="4554077758708533499">‏تم التوصيل باستخدام كابل USB.</translation>
 <translation id="4558311620361989323">اختصارات صفحة الويب</translation>
 <translation id="4561730552726921821">تم التسجيل بنجاح.</translation>
-<translation id="4561979708150884304">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4572422548854449519">تسجيل الدخول إلى الحساب المدار</translation>
 <translation id="4576892426230499203">تجربة خيار آخر لإثبات الهوية</translation>
@@ -1352,7 +1351,6 @@
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">الانتقال إلى علامات التبويب الأخرى</translation>
 <translation id="8266862848225348053">موقع التنزيل</translation>
-<translation id="8274165955039650276">الاطِّلاع على المحتوى الذي تم تنزيله</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8282297628636750033">تطبيق "المظهر الداكن" على المواقع، إن أمكن ذلك</translation>
 <translation id="829672787777123339">جارٍ الاتصال بجهازك…</translation>

@@ -187,6 +187,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="2597774443162333062">Қатесін түзету үшін файлдар Google-ға жіберіледі.</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2638662041295312666">Кіру суреті</translation>
@@ -393,6 +394,7 @@
 <translation id="4793710386569335688">Толық ақпарат алу үшін <ph name="BEGIN_LINK" />Анықтамалық орталыққа<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4793756956024303490">Сығу алгоритмі</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
+<translation id="4798078634453489142">Жаңа APN қосу үшін APN нүктесін өшіру</translation>
 <translation id="4800589996161293643">Chromebook қауымдастығы</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>

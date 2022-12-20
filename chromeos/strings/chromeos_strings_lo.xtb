@@ -187,6 +187,7 @@
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2597774443162333062">ໄຟລ໌ຈະຖືກສົ່ງຫາ Google ສຳລັບການດີບັກ</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
 <translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
 <translation id="2638662041295312666">ຮູບການເຂົ້າສູ່ລະບົບ</translation>

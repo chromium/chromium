@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="2597774443162333062">ડિબગીંગ માટે ફાઇલ Googleને મોકલવામાં આવશે</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2638662041295312666">સાઇન ઇન છબી</translation>

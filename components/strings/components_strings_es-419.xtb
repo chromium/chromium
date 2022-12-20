@@ -258,6 +258,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559447966090556585">¿Quieres recibir notificaciones?</translation>
+<translation id="1559486004335285648">Autocompletar información de pago</translation>
 <translation id="1559528461873125649">El archivo o directorio no existe</translation>
 <translation id="1559572115229829303">&lt;p&gt;No se puede establecer una conexión privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora del dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.&lt;/p&gt;
 
@@ -366,6 +367,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
 <translation id="181000283860817563">Realizar un seguimiento de los precios en varios sitios</translation>
+<translation id="1810391395243432441">Protege tus contraseñas con el bloqueo de pantalla</translation>
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
@@ -385,6 +387,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1871208020102129563">El proxy está configurado para usar servidores proxy fijos, no una URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1873899211667975540">Música rock</translation>
+<translation id="1874224422119691492">Puedes cambiar la opción de usar el bloqueo de pantalla para completar contraseñas en <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Bandeja de fotos</translation>
 <translation id="1875512691959384712">Formularios de Google</translation>
 <translation id="187918866476621466">Abrir páginas de inicio</translation>
@@ -753,6 +756,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu Navegación segura y más en la configuración de Chrome</translation>
 <translation id="2878197950673342043">Plegado de póster</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">usar el bloqueo de pantalla para completar contraseñas.</translation>
 <translation id="2881276955470682203">¿Quieres guardar la tarjeta?</translation>
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
 <translation id="2893773853358652045">Cuarto rollo</translation>
@@ -1012,6 +1016,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3532844647053365774"><ph name="HOST" /> desea usar tu micrófono</translation>
 <translation id="3533328374079021623">Buzón 5</translation>
 <translation id="3537165859691846083">Carta+</translation>
+<translation id="3542628208405253498">Imagen de la tarjeta</translation>
 <translation id="3542768452570884558">Abrir el vínculo en una ventana nueva</translation>
 <translation id="3547746132308051926">50.8 × 61 cm (20 × 24 in)</translation>
 <translation id="3550112004925580947">Industria hotelera</translation>
@@ -1102,6 +1107,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3745099705178523657">Después de que confirmes esta acción, los datos de tu Cuenta de Google se compartirán con este sitio.</translation>
 <translation id="3748148204939282805">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
+<translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
 <translation id="3760561303380396507">¿Deseas usar Windows Hello en lugar de CVC?</translation>
@@ -1408,6 +1414,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4541810033354695636">realidad aumentada</translation>
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Estás usando tu bloqueo de pantalla para completar contraseñas</translation>
 <translation id="4558551763791394412">Intenta inhabilitar tus extensiones.</translation>
 <translation id="4566017918361049074">Al aire libre</translation>
 <translation id="4567686777917670400">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -2913,6 +2920,7 @@ Detalles adicionales:
 <translation id="8355270400102541638">Contexto de falla local:</translation>
 <translation id="8363502534493474904">Desactivar el modo de avión.</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
+<translation id="836616551641291797">Más información sobre cómo se administra tu navegador</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicios de Google Play</translation>
@@ -2925,6 +2933,7 @@ Detalles adicionales:
 <translation id="8396522675989118466">Este es el código de <ph name="NUMBER_OF_DIGITS" /> dígitos que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Buscar teléfono</translation>
 <translation id="8405579342203358118">En la configuración de Chrome, administra qué información sincronizar</translation>
+<translation id="8406071103346257942">dejar de usar el bloqueo de pantalla para completar contraseñas.</translation>
 <translation id="8409413588194360210">controladores de pago</translation>
 <translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>
@@ -3195,6 +3204,7 @@ Detalles adicionales:
 <translation id="9128016270925453879">Se cargaron las políticas</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>
 <translation id="9131119348384879525">¿Deseas capturar contenido confidencial?</translation>
+<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="9136861683332321024">Vehículos de lujo</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137248913990643158">Abre Chrome y accede a tu cuenta antes de usar esta app.</translation>

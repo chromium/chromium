@@ -2397,7 +2397,6 @@
 <translation id="3132896062549112541">قانون</translation>
 <translation id="3132996321662585180">بازآوری روزانه</translation>
 <translation id="3134393957315651797">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید. شرح آزمایش: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">درحال بارگیری، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">چهره‌نمای پیش‌فرض زرد</translation>
 <translation id="3141093262818886744">درهرصورت باز شود</translation>
 <translation id="3141318088920353606">درحال گوش کردن...</translation>
@@ -5037,7 +5036,6 @@
 <translation id="5632059346822207074">درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «مهار + جلو» را فشار دهید</translation>
 <translation id="5632221585574759616">درباره اجازه‌های افزونه بیشتر بدانید</translation>
 <translation id="5632566673632479864">حسابتان (<ph name="EMAIL" />) دیگر به‌عنوان حساب اصلی مجاز نیست. از آن‌جایی‌که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، نشانک‌ها، سابقه، گذرواژه‌ها و دیگر تنظیماتتان از این دستگاه پاک می‌شوند.</translation>
-<translation id="5632592977009207922">درحال بارگیری، <ph name="PERCENT_REMAINING" />% باقی‌مانده است</translation>
 <translation id="5633149627228920745">درباره پیش‌نیازهای سیستم بیشتر بدانید</translation>
 <translation id="563371367637259496">دستگاه همراه</translation>
 <translation id="5634446357546764049">دیدن خاطرات جدیدترین سفرها و لحظات دیگر</translation>

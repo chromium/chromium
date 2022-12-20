@@ -2400,7 +2400,6 @@
 <translation id="3132896062549112541">ਨਿਯਮ</translation>
 <translation id="3132996321662585180">ਰੋਜ਼ਾਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="3134393957315651797">ਪ੍ਰਯੋਗ <ph name="EXPERIMENT_NAME" /> ਲਈ, ਪ੍ਰਯੋਗ ਦੀ ਸਥਿਤੀ ਚੁਣੋ। ਪ੍ਰਯੋਗ ਦਾ ਵਰਣਨ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਪੀਲਾ ਅਵਤਾਰ</translation>
 <translation id="3141093262818886744">ਫਿਰ ਵੀ ਖੋਲ੍ਹੋ</translation>
 <translation id="3141318088920353606">ਸੁਣਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -5040,7 +5039,6 @@
 <translation id="5632059346822207074">ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ Ctrl + Forward ਨੂੰ ਦਬਾਓ</translation>
 <translation id="5632221585574759616">ਐਕਸਟੈਂਸ਼ਨ ਇਜਾਜ਼ਤਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5632566673632479864">ਹੁਣ ਤੁਹਾਡੇ ਖਾਤੇ <ph name="EMAIL" /> ਨੂੰ ਮੁੱਖ ਖਾਤੇ ਵਜੋਂ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਕਿਉਂਕਿ ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਇਸ ਲਈ ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਕਲੀਅਰ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="5632592977009207922">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="PERCENT_REMAINING" />% ਸਮਾਂ ਬਾਕੀ</translation>
 <translation id="5633149627228920745">ਸਿਸਟਮ ਸੰਬੰਧੀ ਲੋੜਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="563371367637259496">ਮੋਬਾਈਲ</translation>
 <translation id="5634446357546764049">ਆਪਣੀਆਂ ਹਾਲੀਆ ਯਾਤਰਾਵਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੀਆਂ ਯਾਦਾਂ ਨੂੰ ਦੇਖੋ</translation>

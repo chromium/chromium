@@ -517,6 +517,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="3830886834687455630">Kemas kini perkhidmatan Google Play untuk menyemak kata laluan anda</translation>
 <translation id="3845098929839618392">Buka dalam tab Inkognito</translation>
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
+<translation id="3858127568696903256">Lihat kandungan yang anda ikuti di sini</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861633093716975811">Video popular</translation>
 <translation id="3874520961715512166">Laman dialih keluar</translation>
@@ -552,7 +553,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="4045764304651014138">Data penggunaan</translation>
 <translation id="405399507749852140">Dapatkan makluman sekiranya harga jatuh pada mana-mana laman</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="4062305924942672200">Maklumat undang-undang</translation>
 <translation id="4072805772816336153">Cuba lagi nanti</translation>
 <translation id="4084682180776658562">Penanda halaman</translation>
@@ -642,7 +642,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4554077758708533499">Disambungkan menggunakan kabel USB</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
 <translation id="4561730552726921821">Pendaftaran berjaya</translation>
-<translation id="4561979708150884304">Tiada sambungan</translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4572422548854449519">Log masuk ke akaun terurus</translation>
 <translation id="4576892426230499203">Cuba pilihan pengesahan lain</translation>
@@ -1351,7 +1350,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8261506727792406068">Padam</translation>
 <translation id="82619448491672958">Lihat tab lain</translation>
 <translation id="8266862848225348053">Lokasi muat turun</translation>
-<translation id="8274165955039650276">Lihat muat turun</translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282297628636750033">Gunakan tema gelap pada laman</translation>
 <translation id="829672787777123339">Menyambung kepada peranti anda…</translation>

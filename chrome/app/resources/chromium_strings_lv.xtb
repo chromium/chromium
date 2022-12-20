@@ -80,6 +80,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="2977506796191543575">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="2983934633046890458">Chromium mēģina rediģēt paroles.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Pārlūkā Chromium ir izveidots savienojums ar HID ierīci}zero{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}one{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}other{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}}</translation>
 <translation id="3032706164202344641">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3032787606318309379">Notiek pievienošana pārlūkam Chromium...</translation>
 <translation id="3038232873781883849">Gaida, lai instalētu...</translation>

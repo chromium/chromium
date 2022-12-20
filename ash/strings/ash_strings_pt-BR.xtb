@@ -37,6 +37,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1175572348579024023">Rolar</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1182225749592316782">Esta ação libera o acesso para todos os apps e sites com essas permissões</translation>
 <translation id="1183863904939664422">Não tenho interesse nesta sugestão</translation>
 <translation id="118437560755358292">Informe a senha ou o PIN para aumentar a segurança</translation>
 <translation id="118532027333893379">Toque em qualquer lugar para capturar a tela cheia</translation>
@@ -462,6 +463,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3542066395059568317">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, clique com o botão direito do mouse.</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
+<translation id="3558768885091059911">Ativar o acesso à câmera e ao microfone?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Ativar ponto de acesso</translation>
 <translation id="3566240529365775567">Aberto agora há pouco</translation>
@@ -871,6 +873,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5763928712329149804">O modo Grupo de estantes está desativado.</translation>
 <translation id="576453121877257266">O Modo noturno está ativado.</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
+<translation id="5773950591113557721">Esta ação libera o acesso para o app <ph name="APP_NAME" /> e todos os apps e sites com essas permissões</translation>
 <translation id="5777841717266010279">Interromper compartilhamento de tela?</translation>
 <translation id="5779721926447984944">Arquivos fixados</translation>
 <translation id="5788127256798019331">Arquivos do Google Play</translation>
@@ -1058,6 +1061,7 @@ Nova instalação</translation>
 <translation id="6787595647772650851">Restaurar a última sessão</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6801878137098616817">Editado recentemente</translation>
+<translation id="6802687695197837794">Esta ação libera o acesso para os apps <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todos os apps e sites com essas permissões</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>
 <translation id="6812232930908427253">Não foi possível salvar o espaço de trabalho. Há muitas janelas ou guias abertas.</translation>
 <translation id="6818242057446442178">Voltar por palavra</translation>
@@ -1090,6 +1094,7 @@ Nova instalação</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Vamos começar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Ativar o acesso</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os arquivos e dados locais associados a este usuário serão excluídos permanentemente quando o usuário for removido.</translation>
 <translation id="7005239792648594238">Abra um app para começar</translation>

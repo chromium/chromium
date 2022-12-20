@@ -1271,6 +1271,7 @@
 <translation id="212862741129535676">頻率狀態佔用率</translation>
 <translation id="212876957201860463">正在準備設定您的流動裝置…</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
+<translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">隱藏 PIN</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
@@ -2400,7 +2401,6 @@
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每日重新整理</translation>
 <translation id="3134393957315651797">揀「<ph name="EXPERIMENT_NAME" />」嘅實驗狀態。實驗描述：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">下載緊，<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">預設黃色圖片</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141318088920353606">正在聽取…</translation>
@@ -2854,11 +2854,13 @@
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586787825263265024">需要可存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
+<translation id="3587438013689771191">進一步了解：<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">已允許安裝付款處理常式</translation>
 <translation id="3589766037099229847">已封鎖不安全的內容</translation>
 <translation id="3590194807845837023">解除鎖定設定檔並重新啟動</translation>
 <translation id="3590295622232282437">正在進入受管理的工作階段</translation>
+<translation id="3591057288287063271">保留 <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">瞭解詳情(&amp;L)</translation>
 <translation id="3593152357631900254">啟用近似拼音輸入模式</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
@@ -3760,6 +3762,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />，管理員要求您變更密碼。</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">刪除 <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">如要開始使用，請先確保 USB 或藍牙開關已連接 Chromebook。您亦可以使用鍵盤按鍵。</translation>
 <translation id="4426508677408162512">所有書籤</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
@@ -4031,6 +4034,7 @@
 <translation id="4666472247053585787">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667027203988048332">我們會使用哪些資料：</translation>
+<translation id="4672759829555593783">立即開啟 <ph name="FILE_NAME" /></translation>
 <translation id="46733273239502219">系統亦會清除已安裝應用程式的離線資料。</translation>
 <translation id="4673442866648850031">拔出觸控筆後開啟觸控筆工具</translation>
 <translation id="4675065861091108046">您先前已選擇允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
@@ -5038,7 +5042,6 @@
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
 <translation id="5632221585574759616">進一步了解擴充程式權限</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
-<translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">進一步了解系統要求</translation>
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5634446357546764049">查看近期旅行等活動的回憶</translation>
@@ -5921,6 +5924,7 @@
 <translation id="6465841119675156448">不使用互聯網</translation>
 <translation id="6466258437571594570">網站無法要求傳送通知，以免造成干擾</translation>
 <translation id="6466988389784393586">開啟所有書籤(&amp;O)</translation>
+<translation id="6467230443178397264">掃瞄 <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">優化全螢幕影片</translation>
 <translation id="6467377768028664108">您的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
 <translation id="6468485451923838994">字型</translation>
@@ -6668,6 +6672,7 @@
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">將圖片轉換成文字</translation>
 <translation id="7159953856712257647">預設已安裝</translation>
 <translation id="7160182524506337403">您現可查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
@@ -6929,6 +6934,7 @@
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
+<translation id="7416091793702109803">審核 <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="7416362041876611053">不明的網絡錯誤</translation>
 <translation id="741906494724992817">這個應用程式不需要任何特殊權限。</translation>

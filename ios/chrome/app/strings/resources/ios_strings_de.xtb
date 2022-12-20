@@ -190,6 +190,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2421044535038393232">Weiter bearbeiten</translation>
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
+<translation id="2451654228769116489">Tab anpinnen</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
 <translation id="2469960372084740698">Safe Browsing deaktivieren?</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
@@ -672,6 +673,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
 <translation id="6064824697233747382">Deine Organisation verlangt, dass du die Synchronisierung deaktivierst.</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
+<translation id="6071409777669089905">Tab loslösen</translation>
 <translation id="60829778314739003">Akzeptieren und fortfahren</translation>
 <translation id="6084848228346514841">Tabs auswählen</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
@@ -1097,6 +1099,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9219154867334666734">Auf Tabs suchen…</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
 <translation id="941747855997058526">Passwort auswählen…</translation>
+<translation id="948048872540558976">Neuen Tab erstellen</translation>
 <translation id="952704832371081537">Abbrechen</translation>
 <translation id="953008885340860025">Von Chrome abgemeldet</translation>
 <translation id="959066944189734975">Du folgst „<ph name="CHANNEL_NAME" />“</translation>

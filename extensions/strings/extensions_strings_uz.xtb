@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paket yaroqsiz: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Asosiy kamera</translation>
 <translation id="1196338895211115272">Yopiq kalitni eksport qilib bo‘lmadi.</translation>
+<translation id="132960226125594336">Hajmi maksimal skript hajmidan yoki kengaytmaning maksimal kontent skripti hajmidan kattaligi sababli “<ph name="RELATIVE_PATH" />” fayli yuklanmadi.</translation>
 <translation id="1420684932347524586">Obbo! Tasodifiy RSA xususiy kalitini tuzib bo‘lmadi.</translation>
 <translation id="1445572445564823378">Bu kengaytma <ph name="PRODUCT_NAME" />’ni sekinlashtirmoqda. <ph name="PRODUCT_NAME" /> samarali ishlashi uchun kengaytmani o‘chirib qo‘yishingiz lozim.</translation>
 <translation id="1468038450257740950">WebGL qo‘llab-quvvatlanmaydi.</translation>

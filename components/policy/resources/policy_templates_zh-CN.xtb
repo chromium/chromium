@@ -2204,6 +2204,7 @@
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
+<translation id="309885424548342662">启用 Microsoft® 云身份验证</translation>
 <translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
 <translation id="3101709781009526431">日期和时间</translation>
@@ -2883,6 +2884,7 @@
       如果您启用了此设置或未设置值，那么“自动填充”功能仍由用户控制。这样，用户就能配置要自动填充的个人资料，并能自行决定是否要启用/停用“自动填充”功能。</translation>
 <translation id="3733014427925403568">间隔时段的开始日期和结束日期分别是周几。</translation>
 <translation id="3736879847913515635">允许通过用户管理器添加用户</translation>
+<translation id="3744984310825999317">允许 <ph name="PEPPER_NAME" /> 使用新版解码器进行硬件加速视频解码。</translation>
 <translation id="3749259744154402564">不支持</translation>
 <translation id="3749511622128647337">禁止输出音频</translation>
 <translation id="3750220015372671395">禁止在这些网站上使用密钥生成功能</translation>
@@ -2948,6 +2950,7 @@
 
       如需详细了解<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话，请查看 <ph name="WEBXR_AR_MODULE_API_NAME" />规范。</translation>
 <translation id="3788662722837364290">设备闲置时的电源管理设置</translation>
+<translation id="3788876528643861853">停用 Microsoft® 云身份验证</translation>
 <translation id="3790085888761753785">如果此设置处于启用状态，用户将能够使用 Smart Lock 登录他们的帐号。一般情况下 Smart Lock 只允许用户解锁屏幕，相较之下，这是限制性更低的设置。
 
       如果此设置处于停用状态，用户将不能使用 Smart Lock 登录功能。
@@ -3800,6 +3803,7 @@
 <translation id="4660356908994631271">在“新标签页”页面上的搜索框中显示 Google 智能镜头按钮。</translation>
 <translation id="4661889655253181651">“内容设置”可用来指定对特定类型内容（例如 Cookie、图片或 JavaScript）的处理方式。</translation>
 <translation id="4663509616441994711">禁止合并用户级云政策。</translation>
+<translation id="4663588423815449593">强制 <ph name="PEPPER_NAME" /> 使用旧版视频解码器。</translation>
 <translation id="4665897631924472251">扩展程序管理设置</translation>
 <translation id="4666930704271463612">指定系统在寻找服务器打印机时，应查询符合哪种条件的打印服务器。
 
@@ -4383,6 +4387,7 @@
 
       如果此政策未设置，用户无法在已注册的 <ph name="PRODUCT_OS_NAME" />上玩恐龙游戏，但可在其他环境下玩这款游戏。</translation>
 <translation id="5293285950307241933">清除所有本地用户数据</translation>
+<translation id="5293619885162445352">允许 <ph name="PEPPER_NAME" /> 使用新版视频解码器。</translation>
 <translation id="529457411593078576">在 CCT 首次运行期间启用《服务条款》</translation>
 <translation id="5297948043665200363">允许用户在帐号身份验证失效后继续保持登录状态</translation>
 <translation id="5298949392804966105">不针对受管理的帐号添加限制</translation>
@@ -5318,6 +5323,12 @@
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
 <translation id="6276087670023098167">停用关于机器标识信息的报告</translation>
 <translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
+<translation id="6277043520666738324">此政策用于控制 <ph name="PEPPER_NAME" /> 插件能否使用新版解码器（而非旧版视频解码器）与硬件解码器通信。
+
+迁移只会影响内部实现细节，而不应改变任何行为。不过，如果任何 PPAPI 应用都无法正常运行，则可以使用此政策。
+
+如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
+如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6278428485366576908">主题</translation>
 <translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器帐号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器帐号密码。
@@ -5676,6 +5687,7 @@
 <translation id="6575944031719151455">通过设置此政策，您可以指定将在登录屏幕中显示的设备本地帐号的列表。标识符会将不同的设备本地帐号区分开。
 
       如果您不设置此政策或此政策是空列表，则不存在设备本地帐号。</translation>
+<translation id="6577760914164385949">允许自动登录 Microsoft® 云标识提供者</translation>
 <translation id="6580851705156412587">在设备休眠或合盖时锁定设备</translation>
 <translation id="6581048059229620221">如果停用此政策，将无法启动远程支持主机，也无法将该主机配置为接受传入连接。
 

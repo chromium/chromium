@@ -82,6 +82,7 @@
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="2977506796191543575">ຖ້າມີເວັບໄຊໃດໜຶ່ງພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chromium ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing</translation>
 <translation id="2983934633046890458">Chromium ກຳລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium ເຊື່ອມຕໍ່ກັບອຸປະກອນ HID}other{Chromium ເຊື່ອມຕໍ່ກັບອຸປະກອນ HID}}</translation>
 <translation id="3032706164202344641">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="3032787606318309379">ກໍາລັງເພີ່ມ Chromium...</translation>
 <translation id="3038232873781883849">ກຳ​ລັງ​ລໍ​ຖ້າ​ຕິດ​ຕັ້ງ...</translation>

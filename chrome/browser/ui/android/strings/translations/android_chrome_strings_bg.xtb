@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">Актуализирайте услугите за Google Play, за да проверите паролите си</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
+<translation id="3858127568696903256">Тук ще виждате съдържанието, което следите</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3861633093716975811">Популярни видеоклипове</translation>
 <translation id="3874520961715512166">Сайтът бе премахнат</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
-<translation id="4060598801229743805">Опциите са в горната част на екрана</translation>
 <translation id="4062305924942672200">Правна информация</translation>
 <translation id="4072805772816336153">Опитайте отново по-късно</translation>
 <translation id="4084682180776658562">Отметка</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
 <translation id="4561730552726921821">Регистрацията бе успешна</translation>
-<translation id="4561979708150884304">Няма връзка</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4572422548854449519">Вход в управляван профил</translation>
 <translation id="4576892426230499203">Опитайте с друга опция за потвърждаване</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="82619448491672958">Преглед на другите раздели</translation>
 <translation id="8266862848225348053">Местоположение за изтеглянията</translation>
-<translation id="8274165955039650276">Преглед на изтеглянията</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>
 <translation id="829672787777123339">Установява се връзка с устройството ви…</translation>

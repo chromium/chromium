@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1951012854035635156">Assistente</translation>
+<translation id="1962550982027027473">Um APN padrão é obrigatório</translation>
 <translation id="1977994649430373166">Foto do perfil do Google</translation>
 <translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="1999615961760456652">Portal cativo</translation>
@@ -635,6 +636,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
+<translation id="6838167112108853532">Não é possível desativar ou remover este APN. Desative ou remova os APNs em anexo.</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
 <translation id="6889786074662672253">Durante a reinicialização deste dispositivo externo, não o desconecte nem desligue o computador. Você pode minimizar esta janela. Isso pode levar alguns minutos, e o dispositivo externo pode não funcionar nesse período.</translation>
 <translation id="6905724422583748843">Voltar para <ph name="PAGE_NAME" /></translation>

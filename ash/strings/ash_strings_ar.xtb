@@ -121,6 +121,7 @@
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
 <translation id="1546492247443594934">مكتب 2</translation>
 <translation id="1546930421365146760">‏يُرجى الرجوع إلى المشرف لطلب ضبط إعدادات هذا الجهاز من خلال وحدة تحكّم المشرف في Google.</translation>
+<translation id="1550406609415860283">الأجهزة المتاحة</translation>
 <translation id="1550523713251050646">انقر للحصول على المزيد من الخيارات</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
@@ -458,9 +459,11 @@
 <translation id="3513798432020909783">يُدير <ph name="MANAGER_EMAIL" /> الحساب.</translation>
 <translation id="352245152354538528">{0,plural, =1{تحديث الجهاز خلال دقيقة واحدة}zero{تحديث الجهاز خلال # دقيقة}two{تحديث الجهاز خلال دقيقتين}few{تحديث الجهاز خلال # دقائق}many{تحديث الجهاز خلال # دقيقة}other{تحديث الجهاز خلال # دقيقة}}</translation>
 <translation id="353086728817903341">تم الربط بـ <ph name="NUM_DEVICES" /> جهاز.</translation>
+<translation id="3533126039236445965">التطبيقات المثبَّتة في الرف</translation>
 <translation id="3542066395059568317">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر بزر الماوس الأيمن لإزالة هذه الاقتراحات.</translation>
 <translation id="3552189655002856821">‏تم إيقاف شبكة Wi-Fi.</translation>
 <translation id="3554637740840164787">تم تثبيت <ph name="ITEM_TITLE" /></translation>
+<translation id="3560174576767922131">تسجيل فيديو</translation>
 <translation id="3563775809269155755">تفعيل نقطة الاتصال</translation>
 <translation id="3566240529365775567">تم فتحه للتو.</translation>
 <translation id="3571734092741541777">إعداد</translation>
@@ -653,6 +656,7 @@
 <translation id="4577274620589681794">انتهى الوقت · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">عرض المعاينات</translation>
 <translation id="4578906031062871102">تم فتح قائمة الإعدادات.</translation>
+<translation id="458210817642223147">‏تسجيل ملف GIF</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
@@ -732,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">سطح المكتب 16</translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
+<translation id="5004607513195820459">الشبكة مُدارة</translation>
 <translation id="5016558321564993266">حالة إيقاف/تفعيل أداة التحديد: <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">الوصول إلى ميكروفون الجهاز مفعَّل.</translation>
 <translation id="5030687792513154421">انتهى الوقت</translation>
@@ -1077,6 +1082,7 @@
 <translation id="6901883536534621389">تجربة الإيماءات للانتقال</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="6931576957638141829">حفظ في</translation>
+<translation id="6942518653766415536">قائمة صيَغ التسجيل</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6960565108681981554">لم يتم تفعيل الشبكة. يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على الملف الشخصي للعمل.</translation>

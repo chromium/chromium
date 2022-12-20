@@ -120,6 +120,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1546930421365146760">Vraag je beheerder dit apparaat in te stellen in de Google Beheerdersconsole</translation>
+<translation id="1550406609415860283">Apparaten beschikbaar</translation>
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
@@ -127,6 +128,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Je kunt Toegang via schakelaar uitzetten via Instellingen &gt; Toegankelijkheid.</translation>
+<translation id="163517899691012366">Het geluid van meldingen staat uit als Niet storen aanstaat</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
@@ -373,6 +375,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3047761520276763270">Zeg eens:</translation>
 <translation id="3051189971848907985">Naam van profiel wijzigen. Wacht een paar minuten.</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
+<translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068711042108640621">Plank aan linkerkant</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menu uitvouwen</translation>
@@ -407,6 +410,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Instellen</translation>
 <translation id="3255483164551725916">Wat kun je doen?</translation>
+<translation id="3260969790895726815">Spraak wordt lokaal verwerkt en dicteren werkt offline, maar sommige spraakopdrachten werken niet.</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
 <translation id="3289544412142055976">Linux-apps worden momenteel niet ondersteund</translation>
 <translation id="3289674678944039601">Opladen via adapter</translation>
@@ -458,6 +462,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3542066395059568317">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Klik met de rechtermuisknop om aanbevelingen te verwijderen.</translation>
 <translation id="3552189655002856821">Wifi staat uit</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vastgezet</translation>
+<translation id="3560174576767922131">Video opnemen</translation>
 <translation id="3563775809269155755">Hotspot aanzetten</translation>
 <translation id="3566240529365775567">Zojuist geopend</translation>
 <translation id="3571734092741541777">Instellen</translation>
@@ -649,6 +654,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
 <translation id="4578906031062871102">Menu Instellingen geopend</translation>
+<translation id="458210817642223147">Gif opnemen</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4611292653554630842">Inloggen</translation>
@@ -728,6 +734,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
+<translation id="5004607513195820459">Netwerk wordt beheerd</translation>
 <translation id="5016558321564993266">Stift aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Microfoontoegang voor apparaat staat aan</translation>
 <translation id="5030687792513154421">De tijd is voorbij</translation>
@@ -787,9 +794,11 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="533282197239610265">Cast-apparaten tonen</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (rechts)</translation>
+<translation id="5351427059191534258">Cameratoegang uitzetten?</translation>
 <translation id="5352250171825660495">Donker thema staat aan</translation>
 <translation id="5356963482258194581">Schakelen tussen het donkere en lichte thema. Klik met de rechtermuisknop op het bureaublad en selecteer Achtergrond en stijl.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
+<translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Naar dit tabblad gaan</translation>
 <translation id="5377367976106153749">Cameratoegang aanzetten?</translation>
 <translation id="5379115545237091094">Te veel pogingen</translation>
@@ -899,6 +908,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
+<translation id="6002179289567220515">Je hebt de fysieke schakelaar gebruikt om 1 camera uit te zetten. Je kunt de toegang ook voor alle camera's uitzetten.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
@@ -939,9 +949,11 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="619279033188484792">Recente foto's, media en meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Nu volledig opladen</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Niet ondersteund door app</translation>
 <translation id="6210042900243040400">Verbinding maken met <ph name="NAME" /> (eerder opgeslagen in <ph name="EMAIL" />)</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
+<translation id="623116199192908855">Je scherm casten vanaf je Chromebook</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -983,8 +995,10 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> vóór de deadline updatet</translation>
 <translation id="649452524636452238">Pincode van smartkaart</translation>
 <translation id="6495400115277918834">Scherm-in-scherm gestart, Alt+Shift+V om te focussen</translation>
+<translation id="6497418457565568043">Niet storen staat aan</translation>
 <translation id="6500896621837555595">Updaten</translation>
 <translation id="6501401484702599040">Scherm casten naar <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Zorg dat je Chromebook is verbonden met hetzelfde wifi-netwerk als je Chromecast-apparaat.</translation>
 <translation id="6515727200518652613">Verbinding met camera verbroken. Er wordt geprobeerd opnieuw verbinding te maken.</translation>
 <translation id="6520517963145875092">Selecteer een venster om op te nemen</translation>
 <translation id="652139407789908527">Je scherm blijft langer leeg dan gebruikelijk (tot een minuut) tijdens deze update. Druk niet op de aan/uit-knop terwijl de update wordt uitgevoerd.</translation>
@@ -1066,6 +1080,7 @@ Nieuwe installatie</translation>
 <translation id="6901883536534621389">Gebaren gebruiken om te navigeren</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
+<translation id="6942518653766415536">Menu voor opname-indelingen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>

@@ -1016,6 +1016,7 @@
 <translation id="3532844647053365774">Ο ιστότοπος <ph name="HOST" /> επιθυμεί να χρησιμοποιήσει το μικρόφωνο σας</translation>
 <translation id="3533328374079021623">Γραμματοκιβώτιο 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Εικόνα κάρτας</translation>
 <translation id="3542768452570884558">Άνοιγμα συνδέσμου σε νέο παράθυρο</translation>
 <translation id="3547746132308051926">20 x 24 ίντσες</translation>
 <translation id="3550112004925580947">Κλάδος φιλοξενίας</translation>
@@ -1106,6 +1107,7 @@
 <translation id="3745099705178523657">Μετά την επιβεβαίωση, τα στοιχεία της κάρτας από τον Λογαριασμό Google θα κοινοποιηθούν σε αυτόν τον ιστότοπο.</translation>
 <translation id="3748148204939282805">Οι εισβολείς σε αυτόν τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> μπορεί να σας εξαπατήσουν και να κάνετε κάτι επικίνδυνο, όπως να εγκαταστήσετε κάποιο λογισμικό ή να αποκαλύψετε προσωπικά σας στοιχεία (για παράδειγμα, κωδικούς πρόσβασης, αριθμούς τηλεφώνου ή στοιχεία πιστωτικών καρτών). <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Αεροπορικός κλάδος</translation>
+<translation id="3752543821772132562">Παραβλέφθηκε, επειδή δεν έχει οριστεί η πολιτική <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Έξοδος από τη λειτουργία picture-in-picture</translation>
 <translation id="3759461132968374835">Δεν έχετε πρόσφατα αναφερθέντα σφάλματα. Τα σφάλματα που προέκυψαν όταν η αναφορά σφαλμάτων ήταν απενεργοποιημένη δεν θα εμφανιστούν εδώ.</translation>
 <translation id="3760561303380396507">Χρήση Windows Hello αντί του CVC;</translation>
@@ -2922,6 +2924,7 @@
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>
 <translation id="8363502534493474904">Απενεργοποιήστε τη λειτουργία πτήσης.</translation>
 <translation id="8364627913115013041">Δεν έχει οριστεί.</translation>
+<translation id="836616551641291797">Μάθετε περισσότερα σχετικά με τον τρόπο διαχείρισης του προγράμματος περιήγησής σας</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
 <translation id="8368027906805972958">Άγνωστη ή μη υποστηριζόμενη συσκευή (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Υπηρεσίες Google Play</translation>

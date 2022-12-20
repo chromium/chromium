@@ -1388,7 +1388,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2251218783371366160">Obre amb el lector del sistema</translation>
 <translation id="225163402930830576">Actualitza les xarxes</translation>
 <translation id="2251809247798634662">Finestra d'incògnit nova</translation>
-<translation id="2252017960592955005">Protecció de visualització (beta)</translation>
+<translation id="2252017960592955005">Protecció antimirades (beta)</translation>
 <translation id="225240747099314620">Permet els identificadors per a contingut protegit (és possible que calgui reiniciar l'ordinador)</translation>
 <translation id="2255077166240162850">Aquest dispositiu s'ha bloquejat amb un domini o un mode diferents.</translation>
 <translation id="2255317897038918278">Marques de temps de Microsoft</translation>
@@ -2385,7 +2385,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3132896062549112541">Regla</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
 <translation id="3134393957315651797">Selecciona un estat per a l'experiment <ph name="EXPERIMENT_NAME" />. Descripció de l'experiment: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
-<translation id="313963229645891001">S'està baixant, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar groc predeterminat</translation>
 <translation id="3141093262818886744">Obre igualment</translation>
 <translation id="3141318088920353606">S'està escoltant...</translation>
@@ -4627,6 +4626,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5268373933383932086">La teva pàgina, a la teva manera</translation>
 <translation id="5269977353971873915">Error d'impressió</translation>
 <translation id="5273806377963980154">Edita l'URL del lloc web</translation>
+<translation id="5273966423195882879">Color basat en el tema</translation>
 <translation id="5275084684151588738">Diccionaris de l'usuari</translation>
 <translation id="5275100789567222478">Activa només quan la bateria estigui a un <ph name="PERCENT" />% o menys</translation>
 <translation id="5275338516105640560">Botó de grup de pestanyes desat</translation>
@@ -5023,7 +5023,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5632059346822207074">S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
 <translation id="5632221585574759616">Més informació sobre els permisos d'extensions</translation>
 <translation id="5632566673632479864">Ja no es permet que <ph name="EMAIL" /> sigui el compte principal. Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
-<translation id="5632592977009207922">S'està baixant. Queda un <ph name="PERCENT_REMAINING" />%.</translation>
 <translation id="5633149627228920745">Més informació sobre els requisits del sistema</translation>
 <translation id="563371367637259496">Mòbil</translation>
 <translation id="5634446357546764049">Consulta els records dels teus viatges recents i més</translation>
@@ -6221,6 +6220,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6770042910635026163">Els llocs web que visites i que defineixen els teus interessos</translation>
 <translation id="6770602306803890733">Millora la seguretat per a tu i per a tots els usuaris del web</translation>
 <translation id="6771503742377376720">És una entitat emissora de certificats</translation>
+<translation id="6774710250118040929">Afegeix una contrasenya nova</translation>
 <translation id="6775163072363532304">Els dispositius disponibles es mostraran aquí.</translation>
 <translation id="677646486571529447">Afegeix una nota</translation>
 <translation id="6776729248872343918">Activa Vinculació ràpida</translation>
@@ -7984,7 +7984,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8380266723152870797">Nom de la finestra</translation>
 <translation id="8380941800586852976">Perillós</translation>
 <translation id="8382677870544805359">Hauràs de restablir les dades de fàbrica d'aquest dispositiu per poder utilitzar les funcions d'empresa.</translation>
-<translation id="8382715499079447151">Protecció de visualització</translation>
+<translation id="8382715499079447151">Protecció antimirades</translation>
 <translation id="8382913212082956454">Copia l'&amp;adreça electrònica</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Prova aquests passos per resoldre el problema:
     <ph name="BEGIN_LIST" />

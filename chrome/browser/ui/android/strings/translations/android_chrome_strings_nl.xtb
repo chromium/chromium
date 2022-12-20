@@ -517,6 +517,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3830886834687455630">Update Google Play-services om je wachtwoorden te checken</translation>
 <translation id="3845098929839618392">Openen op incognitotabblad</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
+<translation id="3858127568696903256">Bekijk hier content die je volgt</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861633093716975811">Populaire video's</translation>
 <translation id="3874520961715512166">Site verwijderd</translation>
@@ -552,7 +553,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4045764304651014138">Gebruiksgegevens</translation>
 <translation id="405399507749852140">Krijg meldingen bij een prijsdaling op een site</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Opties beschikbaar boven aan het scherm</translation>
 <translation id="4062305924942672200">Juridische informatie</translation>
 <translation id="4072805772816336153">Probeer het later opnieuw</translation>
 <translation id="4084682180776658562">Bookmark maken</translation>
@@ -642,7 +642,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4554077758708533499">Aangesloten via USB-kabel</translation>
 <translation id="4558311620361989323">Sneltoetsen voor webpagina's</translation>
 <translation id="4561730552726921821">Registratie afgerond</translation>
-<translation id="4561979708150884304">Geen verbinding</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
 <translation id="4572422548854449519">Inloggen bij een beheerd account</translation>
 <translation id="4576892426230499203">Probeer een andere verificatie-optie</translation>
@@ -1351,7 +1350,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="82619448491672958">Andere tabbladen bekijken</translation>
 <translation id="8266862848225348053">Downloadlocatie</translation>
-<translation id="8274165955039650276">Downloads bekijken</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282297628636750033">Donker thema zo mogelijk toepassen op sites</translation>
 <translation id="829672787777123339">Verbinding maken met je apparaat…</translation>

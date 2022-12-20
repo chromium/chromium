@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
 <translation id="2597774443162333062">Վրիպազերծման համար ֆայլերը կուղարկվեն Google-ին</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
 <translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2638662041295312666">Մուտքի պատկեր</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Եթե օգնություն է անհրաժեշտ, անցեք <ph name="BEGIN_LINK" />Օգնության կենտրոն<ph name="END_LINK" />։</translation>
 <translation id="4793756956024303490">Սեղմման ալգորիթմ</translation>
 <translation id="4794140124556169553">CPU-ի թեստի գործարկումը կարող է ազդել ձեր համակարգի աշխատանքի վրա</translation>
+<translation id="4798078634453489142">Նոր APN ավելացնելու համար հեռացրեք եղածներից մեկը</translation>
 <translation id="4800589996161293643">Chromebook համայնք</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Տպման առաջադրանքը չեղարկվեց՝ <ph name="DOCUMENT_TITLE" /></translation>

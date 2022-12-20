@@ -80,6 +80,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="2983934633046890458">Chromium şifreleri düzenlemeye çalışıyor.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium bir HID cihazına bağlı}other{Chromium, HID cihazlarına bağlı}}</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3032787606318309379">Chromium'a ekleniyor ...</translation>
 <translation id="3038232873781883849">Yüklenmesi bekleniyor...</translation>

@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">小幫手</translation>
+<translation id="1962550982027027473">請輸入預設 APN</translation>
 <translation id="1977994649430373166">Google 個人資料相片</translation>
 <translation id="1979103255016296513">已超過密碼變更期限</translation>
 <translation id="1999615961760456652">網頁認證入口</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
 <translation id="2584559707064218956">如要設定，請前往「設定」頁面</translation>
 <translation id="2597774443162333062">檔案將傳送給 Google 進行偵錯</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2638662041295312666">登入圖片</translation>
@@ -634,6 +636,7 @@
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">提供所選內容的相關資訊。請使用向上鍵存取。</translation>
+<translation id="6838167112108853532">無法停用或移除這個 APN，請務必停用或移除已啟用的連結 APN。</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6889786074662672253">在重新啟動新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。這項作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="6905724422583748843">返回「<ph name="PAGE_NAME" />」頁面</translation>

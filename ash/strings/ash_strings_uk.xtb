@@ -120,6 +120,7 @@
 <translation id="15373452373711364">Великий курсор миші</translation>
 <translation id="1546492247443594934">Робочий стіл 2</translation>
 <translation id="1546930421365146760">Попросіть адміністратора налаштувати цей пристрій на Консолі адміністратора Google</translation>
+<translation id="1550406609415860283">Доступні пристрої</translation>
 <translation id="1550523713251050646">Натисніть, щоб побачити більше опцій</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
@@ -127,6 +128,7 @@
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
+<translation id="163517899691012366">Коли ввімкнено режим "Не турбувати", сповіщення надходять без звуку</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
@@ -373,6 +375,7 @@
 <translation id="3047761520276763270">Спробуйте сказати:</translation>
 <translation id="3051189971848907985">Профіль перейменовується. Зачекайте кілька хвилин.</translation>
 <translation id="3055162170959710888">Сьогодні цей пристрій працював <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Не підтримується</translation>
 <translation id="3068711042108640621">Полицю розташовано ліворуч</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Розгорнути меню</translation>
@@ -407,6 +410,7 @@
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3252573918265662711">Налаштування</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
+<translation id="3260969790895726815">Ви можете використовувати функцію диктування в режимі офлайн, оскільки мовлення обробляється локально. Однак при цьому деякі голосові команди не працюватимуть.</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
 <translation id="3289544412142055976">Додатки Linux наразі не підтримуються</translation>
 <translation id="3289674678944039601">Заряджання через адаптер</translation>
@@ -454,9 +458,11 @@
 <translation id="3513798432020909783">Обліковим записом керує <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Оновіть пристрій протягом 1 хвилини}one{Оновіть пристрій протягом # хвилини}few{Оновіть пристрій протягом # хвилин}many{Оновіть пристрій протягом # хвилин}other{Оновіть пристрій протягом # хвилини}}</translation>
 <translation id="353086728817903341">Підключено до стількох пристроїв: <ph name="NUM_DEVICES" /></translation>
+<translation id="3533126039236445965">Додатки на панелі запуску</translation>
 <translation id="3542066395059568317">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисніть правою кнопкою миші, щоб видалити їх.</translation>
 <translation id="3552189655002856821">Wi-Fi вимкнено</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />: закріплено</translation>
+<translation id="3560174576767922131">Записати відео</translation>
 <translation id="3563775809269155755">Увімкнути точку доступу</translation>
 <translation id="3566240529365775567">Відкрито щойно</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
@@ -648,6 +654,7 @@
 <translation id="4577274620589681794">Час минув   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Увімкнути попередній перегляд</translation>
 <translation id="4578906031062871102">Меню налаштувань відкрито</translation>
+<translation id="458210817642223147">Записати анімацію у форматі GIF</translation>
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
 <translation id="4611292653554630842">Увійти</translation>
@@ -727,6 +734,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Робочий стіл 16</translation>
 <translation id="5003993274120026347">Наступне речення</translation>
+<translation id="5004607513195820459">Мережею керує адміністратор</translation>
 <translation id="5016558321564993266">Перемкнути маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Доступ до мікрофона пристрою ввімкнено</translation>
 <translation id="5030687792513154421">Час закінчився</translation>
@@ -786,9 +794,11 @@
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="533282197239610265">Показати пристрої для трансляції</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Правий)</translation>
+<translation id="5351427059191534258">Вимкнути доступ до камери?</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
 <translation id="5356963482258194581">Ви можете перемикатися між темною та світлою темами. Для цього натисніть правою кнопкою миші будь-де на робочому столі й виберіть "Оформлення та стиль".</translation>
 <translation id="536019650977002321">Ваш адміністратор забороняє записувати звук. Щоб дізнатися більше, зверніться до нього.</translation>
+<translation id="5361524080961918551">Файли для розпізнавання мовлення (мова: <ph name="LANGUAGE" />) частково завантажено</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на цю вкладку</translation>
 <translation id="5377367976106153749">Увімкнути доступ до камери?</translation>
 <translation id="5379115545237091094">Забагато спроб</translation>
@@ -898,6 +908,7 @@
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
+<translation id="6002179289567220515">Ви вимкнули 1 камеру за допомогою фізичного перемикача. Також можна вимкнути доступ для всіх камер.</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
@@ -938,9 +949,11 @@
 <translation id="619279033188484792">Переглядайте нещодавні фотографії, медіаконтент і сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
 <translation id="6193431488227440296">Версія для розробників</translation>
+<translation id="6200515304866777730">Не підтримується додатком</translation>
 <translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
+<translation id="623116199192908855">Транслюйте екран свого пристрою Chromebook</translation>
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +995,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну</translation>
 <translation id="649452524636452238">PIN-код розумної картки</translation>
 <translation id="6495400115277918834">Увімкнено режим "Картинка в картинці"; щоб виділити, натисніть Alt+Shift+V</translation>
+<translation id="6497418457565568043">Режим "Не турбувати" ввімкнено</translation>
 <translation id="6500896621837555595">Оновити</translation>
 <translation id="6501401484702599040">Вміст екрана транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6508923215158854599">Переконайтеся, що Chromebook підключено до тієї самої мережі Wi-Fi, що й пристрій Chromecast.</translation>
 <translation id="6515727200518652613">Немає з’єднання з камерою. Триває підключення.</translation>
 <translation id="6520517963145875092">Виберіть вікно, знімок якого потрібно зробити</translation>
 <translation id="652139407789908527">Під час цього оновлення зображення на екрані зникне на довше, ніж зазвичай (до хвилини). Не натискайте кнопку живлення, поки триває оновлення.</translation>
@@ -1065,6 +1080,7 @@
 <translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
+<translation id="6942518653766415536">Меню форматів запису</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
 <translation id="6961121602502368900">Звук телефона не можна вимкнути в робочому профілі</translation>

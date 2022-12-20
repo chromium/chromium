@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakej adalah tidak sah: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Menghadap persekitaran</translation>
 <translation id="1196338895211115272">Gagal untuk mengeksport kunci persendirian.</translation>
+<translation id="132960226125594336">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan jika fail itu akan melebihi saiz maksimum skrip atau jumlah saiz skrip kandungan maksimum bagi sambungan.</translation>
 <translation id="1420684932347524586">Yikes! Gagal untuk menjanakan kunci persendirian RSA rawak.</translation>
 <translation id="1445572445564823378">Sambungan ini melambatkan <ph name="PRODUCT_NAME" />. Anda perlu melumpuhkannya untuk memulihkan prestasi <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL tidak disokong.</translation>

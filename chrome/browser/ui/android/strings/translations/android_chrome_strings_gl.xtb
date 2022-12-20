@@ -517,6 +517,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3830886834687455630">Actualiza os servizos de Google Play para comprobar os contrasinais</translation>
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
+<translation id="3858127568696903256">Consulta aquí o contido que segues</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3874520961715512166">Quitouse o sitio</translation>
@@ -552,7 +553,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Opcións dispoñibles preto da parte superior da pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
 <translation id="4072805772816336153">Téntao de novo máis tarde</translation>
 <translation id="4084682180776658562">Marcador</translation>
@@ -642,7 +642,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4554077758708533499">Teléfono conectado mediante un cable USB</translation>
 <translation id="4558311620361989323">Atallos da páxina web</translation>
 <translation id="4561730552726921821">Realizouse o rexistro</translation>
-<translation id="4561979708150884304">Sen conexión</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4572422548854449519">Inicia sesión nunha conta xestionada</translation>
 <translation id="4576892426230499203">Proba con outra opción de verificación</translation>
@@ -1351,7 +1350,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver outras pestanas</translation>
 <translation id="8266862848225348053">Localización das descargas</translation>
-<translation id="8274165955039650276">Ver descargas</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282297628636750033">Aplicar tema escuro aos sitios cando sexa posible</translation>
 <translation id="829672787777123339">Conectando co teu dispositivo…</translation>

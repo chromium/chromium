@@ -2400,7 +2400,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3132896062549112541">Aturan</translation>
 <translation id="3132996321662585180">Perbarui tiap hari</translation>
 <translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Mendownload, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning default</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141318088920353606">Mendengarkan...</translation>
@@ -5040,7 +5039,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5632059346822207074">Izin diminta, tekan Ctrl + Forward untuk merespons</translation>
 <translation id="5632221585574759616">Pelajari izin ekstensi lebih lanjut</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> akun Anda tidak lagi diizinkan sebagai akun utama. Karena akun ini dikelola oleh <ph name="DOMAIN" />, bookmark, histori, sandi, dan setelan Anda lainnya akan dihapus dari perangkat ini.</translation>
-<translation id="5632592977009207922">Mendownload, <ph name="PERCENT_REMAINING" />% tersisa</translation>
 <translation id="5633149627228920745">Pelajari persyaratan sistem lebih lanjut</translation>
 <translation id="563371367637259496">Seluler</translation>
 <translation id="5634446357546764049">Lihat kenangan perjalanan terbaru Anda dan banyak lagi</translation>

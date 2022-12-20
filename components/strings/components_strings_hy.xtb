@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1559447966090556585">Ստանա՞լ ծանուցումներ</translation>
+<translation id="1559486004335285648">Վճարային տվյալների ինքնալրացում</translation>
 <translation id="1559528461873125649">Նման ֆայլ կամ գրացուցակ չկա</translation>
 <translation id="1559572115229829303">&lt;p&gt;Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
 <translation id="181000283860817563">Հետագծել գները մի քանի կայքերում</translation>
+<translation id="1810391395243432441">Պաշտպանեք գաղտնաբառերը էկրանի կողպման միջոցով</translation>
 <translation id="1812527064848182527">հորիզոնական</translation>
 <translation id="1813414402673211292">Ջնջել դիտարկման տվյալները</translation>
 <translation id="182139138257690338">ավտոմատ ներբեռնումներ</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">Ընտրված է ֆիքսված պրոքսի-սերվերների, այլ ոչ PAC սկրիպտի URL-ի օգտագործումը:</translation>
 <translation id="1871284979644508959">Պարտադիր դաշտ</translation>
 <translation id="1873899211667975540">Ռոք երաժշտություն</translation>
+<translation id="1874224422119691492">Անցեք <ph name="SETTINGS" />՝ ընտրելու, թե արդյոք ուզում եք օգտագործել էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="1875025161375567525">Լուսանկարների դարակ</translation>
 <translation id="1875512691959384712">Google Ձևաթղթեր</translation>
 <translation id="187918866476621466">Բացել մեկնարկի էջերը</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում Ապահով դիտարկումը և այլ պարամետրեր կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="2878197950673342043">Կրկնակի ուղղաձիգ ծալում</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">oգտագործել էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="2881276955470682203">Պահե՞լ քարտը</translation>
 <translation id="2882949212241984732">Եռափեղկ ծալում</translation>
 <translation id="2893773853358652045">Չորրորդ գլանափաթեթ</translation>
@@ -1011,6 +1015,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> կայքն ուզում է օգտագործել ձեր խոսափողը</translation>
 <translation id="3533328374079021623">Փոստարկղ 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Քարտի պատկեր</translation>
 <translation id="3542768452570884558">Բացել հղումը նոր պատուհանում</translation>
 <translation id="3547746132308051926">20 x 24 դյույմ</translation>
 <translation id="3550112004925580947">Հյուրընկալության ծառայություններ</translation>
@@ -1101,6 +1106,7 @@
 <translation id="3745099705178523657">Հաստատումից հետո ձեր Google հաշվին կցված քարտի տվյալները կօգտագործվեն այս կայքի կողմից։</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքում հարձակվողները կարող են խաբեությամբ ձեր սարքի վրա տեղադրել ծրագրեր կամ բացահայտել ձեր անձնական տեղեկությունները (օրինակ՝ գաղտնաբառերը, հեռախոսահամարները կամ վարկային քարտերը): <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Ավիացիոն արդյունաբերություն</translation>
+<translation id="3752543821772132562">Անտեսվում է, քանի որ <ph name="POLICY_NAME" /> կանոնը կարգավորված չէ։</translation>
 <translation id="3754210790023674521">Դուրս գալ «նկար նկարի մեջ» ռեժիմից</translation>
 <translation id="3759461132968374835">Վերջերս հաղորդված խափանումներ չկան: Խափանումների մասին հաղորդումն անջատված ժամանակ տեղի ունեցած խափանումները չեն ցուցադրվի այստեղ:</translation>
 <translation id="3760561303380396507">Օգտագործե՞լ Windows Hello՝ CVC-ի փոխարեն</translation>
@@ -1407,6 +1413,7 @@
 <translation id="4541810033354695636">լրացված իրականություն</translation>
 <translation id="4542971377163063093">Դարակ 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Դուք օգտագործում եք էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="4558551763791394412">Փորձեք անջատել ձեր ընդլայնումները</translation>
 <translation id="4566017918361049074">Բացօթյա ժամանց</translation>
 <translation id="4567686777917670400">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -2913,6 +2920,7 @@
 <translation id="8355270400102541638">Խափանման լոկալ կոնտեքստը՝</translation>
 <translation id="8363502534493474904">Անջատել Ավիառեժիմը</translation>
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>
+<translation id="836616551641291797">Իմանալ ավելին այն մասին, թե ինչպես է ձեր դիտարկիչը կառավարվում</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-ի ծառայություններ</translation>
@@ -2925,6 +2933,7 @@
 <translation id="8396522675989118466">Սա <ph name="NUMBER_OF_DIGITS" />-անիշ կոդ է <ph name="SIDE_OF_CARD" />ում</translation>
 <translation id="8398790343843005537">Գտնել հեռախոսը</translation>
 <translation id="8405579342203358118">Կառավարեք համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում</translation>
+<translation id="8406071103346257942">այլևս չօգտագործել էկրանի կողպումը՝ գաղտնաբառեր լրացնելու համար</translation>
 <translation id="8409413588194360210">վճարումների մշակիչներ</translation>
 <translation id="8412145213513410671">Խափանումներ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Դուք պետք է երկու անգամ մուտքագրեք միևնույն անցաբառը:</translation>
@@ -3194,6 +3203,7 @@
 <translation id="9128016270925453879">Կանոնները բեռնվել են</translation>
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>
 <translation id="9131119348384879525">Լուսանկարե՞լ կոնֆիդենցիալ բովանդակությունը</translation>
+<translation id="9133985615769429248">Եթե այս սարքից օգտվում եք այլ օգտատերերի հետ համատեղ, ապա կարող եք էկրանի կողպման միջոցով հաստատել ձեր ինքնությունն ամեն անգամ, երբ պահված գաղտնաբառ եք օգտագործում։</translation>
 <translation id="9136861683332321024">Լյուքս դասի ավտոմեքենաներ</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9137248913990643158">Մուտք գործեք Chrome՝ նախքան հավելվածն օգտագործելը։</translation>

@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
+<translation id="163517899691012366">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଚାଲୁ ଥିବା ବେଳେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">ଏହା କହି ଦେଖନ୍ତୁ:</translation>
 <translation id="3051189971848907985">ପ୍ରୋଫାଇଲର ନାମ ବଦଳାଯାଉଛି। କିଛି ସମୟ ପାଇଁ ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="3055162170959710888">ଆଜି, ଆପଣ <ph name="USED_TIME" /> ସମୟରେ ଏହି ଡିଭାଇସ୍‌ ବ୍ୟବହାର କଲେ</translation>
+<translation id="3062298103034426069">ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3068711042108640621">ସେଲ୍ଫ ବାମପଟେ ଅଛି</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">ମେନୁକୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋ <ph name="ACTIVE_DESK" /> ଡେସ୍କରୁ <ph name="TARGET_DESK" />ଡେସ୍କକୁ ଘୁଞ୍ଚାଇ ଦିଆଯାଇଛି</translation>
 <translation id="3252573918265662711">ସେଟ୍‌ଅପ୍‌ କରନ୍ତୁ</translation>
 <translation id="3255483164551725916">ଆପଣ କ’ଣ କରିପାରିବେ?</translation>
+<translation id="3260969790895726815">ସ୍ପିଚକୁ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ଵିତ କରାଯାଇଛି ଏବଂ ଡିକ୍ଟେସନ ଅଫଲାଇନରେ କାମ କରେ, କିନ୍ତୁ କିଛି ଭଏସ କମାଣ୍ଡ କାମ କରିବ ନାହିଁ।</translation>
 <translation id="3269597722229482060">ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="3289544412142055976">Linux ଆପ୍ସ ବର୍ତ୍ତମାନ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3289674678944039601">ଆଡପ୍ଟର୍ ମାଧ୍ୟମରେ ଚାର୍ଜ ହେଉଛି</translation>
@@ -790,9 +793,11 @@
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="533282197239610265">କାଷ୍ଟ ଡିଭାଇସଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ଡାହାଣ)</translation>
+<translation id="5351427059191534258">କେମେରା ଆକ୍ସେସକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5356963482258194581">ଗାଢ଼ା ଏବଂ ହାଲୁକା ଥିମ ମଧ୍ୟରେ ସ୍ୱିଚ କରନ୍ତୁ। ଡେସ୍କଟପରେ ଡାହାଣ-କ୍ଲିକ କରି ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="536019650977002321">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଅଡିଓ କେପଚରକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> ସ୍ପିଚ ଫାଇଲଗୁଡ଼ିକୁ ଆଂଶିକ ଭାବେ ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ଏହି ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5377367976106153749">କେମେରା ଆକ୍ସେସ ଚାଲୁ କରିବେ?</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
@@ -902,6 +907,7 @@
 <translation id="5980301590375426705">ଅତିଥିରୁ ବାହାରି ଯାଅ</translation>
 <translation id="598407983968395253">ଟେମ୍ପଲେଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="598882571027504733">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, ଆପଣଙ୍କର Chromebookକୁ କୀବୋର୍ଡରେ ସଂଲଗ୍ନ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
+<translation id="6002179289567220515">ଆପଣ 1ଟି କେମେରା ବନ୍ଦ କରିବା ପାଇଁ ଫିଜିକାଲ ସୁଇଚକୁ ବ୍ୟବହାର କରିଛନ୍ତି। ଆପଣ ସମସ୍ତ କେମେରା ପାଇଁ ମଧ୍ୟ ଆକ୍ସେସକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />ରୁ <ph name="SELECTED_PAGE" /> ପୃଷ୍ଠା</translation>
 <translation id="6018164090099858612">ମିରର୍‌ ମୋଡ୍‌ରୁ ପ୍ରସ୍ଥାନ କରୁଛି</translation>
 <translation id="602001110135236999">ବାମକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
@@ -942,9 +948,11 @@
 <translation id="619279033188484792">ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ଦେଖନ୍ତୁ</translation>
 <translation id="619335566042889110">ବର୍ତ୍ତମାନ ସମ୍ପୂର୍ଣ୍ଣ ଚାର୍ଜ କରନ୍ତୁ</translation>
 <translation id="6193431488227440296">ଡେଭ</translation>
+<translation id="6200515304866777730">ଆପ ଦ୍ଵାରା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" />ରେ ପୂର୍ବରୁ ସେଭ କରାଯାଇଥିବା <ph name="NAME" /> ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6220928844947387476">ଆପଣ ବର୍ତ୍ତମାନ ନିଜକୁ ଏବଂ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ସମାନ ସମୟରେ ରେକର୍ଡ କରିପାରିବେ</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
+<translation id="623116199192908855">ଆପଣଙ୍କ Chromebookରୁ ଆପଣଙ୍କର ସ୍କ୍ରିନକୁ କାଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6231419273573514727">ପେରିଫେରାଲର ପରଫରମାନ୍ସ ସୀମିତ ହୋଇପାରେ</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଆପଣଙ୍କ କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -986,8 +994,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ସମୟସୀମା ପୂର୍ବରୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="649452524636452238">ସ୍ମାର୍ଟ କାର୍ଡ PIN</translation>
 <translation id="6495400115277918834">ପିକଚର-ଇନ-ପିକଚର ଆରମ୍ଭ ହୋଇଛି, ଫୋକସ କରିବାକୁ Alt+Shift+V ଦବାନ୍ତୁ</translation>
+<translation id="6497418457565568043">"ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ" ଚାଲୁ ଅଛି</translation>
 <translation id="6500896621837555595">ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />କୁ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରାଯାଉଛି</translation>
+<translation id="6508923215158854599">ଆପଣଙ୍କ Chromebook ଯେଉଁ ୱାଇ-ଫାଇ ନେଟୱାର୍କରେ ଅଛି ସେହି ସମାନ ନେଟୱାର୍କରେ ଆପଣଙ୍କ Chromecast ଡିଭାଇସ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="6515727200518652613">କ୍ୟାମେରା ଡିସକନେକ୍ଟ ହୋଇଯାଇଛି, ପୁଣି କନେକ୍ଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯାଉଛି।</translation>
 <translation id="6520517963145875092">କ୍ୟାପଚର୍ କରିବାକୁ ଏକ ୱିଣ୍ଡୋ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="652139407789908527">ଏହି ଅପଡେଟ୍ ସମୟରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସାଧାରଣ ଠାରୁ ଅଧିକ ସମୟ (ଏକ ମିନିଟ୍ ପର୍ଯ୍ୟନ୍ତ) ପାଇଁ ଖାଲି ରହିବ। ଦୟାକରି ଅପଡେଟ୍ ପ୍ରଗତିରେ ଥିବା ସମୟରେ ପାୱାର ବଟନ୍ ଦବାନ୍ତୁ ନାହିଁ।</translation>

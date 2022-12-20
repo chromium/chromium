@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">கடவுச்சொற்களைச் சரிபார்க்க Google Play சேவைகளைப் புதுப்பிக்கவும்</translation>
 <translation id="3845098929839618392">மறைநிலைத் தாவலில் திற</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
+<translation id="3858127568696903256">நீங்கள் பின்தொடரும் உள்ளடக்கத்தை இங்கே பாருங்கள்</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3861633093716975811">பிரபலமான வீடியோக்கள்</translation>
 <translation id="3874520961715512166">தளம் அகற்றப்பட்டது</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">உபயோகத் தரவு</translation>
 <translation id="405399507749852140">எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்</translation>
 <translation id="4056223980640387499">செபியா</translation>
-<translation id="4060598801229743805">திரையின் மேற்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன</translation>
 <translation id="4062305924942672200">சட்டப்பூர்வத் தகவல்</translation>
 <translation id="4072805772816336153">பிறகு முயலவும்</translation>
 <translation id="4084682180776658562">புக்மார்க்</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">USB கேபிள் மூலம் இணைக்கப்பட்டது</translation>
 <translation id="4558311620361989323">இணையப் பக்கக் ஷார்ட்கட்கள்</translation>
 <translation id="4561730552726921821">பதிவுசெய்துவிட்டீர்கள்</translation>
-<translation id="4561979708150884304">இணைப்பு இல்லை</translation>
 <translation id="4565377596337484307">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="4572422548854449519">நிர்வகிக்கப்படும் கணக்கில் உள்நுழையவும்</translation>
 <translation id="4576892426230499203">வேறொரு சரிபார்ப்பு விருப்பத்தைப் பயன்படுத்தவும்</translation>
@@ -664,7 +663,7 @@
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
 <translation id="4685741273709472646">கீழ்த்தோன்றல் பட்டியலில் இருந்து தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
-<translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் ஃபைல்கள் </translation>
+<translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் ஃபைல்களும்</translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />இல் திற</translation>
 <translation id="47217992755561375">நீங்கள் அடிக்கடி பயன்படுத்தும் தளங்களைப் பார்க்கலாம்</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="82619448491672958">மற்ற பக்கங்களைக் காட்டு</translation>
 <translation id="8266862848225348053">பதிவிறக்க இருப்பிடம்</translation>
-<translation id="8274165955039650276">பதிவிறக்கங்களைக் காட்டு</translation>
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8282297628636750033">சாத்தியமானால், தளங்களுக்கு டார்க் தீமினைப் பயன்படுத்து</translation>
 <translation id="829672787777123339">உங்கள் சாதனத்துடன் இணைக்கிறது…</translation>

@@ -2384,7 +2384,6 @@
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Освежавај дневно</translation>
 <translation id="3134393957315651797">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />. Опис експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Преузима се, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Подразумевани жути аватар</translation>
 <translation id="3141093262818886744">Ипак отвори</translation>
 <translation id="3141318088920353606">Слуша се...</translation>
@@ -5023,7 +5022,6 @@
 <translation id="5632059346822207074">Затражена је дозвола. Притисните Ctrl + Forward да бисте одговорили</translation>
 <translation id="5632221585574759616">Сазнајте више о дозволама за додатке</translation>
 <translation id="5632566673632479864">Налог <ph name="EMAIL" /> није више дозвољен као примарни налог. Пошто тим налогом управља <ph name="DOMAIN" />, обележивачи, историја, лозинке и друга подешавања биће обрисани са уређаја.</translation>
-<translation id="5632592977009207922">Преузима се, још <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">Сазнајте више о системским захтевима</translation>
 <translation id="563371367637259496">Мобилна</translation>
 <translation id="5634446357546764049">Погледајте успомене са недавних путовања и друго</translation>

@@ -125,6 +125,7 @@
 <translation id="3140883423282498090">你的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3169523567916669830">在試用期間，你可以查看及移除網站用來向你顯示廣告的感興趣主題。Chrome 會根據近期瀏覽記錄，推測你可能感興趣的主題。</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome 已連線至 HID 裝置}other{Google Chrome 已連線至 HID 裝置}}</translation>
 <translation id="3245429137663807393">如果你一併提供 Chrome 使用報告，這些報告中會包含你造訪的網址</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>

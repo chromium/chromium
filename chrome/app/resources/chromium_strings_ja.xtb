@@ -80,6 +80,7 @@
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2983934633046890458">Chromium でパスワードを編集しようとしています。</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium は HID デバイスに接続されています}other{Chromium は HID デバイスに接続されています}}</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
 <translation id="3038232873781883849">インストールの待機中...</translation>

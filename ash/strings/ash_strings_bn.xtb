@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
+<translation id="163517899691012366">'বিরক্ত করবে না' মোড চালু থাকলে বিজ্ঞপ্তিগুলি মিউট করা হয়</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">এটি বলে দেখুন:</translation>
 <translation id="3051189971848907985">প্রোফাইলের নাম পরিবর্তন করা হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
 <translation id="3055162170959710888">এই ডিভাইসটি আজ আপনি <ph name="USED_TIME" /> ব্যবহার করেছেন</translation>
+<translation id="3062298103034426069">কাজ করে না</translation>
 <translation id="3068711042108640621">শেল্ফ বাঁ দিকে দেখানো হচ্ছে</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">মেনুটি বড় করুন</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> ডেস্ক <ph name="ACTIVE_DESK" /> থেকে ডেস্ক <ph name="TARGET_DESK" />-এ সরানো হয়েছে</translation>
 <translation id="3252573918265662711">সেটআপ</translation>
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
+<translation id="3260969790895726815">স্পিচ স্থানীয়ভাবে প্রসেস করা হয় এবং ডিক্টেশন অফলাইনে কাজ করে, কিন্তু কিছু ভয়েস কমান্ড কাজ করবে না।</translation>
 <translation id="3269597722229482060">ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="3289544412142055976">বর্তমানে Linux অ্যাপ ব্যবহারের সুবিধা নেই</translation>
 <translation id="3289674678944039601">অ্যাডাপ্টার দিয়ে চার্জ হচ্ছে</translation>
@@ -790,9 +793,11 @@
 <translation id="5331975486040154427">USB-C ডিভাইস (বাঁ দিকের পিছনের পোর্ট)</translation>
 <translation id="533282197239610265">কাস্ট ডিভাইসগুলি দেখান</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ডানদিক)</translation>
+<translation id="5351427059191534258">ক্যামেরা অ্যাক্সেস বন্ধ করবেন?</translation>
 <translation id="5352250171825660495">ডার্ক থিম চালু আছে</translation>
 <translation id="5356963482258194581">ডার্ক ও লাইট থিমের মধ্যে বদল করুন। ডেস্কটপে মাউসের ডানদিকের বোতামে ক্লিক করে ওয়ালপেপার ও স্টাইল বেছে নিন।</translation>
 <translation id="536019650977002321">আপনার অ্যাডমিনিস্ট্রেটর অডিও ক্যাপচারের অনুমতি দেয় না। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> স্পিচ ফাইল আংশিক ডাউনলোড করা হয়েছে</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> এই ট্যাবে যান</translation>
 <translation id="5377367976106153749">ক্যামেরা সম্পর্কিত অ্যাক্সেস চালু করবেন?</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
@@ -902,6 +907,7 @@
 <translation id="5980301590375426705">অতিথি থেকে প্রস্থান</translation>
 <translation id="598407983968395253">টেমপ্লেট ব্যবহার করুন</translation>
 <translation id="598882571027504733">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করুন।</translation>
+<translation id="6002179289567220515">আপনি ১টি ক্যামেরা বন্ধ করতে ফিজিক্যাল সুইচ ব্যবহার করেছেন। এছাড়াও আপনি সমস্ত ক্যামেরার অ্যাক্সেস বন্ধ করতে পারেন।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />টি পৃষ্ঠার মধ্যে <ph name="SELECTED_PAGE" />টি পৃষ্ঠা</translation>
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
@@ -942,9 +948,11 @@
 <translation id="619279033188484792">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং বিজ্ঞপ্তি দেখুন</translation>
 <translation id="619335566042889110">এখন সম্পূর্ণ চার্জ করুন</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">অ্যাপে কাজ করে না</translation>
 <translation id="6210042900243040400">আগে থেকে <ph name="EMAIL" />-এ সেভ করা <ph name="NAME" /> কানেক্ট করুন</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
+<translation id="623116199192908855">Chromebook থেকে আপনার স্ক্রিন কাস্ট করুন</translation>
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -986,8 +994,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> আপনাকে ডেডলাইনের আগে <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6495400115277918834">ছবির-মধ্যে-ছবি ফিচার চালু করা হয়েছে, ফোকাস করতে Alt+Shift+V প্রেস করুন</translation>
+<translation id="6497418457565568043">'বিরক্ত করবে না' চালু আছে</translation>
 <translation id="6500896621837555595">আপডেট করুন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
+<translation id="6508923215158854599">আপনার Chromebook এবং Chromecast ডিভাইস একই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট আছে কিনা কনফার্ম করুন।</translation>
 <translation id="6515727200518652613">ক্যামেরা ডিসকানেক্ট হয়ে গেছে, আবার কানেক্ট করার চেষ্টা করা হচ্ছে।</translation>
 <translation id="6520517963145875092">ছবি তুলতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="652139407789908527">এই আপডেট চলাকালীন, আপনার স্ক্রিনে, সাধারণত যে সময় লাগে, তার চেয়ে বেশি সময় (প্রায় এক মিনিট পর্যন্ত) কিছুই দেখতে পাবেন না। আপডেট চলাকালীন পাওয়ার বোতাম প্রেস করবেন না।</translation>

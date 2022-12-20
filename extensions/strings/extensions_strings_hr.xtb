@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paket je nevažeći: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Prema okruženju</translation>
 <translation id="1196338895211115272">Izvoz osobnog ključa nije uspio.</translation>
+<translation id="132960226125594336">Nije bilo moguće učitati datoteku "<ph name="RELATIVE_PATH" />" za skriptu sadržaja jer bi time premašila maksimalnu veličinu skripte ili maksimalnu ukupnu veličinu skripte sadržaja proširenja.</translation>
 <translation id="1420684932347524586">Šteta! Nije uspjelo generiranje nasumičnog RSA osobnog ključa.</translation>
 <translation id="1445572445564823378">Ovo proširenje usporava uslugu <ph name="PRODUCT_NAME" />. Trebali biste ga onemogućiti da biste vratili uspješan rad usluge <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>

@@ -2386,7 +2386,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3132896062549112541">Regla</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Descargando (<ph name="STATUS" />)</translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141318088920353606">Escuchando...</translation>
@@ -5024,7 +5023,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5632059346822207074">Permiso solicitado, pulsa Ctrl + Adelante para responder</translation>
 <translation id="5632221585574759616">Más información sobre los permisos de extensiones</translation>
 <translation id="5632566673632479864">Tu cuenta <ph name="EMAIL" /> ya no puede ser tu cuenta principal. Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo.</translation>
-<translation id="5632592977009207922">Descargando, queda un <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="5633149627228920745">Más información sobre requisitos del sistema</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5634446357546764049">Ver recuerdos de tus viajes recientes y más</translation>
@@ -7985,7 +7983,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8380266723152870797">Nombre de la ventana</translation>
 <translation id="8380941800586852976">Peligroso</translation>
 <translation id="8382677870544805359">Tendrás que restablecer el estado de fábrica de este dispositivo para usar funciones empresariales.</translation>
-<translation id="8382715499079447151">Protección frente a visualizaciones</translation>
+<translation id="8382715499079447151">Protección contra fisgones</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Prueba estos pasos para solucionar el problema:
     <ph name="BEGIN_LIST" />

@@ -1017,6 +1017,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="3533328374079021623">మెయిల్‌బాక్స్ 5</translation>
 <translation id="3537165859691846083">లెటర్ ప్లస్</translation>
+<translation id="3542628208405253498">కార్డ్ ఇమేజ్</translation>
 <translation id="3542768452570884558">లింక్‌ను కొత్త విండోలో తెరవండి</translation>
 <translation id="3547746132308051926">20 x 24 అంగుళాలు</translation>
 <translation id="3550112004925580947">ఆతిథ్య పరిశ్రమ</translation>
@@ -1107,6 +1108,7 @@
 <translation id="3745099705178523657">మీరు నిర్ధారించిన తర్వాత, మీ Google ఖాతా నుండి కార్డ్ వివరాలు ఈ సైట్‌తో షేర్ చేయబడతాయి.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />లోని హ్యాకర్‌లు మిమ్మల్ని సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేసే విధంగా లేదా మీ వ్యక్తిగత సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు, ఫోన్ నంబర్‌లు లేదా క్రెడిట్ కార్డ్‌లు) బహిర్గతం చేసే విధంగా మిమ్మల్ని మాయ చేయవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">విమానయాన పరిశ్రమ</translation>
+<translation id="3752543821772132562"><ph name="POLICY_NAME" /> సెట్ చేసి లేని కారణంగా విస్మరించబడింది.</translation>
 <translation id="3754210790023674521">చిత్రంలో చిత్రం మోడ్ నుండి నిష్క్రమింపజేయి</translation>
 <translation id="3759461132968374835">మీకు ఇటీవల నివేదించిన క్రాష్‌లు లేవు. క్రాష్‌ నివేదన నిలిపివేసినపుడు ఏర్పడే క్రాష్‌లు ఇక్కడ కనిపించవు.</translation>
 <translation id="3760561303380396507">CVCకి బదులుగా Windows Helloను ఉపయోగించాలా?</translation>
@@ -2745,6 +2747,7 @@
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943397946612013052">డౌన్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7943893128817522649">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="7946724693008564269">గుర్తించబడిన భాష</translation>
 <translation id="7947285636476623132">మీ గడువు ముగింపు సంవత్సరాన్ని చెక్ చేసి, మళ్లీ ప్రయత్నించండి</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="7950027195171824198">Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయండి</translation>
@@ -2919,6 +2922,7 @@
 <translation id="8355270400102541638">స్థానిక క్రాష్ సందర్భం:</translation>
 <translation id="8363502534493474904">ఎయిర్‌ప్లైన్ మోడ్‌ను ఆఫ్ చేయడం</translation>
 <translation id="8364627913115013041">సెట్ చేయలేదు.</translation>
+<translation id="836616551641291797">మీ బ్రౌజర్ ఎలా మేనేజ్ చేయబడుతోంది అనే దాని గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8368001212524806591">ధరను ట్రాక్ చేయండి</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play సర్వీసులు</translation>

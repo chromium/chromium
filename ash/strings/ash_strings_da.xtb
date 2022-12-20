@@ -128,6 +128,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1611993646327628135">Til</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
+<translation id="163517899691012366">Notifikationer ignoreres, når Forstyr ikke er slået til</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheder</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
@@ -374,6 +375,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3047761520276763270">Prøv at sige:</translation>
 <translation id="3051189971848907985">Profilen omdøbes. Vent et par minutter.</translation>
 <translation id="3055162170959710888">Du har brugt denne enhed i <ph name="USED_TIME" /> i dag</translation>
+<translation id="3062298103034426069">Understøttes ikke</translation>
 <translation id="3068711042108640621">Hylden er til venstre</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">Udvid menu</translation>
@@ -408,6 +410,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3249513730522716925">Vindue <ph name="WINDOW_TITLE" /> blev flyttet fra Skrivebord <ph name="ACTIVE_DESK" /> til Skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfiguration</translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
+<translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer offline, men visse stemmekommandoer fungerer ikke.</translation>
 <translation id="3269597722229482060">Højreklik</translation>
 <translation id="3289544412142055976">Linux-apps understøttes ikke i øjeblikket</translation>
 <translation id="3289674678944039601">Oplader via adapter</translation>
@@ -455,6 +458,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3513798432020909783">Kontoen administreres af <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Genstart enheden inden for 1 minut}one{Genstart enheden inden for # minut}other{Genstart enheden inden for # minutter}}</translation>
 <translation id="353086728817903341">Forbundet til <ph name="NUM_DEVICES" /> enheder</translation>
+<translation id="3533126039236445965">Apps på hylden</translation>
 <translation id="3542066395059568317">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at højreklikke.</translation>
 <translation id="3552189655002856821">Wi-Fi er deaktiveret</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
@@ -790,9 +794,11 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5331975486040154427">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="533282197239610265">Vis Cast-enheder</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (højre)</translation>
+<translation id="5351427059191534258">Vil du deaktivere kameraadgang?</translation>
 <translation id="5352250171825660495">Mørkt tema er aktiveret</translation>
 <translation id="5356963482258194581">Skift mellem Mørkt og Lyst tema. Højreklik på skrivebordet, og vælg Baggrund og stil.</translation>
 <translation id="536019650977002321">Din administrator tillader ikke lydoptagelse. Kontakt din administrator for at få flere oplysninger.</translation>
+<translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvist downloadet</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gå til denne fane</translation>
 <translation id="5377367976106153749">Vil du aktivere kameraadgang?</translation>
 <translation id="5379115545237091094">For mange forsøg</translation>
@@ -902,6 +908,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5980301590375426705">Afslut gæst</translation>
 <translation id="598407983968395253">Brug skabelon</translation>
 <translation id="598882571027504733">Genstart din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
+<translation id="6002179289567220515">Du brugte den fysiske kontakt til at slukke 1 kamera. Du kan også deaktivere adgang for alle kameraer.</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> ud af <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Lukker spejltilstand</translation>
 <translation id="602001110135236999">Rul til venstre</translation>
@@ -942,9 +949,11 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Oplad helt nu</translation>
 <translation id="6193431488227440296">Udv</translation>
+<translation id="6200515304866777730">Understøttes ikke af appen</translation>
 <translation id="6210042900243040400">Opret forbindelse til <ph name="NAME" />, der tidligere blev gemt på <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Du kan nu optage dig selv og din skærm på samme tid</translation>
 <translation id="622484624075952240">Ned</translation>
+<translation id="623116199192908855">Cast din skærm fra din Chromebook</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera og din mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -986,8 +995,10 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" />, før fristen udløber</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
 <translation id="6495400115277918834">Integreret billede blev startet – tryk på Alt + Shift + V for at fokusere på dette</translation>
+<translation id="6497418457565568043">Forstyr ikke er slået til</translation>
 <translation id="6500896621837555595">Opdater</translation>
 <translation id="6501401484702599040">Caster skærmen til <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Sørg for, at din Chromebook har forbindelse til det samme Wi-Fi-netværk som din Chromecast-enhed.</translation>
 <translation id="6515727200518652613">Forbindelsen til kameraet blev afbrudt. Genopretter forbindelsen.</translation>
 <translation id="6520517963145875092">Vælg et vindue, der skal tages billede af</translation>
 <translation id="652139407789908527">Din skærm vil være tom i længere tid end normalt (i op til et minut) under denne opdatering. Undlad at trykke på afbryderknappen, mens opdateringen er i gang.</translation>

@@ -120,6 +120,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="15373452373711364">Suur hiirekursor</translation>
 <translation id="1546492247443594934">Töölaud 2</translation>
 <translation id="1546930421365146760">Paluge administraatoril see seade Google Admini konsoolil seadistada</translation>
+<translation id="1550406609415860283">Seadmed on saadaval</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
@@ -460,6 +461,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3542066395059568317">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite paremklõpsata.</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kinnitati</translation>
+<translation id="3560174576767922131">Video salvestamine</translation>
 <translation id="3563775809269155755">Kuumkoha lubamine</translation>
 <translation id="3566240529365775567">Äsja avatud</translation>
 <translation id="3571734092741541777">Seadista</translation>
@@ -652,6 +654,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4577274620589681794">Aeg on läbi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Kuva eelvaated</translation>
 <translation id="4578906031062871102">Seadete menüü on avatud</translation>
+<translation id="458210817642223147">GIF-i salvestamine</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
@@ -731,6 +734,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Töölaud 16</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
+<translation id="5004607513195820459">Võrk on hallatud</translation>
 <translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Juurdepääs seadme mikrofonile on sisse lülitatud</translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
@@ -1076,6 +1080,7 @@ Uus installimine</translation>
 <translation id="6901883536534621389">Proovige navigeerimiseks liigutusi</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
+<translation id="6942518653766415536">Salvestise vormingu menüü</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
 <translation id="6961121602502368900">Telefoni vaigistamine pole tööprofiilil saadaval</translation>

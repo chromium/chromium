@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">Продължаване на редактирането</translation>
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2451654228769116489">Фиксиране на раздела</translation>
 <translation id="2461070143328828326">Настройки за паролите</translation>
 <translation id="2469960372084740698">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
@@ -672,6 +673,7 @@
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6064824697233747382">Организацията ви изисква да изключите синхронизирането.</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
+<translation id="6071409777669089905">Освобождаване на раздела</translation>
 <translation id="60829778314739003">Приемам и продължавам</translation>
 <translation id="6084848228346514841">Избиране на раздели</translation>
 <translation id="6103540626693881831">Шифроване на устройството</translation>
@@ -1097,6 +1099,7 @@
 <translation id="9219154867334666734">Търсене на раздели…</translation>
 <translation id="9223358826628549784">Сигналите за сривове са изпратени.</translation>
 <translation id="941747855997058526">Избиране на парола…</translation>
+<translation id="948048872540558976">Създаване на нов раздел</translation>
 <translation id="952704832371081537">Отказ</translation>
 <translation id="953008885340860025">Не сте в профила си в Chrome</translation>
 <translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>

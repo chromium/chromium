@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2597774443162333062">文件将被发送到 Google 进行调试</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="2638662041295312666">登录帐号图片</translation>

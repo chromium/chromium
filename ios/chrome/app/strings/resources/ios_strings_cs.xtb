@@ -190,6 +190,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2421044535038393232">Pokračovat v úpravách</translation>
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
+<translation id="2451654228769116489">Připnout kartu</translation>
 <translation id="2461070143328828326">Nastavení hesla</translation>
 <translation id="2469960372084740698">Vypnout Bezpečné prohlížení?</translation>
 <translation id="2473876017985765807">Pro web <ph name="WEBSITE" /> jste již heslo uložili</translation>
@@ -672,6 +673,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
 <translation id="6064824697233747382">Vaše organizace vyžaduje, abyste vypnuli synchronizaci.</translation>
 <translation id="6066301408025741299">Stahování zrušíte klepnutím.</translation>
+<translation id="6071409777669089905">Odepnout kartu</translation>
 <translation id="60829778314739003">Přijmout a pokračovat</translation>
 <translation id="6084848228346514841">Vybrat karty</translation>
 <translation id="6103540626693881831">Šifrování v zařízení</translation>
@@ -1092,11 +1094,13 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9157836665414082580">Potlačit dialogová okna</translation>
 <translation id="9177438225260810839">Vyhledávejte v otevřených kartách</translation>
 <translation id="9188680907066685419">Odhlásit se ze spravovaného účtu</translation>
+<translation id="9193147658040604536">Přetažením sem kartu připnete</translation>
 <translation id="9200875785104711666">před <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Hledat karty…</translation>
 <translation id="9223358826628549784">Zpráva o selhání byla odeslána.</translation>
 <translation id="941747855997058526">Vybrat heslo…</translation>
+<translation id="948048872540558976">Vytvořit novou kartu</translation>
 <translation id="952704832371081537">Zrušit</translation>
 <translation id="953008885340860025">Chrome je odhlášen</translation>
 <translation id="959066944189734975">Sledujete web <ph name="CHANNEL_NAME" /></translation>

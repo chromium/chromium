@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
 <translation id="2597774443162333062">ডিবাগিংয়ের জন্য, ফাইল Google-এ পাঠানো হবে</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>

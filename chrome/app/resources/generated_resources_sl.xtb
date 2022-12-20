@@ -2403,7 +2403,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3132896062549112541">Pravilo</translation>
 <translation id="3132996321662585180">Dnevno osveževanje</translation>
 <translation id="3134393957315651797">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />. Opis preizkusa: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
-<translation id="313963229645891001">Prenašanje, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Privzeti rumeni avatar</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
 <translation id="3141318088920353606">Poslušanje ...</translation>
@@ -5045,7 +5044,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5632059346822207074">Zahtevano je dovoljenje; pritisnite Ctrl + tipko za naprej, če se želite odzvati.</translation>
 <translation id="5632221585574759616">Preberite več o dovoljenjih za razširitve</translation>
 <translation id="5632566673632479864">Vaš račun <ph name="EMAIL" /> ni več dovoljen kot glavni račun. Ker ta račun upravlja domena <ph name="DOMAIN" />, bodo vaši zaznamki, zgodovina, gesla in druge nastavitve izbrisani iz te naprave.</translation>
-<translation id="5632592977009207922">Prenos, še <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="5633149627228920745">Preberite več o sistemskih zahtevah</translation>
 <translation id="563371367637259496">Mobilno omrežje</translation>
 <translation id="5634446357546764049">Ogled spominov o nedavnih potovanjih in drugem</translation>

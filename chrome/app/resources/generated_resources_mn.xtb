@@ -2396,7 +2396,6 @@
 <translation id="3132896062549112541">Дүрэм</translation>
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу. Туршилтын тайлбар: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Татаж байна, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Өгөгдмөл шар аватар</translation>
 <translation id="3141093262818886744">Ямар ч байсан нээх</translation>
 <translation id="3141318088920353606">Сонсож байна...</translation>
@@ -5036,7 +5035,6 @@
 <translation id="5632059346822207074">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд Ctrl + Forward дээр дарна уу</translation>
 <translation id="5632221585574759616">Өргөтгөлийн зөвшөөрлийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5632566673632479864">Таны <ph name="EMAIL" /> бүртгэл цаашид үндсэн бүртгэлээр зөвшөөрөгдөхөө больсон байна. Энэ бүртгэлийг <ph name="DOMAIN" />-с удирддаг тул таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс устгах болно.</translation>
-<translation id="5632592977009207922">Татаж байна, <ph name="PERCENT_REMAINING" />% үлдсэн</translation>
 <translation id="5633149627228920745">Системийн шаардлагын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="563371367637259496">Мобайл</translation>
 <translation id="5634446357546764049">Саяхны аялал болон бусад зүйлийнхээ дурсамжийг хараарай</translation>
@@ -6234,6 +6232,7 @@
 <translation id="6770042910635026163">Таны сонирхлыг тодорхойлдог таны зочилсон сайтууд</translation>
 <translation id="6770602306803890733">Таны болон веб дэх хүн бүрийн аюулгүй байдлыг сайжруулдаг</translation>
 <translation id="6771503742377376720">Гэрчилгээжүүлэх Алба</translation>
+<translation id="6774710250118040929">Шинэ нууц үг нэмэх</translation>
 <translation id="6775163072363532304">Боломжтой байгаа төхөөрөмжүүд энд харагдана.</translation>
 <translation id="677646486571529447">Тэмдэглэл нэмэх</translation>
 <translation id="6776729248872343918">Хурдан холбохыг идэвхжүүлэх</translation>

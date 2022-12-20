@@ -2108,6 +2108,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
+<translation id="2979696534869541158">Forçar implementação antiga</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
 <translation id="2987227569419001736">Controla o uso da API Web Bluetooth</translation>
@@ -2841,6 +2842,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
 <translation id="3612809274815536412">Configurações do posicionamento de janelas</translation>
+<translation id="3622463490728773174">Permitir nova implementação</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
@@ -3368,6 +3370,16 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       um erro vai ser gerado.
 
       Esta política está disponível apenas em instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" />, instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
+<translation id="4135805680586226327">Esta política controla a refatoração recente das APIs Graphics3D no plug-in PPAPI.
+
+A migração afeta apenas os detalhes de implementação internos e não pode
+mudar nenhum comportamento. No entanto, ela pode ser usada caso algum app PPAPI
+não funcione como esperado.
+
+Quando a política é ativada ou deixada sem definição, o navegador decide qual
+implementação é usada.
+Quando a política é desativada, o navegador usa a implementação antiga
+até que a política expire.</translation>
 <translation id="4136603825567209889">Ativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4140646780789794190">Desativar o compartilhamento de dados de diagnósticos com o PluginVm</translation>
@@ -6079,6 +6091,7 @@ Esta política pode ser removida de <ph name="PRODUCT_NAME" /> no futuro.</trans
 <translation id="6815483833848348029">Definir a política como "Ativada" ou deixá-la sem definição faz com que o <ph name="PRODUCT_OS_NAME" /> mostre uma solicitação de configuração da rede quando um dispositivo ficar off-line, se uma conta local do dispositivo estiver definida para login automático sem atraso.
 
       A desativação da política faz com que uma mensagem de erro seja exibida.</translation>
+<translation id="6815628711329903153">Permitir alocação moderna de buffer para o plug-in PPAPI de APIs Graphics3D.</translation>
 <translation id="6819838337315703072">Se a compatibilidade com apps <ph name="LINUX_OS_NAME" /> estiver ativada, definir a política como "Ativada" enviará informações sobre o uso dos apps <ph name="LINUX_OS_NAME" /> ao servidor.
 
       Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>

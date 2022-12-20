@@ -258,6 +258,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1559447966090556585">Fá tilkynningar?</translation>
+<translation id="1559486004335285648">Sjálfvirk útfylling greiðsluupplýsinga</translation>
 <translation id="1559528461873125649">Engin slík skrá eða mappa</translation>
 <translation id="1559572115229829303">&lt;p&gt;Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tækisins (<ph name="DATE_AND_TIME" />) er röng.&lt;/p&gt;
 
@@ -366,6 +367,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1807528111851433570">Fyrsta blað</translation>
 <translation id="181000283860817563">Fylgjast með verði á mörgum vefsvæðum</translation>
+<translation id="1810391395243432441">Verndaðu aðgangsorðin þín með skjálásnum</translation>
 <translation id="1812527064848182527">langsnið</translation>
 <translation id="1813414402673211292">Hreinsa vafragögn</translation>
 <translation id="182139138257690338">sjálfvirkt niðurhal</translation>
@@ -385,6 +387,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1871208020102129563">Proxy er stillt á að nota fasta proxy-þjóna en ekki vefslóð á .pac-skriftu.</translation>
 <translation id="1871284979644508959">Nauðsynlegur reitur</translation>
 <translation id="1873899211667975540">Rokktónlist</translation>
+<translation id="1874224422119691492">Þú getur breytt því hvort þú notir skjálásinn til að fylla út aðgangsorð í <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Myndabakki</translation>
 <translation id="1875512691959384712">Google eyðublöð</translation>
 <translation id="187918866476621466">Opna ræsisíður</translation>
@@ -753,6 +756,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að stjórna öruggri vefskoðun og fleiru í stillingum Chrome</translation>
 <translation id="2878197950673342043">Veggspjaldabrot</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">nota skjálásinn til að fylla út aðgangsorð</translation>
 <translation id="2881276955470682203">Vista kort?</translation>
 <translation id="2882949212241984732">Innábrot (bæklingabrot)</translation>
 <translation id="2893773853358652045">Fjórða rúlla</translation>
@@ -1011,6 +1015,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3532844647053365774"><ph name="HOST" /> vill fá að nota hljóðnemann</translation>
 <translation id="3533328374079021623">Pósthólf 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Mynd á korti</translation>
 <translation id="3542768452570884558">Opna tengil í nýjum glugga</translation>
 <translation id="3547746132308051926">20 x 24 to.</translation>
 <translation id="3550112004925580947">Þjónustuiðnaður</translation>
@@ -1101,6 +1106,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3745099705178523657">Greiðslukortaupplýsingum af reikningnum þínum á Google verður deilt með þessu vefsvæði eftir að þú hefur staðfest.</translation>
 <translation id="3748148204939282805">Þrjótar á <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> gætu reynt að gabba þig til að gera eitthvað varasamt eins og að setja upp hugbúnað eða gefa upp persónuupplýsingar (til dæmis aðgangsorð, símanúmer eða kreditkortanúmer). <ph name="BEGIN_LEARN_MORE_LINK" />Frekari upplýsingar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Flugiðnaður</translation>
+<translation id="3752543821772132562">Hunsað vegna þess að <ph name="POLICY_NAME" /> er ekki stillt.</translation>
 <translation id="3754210790023674521">Loka mynd í mynd</translation>
 <translation id="3759461132968374835">Ekkert hrun hefur verið tilkynnt nýlega. Hrun sem varð á meðan slökkt var á tilkynningum um hrun mun ekki birtast hér.</translation>
 <translation id="3760561303380396507">Viltu nota Windows Hello í stað CVC-númers?</translation>
@@ -1407,6 +1413,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4541810033354695636">aukinn veruleika</translation>
 <translation id="4542971377163063093">Bakki 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Þú ert að nota skjálásinn til að fylla út aðgangsorð</translation>
 <translation id="4558551763791394412">Prófaðu að slökkva á viðbótunum þínum.</translation>
 <translation id="4566017918361049074">Útivist</translation>
 <translation id="4567686777917670400">Kerfisstjórinn þinn getur breytt uppsetningu vafrans með fjartengingu. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -2912,6 +2919,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>
 <translation id="8364627913115013041">Ekkert valið.</translation>
+<translation id="836616551641291797">Kynntu þér hvernig vafranum þínum er stjórnað</translation>
 <translation id="8368001212524806591">Vakta verð</translation>
 <translation id="8368027906805972958">Óþekkt eða óstutt tæki (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Þjónusta Google Play</translation>
@@ -2924,6 +2932,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8396522675989118466">Þetta er <ph name="NUMBER_OF_DIGITS" /> tölustafa kóðinn sem má finna <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Finna símann minn</translation>
 <translation id="8405579342203358118">Stjórna hvaða upplýsingar eru samstilltar í stillingum Chrome</translation>
+<translation id="8406071103346257942">hætta að nota skjálásinn til að fylla út aðgangsorð</translation>
 <translation id="8409413588194360210">greiðslumiðlara</translation>
 <translation id="8412145213513410671">Hrun (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Þú verður að slá sama aðgangsorðið inn tvisvar.</translation>
@@ -3193,6 +3202,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9128016270925453879">Reglum var hlaðið</translation>
 <translation id="9128870381267983090">Tengjast neti</translation>
 <translation id="9131119348384879525">Taka mynd af trúnaðarupplýsingum?</translation>
+<translation id="9133985615769429248">Ef þú deilir tækinu með öðrum geturðu notað skjálásinn til að staðfesta að þetta sért þú þegar þú notar vistað aðgangsorð</translation>
 <translation id="9136861683332321024">Lúxusbílar</translation>
 <translation id="9137013805542155359">Sýna frumtexta</translation>
 <translation id="9137248913990643158">Byrjaðu á að skrá þig inn á Chrome áður en þetta forrit er notað.</translation>

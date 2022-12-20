@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Gå til Indstillinger for at konfigurere</translation>
 <translation id="2597774443162333062">Filerne sendes til Google til fejlretning</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
 <translation id="2619761439309613843">Nyt hver dag</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2638662041295312666">Loginbillede</translation>

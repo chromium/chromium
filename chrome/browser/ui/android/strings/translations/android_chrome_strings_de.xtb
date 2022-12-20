@@ -517,6 +517,7 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3830886834687455630">Aktualisiere die Google Play-Dienste, um deine Passwörter zu prüfen</translation>
 <translation id="3845098929839618392">In Inkognitotab öffnen</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
+<translation id="3858127568696903256">Hier siehst du Inhalte, denen du folgst</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861633093716975811">Beliebte Videos</translation>
 <translation id="3874520961715512166">Website entfernt</translation>
@@ -552,7 +553,6 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4045764304651014138">Nutzungsdaten</translation>
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Optionen sind oben auf dem Bildschirm verfügbar</translation>
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
 <translation id="4072805772816336153">Versuchen Sie es später noch einmal</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
@@ -642,7 +642,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4554077758708533499">Per USB-Kabel verbunden</translation>
 <translation id="4558311620361989323">Tastenkombinationen für Webseiten</translation>
 <translation id="4561730552726921821">Registrierung abgeschlossen</translation>
-<translation id="4561979708150884304">Keine Verbindung</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4572422548854449519">In verwaltetem Konto anmelden</translation>
 <translation id="4576892426230499203">Versuche es mit einer anderen Bestätigungsoption</translation>
@@ -1351,7 +1350,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="82619448491672958">Andere Tabs anzeigen</translation>
 <translation id="8266862848225348053">Downloadpfad</translation>
-<translation id="8274165955039650276">Downloads aufrufen</translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8282297628636750033">Dunkles Design auf Websites anwenden</translation>
 <translation id="829672787777123339">Verbindung zu deinem Gerät wird hergestellt…</translation>

@@ -191,6 +191,7 @@
 <translation id="2421044535038393232">தொடர்ந்து திருத்து</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> இணையதளத்தில் "<ph name="USERNAME" />" கணக்கிற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
+<translation id="2451654228769116489">உலாவிப் பக்கத்தைப் பின் செய்</translation>
 <translation id="2461070143328828326">கடவுச்சொல் அமைப்புகள்</translation>
 <translation id="2469960372084740698">'பாதுகாப்பு உலாவல்' அம்சத்தை முடக்கவா?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
@@ -673,6 +674,7 @@
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
 <translation id="6064824697233747382">ஒத்திசைவை முடக்குமாறு உங்கள் நிறுவனம் கோருகிறது.</translation>
 <translation id="6066301408025741299">ரத்துசெய்ய தட்டவும்.</translation>
+<translation id="6071409777669089905">உலாவிப் பக்கத்தைப் பிரித்தெடு</translation>
 <translation id="60829778314739003">ஏற்றுக்கொண்டு, தொடர்க</translation>
 <translation id="6084848228346514841">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6103540626693881831">சாதன என்க்ரிப்ஷன்</translation>
@@ -973,7 +975,7 @@
 <translation id="8205564605687841303">ரத்துசெய்</translation>
 <translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>
 <translation id="821809831108207540">உங்கள் Discover ஊட்டம் &amp; Chromeமைப் பிரத்தியேகப்படுத்த, உள்நுழைந்து ஒத்திசைவை ஆன் செய்யவும்.</translation>
-<translation id="8225985093977202398">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் கோப்புகளும்</translation>
+<translation id="8225985093977202398">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் ஃபைல்களும்</translation>
 <translation id="8237382152611443140">'தன்னிரப்பிக் கடவுச்சொல்' அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8271720166617117963">ஏற்று உள்நுழைக</translation>
@@ -1099,6 +1101,7 @@
 <translation id="9219154867334666734">தாவல்களைத் தேட…</translation>
 <translation id="9223358826628549784">சிதைவு அறிக்கை அனுப்பப்பட்டது.</translation>
 <translation id="941747855997058526">கடவுச்சொற்களைக் காட்டு...</translation>
+<translation id="948048872540558976">புதிய உலாவிப் பக்கத்தை உருவாக்கும்</translation>
 <translation id="952704832371081537">ரத்துசெய்</translation>
 <translation id="953008885340860025">Chromeமில் இருந்து வெளியேறிவிட்டீர்கள்</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> ஐப் பின்தொடர்கிறீர்கள்</translation>

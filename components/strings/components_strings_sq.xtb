@@ -258,6 +258,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1559447966090556585">Dëshiron të marrësh njoftime?</translation>
+<translation id="1559486004335285648">Plotëso automatikisht informacionet e pagesës</translation>
 <translation id="1559528461873125649">Nuk ka skedar apo direktori të tillë</translation>
 <translation id="1559572115229829303">&lt;p&gt;Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.&lt;/p&gt;
 
@@ -366,6 +367,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
 <translation id="181000283860817563">Monitoro çmimet nëpër disa sajte</translation>
+<translation id="1810391395243432441">Mbroji fjalëkalimet me kyçjen e ekranit</translation>
 <translation id="1812527064848182527">peizazh</translation>
 <translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="182139138257690338">shkarkimet automatike</translation>
@@ -385,6 +387,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1871208020102129563">Përfaqësuesi është caktuar të përdorë serverë përfaqësues fiksë, jo një shkrim URL-je .pac.</translation>
 <translation id="1871284979644508959">Fushë e detyrueshme</translation>
 <translation id="1873899211667975540">Muzika rok</translation>
+<translation id="1874224422119691492">Mund të ndryshosh nëse e përdor kyçjen e ekranit për plotësimin e fjalëkalimeve te "<ph name="SETTINGS" />"</translation>
 <translation id="1875025161375567525">Tabakaja e fotografive</translation>
 <translation id="1875512691959384712">Formularët e Google</translation>
 <translation id="187918866476621466">Hap faqet e nisjes</translation>
@@ -753,6 +756,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar "Shfletimin e sigurt" dhe më shumë te cilësimet e Chrome</translation>
 <translation id="2878197950673342043">Palosje posteri</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">të përdorë kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="2881276955470682203">Të ruhet karta?</translation>
 <translation id="2882949212241984732">Palosje me dy dritare</translation>
 <translation id="2893773853358652045">Ruli i katërt</translation>
@@ -1011,6 +1015,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3532844647053365774"><ph name="HOST" /> kërkon të përdorë mikrofonin</translation>
 <translation id="3533328374079021623">Kutia postare 5</translation>
 <translation id="3537165859691846083">Letër plus</translation>
+<translation id="3542628208405253498">Imazhi i kartës</translation>
 <translation id="3542768452570884558">Hape lidhjen në një dritare të re</translation>
 <translation id="3547746132308051926">20 x 24 inç</translation>
 <translation id="3550112004925580947">Industria e mikpritjes</translation>
@@ -1101,6 +1106,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3745099705178523657">Pasi t'i konfirmosh, detajet e kartës nga "Llogaria jote e Google" do të ndahen me këtë sajt.</translation>
 <translation id="3748148204939282805">Sulmuesit në  <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve ose të zbulosh informacion personal (për shembull, fjalëkalime, numra telefoni ose karta krediti). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria e aviacionit</translation>
+<translation id="3752543821772132562">Shpërfillur sepse politika <ph name="POLICY_NAME" /> nuk është caktuar.</translation>
 <translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
 <translation id="3759461132968374835">Nuk ke ndërprerje aksidentale të raportuara së fundi. Ndërprerjet aksidentale që kanë ndodhur kur raportimi i tyre ka qenë i çaktivizuar, nuk do të shfaqen këtu.</translation>
 <translation id="3760561303380396507">Të përdoret Windows Hello në vend të CVC?</translation>
@@ -1407,6 +1413,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4541810033354695636">realiteti i zgjeruar</translation>
 <translation id="4542971377163063093">Tabakaja 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Po përdor kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="4558551763791394412">Provo të çaktivizosh shtesat.</translation>
 <translation id="4566017918361049074">Ambientet e hapura</translation>
 <translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -2911,6 +2918,7 @@ Detaje shtesë:
 <translation id="8355270400102541638">Konteksti lokal i ndërprerjes aksidentale:</translation>
 <translation id="8363502534493474904">Të çaktivizosh modalitetin e aeroplanit</translation>
 <translation id="8364627913115013041">Nuk është caktuar.</translation>
+<translation id="836616551641291797">Mëso më shumë se si menaxhohet shfletuesi yt</translation>
 <translation id="8368001212524806591">Monitoro çmimin</translation>
 <translation id="8368027906805972958">Pajisje e panjohur ose e pambështetur (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Shërbimet e Google Play</translation>
@@ -2923,6 +2931,7 @@ Detaje shtesë:
 <translation id="8396522675989118466">Ky është kodi me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Gjej telefonin tënd</translation>
 <translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
+<translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="8409413588194360210">përpunuesit e pagesave</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
@@ -3192,6 +3201,7 @@ Detaje shtesë:
 <translation id="9128016270925453879">Politikat janë ngarkuar</translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9131119348384879525">Të regjistrohet përmbajtja konfidenciale?</translation>
+<translation id="9133985615769429248">Nëse e ndan këtë pajisje me të tjerët, mund të përdorësh kyçjen e ekranit për të verifikuar që je ti sa herë që përdor një fjalëkalim të ruajtur</translation>
 <translation id="9136861683332321024">Automjetet luksoze</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9137248913990643158">Fillo dhe identifikohu në Chrome para se të përdorësh këtë aplikacion.</translation>

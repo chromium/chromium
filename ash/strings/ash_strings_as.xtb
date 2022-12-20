@@ -120,6 +120,7 @@
 <translation id="15373452373711364">মাউছৰ ডাঙৰ কাৰ্ছৰ</translation>
 <translation id="1546492247443594934">ডেস্ক ২</translation>
 <translation id="1546930421365146760">আপোনাৰ প্ৰশাসকক Google প্ৰশাসকৰ কনছ’লত এই ডিভাইচটো ছেট আপ কৰিবলৈ কওক</translation>
+<translation id="1550406609415860283">ডিভাইচ উপলব্ধ</translation>
 <translation id="1550523713251050646">অধিক বিকল্পৰ বাবে ক্লিক কৰক</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
@@ -460,6 +461,7 @@
 <translation id="3542066395059568317">আপুনি চুপাৰিছ দেখা পাব যাতে আপুনি য'ত এৰিছিল তাৰ পৰাই পুনৰ আৰম্ভ কৰিব পাৰে। আপুনি চুপাৰিছ আঁতৰাবলৈ ৰাইট-ক্লিক কৰিব পাৰে।</translation>
 <translation id="3552189655002856821">ৱাই-ফাই অফ কৰা হ’ল</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> পিন কৰা হৈছে</translation>
+<translation id="3560174576767922131">ভিডিঅ’ ৰেকৰ্ড কৰক</translation>
 <translation id="3563775809269155755">হটস্পট সক্ষম কৰক</translation>
 <translation id="3566240529365775567">এইমাত্ৰ খোলা হৈছে</translation>
 <translation id="3571734092741541777">ছেট আপ কৰক</translation>
@@ -651,6 +653,7 @@
 <translation id="4577274620589681794">সময় শেষ হ’ল · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">পূৰ্বদৰ্শন দেখুৱাওক</translation>
 <translation id="4578906031062871102">ছেটিঙৰ মেনু খোলা হ'ল</translation>
+<translation id="458210817642223147">GIF ৰেকৰ্ড কৰক</translation>
 <translation id="4585337515783392668">কোনো অজ্ঞাত প্ৰাপকলৈ কাষ্ট কৰাটো বন্ধ কৰক</translation>
 <translation id="4596144739579517758">গাঢ় ৰঙৰ ম’ড অফ আছে</translation>
 <translation id="4611292653554630842">লগ ইন কৰক</translation>
@@ -730,6 +733,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="5003993274120026347">পৰৱৰ্তী বাক্য</translation>
+<translation id="5004607513195820459">নেটৱৰ্কটো পৰিচালিত</translation>
 <translation id="5016558321564993266">চিহ্নকৰ সুবিধাটো ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">ডিভাইচৰ মাইক্ৰ’ফ’নৰ এক্সেছ অন কৰা হৈছে</translation>
 <translation id="5030687792513154421">সময় সীমা উকলিল</translation>
@@ -1075,6 +1079,7 @@
 <translation id="6901883536534621389">নেভিগে’ট কৰিবলৈ আঙুলিৰ স্পৰ্শৰে নিৰ্দেশসমূহ ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6919251195245069855">আপোনাৰ স্মার্ট কার্ডখন চিনাক্ত কৰিব পৰা নগ'ল। আকৌ চেষ্টা কৰক।</translation>
 <translation id="6931576957638141829">ইয়াত ছেভ কৰক</translation>
+<translation id="6942518653766415536">ৰেকৰ্ডিঙৰ ফৰ্মেটৰ মেনু</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6960565108681981554">সক্ৰিয় কৰা হোৱা নাই। আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="6961121602502368900">কৰ্মস্থানৰ প্ৰ’ফাইলত নীৰৱ ফ’ন উপলব্ধ নহয়</translation>

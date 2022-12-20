@@ -517,6 +517,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3830886834687455630">Actualiza los Servicios de Google Play para revisar tus contraseñas.</translation>
 <translation id="3845098929839618392">Abrir en pestaña de incógnito</translation>
 <translation id="3856096718352044181">Verifica que sea un proveedor válido o vuelve a intentarlo más tarde</translation>
+<translation id="3858127568696903256">Mira el contenido que sigues aquí</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861633093716975811">Videos populares</translation>
 <translation id="3874520961715512166">Se quitó el sitio</translation>
@@ -552,7 +553,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Opciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="4062305924942672200">Información legal</translation>
 <translation id="4072805772816336153">Vuelve a intentarlo más tarde</translation>
 <translation id="4084682180776658562">Marcador</translation>
@@ -642,7 +642,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4554077758708533499">Conectado con cable USB</translation>
 <translation id="4558311620361989323">Accesos directos a páginas web</translation>
 <translation id="4561730552726921821">Se completó correctamente el registro.</translation>
-<translation id="4561979708150884304">Sin conexión</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4572422548854449519">Acceder a una cuenta administrada</translation>
 <translation id="4576892426230499203">Prueba otra opción de verificación.</translation>
@@ -1351,7 +1350,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="82619448491672958">Ver otras pestañas</translation>
 <translation id="8266862848225348053">Ubicación de las descargas</translation>
-<translation id="8274165955039650276">Ver las descargas</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282297628636750033">Aplica el Tema oscuro para sitios (de ser posible)</translation>
 <translation id="829672787777123339">Estableciendo conexión con el dispositivo…</translation>

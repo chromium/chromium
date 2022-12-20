@@ -80,6 +80,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2977470724722393594">Chromium er opdateret</translation>
 <translation id="2977506796191543575">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
 <translation id="2983934633046890458">Chromium forsøger at redigere adgangskoder.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium har forbindelse til en HID-enhed}one{Chromium har forbindelse til en HID-enhed}other{Chromium har forbindelse til HID-enheder}}</translation>
 <translation id="3032706164202344641">Chromium kan ikke tjekke dine adgangskoder. Prøv igen senere.</translation>
 <translation id="3032787606318309379">Føjer til Chromium...</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>

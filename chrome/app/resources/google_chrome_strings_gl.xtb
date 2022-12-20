@@ -128,6 +128,7 @@
 <translation id="3140883423282498090">Os cambios terán efecto a próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
 <translation id="3169523567916669830">Durante as probas, podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome está conectado a un dispositivo de interface humana}other{Google Chrome está conectado a dispositivos de interface humana}}</translation>
 <translation id="3245429137663807393">Se, ademais, compartes os informes de uso de Chrome, neles inclúense os URL que visitas</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>

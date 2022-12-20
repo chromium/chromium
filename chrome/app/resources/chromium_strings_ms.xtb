@@ -80,6 +80,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2977470724722393594">Chromium telah dikemas kini</translation>
 <translation id="2977506796191543575">Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat</translation>
 <translation id="2983934633046890458">Chromium cuba mengedit kata laluan.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium disambungkan kepada peranti HID}other{Chromium disambungkan kepada peranti HID}}</translation>
 <translation id="3032706164202344641">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambah ke Chromium...</translation>
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>

@@ -517,6 +517,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3830886834687455630">Oma paroolide kontrollimiseks värskendage Google Play teenuseid</translation>
 <translation id="3845098929839618392">Ava inkognito vahelehel</translation>
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
+<translation id="3858127568696903256">Siin näete sisu, mida jälgite</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861633093716975811">Populaarsed videod</translation>
 <translation id="3874520961715512166">Sait on eemaldatud</translation>
@@ -552,7 +553,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4045764304651014138">Kasutusandmed</translation>
 <translation id="405399507749852140">Teile saadetakse märguanne, kui hind mõnel saidil langeb</translation>
 <translation id="4056223980640387499">Seepia</translation>
-<translation id="4060598801229743805">Ekraani ülaosas saadaolevad valikud</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>
 <translation id="4072805772816336153">Proovige hiljem uuesti</translation>
 <translation id="4084682180776658562">Järjehoidja</translation>
@@ -642,7 +642,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4554077758708533499">Ühendatud USB-kaabliga</translation>
 <translation id="4558311620361989323">Veebilehe otseteed</translation>
 <translation id="4561730552726921821">Registreerumine õnnestus</translation>
-<translation id="4561979708150884304">Ühendus puudub</translation>
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4572422548854449519">Logige hallatud kontole sisse</translation>
 <translation id="4576892426230499203">Proovige mõnda teist kinnitusvõimalust</translation>
@@ -1351,7 +1350,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="82619448491672958">Kuva muud vahelehed</translation>
 <translation id="8266862848225348053">Allalaadimise asukoht</translation>
-<translation id="8274165955039650276">Kuva allalaadimised</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8282297628636750033">Kui võimalik, rakendatakse saitidele tume teema</translation>
 <translation id="829672787777123339">Teie seadmega ühendamine …</translation>

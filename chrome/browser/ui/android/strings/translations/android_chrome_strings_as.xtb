@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ Google Play সেৱাসমূহ আপডে’ট কৰক</translation>
 <translation id="3845098929839618392">ইনক’গনিট’ টেবত খোলক</translation>
 <translation id="3856096718352044181">অনুগ্ৰহ কৰি এইটো কোনো মান্য প্ৰদানকাৰীৰ বুলি সত্যাপন কৰক অথবা পাছত আকৌ চেষ্টা কৰক</translation>
+<translation id="3858127568696903256">আপুনি ফ’ল’ কৰা সমল ইয়াত চাওক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861633093716975811">জনপ্ৰিয় ভিডিঅ’</translation>
 <translation id="3874520961715512166">ছাইট আঁতৰোৱা হৈছে</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">ব্যৱহাৰৰ ডেটা</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
-<translation id="4060598801229743805">স্ক্ৰীনৰ ওপৰৰ অংশত কাষত থকা বিকল্প</translation>
 <translation id="4062305924942672200">আইনী তথ্য</translation>
 <translation id="4072805772816336153">পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="4084682180776658562">বুকমাৰ্ক কৰক</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">ইউএছবি কে’বলৰ জৰিয়তে সংযোগ কৰা হ’ল</translation>
 <translation id="4558311620361989323">ৱেবপৃষ্ঠাৰ শ্বৰ্টকাট</translation>
 <translation id="4561730552726921821">সফলভাৱে পঞ্জীয়ন কৰা হ’ল</translation>
-<translation id="4561979708150884304">ইণ্টাৰনেট নাই</translation>
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4572422548854449519">পৰিচালিত একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="4576892426230499203">সত্যাপনৰ অন্য এটা বিকল্প ব্যৱহাৰ কৰি চাওক</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">মচক</translation>
 <translation id="82619448491672958">অন্য টেবসমূহ চাওক</translation>
 <translation id="8266862848225348053">ডাউনল’ডৰ অৱস্থান</translation>
-<translation id="8274165955039650276">ডাউনল’ড কৰাবোৰ চাওক</translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8282297628636750033">সম্ভৱ হ’লে ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="829672787777123339">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>

@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1559447966090556585">Отримувати сповіщення?</translation>
+<translation id="1559486004335285648">Автозаповнення платіжної інформації</translation>
 <translation id="1559528461873125649">Такого файла або каталогу немає</translation>
 <translation id="1559572115229829303">&lt;p&gt;Не вдається встановити конфіденційне з’єднання із сайтом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на вашому пристрої неправильно налаштовано дату й час (<ph name="DATE_AND_TIME" />).&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1807528111851433570">Перший аркуш</translation>
 <translation id="181000283860817563">Відстежувати ціни на кількох сайтах</translation>
+<translation id="1810391395243432441">Захистіть свої паролі за допомогою функції блокування екрана</translation>
 <translation id="1812527064848182527">альбомна</translation>
 <translation id="1813414402673211292">Очистити історію</translation>
 <translation id="182139138257690338">автоматичні завантаження</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">Проксі-сервер налаштовано на використання фіксованих проксі-серверів, а не URL-адреси сценарію .pac.</translation>
 <translation id="1871284979644508959">Обов’язкове поле</translation>
 <translation id="1873899211667975540">Рок-музика</translation>
+<translation id="1874224422119691492">Ви можете вимкнути цю функцію, перейшовши в розділ <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Лоток для фотографій</translation>
 <translation id="1875512691959384712">Google Форми</translation>
 <translation id="187918866476621466">Відкрити стартові сторінки</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
 <translation id="2878197950673342043">Зігнути за типом плаката</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">використовувати функцію блокування екрана для заповнення паролів</translation>
 <translation id="2881276955470682203">Зберегти картку?</translation>
 <translation id="2882949212241984732">Зігнути за типом "подвійні ворота"</translation>
 <translation id="2893773853358652045">Четвертий рулон</translation>
@@ -1011,6 +1015,7 @@
 <translation id="3532844647053365774">Сайт <ph name="HOST" /> хоче отримати доступ до вашого мікрофона</translation>
 <translation id="3533328374079021623">Поштова скринька 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Зображення картки</translation>
 <translation id="3542768452570884558">Відкрити посилання в новому вікні</translation>
 <translation id="3547746132308051926">20 x 24 дюйм.</translation>
 <translation id="3550112004925580947">Сфера обслуговування</translation>
@@ -1101,6 +1106,7 @@
 <translation id="3745099705178523657">Щойно ви підтвердите дані картки з облікового запису Google, цей сайт отримає доступ до них.</translation>
 <translation id="3748148204939282805">Зловмисники можуть використовувати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб обманом змусити вас виконати небезпечну дію, наприклад, установити шкідливе програмне забезпечення або повідомити особисту інформацію (пароль, номер телефону, дані кредитної картки тощо). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авіаційна галузь</translation>
+<translation id="3752543821772132562">Ігнорується, оскільки правило <ph name="POLICY_NAME" /> не налаштовано.</translation>
 <translation id="3754210790023674521">Вийти з режиму "Картинка в картинці"</translation>
 <translation id="3759461132968374835">У вас немає останніх повідомлень про аварійне завершення роботи. Тут не відображатимуться випадки аварійного завершення роботи, які сталися, коли повідомлення про аварійне завершення роботи було вимкнено.</translation>
 <translation id="3760561303380396507">Використовувати Windows Hello замість коду CVC?</translation>
@@ -1407,6 +1413,7 @@
 <translation id="4541810033354695636">доповнена реальність</translation>
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Ви використовуєте функцію блокування екрана для заповнення паролів</translation>
 <translation id="4558551763791394412">Спробуйте вимкнути розширення.</translation>
 <translation id="4566017918361049074">Дозвілля на природі</translation>
 <translation id="4567686777917670400">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -2912,6 +2919,7 @@
 <translation id="8355270400102541638">Локальний контекст аварійного завершення роботи:</translation>
 <translation id="8363502534493474904">вимкнути режим польоту</translation>
 <translation id="8364627913115013041">Не встановлено.</translation>
+<translation id="836616551641291797">Дізнайтесь, як відбувається керування вашим веб-переглядачем</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8368027906805972958">Невідомий чи непідтримуваний пристрій (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Сервіси Google Play</translation>
@@ -2924,6 +2932,7 @@
 <translation id="8396522675989118466">Це <ph name="NUMBER_OF_DIGITS" />-значний код, який розташовано на картці (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="8398790343843005537">Знайти телефон</translation>
 <translation id="8405579342203358118">Виберіть у налаштуваннях Chrome, яку інформацію синхронізувати</translation>
+<translation id="8406071103346257942">припинити використовувати функцію блокування екрана для заповнення паролів</translation>
 <translation id="8409413588194360210">обробники платежів</translation>
 <translation id="8412145213513410671">Аварійне завершення роботи (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Потрібно двічі ввести однакову парольну фразу.</translation>
@@ -3194,6 +3203,7 @@
 <translation id="9128016270925453879">Правила завантажено</translation>
 <translation id="9128870381267983090">З'єднатися з мережею</translation>
 <translation id="9131119348384879525">Записати конфіденційний контент?</translation>
+<translation id="9133985615769429248">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, налаштуйте блокування екрана, щоб лише ви могли отримувати доступ до збережених паролів</translation>
 <translation id="9136861683332321024">Автомобілі класу люкс</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
 <translation id="9137248913990643158">Перш ніж користуватися додатком, увійдіть в обліковий запис Chrome.</translation>

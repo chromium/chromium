@@ -190,6 +190,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2421044535038393232">Turpināt rediģēt</translation>
 <translation id="2434405374328098816">Jūs jau esat saglabājis paroli lietotājvārdam “<ph name="USERNAME" />” vietnē <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2451654228769116489">Piespraust cilni</translation>
 <translation id="2461070143328828326">Paroļu iestatījumi</translation>
 <translation id="2469960372084740698">Vai izslēgt funkciju Droša pārlūkošana?</translation>
 <translation id="2473876017985765807">Jūs jau esat saglabājis paroli vietnei <ph name="WEBSITE" />.</translation>
@@ -672,6 +673,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
 <translation id="6064824697233747382">Saskaņā ar jūsu organizācijas politiku sinhronizācija ir jāizslēdz.</translation>
 <translation id="6066301408025741299">Pieskarieties, lai atceltu.</translation>
+<translation id="6071409777669089905">Atspraust cilni</translation>
 <translation id="60829778314739003">Piekrist un turpināt</translation>
 <translation id="6084848228346514841">Atlasiet cilnes</translation>
 <translation id="6103540626693881831">Šifrēšana ierīcē</translation>
@@ -1097,6 +1099,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9219154867334666734">Meklēt cilnēs…</translation>
 <translation id="9223358826628549784">Avārijas ziņojums nosūtīts.</translation>
 <translation id="941747855997058526">Atlasīt paroli…</translation>
+<translation id="948048872540558976">Izveidot jaunu cilni</translation>
 <translation id="952704832371081537">Atcelt</translation>
 <translation id="953008885340860025">Esat izrakstījies pārlūkā Chrome</translation>
 <translation id="959066944189734975">Jūs sekojat kanālam <ph name="CHANNEL_NAME" /></translation>

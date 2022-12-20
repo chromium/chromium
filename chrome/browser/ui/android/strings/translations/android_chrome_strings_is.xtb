@@ -517,6 +517,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3830886834687455630">Uppfærðu þjónustu Google Play til að athuga aðgangsorðin þín</translation>
 <translation id="3845098929839618392">Opna á huliðsflipa</translation>
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
+<translation id="3858127568696903256">Hér sérðu efni sem þú fylgist með</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861633093716975811">Vinsæl myndskeið</translation>
 <translation id="3874520961715512166">Vefsvæði fjarlægt</translation>
@@ -552,7 +553,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4045764304651014138">Notkunargögn</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
-<translation id="4060598801229743805">Valkosti er að finna ofarlega á skjánum</translation>
 <translation id="4062305924942672200">Lagalegar upplýsingar</translation>
 <translation id="4072805772816336153">Reyndu aftur síðar</translation>
 <translation id="4084682180776658562">Bókamerki</translation>
@@ -642,7 +642,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4554077758708533499">Tengt með USB-snúru</translation>
 <translation id="4558311620361989323">Flýtilyklar vefsíðu</translation>
 <translation id="4561730552726921821">Skráning tókst</translation>
-<translation id="4561979708150884304">Engin tenging</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4572422548854449519">Innskráning á stýrðan reikning</translation>
 <translation id="4576892426230499203">Prófaðu aðra staðfestingaraðferð</translation>
@@ -1351,7 +1350,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="82619448491672958">Sjá aðra flipa</translation>
 <translation id="8266862848225348053">Niðurhalsmappa</translation>
-<translation id="8274165955039650276">Sjá niðurhal</translation>
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8282297628636750033">Nota dökkt þema fyrir vefsvæði</translation>
 <translation id="829672787777123339">Tengist tækinu…</translation>

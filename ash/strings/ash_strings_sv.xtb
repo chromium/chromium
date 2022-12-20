@@ -111,7 +111,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har bytts ut mot <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Visa alla förslag</translation>
 <translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
-<translation id="1510238584712386396">Startprogram</translation>
+<translation id="1510238584712386396">Starttangent</translation>
 <translation id="1516740043221086139">Stör ej har aktiverats.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
 <translation id="1525508553941733066">IGNORERA</translation>
@@ -120,6 +120,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
 <translation id="1546492247443594934">Skrivbord 2</translation>
 <translation id="1546930421365146760">Be administratören att konfigurera enheten i Googles administratörskonsol</translation>
+<translation id="1550406609415860283">Tillgängliga enheter</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
@@ -460,6 +461,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3542066395059568317">Rekommendationer visas så att du kan fortsätta där du slutade. Du kan ta bort rekommendationer genom att högerklicka.</translation>
 <translation id="3552189655002856821">wifi är inaktiverat</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> har fästs</translation>
+<translation id="3560174576767922131">Spela in video</translation>
 <translation id="3563775809269155755">Aktivera surfzon</translation>
 <translation id="3566240529365775567">Öppnades nyss</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
@@ -651,6 +653,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
+<translation id="458210817642223147">Spela in gif</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4611292653554630842">Logga in</translation>
@@ -730,6 +733,7 @@ Anslut enheten till en strömkälla.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Skrivbord 16</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
+<translation id="5004607513195820459">Nätverket hanteras</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Åtkomst till enhetens mikrofon har aktiverats</translation>
 <translation id="5030687792513154421">Tiden är slut</translation>
@@ -1075,6 +1079,7 @@ Nyligen installerad</translation>
 <translation id="6901883536534621389">Testa att navigera med rörelser</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6931576957638141829">Spara i</translation>
+<translation id="6942518653766415536">Meny för inspelningsformat</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>

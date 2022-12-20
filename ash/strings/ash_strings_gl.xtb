@@ -120,6 +120,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1546930421365146760">Pídelle ao teu administrador que configure este dispositivo na consola de administración de Google</translation>
+<translation id="1550406609415860283">Hai dispositivos dispoñibles</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
@@ -127,6 +128,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
+<translation id="163517899691012366">Cando está activado o modo Non molestar, as notificacións están silenciadas</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
@@ -373,6 +375,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
 <translation id="3051189971848907985">Cambiando nome de perfil. Agarda uns minutos.</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Función non admitida</translation>
 <translation id="3068711042108640621">O estante está na parte esquerda</translation>
 <translation id="3077734595579995578">maiús</translation>
 <translation id="3081696990447829002">Despregar menú</translation>
@@ -407,6 +410,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuración</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
+<translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3289544412142055976">As aplicación de Linux agora mesmo non son compatibles</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>
@@ -454,9 +458,11 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
+<translation id="3533126039236445965">Aplicacións no andel</translation>
 <translation id="3542066395059568317">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes facer clic co botón dereito para quitar as recomendacións.</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
+<translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
 <translation id="3566240529365775567">Abriuse hai uns intres</translation>
 <translation id="3571734092741541777">Configurar</translation>
@@ -649,6 +655,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
+<translation id="458210817642223147">Gravar GIF</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
@@ -728,6 +735,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Escritorio 16</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
+<translation id="5004607513195820459">A rede está xestionada</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">O acceso do micrófono ao dispositivo está activado</translation>
 <translation id="5030687792513154421">Rematou o tempo</translation>
@@ -787,9 +795,11 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="533282197239610265">Mostrar os dispositivos de emisión</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo dereito)</translation>
+<translation id="5351427059191534258">Queres desactivar o acceso á cámara?</translation>
 <translation id="5352250171825660495">O tema escuro está activado</translation>
 <translation id="5356963482258194581">Cambia do tema claro ao escuro, e viceversa. Fai clic co botón dereito no escritorio e selecciona Estilo e fondo de pantalla.</translation>
 <translation id="536019650977002321">O teu administrador non permite o rexistro de audio. Para obter máis información, ponte en contacto con el.</translation>
+<translation id="5361524080961918551">Os ficheiros de voz (<ph name="LANGUAGE" />) descargáronse parcialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestana</translation>
 <translation id="5377367976106153749">Queres activar o acceso á cámara?</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
@@ -899,6 +909,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5980301590375426705">Pechar sesión invit.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para recibir a actualización, reinicia o dispositivo Chromebook co teclado conectado.</translation>
+<translation id="6002179289567220515">Usaches o interruptor físico para apagar 1 cámara. Tamén podes desactivar o acceso a todas as cámaras.</translation>
 <translation id="6012623610530968780">Páxina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
@@ -939,9 +950,11 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="619279033188484792">Accede ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Cargar por completo agora</translation>
 <translation id="6193431488227440296">Desenvolvemento</translation>
+<translation id="6200515304866777730">Función non admitida pola aplicación</translation>
 <translation id="6210042900243040400">Conecta o dispositivo (<ph name="NAME" />), que xa está gardado en <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Xa podes gravarte ao mesmo tempo que gravas a túa pantalla</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
+<translation id="623116199192908855">Emite a pantalla do Chromebook</translation>
 <translation id="6231419273573514727">É posible que os periféricos teñan un rendemento limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando a cámara e o micrófono nestes intres</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -983,8 +996,10 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) antes de que finalice o prazo</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6495400115277918834">Iniciouse a función da pantalla superposta. Para enfocar esta pantalla, preme Alt + Maiúsculas + V</translation>
+<translation id="6497418457565568043">O modo Non molestar está activado</translation>
 <translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Emitindo pantalla en <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Asegúrate de que o Chromebook estea conectado á mesma rede wifi que o dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Perdeuse a conexión coa cámara; tentando conexión de novo.</translation>
 <translation id="6520517963145875092">Selecciona a ventá que queiras capturar</translation>
 <translation id="652139407789908527">A túa pantalla quedará en branco durante máis tempo do habitual (ata un minuto) durante a actualización. Non premas o botón de acendido mentres a actualización estea en curso.</translation>
@@ -1066,6 +1081,7 @@ Nova instalación</translation>
 <translation id="6901883536534621389">Proba a navegar con xestos</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
 <translation id="6931576957638141829">Gardar en</translation>
+<translation id="6942518653766415536">Menú de formato da gravación</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6960565108681981554">Non activada. Contacta co teu operador.</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>

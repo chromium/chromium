@@ -120,6 +120,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="15373452373711364">Suuri hiiren osoitin</translation>
 <translation id="1546492247443594934">Pöytä 2</translation>
 <translation id="1546930421365146760">Pyydä järjestelmänvalvojaa suorittamaan käyttöönotto Google-hallintakonsolissa</translation>
+<translation id="1550406609415860283">Laitteita saatavilla</translation>
 <translation id="1550523713251050646">Näet lisävaihtoehtoja klikkaamalla tätä.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
@@ -457,9 +458,11 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> hallinnoi tiliä</translation>
 <translation id="352245152354538528">{0,plural, =1{Päivitä laite 1 minuutin kuluessa}other{Päivitä laite # minuutin kuluessa}}</translation>
 <translation id="353086728817903341">Yhdistetty <ph name="NUM_DEVICES" /> laitteeseen</translation>
+<translation id="3533126039236445965">Hyllyssä olevat sovellukset</translation>
 <translation id="3542066395059568317">Näet suosituksia, joiden avulla voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa, kun niitä klikkaa kakkospainikkeella.</translation>
 <translation id="3552189655002856821">Wi-Fi on poissa päältä</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kiinnitettiin</translation>
+<translation id="3560174576767922131">Kuvaa video</translation>
 <translation id="3563775809269155755">Ota hotspot käyttöön</translation>
 <translation id="3566240529365775567">Avattu äsken</translation>
 <translation id="3571734092741541777">Ota käyttöön</translation>
@@ -651,6 +654,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4577274620589681794">Aika loppui · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Näytä esikatselut</translation>
 <translation id="4578906031062871102">Asetusvalikko avattu</translation>
+<translation id="458210817642223147">Kuvaa GIF</translation>
 <translation id="4585337515783392668">Lopeta suoratoisto tuntemattomaan kohteeseen</translation>
 <translation id="4596144739579517758">Tumma teema on pois päältä</translation>
 <translation id="4611292653554630842">Kirjaudu sisään</translation>
@@ -730,6 +734,7 @@ Yhdistä laite virtalähteeseen.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Työpöytä 16</translation>
 <translation id="5003993274120026347">Seuraava lause</translation>
+<translation id="5004607513195820459">Verkkoa hallinnoidaan</translation>
 <translation id="5016558321564993266">Piirtotyökalu päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Pääsy laitteen mikrofoniin on päällä</translation>
 <translation id="5030687792513154421">Aika on lopussa</translation>
@@ -1075,6 +1080,7 @@ Uusi asennus</translation>
 <translation id="6901883536534621389">Kokeile navigoida eleillä</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="6931576957638141829">Tallennuspaikka:</translation>
+<translation id="6942518653766415536">Kuvataan muotovalikkoa</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>

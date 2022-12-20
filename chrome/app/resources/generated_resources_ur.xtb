@@ -2387,7 +2387,6 @@
 <translation id="3132896062549112541">اصول</translation>
 <translation id="3132996321662585180">روزانہ ریفریش کریں</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> تجربے کیلئے تجربے کی حالت منتخب کریں۔ تجربے کی تفصیل: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">ڈاؤن لوڈ جاری ہے، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ڈیفالٹ زرد اوتار</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
 <translation id="3141318088920353606">سنا جا رہا ہے…</translation>
@@ -5025,7 +5024,6 @@
 <translation id="5632059346822207074">‏اجازت کی درخواست کی گئی، جواب دینے کے ليے Ctrl + Forward دبائیں</translation>
 <translation id="5632221585574759616">ایکسٹینشن کی اجازتوں کے بارے میں مزید جانیں</translation>
 <translation id="5632566673632479864">آپ کا اکاؤنٹ <ph name="EMAIL" /> اب بنیادی اکاؤنٹ کے طور پر اجازت یافتہ نہیں ہے۔ چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے، لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔</translation>
-<translation id="5632592977009207922">ڈاؤن لوڈ ہو رہا ہے، <ph name="PERCENT_REMAINING" /> فیصد باقی ہے</translation>
 <translation id="5633149627228920745">سسٹم کی ضروریات کے بارے میں مزید جانیں</translation>
 <translation id="563371367637259496">موبائل</translation>
 <translation id="5634446357546764049">اپنے حالیہ دوروں کی یادیں اور مزید دیکھیں</translation>

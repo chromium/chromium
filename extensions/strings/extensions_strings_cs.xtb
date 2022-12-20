@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Balíček je neplatný: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Zadní</translation>
 <translation id="1196338895211115272">Export soukromého klíče se nezdařil.</translation>
+<translation id="132960226125594336">Soubor <ph name="RELATIVE_PATH" /> pro skript obsahu nelze načíst, protože by překročil maximální velikost skriptu nebo maximální celkovou velikost skriptů rozšíření.</translation>
 <translation id="1420684932347524586">Nezdařilo se vytvořit náhodný soukromý klíč RSA.</translation>
 <translation id="1445572445564823378">Toto rozšíření zpomaluje prohlížeč <ph name="PRODUCT_NAME" />. Chcete-li výkon prohlížeče <ph name="PRODUCT_NAME" /> obnovit, měli byste rozšíření zakázat.</translation>
 <translation id="1468038450257740950">Rozhraní WebGL není podporováno.</translation>

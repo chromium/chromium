@@ -517,6 +517,7 @@
 <translation id="3830886834687455630">ඔබේ මුරපද පරීක්ෂා කිරීමට Google Play සේවා යාවත්කාලීන කරන්න</translation>
 <translation id="3845098929839618392">අප්‍රකට ටැබයක විවෘත කරන්න</translation>
 <translation id="3856096718352044181">මෙය වලංගු සැපයුම්කරුවෙක් බව සත්‍යාපන කරන්න, නැති නම් පසුව නැවත උත්සාහ කරන්න</translation>
+<translation id="3858127568696903256">ඔබ අනුගමනය කරන අන්තර්ගතය මෙතැනින් බලන්න</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3861633093716975811">ජනප්‍රිය වීඩියෝ</translation>
 <translation id="3874520961715512166">අඩවිය ඉවත් කරන ලදි</translation>
@@ -552,7 +553,6 @@
 <translation id="4045764304651014138">භාවිත දත්ත</translation>
 <translation id="405399507749852140">කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඇඟවීම් ලබා ගන්න</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">තිරයේ ඉහළට ආසන්නව විකල්ප තිබේ</translation>
 <translation id="4062305924942672200">නෛතික තොරතුරු</translation>
 <translation id="4072805772816336153">පසුව නැවත උත්සාහ කරන්න</translation>
 <translation id="4084682180776658562">පිටු සලකුණ</translation>
@@ -642,7 +642,6 @@
 <translation id="4554077758708533499">USB කේබලය සමගින් සම්බන්ධයි</translation>
 <translation id="4558311620361989323">වෙබ් පිටු කෙටි මං</translation>
 <translation id="4561730552726921821">ලියාපදිංචිය සාර්ථක විය</translation>
-<translation id="4561979708150884304">සබැඳුමක් නැත</translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
 <translation id="4572422548854449519">කළමනාකරණය කරන ලද ගිණුමට පිරීම</translation>
 <translation id="4576892426230499203">වෙනත් සත්‍යාපනය කිරිමේ විකල්පයක් උත්සාහ කරන්න</translation>
@@ -1351,7 +1350,6 @@
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="82619448491672958">අනෙකුත් ටැබ බලන්න</translation>
 <translation id="8266862848225348053">බාගැනීම් ස්ථානය</translation>
-<translation id="8274165955039650276">බාගැනීම් බලන්න</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8282297628636750033">හැකි විට, අඩවිවලට අඳුරු තේමාව යොදන්න</translation>
 <translation id="829672787777123339">ඔබගේ උපාංගය වෙත සම්බන්ධ වෙමින්…</translation>

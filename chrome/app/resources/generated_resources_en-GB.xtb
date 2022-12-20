@@ -1271,6 +1271,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="212862741129535676">Frequency state occupancy percentage</translation>
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2133857665503360653">Retry <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">Hide PINs</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2135787500304447609">&amp;Resume</translation>
@@ -2402,7 +2403,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3132896062549112541">Rule</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Downloading, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141318088920353606">Listening...</translation>
@@ -2856,11 +2856,13 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
 <translation id="3586787825263265024">The application <ph name="APPLICATION_NAME" /> requires OneDrive to be available.</translation>
 <translation id="3586806079541226322">Can't open this file</translation>
+<translation id="3587438013689771191">Learn more about: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3588790464166520201">Allowed to install payment handlers</translation>
 <translation id="3589766037099229847">Insecure content blocked</translation>
 <translation id="3590194807845837023">Unlock Profile and Relaunch</translation>
 <translation id="3590295622232282437">Entering managed session.</translation>
+<translation id="3591057288287063271">Keep <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Learn more</translation>
 <translation id="3593152357631900254">Enable Fuzzy-Pinyin mode</translation>
 <translation id="3593965109698325041">Certificate Name Constraints</translation>
@@ -3762,6 +3764,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="442397852638519243"><ph name="USER_NAME" />, your administrator requires you to change your password.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Delete <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">To get started, please make sure that your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.</translation>
 <translation id="4426508677408162512">All Bookmarks</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
@@ -4033,6 +4036,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4666472247053585787">View notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667027203988048332">What data is used:</translation>
+<translation id="4672759829555593783">Open <ph name="FILE_NAME" /> now</translation>
 <translation id="46733273239502219">Offline data in installed apps will also be cleared</translation>
 <translation id="4673442866648850031">Open stylus tools when the stylus is removed</translation>
 <translation id="4675065861091108046">You Previously Chose To Allow All Extensions On <ph name="ORIGIN" /></translation>
@@ -4645,6 +4649,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5268373933383932086">Your page, your way</translation>
 <translation id="5269977353971873915">Print Failed</translation>
 <translation id="5273806377963980154">Edit site URL</translation>
+<translation id="5273966423195882879">Colour based on theme</translation>
 <translation id="5275084684151588738">User dictionaries</translation>
 <translation id="5275100789567222478">Turn on only when my battery is at <ph name="PERCENT" />% or lower</translation>
 <translation id="5275338516105640560">Saved tab group button</translation>
@@ -5042,7 +5047,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5632059346822207074">Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="5632221585574759616">Learn more about extension permissions</translation>
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
-<translation id="5632592977009207922">Downloading, <ph name="PERCENT_REMAINING" />% remaining</translation>
 <translation id="5633149627228920745">Learn more about system requirements</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">See memories of your recent trips and more</translation>
@@ -5925,6 +5929,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6465841119675156448">Without Internet</translation>
 <translation id="6466258437571594570">Sites are blocked from interrupting you when they ask to send notifications</translation>
 <translation id="6466988389784393586">&amp;Open All Bookmarks</translation>
+<translation id="6467230443178397264">Scan <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimise full-screen videos</translation>
 <translation id="6467377768028664108">Your <ph name="DEVICE_TYPE" /> can then:</translation>
 <translation id="6468485451923838994">Fonts</translation>
@@ -6671,6 +6676,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Convert image to text</translation>
 <translation id="7159953856712257647">Installed by default</translation>
 <translation id="7160182524506337403">You can now view your phone's notifications</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
@@ -6932,6 +6938,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7412226954991670867">GPU Memory</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Setup complete</translation>
+<translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
 <translation id="7416362041876611053">Unknown network error</translation>
 <translation id="741906494724992817">This app requires no special permissions.</translation>

@@ -61,7 +61,7 @@
 <translation id="1491076385728777984">Firmware uppdateras på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="150962533380566081">Ogiltig PUK-kod.</translation>
-<translation id="1510238584712386396">Startprogram</translation>
+<translation id="1510238584712386396">Starttangent</translation>
 <translation id="1526389707933164996">Animation för skärmsläckaren</translation>
 <translation id="152892567002884378">Höj volymen</translation>
 <translation id="1555130319947370107">Blå</translation>
@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1962550982027027473">Ett standard-APN krävs</translation>
 <translation id="1977994649430373166">Profilbild på Google</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="1999615961760456652">Infångstportal</translation>
@@ -393,6 +394,7 @@
 <translation id="4793710386569335688">Besök <ph name="BEGIN_LINK" />hjälpcentret<ph name="END_LINK" /> om du vill ha mer hjälp.</translation>
 <translation id="4793756956024303490">Komprimeringsalgoritm</translation>
 <translation id="4794140124556169553">Systemet kan bli långsammare när du kör ett CPU-test</translation>
+<translation id="4798078634453489142">Ta bort ett APN om du vill lägga till ett nytt APN</translation>
 <translation id="4800589996161293643">Community för Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
@@ -634,6 +636,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6791471867139427246">färg på tangentbordets belysning</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
+<translation id="6838167112108853532">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade anslutna APN:er är inaktiverade eller borttagna.</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
 <translation id="6889786074662672253">Koppla inte från den externa enheten och stäng inte av datorn medan enheten startas om. Du kan minimera fönstret. Detta kan ta en stund och den externa enheten kanske inte fungerar under tiden.</translation>
 <translation id="6905724422583748843">Tillbaka till <ph name="PAGE_NAME" /></translation>

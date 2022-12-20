@@ -129,6 +129,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3140883423282498090">Změny se projeví po příštím restartu prohlížeče Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikace Chrome</translation>
 <translation id="3169523567916669830">Během zkoušek můžete zobrazovat a odstraňovat zájmy, které weby používají k zobrazování reklam. Chromium zájmy odhaduje na základě vaší nedávné historie prohlížení.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome je připojen k zařízení HID}few{Google Chrome je připojen k zařízením HID}many{Google Chrome je připojen k zařízením HID}other{Google Chrome je připojen k zařízením HID}}</translation>
 <translation id="3245429137663807393">Pokud také sdílíte přehledy využití Chromu, budou zahrnovat adresy URL, které navštěvujete</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3286538390144397061">Restartovat</translation>

@@ -258,6 +258,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1559447966090556585">Vil du have notifikationer?</translation>
+<translation id="1559486004335285648">Udfyld automatisk betalingsoplysninger</translation>
 <translation id="1559528461873125649">Filen eller mappen findes ikke</translation>
 <translation id="1559572115229829303">&lt;p&gt;Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da datoen og tiden på din enhed (<ph name="DATE_AND_TIME" />) er forkert.&lt;/p&gt;
 
@@ -366,6 +367,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1807528111851433570">Startark</translation>
 <translation id="181000283860817563">Hold øje med priser på flere websites</translation>
+<translation id="1810391395243432441">Beskyt adgangskoder med din skærmlås</translation>
 <translation id="1812527064848182527">landskab</translation>
 <translation id="1813414402673211292">Ryd browserdata</translation>
 <translation id="182139138257690338">automatiske downloads</translation>
@@ -385,6 +387,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1871208020102129563">Proxy er indstillet til at bruge faste proxyservere, ikke webadresser til .pac-scripts.</translation>
 <translation id="1871284979644508959">Skal udfyldes</translation>
 <translation id="1873899211667975540">Rockmusik</translation>
+<translation id="1874224422119691492">Du kan ændre, om du vil bruge din skærmlås til at udfylde adgangskoder, i <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Fotobakke</translation>
 <translation id="1875512691959384712">Google Analyse</translation>
 <translation id="187918866476621466">Åbn opstartssider</translation>
@@ -753,6 +756,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at administrere Beskyttet browsing m.m. i Chrome-indstillingerne</translation>
 <translation id="2878197950673342043">Plakatfals</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">bruge din skærmlås til at udfylde adgangskoder</translation>
 <translation id="2881276955470682203">Vil du gemme kortet?</translation>
 <translation id="2882949212241984732">Dobbelt portfals</translation>
 <translation id="2893773853358652045">Fjerde papirrulle</translation>
@@ -1409,6 +1413,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Bakke 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Du bruger din skærmlås til at udfylde adgangskoder</translation>
 <translation id="4558551763791394412">Prøv at deaktivere dine udvidelser.</translation>
 <translation id="4566017918361049074">Udendørsaktiviteter</translation>
 <translation id="4567686777917670400">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -2927,6 +2932,7 @@ Yderligere oplysninger:
 <translation id="8396522675989118466">Dette er den <ph name="NUMBER_OF_DIGITS" />-cifrede kode på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Find din telefon</translation>
 <translation id="8405579342203358118">Administrer, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
+<translation id="8406071103346257942">stoppe med at bruge din skærmlås til at udfylde adgangskoder</translation>
 <translation id="8409413588194360210">betalingshandlers</translation>
 <translation id="8412145213513410671">Nedbrud (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du skal angive den samme adgangssætning to gange.</translation>
@@ -3197,6 +3203,7 @@ Yderligere oplysninger:
 <translation id="9128016270925453879">Politikkerne er indlæst</translation>
 <translation id="9128870381267983090">Opret forbindelse til netværk</translation>
 <translation id="9131119348384879525">Vil du optage fortroligt indhold?</translation>
+<translation id="9133985615769429248">Hvis du deler denne enhed med andre, kan du bruge din skærmlås til at verificere din identitet, når du bruger en gemt adgangskode</translation>
 <translation id="9136861683332321024">Luksusbiler</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9137248913990643158">Start og log ind på Chrome, inden du bruger denne app.</translation>

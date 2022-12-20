@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1962550982027027473">Een standaard APN is vereist</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
 <translation id="2597774443162333062">Bestanden worden naar Google gestuurd voor foutopsporing</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scannen afgerond. 1 pagina gescand}other{Scannen afgerond. {NUMBER_OF_PAGES} pagina's gescand}}</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
@@ -392,6 +394,7 @@
 <translation id="4793710386569335688">Ga voor meer hulp naar het <ph name="BEGIN_LINK" />Helpcentrum<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Compressiealgoritme</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
+<translation id="4798078634453489142">Verwijder een APN om een nieuwe APN toe te voegen</translation>
 <translation id="4800589996161293643">Chromebook-community</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
@@ -633,6 +636,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
+<translation id="6838167112108853532">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette gekoppelde APN's uitstaan of worden verwijderd.</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>

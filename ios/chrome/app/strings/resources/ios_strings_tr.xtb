@@ -190,6 +190,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2421044535038393232">Düzenlemeye Devam Et</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> adresinde "<ph name="USERNAME" />" için zaten kayıtlı şifreniz var</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
+<translation id="2451654228769116489">Sekmeyi Sabitle</translation>
 <translation id="2461070143328828326">Şifre Ayarları</translation>
 <translation id="2469960372084740698">Güvenli Tarama kapatılsın mı?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> için zaten kayıtlı şifreniz var</translation>
@@ -672,6 +673,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6059830886158432458">Haberlerinizi ve aktivitenizi buradan yönetin</translation>
 <translation id="6064824697233747382">Kuruluşunuz, senkronizasyonu kapatmanızı zorunlu tutuyor.</translation>
 <translation id="6066301408025741299">İptal etmek için hafifçe vurun.</translation>
+<translation id="6071409777669089905">Sekmenin Sabitlemesini Kaldır</translation>
 <translation id="60829778314739003">Kabul Et ve Devam Et</translation>
 <translation id="6084848228346514841">Sekme Seçin</translation>
 <translation id="6103540626693881831">Cihaz Üzerinde Şifreleme</translation>
@@ -1097,6 +1099,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9219154867334666734">Sekmelerde Ara…</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
 <translation id="941747855997058526">Şifreyi seçin...</translation>
+<translation id="948048872540558976">Yeni Sekme Oluştur</translation>
 <translation id="952704832371081537">İptal</translation>
 <translation id="953008885340860025">Chrome Oturumu Kapatıldı</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> kanalını takip ediyorsunuz</translation>

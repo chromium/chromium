@@ -30,6 +30,7 @@
 <translation id="1022489261739821355">‏عرض كلمات المرور من <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">إضافة منفذ</translation>
 <translation id="1026822031284433028">تحميل صورة</translation>
+<translation id="1028604629594230522">‏يُحمِّل متصفِّح Chrome مسبقًا الصفحات التي يُحتمل أن تنتقل إليها حتى يتم تحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="1028700151766901954">‏السبب: تم العثور على ميزة "الوصول إلى المتصفِّحات القديمة" (LBS) في <ph name="DEFAULT_OPEN_BROWSER" /> بشكل تلقائي.</translation>
 <translation id="1029317248976101138">تكبير/تصغير</translation>
 <translation id="1031362278801463162">تحميل المعاينة</translation>
@@ -646,6 +647,7 @@
 <translation id="15916883652754430">إعدادات صوت النظام</translation>
 <translation id="1592074621872221573">‏أوقَف <ph name="MANAGER" /> تفعيل إعداد "تصحيح الأخطاء عبر ADB"، وهذا سيؤدي إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" />. يُرجى الاحتفاظ بنسخة احتياطية من ملفاتك قبل إعادة التشغيل.</translation>
 <translation id="1592126057537046434">الترجمة باستخدام ميزة "معلومات سريعة"</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />موقع إلكتروني واحد<ph name="END_BOLD" /> لم تزُره منذ فترة}zero{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />{NUM_SITES} موقع إلكتروني<ph name="END_BOLD" /> لم تزُره منذ فترة}two{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />موقعَين إلكترونيَّين ({NUM_SITES})<ph name="END_BOLD" /> لم تزُرهما منذ فترة}few{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />{NUM_SITES} مواقع إلكترونية<ph name="END_BOLD" /> لم تزُرها منذ فترة}many{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />{NUM_SITES} موقعًا إلكترونيًا<ph name="END_BOLD" /> لم تزُره منذ فترة}other{تمت إزالة الأذونات من <ph name="BEGIN_BOLD" />{NUM_SITES} موقع إلكتروني<ph name="END_BOLD" /> لم تزُره منذ فترة}}</translation>
 <translation id="1593594475886691512">تجري التهيئة...</translation>
 <translation id="159359590073980872">ذاكرة التخزين المؤقت للصور</translation>
 <translation id="1593926297800505364">حفظ طريقة الدفع</translation>
@@ -1061,6 +1063,7 @@
 <translation id="1941995177877935582">عرض خريطة المفاتيح</translation>
 <translation id="1942128823046546853">الاطّلاع على جميع بياناتك وتغييرها على جميع المواقع الإلكترونية</translation>
 <translation id="1944528062465413897">رمز إقران البلوتوث:</translation>
+<translation id="1944535645109964458">ما مِن مفاتيح مرور متوفّرة</translation>
 <translation id="1944921356641260203">تم العثور على التحديث</translation>
 <translation id="1947136734041527201">بإمكانك تسجيل الدخول إلى المواقع الإلكترونية باستخدام حسابك من خلال خدمة تقديم الهويات.</translation>
 <translation id="1949584741547056205">إجابات سريعة</translation>
@@ -1979,6 +1982,7 @@
 <translation id="2766161002040448006">طلب الإذن من أحد الوالدَين</translation>
 <translation id="2767077837043621282">‏تعذَر تحديث جهاز Chromebook. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2767127727915954024">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
+<translation id="2769174155451290427">الصورة التي تم تحميلها</translation>
 <translation id="2770082596325051055">إيقاف تنزيل "<ph name="FILE_NAME" />" مؤقتًا</translation>
 <translation id="2770465223704140727">إزالة من القائمة</translation>
 <translation id="2770690685823456775">تصدير كلمات المرور إلى مجلد آخر</translation>
@@ -2261,6 +2265,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">الاتصالات الآمنة من نفس الموقع فقط</translation>
 <translation id="3012917896646559015">يُرجى الاتصال بجهة تصنيع الجهاز على الفور لإرسال جهاز الكمبيوتر إلى أحد مرافق الإصلاح.</translation>
+<translation id="3014717196148502230">‏يُحمِّل متصفِّح Chrome مسبقًا المزيد من الصفحات التي يُحتمل أن تنتقل إليها حتى يتم تحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="301525898020410885">حدّدت مؤسستك لغة تلقائية</translation>
 <translation id="3015639418649705390">إعادة التشغيل الآن</translation>
 <translation id="3016381065346027039">لا تتوفر إدخالات في السجلّ</translation>
@@ -2293,6 +2298,7 @@
 <translation id="3037754279345160234">يتعذَّر تحليل الإعداد لضمّ النطاق. يُرجى الاتصال بمشرفك.</translation>
 <translation id="3038612606416062604">إضافة طابعة يدويًا</translation>
 <translation id="3039491566278747710">تعذّر تثبيت السياسة بلا إنترنت على الجهاز.</translation>
+<translation id="3043016484125065343">يجب تسجيل الدخول للاطّلاع على الإشارات المرجعية</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">من <ph name="ORIGIN" /></translation>
 <translation id="304499331062371949">عدم السماح لأي إضافات بقراءة اسم الموقع الإلكتروني <ph name="SITE_NAME" /> وتغييره</translation>
@@ -2385,7 +2391,6 @@
 <translation id="3132896062549112541">القاعدة</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">جارٍ التنزيل، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
 <translation id="3141318088920353606">جارٍ الاستماع…</translation>
@@ -3777,6 +3782,7 @@
 <translation id="4458535500699390320">عندما كانت علامة التبويب هذه غير نشطة، نجحت ميزة "توفير الذاكرة" في تفريغ مساحة من الذاكرة لتنفيذ مهام أخرى. يمكنك تعديل هذا الإعداد في أي وقت من خلال الإعدادات.</translation>
 <translation id="4459169140545916303">نشط قبل <ph name="DEVICE_LAST_ACTIVATED_TIME" /> يوم</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
+<translation id="4461483878391246134">إضافة اللغات إلى قائمة "عدم اقتراح ترجمة المحتوى مطلقًا"</translation>
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465236939126352372">تم ضبط الحد الأقصى المسموح به لاستخدام تطبيق <ph name="APP_NAME" /> على <ph name="TIME" />.</translation>
 <translation id="4466839823729730432">الاطّلاع على ذكرياتك هنا</translation>
@@ -3921,6 +3927,7 @@
 <translation id="4589713469967853491">تمّت كتابة السجلّات في دليل "عمليات التنزيل" بنجاح.</translation>
 <translation id="4590324241397107707">تخزين قاعدة البيانات</translation>
 <translation id="459204634473266369">ما مِن أجهزة محفوظة في الحساب <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4592525994536856567">التصفُّح والبحث أسرع من ذي قبل</translation>
 <translation id="4592891116925567110">تطبيق الرسم باستخدام قلم الشاشة</translation>
 <translation id="4593021220803146968">&amp;انتقال إلى <ph name="URL" /></translation>
 <translation id="4594218792629569101">انقر على "وضع علامة على الصفحة بأنّها مقروءة" لنقلها إلى أسفل القائمة.</translation>
@@ -4429,6 +4436,7 @@
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5079010647467150187">إضافة شبكة افتراضية خاصة مُدمجة...</translation>
 <translation id="508059534790499809">‏تحديث تذكرة Kerberos</translation>
+<translation id="5081960376148623587">اختيار ما إذا كنت تريد تحميل الصفحات مسبقًا</translation>
 <translation id="5084328598860513926">تمّت مقاطعة عملية الإعداد. يُرجى إعادة المحاولة أو التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="5085162214018721575">جارٍ البحث عن تحديثات</translation>
 <translation id="5086082738160935172">‏جهاز واجهة بشرية (HID)</translation>
@@ -4457,6 +4465,7 @@
 <translation id="5109816792918100764">إزالة <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111646998522066203">الخروج من وضع التصفّح المتخفّي</translation>
 <translation id="5111692334209731439">&amp;مدير الإشارات</translation>
+<translation id="5111794652433847656">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="APP_NAME" />".</translation>
 <translation id="5112577000029535889">&amp;أدوات المطورين</translation>
 <translation id="511313294362309725">تفعيل ميزة "الإقران السريع"</translation>
 <translation id="5113739826273394829">إذا نقرت على هذا الرمز، فستقوم بقفل جهاز <ph name="DEVICE_TYPE" /> هذا يدويًا. في المرة القادمة، ستحتاج إلى كتابة كلمة مرورك للدخول.</translation>
@@ -5018,7 +5027,6 @@
 <translation id="5632059346822207074">‏تم طلب الإذن، اضغط على Ctrl + السهم المتجه للأمام للاستجابة للطلب</translation>
 <translation id="5632221585574759616">مزيد من المعلومات حول أذونات الإضافات</translation>
 <translation id="5632566673632479864">لم يعد حسابك <ph name="EMAIL" /> مسموحًا به كحساب أساسي. بما أنّ النطاق <ph name="DOMAIN" /> يدير هذا الحساب، سيتم محو الإشارات المرجعية والسِجلّ وكلمات المرور والإعدادات الأخرى من هذا الجهاز.</translation>
-<translation id="5632592977009207922">جارٍ التنزيل، تَبقَّى<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">مزيد من المعلومات حول متطلبات النظام</translation>
 <translation id="563371367637259496">الجوّال</translation>
 <translation id="5634446357546764049">الاطّلاع على ذكريات رحلاتك الأخيرة وغيرها المزيد</translation>
@@ -5312,6 +5320,7 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
 <translation id="5911030830365207728">‏الترجمة من Google</translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
+<translation id="5911545422157959623">الإشارات المرجعية غير متاحة في وضع الضيف.</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -5406,6 +5415,7 @@
 <translation id="5990266201903445068">‏Wi-Fi فقط</translation>
 <translation id="5990386583461751448">مترجَمة</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذا التطبيق.}zero{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}two{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذين التطبيقين.}few{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}many{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}other{لضمان مواصلة تصفّح الويب، يُرجى الطلب من المُشرف إزالة هذه التطبيقات.}}</translation>
+<translation id="5993508466487156420">{NUM_SITES,plural, =1{اكتملت مراجعة موقع إلكتروني واحد.}zero{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}two{اكتملت مراجعة موقعَين إلكترونيَّين ({NUM_SITES}).}few{اكتملت مراجعة {NUM_SITES} مواقع إلكترونية.}many{اكتملت مراجعة {NUM_SITES} موقعًا إلكترونيًا.}other{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}}</translation>
 <translation id="5997337190805127100">مزيد من المعلومات عن إمكانية الوصول إلى الموقع الإلكتروني</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">البدء</translation>
@@ -5590,6 +5600,7 @@
 <translation id="6163363155248589649">&amp;عادي</translation>
 <translation id="6163376401832887457">‏إعدادات Kerberos</translation>
 <translation id="6163522313638838258">توسيع الكل...</translation>
+<translation id="6164832038898943453">إضافة اللغات إلى قائمة "لغات أريد ترجمتها تلقائيًا"</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
 <translation id="6169040057125497443">الرجاء التحقق من الميكروفون.</translation>
@@ -6007,6 +6018,7 @@
 <translation id="6568283005472142698">البحث عن علامات تبويب</translation>
 <translation id="65711204837946324">يجب الحصول على إذن لإجراء عملية التنزيل.</translation>
 <translation id="6571772921213691236">تعديل بيانات تسجيل الدخول</translation>
+<translation id="6572081226337824427">إنّ بعض الصفحات التي تنتقل إليها يتم تحميلها مُسبقًا.</translation>
 <translation id="657229725818377235">عزِّز حماية جهازك من المواقع الإلكترونية الضارّة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6573096386450695060">السماح دومًا</translation>
 <translation id="6573497332121198392">تتعذَّر إزالة الاختصار.</translation>
@@ -6099,6 +6111,7 @@
 <translation id="6646476869708241165">إيقاف ميزة "الإقران السريع"</translation>
 <translation id="6647228709620733774">‏عنوان URL لإبطال المرجع المصدق لـ Netscape</translation>
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
+<translation id="6647690760956378579">الاستماع إلى معاينة الصوت الطبيعي</translation>
 <translation id="6648911618876616409">تحديث مهم جاهز للتثبيت. يُرجى تسجيل الدخول للبدء.</translation>
 <translation id="6649018507441623493">لحظة من فضلك...</translation>
 <translation id="665061930738760572">فتح في &amp;نافذة جديدة</translation>
@@ -6162,11 +6175,13 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
 <translation id="6709133671862442373">الأخبار</translation>
 <translation id="6709357832553498500">الاتصال باستخدام <ph name="EXTENSIONNAME" /></translation>
+<translation id="6709802811835274327">‏في حال السماح بملفات تعريف الارتباط، قد يستخدمها Chrome في عملية التحميل المُسبق للصفحات.</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6710394144992407503">التحقق من الأخطاء الإملائية عند كتابة نص على صفحات الويب</translation>
 <translation id="6711146141291425900">ربط حساب <ph name="WEB_DRIVE" /> لإجراء عمليات التنزيل</translation>
 <translation id="6712943853047024245">سبق أن حفظت كلمة مرور مع اسم المستخدم هذا للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="6713233729292711163">إضافة ملف شخصي للعمل</translation>
+<translation id="6713668088933662563">عدم اقتراح ترجمة المحتوى المعروض بهذه اللغات مطلقًا</translation>
 <translation id="6715803357256707211">‏لقد حدث خطأ أثناء تثبيت تطبيق Linux. يُرجى النقر على الإشعار لمعرفة التفاصيل.</translation>
 <translation id="671619610707606484">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات المُخزّنة من خلال المواقع الإلكترونية.</translation>
 <translation id="6716798148881908873">‏تم فقد اتصال الشبكة، يُرجى التحقّق من اتصالك بالشبكة أو تجربة شبكة Wi-Fi أخرى.</translation>
@@ -7077,6 +7092,7 @@
 <translation id="7573594921350120855">تستخدم المواقع الإلكترونية عادةً كاميرا الفيديو لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
 <translation id="7574650250151586813">‏لكتابة نص، يُرجى تحديث تطبيق لوحة مفاتيح Daydream</translation>
 <translation id="7574676002608048667">إرسال كلمة المرور</translation>
+<translation id="7575272930307342804">عناصر التحكّم في التنقّل</translation>
 <translation id="7576690715254076113">تجميع</translation>
 <translation id="7576976045740938453">حدثت مشكلة في حساب الوضع التجريبي.</translation>
 <translation id="7578137152457315135">إعدادات بصمة الإصبع</translation>
@@ -7930,6 +7946,7 @@
 <translation id="833262891116910667">تمييز</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
 <translation id="8336407002559723354">إنهاء التحديثات في <ph name="MONTH_AND_YEAR" /></translation>
+<translation id="8336463659890584292">‏عندما يطلب موقع إلكتروني أن يحمِّل مُسبقًا الروابط في صفحته بخصوصية تامة، يستخدم متصفِّح Chrome خوادم Google. يؤدي هذا الإجراء إلى إخفاء هويتك عن الموقع الإلكتروني الذي يتم تحميله مسبقًا، ولكنّ تكون Google على اطّلاع بالمواقع الإلكترونية التي يتم تحميلها مُسبقًا.</translation>
 <translation id="8336739000755212683">تغيير صورة حساب الجهاز</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{سيتم حفظ بيانات هذا الجهاز لمدة ساعة واحدة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}zero{سيتم حفظ بيانات هذا الجهاز لمدة {HOURS} ساعة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}two{سيتم حفظ بيانات هذا الجهاز لمدة ساعتَين ({HOURS}) ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}few{سيتم حفظ بيانات هذا الجهاز لمدة {HOURS} ساعات ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}many{سيتم حفظ بيانات هذا الجهاز لمدة {HOURS} ساعة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}other{سيتم حفظ بيانات هذا الجهاز لمدة {HOURS} ساعة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}}</translation>
 <translation id="8337047789441383384">لقد سجّلت مفتاح الأمان هذا من قبل. لا داعي لتسجيله مرة أخرى.</translation>
@@ -8390,6 +8407,7 @@
 <translation id="8774379074441005279">تأكيد الاستعادة</translation>
 <translation id="8774934320277480003">الهامش العلوي</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
+<translation id="8775329533241312400">التصفُّح والبحث أسرع من عملية التحميل المُسبق العادي</translation>
 <translation id="8775653927968399786">{0,plural, =1{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانية واحدة.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثانية.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانيتَين.

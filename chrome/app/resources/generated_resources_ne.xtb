@@ -2383,7 +2383,6 @@
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">दैनिक रूपमा पुनः ताजा गर्नुहोस्</translation>
 <translation id="3134393957315651797">परीक्षणको चरणमा रहेको <ph name="EXPERIMENT_NAME" /> नामक सुविधाको स्थिति चयन गर्नुहोस्। परीक्षणको चरणमा रहेको सुविधाको विवरण: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">डाउनलोड गर्दै: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">डिफल्ट पहेँलो अवतार</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141318088920353606">सुन्दै...</translation>
@@ -5021,7 +5020,6 @@
 <translation id="5632059346822207074">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न Ctrl + Forward थिच्नुहोस्</translation>
 <translation id="5632221585574759616">एक्स्टेन्सनसम्बन्धी अनुमतिका बारेमा थप जान्नुहोस्</translation>
 <translation id="5632566673632479864">तपाईंको खाता <ph name="EMAIL" /> लाई अब उप्रान्त प्राथमिक खाताका रूपमा अनुमति दिइँदैन। यो खाताको व्यवस्थापन <ph name="DOMAIN" /> ले गर्ने हुनाले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू यस डिभाइसबाट खाली गरिने छ।</translation>
-<translation id="5632592977009207922">डाउनलोड गर्दै, <ph name="PERCENT_REMAINING" />% बाँकी</translation>
 <translation id="5633149627228920745">सिस्टमसम्बन्धी मापदण्डहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5634446357546764049">आफूले हालसालै भ्रमण गरेका ठाउँका स्मरणमा र अन्य कुरा हेर्नुहोस्</translation>
@@ -6219,6 +6217,7 @@
 <translation id="6770042910635026163">तपाईंले खोल्ने (तपाईंका रुचिहरूका बारेमा व्याख्या गर्ने) साइटहरू</translation>
 <translation id="6770602306803890733">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्छ</translation>
 <translation id="6771503742377376720">एउटा प्रमाणीकरण अधिकार हो</translation>
+<translation id="6774710250118040929">नयाँ पासवर्ड हाल्नुहोस्</translation>
 <translation id="6775163072363532304">उपलब्ध डिभाइस यहाँ देखिने छन्।</translation>
 <translation id="677646486571529447">टिपोट हाल्नुहोस्</translation>
 <translation id="6776729248872343918">फास्ट पेयर अन गर्नुहोस्</translation>

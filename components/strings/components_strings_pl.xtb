@@ -1015,6 +1015,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> chce korzystać z mikrofonu</translation>
 <translation id="3533328374079021623">Zestaw tac odbiorczych 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Obraz na karcie</translation>
 <translation id="3542768452570884558">Otwórz link w nowym oknie</translation>
 <translation id="3547746132308051926">20 x 24 cale</translation>
 <translation id="3550112004925580947">Branża turystyczna</translation>
@@ -1105,6 +1106,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3745099705178523657">Po potwierdzeniu dane karty z Twojego konta Google zostaną udostępnione tej stronie.</translation>
 <translation id="3748148204939282805">Osoby atakujące na stronie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą podstępem nakłonić Cię do wykonania czynności niebezpiecznych takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Branża lotnicza</translation>
+<translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
 <translation id="3759461132968374835">Brak ostatnio zgłoszonych awarii. Awarie, które nastąpiły wówczas, gdy funkcja zgłaszania awarii była wyłączona, nie są tutaj wymienione.</translation>
 <translation id="3760561303380396507">Używać Windows Hello zamiast kodu CVC?</translation>
@@ -2917,6 +2919,7 @@ Dodatkowe informacje:
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
 <translation id="8364627913115013041">Nie ustawiono.</translation>
+<translation id="836616551641291797">Dowiedz się więcej o sposobie zarządzania przeglądarką</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8368027906805972958">Nieznane lub nieobsługiwane urządzenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Usługi Google Play</translation>

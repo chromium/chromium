@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">程序包无效：“<ph name="ERROR_CODE" />”。</translation>
 <translation id="1140871961407805696">后置</translation>
 <translation id="1196338895211115272">无法导出私有密钥。</translation>
+<translation id="132960226125594336">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件，因为该文件会超出脚本大小上限或相应扩展程序的内容脚本总大小上限。</translation>
 <translation id="1420684932347524586">糟糕！无法生成随机的 RSA 私有密钥。</translation>
 <translation id="1445572445564823378">此扩展程序拖慢了 <ph name="PRODUCT_NAME" />的运行速度。您应将其停用，以恢复 <ph name="PRODUCT_NAME" />的性能。</translation>
 <translation id="1468038450257740950">WebGL 不受支持。</translation>

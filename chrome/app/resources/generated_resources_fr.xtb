@@ -2386,7 +2386,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3132896062549112541">Règle</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3134393957315651797">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />. Description du test : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Téléchargement en cours : <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141318088920353606">Écoute…</translation>
@@ -5026,7 +5025,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5632059346822207074">Autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="5632221585574759616">En savoir plus sur les autorisations des extensions</translation>
 <translation id="5632566673632479864">Votre compte <ph name="EMAIL" /> n'est plus autorisé comme compte principal. Étant donné que ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et les autres paramètres seront effacés de cet appareil.</translation>
-<translation id="5632592977009207922">Téléchargement en cours, <ph name="PERCENT_REMAINING" /> % restant</translation>
 <translation id="5633149627228920745">En savoir plus sur la configuration système requise</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">Afficher les souvenirs de vos voyages récents et bien plus encore</translation>

@@ -258,6 +258,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1559447966090556585">Ricevere notifiche?</translation>
+<translation id="1559486004335285648">Compilazione automatica delle informazioni di pagamento</translation>
 <translation id="1559528461873125649">Nessun file o directory corrispondente</translation>
 <translation id="1559572115229829303">&lt;p&gt;Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del dispositivo (<ph name="DATE_AND_TIME" />) non sono corrette.&lt;/p&gt;
 
@@ -366,6 +367,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1807528111851433570">Primo foglio</translation>
 <translation id="181000283860817563">Monitora i prezzi su più siti</translation>
+<translation id="1810391395243432441">Proteggi le password con il blocco schermo</translation>
 <translation id="1812527064848182527">orizzontale</translation>
 <translation id="1813414402673211292">Cancella dati di navigazione</translation>
 <translation id="182139138257690338">download automatici</translation>
@@ -385,6 +387,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1871208020102129563">L'impostazione del proxy prevede l'utilizzo di server proxy fissi, non di un URL script .pac.</translation>
 <translation id="1871284979644508959">Campo obbligatorio</translation>
 <translation id="1873899211667975540">Musica rock</translation>
+<translation id="1874224422119691492">Puoi scegliere se utilizzare il blocco schermo per inserire le password in <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Vassoio foto</translation>
 <translation id="1875512691959384712">Moduli Google</translation>
 <translation id="187918866476621466">Apri pagine iniziali</translation>
@@ -753,6 +756,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire la funzionalità Navigazione sicura e altre opzioni nelle impostazioni di Chrome</translation>
 <translation id="2878197950673342043">Piegatura a mappa</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">usare il blocco schermo per inserire le password</translation>
 <translation id="2881276955470682203">Salvare la carta?</translation>
 <translation id="2882949212241984732">Piegatura a doppia finestra</translation>
 <translation id="2893773853358652045">Quarto rullo</translation>
@@ -1406,6 +1410,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4541810033354695636">realtà aumentata</translation>
 <translation id="4542971377163063093">Vassoio 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Stai usando il blocco schermo per inserire le password</translation>
 <translation id="4558551763791394412">Prova a disattivare le estensioni.</translation>
 <translation id="4566017918361049074">Attività all'aria aperta</translation>
 <translation id="4567686777917670400">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -2736,6 +2741,7 @@ Ulteriori dettagli:
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943397946612013052">Download bloccato</translation>
 <translation id="7943893128817522649">Può chiedere di scaricare automaticamente più file</translation>
+<translation id="7946724693008564269">Lingua rilevata</translation>
 <translation id="7947285636476623132">Controlla l'anno di scadenza e riprova</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="7950027195171824198">Gestisci le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
@@ -2923,6 +2929,7 @@ Ulteriori dettagli:
 <translation id="8396522675989118466">Si tratta del codice di <ph name="NUMBER_OF_DIGITS" /> cifre indicato su: <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Trova il tuo telefono</translation>
 <translation id="8405579342203358118">Gestisci le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
+<translation id="8406071103346257942">non usare più il blocco schermo per inserire le password</translation>
 <translation id="8409413588194360210">gestori dei pagamenti</translation>
 <translation id="8412145213513410671">Arresti anomali (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Devi inserire la stessa passphrase due volte.</translation>
@@ -3193,6 +3200,7 @@ Ulteriori dettagli:
 <translation id="9128016270925453879">I criteri sono stati caricati</translation>
 <translation id="9128870381267983090">Collegati alla rete</translation>
 <translation id="9131119348384879525">Vuoi acquisire contenuti riservati?</translation>
+<translation id="9133985615769429248">Se condividi questo dispositivo con altre persone, puoi usare il blocco schermo per verificare la tua identità ogni volta che usi una password salvata</translation>
 <translation id="9136861683332321024">Veicoli di lusso</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
 <translation id="9137248913990643158">Accedi a Chrome prima di usare questa app.</translation>

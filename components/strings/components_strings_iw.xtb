@@ -1011,6 +1011,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> רוצה להשתמש במיקרופון שלך</translation>
 <translation id="3533328374079021623">תיבת דואר 5</translation>
 <translation id="3537165859691846083">‏8.5x12.67 אינץ' (Letter Plus)</translation>
+<translation id="3542628208405253498">תמונת הכרטיס</translation>
 <translation id="3542768452570884558">פתיחת הקישור בחלון חדש</translation>
 <translation id="3547746132308051926">‏20x24 אינץ'</translation>
 <translation id="3550112004925580947">תעשיית מלונאות ואירוח</translation>
@@ -1101,6 +1102,7 @@
 <translation id="3745099705178523657">‏אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="3748148204939282805">תוקפים באתר <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> עלולים להונות אותך כדי לגרום לך לבצע פעולות מסוכנות, כמו התקנת תוכנה או חשיפת מידע אישי (לדוגמה, סיסמאות, מספרי טלפון או כרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">תעשייה אווירית</translation>
+<translation id="3752543821772132562">המערכת התעלמה מהמדיניות הזו כי המדיניות <ph name="POLICY_NAME" /> לא מוגדרת.</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
 <translation id="3759461132968374835">לא התקבלו דיווחים על קריסות לאחרונה. קריסות שהתרחשו בזמן שאפשרות הדיווח על קריסות הייתה מושבתת לא יופיעו כאן.</translation>
 <translation id="3760561303380396507">‏האם להשתמש ב-Windows Hello במקום ב-CVC?</translation>
@@ -2917,6 +2919,7 @@ Del</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>
+<translation id="836616551641291797">מידע נוסף על ניהול הדפדפן</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
 <translation id="8368027906805972958">מכשיר לא ידוע או שאינו נתמך (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏שירותי Google Play</translation>

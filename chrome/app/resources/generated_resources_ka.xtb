@@ -2387,7 +2387,6 @@
 <translation id="3132896062549112541">წესი</translation>
 <translation id="3132996321662585180">ყოველდღიურად განახლება</translation>
 <translation id="3134393957315651797">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“. ექსპერიმენტის აღწერილობა: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">მიმდინარეობს ჩამოტვირთვა, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ნაგულისხმევი ყვითელი ავატარი</translation>
 <translation id="3141093262818886744">მაინც გახსნა</translation>
 <translation id="3141318088920353606">მიმდინარეობს მოსმენა…</translation>
@@ -5026,7 +5025,6 @@
 <translation id="5632059346822207074">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას Ctrl + წინ</translation>
 <translation id="5632221585574759616">შეიტყვეთ მეტი გაფართოებების ნებართვების შესახებ</translation>
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
-<translation id="5632592977009207922">მიმდინარეობს ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="5633149627228920745">შეიტყვეთ მეტი სისტემური მოთხოვნების შესახებ</translation>
 <translation id="563371367637259496">მობილური</translation>
 <translation id="5634446357546764049">გაიხსენეთ თქვენი ბოლოდროინდელი მოგზაურობები და არა მხოლოდ</translation>

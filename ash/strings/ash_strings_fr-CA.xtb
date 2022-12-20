@@ -37,6 +37,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1182225749592316782">Cela autorise l'accès à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="118437560755358292">Entrez le mot de passe ou le NIP pour plus de sécurité</translation>
 <translation id="118532027333893379">Touchez n'importe où pour capturer la totalité de l'écran</translation>
@@ -127,6 +128,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
+<translation id="163517899691012366">Les notifications sont mises en sourdine lorsque le mode Ne pas déranger est activé</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
@@ -373,6 +375,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3047761520276763270">Essayez de dire :</translation>
 <translation id="3051189971848907985">Modification du nom du profil en cours… Patientez quelques minutes.</translation>
 <translation id="3055162170959710888">Tu as utilisé cet appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
+<translation id="3062298103034426069">Non prise en charge</translation>
 <translation id="3068711042108640621">Étagère à gauche</translation>
 <translation id="3077734595579995578">majuscule</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
@@ -407,6 +410,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a passé du bureau <ph name="ACTIVE_DESK" /> au bureau <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuration</translation>
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
+<translation id="3260969790895726815">La voix est traitée localement et la dictée fonctionne hors ligne, mais certaines commandes vocales ne fonctionneront pas.</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289544412142055976">Les applications Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">Recharge par l'adaptateur</translation>
@@ -454,9 +458,11 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Mettez à jour l'appareil d'ici 1 minute}one{Mettez à jour l'appareil d'ici # minute}other{Mettez à jour l'appareil d'ici # minutes}}</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
+<translation id="3533126039236445965">Applications dans l'étagère</translation>
 <translation id="3542066395059568317">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez faire un clic droit pour retirer les recommandations.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
+<translation id="3558768885091059911">Activer l'accès à la caméra et au microphone?</translation>
 <translation id="3563775809269155755">Activer le point d'accès sans fil</translation>
 <translation id="3566240529365775567">Ouvert au cours des dernières minutes</translation>
 <translation id="3571734092741541777">Configurer</translation>
@@ -786,9 +792,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5331975486040154427">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="533282197239610265">Afficher les appareils de diffusion</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droite)</translation>
+<translation id="5351427059191534258">Désactiver l'accès à l'appareil photo?</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Faites un clic droit sur le bureau et sélectionnez Fond d'écran et style.</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Pour en savoir plus, communiquez avec votre administrateur.</translation>
+<translation id="5361524080961918551">Fichiers vocaux en <ph name="LANGUAGE" /> partiellement téléchargés</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
@@ -861,6 +869,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5763928712329149804">Le mode Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Le mode Éclairage nocturne est activé.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
+<translation id="5773950591113557721">Cela autorise l'accès à <ph name="APP_NAME" />, à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5788127256798019331">Fichiers Google Play</translation>
@@ -898,6 +907,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier associé.</translation>
+<translation id="6002179289567220515">Vous avez utilisé le commutateur physique pour éteindre un appareil photo. Vous pouvez également désactiver l'accès pour tous les appareils photo.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Fermeture du mode miroir</translation>
 <translation id="602001110135236999">Faire défiler vers la gauche</translation>
@@ -938,9 +948,11 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="619279033188484792">Affichez les notifications, les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Recharger complètement maintenant</translation>
 <translation id="6193431488227440296">Développeur</translation>
+<translation id="6200515304866777730">Non pris en charge par l'application</translation>
 <translation id="6210042900243040400">Connectez <ph name="NAME" /> précédemment enregistré dans <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Vous pouvez maintenant vous enregistrer en même temps que votre écran</translation>
 <translation id="622484624075952240">Bas</translation>
+<translation id="623116199192908855">Diffusez votre écran depuis votre Chromebook</translation>
 <translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +994,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige que vous mettiez à jour votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6495400115277918834">Début de l'incrustation d'image, appuyez sur les touches Alt+Majuscule+V pour sélectionner</translation>
+<translation id="6497418457565568043">Mode Ne pas déranger activé</translation>
 <translation id="6500896621837555595">Mettre à jour</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur <ph name="RECEIVER_NAME" /> en cours</translation>
+<translation id="6508923215158854599">Assurez-vous que votre Chromebook est sur le même réseau Wi-Fi que votre appareil Chromecast.</translation>
 <translation id="6515727200518652613">Caméra déconnectée; tentative de reconnexion en cours…</translation>
 <translation id="6520517963145875092">Sélectionnez une fenêtre à capturer</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur l'interrupteur tant que la mise à jour n'est pas terminée.</translation>
@@ -1043,6 +1057,7 @@ Nouvelle installation</translation>
 <translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
+<translation id="6802687695197837794">Cela autorise l'accès à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" />, à toutes les applications et à tous les sites Web disposant des autorisations de caméra et de microphone</translation>
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
 <translation id="6812232930908427253">Impossible d'enregistrer le bureau. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
@@ -1074,6 +1089,7 @@ Nouvelle installation</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Disque</translation>
+<translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>

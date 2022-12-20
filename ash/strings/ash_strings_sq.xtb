@@ -120,6 +120,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
 <translation id="1546492247443594934">Tavolina e punës 2</translation>
 <translation id="1546930421365146760">Kërkoji administratorit ta konfigurojë këtë pajisje te "Paneli i administratorit të Google"</translation>
+<translation id="1550406609415860283">Pajisjet e disponueshme</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
@@ -127,6 +128,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1611993646327628135">Aktive</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
+<translation id="163517899691012366">Njoftimet janë të vendosura në heshtje kur modaliteti "Mos shqetëso" është aktiv</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
@@ -373,6 +375,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3047761520276763270">Provo të thuash:</translation>
 <translation id="3051189971848907985">Profili po riemërtohet. Prit disa minuta.</translation>
 <translation id="3055162170959710888">Sot e ke përdorur këtë pajisje për <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">Nuk mbështetet</translation>
 <translation id="3068711042108640621">Rafti në të majtë</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Zgjero menynë</translation>
@@ -407,6 +410,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfigurimi</translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
+<translation id="3260969790895726815">Ligjërimi përpunohet në nivel lokal dhe diktimi funksionon jashtë linje, por disa komanda zanore nuk do të funksionojnë.</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
 <translation id="3289544412142055976">Aplikacionet për Linux nuk mbështeten aktualisht</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
@@ -457,6 +461,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3542066395059568317">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të klikosh me butonin djathtas për të hequr rekomandimet.</translation>
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
+<translation id="3560174576767922131">Regjistro një video</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
 <translation id="3566240529365775567">Hapur tani</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
@@ -648,6 +653,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4577274620589681794">Koha mbaroi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Shfaq paraafishimet</translation>
 <translation id="4578906031062871102">Menyja e "Cilësimeve" u hap</translation>
+<translation id="458210817642223147">Regjistro imazhin GIF</translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
@@ -727,6 +733,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Tavolina e punës 16</translation>
 <translation id="5003993274120026347">Fjalia tjetër</translation>
+<translation id="5004607513195820459">Rrjeti menaxhohet</translation>
 <translation id="5016558321564993266">Ndrysho treguesin. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Qasja te mikrofoni i pajisjes është aktiv</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
@@ -786,9 +793,11 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
 <translation id="533282197239610265">Shfaq pajisjet e transmetimit</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (djathtas)</translation>
+<translation id="5351427059191534258">Të çaktivizohet qasja te kamera?</translation>
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5356963482258194581">Ndërro mes temës së errët dhe temës së ndriçuar. Kliko me butonin djathtas në desktop dhe zgjidh "Imazhi i sfondit dhe stili".</translation>
 <translation id="536019650977002321">Administratori yt nuk e lejon regjistrimin e audios. Kontakto me administratorin për më shumë informacion.</translation>
+<translation id="5361524080961918551">Skedarët e ligjërimit në <ph name="LANGUAGE" /> janë shkarkuar pjesërisht</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Shko te kjo skedë</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
@@ -898,6 +907,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
+<translation id="6002179289567220515">Ti përdore çelësin fizik për të çaktivizuar 1 kamerë. Mund të çaktivizosh po ashtu qasjen për të gjitha kamerat.</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
@@ -938,9 +948,11 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="619279033188484792">Shiko fotografitë, mediat dhe njoftimet më të fundit të telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Karikoje plotësisht tani</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">Nuk mbështetet nga aplikacioni</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
+<translation id="623116199192908855">Transmeto ekranin nga pajisja jote Chromebook</translation>
 <translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> po përdor aktualisht kamerën dhe mikrofonin tënd</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +994,10 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kërkon që ta përditësosh pajisjen tënde <ph name="DEVICE_TYPE" /> përpara afatit</translation>
 <translation id="649452524636452238">Kodi PIN i kartës smart</translation>
 <translation id="6495400115277918834">"Figurë brenda figurës" filloi; shtyp "Alt+Shift+V" për të fokusuar</translation>
+<translation id="6497418457565568043">Modaliteti "Mos shqetëso" është aktiv</translation>
 <translation id="6500896621837555595">Përditëso</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Sigurohu që pajisja jote Chromebook është në të njëjtin rrjet Wi-Fi me pajisjen tënde Chromecast.</translation>
 <translation id="6515727200518652613">Kamera u shkëput; po provohet rilidhja.</translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
@@ -1065,6 +1079,7 @@ Instalim i ri</translation>
 <translation id="6901883536534621389">Provo gjestet për të naviguar</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6931576957638141829">Ruaj te</translation>
+<translation id="6942518653766415536">Menyja e formatit të regjistrimit</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>

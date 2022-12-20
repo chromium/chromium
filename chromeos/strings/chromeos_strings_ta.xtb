@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2597774443162333062">ஃபைல்கள் பிழைதிருத்தத்திற்காக Googleளுக்கு அனுப்பப்படும்</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
 <translation id="2619761439309613843">தினசரிப் புதுப்பிப்பு</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
 <translation id="2638662041295312666">உள்நுழைவுப் படம்</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">கூடுதல் உதவிக்கு, <ph name="BEGIN_LINK" />உதவி மையத்திற்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4793756956024303490">சுருக்குதல் அல்காரிதம்</translation>
 <translation id="4794140124556169553">CPU பரிசோதனையை இயக்குவதால் உங்கள் சிஸ்டத்தின் செயல்திறன் பாதிக்கப்படக்கூடும்</translation>
+<translation id="4798078634453489142">புதிய APNனைச் சேர்க்க ஒரு APNனை அகற்றவும்</translation>
 <translation id="4800589996161293643">Chromebook சமூகம்</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>

@@ -1015,6 +1015,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3532844647053365774"><ph name="HOST" /> soovib kasutada teie mikrofoni</translation>
 <translation id="3533328374079021623">Postkast 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Kaardi pilt</translation>
 <translation id="3542768452570884558">Ava link uues aknas</translation>
 <translation id="3547746132308051926">20 × 24 tolli</translation>
 <translation id="3550112004925580947">Võõrustamistööstus</translation>
@@ -1105,6 +1106,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3745099705178523657">Pärast kinnitamist jagatakse teie Google'i kontol olevaid kaardi üksikasju selle saidiga.</translation>
 <translation id="3748148204939282805">Saidil <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> asuvad ründajad võivad teid meelitada ohtlikele tegevustele, nagu tarkvara installimine või isiklike andmete (nt paroolid, telefoninumbrid või krediitkaarditeave) avaldamine. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Lennutööstus</translation>
+<translation id="3752543821772132562">Eirati, sest reegel <ph name="POLICY_NAME" /> on seadistamata.</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
 <translation id="3759461132968374835">Hiljuti teatatud krahhe ei ole. Siin ei ilmu krahhid, mis toimusid siis, kui krahhide aruandlus oli keelatud.</translation>
 <translation id="3760561303380396507">Kas kasutada CVC asemel Windows Hello autentimist?</translation>
@@ -2917,6 +2919,7 @@ Lisateave:
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
 <translation id="8364627913115013041">Määramata.</translation>
+<translation id="836616551641291797">Lugege lisateavet brauseri haldamise kohta</translation>
 <translation id="8368001212524806591">Jälgi hinda</translation>
 <translation id="8368027906805972958">Tundmatu või toetamata seade (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play teenused</translation>

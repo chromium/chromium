@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1182225749592316782">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します</translation>
 <translation id="1183863904939664422">この提案に興味がない</translation>
 <translation id="118437560755358292">セキュリティ強化のためパスワードまたは PIN を入力してください</translation>
 <translation id="118532027333893379">全画面をキャプチャするには任意の場所をタップしてください</translation>
@@ -120,6 +121,7 @@
 <translation id="15373452373711364">大きいマウスカーソル</translation>
 <translation id="1546492247443594934">デスク 2</translation>
 <translation id="1546930421365146760">管理者に Google 管理コンソールでこのデバイスをセットアップするよう依頼してください</translation>
+<translation id="1550406609415860283">利用可能なデバイス</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
@@ -127,6 +129,7 @@
 <translation id="1611993646327628135">オン</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
+<translation id="163517899691012366">サイレント モードがオンになっている場合、通知はミュートされます</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
@@ -373,6 +376,7 @@
 <translation id="3047761520276763270">次のように言ってみてください。</translation>
 <translation id="3051189971848907985">プロファイルの名前を変更しています。数分お待ちください。</translation>
 <translation id="3055162170959710888">あなたは今日、このデバイスを <ph name="USED_TIME" />使用しました</translation>
+<translation id="3062298103034426069">未対応</translation>
 <translation id="3068711042108640621">シェルフは左側にあります</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
@@ -407,6 +411,7 @@
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
 <translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">何ができる？</translation>
+<translation id="3260969790895726815">音声はローカルで処理されました。オフラインで音声入力を使用できますが、一部の音声コマンドは動作しません。</translation>
 <translation id="3269597722229482060">右クリック</translation>
 <translation id="3289544412142055976">Linux アプリは現在サポートされていません</translation>
 <translation id="3289674678944039601">アダプター経由で充電しています</translation>
@@ -454,9 +459,12 @@
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="352245152354538528">{0,plural, =1{1 分以内にデバイスを更新してください}other{# 分以内にデバイスを更新してください}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> 台のデバイスに接続しています</translation>
+<translation id="3533126039236445965">シェルフのアプリ</translation>
 <translation id="3542066395059568317">前回中断したところから再開できるように、おすすめが表示されます。おすすめは右クリックで削除できます。</translation>
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> を固定しました</translation>
+<translation id="3558768885091059911">カメラとマイクへのアクセスをオンにしますか？</translation>
+<translation id="3560174576767922131">動画を撮影</translation>
 <translation id="3563775809269155755">アクセス ポイントを有効にする</translation>
 <translation id="3566240529365775567">数秒前に開いたファイル</translation>
 <translation id="3571734092741541777">設定</translation>
@@ -648,6 +656,7 @@
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">プレビューを表示</translation>
 <translation id="4578906031062871102">設定メニューが開いています</translation>
+<translation id="458210817642223147">GIF を撮影</translation>
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4611292653554630842">ログイン</translation>
@@ -727,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">デスク 16</translation>
 <translation id="5003993274120026347">次の文</translation>
+<translation id="5004607513195820459">ネットワークは管理されています</translation>
 <translation id="5016558321564993266">マーカーを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">デバイスのマイクへのアクセスはオンになっています</translation>
 <translation id="5030687792513154421">時間切れです</translation>
@@ -786,9 +796,11 @@
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
 <translation id="533282197239610265">キャスト デバイスを表示します</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
+<translation id="5351427059191534258">カメラへのアクセスをオフにしますか？</translation>
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
 <translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> の音声ファイルを部分的にダウンロードしました</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> このタブに移動</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
@@ -861,6 +873,7 @@
 <translation id="5763928712329149804">シェルフ グループはオフです。</translation>
 <translation id="576453121877257266">夜間モードはオンです。</translation>
 <translation id="5769373120130404283">プライバシー スクリーン</translation>
+<translation id="5773950591113557721">カメラとマイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、アクセスを許可します</translation>
 <translation id="5777841717266010279">画面の共有を解除しますか？</translation>
 <translation id="5779721926447984944">固定したファイル</translation>
 <translation id="5788127256798019331">Play ファイル</translation>
@@ -898,6 +911,7 @@
 <translation id="5980301590375426705">ゲストを終了</translation>
 <translation id="598407983968395253">テンプレートを使用</translation>
 <translation id="598882571027504733">アップデートを取得するには、キーボードを接続した状態で Chromebook を再起動してください。</translation>
+<translation id="6002179289567220515">物理的なスイッチを使ってカメラを 1 つオフにしました。すべてのカメラに対してアクセスをオフにすることもできます。</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /> ページ</translation>
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
 <translation id="602001110135236999">左にスクロール</translation>
@@ -938,9 +952,11 @@
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知を表示します</translation>
 <translation id="619335566042889110">今すぐ完全に充電</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6200515304866777730">アプリが対応していません</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> に保存済みの <ph name="NAME" /> に接続します</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
+<translation id="623116199192908855">Chromebook から画面をキャストする</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -982,8 +998,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> が期限までに <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
 <translation id="6495400115277918834">ピクチャー イン ピクチャーを開始しました。フォーカスするには Alt+Shift+V キーを押してください</translation>
+<translation id="6497418457565568043">サイレント モードがオンです</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">画面を <ph name="RECEIVER_NAME" /> にキャスト中</translation>
+<translation id="6508923215158854599">Chromebook がお使いの Chromecast デバイスと同じ Wi-Fi ネットワークに接続されていることを確認します。</translation>
 <translation id="6515727200518652613">カメラの接続が解除されました。再接続を試行しています。</translation>
 <translation id="6520517963145875092">キャプチャするウィンドウを選択してください</translation>
 <translation id="652139407789908527">更新中は、空白の画面が通常より長く表示されます（最長 1 分）。更新中は電源ボタンを押さないでください。</translation>
@@ -1043,6 +1061,7 @@
 <translation id="6787595647772650851">最後のセッションを復元</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6801878137098616817">最近編集したファイル</translation>
+<translation id="6802687695197837794">カメラとマイクへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、アクセスを許可します</translation>
 <translation id="6803622936009808957">サポートされている解像度が見つからなかったため、ディスプレイをミラーリングできませんでした。代わりに拡張デスクトップ モードに切り替えました。</translation>
 <translation id="6812232930908427253">デスクを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
 <translation id="6818242057446442178">1 語戻る</translation>
@@ -1065,6 +1084,7 @@
 <translation id="6901883536534621389">ジェスチャー操作をお試しください</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6931576957638141829">保存先</translation>
+<translation id="6942518653766415536">録画形式メニュー</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
@@ -1074,6 +1094,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
+<translation id="6981291220124935078">アクセスをオンにする</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="698231206551913481">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。</translation>
 <translation id="7005239792648594238">開始するにはアプリを開きます</translation>

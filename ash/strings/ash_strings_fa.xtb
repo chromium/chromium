@@ -458,6 +458,7 @@
 <translation id="3513798432020909783">حساب تحت مدیریت <ph name="MANAGER_EMAIL" /> است</translation>
 <translation id="352245152354538528">{0,plural, =1{دستگاه را تا یک دقیقه دیگر به‌روزرسانی کنید}one{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}other{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}}</translation>
 <translation id="353086728817903341">به <ph name="NUM_DEVICES" /> دستگاه متصل است</translation>
+<translation id="3533126039236445965">برنامه‌های موجود در قفسه</translation>
 <translation id="3542066395059568317">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید کلیک راست کنید.</translation>
 <translation id="3552189655002856821">‏Wi-Fi خاموش است</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> پین شد</translation>

@@ -128,6 +128,7 @@
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
+<translation id="163517899691012366">'ശല്യപ്പെടുത്തരുത്' ഓണായിരിക്കുമ്പോൾ അറിയിപ്പുകൾ മ്യൂട്ട് ചെയ്യുന്നു</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
@@ -374,6 +375,7 @@
 <translation id="3047761520276763270">ഇങ്ങനെ പറഞ്ഞ് നോക്കൂ:</translation>
 <translation id="3051189971848907985">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="3055162170959710888">നിങ്ങൾ ഇന്ന് <ph name="USED_TIME" />, ഈ ഉപകരണം ഉപയോഗിച്ചു</translation>
+<translation id="3062298103034426069">പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="3068711042108640621">സ്‌ക്രീനിൻ്റെ ഇടതുഭാഗത്താണ് ഷെൽഫ്</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">മെനു വികസിപ്പിക്കുക</translation>
@@ -408,6 +410,7 @@
 <translation id="3249513730522716925">വിൻഡോ <ph name="WINDOW_TITLE" /> ഡെസ്‌ക് <ph name="ACTIVE_DESK" />-ൽ നിന്ന് ഡെസ്‌ക് <ph name="TARGET_DESK" />-ലേക്ക് നീക്കി</translation>
 <translation id="3252573918265662711">സജ്ജമാക്കുക</translation>
 <translation id="3255483164551725916">നിങ്ങൾക്ക് എന്ത് ചെയ്യാനാവും?</translation>
+<translation id="3260969790895726815">സംഭാഷണം ലോക്കലായി പ്രോസസ് ചെയ്യുകയും കേട്ടെഴുത്ത് ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുകയും ചെയ്യുന്നു, എന്നാൽ ചില ശബ്ദ കമാൻഡുകൾ പ്രവർത്തിക്കില്ല.</translation>
 <translation id="3269597722229482060">വലത് ക്ലിക്ക്</translation>
 <translation id="3289544412142055976">Linux ആപ്പുകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
 <translation id="3289674678944039601">അഡാപ്‌റ്റർ വഴി ചാർജ് ചെയ്യുന്നു</translation>
@@ -791,9 +794,11 @@
 <translation id="5331975486040154427">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
 <translation id="533282197239610265">കാസ്‌റ്റ് ഉപകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
+<translation id="5351427059191534258">ക്യാമറാ ആക്‌സസ് ഓഫാക്കണോ?</translation>
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
 <translation id="5356963482258194581">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ വലത് ക്ലിക്ക് ചെയ്ത ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="536019650977002321">നിങ്ങളുടെ അഡ്‌മിൻ ഓഡിയോ ക്യാപ്ചർ ചെയ്യാൻ അനുവദിക്കുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഭാഗികമായി ഡൗൺലോഡ് ചെയ്തു</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ഈ ടാബിലേക്ക് പോകുക</translation>
 <translation id="5377367976106153749">ക്യാമറയിലേക്കുള്ള ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="5379115545237091094">നിരവധി ശ്രമങ്ങൾ</translation>
@@ -903,6 +908,7 @@
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
+<translation id="6002179289567220515">1 ക്യാമറ ഓഫാക്കാൻ നിങ്ങൾ ഫിസിക്കൽ സ്വിച്ച് ഉപയോഗിച്ചു. എല്ലാ ക്യാമറകളിലേക്കുമുള്ള ആക്‌സസും നിങ്ങൾക്ക് ഓഫാക്കാനാകും.</translation>
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="602001110135236999">ഇടത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
@@ -943,9 +949,11 @@
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിന്റെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുക</translation>
 <translation id="619335566042889110">ഇപ്പോൾ തന്നെ പൂർണ്ണമായി ചാർജ് ചെയ്യുക</translation>
 <translation id="6193431488227440296">ഡെവ്</translation>
+<translation id="6200515304866777730">ആപ്പ് പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> എന്നതിലേക്ക് മുമ്പ് സംരക്ഷിച്ച <ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
+<translation id="623116199192908855">നിങ്ങളുടെ Chromebook-ൽ നിന്ന് സ്ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
 <translation id="6231419273573514727">പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -987,8 +995,10 @@
 <translation id="6491071886865974820">സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="649452524636452238">സ്‌മാർട്ട് കാർഡ് പിൻ</translation>
 <translation id="6495400115277918834">ചിത്രത്തിനുള്ളിൽ ചിത്രം ആരംഭിച്ചു, ഫോക്കസ് ചെയ്യാൻ Alt+Shift+V അമർത്തുക</translation>
+<translation id="6497418457565568043">'ശല്യപ്പെടുത്തരുത്' ഓണാണ്</translation>
 <translation id="6500896621837555595">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നു</translation>
+<translation id="6508923215158854599">Chromecast ഉപകരണത്തിന്റെ അതേ വൈഫൈ നെറ്റ്‌വർക്കിലാണ് Chromebook-ഉം കണക്റ്റ് ചെയ്തിരിക്കുന്നതെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="6515727200518652613">ക്യാമറ വിച്ഛേദിക്കപ്പെട്ടു, വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="6520517963145875092">ക്യാപ്‌ചർ ചെയ്യാൻ വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="652139407789908527">ഈ അപ്‌ഡേറ്റ് നടക്കുമ്പോൾ നിങ്ങളുടെ സ്‌ക്രീൻ പതിവിലും കൂടുതൽ സമയം (ഒരു മിനിറ്റ് വരെ) ശൂന്യമാകും. അപ്‌ഡേറ്റ് ചെയ്യൽ പുരോഗമിക്കുമ്പോൾ പവർ ബട്ടൺ അമർത്തരുത്.</translation>

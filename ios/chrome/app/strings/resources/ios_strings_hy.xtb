@@ -190,6 +190,7 @@
 <translation id="2421044535038393232">Շարունակել խմբագրումը</translation>
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2451654228769116489">Ամրացնել ներդիրը</translation>
 <translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2469960372084740698">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="2473876017985765807">Դուք <ph name="WEBSITE" /> կայքի համար արդեն պահել եք գաղտնաբառ։</translation>
@@ -672,6 +673,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6064824697233747382">Ձեր կազմակերպությունը պահանջում է, որ անջատեք համաժամացումը։</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
+<translation id="6071409777669089905">Ապամրացնել ներդիրը</translation>
 <translation id="60829778314739003">Ընդունել և շարունակել</translation>
 <translation id="6084848228346514841">Ընտրեք ներդիրներ</translation>
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
@@ -1097,6 +1099,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9219154867334666734">Ներդիրների որոնում…</translation>
 <translation id="9223358826628549784">Խափանման հաշվետվությունն ուղարկվեց:</translation>
 <translation id="941747855997058526">Ընտրել գաղտնաբառ…</translation>
+<translation id="948048872540558976">Ստեղծել նոր ներդիր</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>

@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">Лизгај</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
+<translation id="1182225749592316782">Ова дозволува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="1183863904939664422">Не ме интересира предлогов</translation>
 <translation id="118437560755358292">Внесете лозинка или PIN за поголема безбедност</translation>
 <translation id="118532027333893379">Допрете каде било за да го снимите целиот екран</translation>
@@ -120,6 +121,7 @@
 <translation id="15373452373711364">Голем покажувач на глувчето</translation>
 <translation id="1546492247443594934">Биро 2</translation>
 <translation id="1546930421365146760">Побарајте од администраторот да го постави уредов во „Администраторската конзола на Google“</translation>
+<translation id="1550406609415860283">Достапни уреди</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
@@ -460,6 +462,8 @@
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
+<translation id="3558768885091059911">Да се вклучи пристап за камера и микрофон?</translation>
+<translation id="3560174576767922131">Снимај видео</translation>
 <translation id="3563775809269155755">Овозможи точка на пристап</translation>
 <translation id="3566240529365775567">Отворено пред малку</translation>
 <translation id="3571734092741541777">Постави</translation>
@@ -652,6 +656,7 @@
 <translation id="4577274620589681794">Времето истече · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Прикажи ги прегледите</translation>
 <translation id="4578906031062871102">Менито со поставки е отворено</translation>
+<translation id="458210817642223147">Сними GIF</translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4611292653554630842">Најави се</translation>
@@ -731,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Работна површина 16</translation>
 <translation id="5003993274120026347">Следна реченица</translation>
+<translation id="5004607513195820459">Со мрежата се управува</translation>
 <translation id="5016558321564993266">Вклучете/исклучете го означувачот. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Вклучен е пристап до микрофонот на уредот</translation>
 <translation id="5030687792513154421">Времето истече</translation>
@@ -867,6 +873,7 @@
 <translation id="5763928712329149804">Групата на полица е исклучена.</translation>
 <translation id="576453121877257266">„Ноќното светло“ е вклучено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
+<translation id="5773950591113557721">Ова дозволува пристап за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="5777841717266010279">Запри споделување екран?</translation>
 <translation id="5779721926447984944">Закачени датотеки</translation>
 <translation id="5788127256798019331">Датотеки на Play</translation>
@@ -1054,6 +1061,7 @@
 <translation id="6787595647772650851">Обнови ја последната сесија</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6801878137098616817">Изменето неодамна</translation>
+<translation id="6802687695197837794">Ова дозволува пристап за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
 <translation id="6812232930908427253">Не можеше да се зачува работната површина. Премногу прозорци или картички.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
@@ -1076,6 +1084,7 @@
 <translation id="6901883536534621389">Обидете се со движења за навигација</translation>
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
+<translation id="6942518653766415536">Мени за формат на снимање</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="6961121602502368900">Стишувањето на телефонот не е достапно на работен профил</translation>
@@ -1085,6 +1094,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6972754398087986839">Започни</translation>
 <translation id="6979158407327259162">Google Диск</translation>
+<translation id="6981291220124935078">Вклучи пристап</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
 <translation id="7005239792648594238">Отворете апликација за да започнете</translation>

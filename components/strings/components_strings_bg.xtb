@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1559447966090556585">Да получавате ли известия?</translation>
+<translation id="1559486004335285648">Автоматично попълване на данни за плащане</translation>
 <translation id="1559528461873125649">Няма такъв файл или директория</translation>
 <translation id="1559572115229829303">&lt;p&gt;Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1807528111851433570">Първи лист</translation>
 <translation id="181000283860817563">Проследяване на цените в няколко сайта</translation>
+<translation id="1810391395243432441">Защита на паролите с опцията ви за заключване на екрана</translation>
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
 <translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
 <translation id="182139138257690338">автоматични изтегляния</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">За прокси сървъра е зададено да използва фиксирани прокси сървъри, а не URL адрес на скрипт във формат .pac.</translation>
 <translation id="1871284979644508959">Задължително поле</translation>
 <translation id="1873899211667975540">Рок музика</translation>
+<translation id="1874224422119691492">В <ph name="SETTINGS" /> можете да задавате дали опцията ви за заключване на екрана да се използва при попълване на пароли</translation>
 <translation id="1875025161375567525">Тава за фотохартия</translation>
 <translation id="1875512691959384712">Google Формуляри</translation>
 <translation id="187918866476621466">Отваряне на страниците при стартиране</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате Безопасно сърфиране и други функции от настройките на Chrome</translation>
 <translation id="2878197950673342043">Кръстосано сгъване</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">използва опцията ви за заключване на екрана при попълване на пароли</translation>
 <translation id="2881276955470682203">Да се запази ли картата?</translation>
 <translation id="2882949212241984732">Сгъване на двата края навътре и прегъване в средата</translation>
 <translation id="2893773853358652045">Четвърта ролка</translation>
@@ -1011,6 +1015,7 @@
 <translation id="3532844647053365774"><ph name="HOST" /> иска да използва микрофона ви</translation>
 <translation id="3533328374079021623">Пощенска кутия 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Изображение на картата</translation>
 <translation id="3542768452570884558">Отваряне на връзката в нов прозорец</translation>
 <translation id="3547746132308051926">20 x 24 инча</translation>
 <translation id="3550112004925580947">Туристически отрасъл</translation>
@@ -1101,6 +1106,7 @@
 <translation id="3745099705178523657">След като потвърдите картата си, данните за нея от профила ви в Google ще бъдат споделени с този сайт.</translation>
 <translation id="3748148204939282805">Извършители на атака, използващи <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, може да ви подведат да направите нещо опасно, като например да инсталирате софтуер или да разкриете лична информация (например пароли, телефонни номера или номера на кредитни карти). <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авиационна промишленост</translation>
+<translation id="3752543821772132562">Пренебрегнато, защото <ph name="POLICY_NAME" /> не е зададено.</translation>
 <translation id="3754210790023674521">Изход от „Картина в картината“</translation>
 <translation id="3759461132968374835">Наскоро не сте съобщавали за сривове. Тези, възникнали при деактивирано изпращане на сигнали за сривове, не се показват тук.</translation>
 <translation id="3760561303380396507">Искате ли да използвате Windows Hello вместо код за проверка?</translation>
@@ -1407,6 +1413,7 @@
 <translation id="4541810033354695636">обогатена реалност</translation>
 <translation id="4542971377163063093">Тава 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">Използвате опцията си за заключване на екрана при попълване на пароли</translation>
 <translation id="4558551763791394412">Опитайте да деактивирате разширенията.</translation>
 <translation id="4566017918361049074">Занимания на открито</translation>
 <translation id="4567686777917670400">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -2912,6 +2919,7 @@
 <translation id="8355270400102541638">Локален контекст за срива:</translation>
 <translation id="8363502534493474904">Изключете самолетния режим.</translation>
 <translation id="8364627913115013041">Не е зададено.</translation>
+<translation id="836616551641291797">Научете повече за това как се управлява браузърът ви</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
 <translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Услуги за Google Play</translation>
@@ -2924,6 +2932,7 @@
 <translation id="8396522675989118466">Това е <ph name="NUMBER_OF_DIGITS" />-цифреният код на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Намиране на телефона ви</translation>
 <translation id="8405579342203358118">Управление на данните, които да се синхронизират, от настройките на Chrome</translation>
+<translation id="8406071103346257942">спре да използва опцията ви за заключване на екрана при попълване на пароли</translation>
 <translation id="8409413588194360210">приложения за обработване на плащания</translation>
 <translation id="8412145213513410671">Сривове (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Трябва да въведете един и същи пропуск два пъти.</translation>
@@ -3193,6 +3202,7 @@
 <translation id="9128016270925453879">Правилата са заредени</translation>
 <translation id="9128870381267983090">Свързване към мрежа</translation>
 <translation id="9131119348384879525">Да се заснеме ли поверително съдържание?</translation>
+<translation id="9133985615769429248">Ако споделяте това устройство с други хора, можете да използвате опцията си за заключване на екрана, за да потвърждавате самоличността си всеки път, когато ползвате запазена парола</translation>
 <translation id="9136861683332321024">Луксозни превозни средства</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9137248913990643158">Моля, стартирайте браузъра Chrome и влезте в него, преди да използвате това приложение.</translation>

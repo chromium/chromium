@@ -2389,7 +2389,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3132896062549112541">Pravidlo</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
 <translation id="3134393957315651797">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />. Popis experimentu: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
-<translation id="313963229645891001">Sťahuje sa: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Predvolený žltý avatar</translation>
 <translation id="3141093262818886744">Otvoriť aj tak</translation>
 <translation id="3141318088920353606">Počúvam...</translation>
@@ -5028,7 +5027,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5632059346822207074">Vyžaduje sa povolenie, reagujte stlačením klávesov Ctrl + Ďalej</translation>
 <translation id="5632221585574759616">Ďalšie informácie o povoleniach rozšírenia</translation>
 <translation id="5632566673632479864">Účet <ph name="EMAIL" /> už nemôžete použiť ako hlavný účet. Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia.</translation>
-<translation id="5632592977009207922">Sťahuje sa, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="5633149627228920745">Ďalšie informácie o systémových požiadavkách</translation>
 <translation id="563371367637259496">Mobilná</translation>
 <translation id="5634446357546764049">Pozrite si spomienky z nedávnych ciest a viac</translation>

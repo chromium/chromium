@@ -190,6 +190,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2451654228769116489">Ainguratu fitxa</translation>
 <translation id="2461070143328828326">Pasahitzen ezarpenak</translation>
 <translation id="2469960372084740698">Arakatze segurua desaktibatu nahi duzu?</translation>
 <translation id="2473876017985765807">Gordeta daukazu jada <ph name="WEBSITE" /> webguneari dagokion pasahitza</translation>
@@ -672,6 +673,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6059830886158432458">Kontrolatu istorioak eta jarduerak hemen</translation>
 <translation id="6064824697233747382">Zure erakundeak sinkronizazioa desaktibatzea eskatzen du.</translation>
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
+<translation id="6071409777669089905">Kendu aingura fitxari</translation>
 <translation id="60829778314739003">Onartu eta egin aurrera</translation>
 <translation id="6084848228346514841">Hautatu fitxak</translation>
 <translation id="6103540626693881831">Gailuan bertan enkriptatzeko aukera</translation>
@@ -1097,6 +1099,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9219154867334666734">Bilatu fitxetan…</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
 <translation id="941747855997058526">Hautatu pasahitz bat…</translation>
+<translation id="948048872540558976">Sortu beste fitxa bat</translation>
 <translation id="952704832371081537">Utzi</translation>
 <translation id="953008885340860025">Amaitu egin da Chrome-ko saioa</translation>
 <translation id="959066944189734975">Hasi zara <ph name="CHANNEL_NAME" /> webguneari jarraitzen</translation>

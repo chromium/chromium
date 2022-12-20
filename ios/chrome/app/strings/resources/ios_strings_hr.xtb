@@ -148,6 +148,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2074131957428911366">Uvijek možete odabrati u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> što će se sinkronizirati.</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2080769225927880590">Prijavite se važećim računom</translation>
+<translation id="2090878303988764231">Prijavite se da biste upravljali sadržajem koji vam se prikazuje</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="21133533946938348">Pričvrsti karticu</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -973,6 +974,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8197543752516192074">Prevedi stranicu</translation>
 <translation id="8205564605687841303">Odustani</translation>
 <translation id="8206354486702514201">Ovu postavku nametnuo je vaš administrator.</translation>
+<translation id="821809831108207540">Da biste prilagodili svoj feed Discovera i Chrome, prijavite se i uključite sinkronizaciju.</translation>
 <translation id="8225985093977202398">Predmemorirane slike i datoteke</translation>
 <translation id="8237382152611443140">Otvorite postavke automatskog popunjavanja zaporki</translation>
 <translation id="8261506727792406068">Izbriši</translation>

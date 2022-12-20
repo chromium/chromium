@@ -120,6 +120,7 @@
 <translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1546930421365146760">‏צריך לבקש מהאדמין להגדיר את המכשיר במסוף Google Admin</translation>
+<translation id="1550406609415860283">המכשירים הזמינים</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
@@ -457,6 +458,7 @@
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
+<translation id="3560174576767922131">צילום סרטון</translation>
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
 <translation id="3566240529365775567">נפתח ממש עכשיו</translation>
 <translation id="3571734092741541777">הגדרה</translation>
@@ -648,6 +650,7 @@
 <translation id="4577274620589681794">הזמן נגמר · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">צפייה בתצוגות מקדימות</translation>
 <translation id="4578906031062871102">תפריט ההגדרות נפתח</translation>
+<translation id="458210817642223147">‏צילום בפורמט GIF</translation>
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
 <translation id="4596144739579517758">עיצוב כהה כבוי.</translation>
 <translation id="4611292653554630842">התחבר</translation>
@@ -727,6 +730,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">שולחן עבודה וירטואלי מספר 16</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
+<translation id="5004607513195820459">הרשת מנוהלת</translation>
 <translation id="5016558321564993266">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">הגישה למיקרופון המכשיר מופעלת</translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
@@ -1065,6 +1069,7 @@
 <translation id="6901883536534621389">רוצה לנסות לנווט באמצעות תנועות?</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
+<translation id="6942518653766415536">התפריט של פורמט הצילום</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>

@@ -517,6 +517,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3830886834687455630">Şifrelerinizi kontrol etmek için Google Play Hizmetleri'ni güncelleyin</translation>
 <translation id="3845098929839618392">Gizli sekmede aç</translation>
 <translation id="3856096718352044181">Lütfen bunun geçerli bir sağlayıcı olduğunu doğrulayın veya daha sonra tekrar deneyin</translation>
+<translation id="3858127568696903256">Takip ettiğiniz içerikleri burada görebilirsiniz</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861633093716975811">Popüler videolar</translation>
 <translation id="3874520961715512166">Site kaldırıldı</translation>
@@ -552,7 +553,6 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4045764304651014138">Kullanım verileri</translation>
 <translation id="405399507749852140">Herhangi bir sitedeki fiyat düşüşüyle ilgili uyarıları alın</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
-<translation id="4060598801229743805">Ekranın üst kısmına yakın bir yerde seçenekler vardır</translation>
 <translation id="4062305924942672200">Yasal bilgiler</translation>
 <translation id="4072805772816336153">Daha sonra tekrar deneyin</translation>
 <translation id="4084682180776658562">Yer İşareti</translation>
@@ -642,7 +642,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4554077758708533499">USB kablosuyla bağlandı</translation>
 <translation id="4558311620361989323">Web sayfası kısayolları</translation>
 <translation id="4561730552726921821">Kayıt başarılı oldu</translation>
-<translation id="4561979708150884304">Bağlantı yok</translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
 <translation id="4572422548854449519">Yönetilen hesapta oturum açın</translation>
 <translation id="4576892426230499203">Başka bir doğrulama seçeneğini deneyin</translation>
@@ -1351,7 +1350,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8261506727792406068">Sil</translation>
 <translation id="82619448491672958">Diğer sekmeleri göster</translation>
 <translation id="8266862848225348053">İndirme konumu</translation>
-<translation id="8274165955039650276">İndirilenleri göster</translation>
 <translation id="8281886186245836920">Atla</translation>
 <translation id="8282297628636750033">Sitelere koyu tema uygulayın</translation>
 <translation id="829672787777123339">Cihazınıza bağlanılıyor…</translation>

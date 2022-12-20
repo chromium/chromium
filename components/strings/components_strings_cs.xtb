@@ -258,6 +258,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1559447966090556585">Zobrazovat oznámení?</translation>
+<translation id="1559486004335285648">Automaticky vyplnit platební údaje</translation>
 <translation id="1559528461873125649">Daný soubor nebo adresář neexistuje.</translation>
 <translation id="1559572115229829303">&lt;p&gt;Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v zařízení nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).&lt;/p&gt;
 
@@ -366,6 +367,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1807528111851433570">Počáteční list</translation>
 <translation id="181000283860817563">Sledovat ceny na různých webech</translation>
+<translation id="1810391395243432441">Ochrana hesel pomocí zámku obrazovky</translation>
 <translation id="1812527064848182527">na šířku</translation>
 <translation id="1813414402673211292">Vymazat údaje o prohlížení</translation>
 <translation id="182139138257690338">automatické stahování</translation>
@@ -385,6 +387,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1871208020102129563">Proxy je nastaveno na používání pevně daných serverů proxy, nikoliv adresy URL skriptu PAC.</translation>
 <translation id="1871284979644508959">Povinné pole</translation>
 <translation id="1873899211667975540">Rocková hudba</translation>
+<translation id="1874224422119691492">V <ph name="SETTINGS" /> můžete změnit, zda k vyplňování hesel chcete používat zámek obrazovky</translation>
 <translation id="1875025161375567525">Foto přihrádka</translation>
 <translation id="1875512691959384712">Formuláře Google</translation>
 <translation id="187918866476621466">Otevřít počáteční stránky</translation>
@@ -753,6 +756,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="2878197950673342043">Plakátové přeložení</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">používat k vyplňování hesel zámek obrazovky</translation>
 <translation id="2881276955470682203">Uložit kartu?</translation>
 <translation id="2882949212241984732">Dvojité otevírací přeložení</translation>
 <translation id="2893773853358652045">Čtvrtá role</translation>
@@ -1008,6 +1012,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3532844647053365774">Stránka <ph name="HOST" /> chce použít váš mikrofon</translation>
 <translation id="3533328374079021623">Schránka 5</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
+<translation id="3542628208405253498">Obrázek karty</translation>
 <translation id="3542768452570884558">Otevřít odkaz v novém okně</translation>
 <translation id="3547746132308051926">20 × 24″</translation>
 <translation id="3550112004925580947">Pohostinství</translation>
@@ -1097,6 +1102,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3745099705178523657">Po potvrzení budou údaje o kartě z vašeho účtu Google poskytnuty tomuto webu.</translation>
 <translation id="3748148204939282805">Útočníci na webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vás mohou podvodem přimět k nebezpečnému chování, jako je instalace softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letecký průmysl</translation>
+<translation id="3752543821772132562">Ignorováno, protože není nastavena zásada <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Ukončit režim obrazu v obraze</translation>
 <translation id="3759461132968374835">Nemáte žádná nedávno hlášená selhání. Selhání, ke kterým došlo, když byla služba hlášení o selháních vypnutá, se zde nezobrazují.</translation>
 <translation id="3760561303380396507">Použít Windows Hello namísto CVC?</translation>
@@ -1403,6 +1409,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4541810033354695636">rozšířená realita</translation>
 <translation id="4542971377163063093">Přihrádka 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">K vyplňování hesel používáte zámek obrazovky</translation>
 <translation id="4558551763791394412">Zkuste zakázat rozšíření.</translation>
 <translation id="4566017918361049074">Příroda</translation>
 <translation id="4567686777917670400">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chromium. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -2906,6 +2913,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8355270400102541638">Místní kontext selhání:</translation>
 <translation id="8363502534493474904">Vypnout režim Letadlo</translation>
 <translation id="8364627913115013041">Nenastaveno.</translation>
+<translation id="836616551641291797">Další informace o tom, jak je váš prohlížeč spravován</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>
 <translation id="8368027906805972958">Neznámé nebo nepodporované zařízení (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Služby Google Play</translation>
@@ -2918,6 +2926,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8396522675989118466">Jedná se o <ph name="NUMBER_OF_DIGITS" />místný kód na: <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Najděte svůj telefon</translation>
 <translation id="8405579342203358118">Spravujte v nastavení Chromu, jaké informace synchronizujete</translation>
+<translation id="8406071103346257942">přestat používat k vyplňování hesel zámek obrazovky</translation>
 <translation id="8409413588194360210">obslužné nástroje pro platby</translation>
 <translation id="8412145213513410671">Selhání (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Stejnou heslovou frázi musíte zadat dvakrát.</translation>
@@ -3188,6 +3197,7 @@ Další podrobnosti:
 <translation id="9128016270925453879">Zásady jsou načteny</translation>
 <translation id="9128870381267983090">Připojit k síti</translation>
 <translation id="9131119348384879525">Pořídit záznam s důvěryhodným obsahem?</translation>
+<translation id="9133985615769429248">Pokud toto zařízení sdílíte s dalšími lidmi, můžete při každém použití uloženého hesla nechat ověřit svou totožnost pomocí zámku obrazovky</translation>
 <translation id="9136861683332321024">Luxusní vozy</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>
 <translation id="9137248913990643158">Chcete-li tuto aplikaci použít, přihlaste se do Chromu.</translation>

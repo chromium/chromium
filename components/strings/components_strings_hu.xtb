@@ -1013,6 +1013,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3532844647053365774">A(z) <ph name="HOST" /> használni szeretné a mikrofont</translation>
 <translation id="3533328374079021623">5. postaláda</translation>
 <translation id="3537165859691846083">„Letter Plus” méret</translation>
+<translation id="3542628208405253498">Kártyakép</translation>
 <translation id="3542768452570884558">Link megnyitása új ablakban</translation>
 <translation id="3547746132308051926">20 × 24 hüvelyk</translation>
 <translation id="3550112004925580947">Vendéglátóipar</translation>
@@ -1103,6 +1104,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3745099705178523657">A megerősítést követően a böngésző megosztja az Ön Google-fiókjából származó kártyaadatokat ezzel a webhellyel.</translation>
 <translation id="3748148204939282805">A támadók a(z) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webhelyen megpróbálhatják csellel rávenni Önt például arra, hogy veszélyes szoftvert telepítsen, vagy felfedje személyes adatait (jelszavakat, telefonszámokat, bankkártyaadatokat stb). <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3748912308089554501">Repülőipar</translation>
+<translation id="3752543821772132562">Figyelmen kívül hagyva, mert a következő házirend nincs beállítva: <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Kilépés a kép a képben módból</translation>
 <translation id="3759461132968374835">Nincs a közelmúltban bejelentett rendszerösszeomlás. A kikapcsolt jelentésküldés során történt összeomlások nem jelennek meg itt.</translation>
 <translation id="3760561303380396507">A Windows Hello szolgáltatást szeretné használni a CVC helyett?</translation>
@@ -2915,6 +2917,7 @@ További részletek:
 <translation id="8355270400102541638">Összeomlás helyi kontextusa:</translation>
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
 <translation id="8364627913115013041">Nincs beállítva.</translation>
+<translation id="836616551641291797">További információ a felügyelt böngészőkről</translation>
 <translation id="8368001212524806591">Ár nyomon követése</translation>
 <translation id="8368027906805972958">Ismeretlen vagy nem támogatott eszköz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-szolgáltatások</translation>

@@ -2403,7 +2403,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3132896062549112541">Panuntunan</translation>
 <translation id="3132996321662585180">I-refresh araw-araw</translation>
 <translation id="3134393957315651797">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />. Paglalarawan ng eksperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="313963229645891001">Nagda-download, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default na dilaw na avatar</translation>
 <translation id="3141093262818886744">Buksan pa rin</translation>
 <translation id="3141318088920353606">Nakikinig...</translation>
@@ -4646,6 +4645,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5268373933383932086">Ikaw ang bahala sa iyong page</translation>
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
 <translation id="5273806377963980154">I-edit ang URL ng site</translation>
+<translation id="5273966423195882879">Kulay na nakabatay sa tema</translation>
 <translation id="5275084684151588738">Mga Diksyunaryo ng User</translation>
 <translation id="5275100789567222478">I-on lang kapag nasa <ph name="PERCENT" />% o mas mababa ang aking baterya</translation>
 <translation id="5275338516105640560">Button na Na-save na Grupo ng Tab</translation>
@@ -5043,7 +5043,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5632059346822207074">Humiling ng pahintulot, pindutin ang Ctrl + Forward para tumugon</translation>
 <translation id="5632221585574759616">Matuto pa tungkol sa mga pahintulot sa extension</translation>
 <translation id="5632566673632479864">Hindi na pinapayagan ang iyong account na <ph name="EMAIL" /> bilang pangunahing account. Dahil pinapamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear ang iyong mga bookmark, history, password, at iba pang setting sa device na ito.</translation>
-<translation id="5632592977009207922">Nagda-download, <ph name="PERCENT_REMAINING" />% ang natitira</translation>
 <translation id="5633149627228920745">Matuto pa tungkol sa mga requirement ng system</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">Tingnan ang mga alaala ng mga kamakailan mong biyahe at iba pa</translation>

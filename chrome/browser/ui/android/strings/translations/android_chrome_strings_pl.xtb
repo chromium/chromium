@@ -517,6 +517,7 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="3830886834687455630">Aby sprawdzić swoje hasła, zaktualizuj Usługi Google Play</translation>
 <translation id="3845098929839618392">Otwórz w karcie incognito</translation>
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
+<translation id="3858127568696903256">Tutaj zobaczysz treści, które obserwujesz</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3861633093716975811">Popularne filmy</translation>
 <translation id="3874520961715512166">Witryna została usunięta</translation>
@@ -552,7 +553,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="4045764304651014138">Dane o korzystaniu</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4060598801229743805">Opcje dostępne na górze ekranu</translation>
 <translation id="4062305924942672200">Informacje prawne</translation>
 <translation id="4072805772816336153">Spróbuj ponownie później</translation>
 <translation id="4084682180776658562">Dodaj do zakładek</translation>
@@ -642,7 +642,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4554077758708533499">Podłączony za pomocą kabla USB</translation>
 <translation id="4558311620361989323">Skróty stron internetowych</translation>
 <translation id="4561730552726921821">Rejestracja się udała</translation>
-<translation id="4561979708150884304">Brak połączenia</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4572422548854449519">Zaloguj się na konto zarządzane</translation>
 <translation id="4576892426230499203">Spróbuj innego sposobu potwierdzania tożsamości</translation>
@@ -1351,7 +1350,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="82619448491672958">Zobacz inne karty</translation>
 <translation id="8266862848225348053">Miejsce zapisywania pobranych plików</translation>
-<translation id="8274165955039650276">Zobacz pobrane</translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282297628636750033">Stosuj ciemny motyw witryn tam, gdzie to możliwe</translation>
 <translation id="829672787777123339">Łączę z Twoim urządzeniem…</translation>
