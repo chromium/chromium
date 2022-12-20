@@ -70,6 +70,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"editBookmarkListA11yLabel",
        IDS_BOOKMARKS_EDIT_BOOKMARK_LIST_A11Y_LABEL},
       {"cancelA11yLabel", IDS_CANCEL},
+      {"bookmarkNameA11yLabel", IDS_BOOKMARK_AX_EDITOR_NAME_LABEL},
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"emptyTitle", IDS_BOOKMARKS_EMPTY_STATE_TITLE},
       {"emptyBody", IDS_BOOKMARKS_EMPTY_STATE_BODY},
@@ -79,6 +80,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
       {"selectedBookmarkCount", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"menuOpenNewTab", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB},
+      {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

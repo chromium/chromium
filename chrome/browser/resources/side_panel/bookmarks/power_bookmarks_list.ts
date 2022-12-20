@@ -122,6 +122,16 @@ export class PowerBookmarksListElement extends PolymerElement {
         value: loadTimeData.getBoolean('guestMode'),
         reflectToAttribute: true,
       },
+
+      renamingParentId_: {
+        type: String,
+        value: '',
+      },
+
+      renamingId_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -154,6 +164,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private editing_: boolean;
   private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private guestMode_: boolean;
+  private renamingParentId_: string;
+  private renamingId_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -255,10 +267,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onCreated_(node: chrome.bookmarks.BookmarkTreeNode) {
     const pathToParent = this.findPathToId_(node.parentId as string);
     const parent = pathToParent[pathToParent.length - 1]!;
-    if (!parent.children) {
+    if (!node.url && !node.children) {
       // Newly created folders in this session may not have an array of
       // children yet, so create an empty one.
-      parent.children = [];
+      node.children = [];
     }
     parent.children!.splice(node.index!, 0, node);
     if (this.visibleParent_(parent)) {
@@ -270,6 +282,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
     this.findBookmarkDescriptions_(parent, false);
     this.findBookmarkDescriptions_(node, false);
+    if (parent.id === this.renamingParentId_) {
+      this.renamingParentId_ = '';
+      this.renamingId_ = node.id;
+    }
   }
 
   private onMoved_(movedInfo: chrome.bookmarks.MoveInfo) {
@@ -393,13 +409,6 @@ export class PowerBookmarksListElement extends PolymerElement {
    */
   private findBookmarkDescriptions_(
       bookmark: chrome.bookmarks.BookmarkTreeNode, recurse: boolean) {
-    if (bookmark.children) {
-      PluralStringProxyImpl.getInstance()
-          .getPluralString('bookmarkFolderChildCount', bookmark.children.length)
-          .then(pluralString => {
-            this.set(`compactDescriptions_.${bookmark.id}`, pluralString);
-          });
-    }
     if (bookmark.url) {
       const url = new URL(bookmark.url);
       // Show chrome:// if it's a chrome internal url
@@ -409,6 +418,14 @@ export class PowerBookmarksListElement extends PolymerElement {
       } else {
         this.set(`expandedDescriptions_.${bookmark.id}`, url.hostname);
       }
+    } else {
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'bookmarkFolderChildCount',
+              bookmark.children ? bookmark.children.length : 0)
+          .then(pluralString => {
+            this.set(`compactDescriptions_.${bookmark.id}`, pluralString);
+          });
     }
     if (recurse && bookmark.children) {
       bookmark.children.forEach(
@@ -449,6 +466,10 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private getProductInfos_(): BookmarkProductInfo[] {
     return Array.from(this.productInfos_.values());
+  }
+
+  private renamingItem_(id: string) {
+    return id === this.renamingId_;
   }
 
   private isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
@@ -525,9 +546,9 @@ export class PowerBookmarksListElement extends PolymerElement {
         a: chrome.bookmarks.BookmarkTreeNode,
         b: chrome.bookmarks.BookmarkTreeNode) {
       // Always sort by folders first
-      if (a.children && !b.children) {
+      if (!a.url && b.url) {
         return -1;
-      } else if (!a.children && b.children) {
+      } else if (a.url && !b.url) {
         changedPosition = true;
         return 1;
       } else {
@@ -604,6 +625,14 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private onRename_(
+      event: CustomEvent<
+          {bookmark: chrome.bookmarks.BookmarkTreeNode, value: string}>) {
+    this.bookmarksApi_.renameBookmark(
+        event.detail.bookmark.id, event.detail.value);
+    this.renamingId_ = '';
+  }
+
   private getSelectedDescription_() {
     return loadTimeData.getStringF(
         'selectedBookmarkCount', this.selectedBookmarks_.length);
@@ -658,6 +687,13 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private getParentFolder_(): chrome.bookmarks.BookmarkTreeNode {
+    return this.getActiveFolder_() ||
+        this.folders_.find(
+            (folder: chrome.bookmarks.BookmarkTreeNode) =>
+                folder.id === loadTimeData.getString('otherBookmarksId'))!;
+  }
+
   private onShowSortMenuClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -667,7 +703,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onAddNewFolderClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    // TODO: Implement add new folder functionality
+    const newParent = this.getParentFolder_();
+    this.renamingParentId_ = newParent.id;
+    this.bookmarksApi_.createFolder(
+        newParent.id, loadTimeData.getString('newFolderTitle'));
   }
 
   private onBulkEditClicked_(event: MouseEvent) {
@@ -712,11 +751,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private onAddTabClicked_() {
-    const newParent = this.getActiveFolder_() ||
-        this.folders_.find(
-            (folder: chrome.bookmarks.BookmarkTreeNode) =>
-                folder.id === loadTimeData.getString('otherBookmarksId'));
-    this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent!.id);
+    const newParent = this.getParentFolder_();
+    this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent.id);
   }
 
   private hideAddTabButton_() {

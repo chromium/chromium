@@ -29,8 +29,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'openBookmark',
       'cutBookmark',
       'copyBookmark',
+      'createFolder',
       'deleteBookmarks',
       'pasteToBookmark',
+      'renameBookmark',
       'showContextMenu',
       'showUi',
     ]);
@@ -75,6 +77,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
+  createFolder(parentId: string, title: string) {
+    this.methodCalled('createFolder', parentId, title);
+  }
+
   cutBookmark(id: string) {
     this.methodCalled('cutBookmark', id);
   }
@@ -87,6 +93,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void> {
     this.methodCalled('pasteToBookmark', parentId, destinationId);
     return Promise.resolve();
+  }
+
+  renameBookmark(id: string, title: string) {
+    this.methodCalled('renameBookmark', id, title);
   }
 
   showContextMenu(id: string, x: number, y: number, source: ActionSource) {

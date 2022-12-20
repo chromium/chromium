@@ -282,10 +282,12 @@
           compact="[[compact_]]" trailing-icon="cr:more-vert"
           trailing-icon-aria-label="TODO"
           has-checkbox="[[editing_]]"
+          has-input="[[renamingItem_(item.id, renamingId_)]]"
           on-row-clicked="onRowClicked_"
           on-context-menu="onShowContextMenuClicked_"
           on-trailing-icon-clicked="onShowContextMenuClicked_"
-          on-checkbox-change="onRowSelectedChange_">
+          on-checkbox-change="onRowSelectedChange_"
+          on-input-change="onRename_">
         <div slot="extra-content-container">
           <template is="dom-if"
               if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>

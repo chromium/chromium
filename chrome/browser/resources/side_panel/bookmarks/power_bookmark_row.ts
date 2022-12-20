@@ -5,19 +5,15 @@
 import './power_bookmark_chip.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './power_bookmark_row.html.js';
-
-export interface PowerBookmarkRowElement {
-  $: {
-    bookmarkImage: HTMLDivElement,
-  };
-}
 
 export class PowerBookmarkRowElement extends PolymerElement {
   static get is() {
@@ -32,14 +28,14 @@ export class PowerBookmarkRowElement extends PolymerElement {
     return {
       bookmark: {
         type: Object,
-        observer: 'updateImage_',
+        observer: 'updateImages_',
       },
 
       compact: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
-        observer: 'updateImage_',
+        observer: 'updateImages_',
       },
 
       description: {
@@ -48,6 +44,12 @@ export class PowerBookmarkRowElement extends PolymerElement {
       },
 
       hasCheckbox: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      hasInput: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
@@ -69,31 +71,60 @@ export class PowerBookmarkRowElement extends PolymerElement {
   compact: boolean;
   description: string;
   hasCheckbox: boolean;
+  hasInput: boolean;
   trailingIcon: string;
   trailingIconAriaLabel: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.onInputDisplayChange_();
+  }
+
+  /**
+   * Set content and styling for all images in the row.
+   */
+  private updateImages_() {
+    const bookmarkImage = this.shadowRoot!.querySelector('#bookmarkImage');
+    if (bookmarkImage) {
+      this.updateImage_(bookmarkImage as HTMLDivElement);
+    }
+    const inputBookmarkImage =
+        this.shadowRoot!.querySelector('#inputBookmarkImage');
+    if (inputBookmarkImage) {
+      this.updateImage_(inputBookmarkImage as HTMLDivElement);
+    }
+  }
 
   /**
    * Add the appropriate image for the given bookmark and compact/expanded
    * state. If the bookmark should be displayed as compact, this image will be
    * a favicon or folder icon, otherwise it will be a larger image.
    */
-  private updateImage_() {
+  private updateImage_(imageElement: HTMLDivElement) {
     // Reset styling added in previous calls to this method.
-    this.$.bookmarkImage.classList.remove('url-icon');
-    this.$.bookmarkImage.classList.remove('icon-folder-open');
-    this.$.bookmarkImage.style.backgroundImage = '';
-    this.$.bookmarkImage.style.backgroundColor = '';
+    imageElement.classList.remove('url-icon');
+    imageElement.classList.remove('icon-folder-open');
+    imageElement.style.backgroundImage = '';
+    imageElement.style.backgroundColor = '';
     if (this.compact) {
       if (this.bookmark.url) {
-        this.$.bookmarkImage.classList.add('url-icon');
-        this.$.bookmarkImage.style.backgroundImage =
+        imageElement.classList.add('url-icon');
+        imageElement.style.backgroundImage =
             getFaviconForPageURL(this.bookmark.url, false);
       } else {
-        this.$.bookmarkImage.classList.add('icon-folder-open');
+        imageElement.classList.add('icon-folder-open');
       }
     } else {
       // TODO(b/244627092): Add image once available
-      this.$.bookmarkImage.style.backgroundColor = 'red';
+      imageElement.style.backgroundColor = 'red';
+    }
+  }
+
+  private onInputDisplayChange_() {
+    this.updateImages_();
+    const input = this.shadowRoot!.querySelector('#input');
+    if (input) {
+      (input as CrInputElement).focus();
     }
   }
 
@@ -159,6 +190,35 @@ export class PowerBookmarkRowElement extends PolymerElement {
       detail: {
         bookmark: this.bookmark,
         checked: (event.target as CrCheckboxElement).checked,
+      },
+    }));
+  }
+
+  /**
+   * Triggers an input change event on enter. Extends default input behavior
+   * which only triggers a change event if the value of the input has changed.
+   */
+  private onInputKeyPress_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onInputChange_(event);
+    }
+  }
+
+  /**
+   * Triggers a custom input change event when the user hits enter or the input
+   * loses focus.
+   */
+  private onInputChange_(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const inputElement: CrInputElement =
+        this.shadowRoot!.querySelector('#input')!;
+    this.dispatchEvent(new CustomEvent('input-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        value: inputElement.value,
       },
     }));
   }
