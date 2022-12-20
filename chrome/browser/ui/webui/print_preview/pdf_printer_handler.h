@@ -119,7 +119,7 @@ class PdfPrinterHandler : public PrinterHandler,
   // The callback to call when complete.
   PrintCallback print_callback_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Determines if the local Drive mount is sent to the file picker as the
   // default save location. Set to true for Save to Drive print jobs.
   bool use_drive_mount_ = false;

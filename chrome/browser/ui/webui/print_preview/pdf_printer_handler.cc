@@ -296,7 +296,7 @@ void PdfPrinterHandler::StartPrint(
 
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   bool prompt_user = !cmdline->HasSwitch(switches::kKioskModePrinting);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   use_drive_mount_ =
       settings.FindBool(kSettingPrintToGoogleDrive).value_or(false);
 #endif
@@ -412,7 +412,7 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* service = chromeos::LacrosService::Get();
-  if (service &&
+  if (use_drive_mount_ && service &&
       service->IsAvailable<crosapi::mojom::DriveIntegrationService>()) {
     service->GetRemote<crosapi::mojom::DriveIntegrationService>()
         ->GetMountPointPath(
