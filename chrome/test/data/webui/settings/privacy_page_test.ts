@@ -175,6 +175,7 @@ suite('PrivacyPage', function() {
     suiteSetup(function() {
       loadTimeData.overrideValues({
         isPrivacySandboxRestricted: false,
+        isPrivacySandboxSettings4: enablePrivacySandbox4,
       });
 
       settingsPrefs = document.createElement('settings-prefs');

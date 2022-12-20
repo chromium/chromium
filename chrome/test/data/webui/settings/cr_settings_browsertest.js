@@ -535,6 +535,7 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'features::kPrivacyGuide2',
+        'privacy_sandbox::kPrivacySandboxSettings4',
       ],
     };
   }
@@ -557,8 +558,8 @@ TEST_F('CrSettingsPrivacyPageTest', 'MAYBE_PrivacyPageTests', function() {
   runMochaSuite('PrivacyPage');
 });
 
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandboxEnabled', function() {
-  runMochaSuite('PrivacySandboxEnabled');
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandbox4Enabled', function() {
+  runMochaSuite('PrivacySandbox4Enabled');
 });
 
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideRowTests', function() {
@@ -594,25 +595,11 @@ TEST_F(
       runMochaSuite('NativeCertificateManager');
     });
 GEN('#endif');
-
-var CrSettingsPrivacyPageWithPrivacySandbox4Test =
-    class extends CrSettingsPrivacyPageTest {
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'features::kPrivacyGuide2',
-        'privacy_sandbox::kPrivacySandboxSettings4',
-      ],
-    };
-  }
-};
-
-TEST_F(
-    'CrSettingsPrivacyPageWithPrivacySandbox4Test', 'PrivacySandbox4Enabled',
-    function() {
-      runMochaSuite('PrivacySandbox4Enabled');
-    });
+// TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
+// out.
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandboxEnabled', function() {
+  runMochaSuite('PrivacySandboxEnabled');
+});
 
 var CrSettingsPrivacySandboxPageTest = class extends CrSettingsBrowserTest {
   /** @override */
