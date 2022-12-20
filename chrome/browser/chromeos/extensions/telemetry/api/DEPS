@@ -1,0 +1,11 @@
+include_rules = [
+  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
+  "+chrome/browser/ash/telemetry_extension",
+]
+
+specific_include_rules = {
+  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
+  ".*test\.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
+  ],
+}

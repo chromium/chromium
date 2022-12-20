@@ -484,18 +484,16 @@ static_library("test_support") {
     sources += [
       "../browser/certificate_provider/test_certificate_provider_extension.cc",
       "../browser/certificate_provider/test_certificate_provider_extension.h",
+      "../browser/extensions/policy_test_utils.cc",
+      "../browser/extensions/policy_test_utils.h",
       "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.cc",
       "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
     ]
-    deps += [ "//chromeos/dbus/constants" ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "../browser/extensions/policy_test_utils.cc",
-      "../browser/extensions/policy_test_utils.h",
+    deps += [
+      "//chrome/browser/chromeos",
+      "//chromeos/dbus/constants",
     ]
   }
 
@@ -603,7 +601,6 @@ static_library("test_support") {
       "//chrome/browser/ash:print_job_info_proto",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/chromeos",
       "//chrome/browser/nearby_sharing/public/cpp",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/attestation:test_support",
@@ -621,7 +618,7 @@ static_library("test_support") {
 
   if (is_chromeos_lacros) {
     public_deps += [
-      "//chrome/browser:dlp_policy_event_proto",
+      "//chrome/browser/chromeos:dlp_policy_event_proto",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:test_support",
       "//components/reporting/storage:test_support",
@@ -2542,6 +2539,7 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/chromeos",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
         "//chromeos/ui/frame",
@@ -4305,7 +4303,6 @@ if (!is_android) {
         "//chrome/browser/ash/system_extensions:browser_tests",
         "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-        "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/enterprise/connectors/device_trust:features",
@@ -4390,6 +4387,7 @@ if (!is_android) {
         "//chromeos/services/machine_learning/public/cpp:stub",
         "//chromeos/services/network_config:network_config",
         "//chromeos/services/tts",
+        "//chromeos/strings",
         "//chromeos/ui/base",
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
@@ -4836,6 +4834,7 @@ if (is_chromeos_lacros) {
       ":sync_integration_test_support",
       ":test_support",
       "//chrome/app:command_ids",
+      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
@@ -4939,6 +4938,7 @@ if (is_chromeos_lacros) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
+      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/metrics/structured",
@@ -7315,6 +7315,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chromeos/components/disks:prefs",
       "//chromeos/dbus/power",
@@ -7698,6 +7699,7 @@ test("unit_tests") {
       "//chromeos/services/assistant/public/shared",
       "//chromeos/services/network_config:in_process_instance",
       "//chromeos/services/network_config:network_config",
+      "//chromeos/strings",
       "//chromeos/ui/base",
       "//chromeos/ui/wm",
       "//components/app_constants",
@@ -7713,6 +7715,7 @@ test("unit_tests") {
       "//components/soda:soda",
       "//components/webapk:proto",
       "//ui/base/ime/ash",
+      "//ui/chromeos/strings",
       "//ui/file_manager:resources_grit",
       "//ui/webui/resources/cr_components/app_management:unit_tests",
       "//ui/wm/public",
@@ -7786,7 +7789,7 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser:dlp_policy_event_proto",
+      "//chrome/browser/chromeos:dlp_policy_event_proto",
       "//chrome/browser/chromeos/launcher_search:unit_tests",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
@@ -9993,6 +9996,7 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/chromeos",
         "//chromeos/constants",
         "//chromeos/ui/base",
         "//chromeos/ui/frame",

@@ -5146,7 +5146,6 @@ static_library("browser") {
       "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/video_conference",
-      "//chrome/browser/chromeos",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
@@ -5278,6 +5277,8 @@ static_library("browser") {
       "//device/vr/public/mojom:isolated_xr_service",
       "//remoting/host/chromeos:features",
       "//ui/chromeos",
+      "//ui/chromeos/resources",
+      "//ui/chromeos/strings",
       "//ui/events/ozone",
       "//ui/ozone",
       "//ui/wm/public",
@@ -5285,7 +5286,6 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
-      "//chrome/browser/chromeos",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ui/ash/system_web_apps",
     ]
@@ -5369,101 +5369,6 @@ static_library("browser") {
       "apps/digital_goods/digital_goods_lacros.h",
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
-      "chromeos/app_mode/app_session.cc",
-      "chromeos/app_mode/app_session.h",
-      "chromeos/app_mode/app_session_browser_window_handler.cc",
-      "chromeos/app_mode/app_session_browser_window_handler.h",
-      "chromeos/app_mode/app_session_metrics_service.cc",
-      "chromeos/app_mode/app_session_metrics_service.h",
-      "chromeos/app_mode/app_session_policies.cc",
-      "chromeos/app_mode/app_session_policies.h",
-      "chromeos/app_mode/chrome_kiosk_app_installer.cc",
-      "chromeos/app_mode/chrome_kiosk_app_installer.h",
-      "chromeos/app_mode/chrome_kiosk_app_launcher.cc",
-      "chromeos/app_mode/chrome_kiosk_app_launcher.h",
-      "chromeos/app_mode/chrome_kiosk_external_loader_broker.cc",
-      "chromeos/app_mode/chrome_kiosk_external_loader_broker.h",
-      "chromeos/app_mode/kiosk_app_external_loader.cc",
-      "chromeos/app_mode/kiosk_app_external_loader.h",
-      "chromeos/app_mode/kiosk_app_service_launcher.cc",
-      "chromeos/app_mode/kiosk_app_service_launcher.h",
-      "chromeos/app_mode/kiosk_settings_navigation_throttle.cc",
-      "chromeos/app_mode/kiosk_settings_navigation_throttle.h",
-      "chromeos/app_mode/startup_app_launcher_update_checker.cc",
-      "chromeos/app_mode/startup_app_launcher_update_checker.h",
-      "chromeos/extensions/desk_api/desk_api_extension_manager.cc",
-      "chromeos/extensions/desk_api/desk_api_extension_manager.h",
-      "chromeos/extensions/device_local_account_external_policy_loader.cc",
-      "chromeos/extensions/device_local_account_external_policy_loader.h",
-      "chromeos/extensions/echo_private/echo_private_api.cc",
-      "chromeos/extensions/echo_private/echo_private_api.h",
-      "chromeos/extensions/file_system_provider/file_system_provider_api.cc",
-      "chromeos/extensions/file_system_provider/file_system_provider_api.h",
-      "chromeos/extensions/file_system_provider/provider_function.cc",
-      "chromeos/extensions/file_system_provider/provider_function.h",
-      "chromeos/extensions/file_system_provider/service_worker_lifetime_manager.cc",
-      "chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h",
-      "chromeos/extensions/info_private_api.cc",
-      "chromeos/extensions/info_private_api.h",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.cc",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.h",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.cc",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h",
-      "chromeos/extensions/wallpaper_api.cc",
-      "chromeos/extensions/wallpaper_api.h",
-      "chromeos/policy/dlp/clipboard_bubble.cc",
-      "chromeos/policy/dlp/clipboard_bubble.h",
-      "chromeos/policy/dlp/data_transfer_dlp_controller.cc",
-      "chromeos/policy/dlp/data_transfer_dlp_controller.h",
-      "chromeos/policy/dlp/dlp_browser_helper_lacros.cc",
-      "chromeos/policy/dlp/dlp_browser_helper_lacros.h",
-      "chromeos/policy/dlp/dlp_clipboard_bubble_constants.h",
-      "chromeos/policy/dlp/dlp_clipboard_notifier.cc",
-      "chromeos/policy/dlp/dlp_clipboard_notifier.h",
-      "chromeos/policy/dlp/dlp_confidential_contents.cc",
-      "chromeos/policy/dlp/dlp_confidential_contents.h",
-      "chromeos/policy/dlp/dlp_confidential_file.cc",
-      "chromeos/policy/dlp/dlp_confidential_file.h",
-      "chromeos/policy/dlp/dlp_content_manager.cc",
-      "chromeos/policy/dlp/dlp_content_manager.h",
-      "chromeos/policy/dlp/dlp_content_manager_lacros.cc",
-      "chromeos/policy/dlp/dlp_content_manager_lacros.h",
-      "chromeos/policy/dlp/dlp_content_observer.cc",
-      "chromeos/policy/dlp/dlp_content_observer.h",
-      "chromeos/policy/dlp/dlp_content_restriction_set.cc",
-      "chromeos/policy/dlp/dlp_content_restriction_set.h",
-      "chromeos/policy/dlp/dlp_content_tab_helper.cc",
-      "chromeos/policy/dlp/dlp_content_tab_helper.h",
-      "chromeos/policy/dlp/dlp_copy_or_move_hook_delegate.cc",
-      "chromeos/policy/dlp/dlp_copy_or_move_hook_delegate.h",
-      "chromeos/policy/dlp/dlp_data_transfer_notifier.cc",
-      "chromeos/policy/dlp/dlp_data_transfer_notifier.h",
-      "chromeos/policy/dlp/dlp_drag_drop_notifier.cc",
-      "chromeos/policy/dlp/dlp_drag_drop_notifier.h",
-      "chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.cc",
-      "chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h",
-      "chromeos/policy/dlp/dlp_histogram_helper.cc",
-      "chromeos/policy/dlp/dlp_histogram_helper.h",
-      "chromeos/policy/dlp/dlp_notification_helper.cc",
-      "chromeos/policy/dlp/dlp_notification_helper.h",
-      "chromeos/policy/dlp/dlp_policy_constants.h",
-      "chromeos/policy/dlp/dlp_reporting_manager.cc",
-      "chromeos/policy/dlp/dlp_reporting_manager.h",
-      "chromeos/policy/dlp/dlp_rules_manager.h",
-      "chromeos/policy/dlp/dlp_rules_manager_factory.cc",
-      "chromeos/policy/dlp/dlp_rules_manager_factory.h",
-      "chromeos/policy/dlp/dlp_rules_manager_impl.cc",
-      "chromeos/policy/dlp/dlp_rules_manager_impl.h",
-      "chromeos/policy/dlp/dlp_scoped_file_access_delegate.cc",
-      "chromeos/policy/dlp/dlp_scoped_file_access_delegate.h",
-      "chromeos/policy/dlp/dlp_warn_dialog.cc",
-      "chromeos/policy/dlp/dlp_warn_dialog.h",
-      "chromeos/policy/dlp/dlp_warn_notifier.cc",
-      "chromeos/policy/dlp/dlp_warn_notifier.h",
-      "chromeos/reporting/device_reporting_settings_lacros.cc",
-      "chromeos/reporting/device_reporting_settings_lacros.h",
-      "chromeos/reporting/metric_reporting_manager_lacros.cc",
-      "chromeos/reporting/metric_reporting_manager_lacros.h",
       "feedback/show_feedback_page_lacros.cc",
       "lacros/account_manager/account_cache.cc",
       "lacros/account_manager/account_cache.h",
@@ -5635,7 +5540,6 @@ static_library("browser") {
       "ui/lacros/window_utility.h",
     ]
     deps += [
-      ":dlp_policy_event_proto",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
@@ -5659,14 +5563,6 @@ static_library("browser") {
       "//ui/platform_window",
       "//ui/strings:ui_strings_grit",
     ]
-
-    if (enable_plugins) {
-      sources += [
-        "chromeos/app_mode/kiosk_session_plugin_handler.cc",
-        "chromeos/app_mode/kiosk_session_plugin_handler.h",
-        "chromeos/app_mode/kiosk_session_plugin_handler_delegate.h",
-      ]
-    }
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
@@ -5724,54 +5620,6 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
-      "chromeos/arc/arc_external_protocol_dialog.cc",
-      "chromeos/arc/arc_external_protocol_dialog.h",
-      "chromeos/arc/arc_web_contents_data.cc",
-      "chromeos/arc/arc_web_contents_data.h",
-      "chromeos/arc/open_with_menu.cc",
-      "chromeos/arc/open_with_menu.h",
-      "chromeos/arc/start_smart_selection_action_menu.cc",
-      "chromeos/arc/start_smart_selection_action_menu.h",
-      "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
-      "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h",
-      "chromeos/extensions/login_screen/login/cleanup/browser_cleanup_handler.cc",
-      "chromeos/extensions/login_screen/login/cleanup/browser_cleanup_handler.h",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager.cc",
-      "chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h",
-      "chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.cc",
-      "chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h",
-      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.cc",
-      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h",
-      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.cc",
-      "chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h",
-      "chromeos/extensions/login_screen/login/login_api.cc",
-      "chromeos/extensions/login_screen/login/login_api.h",
-      "chromeos/extensions/login_screen/login/login_api_prefs.cc",
-      "chromeos/extensions/login_screen/login/login_api_prefs.h",
-      "chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.cc",
-      "chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h",
-      "chromeos/extensions/login_screen/login_state/login_state_api.cc",
-      "chromeos/extensions/login_screen/login_state/login_state_api.h",
-      "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.cc",
-      "chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h",
-      "chromeos/reporting/metric_default_utils.cc",
-      "chromeos/reporting/metric_default_utils.h",
-      "chromeos/reporting/metric_reporting_manager_delegate_base.cc",
-      "chromeos/reporting/metric_reporting_manager_delegate_base.h",
-      "chromeos/reporting/network/network_bandwidth_sampler.cc",
-      "chromeos/reporting/network/network_bandwidth_sampler.h",
-      "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
-      "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
-      "chromeos/tablet_mode/tablet_mode_page_behavior.cc",
-      "chromeos/tablet_mode/tablet_mode_page_behavior.h",
-      "chromeos/video_conference/video_conference_app_permissions.h",
-      "chromeos/video_conference/video_conference_manager_client.cc",
-      "chromeos/video_conference/video_conference_manager_client.h",
-      "chromeos/video_conference/video_conference_media_listener.cc",
-      "chromeos/video_conference/video_conference_media_listener.h",
-      "chromeos/video_conference/video_conference_web_app.cc",
-      "chromeos/video_conference/video_conference_web_app.h",
       "download/notification/download_item_notification.cc",
       "download/notification/download_item_notification.h",
       "download/notification/download_notification_manager.cc",
@@ -5814,6 +5662,7 @@ static_library("browser") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
+      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/telemetry",
 
       # This is a dependency only to allow `allow_circular_includes_from` to
@@ -5856,6 +5705,7 @@ static_library("browser") {
     ]
 
     allow_circular_includes_from += [
+      "//chrome/browser/chromeos",
       "//chrome/browser/policy:onc",
 
       # TODO(b/262484731): Remove this when app service has its own target.
@@ -7820,25 +7670,6 @@ static_library("browser") {
     ]
   }
 
-  if (use_cups) {
-    if (is_chromeos) {
-      sources += [
-        "chromeos/printing/cups_wrapper.cc",
-        "chromeos/printing/cups_wrapper.h",
-        "chromeos/printing/cups_wrapper_impl.cc",
-        "chromeos/printing/printer_error_codes.cc",
-        "chromeos/printing/printer_error_codes.h",
-      ]
-      deps += [ "//chromeos/components/print_management/mojom" ]
-    }
-    if (is_chromeos_ash) {
-      deps += [
-        "//chrome/services/cups_proxy",
-        "//chrome/services/cups_proxy/public/mojom",
-      ]
-    }
-  }
-
   if (use_nss_certs) {
     sources += [
       "certificate_manager_model.cc",
@@ -8562,12 +8393,6 @@ if (is_android) {
   }
   java_cpp_enum("survey_http_client_type_enum") {
     sources = [ "android/survey/http_client_type.h" ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  proto_library("dlp_policy_event_proto") {
-    sources = [ "chromeos/policy/dlp/dlp_policy_event.proto" ]
   }
 }
 

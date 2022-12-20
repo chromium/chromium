@@ -1,9 +1,26 @@
 include_rules = [
-  # TODO(https://crbug.com/1164001): extensions/ will be eventually split
-  # between Ash-only code that will be moved to chrome/browser/ash/extensions
-  # and generic code that will be used by both Ash and Lacros and remain here.
-  # The latter won't be able to depend on the directories below. Remove them
-  # once that is done.
-  "+ash",
-  "+chrome/browser/ash",
+  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
+  "+chrome/browser/ash/crosapi",
 ]
+
+# Included in is_chromeos_ash blocks in //chrome/test targets.
+specific_include_rules = {
+  "contact_center_insights_extension_manager_ash_browsertest\.cc": [
+    "+chrome/browser/ash",
+  ],
+  "echo_private_apitest\.cc": [
+    "+chrome/browser/ash",
+  ],
+  "file_system_provider_apitest\.cc": [
+    "+chrome/browser/ash",
+  ],
+  "info_private_apitest\.cc": [
+    "+ash",
+    "+chrome/browser/ash/arc",
+  ],
+
+  # Guarded by IS_CHROMEOS_ASH.
+  "file_system_provider_api\.cc": [
+    "+chrome/browser/ash/guest_os",
+  ],
+}
