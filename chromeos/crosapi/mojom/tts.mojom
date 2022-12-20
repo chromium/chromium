@@ -114,6 +114,8 @@ struct TtsUtterance {
 // Interface for Tts, implemented in ash-chrome. Used by lacros-chrome to
 // communicate with ash TtsController to send the voice data and
 // speech requests to ash.
+// Next version: 3
+// Next method id: 4
 [Stable, Uuid="8550e8d0-a818-49a3-93c1-d8053a33b2e6"]
 interface Tts {
   // A TtsClient can register itself with Tts, so that Tts can communicate with
@@ -133,6 +135,11 @@ interface Tts {
   [MinVersion=1]
   SpeakOrEnqueue@2(TtsUtterance utterance,
                    pending_remote<TtsUtteranceClient> utterance_client);
+
+  // Requests Ash TtsController to stop the current utterance if it matches
+  // the given |source_url|.
+  [MinVersion=2]
+  Stop@3(url.mojom.Url source_url);
 };
 
 // Interface for tts client. Implemented in lacros-chrome.

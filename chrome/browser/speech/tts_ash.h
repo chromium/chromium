@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
+class GURL;
 class ProfileManager;
 
 namespace crosapi {
@@ -65,6 +66,7 @@ class TtsAsh : public mojom::Tts,
   void SpeakOrEnqueue(
       mojom::TtsUtterancePtr utterance,
       mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) override;
+  void Stop(const GURL& source_url) override;
 
  private:
   class TtsUtteranceClient;

@@ -200,10 +200,16 @@ void TtsControllerImpl::SpeakOrEnqueueInternal(
 }
 
 void TtsControllerImpl::Stop() {
-  StopAndClearQueue(GURL());
+  Stop(GURL());
 }
 
 void TtsControllerImpl::Stop(const GURL& source_url) {
+  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
+  if (external_delegate) {
+    external_delegate->Stop(source_url);
+    return;
+  }
+
   StopAndClearQueue(source_url);
 }
 

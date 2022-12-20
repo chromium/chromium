@@ -390,6 +390,17 @@ void TtsClientLacros::SpeakOrEnqueue(
   pending_utterance_clients_.emplace(utterance_id, std::move(pending_client));
 }
 
+void TtsClientLacros::RequestStop(const GURL& source_url) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
+      static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
+          crosapi::mojom::Tts::Uuid_)) < crosapi::mojom::Tts::kStopMinVersion) {
+    LOG(WARNING) << kErrorUnsupportedVersion;
+    return;
+  }
+  lacros_service->GetRemote<crosapi::mojom::Tts>()->Stop(source_url);
+}
+
 void TtsClientLacros::OnLacrosSpeechEngineTtsEvent(
     int utterance_id,
     content::TtsEventType event_type,

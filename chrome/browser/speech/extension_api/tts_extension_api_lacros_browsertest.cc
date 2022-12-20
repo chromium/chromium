@@ -311,4 +311,25 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
   ASSERT_TRUE(IsUtteranceQueueEmpty());
 }
 
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
+                       StopLacrosUtteranceWithLacrosTtsEngine) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::Tts::Uuid_) <
+      static_cast<int>(crosapi::mojom::Tts::kStopMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Load tts engine extension, register the tts engine events and
+  // call tts.speak and tts.stop from the testing extension.
+  ASSERT_TRUE(
+      RunExtensionTest("tts_engine/lacros_tts_support/"
+                       "tts_stop_lacros_engine",
+                       {}, {.ignore_manifest_warnings = true}))
+      << message_;
+
+  // Verify the utterance issued from the testing extension is properly
+  // finished and the utterance queue is empty in Ash's TtsController.
+  ASSERT_TRUE(IsUtteranceQueueEmpty());
+}
+
 }  // namespace extensions

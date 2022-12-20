@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -53,6 +54,10 @@ class CONTENT_EXPORT ExternalPlatformDelegate {
                           int char_index,
                           int length,
                           const std::string& error_message) = 0;
+
+  // Requests external TtsController to stop the current utterance if it matches
+  // the given |source_url|.
+  virtual void Stop(const GURL& source_url) = 0;
 };
 
 // Abstract class that defines the native platform TTS interface,

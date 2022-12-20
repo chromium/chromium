@@ -52,3 +52,12 @@ void ExternalPlatformDelegateImplLacros::OnTtsEvent(
       ->OnLacrosSpeechEngineTtsEvent(utterance_id, event_type, char_index,
                                      length, error_message);
 }
+
+void ExternalPlatformDelegateImplLacros::Stop(const GURL& source_url) {
+  // TODO(crbug.com/1251979): When Tts is supported for secondary prfoile in
+  // in Lacros, use TtsClientLacros created for the same profile.
+  content::BrowserContext* browser_context =
+      ProfileManager::GetPrimaryUserProfile();
+  TtsClientLacros::GetForBrowserContext(browser_context)
+      ->RequestStop(source_url);
+}

@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -229,6 +230,10 @@ void TtsAsh::SpeakOrEnqueue(
 
   content::TtsController::GetInstance()->SpeakOrEnqueue(
       std::move(lacros_utterance));
+}
+
+void TtsAsh::Stop(const GURL& source_url) {
+  content::TtsController::GetInstance()->Stop(source_url);
 }
 
 void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,

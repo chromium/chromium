@@ -57,6 +57,10 @@ class TtsClientLacros
   // Forwards the given utterance to Ash to be processed by Ash TtsController.
   void SpeakOrEnqueue(std::unique_ptr<content::TtsUtterance> utterance);
 
+  // Forwards the Stop request (for stopping the current utterance if it matches
+  // the given |source_url|) to Ash.
+  void RequestStop(const GURL& source_url);
+
   // Handle events received from the Lacros speech engine.
   void OnLacrosSpeechEngineTtsEvent(int utterance_id,
                                     content::TtsEventType event_type,

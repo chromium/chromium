@@ -31,6 +31,7 @@ class ExternalPlatformDelegateImplLacros
                   int char_index,
                   int length,
                   const std::string& error_message) override;
+  void Stop(const GURL& source_url) override;
 
  private:
   friend class base::NoDestructor<ExternalPlatformDelegateImplLacros>;
