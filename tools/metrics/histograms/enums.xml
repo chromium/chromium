@@ -101536,6 +101536,8 @@ Full version information for the fingerprint enum values:
   <int value="9" label="Empty URL"/>
   <int value="10" label="Rejected by filter"/>
   <int value="11" label="No UKM sampling configuration received"/>
+  <int value="12" label="MSBB consent is disabled"/>
+  <int value="13" label="Apps consent is disabled"/>
 </enum>
 
 <enum name="UkmEventNameHash">

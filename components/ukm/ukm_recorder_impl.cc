@@ -79,6 +79,9 @@ bool HasSupportedScheme(const GURL& url) {
          url.SchemeIs(kAppScheme);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Update tools/metrics/histograms/enums.xml when new entries are added.
 enum class DroppedDataReason {
   NOT_DROPPED = 0,
   RECORDING_DISABLED = 1,
