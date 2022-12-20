@@ -18,7 +18,6 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -42,8 +41,6 @@ public class AdPersonalizationFragment extends PrivacySandboxSettingsBaseFragmen
     private static final String EMPTY_FLEDGE_PREFERENCE = "empty_fledge";
     private static final String REMOVED_SITES_PREFERENCE = "removed_sites";
 
-    private SnackbarManager mSnackbarManager;
-
     private PreferenceCategory mTopicsCategory;
     private ChromeBasePreference mEmptyTopicsPreference;
     private Preference mRemovedTopicsPreference;
@@ -55,10 +52,6 @@ public class AdPersonalizationFragment extends PrivacySandboxSettingsBaseFragmen
     private Preference mDescriptionPreference;
     private LargeIconBridge mLargeIconBridge;
     private SettingsLauncher mSettingsLauncher;
-
-    public void setSnackbarManager(SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
-    }
 
     @Override
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
@@ -197,16 +190,14 @@ public class AdPersonalizationFragment extends PrivacySandboxSettingsBaseFragmen
         if (preference instanceof TopicPreference) {
             blockTopic(((TopicPreference) preference).getTopic());
             mTopicsCategory.removePreference(preference);
-            mSnackbarManager.showSnackbar(Snackbar.make(
-                    getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
-                    null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
+            showSnackbar(R.string.privacy_sandbox_remove_interest_snackbar, null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
             RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.TopicRemoved");
         } else if (preference instanceof FledgePreference) {
             blockFledge(((FledgePreference) preference).getSite());
             mFledgeCategory.removePreference(preference);
-            mSnackbarManager.showSnackbar(Snackbar.make(
-                    getResources().getString(R.string.privacy_sandbox_remove_site_snackbar), null,
-                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
+            showSnackbar(R.string.privacy_sandbox_remove_site_snackbar, null, Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
             RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.SiteRemoved");
         } else {
             assert false; // NOTREACHED.

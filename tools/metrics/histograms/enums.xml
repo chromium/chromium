@@ -94362,6 +94362,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="50" label="UMA_PRIVACY_SANDBOX_REMOVE_INTEREST"/>
   <int value="52" label="UMA_DOWNLOAD_INTERSTITIAL_DOWNLOAD_DELETED"/>
   <int value="53" label="UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO"/>
+  <int value="54" label="UMA_PRIVACY_SANDBOX_ADD_SITE"/>
+  <int value="55" label="UMA_PRIVACY_SANDBOX_REMOVE_SITE"/>
 </enum>
 
 <enum name="SnapshotItemId">

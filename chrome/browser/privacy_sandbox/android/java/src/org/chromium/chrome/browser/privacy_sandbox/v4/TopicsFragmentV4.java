@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.privacy_sandbox.Topic;
 import org.chromium.chrome.browser.privacy_sandbox.TopicPreference;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -119,6 +120,9 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
             PrivacySandboxBridge.setTopicAllowed(((TopicPreference) preference).getTopic(), false);
             mCurrentTopicsCategory.removePreference(preference);
             updatePreferenceVisibility();
+
+            showSnackbar(R.string.privacy_sandbox_remove_interest_snackbar, null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
             return true;
         }
 

@@ -52,8 +52,6 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
-import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
-import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment;
 import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -253,11 +251,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                                           .getSiteSettingsDelegate());
             delegate.setSnackbarManager(mSnackbarManager);
         }
-        if (fragment instanceof AdPersonalizationFragment) {
-            ((AdPersonalizationFragment) fragment).setSnackbarManager(getSnackbarManager());
-        }
-        if (fragment instanceof AdPersonalizationRemovedFragment) {
-            ((AdPersonalizationRemovedFragment) fragment).setSnackbarManager(getSnackbarManager());
+        if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
+            ((PrivacySandboxSettingsBaseFragment) fragment)
+                    .setSnackbarManager(getSnackbarManager());
         }
     }
 

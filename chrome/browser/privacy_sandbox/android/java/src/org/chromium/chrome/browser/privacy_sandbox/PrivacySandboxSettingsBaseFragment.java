@@ -23,6 +23,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -41,6 +43,7 @@ public abstract class PrivacySandboxSettingsBaseFragment
 
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
     private SettingsLauncher mSettingsLauncher;
+    private SnackbarManager mSnackbarManager;
 
     /**
      * Launches the right version of PrivacySandboxSettings depending on feature flags.
@@ -108,6 +111,16 @@ public abstract class PrivacySandboxSettingsBaseFragment
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(getContext(), intent);
+    }
+
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
+
+    protected void showSnackbar(int stringResId, SnackbarManager.SnackbarController controller,
+            int type, int identifier) {
+        mSnackbarManager.showSnackbar(
+                Snackbar.make(getResources().getString(stringResId), controller, type, identifier));
     }
 
     protected void parseAndRecordReferrer() {

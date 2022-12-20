@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
@@ -67,6 +68,9 @@ public class FledgeAllSitesFragmentV4
             PrivacySandboxBridge.setFledgeJoiningAllowed(
                     ((FledgePreference) preference).getSite(), false);
             mPreferenceScreen.removePreference(preference);
+
+            showSnackbar(R.string.privacy_sandbox_remove_site_snackbar, null, Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
             return true;
         }
 

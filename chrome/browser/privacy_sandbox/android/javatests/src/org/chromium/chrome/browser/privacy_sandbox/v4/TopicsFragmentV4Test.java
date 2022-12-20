@@ -307,10 +307,14 @@ public final class TopicsFragmentV4Test {
         // Remove the first Topic from the list.
         clickImageButtonNextToText(TOPIC_NAME_1);
         onView(withText(TOPIC_NAME_1)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_remove_interest_snackbar))
+                .check(matches(isDisplayed()));
 
         // Remove the second Topic from the list.
         clickImageButtonNextToText(TOPIC_NAME_2);
         onView(withText(TOPIC_NAME_2)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_remove_interest_snackbar))
+                .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the Topic list is empty.
         onView(withText(R.string.settings_topics_page_current_topics_description_empty))
@@ -339,10 +343,14 @@ public final class TopicsFragmentV4Test {
         // Unblock the first Topic
         clickImageButtonNextToText(TOPIC_NAME_1);
         onView(withText(TOPIC_NAME_1)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_add_interest_snackbar))
+                .check(matches(isDisplayed()));
 
         // Unblock the second Topic
         clickImageButtonNextToText(TOPIC_NAME_2);
         onView(withText(TOPIC_NAME_2)).check(doesNotExist());
+        onView(withText(R.string.privacy_sandbox_add_interest_snackbar))
+                .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the Topic list is empty.
         onView(withText(R.string.settings_topics_page_blocked_topics_description_empty))
