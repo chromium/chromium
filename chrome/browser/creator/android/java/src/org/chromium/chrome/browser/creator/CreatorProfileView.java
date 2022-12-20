@@ -16,6 +16,8 @@ import org.chromium.ui.widget.ButtonCompat;
  * View class for the Creator Profile section
  */
 public class CreatorProfileView extends LinearLayout {
+    private static final int FADE_IN_ANIMATION_DURATION_MS = 150;
+    private static final int FADE_OUT_ANIMATION_DURATION_MS = 300;
     private TextView mTitle;
     private TextView mUrl;
     private ButtonCompat mFollowButton;
@@ -42,6 +44,16 @@ public class CreatorProfileView extends LinearLayout {
             // When the user un-follows a site
             mFollowButton.setVisibility(View.VISIBLE);
             mFollowingButton.setVisibility(View.GONE);
+        }
+    }
+
+    public void setProfileVisibility(boolean isToolbarVisible) {
+        if (isToolbarVisible) {
+            setAlpha(1.0f);
+            animate().alpha(0.0f).setDuration(FADE_OUT_ANIMATION_DURATION_MS).start();
+        } else {
+            setAlpha(0.0f);
+            animate().alpha(1.0f).setDuration(FADE_IN_ANIMATION_DURATION_MS).start();
         }
     }
 

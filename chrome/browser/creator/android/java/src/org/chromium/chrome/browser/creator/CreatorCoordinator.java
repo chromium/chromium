@@ -299,8 +299,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 mCreatorModel.set(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY,
-                        mHybridListRenderer.getListLayoutHelper().findFirstVisibleItemPosition()
-                                > 0);
+                        recyclerView.canScrollVertically(-1));
             }
         });
     }

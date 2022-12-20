@@ -9,6 +9,9 @@ found in the LICENSE file.
     <!-- Content Previews dimensions. -->
     <dimen name="content_previews_padding">16dp</dimen>
 
+    <!-- Toolbar dimensions -->
+    <dimen name="creator_toolbar_bottom_border_height">1dp</dimen>
+
     <!-- Sheet tab toolbar dimensions -->
     <dimen name="creator_tab_toolbar_height">70dp</dimen>
 </resources>

@@ -8,7 +8,6 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="CreatorActivityNoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
     </style>
 
     <style name="CreatorFollowFilledButton" parent="ButtonCompatBase">

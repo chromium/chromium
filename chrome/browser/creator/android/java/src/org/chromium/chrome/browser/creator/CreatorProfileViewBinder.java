@@ -16,6 +16,8 @@ public class CreatorProfileViewBinder {
             view.setTitle(model.get(CreatorProperties.TITLE_KEY));
         } else if (CreatorProperties.URL_KEY == propertyKey) {
             view.setUrl(model.get(CreatorProperties.URL_KEY));
+        } else if (CreatorProperties.IS_TOOLBAR_VISIBLE_KEY == propertyKey) {
+            view.setProfileVisibility(model.get(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY));
         } else if (CreatorProperties.IS_FOLLOWED_KEY == propertyKey) {
             view.setIsFollowedStatus(model.get(CreatorProperties.IS_FOLLOWED_KEY));
         } else if (CreatorProperties.ON_FOLLOW_CLICK_KEY == propertyKey) {
