@@ -2058,6 +2058,9 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
   base::UnguessableToken unguessable_token =
       base::UnguessableToken::Deserialize(high, low);
+  if (unguessable_token.is_empty()) {
+    return error::kInvalidArguments;
+  }
   blink::WebGPUExecutionContextToken execution_context_token;
   switch (type) {
     case blink::WebGPUExecutionContextToken::IndexOf<blink::DocumentToken>(): {
