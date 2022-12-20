@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 {
   include: [
-    "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
     "vulkan/client.shard.cml",
@@ -72,8 +71,57 @@
       protocol: [
         "chromium.cast.ApplicationConfigManager",
         "chromium.cast.CorsExemptHeaderProvider",
-        "fuchsia.feedback.CrashReportingProductRegister",
+        // "fuchsia.feedback.CrashReportingProductRegister",
       ]
+    },
+    {
+      // Capabilities used by the WebInstanceHost.
+      protocol: [
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Loader",
+      ]
+    },
+    {
+      // Capabilities to be passed to WebEngine instances.
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
+        "fuchsia.legacymetrics.MetricsRecorder",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.mediacodec.CodecFactory",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.settings.Display",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.input3.Keyboard",
+        "fuchsia.ui.scenic.Scenic",
+      ]
+    },
+    {
+      // Optional capabilities to be passed to WebEngine instances.
+      protocol: [
+        "fuchsia.camera3.DeviceWatcher",
+        "fuchsia.media.Audio",
+        "fuchsia.media.drm.PlayReady",
+        "fuchsia.media.drm.Widevine",
+        "fuchsia.tracing.perfetto.ProducerConnector",
+        // "fuchsia.tracing.provider.Registry",
+      ],
+      availability: "optional"
     },
     {
       protocol: "fuchsia.component.Realm",

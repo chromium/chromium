@@ -9,18 +9,12 @@
       to: "#realm_builder",
     },
     {
-      directory: "root-ssl-certificates",
-      from: "parent",
-      to: "#realm_builder",
-    },
-    {
       protocol: [
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.ProfileProvider",
         "fuchsia.memorypressure.Provider",
         "fuchsia.net.interfaces.State",
         "fuchsia.posix.socket.Provider",
-        "fuchsia.process.Launcher",
         "fuchsia.scheduler.ProfileProvider",
         "fuchsia.settings.Display",
         "fuchsia.sys.Environment",

@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_component.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "url/gurl.h"
 
 namespace {
@@ -52,19 +53,17 @@ WebContentRunner::WebInstanceConfig&
 WebContentRunner::WebInstanceConfig::operator=(WebInstanceConfig&&) = default;
 
 WebContentRunner::WebContentRunner(
-    CreateWebInstanceAndContextCallback create_web_instance_callback,
+    WebInstanceHostV1& web_instance_host,
     GetWebInstanceConfigCallback get_web_instance_config_callback)
-    : create_web_instance_callback_(std::move(create_web_instance_callback)),
+    : web_instance_host_(web_instance_host),
       get_web_instance_config_callback_(
           std::move(get_web_instance_config_callback)) {
-  DCHECK(create_web_instance_callback_);
   DCHECK(get_web_instance_config_callback_);
 }
 
-WebContentRunner::WebContentRunner(
-    CreateWebInstanceAndContextCallback create_web_instance_callback,
-    WebInstanceConfig web_instance_config)
-    : create_web_instance_callback_(std::move(create_web_instance_callback)) {
+WebContentRunner::WebContentRunner(WebInstanceHostV1& web_instance_host,
+                                   WebInstanceConfig web_instance_config)
+    : web_instance_host_(web_instance_host) {
   CreateWebInstanceAndContext(std::move(web_instance_config));
 }
 
@@ -152,9 +151,9 @@ void WebContentRunner::EnsureWebInstanceAndContext() {
 }
 
 void WebContentRunner::CreateWebInstanceAndContext(WebInstanceConfig config) {
-  create_web_instance_callback_.Run(std::move(config.params),
-                                    web_instance_services_.NewRequest(),
-                                    config.extra_args);
+  web_instance_host_->CreateInstanceForContextWithCopiedArgs(
+      std::move(config.params), web_instance_services_.NewRequest(),
+      config.extra_args);
   zx_status_t result = fdio_service_connect_at(
       web_instance_services_.channel().get(), fuchsia::web::Context::Name_,
       context_.NewRequest().TakeChannel().release());

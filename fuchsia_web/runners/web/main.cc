@@ -69,11 +69,8 @@ int main(int argc, char** argv) {
   LogComponentStartWithVersion("web_runner");
 
   WebInstanceHostV1 web_instance_host;
-  WebContentRunner runner(
-      base::BindRepeating(
-          &WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs,
-          base::Unretained(&web_instance_host)),
-      base::BindRepeating(&GetWebInstanceConfig));
+  WebContentRunner runner(web_instance_host,
+                          base::BindRepeating(&GetWebInstanceConfig));
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       base::ComponentContextForProcess()->outgoing().get(), &runner);
 

@@ -70,14 +70,12 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
       Route{.capabilities =
                 {
                     Directory{.name = "config-data"},
-                    Directory{.name = "root-ssl-certificates"},
                     Protocol{fuchsia::buildinfo::Provider::Name_},
                     Protocol{fuchsia::intl::PropertyProvider::Name_},
                     Protocol{fuchsia::media::ProfileProvider::Name_},
                     Protocol{fuchsia::memorypressure::Provider::Name_},
                     Protocol{fuchsia::net::interfaces::State::Name_},
                     Protocol{"fuchsia.posix.socket.Provider"},
-                    Protocol{"fuchsia.process.Launcher"},
                     Protocol{fuchsia::settings::Display::Name_},
                     Protocol{fuchsia::sys::Environment::Name_},
                     Protocol{fuchsia::sys::Loader::Name_},
