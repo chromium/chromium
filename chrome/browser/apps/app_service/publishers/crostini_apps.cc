@@ -34,7 +34,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/display/display.h"
@@ -139,9 +138,6 @@ void CrostiniApps::Initialize() {
   }
 
   registry_->AddObserver(this);
-
-  PublisherBase::Initialize(proxy()->AppService(),
-                            apps::mojom::AppType::kCrostini);
 
   RegisterPublisher(AppType::kCrostini);
 
@@ -278,25 +274,6 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   std::move(callback).Run(std::move(menu_items));
 }
 
-void CrostiniApps::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  std::vector<apps::mojom::AppPtr> apps;
-
-  for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::VmType::TERMINA)) {
-    const guest_os::GuestOsRegistryService::Registration& registration =
-        pair.second;
-    apps.push_back(Convert(registration, /*new_icon_key=*/true));
-  }
-
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kCrostini,
-                     true /* should_notify_initialized */);
-  subscribers_.Add(std::move(subscriber));
-}
-
 void CrostiniApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
     guest_os::VmType vm_type,
@@ -313,27 +290,17 @@ void CrostiniApps::OnRegistryUpdated(
       crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_);
   for (const std::string& app_id : updated_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      PublisherBase::Publish(
-          Convert(*registration, /*new_icon_key=*/update_icon), subscribers_);
       AppPublisher::Publish(
           CreateApp(*registration, /*generate_new_icon_key=*/update_icon));
     }
   }
   for (const std::string& app_id : removed_apps) {
-    apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-    mojom_app->app_type = apps::mojom::AppType::kCrostini;
-    mojom_app->app_id = app_id;
-    mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-    PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
     auto app = std::make_unique<App>(AppType::kCrostini, app_id);
     app->readiness = Readiness::kUninstalledByUser;
     AppPublisher::Publish(std::move(app));
   }
   for (const std::string& app_id : inserted_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      PublisherBase::Publish(Convert(*registration, /*new_icon_key=*/true),
-                             subscribers_);
       AppPublisher::Publish(
           CreateApp(*registration, /*generate_new_icon_key=*/true));
     }
@@ -386,64 +353,6 @@ AppPtr CrostiniApps::CreateApp(
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
-}
-
-apps::mojom::AppPtr CrostiniApps::Convert(
-    const guest_os::GuestOsRegistryService::Registration& registration,
-    bool new_icon_key) {
-  DCHECK_EQ(registration.VmType(), guest_os::VmType::TERMINA);
-
-  apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      apps::mojom::AppType::kCrostini, registration.app_id(),
-      apps::mojom::Readiness::kReady, registration.Name(),
-      apps::mojom::InstallReason::kUser);
-
-  const std::string& executable_file_name = registration.ExecutableFileName();
-  if (!executable_file_name.empty()) {
-    app->additional_search_terms.push_back(executable_file_name);
-  }
-  for (const std::string& keyword : registration.Keywords()) {
-    app->additional_search_terms.push_back(keyword);
-  }
-
-  if (new_icon_key) {
-    app->icon_key = NewIconKey(registration.app_id());
-  }
-
-  app->last_launch_time = registration.LastLaunchTime();
-  app->install_time = registration.InstallTime();
-
-  auto show = apps::mojom::OptionalBool::kTrue;
-  if (registration.NoDisplay()) {
-    show = apps::mojom::OptionalBool::kFalse;
-  }
-  app->show_in_launcher = show;
-  app->show_in_search = show;
-  app->show_in_shelf = show;
-  // TODO(crbug.com/955937): Enable once Crostini apps are managed inside App
-  // Management.
-  app->show_in_management = apps::mojom::OptionalBool::kFalse;
-
-  app->allow_uninstall =
-      crostini::IsUninstallable(profile_, registration.app_id())
-          ? apps::mojom::OptionalBool::kTrue
-          : apps::mojom::OptionalBool::kFalse;
-
-  app->handles_intents = apps::mojom::OptionalBool::kTrue;
-
-  const guest_os::GuestOsMimeTypesService* mime_types_service =
-      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_);
-
-  app->intent_filters = ConvertIntentFiltersToMojomIntentFilters(
-      CreateIntentFilterForCrostini(mime_types_service, registration));
-
-  return app;
-}
-
-apps::mojom::IconKeyPtr CrostiniApps::NewIconKey(const std::string& app_id) {
-  DCHECK(!app_id.empty());
-  auto icon_effects = IconEffects::kCrOsStandardIcon;
-  return icon_key_factory_.MakeIconKey(icon_effects);
 }
 
 }  // namespace apps

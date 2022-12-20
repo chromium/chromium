@@ -22,12 +22,6 @@
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -39,13 +33,8 @@ struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
 class BorealisApps
-    : public apps::PublisherBase,
-      public AppPublisher,
+    : public AppPublisher,
       public guest_os::GuestOsRegistryService::Observer,
       public borealis::BorealisWindowManager::AnonymousAppObserver {
  public:
@@ -67,7 +56,6 @@ class BorealisApps
   // method sets up the "special" (i.e. non-vm, non-anonymous) apps used by
   // borealis, such as its installer.
   void SetUpSpecialApps(bool allowed);
-  void SetUpSpecialAppsMojom(bool allowed);
 
   // Helper method to get the registry used by this profile
   guest_os::GuestOsRegistryService* Registry();
@@ -76,11 +64,6 @@ class BorealisApps
   AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
-
-  // Turns GuestOsRegistry's "app" into one the AppService can use.
-  apps::mojom::AppPtr Convert(
-      const guest_os::GuestOsRegistryService::Registration& registration,
-      bool new_icon_key);
 
   void Initialize();
 
@@ -116,10 +99,6 @@ class BorealisApps
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  // apps::PublisherBase overrides.
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
-
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
@@ -134,8 +113,6 @@ class BorealisApps
   void OnAnonymousAppRemoved(const std::string& shelf_app_id) override;
   void OnWindowManagerDeleted(
       borealis::BorealisWindowManager* window_manager) override;
-
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

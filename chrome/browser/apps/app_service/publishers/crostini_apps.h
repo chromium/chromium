@@ -20,12 +20,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -38,12 +32,7 @@ struct AppLaunchParams;
 // An app publisher (in the App Service sense) of Crostini apps,
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
 class CrostiniApps : public KeyedService,
-                     public apps::PublisherBase,
                      public AppPublisher,
                      public guest_os::GuestOsRegistryService::Observer {
  public:
@@ -85,10 +74,6 @@ class CrostiniApps : public KeyedService,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  // apps::mojom::Publisher overrides.
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
-
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
@@ -100,13 +85,6 @@ class CrostiniApps : public KeyedService,
   AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
-
-  apps::mojom::AppPtr Convert(
-      const guest_os::GuestOsRegistryService::Registration& registration,
-      bool new_icon_key);
-  apps::mojom::IconKeyPtr NewIconKey(const std::string& app_id);
-
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
 

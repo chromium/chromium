@@ -20,12 +20,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -38,12 +32,7 @@ struct AppLaunchParams;
 // An app publisher (in the App Service sense) of Plugin VM apps.
 //
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250):
-// 1. Remove the parent class apps::PublisherBase.
-// 2. Remove all apps::mojom related code.
-class PluginVmApps : public apps::PublisherBase,
-                     public AppPublisher,
+class PluginVmApps : public AppPublisher,
                      public guest_os::GuestOsRegistryService::Observer {
  public:
   explicit PluginVmApps(AppServiceProxy* proxy);
@@ -87,10 +76,6 @@ class PluginVmApps : public apps::PublisherBase,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  // apps::PublisherBase overrides.
-  void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-               apps::mojom::ConnectOptionsPtr opts) override;
-
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
@@ -103,14 +88,9 @@ class PluginVmApps : public apps::PublisherBase,
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 
-  apps::mojom::AppPtr Convert(
-      const guest_os::GuestOsRegistryService::Registration& registration,
-      bool new_icon_key);
   void OnPluginVmAllowedChanged(bool is_allowed);
   void OnPluginVmConfiguredChanged();
   void OnPermissionChanged();
-
-  mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
   guest_os::GuestOsRegistryService* registry_ = nullptr;
