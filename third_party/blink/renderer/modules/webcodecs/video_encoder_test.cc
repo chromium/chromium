@@ -56,8 +56,8 @@ class FakeVideoEncoder : public VideoEncoder {
         .WillOnce([quit_closure](Unused, Unused, Unused,
                                  media::VideoEncoder::EncoderStatusCB done_cb) {
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(done_cb),
-                                        media::EncoderStatus::Codes::kOk));
+              FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                       media::EncoderStatus::Codes::kOk));
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, std::move(quit_closure));
         });

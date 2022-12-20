@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 #include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
 
@@ -179,15 +180,15 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
     decoder_selector_ =
         std::make_unique<DecoderSelector<TypeParam::kStreamType>>(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            base::BindRepeating(&Self::CreateDecoders, base::Unretained(this)),
-            base::BindRepeating(&Self::OnOutput, base::Unretained(this)));
+            WTF::BindRepeating(&Self::CreateDecoders, base::Unretained(this)),
+            WTF::BindRepeating(&Self::OnOutput, base::Unretained(this)));
   }
 
   void SelectDecoder(DecoderConfig config = TypeParam::CreateConfig()) {
     last_set_decoder_config_ = config;
     decoder_selector_->SelectDecoder(
         config, low_delay_,
-        base::BindOnce(&Self::OnDecoderSelectedThunk, base::Unretained(this)));
+        WTF::BindOnce(&Self::OnDecoderSelectedThunk, base::Unretained(this)));
     RunUntilIdle();
   }
 
