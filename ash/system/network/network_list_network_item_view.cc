@@ -158,6 +158,10 @@ bool IsNetworkConnectable(const NetworkStatePropertiesPtr& network_properties) {
 }
 
 bool IsNetworkDisabled(const NetworkStatePropertiesPtr& network_properties) {
+  if (network_properties->prohibited_by_policy) {
+    return true;
+  }
+
   if (!NetworkTypeMatchesType(network_properties->type,
                               NetworkType::kCellular)) {
     return false;
@@ -179,7 +183,7 @@ bool IsNetworkDisabled(const NetworkStatePropertiesPtr& network_properties) {
     return true;
   }
 
-  return network_properties->prohibited_by_policy;
+  return false;
 }
 
 bool IsWifiNetworkSecured(const NetworkStatePropertiesPtr& network_properties) {
@@ -287,6 +291,7 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 
   if (IsNetworkDisabled(network_properties)) {
     UpdateDisabledTextColor();
+    SetEnabled(false);
   }
 
   if (network_properties_->prohibited_by_policy) {

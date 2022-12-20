@@ -385,6 +385,11 @@ TEST_F(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
   wifi_network->prohibited_by_policy = true;
   UpdateViewForNetwork(wifi_network);
 
+  // When prohibited by policy network row is not clickable.
+  EXPECT_FALSE(LastClickedNetworkListItem());
+  LeftClickOn(network_list_network_item_view());
+  EXPECT_FALSE(LastClickedNetworkListItem());
+
   ASSERT_TRUE(network_list_network_item_view()->right_view());
   EXPECT_TRUE(network_list_network_item_view()->right_view()->GetVisible());
   ASSERT_TRUE(views::IsViewClass<views::ImageView>(
