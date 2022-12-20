@@ -9,16 +9,13 @@
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
-#include "base/win/windows_version.h"
 
 namespace {
 
 // A helper callback that opens the caption settings dialog.
 void CaptionSettingsDialogCallback() {
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    ShellExecute(NULL, L"open", L"ms-settings:easeofaccess-closedcaptioning",
-                 NULL, NULL, SW_SHOWNORMAL);
-  }
+  ShellExecute(nullptr, L"open", L"ms-settings:easeofaccess-closedcaptioning",
+               nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 }  // namespace

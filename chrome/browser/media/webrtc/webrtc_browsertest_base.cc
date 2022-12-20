@@ -33,11 +33,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_WIN)
-// For fine-grained suppression.
-#include "base/win/windows_version.h"
-#endif
-
 const char WebRtcTestBase::kAudioVideoCallConstraints[] =
     "{audio: true, video: true}";
 const char WebRtcTestBase::kVideoCallConstraintsQVGA[] =
@@ -525,14 +520,6 @@ std::string WebRtcTestBase::GetStreamSize(
   std::string result = ExecuteJavascript(javascript, tab_contents);
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
   return result.substr(3);
-}
-
-bool WebRtcTestBase::OnWin8OrHigher() const {
-#if BUILDFLAG(IS_WIN)
-  return base::win::GetVersion() >= base::win::Version::WIN8;
-#else
-  return false;
-#endif
 }
 
 void WebRtcTestBase::OpenDatabase(content::WebContents* tab) const {

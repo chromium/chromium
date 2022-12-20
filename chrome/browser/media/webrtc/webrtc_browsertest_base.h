@@ -209,9 +209,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
   std::string GetStreamSize(content::WebContents* tab_contents,
                             const std::string& video_element) const;
 
-  // Returns true if we're on Windows 8 or higher.
-  bool OnWin8OrHigher() const;
-
   void OpenDatabase(content::WebContents* tab) const;
   void CloseDatabase(content::WebContents* tab) const;
   void DeleteDatabase(content::WebContents* tab) const;

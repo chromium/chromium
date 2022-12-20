@@ -21,10 +21,6 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 class ExternalProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
   content::WebContents* web_content() {
@@ -159,14 +155,6 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
 #endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        MAYBE_AutoCloseTabOnNonWebProtocolNavigation) {
-#if BUILDFLAG(IS_WIN)
-  // On Win 7 the protocol is registered to be handled by Chrome and thus never
-  // reaches the ExternalProtocolHandler so we skip the test. For
-  // more info see installer/util/shell_util.cc:GetShellIntegrationEntries
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-#endif
-
   TabAddedRemovedObserver observer(browser()->tab_strip_model());
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   ASSERT_TRUE(
@@ -184,14 +172,6 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        MAYBE_ProtocolLaunchEmitsConsoleLog) {
-#if BUILDFLAG(IS_WIN)
-  // On Win 7 the protocol is registered to be handled by Chrome and thus never
-  // reaches the ExternalProtocolHandler so we skip the test. For
-  // more info see installer/util/shell_util.cc:GetShellIntegrationEntries
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-#endif
-
   content::WebContentsConsoleObserver observer(web_content());
   // Wait for either "Launched external handler..." or "Failed to launch..."; the former will pass
   // the test, while the latter will fail it more quickly than waiting for a timeout.

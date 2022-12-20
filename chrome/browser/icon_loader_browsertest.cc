@@ -13,7 +13,6 @@
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -70,11 +69,6 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
   float scale = 1.0;
 #if BUILDFLAG(IS_WIN)
   scale = display::win::GetDPIScale();
-
-  // This test times out on Win7. Return early to avoid disabling test on
-  // all of Windows.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
 #endif
 
   // Test that an icon for a file type (group) can be loaded even

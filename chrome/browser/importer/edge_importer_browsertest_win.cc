@@ -159,10 +159,6 @@ class EdgeImporterBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
-  // Only verified to work with ESE library on Windows 8.1 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
   const BookmarkInfo kEdgeBookmarks[] = {
       {true,
        2,
@@ -282,10 +278,6 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
 }
 
 IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterNoDatabase) {
-  // Only verified to work with ESE library on Windows 8.1 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN8_1)
-    return;
-
   std::vector<BookmarkInfo> bookmark_entries;
   std::vector<FaviconGroup> favicon_groups;
 
