@@ -825,7 +825,14 @@ void MediaStreamTrackImpl::SourceChangedState() {
       EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateEnded:
-      DispatchEvent(*Event::Create(event_type_names::kEnded));
+      // SourceChangedState() may be called in kReadyStateEnded during object
+      // disposal if there are no event listeners (otherwise disposal is blocked
+      // by HasPendingActivity). In that case it is not allowed to create
+      // objects, so check if there are event listeners before the event object
+      // is created.
+      if (HasEventListeners(event_type_names::kEnded)) {
+        DispatchEvent(*Event::Create(event_type_names::kEnded));
+      }
       PropagateTrackEnded();
       feature_handle_for_scheduler_.reset();
       break;
