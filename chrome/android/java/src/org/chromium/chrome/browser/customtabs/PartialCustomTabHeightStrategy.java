@@ -371,7 +371,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @Override
     public void onAnimationUpdate(ValueAnimator valueAnimator) {
         int value = (int) valueAnimator.getAnimatedValue();
-        updateWindowPos(value);
+        updateWindowPos(value, false);
     }
 
     private void roundCorners(
@@ -602,7 +602,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         return mInteractWithBackground;
     }
 
-    private void updateWindowPos(@Px int y) {
+    private void updateWindowPos(@Px int y, boolean userGesture) {
         // Do not allow the Window to go above the minimum threshold capped by the status
         // bar and (optionally) the 90%-height adjustment.
         int topY = getFullyExpandedYWithAdjustment();
@@ -613,7 +613,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
         // If the tab is not resizable then dragging it higher than the initial height will not be
         // allowed. The tab can still be dragged down in order to be closed.
-        if (isFixedHeight() && y < initialY()) return;
+        if (isFixedHeight() && userGesture && y < initialY()) return;
 
         attrs.y = y;
         window.setAttributes(attrs);
@@ -704,6 +704,16 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         if (mSoftKeyboardRunnable != null) {
             mSoftKeyboardRunnable.run();
             mSoftKeyboardRunnable = null;
+            mVersionCompat.setImeStateCallback(this::onImeStateChanged);
+        }
+    }
+
+    @VisibleForTesting
+    void onImeStateChanged(boolean imeVisible) {
+        if (!imeVisible) {
+            // Soft keyboard was hidden. Restore the tab to initial height state.
+            mVersionCompat.setImeStateCallback(null);
+            animateTabTo(HeightStatus.INITIAL_HEIGHT, /*autoResize=*/true);
         }
     }
 
@@ -856,6 +866,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
         mFinishRunnable = finishRunnable;
 
+        mVersionCompat.setImeStateCallback(null);
+
         // Tapping the close button while in transition state should be ignored.
         // Delay it till the height settles in to either top/initial state, where the animation
         // begins when it detects the presence of |mFinishRunnable|.
@@ -877,7 +889,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     @Override
     public void onDragMove(int y) {
-        updateWindowPos((int) (y + mOffsetY));
+        updateWindowPos((int) (y + mOffsetY), true);
     }
 
     @Override

@@ -608,6 +608,30 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void fixedHeightReactsTosoftKeyboard() {
+        configureStatusBarHeightForR();
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        assertTabIsAtInitialPos(getWindowAttributes());
+
+        strategy.onShowSoftInput(() -> {});
+        waitForAnimationToFinish();
+        // assertTabBelowStatusBar instead of assertTabIsFullHeight since
+        // the height in mock is configured to return the device height minus
+        // both navbar + status on R, which is more correct. By default on
+        // other builds, status bar height was zero, thus ignored as it was
+        // insignificant for tests.
+        assertTabBelowStatusBar(getWindowAttributes());
+
+        strategy.onImeStateChanged(/*imeVisible=*/true);
+        assertTabBelowStatusBar(getWindowAttributes());
+
+        strategy.onImeStateChanged(/*imeVisible=*/false);
+        waitForAnimationToFinish();
+        assertTabIsAtInitialPos(getWindowAttributes());
+    }
+
+    @Test
     public void moveUpFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
         verifyWindowFlagsSet();

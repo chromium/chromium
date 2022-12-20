@@ -11,11 +11,17 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowInsetsAnimation;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+
+import java.util.List;
 
 /**
  * Collection of methods that differ in the implementation per OS build version.
@@ -45,6 +51,13 @@ abstract class PartialCustomTabVersionCompat {
 
     /** Returns the bottom navigation bar height */
     abstract @Px int getNavbarHeight();
+
+    /**
+     * Sets the callback to invoke when IME (soft keyboard) visible state is updated.
+     * @param callback Callback to invoke upon IME state update. Can be {@code null} to
+     *        remove the callback.
+     */
+    void setImeStateCallback(@Nullable Callback<Boolean> callback) {}
 
     /** Implementation that supports R+ */
     @RequiresApi(Build.VERSION_CODES.R)
@@ -88,6 +101,30 @@ abstract class PartialCustomTabVersionCompat {
                     .getWindowInsets()
                     .getInsets(WindowInsets.Type.navigationBars())
                     .bottom;
+        }
+
+        @Override
+        void setImeStateCallback(Callback<Boolean> callback) {
+            View view = mActivity.getWindow().getDecorView();
+            var animCallback = callback == null
+                    ? null
+                    : new WindowInsetsAnimation.Callback(
+                            WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
+                          @Override
+                          public WindowInsets onProgress(@NonNull WindowInsets insets,
+                                  @NonNull List<WindowInsetsAnimation> runningAnimations) {
+                              return insets;
+                          }
+
+                          @Override
+                          public void onEnd(@NonNull WindowInsetsAnimation animation) {
+                              WindowInsets insets = mActivity.getWindowManager()
+                                                            .getCurrentWindowMetrics()
+                                                            .getWindowInsets();
+                              callback.onResult(insets.isVisible(WindowInsets.Type.ime()));
+                          }
+                      };
+            view.setWindowInsetsAnimationCallback(animCallback);
         }
     }
 
