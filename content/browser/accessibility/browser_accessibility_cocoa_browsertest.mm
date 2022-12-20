@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
@@ -126,10 +127,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
   EXPECT_NE(text_edit.edit_text_marker, nil);
 
-  EXPECT_EQ(
-      ui::AXTextMarkerToAXPosition(text_edit.edit_text_marker)->ToString(),
-      "TextPosition anchor_id=7 text_offset=1 affinity=downstream "
-      "annotated_text=B<>");
+  auto ax_position = ui::AXTextMarkerToAXPosition(text_edit.edit_text_marker);
+  std::string expected_string = "TextPosition anchor_id=";
+  expected_string += base::NumberToString(ax_position->anchor_id());
+  expected_string += " text_offset=1 affinity=downstream annotated_text=B<>";
+  EXPECT_EQ(ax_position->ToString(), expected_string);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
