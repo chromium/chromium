@@ -26,7 +26,7 @@ namespace storage_monitor {
 // events through this interface.
 class ImageCaptureDeviceListener {
  public:
-  virtual ~ImageCaptureDeviceListener() {}
+  virtual ~ImageCaptureDeviceListener() = default;
 
   // Get a notification that a particular item has been found on the device.
   // These calls will come automatically after a new device is initialized.

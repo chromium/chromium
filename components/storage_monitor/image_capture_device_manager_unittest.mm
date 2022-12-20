@@ -203,11 +203,8 @@ class TestCameraListener
     : public ImageCaptureDeviceListener,
       public base::SupportsWeakPtr<TestCameraListener> {
  public:
-  TestCameraListener()
-      : completed_(false),
-        removed_(false),
-        last_error_(base::File::FILE_ERROR_INVALID_URL) {}
-  ~TestCameraListener() override {}
+  TestCameraListener() = default;
+  ~TestCameraListener() override = default;
 
   void ItemAdded(const std::string& name,
                  const base::File::Info& info) override {
@@ -235,14 +232,14 @@ class TestCameraListener
  private:
   std::vector<std::string> items_;
   std::vector<std::string> downloads_;
-  bool completed_;
-  bool removed_;
-  base::File::Error last_error_;
+  bool completed_ = false;
+  bool removed_ = false;
+  base::File::Error last_error_ = base::File::FILE_ERROR_INVALID_URL;
 };
 
 class ImageCaptureDeviceManagerTest : public testing::Test {
  public:
-  ImageCaptureDeviceManagerTest() {}
+  ImageCaptureDeviceManagerTest() = default;
 
   void SetUp() override { monitor_ = TestStorageMonitor::CreateAndInstall(); }
 
@@ -305,10 +302,9 @@ TEST_F(ImageCaptureDeviceManagerTest, OpenCamera) {
 
   base::scoped_nsobject<MockICCameraFile> picture1(
       [[MockICCameraFile alloc] init:@"pic1"]);
-  [camera cameraDevice:device didAddItem:picture1];
   base::scoped_nsobject<MockICCameraFile> picture2(
       [[MockICCameraFile alloc] init:@"pic2"]);
-  [camera cameraDevice:device didAddItem:picture2];
+  [camera cameraDevice:device didAddItems:@[ picture1, picture2 ]];
   ASSERT_EQ(2U, listener_.items().size());
   EXPECT_EQ("pic1", listener_.items()[0]);
   EXPECT_EQ("pic2", listener_.items()[1]);
@@ -355,7 +351,7 @@ TEST_F(ImageCaptureDeviceManagerTest, DownloadFile) {
   base::scoped_nsobject<MockICCameraFile> picture1(
       [[MockICCameraFile alloc] init:base::SysUTF8ToNSString(kTestFileName)]);
   [device addMediaFile:picture1];
-  [camera cameraDevice:device didAddItem:picture1];
+  [camera cameraDevice:device didAddItems:@[ picture1 ]];
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -407,7 +403,7 @@ TEST_F(ImageCaptureDeviceManagerTest, TestSubdirectories) {
       [[MockICCameraFile alloc] init:base::SysUTF8ToNSString(kTestFileName)]);
   [picture1 setParent:base::SysUTF8ToNSString("dir")];
   [device addMediaFile:picture1];
-  [camera cameraDevice:device didAddItem:picture1];
+  [camera cameraDevice:device didAddItems:@[ picture1 ]];
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

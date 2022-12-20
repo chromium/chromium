@@ -17,7 +17,8 @@ namespace {
 
 base::File::Error RenameFile(const base::FilePath& downloaded_filename,
                              const base::FilePath& desired_filename) {
-  bool success = base::ReplaceFile(downloaded_filename, desired_filename, NULL);
+  bool success =
+      base::ReplaceFile(downloaded_filename, desired_filename, nullptr);
   return success ? base::File::FILE_OK : base::File::FILE_ERROR_NOT_FOUND;
 }
 
@@ -26,12 +27,9 @@ void ReturnRenameResultToListener(
     const std::string& name,
     const base::File::Error& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (listener)
+  if (listener) {
     listener->DownloadedFile(name, result);
-}
-
-base::Time NSDateToBaseTime(NSDate* date) {
-  return base::Time::FromDoubleT([date timeIntervalSince1970]);
+  }
 }
 
 base::FilePath PathForCameraItem(ICCameraItem* item) {
@@ -97,7 +95,7 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 }
 
 - (void)eject {
-  [_camera requestEjectOrDisconnect];
+  [_camera requestEject];
 }
 
 - (void)downloadFile:(const std::string&)name
@@ -126,78 +124,131 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
       [_camera requestDownloadFile:base::mac::ObjCCastStrict<ICCameraFile>(item)
                            options:options
                   downloadDelegate:self
-               didDownloadSelector:
-                   @selector(didDownloadFile:error:options:contextInfo:)
-                       contextInfo:NULL];
+               didDownloadSelector:@selector
+               (didDownloadFile:error:options:contextInfo:)
+                       contextInfo:nullptr];
       return;
     }
   }
 
-  if (_listener)
+  if (_listener) {
     _listener->DownloadedFile(name, base::File::FILE_ERROR_NOT_FOUND);
+  }
 }
 
-- (void)cameraDevice:(ICCameraDevice*)camera didAddItem:(ICCameraItem*)item {
-  base::File::Info info;
-  if ([[item UTI] isEqualToString:base::mac::CFToNSCast(kUTTypeFolder)])
-    info.is_directory = true;
-  else
-    info.size = [base::mac::ObjCCastStrict<ICCameraFile>(item) fileSize];
-
-  base::FilePath path = storage_monitor::PathForCameraItem(item);
-
-  info.last_modified =
-      storage_monitor::NSDateToBaseTime([item modificationDate]);
-  info.creation_time = storage_monitor::NSDateToBaseTime([item creationDate]);
-  info.last_accessed = info.last_modified;
-
-  if (_listener)
-    _listener->ItemAdded(path.value(), info);
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera didAddItems:(NSArray*)items {
-  for (ICCameraItem* item in items)
-    [self cameraDevice:camera didAddItem:item];
-}
+// ----- ICDeviceDelegate (super-protocol of ICCameraDeviceDelegate) -----
 
 - (void)didRemoveDevice:(ICDevice*)device {
-  device.delegate = NULL;
-  if (_listener)
+  device.delegate = nullptr;
+  if (_listener) {
     _listener->DeviceRemoved();
+  }
 }
 
 // Notifies that a session was opened with the given device; potentially
 // with an error.
 - (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
-  if (error)
+  if (error) {
     [self didRemoveDevice:_camera];
+  }
 }
 
 - (void)device:(ICDevice*)device didEncounterError:(NSError*)error {
-  if (error && _listener)
+  if (error && _listener) {
     _listener->DeviceRemoved();
+  }
+}
+
+// Various ICDeviceDelegate calls that are not used but need to exist as part of
+// a full delegate implementation.
+
+- (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
+}
+
+// ----- ICCameraDeviceDelegate -----
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+         didAddItems:(NSArray<ICCameraItem*>*)items {
+  for (ICCameraItem* item in items) {
+    base::File::Info info;
+    if ([[item UTI] isEqualToString:base::mac::CFToNSCast(kUTTypeFolder)]) {
+      info.is_directory = true;
+    } else {
+      info.size = [base::mac::ObjCCastStrict<ICCameraFile>(item) fileSize];
+    }
+
+    base::FilePath path = storage_monitor::PathForCameraItem(item);
+
+    info.last_modified = base::Time::FromNSDate([item modificationDate]);
+    info.creation_time = base::Time::FromNSDate([item creationDate]);
+    info.last_accessed = info.last_modified;
+
+    if (_listener) {
+      _listener->ItemAdded(path.value(), info);
+    }
+  }
 }
 
 // When this message is received, all media metadata is now loaded.
 - (void)deviceDidBecomeReadyWithCompleteContentCatalog:(ICDevice*)device {
-  if (_listener)
+  if (_listener) {
     _listener->NoMoreItems();
+  }
 }
+
+// Various ICCameraDeviceDelegate calls that are not used but need to exist as
+// part of a full delegate implementation.
+
+- (void)cameraDevice:(ICCameraDevice*)camera didRemoveItems:(NSArray*)items {
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+    didReceiveThumbnail:(CGImageRef)thumbnail
+                forItem:(ICCameraItem*)item
+                  error:(NSError*)error {
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+    didReceiveMetadata:(NSDictionary*)metadata
+               forItem:(ICCameraItem*)item
+                 error:(NSError*)error {
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+      didRenameItems:(NSArray<ICCameraItem*>*)items {
+}
+
+- (void)cameraDeviceDidChangeCapability:(ICCameraDevice*)camera {
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+    didReceivePTPEvent:(NSData*)eventData {
+}
+
+- (void)cameraDeviceDidRemoveAccessRestriction:(ICDevice*)device {
+}
+
+- (void)cameraDeviceDidEnableAccessRestriction:(ICDevice*)device {
+}
+
+// ----- ICCameraDeviceDownloadDelegate -----
 
 - (void)didDownloadFile:(ICCameraFile*)file
                   error:(NSError*)error
                 options:(NSDictionary*)options
             contextInfo:(void*)contextInfo {
-  if (_closing)
+  if (_closing) {
     return;
+  }
 
   std::string name = storage_monitor::PathForCameraItem(file).value();
 
   if (error) {
     DVLOG(1) << "error..."
              << base::SysNSStringToUTF8([error localizedDescription]);
-    if (_listener)
+    if (_listener) {
       _listener->DownloadedFile(name, base::File::FILE_ERROR_FAILED);
+    }
     return;
   }
 
@@ -205,8 +256,9 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
   std::string saveAsFilename =
       base::SysNSStringToUTF8(options[ICSaveAsFilename]);
   if (savedFilename == saveAsFilename) {
-    if (_listener)
+    if (_listener) {
       _listener->DownloadedFile(name, base::File::FILE_OK);
+    }
     return;
   }
 
@@ -227,72 +279,6 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
       base::BindOnce(&storage_monitor::RenameFile, savedPath, saveAsPath),
       base::BindOnce(&storage_monitor::ReturnRenameResultToListener, _listener,
                      name));
-}
-
-// MacOS 10.14 SDK methods, not yet implemented (https://crbug.com/849689)
-- (void)cameraDevice:(ICCameraDevice*)camera
-      didRenameItems:(NSArray<ICCameraItem*>*)items {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera didRemoveItem:(ICCameraItem*)item {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didCompleteDeleteFilesWithError:(NSError*)error {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDeviceDidChangeCapability:(ICCameraDevice*)camera {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didReceiveThumbnailForItem:(ICCameraItem*)item {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didReceiveMetadataForItem:(ICCameraItem*)item {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didReceivePTPEvent:(NSData*)eventData {
-  NOTIMPLEMENTED();
-}
-
-// Mac 10.15 SDK methods, not yet implemented (https://crbug.com/849689)
-
-- (void)cameraDevice:(ICCameraDevice*)camera didRemoveItems:(NSArray*)items {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didReceiveThumbnail:(CGImageRef)thumbnail
-                forItem:(ICCameraItem*)item
-                  error:(NSError*)error {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDevice:(ICCameraDevice*)camera
-    didReceiveMetadata:(NSDictionary*)metadata
-               forItem:(ICCameraItem*)item
-                 error:(NSError*)error {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDeviceDidEnableAccessRestriction:(ICDevice*)device {
-  NOTIMPLEMENTED();
-}
-
-- (void)cameraDeviceDidRemoveAccessRestriction:(ICDevice*)device {
-  NOTIMPLEMENTED();
-}
-
-- (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
-  NOTIMPLEMENTED();
 }
 
 @end  // ImageCaptureDevice
