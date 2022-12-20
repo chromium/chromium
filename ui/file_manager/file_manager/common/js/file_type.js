@@ -195,6 +195,16 @@ FileType.isVideo = (entry, opt_mimeType) => {
 /**
  * @param {Entry} entry Reference to the file.
  * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} True if document file.
+ */
+FileType.isDocument = (entry, opt_mimeType) => {
+  const type = FileType.getMediaType(entry, opt_mimeType);
+  return type === 'document' || type === 'hosted' || type === 'text';
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
  * @return {boolean} True if raw file.
  */
 FileType.isRaw = (entry, opt_mimeType) => {

@@ -2,11 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FileType} from './file_type.js';
 import {MockFileSystem} from './mock_entry.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
+
+/**
+ * @param {string} name
+ * @return {!Entry}
+ */
+function makeFakeEntry(name) {
+  return /** @type {!Entry} */ ({
+    isDirectory: false,
+    rootType: VolumeManagerCommon.RootType.MY_FILES,
+    name: name,
+    toURL: () => `filesyste:chrome://file-manager/root/${name}`,
+  });
+}
 
 /*
  * Tests that Downloads icon is customized within Downloads root, but not in
@@ -108,4 +121,20 @@ export function testGetTypeForName() {
     assertEquals(item.want.type, got.type);
     assertEquals(item.want.subtype, got.subtype);
   }
+}
+
+export function testIsDocument() {
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.txt')), '.txt');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.csv')), '.csv');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.doc')), '.doc');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.docx')), '.docx');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.gdoc')), '.gdoc');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.gsheet')), '.gsheet');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.gslides')), '.gslides');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.gdraw')), '.gdraw');
+  assertTrue(FileType.isDocument(makeFakeEntry('foo.pdf')), '.pdf');
+  assertFalse(FileType.isDocument(makeFakeEntry('foo.png')), '.png');
+  assertFalse(FileType.isDocument(makeFakeEntry('foo.ogg')), '.ogg');
+  assertFalse(FileType.isDocument(makeFakeEntry('foo.zip')), '.zip');
+  assertFalse(FileType.isDocument(makeFakeEntry('foo.qt')), '.qt');
 }
