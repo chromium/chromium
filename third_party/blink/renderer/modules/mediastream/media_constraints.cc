@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 
 #include <math.h>
 
@@ -47,10 +47,12 @@ void MaybeEmitNamedValue(StringBuilder& builder,
                          bool emit,
                          const char* name,
                          T value) {
-  if (!emit)
+  if (!emit) {
     return;
-  if (builder.length() > 1)
+  }
+  if (builder.length() > 1) {
     builder.Append(", ");
+  }
   builder.Append(name);
   builder.Append(": ");
   builder.AppendNumber(value);
@@ -60,23 +62,22 @@ void MaybeEmitNamedBoolean(StringBuilder& builder,
                            bool emit,
                            const char* name,
                            bool value) {
-  if (!emit)
+  if (!emit) {
     return;
-  if (builder.length() > 1)
+  }
+  if (builder.length() > 1) {
     builder.Append(", ");
+  }
   builder.Append(name);
   builder.Append(": ");
-  if (value)
+  if (value) {
     builder.Append("true");
-  else
+  } else {
     builder.Append("false");
+  }
 }
 
 }  // namespace
-
-const char kEchoCancellationTypeBrowser[] = "browser";
-const char kEchoCancellationTypeAec3[] = "aec3";
-const char kEchoCancellationTypeSystem[] = "system";
 
 class MediaConstraintsPrivate final
     : public ThreadSafeRefCounted<MediaConstraintsPrivate> {
@@ -138,13 +139,15 @@ const String MediaConstraintsPrivate::ToString() const {
     builder.Append('{');
     builder.Append(Basic().ToString());
     if (!Advanced().empty()) {
-      if (builder.length() > 1)
+      if (builder.length() > 1) {
         builder.Append(", ");
+      }
       builder.Append("advanced: [");
       bool first = true;
       for (const auto& constraint_set : Advanced()) {
-        if (!first)
+        if (!first) {
           builder.Append(", ");
+        }
         builder.Append('{');
         builder.Append(constraint_set.ToString());
         builder.Append('}');
@@ -282,8 +285,9 @@ String StringConstraint::ToString() const {
     builder.Append("ideal: [");
     bool first = true;
     for (const auto& iter : ideal_) {
-      if (!first)
+      if (!first) {
         builder.Append(", ");
+      }
       builder.Append('"');
       builder.Append(iter);
       builder.Append('"');
@@ -292,13 +296,15 @@ String StringConstraint::ToString() const {
     builder.Append(']');
   }
   if (!exact_.empty()) {
-    if (builder.length() > 1)
+    if (builder.length() > 1) {
       builder.Append(", ");
+    }
     builder.Append("exact: [");
     bool first = true;
     for (const auto& iter : exact_) {
-      if (!first)
+      if (!first) {
         builder.Append(", ");
+      }
       builder.Append('"');
       builder.Append(iter);
       builder.Append('"');
@@ -408,8 +414,9 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
 
 bool MediaTrackConstraintSetPlatform::IsUnconstrained() const {
   for (auto* const constraint : AllConstraints()) {
-    if (!constraint->IsUnconstrained())
+    if (!constraint->IsUnconstrained()) {
       return false;
+    }
   }
   return true;
 }
@@ -435,16 +442,18 @@ bool MediaTrackConstraintSetPlatform::HasMandatory() const {
 
 bool MediaTrackConstraintSetPlatform::HasMin() const {
   for (auto* const constraint : AllConstraints()) {
-    if (constraint->HasMin())
+    if (constraint->HasMin()) {
       return true;
+    }
   }
   return false;
 }
 
 bool MediaTrackConstraintSetPlatform::HasExact() const {
   for (auto* const constraint : AllConstraints()) {
-    if (constraint->HasExact())
+    if (constraint->HasExact()) {
       return true;
+    }
   }
   return false;
 }
@@ -454,8 +463,9 @@ String MediaTrackConstraintSetPlatform::ToString() const {
   bool first = true;
   for (auto* const constraint : AllConstraints()) {
     if (constraint->IsPresent()) {
-      if (!first)
+      if (!first) {
         builder.Append(", ");
+      }
       builder.Append(constraint->GetName());
       builder.Append(": ");
       builder.Append(constraint->ToString());
@@ -503,8 +513,9 @@ const Vector<MediaTrackConstraintSetPlatform>& MediaConstraints::Advanced()
 }
 
 const String MediaConstraints::ToString() const {
-  if (IsNull())
+  if (IsNull()) {
     return String("");
+  }
   return private_->ToString();
 }
 

@@ -27,6 +27,8 @@ blink_modules_sources("mediastream") {
     "local_video_capturer_source.h",
     "low_latency_video_renderer_algorithm.cc",
     "low_latency_video_renderer_algorithm.h",
+    "media_constraints.cc",
+    "media_constraints.h",
     "media_constraints_impl.cc",
     "media_constraints_impl.h",
     "media_device_info.cc",

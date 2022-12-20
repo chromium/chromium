@@ -28,24 +28,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_CONSTRAINTS_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_CONSTRAINTS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_CONSTRAINTS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_CONSTRAINTS_H_
 
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-// Possible values of the echo canceller type constraint.
-PLATFORM_EXPORT extern const char kEchoCancellationTypeBrowser[];
-PLATFORM_EXPORT extern const char kEchoCancellationTypeAec3[];
-PLATFORM_EXPORT extern const char kEchoCancellationTypeSystem[];
-
 class MediaConstraintsPrivate;
 
-class PLATFORM_EXPORT BaseConstraint {
+class MODULES_EXPORT BaseConstraint {
  public:
   explicit BaseConstraint(const char* name);
   virtual ~BaseConstraint();
@@ -70,7 +65,7 @@ class PLATFORM_EXPORT BaseConstraint {
 
 // Note this class refers to the "long" WebIDL definition which is
 // equivalent to int32_t.
-class PLATFORM_EXPORT LongConstraint : public BaseConstraint {
+class MODULES_EXPORT LongConstraint : public BaseConstraint {
  public:
   explicit LongConstraint(const char* name);
 
@@ -117,7 +112,7 @@ class PLATFORM_EXPORT LongConstraint : public BaseConstraint {
   unsigned has_ideal_ : 1;
 };
 
-class PLATFORM_EXPORT DoubleConstraint : public BaseConstraint {
+class MODULES_EXPORT DoubleConstraint : public BaseConstraint {
  public:
   // Permit a certain leeway when comparing floats. The offset of 0.00001
   // is chosen based on observed behavior of doubles formatted with
@@ -169,7 +164,7 @@ class PLATFORM_EXPORT DoubleConstraint : public BaseConstraint {
   unsigned has_ideal_ : 1;
 };
 
-class PLATFORM_EXPORT StringConstraint : public BaseConstraint {
+class MODULES_EXPORT StringConstraint : public BaseConstraint {
  public:
   // String-valued options don't have min or max, but can have multiple
   // values for ideal and exact.
@@ -196,7 +191,7 @@ class PLATFORM_EXPORT StringConstraint : public BaseConstraint {
   Vector<String> ideal_;
 };
 
-class PLATFORM_EXPORT BooleanConstraint : public BaseConstraint {
+class MODULES_EXPORT BooleanConstraint : public BaseConstraint {
  public:
   explicit BooleanConstraint(const char* name);
 
@@ -227,7 +222,7 @@ class PLATFORM_EXPORT BooleanConstraint : public BaseConstraint {
 
 struct MediaTrackConstraintSetPlatform {
  public:
-  PLATFORM_EXPORT MediaTrackConstraintSetPlatform();
+  MODULES_EXPORT MediaTrackConstraintSetPlatform();
 
   LongConstraint width;
   LongConstraint height;
@@ -264,13 +259,13 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint goog_da_echo_cancellation;
   BooleanConstraint goog_noise_reduction;
 
-  PLATFORM_EXPORT bool IsUnconstrained() const;
-  PLATFORM_EXPORT bool HasMandatory() const;
-  PLATFORM_EXPORT bool HasMandatoryOutsideSet(const Vector<String>&,
-                                              String&) const;
-  PLATFORM_EXPORT bool HasMin() const;
-  PLATFORM_EXPORT bool HasExact() const;
-  PLATFORM_EXPORT String ToString() const;
+  MODULES_EXPORT bool IsUnconstrained() const;
+  MODULES_EXPORT bool HasMandatory() const;
+  MODULES_EXPORT bool HasMandatoryOutsideSet(const Vector<String>&,
+                                             String&) const;
+  MODULES_EXPORT bool HasMin() const;
+  MODULES_EXPORT bool HasExact() const;
+  MODULES_EXPORT String ToString() const;
 
  private:
   Vector<const BaseConstraint*> AllConstraints() const;
@@ -287,22 +282,22 @@ class MediaConstraints {
     return *this;
   }
 
-  PLATFORM_EXPORT void Assign(const MediaConstraints&);
+  MODULES_EXPORT void Assign(const MediaConstraints&);
 
-  PLATFORM_EXPORT void Reset();
+  MODULES_EXPORT void Reset();
   bool IsNull() const { return private_.IsNull(); }
-  PLATFORM_EXPORT bool IsUnconstrained() const;
+  MODULES_EXPORT bool IsUnconstrained() const;
 
-  PLATFORM_EXPORT void Initialize();
-  PLATFORM_EXPORT void Initialize(
+  MODULES_EXPORT void Initialize();
+  MODULES_EXPORT void Initialize(
       const MediaTrackConstraintSetPlatform& basic,
       const Vector<MediaTrackConstraintSetPlatform>& advanced);
 
-  PLATFORM_EXPORT const MediaTrackConstraintSetPlatform& Basic() const;
-  PLATFORM_EXPORT const Vector<MediaTrackConstraintSetPlatform>& Advanced()
+  MODULES_EXPORT const MediaTrackConstraintSetPlatform& Basic() const;
+  MODULES_EXPORT const Vector<MediaTrackConstraintSetPlatform>& Advanced()
       const;
 
-  PLATFORM_EXPORT const String ToString() const;
+  MODULES_EXPORT const String ToString() const;
 
  private:
   WebPrivatePtr<MediaConstraintsPrivate> private_;
