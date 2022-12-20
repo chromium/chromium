@@ -153,9 +153,9 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
     ui::CapabilitiesToDeviceInfo(capabilities,
                                  &device_information.event_device_info);
     device_information.keyboard_type =
-        ui::EventRewriterChromeOS::kDeviceInternalKeyboard;
+        ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
     device_information.keyboard_top_row_layout =
-        ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom;
+        ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
 
     device_information.input_device =
         InputDeviceFromCapabilities(kEvdevId, capabilities);
@@ -175,9 +175,9 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
     InputDataProviderKeyboardTest::SetUp();
 
     device_information.keyboard_type =
-        ui::EventRewriterChromeOS::kDeviceInternalKeyboard;
+        ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
     device_information.keyboard_top_row_layout =
-        ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom;
+        ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   }
 
   void TearDown() override {

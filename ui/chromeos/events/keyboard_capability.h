@@ -41,6 +41,37 @@ inline constexpr auto kSixPackKeyToSystemKeyMap =
 // as top row key layout, existence of certain keys, what is top right key, etc.
 class KeyboardCapability {
  public:
+  enum class DeviceType {
+    kDeviceUnknown = 0,
+    kDeviceInternalKeyboard,
+    kDeviceExternalAppleKeyboard,
+    kDeviceExternalChromeOsKeyboard,
+    kDeviceExternalGenericKeyboard,
+    kDeviceExternalUnknown,
+    kDeviceHotrodRemote,
+    kDeviceVirtualCoreKeyboard,  // X-server generated events.
+  };
+
+  enum class KeyboardTopRowLayout {
+    // The original Chrome OS Layout:
+    // Browser Back, Browser Forward, Refresh, Full Screen, Overview,
+    // Brightness Down, Brightness Up, Mute, Volume Down, Volume Up.
+    kKbdTopRowLayout1 = 1,
+    kKbdTopRowLayoutDefault = kKbdTopRowLayout1,
+    kKbdTopRowLayoutMin = kKbdTopRowLayout1,
+    // 2017 keyboard layout: Browser Forward is gone and Play/Pause
+    // key is added between Brightness Up and Mute.
+    kKbdTopRowLayout2 = 2,
+    // Keyboard layout and handling for Wilco.
+    kKbdTopRowLayoutWilco = 3,
+    kKbdTopRowLayoutDrallion = 4,
+
+    // Handling for all keyboards that support supplying a custom layout
+    // via sysfs attribute (aka Vivaldi). See crbug.com/1076241
+    kKbdTopRowLayoutCustom = 5,
+    kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
+  };
+
   KeyboardCapability() = default;
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;

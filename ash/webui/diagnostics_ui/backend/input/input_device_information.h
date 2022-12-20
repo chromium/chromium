@@ -7,6 +7,7 @@
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -29,8 +30,8 @@ class InputDeviceInformation {
   base::FilePath path;
 
   // Keyboard-only fields:
-  ui::EventRewriterChromeOS::DeviceType keyboard_type;
-  ui::EventRewriterChromeOS::KeyboardTopRowLayout keyboard_top_row_layout;
+  ui::KeyboardCapability::DeviceType keyboard_type;
+  ui::KeyboardCapability::KeyboardTopRowLayout keyboard_top_row_layout;
   base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
       keyboard_scan_code_map;
 };

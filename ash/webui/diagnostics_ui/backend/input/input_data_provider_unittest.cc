@@ -48,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touch_device_transform.h"
@@ -449,9 +450,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     if (base_name == "event0") {
       device_caps = ui::kLinkKeyboard;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
-          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout1;
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1;
       EXPECT_EQ(0, id);
     } else if (base_name == "event1") {
       device_caps = ui::kLinkTouchpad;
@@ -465,45 +466,45 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     } else if (base_name == "event4") {
       device_caps = ui::kHpUsbKeyboard;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(4, id);
     } else if (base_name == "event5") {
       device_caps = ui::kSarienKeyboard;  // Wilco
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
       EXPECT_EQ(5, id);
     } else if (base_name == "event6") {
       device_caps = ui::kEveKeyboard;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
-          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout2;
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2;
       EXPECT_EQ(6, id);
     } else if (base_name == "event7") {
       device_caps = ui::kJinlonKeyboard;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
       info->keyboard_scan_code_map = kInternalJinlonScanCodeMap;
       EXPECT_EQ(7, id);
     } else if (base_name == "event8") {
       device_caps = ui::kMicrosoftBluetoothNumberPad;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(8, id);
     } else if (base_name == "event9") {
       device_caps = ui::kLogitechTouchKeyboardK400;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceExternalGenericKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
       EXPECT_EQ(9, id);
     } else if (base_name == "event10") {
       device_caps = ui::kDrallionKeyboard;
@@ -513,9 +514,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       device_caps = ui::kJinlonKeyboard;
       device_caps.kbd_function_row_physmap = kModifiedJinlonDescriptor;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
-      info->keyboard_top_row_layout = ui::EventRewriterChromeOS::
-          KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
       info->keyboard_scan_code_map = kInternalJinlonScanCodeMap;
       info->keyboard_scan_code_map.erase(0x96);
       info->keyboard_scan_code_map[0xC4] = {ui::EF_NONE, ui::DomCode::F8,
@@ -527,9 +528,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     } else if (base_name == "event13") {
       device_caps = ui::kHammerKeyboard;
       info->keyboard_type =
-          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
-          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout2;
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2;
       EXPECT_EQ(13, id);
     } else if (base_name == "event14") {
       device_caps = ui::kBaskingTouchScreen;

@@ -274,7 +274,7 @@ InputDataProviderKeyboard::AuxData::~AuxData() = default;
 
 void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
     const InputDeviceInformation* device_info,
-    ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout,
+    ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout,
     const base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>&
         scan_code_map,
     std::vector<mojom::TopRowKey>* out_top_row_keys,
@@ -287,7 +287,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
   base::flat_map<uint32_t, uint32_t> top_row_key_scancode_indexes;
 
   switch (top_row_layout) {
-    case ui::EventRewriterChromeOS::kKbdTopRowLayoutWilco:
+    case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
       top_row_keys.assign(std::begin(kSystemKeysWilco),
                           std::end(kSystemKeysWilco));
 
@@ -295,7 +295,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
         top_row_key_scancode_indexes[kScancodesWilco[i]] = i;
       break;
 
-    case ui::EventRewriterChromeOS::kKbdTopRowLayoutDrallion:
+    case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
       top_row_keys.assign(std::begin(kSystemKeysDrallion),
                           std::end(kSystemKeysDrallion));
 
@@ -318,7 +318,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
 
       break;
 
-    case ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom: {
+    case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom: {
       // Process scan-code map generated from custom top-row key layout: it maps
       // from physical scan codes to several things, including VKEY key-codes,
       // which we will use to derive a linear index.
@@ -365,14 +365,14 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
       }
       break;
     }
-    case ui::EventRewriterChromeOS::kKbdTopRowLayout2:
+    case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
       top_row_keys.assign(std::begin(kSystemKeys2), std::end(kSystemKeys2));
       // No specific top_row_key_scancode_indexes are needed
       // for classic ChromeOS keyboards, as they do not have an /Fn/ key and
       // only emit /F[0-9]+/ keys.
       break;
 
-    case ui::EventRewriterChromeOS::kKbdTopRowLayout1:
+    case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
     default:
       top_row_keys.assign(std::begin(kSystemKeys1), std::end(kSystemKeys1));
       // No specific top_row_key_scancode_indexes are needed for classic
@@ -408,19 +408,19 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
 
   // Work out the physical layout.
   if (device_info->keyboard_type ==
-      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
     // Reven boards have unknown keyboard layouts and should not be considered
     // internal keyboards for the purposes of diagnostics.
     if (chromeos::switches::IsRevenBranding()) {
       result->physical_layout = mojom::PhysicalLayout::kUnknown;
       result->connection_type = mojom::ConnectionType::kUnknown;
     } else if (device_info->keyboard_top_row_layout ==
-               ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+               ui::KeyboardCapability::KeyboardTopRowLayout::
                    kKbdTopRowLayoutWilco) {
       result->physical_layout =
           mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco;
     } else if (device_info->keyboard_top_row_layout ==
-               ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+               ui::KeyboardCapability::KeyboardTopRowLayout::
                    kKbdTopRowLayoutDrallion) {
       result->physical_layout =
           mojom::PhysicalLayout::kChromeOSDellEnterpriseDrallion;
@@ -455,7 +455,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
       LOG(ERROR) << "OS believes internal numberpad is implemented, but "
                     "evdev disagrees.";
   } else if (device_info->keyboard_top_row_layout ==
-             ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+             ui::KeyboardCapability::KeyboardTopRowLayout::
                  kKbdTopRowLayoutCustom) {
     // If keyboard has WWCB top row custom layout (vivaldi) then we can trust
     // the HID descriptor to be accurate about presence of keys.

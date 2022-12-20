@@ -9,6 +9,7 @@
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 
 namespace ash {
 namespace diagnostics {
@@ -53,7 +54,7 @@ class InputDataProviderKeyboard {
  private:
   void ProcessKeyboardTopRowLayout(
       const InputDeviceInformation* device_info,
-      ui::EventRewriterChromeOS::KeyboardTopRowLayout top_row_layout,
+      ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout,
       const base::flat_map<uint32_t,
                            ui::EventRewriterChromeOS::MutableKeyState>&
           scan_code_map,
