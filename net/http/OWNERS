@@ -3,8 +3,6 @@ per-file transport_security_state_static.*=estark@chromium.org
 per-file transport_security_state_static.*=cthomp@chromium.org
 per-file transport_security_state_static.*=jdeblasio@chromium.org
 # For automated updates
-# TODO(crbug.com/1342998): Remove mdb.chrome-pki-metadata@google.com once the
-# pod batch migration is complete.
-per-file transport_security_state_static.*=mdb.chrome-pki-metadata@google.com
 per-file transport_security_state_static.*=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file transport_security_state_static_pins.json=mdb.chrome-pki-metadata-release-jobs@google.com
 per-file *test*=file://net/quic/OWNERS # for QUIC refactors
