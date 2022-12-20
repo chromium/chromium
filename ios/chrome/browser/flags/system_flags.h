@@ -61,6 +61,9 @@ bool IsMemoryDebuggingEnabled();
 // Whether omnibox debugging tools are enabled.
 bool IsOmniboxDebuggingEnabled();
 
+// Whether Spotlight debugging tools are enabled.
+bool IsSpotlightDebuggingEnabled();
+
 // Whether startup crash is enabled.
 bool IsStartupCrashEnabled();
 

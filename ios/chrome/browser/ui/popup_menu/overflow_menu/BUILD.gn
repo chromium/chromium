@@ -68,6 +68,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/follow:tab_helper",

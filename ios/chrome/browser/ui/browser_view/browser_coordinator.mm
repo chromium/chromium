@@ -141,6 +141,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
@@ -402,6 +403,10 @@ enum class ToolbarKind {
 
 // The coordinator used for What's New feature.
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
+
+// The coordinator used for Spotlight Debugger.
+@property(nonatomic, strong)
+    SpotlightDebuggerCoordinator* spotlightDebuggerCoordinator;
 
 @end
 
@@ -1442,6 +1447,13 @@ enum class ToolbarKind {
 
 - (void)showWhatsNewIPH {
   [_bubblePresenter presentWhatsNewBottomToolbarBubble];
+}
+
+- (void)showSpotlightDebugger {
+  self.spotlightDebuggerCoordinator = [[SpotlightDebuggerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.spotlightDebuggerCoordinator start];
 }
 
 #pragma mark - DefaultPromoCommands

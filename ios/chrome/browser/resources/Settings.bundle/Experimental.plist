@@ -194,6 +194,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Enable Spotlight Debugging</string>
+			<key>Key</key>
+			<string>EnableSpotlightDebugging</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Use Mobile Safari UA</string>
 			<key>Key</key>
 			<string>UseMobileSafariUA</string>

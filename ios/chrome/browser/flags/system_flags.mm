@@ -99,6 +99,11 @@ bool IsOmniboxDebuggingEnabled() {
       boolForKey:@"EnableOmniboxDebugging"];
 }
 
+bool IsSpotlightDebuggingEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"EnableSpotlightDebugging"];
+}
+
 bool IsStartupCrashEnabled() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableStartupCrash];
 }

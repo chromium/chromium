@@ -58,6 +58,8 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::Settings";
     case overflow_menu::Destination::WhatsNew:
       return "overflow_menu::Destination::WhatsNew";
+    case overflow_menu::Destination::SpotlightDebugger:
+      return "overflow_menu::Destination::SpotlightDebugger";
   }
 }
 
@@ -90,6 +92,9 @@ void RecordUmaActionForDestination(Destination destination) {
       break;
     case Destination::WhatsNew:
       base::RecordAction(base::UserMetricsAction("MobileMenuWhatsNew"));
+      break;
+    case overflow_menu::Destination::SpotlightDebugger:
+      // No need to log metrics for a debug-only feature.
       break;
   }
 }

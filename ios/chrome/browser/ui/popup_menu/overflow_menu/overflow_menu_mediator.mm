@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
@@ -90,6 +91,7 @@
 using base::RecordAction;
 using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
+using experimental_flags::IsSpotlightDebuggingEnabled;
 
 namespace {
 
@@ -216,6 +218,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
 @property(nonatomic, strong) OverflowMenuDestination* whatsNewDestination;
+@property(nonatomic, strong)
+    OverflowMenuDestination* spotlightDebuggerDestination;
 
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
@@ -606,6 +610,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                 [weakSelf openSettings];
                               }];
   }
+
+  self.spotlightDebuggerDestination = [self destinationForSpotlightDebugger:^{
+    [weakSelf openSpotlightDebugger];
+  }];
 
   if (UseSymbols()) {
     // WhatsNew destination.
@@ -1026,6 +1034,20 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return result;
 }
 
+// Creates an OverflowMenuDestination for the Spotlight debugger.
+- (OverflowMenuDestination*)destinationForSpotlightDebugger:(Handler)handler {
+  OverflowMenuDestination* result = [[OverflowMenuDestination alloc]
+                 initWithName:@"Spotlight Debugger"
+                        image:[UIImage
+                                  imageNamed:
+                                      @"overflow_menu_destination_settings"]
+      accessibilityIdentifier:@"Spotlight Debugger"
+           enterpriseDisabled:NO
+                      handler:handler];
+  result.destinationName = @"Spotlight Debugger";
+  return result;
+}
+
 // Adds What's New to the OverflowMenuDestination to be displayed in the
 // destinations carousel.
 - (NSArray<OverflowMenuDestination*>*)insertWhatsNewToDestinations:
@@ -1050,6 +1072,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           feature_engagement::kIPHBadgedWhatsNewFeature)) {
     self.whatsNewDestination.badge = BadgeTypeNewLabel;
   }
+
+  return newDestinations;
+}
+
+// Adds SpotlightDebugger to the OverflowMenuDestination to be displayed in the
+// destinations carousel.
+- (NSArray<OverflowMenuDestination*>*)insertSpotlightDebuggerToDestinations:
+    (NSArray<OverflowMenuDestination*>*)destinations {
+  DCHECK(IsSpotlightDebuggingEnabled());
+
+  NSMutableArray<OverflowMenuDestination*>* newDestinations =
+      [[NSMutableArray alloc] init];
+
+  // Place the debugger at the top of the overflow menu carousel.
+  [newDestinations addObject:self.spotlightDebuggerDestination];
+  [newDestinations addObjectsFromArray:destinations];
 
   return newDestinations;
 }
@@ -1082,6 +1120,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   // inserted after smart sorting returns the sorted destinations.
   if (IsWhatsNewEnabled()) {
     baseDestinations = [self insertWhatsNewToDestinations:baseDestinations];
+  }
+
+  if (IsSpotlightDebuggingEnabled()) {
+    baseDestinations =
+        [self insertSpotlightDebuggerToDestinations:baseDestinations];
   }
 
   self.overflowMenuModel.destinations = [baseDestinations
@@ -1828,6 +1871,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:
                                              GURL(kChromeUIManagementURL)]];
+}
+
+- (void)openSpotlightDebugger {
+  DCHECK(IsSpotlightDebuggingEnabled());
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.dispatcher showSpotlightDebugger];
 }
 
 #pragma mark - PopupMenuCarouselMetricsDelegate
