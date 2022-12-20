@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+PASS Loading data…
+FAIL <a>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
+FAIL <area>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
+PASS <a>: Setting <file:///test>.protocol = 'https'
+PASS <area>: Setting <file:///test>.protocol = 'https'
+PASS <a>: Setting <file:>.protocol = 'wss'
+PASS <area>: Setting <file:>.protocol = 'wss'
+FAIL <a>: Setting <file://hi/path>.protocol = 's' assert_equals: expected "file://hi/path" but got "s://hi/path"
+FAIL <area>: Setting <file://hi/path>.protocol = 's' assert_equals: expected "file://hi/path" but got "s://hi/path"
+PASS <a>: Setting <file:///home/you/index.html>.username = 'me' No host means no username
+PASS <area>: Setting <file:///home/you/index.html>.username = 'me' No host means no username
+PASS <a>: Setting <file://test/>.username = 'test'
+PASS <area>: Setting <file://test/>.username = 'test'
+PASS <a>: Setting <file:///home/me/index.html>.password = 'secret' No host means no password
+PASS <area>: Setting <file:///home/me/index.html>.password = 'secret' No host means no password
+PASS <a>: Setting <file://test/>.password = 'test'
+PASS <area>: Setting <file://test/>.password = 'test'
+FAIL <a>: Setting <file://y/>.host = 'x:123' assert_equals: expected "file://y/" but got "file://x/"
+FAIL <area>: Setting <file://y/>.host = 'x:123' assert_equals: expected "file://y/" but got "file://x/"
+FAIL <a>: Setting <file://y/>.host = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL <area>: Setting <file://y/>.host = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL <a>: Setting <file://hi/x>.host = '' assert_equals: expected "file:///x" but got "file://hi/x"
+FAIL <area>: Setting <file://hi/x>.host = '' assert_equals: expected "file:///x" but got "file://hi/x"
+PASS <a>: Setting <file://y/>.hostname = 'x:123'
+PASS <area>: Setting <file://y/>.hostname = 'x:123'
+FAIL <a>: Setting <file://y/>.hostname = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL <area>: Setting <file://y/>.hostname = 'loc%41lhost' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL <a>: Setting <file://hi/x>.hostname = '' assert_equals: expected "file:///x" but got "file://hi/x"
+FAIL <area>: Setting <file://hi/x>.hostname = '' assert_equals: expected "file:///x" but got "file://hi/x"
+PASS <a>: Setting <file://test/>.port = '12'
+PASS <area>: Setting <file://test/>.port = '12'
+FAIL <a>: Setting <file://localhost/>.port = '12' assert_equals: expected "file:///" but got "file://localhost/"
+FAIL <area>: Setting <file://localhost/>.port = '12' assert_equals: expected "file:///" but got "file://localhost/"
+PASS <a>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
+PASS <area>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
+PASS <a>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+PASS <area>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
+FAIL <a>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file://////" but got "file:///"
+FAIL <area>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file://////" but got "file:///"
+FAIL <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
+FAIL <area>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
+Harness: the test ran to completion.
+

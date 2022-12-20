@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Loading data…
+PASS Parsing: <javascript:/example.com/> against <http://example.org/foo/bar>
+PASS Parsing: <javascript:example.com/> against <http://example.org/foo/bar>
+PASS Parsing: <javascript:/example.com/> against <about:blank>
+PASS Parsing: <javascript:example.com/> against <about:blank>
+FAIL Parsing: <javascript:/../> against <about:blank> assert_equals: href expected "javascript:/" but got "javascript:/../"
+Harness: the test ran to completion.
+

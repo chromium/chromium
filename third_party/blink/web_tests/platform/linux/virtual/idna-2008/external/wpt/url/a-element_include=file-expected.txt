@@ -1,0 +1,130 @@
+This is a testharness.js-based test.
+Found 125 tests; 74 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Loading data…
+PASS Parsing: <file:/example.com/> against <http://example.org/foo/bar>
+PASS Parsing: <file://example:1/> against <about:blank>
+PASS Parsing: <file://example:test/> against <about:blank>
+FAIL Parsing: <file://example%/> against <about:blank> assert_equals: failure should set href to input expected "file://example%/" but got "file://example%25/"
+PASS Parsing: <file://[example]/> against <about:blank>
+FAIL Parsing: <file:c:\foo\bar.html> against <file:///tmp/mock/path> assert_equals: href expected "file:///c:/foo/bar.html" but got "file:///tmp/mock/c:/foo/bar.html"
+FAIL Parsing: <  File:c|////foo\bar.html> against <file:///tmp/mock/path> assert_equals: href expected "file:///c:////foo/bar.html" but got "file:///tmp/mock/c%7C////foo/bar.html"
+FAIL Parsing: <C|/foo/bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file:///tmp/mock/C%7C/foo/bar"
+FAIL Parsing: </C|\foo\bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file:///C%7C/foo/bar"
+FAIL Parsing: <//C|/foo/bar> against <file:///tmp/mock/path> assert_equals: href expected "file:///C:/foo/bar" but got "file://c%7C/foo/bar"
+PASS Parsing: <//server/file> against <file:///tmp/mock/path>
+PASS Parsing: <\\server\file> against <file:///tmp/mock/path>
+PASS Parsing: </\server/file> against <file:///tmp/mock/path>
+PASS Parsing: <file:///foo/bar.txt> against <file:///tmp/mock/path>
+PASS Parsing: <file:///home/me> against <file:///tmp/mock/path>
+PASS Parsing: <//> against <file:///tmp/mock/path>
+PASS Parsing: <///> against <file:///tmp/mock/path>
+PASS Parsing: <///test> against <file:///tmp/mock/path>
+PASS Parsing: <file://test> against <file:///tmp/mock/path>
+FAIL Parsing: <file://localhost> against <file:///tmp/mock/path> assert_equals: href expected "file:///" but got "file://localhost/"
+FAIL Parsing: <file://localhost/> against <file:///tmp/mock/path> assert_equals: href expected "file:///" but got "file://localhost/"
+FAIL Parsing: <file://localhost/test> against <file:///tmp/mock/path> assert_equals: href expected "file:///test" but got "file://localhost/test"
+PASS Parsing: <test> against <file:///tmp/mock/path>
+PASS Parsing: <file:test> against <file:///tmp/mock/path>
+PASS Parsing: <file:/example.com/> against <about:blank>
+PASS Parsing: <file:...> against <http://www.example.com/test>
+PASS Parsing: <file:..> against <http://www.example.com/test>
+PASS Parsing: <file:a> against <http://www.example.com/test>
+PASS Parsing: <file:///C%3A/> against <about:blank>
+PASS Parsing: <file:///C%7C/> against <about:blank>
+FAIL Parsing: <file://%43%3A> against <about:blank> assert_equals: failure should set href to input expected "file://%43%3A" but got "file://c:/"
+FAIL Parsing: <file://%43%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://%43|> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://C%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://%43%7C/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html>
+FAIL Parsing: <..> against <file:///C:/> assert_equals: href expected "file:///C:/" but got "file:///"
+PASS Parsing: <..> against <file:///>
+FAIL Parsing: </> against <file:///C:/a/b> assert_equals: href expected "file:///C:/" but got "file:///"
+FAIL Parsing: </> against <file://h/C:/a/b> assert_equals: href expected "file://h/C:/" but got "file://h/"
+PASS Parsing: </> against <file://h/a/b>
+FAIL Parsing: <//d:> against <file:///C:/a/b> assert_equals: href expected "file:///d:" but got "file://d:/"
+FAIL Parsing: <//d:/..> against <file:///C:/a/b> assert_equals: href expected "file:///d:/" but got "file://d:/"
+PASS Parsing: <..> against <file:///ab:/>
+PASS Parsing: <..> against <file:///1:/>
+PASS Parsing: <> against <file:///test?test#test>
+PASS Parsing: <file:> against <file:///test?test#test>
+PASS Parsing: <?x> against <file:///test?test#test>
+PASS Parsing: <file:?x> against <file:///test?test#test>
+PASS Parsing: <#x> against <file:///test?test#test>
+PASS Parsing: <file:#x> against <file:///test?test#test>
+FAIL Parsing: <file:\\//> against <about:blank> assert_equals: href expected "file:////" but got "file:///"
+FAIL Parsing: <file:\\\\> against <about:blank> assert_equals: href expected "file:////" but got "file:///"
+FAIL Parsing: <file:\\\\?fox> against <about:blank> assert_equals: href expected "file:////?fox" but got "file:///?fox"
+FAIL Parsing: <file:\\\\#guppy> against <about:blank> assert_equals: href expected "file:////#guppy" but got "file:///#guppy"
+PASS Parsing: <file://spider///> against <about:blank>
+FAIL Parsing: <file:\\localhost//> against <about:blank> assert_equals: href expected "file:////" but got "file://localhost//"
+PASS Parsing: <file:///localhost//cat> against <about:blank>
+FAIL Parsing: <file://\/localhost//cat> against <about:blank> assert_equals: href expected "file:////localhost//cat" but got "file:///localhost//cat"
+FAIL Parsing: <file://localhost//a//../..//> against <about:blank> assert_equals: href expected "file://///" but got "file://localhost///"
+FAIL Parsing: </////mouse> against <file:///elephant> assert_equals: href expected "file://///mouse" but got "file:///mouse"
+PASS Parsing: <\//pig> against <file://lion/>
+FAIL Parsing: <\/localhost//pig> against <file://lion/> assert_equals: href expected "file:////pig" but got "file://localhost//pig"
+FAIL Parsing: <//localhost//pig> against <file://lion/> assert_equals: href expected "file:////pig" but got "file://localhost//pig"
+PASS Parsing: </..//localhost//pig> against <file://lion/>
+PASS Parsing: <file://> against <file://ape/>
+PASS Parsing: </rooibos> against <file://tea/>
+PASS Parsing: </?chai> against <file://tea/>
+FAIL Parsing: <C|> against <file://host/dir/file> assert_equals: href expected "file://host/C:" but got "file://host/dir/C%7C"
+FAIL Parsing: <C|> against <file://host/D:/dir1/dir2/file> assert_equals: href expected "file://host/C:" but got "file://host/D:/dir1/dir2/C%7C"
+FAIL Parsing: <C|#> against <file://host/dir/file> assert_equals: href expected "file://host/C:#" but got "file://host/dir/C%7C#"
+FAIL Parsing: <C|?> against <file://host/dir/file> assert_equals: href expected "file://host/C:?" but got "file://host/dir/C%7C?"
+FAIL Parsing: <C|/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file://host/dir/C%7C/"
+FAIL Parsing: <C|
+/> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file://host/dir/C%7C/"
+FAIL Parsing: <C|\> against <file://host/dir/file> assert_equals: href expected "file://host/C:/" but got "file://host/dir/C%7C/"
+PASS Parsing: <C> against <file://host/dir/file>
+FAIL Parsing: <C|a> against <file://host/dir/file> assert_equals: href expected "file://host/dir/C|a" but got "file://host/dir/C%7Ca"
+PASS Parsing: </c:/foo/bar> against <file:///c:/baz/qux>
+FAIL Parsing: </c|/foo/bar> against <file:///c:/baz/qux> assert_equals: href expected "file:///c:/foo/bar" but got "file:///c%7C/foo/bar"
+PASS Parsing: <file:\c:\foo\bar> against <file:///c:/baz/qux>
+PASS Parsing: </c:/foo/bar> against <file://host/path>
+PASS Parsing: <file://example.net/C:/> against <about:blank>
+PASS Parsing: <file://1.2.3.4/C:/> against <about:blank>
+PASS Parsing: <file://[1::8]/C:/> against <about:blank>
+FAIL Parsing: <C|/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file://host/C%7C/"
+PASS Parsing: </C:/> against <file://host/>
+PASS Parsing: <file:C:/> against <file://host/>
+PASS Parsing: <file:/C:/> against <file://host/>
+FAIL Parsing: <//C:/> against <file://host/> assert_equals: href expected "file:///C:/" but got "file://c:/"
+FAIL Parsing: <file://C:/> against <file://host/> assert_equals: href expected "file:///C:/" but got "file://c:/"
+PASS Parsing: <///C:/> against <file://host/>
+PASS Parsing: <file:///C:/> against <file://host/>
+FAIL Parsing: <file:/C|/> against <about:blank> assert_equals: href expected "file:///C:/" but got "file:///C%7C/"
+FAIL Parsing: <file://C|/> against <about:blank> assert_equals: href expected "file:///C:/" but got "file://c%7C/"
+PASS Parsing: <file:> against <about:blank>
+PASS Parsing: <file:?q=v> against <about:blank>
+PASS Parsing: <file:#frag> against <about:blank>
+PASS Parsing: <file:///Y:> against <about:blank>
+PASS Parsing: <file:///Y:/> against <about:blank>
+PASS Parsing: <file:///./Y> against <about:blank>
+PASS Parsing: <file:///./Y:> against <about:blank>
+PASS Parsing: <file:///y:> against <about:blank>
+PASS Parsing: <file:///y:/> against <about:blank>
+PASS Parsing: <file:///./y> against <about:blank>
+PASS Parsing: <file:///./y:> against <about:blank>
+FAIL Parsing: <file://localhost//a//../..//foo> against <about:blank> assert_equals: href expected "file://///foo" but got "file://localhost///foo"
+FAIL Parsing: <file://localhost////foo> against <about:blank> assert_equals: href expected "file://////foo" but got "file://localhost////foo"
+FAIL Parsing: <file:////foo> against <about:blank> assert_equals: href expected "file:////foo" but got "file:///foo"
+PASS Parsing: <file:///one/two> against <file:///>
+FAIL Parsing: <file:////one/two> against <file:///> assert_equals: href expected "file:////one/two" but got "file:///one/two"
+PASS Parsing: <//one/two> against <file:///>
+PASS Parsing: <///one/two> against <file:///>
+FAIL Parsing: <////one/two> against <file:///> assert_equals: href expected "file:////one/two" but got "file:///one/two"
+PASS Parsing: <file:///.//> against <file:////>
+PASS Parsing: <file:.//p> against <about:blank>
+PASS Parsing: <file:/.//p> against <about:blank>
+PASS Parsing: <10.0.0.7:8080/foo.html> against <file:///some/dir/bar.html>
+PASS Parsing: <a!@$*=/foo.html> against <file:///some/dir/bar.html>
+PASS Parsing: <file://a­b/p> against <about:blank>
+PASS Parsing: <file://a%C2%ADb/p> against <about:blank>
+FAIL Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> against <about:blank> assert_equals: href expected "file:///usr/bin" but got "file://localhost/usr/bin"
+FAIL Parsing: <file://­/p> against <about:blank> assert_equals: failure should set href to input expected "file://­/p" but got "file://%C2%AD/p"
+PASS Parsing: <file://%C2%AD/p> against <about:blank>
+FAIL Parsing: <file://xn--/p> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+Harness: the test ran to completion.
+
