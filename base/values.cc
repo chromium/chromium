@@ -1670,17 +1670,6 @@ bool DictionaryValue::Get(StringPiece path, Value** out_value) {
   return std::as_const(*this).Get(path, const_cast<const Value**>(out_value));
 }
 
-bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
-  const Value* value;
-  if (!Get(path, &value))
-    return false;
-
-  bool is_int = value->is_int();
-  if (is_int && out_value)
-    *out_value = value->GetInt();
-  return is_int;
-}
-
 bool DictionaryValue::GetString(StringPiece path,
                                 std::string* out_value) const {
   const Value* value;
