@@ -880,6 +880,180 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Libhwsec.RetryAction{Category}"
+    enum="HwsecRetryActionEnum" expires_after="2023-06-19">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result code of a libhwsec operation issued through
+    libhwsec that belongs to {Category}. Success is 0. For the other error
+    codes, see src/platform2/libhwsec/error/tpm_retry_action.h. Recorded when
+    the libhwsec operation finished in the middleware.
+  </summary>
+  <token key="Category">
+    <variant name="" summary="hwsec"/>
+    <variant name=".Config" summary="Config"/>
+    <variant name=".Config.IsCurrentUserSet"
+        summary="Config::IsCurrentUserSet"/>
+    <variant name=".Config.Quote" summary="Config::Quote"/>
+    <variant name=".Config.SetCurrentUser" summary="Config::SetCurrentUser"/>
+    <variant name=".Config.ToOperationPolicy"
+        summary="Config::ToOperationPolicy"/>
+    <variant name=".DAMitigation" summary="DAMitigation"/>
+    <variant name=".DAMitigation.GetStatus" summary="DAMitigation::GetStatus"/>
+    <variant name=".DAMitigation.IsReady" summary="DAMitigation::IsReady"/>
+    <variant name=".DAMitigation.Mitigate" summary="DAMitigation::Mitigate"/>
+    <variant name=".Deriving" summary="Deriving"/>
+    <variant name=".Deriving.Derive" summary="Deriving::Derive"/>
+    <variant name=".Deriving.SecureDerive" summary="Deriving::SecureDerive"/>
+    <variant name=".Encryption" summary="Encryption"/>
+    <variant name=".Encryption.Decrypt" summary="Encryption::Decrypt"/>
+    <variant name=".Encryption.Encrypt" summary="Encryption::Encrypt"/>
+    <variant name=".KeyManagement" summary="KeyManagement"/>
+    <variant name=".KeyManagement.CreateKey"
+        summary="KeyManagement::CreateKey"/>
+    <variant name=".KeyManagement.Flush" summary="KeyManagement::Flush"/>
+    <variant name=".KeyManagement.GetECCPublicInfo"
+        summary="KeyManagement::GetECCPublicInfo"/>
+    <variant name=".KeyManagement.GetKeyHandle"
+        summary="KeyManagement::GetKeyHandle"/>
+    <variant name=".KeyManagement.GetPersistentKey"
+        summary="KeyManagement::GetPersistentKey"/>
+    <variant name=".KeyManagement.GetPolicyEndorsementKey"
+        summary="KeyManagement::GetPolicyEndorsementKey"/>
+    <variant name=".KeyManagement.GetPubkeyHash"
+        summary="KeyManagement::GetPubkeyHash"/>
+    <variant name=".KeyManagement.GetRSAPublicInfo"
+        summary="KeyManagement::GetRSAPublicInfo"/>
+    <variant name=".KeyManagement.GetSupportedAlgo"
+        summary="KeyManagement::GetSupportedAlgo"/>
+    <variant name=".KeyManagement.IsSupported"
+        summary="KeyManagement::IsSupported"/>
+    <variant name=".KeyManagement.LoadKey" summary="KeyManagement::LoadKey"/>
+    <variant name=".KeyManagement.ReloadIfPossible"
+        summary="KeyManagement::ReloadIfPossible"/>
+    <variant name=".KeyManagement.SideLoadKey"
+        summary="KeyManagement::SideLoadKey"/>
+    <variant name=".KeyManagement.WrapECCKey"
+        summary="KeyManagement::WrapECCKey"/>
+    <variant name=".KeyManagement.WrapRSAKey"
+        summary="KeyManagement::WrapRSAKey"/>
+    <variant name=".PinWeaver" summary="PinWeaver"/>
+    <variant name=".PinWeaver.BlockGeneratePk"
+        summary="PinWeaver::BlockGeneratePk"/>
+    <variant name=".PinWeaver.CheckCredential"
+        summary="PinWeaver::CheckCredential"/>
+    <variant name=".PinWeaver.GeneratePk" summary="PinWeaver::GeneratePk"/>
+    <variant name=".PinWeaver.GetDelayInSeconds"
+        summary="PinWeaver::GetDelayInSeconds"/>
+    <variant name=".PinWeaver.GetDelaySchedule"
+        summary="PinWeaver::GetDelaySchedule"/>
+    <variant name=".PinWeaver.GetExpirationInSeconds"
+        summary="PinWeaver::GetExpirationInSeconds"/>
+    <variant name=".PinWeaver.GetLog" summary="PinWeaver::GetLog"/>
+    <variant name=".PinWeaver.GetVersion" summary="PinWeaver::GetVersion"/>
+    <variant name=".PinWeaver.GetWrongAuthAttempts"
+        summary="PinWeaver::GetWrongAuthAttempts"/>
+    <variant name=".PinWeaver.InsertCredential"
+        summary="PinWeaver::InsertCredential"/>
+    <variant name=".PinWeaver.InsertRateLimiter"
+        summary="PinWeaver::InsertRateLimiter"/>
+    <variant name=".PinWeaver.IsEnabled" summary="PinWeaver::IsEnabled"/>
+    <variant name=".PinWeaver.RemoveCredential"
+        summary="PinWeaver::RemoveCredential"/>
+    <variant name=".PinWeaver.ReplayLogOperation"
+        summary="PinWeaver::ReplayLogOperation"/>
+    <variant name=".PinWeaver.Reset" summary="PinWeaver::Reset"/>
+    <variant name=".PinWeaver.ResetCredential"
+        summary="PinWeaver::ResetCredential"/>
+    <variant name=".PinWeaver.StartBiometricsAuth"
+        summary="PinWeaver::StartBiometricsAuth"/>
+    <variant name=".Random" summary="Random"/>
+    <variant name=".Random.RandomBlob" summary="Random::RandomBlob"/>
+    <variant name=".Random.RandomSecureBlob"
+        summary="Random::RandomSecureBlob"/>
+    <variant name=".RecoveryCrypto" summary="RecoveryCrypto"/>
+    <variant name=".RecoveryCrypto.EncryptEccPrivateKey"
+        summary="RecoveryCrypto::EncryptEccPrivateKey"/>
+    <variant name=".RecoveryCrypto.GenerateDiffieHellmanSharedSecret"
+        summary="RecoveryCrypto::GenerateDiffieHellmanSharedSecret"/>
+    <variant name=".RecoveryCrypto.GenerateKeyAuthValue"
+        summary="RecoveryCrypto::GenerateKeyAuthValue"/>
+    <variant name=".RecoveryCrypto.GenerateRsaKeyPair"
+        summary="RecoveryCrypto::GenerateRsaKeyPair"/>
+    <variant name=".RecoveryCrypto.SignRequestPayload"
+        summary="RecoveryCrypto::SignRequestPayload"/>
+    <variant name=".RoData" summary="RoData"/>
+    <variant name=".RoData.Certify" summary="RoData::Certify"/>
+    <variant name=".RoData.IsReady" summary="RoData::IsReady"/>
+    <variant name=".RoData.Read" summary="RoData::Read"/>
+    <variant name=".Sealing" summary="Sealing"/>
+    <variant name=".Sealing.IsSupported" summary="Sealing::IsSupported"/>
+    <variant name=".Sealing.PreloadSealedData"
+        summary="Sealing::PreloadSealedData"/>
+    <variant name=".Sealing.Seal" summary="Sealing::Seal"/>
+    <variant name=".Sealing.Unseal" summary="Sealing::Unseal"/>
+    <variant name=".SessionManagement" summary="SessionManagement"/>
+    <variant name=".SessionManagement.FlushInvalidSessions"
+        summary="SessionManagement::FlushInvalidSessions"/>
+    <variant name=".SignatureSealing" summary="SignatureSealing"/>
+    <variant name=".SignatureSealing.Challenge"
+        summary="SignatureSealing::Challenge"/>
+    <variant name=".SignatureSealing.Seal" summary="SignatureSealing::Seal"/>
+    <variant name=".SignatureSealing.Unseal"
+        summary="SignatureSealing::Unseal"/>
+    <variant name=".Signing" summary="Signing"/>
+    <variant name=".Signing.RawSign" summary="Signing::RawSign"/>
+    <variant name=".Signing.Sign" summary="Signing::Sign"/>
+    <variant name=".Signing.Verify" summary="Signing::Verify"/>
+    <variant name=".State" summary="State"/>
+    <variant name=".State.IsEnabled" summary="State::IsEnabled"/>
+    <variant name=".State.IsReady" summary="State::IsReady"/>
+    <variant name=".State.Prepare" summary="State::Prepare"/>
+    <variant name=".State.WaitUntilReady" summary="State::WaitUntilReady"/>
+    <variant name=".Storage" summary="Storage"/>
+    <variant name=".Storage.Destroy" summary="Storage::Destroy"/>
+    <variant name=".Storage.IsReady" summary="Storage::IsReady"/>
+    <variant name=".Storage.IsWriteLocked" summary="Storage::IsWriteLocked"/>
+    <variant name=".Storage.Load" summary="Storage::Load"/>
+    <variant name=".Storage.Lock" summary="Storage::Lock"/>
+    <variant name=".Storage.Prepare" summary="Storage::Prepare"/>
+    <variant name=".Storage.Store" summary="Storage::Store"/>
+    <variant name=".U2f" summary="U2f"/>
+    <variant name=".U2f.Check" summary="U2f::Check"/>
+    <variant name=".U2f.CheckUserPresenceOnly"
+        summary="U2f::CheckUserPresenceOnly"/>
+    <variant name=".U2f.CorpAttest" summary="U2f::CorpAttest"/>
+    <variant name=".U2f.G2fAttest" summary="U2f::G2fAttest"/>
+    <variant name=".U2f.Generate" summary="U2f::Generate"/>
+    <variant name=".U2f.GenerateUserPresenceOnly"
+        summary="U2f::GenerateUserPresenceOnly"/>
+    <variant name=".U2f.GetG2fAttestData" summary="U2f::GetG2fAttestData"/>
+    <variant name=".U2f.Sign" summary="U2f::Sign"/>
+    <variant name=".U2f.SignUserPresenceOnly"
+        summary="U2f::SignUserPresenceOnly"/>
+    <variant name=".Vendor" summary="Vendor"/>
+    <variant name=".Vendor.DeclareTpmFirmwareStable"
+        summary="Vendor::DeclareTpmFirmwareStable"/>
+    <variant name=".Vendor.GetFamily" summary="Vendor::GetFamily"/>
+    <variant name=".Vendor.GetFingerprint" summary="Vendor::GetFingerprint"/>
+    <variant name=".Vendor.GetFirmwareVersion"
+        summary="Vendor::GetFirmwareVersion"/>
+    <variant name=".Vendor.GetIFXFieldUpgradeInfo"
+        summary="Vendor::GetIFXFieldUpgradeInfo"/>
+    <variant name=".Vendor.GetManufacturer" summary="Vendor::GetManufacturer"/>
+    <variant name=".Vendor.GetRsuDeviceId" summary="Vendor::GetRsuDeviceId"/>
+    <variant name=".Vendor.GetRwVersion" summary="Vendor::GetRwVersion"/>
+    <variant name=".Vendor.GetSpecLevel" summary="Vendor::GetSpecLevel"/>
+    <variant name=".Vendor.GetTpmModel" summary="Vendor::GetTpmModel"/>
+    <variant name=".Vendor.GetVendorSpecific"
+        summary="Vendor::GetVendorSpecific"/>
+    <variant name=".Vendor.IsSrkRocaVulnerable"
+        summary="Vendor::IsSrkRocaVulnerable"/>
+    <variant name=".Vendor.SendRawCommand" summary="Vendor::SendRawCommand"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.LogicalCpuCount" units="units"
     expires_after="2022-08-21">
   <owner>sonnyrao@chromium.org</owner>

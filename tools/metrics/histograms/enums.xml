@@ -50244,6 +50244,24 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Invalid PCR0 value"/>
 </enum>
 
+<enum name="HwsecRetryActionEnum">
+  <int value="0" label="kNone">Succeeded.</int>
+  <int value="1" label="kCommunication">Communication failure.</int>
+  <int value="2" label="kSession">Session failure.</int>
+  <int value="3" label="kLater">Retry the action later.</int>
+  <int value="4" label="kReboot">The state that requires reboot.</int>
+  <int value="5" label="kDefend">In the defense mode.</int>
+  <int value="6" label="kUserAuth">User authorization failure.</int>
+  <int value="7" label="kNoRetry">Retrying won't change the outcome.</int>
+  <int value="8" label="kEllipticCurveScalarOutOfRange">
+    The elliptic curve scalar out of range.
+  </int>
+  <int value="9" label="kUserPresence">User presence not detected.</int>
+  <int value="10" label="kSpaceNotFound">
+    The space for this operation is not fount.
+  </int>
+</enum>
+
 <enum name="ICCProfileAnalyzeResult">
   <int value="0"
       label="Extracted primary matrix and numerical transfer function
