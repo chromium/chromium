@@ -1121,7 +1121,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   DCHECK(position >= 0);
   DCHECK(self.handler);
   [self.handler
-      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]];
+      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
+                                       anchorView:buttonView
+                                       anchorRect:buttonView.frame];
 }
 
 #pragma mark - UIResponder

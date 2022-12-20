@@ -205,7 +205,9 @@
                        compromisedPassword:(BOOL)compromisedPassword {
   [self showPasswordDeleteDialogWithOrigin:origin
                        compromisedPassword:compromisedPassword
-                                  forIndex:0];
+                                  forIndex:0
+                                anchorView:nil  // use bottom bar delete button
+                                anchorRect:CGRect()];
 }
 
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
@@ -236,7 +238,9 @@
   [self.actionSheetCoordinator start];
 }
 
-- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password {
+- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
+                                         anchorView:(UIView*)anchorView
+                                         anchorRect:(CGRect)anchorRect {
   auto it = std::find_if(
       self.mediator.credentials.begin(), self.mediator.credentials.end(),
       [password](password_manager::CredentialUIEntry credential) {
@@ -255,7 +259,9 @@
     DCHECK((unsigned long)index < self.mediator.credentials.size());
     [self showPasswordDeleteDialogWithOrigin:password.origin
                          compromisedPassword:password.isCompromised
-                                    forIndex:index];
+                                    forIndex:index
+                                  anchorView:anchorView
+                                  anchorRect:anchorRect];
   }
 }
 
@@ -274,9 +280,14 @@
 
 #pragma mark - Private
 
+// TODO(crbug.com/1359392): By convention, passing nil for `anchorView` means
+// to use the delete button in the bottom bar as the anchor. This is a temporary
+// hack and will be removed when `kPasswordsGrouping` is enabled by default.
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
                        compromisedPassword:(BOOL)compromisedPassword
-                                  forIndex:(int)index {
+                                  forIndex:(int)index
+                                anchorView:(UIView*)anchorView
+                                anchorRect:(CGRect)anchorRect {
   NSString* message;
 
   if (origin.length > 0) {
@@ -286,12 +297,23 @@
     message =
         l10n_util::GetNSStringF(stringID, base::SysNSStringToUTF16(origin));
   }
-  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                           title:nil
-                         message:message
-                   barButtonItem:self.viewController.deleteButton];
+
+  if (anchorView) {
+    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                             title:nil
+                           message:message
+                              rect:anchorRect
+                              view:anchorView];
+  } else {
+    self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                             title:nil
+                           message:message
+                     barButtonItem:self.viewController.deleteButton];
+  }
 
   __weak __typeof(self) weakSelf = self;
 

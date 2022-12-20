@@ -75,7 +75,9 @@ constexpr char kPassword[] = "test";
   self.deletionCalledOnCompromisedPassword = compromisedPassword;
 }
 
-- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password {
+- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
+                                         anchorView:(UIView*)anchorView
+                                         anchorRect:(CGRect)anchorRect {
   self.deletionCalled = YES;
   self.deletionCalledOnCompromisedPassword = password.isCompromised;
 }

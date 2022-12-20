@@ -25,8 +25,13 @@
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin
                        compromisedPassword:(BOOL)compromisedPassword;
 
-// Called when the user wants to delete a password.
-- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password;
+// Called when the user wants to delete a password. `anchorView` and
+// `anchorRect` should be the button that triggered this deletion flow and the
+// coordinates of that button, to position the confirmation dialog correctly on
+// tablets.
+- (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
+                                         anchorView:(UIView*)anchorView
+                                         anchorRect:(CGRect)anchorRect;
 
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;
