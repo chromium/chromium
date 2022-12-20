@@ -2913,14 +2913,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
 
 class PDFExtensionComboBoxTest : public PDFExtensionTest {
  public:
-  // TODO(crbug.com/1261928): Prefer using LoadTestComboBoxPdfGetMimeHanderView
-  void LoadTestComboBoxPdfGetGuestContents() {
-    guest_contents_ = LoadPdfGetGuestContents(
-        embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
-    ASSERT_TRUE(guest_contents_);
-  }
-
-  MimeHandlerViewGuest* LoadTestComboBoxPdfGetMimeHanderView() {
+  MimeHandlerViewGuest* LoadTestComboBoxPdfGetMimeHandlerView() {
     return LoadPdfGetMimeHandlerView(
         embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
   }
@@ -2933,31 +2926,9 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Blink page coordinates corresponds to approximately (102, 62) in PDF user
   // space coordinates. See PDFExtensionLinkClickTest::GetLinkPosition() for
   // more information on all the coordinate systems involved.
-  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
-  // method.
-  gfx::Point GetEditableComboBoxLeftPosition() {
-    return ConvertPageCoordToScreenCoord(guest_contents_, {136, 318});
-  }
-
   gfx::Point GetEditableComboBoxLeftPosition(MimeHandlerViewGuest* guest) {
     return ConvertPageCoordToScreenCoord(guest->GetGuestMainFrame(),
                                          {136, 318});
-  }
-
-  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
-  // method.
-  void ClickLeftSideOfEditableComboBox() {
-    WebContents* contents = GetWebContentsForInputRouting();
-    content::SimulateMouseClickAt(contents, 0,
-                                  blink::WebMouseEvent::Button::kLeft,
-                                  GetEditableComboBoxLeftPosition());
-
-    // Make sure mouse events are sent completely before proceeding, in order to
-    // avoid races with subsequent keyboard events.
-    content::InputEventAckWaiter mouse_waiter(
-        GetPluginFrame(contents)->GetRenderWidgetHost(),
-        blink::WebInputEvent::Type::kMouseUp);
-    mouse_waiter.Wait();
   }
 
   void ClickLeftSideOfEditableComboBox(MimeHandlerViewGuest* guest) {
@@ -2970,36 +2941,6 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
         GetPluginFrame(guest)->GetRenderWidgetHost(),
         blink::WebInputEvent::Type::kMouseUp);
     mouse_waiter.Wait();
-  }
-
-  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
-  // method.
-  void TypeHello() {
-    struct KeyData {
-      char ch;
-      ui::DomCode code;
-      ui::KeyboardCode key_code;
-    };
-
-    constexpr KeyData kData[] = {
-        {'H', ui::DomCode::US_H, ui::VKEY_H},
-        {'E', ui::DomCode::US_E, ui::VKEY_E},
-        {'L', ui::DomCode::US_L, ui::VKEY_L},
-        {'L', ui::DomCode::US_L, ui::VKEY_L},
-        {'O', ui::DomCode::US_O, ui::VKEY_O},
-    };
-
-    auto* contents = GetWebContentsForInputRouting();
-    auto* rwh = GetPluginFrame(contents)->GetRenderWidgetHost();
-    for (const auto& data : kData) {
-      content::SimulateKeyPress(contents, ui::DomKey::FromCharacter(data.ch),
-                                data.code, data.key_code, /*control=*/false,
-                                /*shift=*/false, /*alt=*/false,
-                                /*command=*/false);
-      content::InputEventAckWaiter key_waiter(
-          rwh, blink::WebInputEvent::Type::kKeyUp);
-      key_waiter.Wait();
-    }
   }
 
   void TypeHello(MimeHandlerViewGuest* guest) {
@@ -3034,39 +2975,42 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   }
 
   // Presses the left arrow key.
-  void PressLeftArrow() {
+  void PressLeftArrow(MimeHandlerViewGuest* guest) {
+    // Make sure that the plugin frame of guest has focus.
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
     content::SimulateKeyPressWithoutChar(
-        GetWebContentsForInputRouting(), ui::DomKey::ARROW_LEFT,
+        guest->embedder_web_contents(), ui::DomKey::ARROW_LEFT,
         ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT, false, false, false, false);
   }
 
   // Presses down shift, presses the left arrow, and lets go of shift.
-  void PressShiftLeftArrow() {
-    content::SimulateKeyPressWithoutChar(GetWebContentsForInputRouting(),
+  void PressShiftLeftArrow(MimeHandlerViewGuest* guest) {
+    // Make sure that the plugin frame of guest has focus.
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
+    content::SimulateKeyPressWithoutChar(guest->embedder_web_contents(),
                                          ui::DomKey::ARROW_LEFT,
                                          ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT,
                                          false, /*shift=*/true, false, false);
   }
 
   // Presses the right arrow key.
-  void PressRightArrow() {
+  void PressRightArrow(MimeHandlerViewGuest* guest) {
+    // Make sure that the plugin frame of guest has focus.
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
     content::SimulateKeyPressWithoutChar(
-        GetWebContentsForInputRouting(), ui::DomKey::ARROW_RIGHT,
+        guest->embedder_web_contents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, false, false, false);
   }
 
   // Presses down shift, presses the right arrow, and lets go of shift.
-  void PressShiftRightArrow() {
+  void PressShiftRightArrow(MimeHandlerViewGuest* guest) {
+    // Make sure that the plugin frame of guest has focus.
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
     content::SimulateKeyPressWithoutChar(
-        GetWebContentsForInputRouting(), ui::DomKey::ARROW_RIGHT,
+        guest->embedder_web_contents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, /*shift=*/true, false,
         false);
   }
-
-  WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
-
- private:
-  raw_ptr<WebContents, DanglingUntriaged> guest_contents_ = nullptr;
 };
 
 class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
@@ -3113,7 +3057,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveTest, MAYBE_Save) {
   using FileChooser = extensions::FileSystemChooseEntryFunction;
   FileChooser::SkipPickerAndAlwaysSelectPathForTest file_picker(save_path);
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
   ClickLeftSideOfEditableComboBox(guest);
   TypeHello(guest);
   SaveEditedPdf(guest);
@@ -3183,7 +3127,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
   ClickLeftSideOfEditableComboBox(guest);
   TypeHello(guest);
   SaveEditedPdf(guest);
@@ -3213,7 +3157,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
   ClickLeftSideOfEditableComboBox(guest);
   TypeHello(guest);
   SaveEditedPdf(guest);
@@ -3233,7 +3177,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHanderView();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
   ClickLeftSideOfEditableComboBox(guest);
   TypeHello(guest);
   SaveEditedPdf(guest);
@@ -3278,9 +3222,10 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
   // Sends a copy command and checks the copy/paste clipboard.
   // Note: Trying to send ctrl+c does not work correctly with
   // SimulateKeyPress(). Using IDC_COPY does not work on Mac in browser_tests.
-  void SendCopyCommandAndCheckCopyPasteClipboard(const std::string& expected) {
+  void SendCopyCommandAndCheckCopyPasteClipboard(MimeHandlerViewGuest* guest,
+                                                 const std::string& expected) {
     DoActionAndCheckClipboard(base::BindLambdaForTesting([&]() {
-                                GetWebContentsForInputRouting()->Copy();
+                                guest->embedder_web_contents()->Copy();
                               }),
                               ui::ClipboardBuffer::kCopyPaste, expected);
   }
@@ -3326,50 +3271,52 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
                        MAYBE_IndividualShiftRightArrowPresses) {
-  LoadTestComboBoxPdfGetGuestContents();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
 
   // Give the editable combo box focus.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
-  TypeHello();
+  TypeHello(guest);
 
   // Put the cursor back to the left side of the combo box.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
   // Press shift + right arrow 3 times. Letting go of shift in between.
-  auto action = base::BindLambdaForTesting([&]() { PressShiftRightArrow(); });
+  auto action =
+      base::BindLambdaForTesting([&]() { PressShiftRightArrow(guest); });
   DoActionAndCheckSelectionClipboard(action, "H");
   DoActionAndCheckSelectionClipboard(action, "HE");
   DoActionAndCheckSelectionClipboard(action, "HEL");
-  SendCopyCommandAndCheckCopyPasteClipboard("HEL");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "HEL");
 }
 
 // TODO(crbug.com/897801): test is flaky.
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftLeftArrowPresses) {
-  LoadTestComboBoxPdfGetGuestContents();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
 
   // Give the editable combo box focus.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
-  TypeHello();
+  TypeHello(guest);
 
   // Put the cursor back to the left side of the combo box.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
   for (int i = 0; i < 3; ++i)
-    PressRightArrow();
+    PressRightArrow(guest);
 
   // Press shift + left arrow 2 times. Letting go of shift in between.
-  auto action = base::BindLambdaForTesting([&]() { PressShiftLeftArrow(); });
+  auto action =
+      base::BindLambdaForTesting([&]() { PressShiftLeftArrow(guest); });
   DoActionAndCheckSelectionClipboard(action, "L");
   DoActionAndCheckSelectionClipboard(action, "EL");
-  SendCopyCommandAndCheckCopyPasteClipboard("EL");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "EL");
 
   // Press shift + left arrow 2 times. Letting go of shift in between.
   DoActionAndCheckSelectionClipboard(action, "HEL");
   DoActionAndCheckSelectionClipboard(action, "HEL");
-  SendCopyCommandAndCheckCopyPasteClipboard("HEL");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "HEL");
 }
 
 // Flaky, http://crbug.com/1121446, http://crbug.com/1350332
@@ -3381,20 +3328,20 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
                        MAYBE_CombinedShiftRightArrowPresses) {
-  LoadTestComboBoxPdfGetGuestContents();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
 
   // Give the editable combo box focus.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
-  TypeHello();
+  TypeHello(guest);
 
   // Put the cursor back to the left side of the combo box.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
   // Press shift + right arrow 3 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetWebContentsForInputRouting(), false, true, false, false);
+        guest->embedder_web_contents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
                                      ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
@@ -3403,29 +3350,29 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
     DoActionAndCheckSelectionClipboard(action, "HE");
     DoActionAndCheckSelectionClipboard(action, "HEL");
   }
-  SendCopyCommandAndCheckCopyPasteClipboard("HEL");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "HEL");
 }
 
 // Flaky on multiple platforms (https://crbug.com/1121446)
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
                        DISABLED_CombinedShiftArrowPresses) {
-  LoadTestComboBoxPdfGetGuestContents();
+  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
 
   // Give the editable combo box focus.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
-  TypeHello();
+  TypeHello(guest);
 
   // Put the cursor back to the left side of the combo box.
-  ClickLeftSideOfEditableComboBox();
+  ClickLeftSideOfEditableComboBox(guest);
 
   for (int i = 0; i < 3; ++i)
-    PressRightArrow();
+    PressRightArrow(guest);
 
   // Press shift + left arrow 3 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetWebContentsForInputRouting(), false, true, false, false);
+        guest->embedder_web_contents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_LEFT,
                                      ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT);
@@ -3434,12 +3381,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
     DoActionAndCheckSelectionClipboard(action, "EL");
     DoActionAndCheckSelectionClipboard(action, "HEL");
   }
-  SendCopyCommandAndCheckCopyPasteClipboard("HEL");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "HEL");
 
   // Press shift + right arrow 2 times. Holding down shift in between.
   {
     content::ScopedSimulateModifierKeyPress hold_shift(
-        GetWebContentsForInputRouting(), false, true, false, false);
+        guest->embedder_web_contents(), false, true, false, false);
     auto action = base::BindLambdaForTesting([&]() {
       hold_shift.KeyPressWithoutChar(ui::DomKey::ARROW_RIGHT,
                                      ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT);
@@ -3447,7 +3394,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
     DoActionAndCheckSelectionClipboard(action, "EL");
     DoActionAndCheckSelectionClipboard(action, "L");
   }
-  SendCopyCommandAndCheckCopyPasteClipboard("L");
+  SendCopyCommandAndCheckCopyPasteClipboard(guest, "L");
 }
 
 // Verifies that an <embed> of size zero will still instantiate a guest and post
