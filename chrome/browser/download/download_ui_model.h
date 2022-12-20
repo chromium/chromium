@@ -376,9 +376,6 @@ class DownloadUIModel {
   virtual const download::DownloadItem* GetDownloadItem() const;
   download::DownloadItem* GetDownloadItem();
 
-  // Returns the display name for the web drive where the file is rerouted to.
-  virtual std::u16string GetWebDriveName() const;
-
   // Returns the file-name that should be reported to the user.
   virtual base::FilePath GetFileNameToReportUser() const;
 
@@ -546,9 +543,6 @@ class DownloadUIModel {
 
   // Returns whether the download is triggered by an extension.
   virtual bool IsExtensionDownload() const;
-
-  // Returns the message, if any, to be displayed for file rerouted.
-  virtual std::u16string GetWebDriveMessage(bool verbose) const;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 

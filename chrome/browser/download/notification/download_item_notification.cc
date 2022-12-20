@@ -1110,7 +1110,6 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
         IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS);
   }
 
-  auto web_drive = item_->GetWebDriveName();
   switch (item_->GetState()) {
     case download::DownloadItem::IN_PROGRESS:
       // The download is a CRX (app, extension, theme, ...) and it is being
@@ -1118,10 +1117,6 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
       if (item_->AllDataSaved() && IsExtensionDownload(item_.get())) {
         return l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING);
-      } else if (web_drive.size()) {
-        // If the file is being uploaded: "Sending to <WEB_DRIVE>"
-        return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING,
-                                          web_drive);
       } else {
         return GetInProgressSubStatusString();
       }
@@ -1129,10 +1124,6 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
       if (item_->GetFileExternallyRemoved()) {
         // If the file has been removed: "Removed"
         return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
-      } else if (web_drive.size()) {
-        // If the file was uploaded: "Saved to <WEB_DRIVE>"
-        return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADED,
-                                          web_drive);
       } else {
         std::u16string file_name =
             item_->GetFileNameToReportUser().LossyDisplayName();

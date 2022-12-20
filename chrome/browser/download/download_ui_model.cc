@@ -360,13 +360,7 @@ std::u16string DownloadUIModel::GetWarningConfirmButtonText() const {
 }
 
 std::u16string DownloadUIModel::GetShowInFolderText() const {
-  std::u16string where = GetWebDriveName();
-  if (where.empty()) {
-    // "Show in <folder/Finder>"
-    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_SHOW);
-  }
-  // "Show in <WEB_DRIVE>"
-  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_LINK_SHOW_IN_WEB_DRIVE, where);
+  return l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_SHOW);
 }
 
 ContentId DownloadUIModel::GetContentId() const {
@@ -487,14 +481,6 @@ const DownloadItem* DownloadUIModel::GetDownloadItem() const {
 
 DownloadItem* DownloadUIModel::GetDownloadItem() {
   return const_cast<DownloadItem*>(std::as_const(*this).GetDownloadItem());
-}
-
-std::u16string DownloadUIModel::GetWebDriveName() const {
-  return std::u16string();
-}
-
-std::u16string DownloadUIModel::GetWebDriveMessage(bool) const {
-  return std::u16string();
 }
 
 base::FilePath DownloadUIModel::GetFileNameToReportUser() const {
@@ -1245,14 +1231,12 @@ bool DownloadUIModel::IsExtensionDownload() const {
 std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
     const {
   DCHECK_EQ(DownloadItem::IN_PROGRESS, model_->GetState());
-  const auto web_drive = model_->GetWebDriveName();
 
   base::TimeDelta time_remaining;
   // time_remaining is only known if the download isn't paused, and it isn't
   // going to be rerouted to a web drive.
   bool time_remaining_known =
-      (!model_->IsPaused() && model_->TimeRemaining(&time_remaining) &&
-       web_drive.empty());
+      (!model_->IsPaused() && model_->TimeRemaining(&time_remaining));
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
   std::u16string size_ratio = GetProgressSizesString();
@@ -1271,7 +1255,7 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
   }
 
   // A download scheduled to be opened when complete: "Opening in 10 secs"
-  if (web_drive.empty() && model_->GetOpenWhenComplete()) {
+  if (model_->GetOpenWhenComplete()) {
     if (!time_remaining_known)
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_OPEN_WHEN_COMPLETE);
 
@@ -1299,10 +1283,6 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
     // bytes: "100/120 MB • Resuming..." or "100 MB • Resuming...", or "100/120
     // MB" or "100 MB"
     return size_ratio;
-  } else if (web_drive.size()) {
-    // If all bytes of the file has been downloaded and it is being rerouted:
-    // "Sending to <WEB_DRIVE>..."
-    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive);
   } else {
     return std::u16string();
   }
@@ -1453,13 +1433,11 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
   if (!warning_status_text.empty())
     return warning_status_text;
 
-  const auto web_drive = model_->GetWebDriveName();
   base::TimeDelta time_remaining;
   // time_remaining is only known if the download isn't paused, and it isn't
   // going to be rerouted to a web drive.
   bool time_remaining_known =
-      (!model_->IsPaused() && model_->TimeRemaining(&time_remaining) &&
-       web_drive.empty());
+      (!model_->IsPaused() && model_->TimeRemaining(&time_remaining));
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
   std::u16string size_ratio = GetProgressSizesString();
@@ -1504,7 +1482,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
 
   // A download scheduled to be opened when complete: "↓ 100/120 MB • Opening in
   // 10 seconds"
-  if (web_drive.empty() && model_->GetOpenWhenComplete()) {
+  if (model_->GetOpenWhenComplete()) {
     if (!time_remaining_known)
       // "100/120 MB • Opening when complete"
       return get_size_ratio_string(
@@ -1533,11 +1511,6 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
     // bytes: "100/120 MB • Resuming..." or "100 MB • Resuming..."
     return get_size_ratio_string(
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING));
-  } else if (web_drive.size()) {
-    // If all bytes of the file has been downloaded and it is being rerouted:
-    // "120 MB • Sending to <WEB_DRIVE>..."
-    return get_total_string(
-        l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive));
   } else {
     // "120 MB • Done"
     return get_total_string(
@@ -1550,11 +1523,6 @@ DownloadUIModel::StatusTextBuilderBase::GetCompletedRemovedOrSavedStatusText()
     const {
   if (model_->GetFileExternallyRemoved()) {
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
-  }
-  const auto web_drive = model_->GetWebDriveName();
-  if (web_drive.size()) {
-    // "Saved to <WEB_DRIVE>"
-    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADED, web_drive);
   }
   return std::u16string();
 }
@@ -1611,11 +1579,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
 std::u16string DownloadUIModel::StatusTextBuilderBase::GetFailStateMessage(
     offline_items_collection::FailState fail_state) const {
   std::u16string state_msg;
-  if (fail_state != FailState::SERVER_FAILED ||
-      (state_msg = model_->GetWebDriveMessage(/* verbose = */ false)).empty()) {
-    return OfflineItemUtils::GetFailStateMessage(fail_state);
-  }
-  return state_msg;
+  return OfflineItemUtils::GetFailStateMessage(fail_state);
 }
 
 void DownloadUIModel::set_clock_for_testing(base::Clock* clock) {
@@ -1647,23 +1611,10 @@ bool DownloadUIModel::IsBubbleV2Enabled() const {
 #endif
 
 std::u16string DownloadUIModel::GetInterruptDescription() const {
-  std::u16string state_description;
   const auto fail_state = GetLastFailState();
-  if (fail_state != FailState::SERVER_FAILED ||
-      (state_description = GetWebDriveMessage(/* verbose = */ true)).empty()) {
-    state_description = FailStateDescription(fail_state);
-  }
-
-  const auto web_drive = GetWebDriveName();
-  if (web_drive.empty()) {
-    // "Failed - <STATE_DESCRIPTION>"
-    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
-                                      state_description);
-  }
-  // else: file was rerouted. Formulate the message string accordingly.
-  // "Fail to save to <WEB_DRIVE> - <STATE_DESCRIPTION>"
-  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED,
-                                    web_drive, state_description);
+  std::u16string state_description = FailStateDescription(fail_state);
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
+                                    state_description);
 }
 
 std::u16string DownloadUIModel::GetHistoryPageStatusText() const {
@@ -1681,15 +1632,7 @@ void DownloadUIModel::StatusTextBuilderBase::SetModel(DownloadUIModel* model) {
 std::u16string DownloadUIModel::StatusTextBuilderBase::GetInterruptedStatusText(
     FailState fail_state) const {
   auto state_msg = GetFailStateMessage(fail_state);
-  const auto web_drive = model_->GetWebDriveName();
-  if (web_drive.empty()) {
-    // "Failed - <STATE_MESSAGE>"
-    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
-                                      state_msg);
-  }
-  // "Fail to save to <WEB_DRIVE> - <STATE_MESSAGE>"
-  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED,
-                                    web_drive, state_msg);
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED, state_msg);
 }
 
 std::u16string
