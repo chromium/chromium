@@ -3569,8 +3569,8 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
     std::string json;
-    base::DictionaryValue local_state;
-    local_state.SetBoolean(prefs::kWasRestarted, true);
+    base::Value::Dict local_state;
+    local_state.SetByDottedPath(prefs::kWasRestarted, true);
     base::JSONWriter::Write(local_state, &json);
     ASSERT_TRUE(base::WriteFile(
         temp_dir_.GetPath().Append(chrome::kLocalStateFilename), json));
