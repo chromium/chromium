@@ -19,6 +19,10 @@ namespace base {
 // `value` the actual tag value.
 void AddTagToTestResult(const std::string& name, const std::string& value);
 
+// Add a "feature_id" tag in gtest xml output.
+// Must be called on the thread where gtest is running the test case.
+void AddFeatureIdTagToTestResult(const std::string& value);
+
 }  // namespace base
 
 #endif  // BASE_TEST_GTEST_TAGS_H_

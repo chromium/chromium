@@ -15,4 +15,8 @@ void AddTagToTestResult(const std::string& name, const std::string& value) {
   XmlUnitTestResultPrinter::Get()->AddTag(name, value);
 }
 
+void AddFeatureIdTagToTestResult(const std::string& value) {
+  AddTagToTestResult("feature_id", value);
+}
+
 }  // namespace base
