@@ -332,7 +332,17 @@ ScriptPromise BaseAudioContext::decodeAudioData(
     // promise with an error.
     exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                       "Cannot decode detached ArrayBuffer");
-  } else if (audio_data->Transfer(isolate, buffer_contents, exception_state)) {
+    // Fall through in order to invoke the error_callback.
+  } else if (!audio_data->Transfer(isolate, buffer_contents, exception_state)) {
+    // Transfer may throw a TypeError, which is not a DOMException. However, the
+    // spec requires throwing a DOMException with kDataCloneError. Hence
+    // re-throw a DOMException.
+    // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-decodeaudiodata
+    exception_state.ClearException();
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      "Cannot transfer the ArrayBuffer");
+    // Fall through in order to invoke the error_callback.
+  } else {  // audio_data->Transfer succeeded.
     DOMArrayBuffer* audio = DOMArrayBuffer::Create(buffer_contents);
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -346,11 +356,16 @@ ScriptPromise BaseAudioContext::decodeAudioData(
 
   // Forward the exception to the callback.
   DCHECK(exception_state.HadException());
-  v8::Local<v8::Value> error = exception_state.GetException();
   if (error_callback) {
-    error_callback->InvokeAndReportException(
-        this, NativeValueTraits<DOMException>::NativeValue(
-                  script_state->GetIsolate(), error, exception_state));
+    // Use of NonThrowableExceptionState:
+    // 1. The exception being thrown must be a DOMException, hence no chance
+    //   for NativeValueTraits<T>::NativeValue to fail.
+    // 2. `exception_state` already holds an exception being thrown and it's
+    //   wrong to throw another exception in `exception_state`.
+    DOMException* dom_exception = NativeValueTraits<DOMException>::NativeValue(
+        isolate, exception_state.GetException(),
+        NonThrowableExceptionState().ReturnThis());
+    error_callback->InvokeAndReportException(this, dom_exception);
   }
 
   return ScriptPromise();
