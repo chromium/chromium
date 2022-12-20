@@ -9,25 +9,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the
  * TouchToFillCreditCard. It is a View in this Model-View-Controller component and doesn't inherit
  * but holds Android Views.
  */
-class TouchToFillCreditCardView implements BottomSheetContent {
+class TouchToFillCreditCardView extends TouchToFillViewBase {
     private final BottomSheetController mBottomSheetController;
-    private final RelativeLayout mContentView;
     private final RecyclerView mSheetItemListView;
     private Callback<Integer> mDismissHandler;
     private Runnable mScanCreditCardHandler;
@@ -59,20 +56,15 @@ class TouchToFillCreditCardView implements BottomSheetContent {
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
     TouchToFillCreditCardView(Context context, BottomSheetController bottomSheetController) {
+        super(bottomSheetController,
+                (RelativeLayout) LayoutInflater.from(context).inflate(
+                        R.layout.touch_to_fill_credit_card_sheet, null));
         mBottomSheetController = bottomSheetController;
-        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
-                R.layout.touch_to_fill_credit_card_sheet, null);
-        // Apply RTL layout changes.
-        int layoutDirection = LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
-                                                              : View.LAYOUT_DIRECTION_LTR;
-        mContentView.setLayoutDirection(layoutDirection);
-        mSheetItemListView = mContentView.findViewById(R.id.sheet_item_list);
-        mSheetItemListView.setLayoutManager(
-                new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        mSheetItemListView = getItemList();
     }
 
     void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
-        View scanCreditCard = mContentView.findViewById(R.id.scan_new_card);
+        View scanCreditCard = getContentView().findViewById(R.id.scan_new_card);
         if (shouldShowScanCreditCard) {
             scanCreditCard.setVisibility(View.VISIBLE);
             scanCreditCard.setOnClickListener(unused -> mScanCreditCardHandler.run());
@@ -96,7 +88,8 @@ class TouchToFillCreditCardView implements BottomSheetContent {
     }
 
     void setShowCreditCardSettingsCallback(Runnable callback) {
-        View managePaymentMethodsButton = mContentView.findViewById(R.id.manage_payment_methods);
+        View managePaymentMethodsButton =
+                getContentView().findViewById(R.id.manage_payment_methods);
         managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }
 
@@ -107,7 +100,10 @@ class TouchToFillCreditCardView implements BottomSheetContent {
      * @return True if the request was successful, false otherwise.
      */
     boolean setVisible(boolean isVisible) {
-        if (!isVisible) {
+        // TODO(crbug.com/1247698): Move this method to the base class.
+        if (isVisible) {
+            remeasure(false);
+        } else {
             mBottomSheetController.hideContent(this, true);
             return true;
         }
@@ -120,71 +116,15 @@ class TouchToFillCreditCardView implements BottomSheetContent {
         return true;
     }
 
-    void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
-        mSheetItemListView.setAdapter(adapter);
-    }
-
+    // TODO(crbug.com/1247698): Move this method to the base class.
     @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     @Override
-    public View getContentView() {
-        return mContentView;
-    }
-
-    @Nullable
-    @Override
-    public View getToolbarView() {
-        return null;
-    }
-
-    @Override
     public int getVerticalScrollOffset() {
-        return 0;
-    }
-
-    @Override
-    public int getPriority() {
-        return BottomSheetContent.ContentPriority.HIGH;
-    }
-
-    @Override
-    public boolean hasCustomScrimLifecycle() {
-        return false;
-    }
-
-    @Override
-    public boolean swipeToDismissEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean skipHalfStateOnScrollingDown() {
-        return false;
-    }
-
-    @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
-    public float getFullHeightRatio() {
-        // TODO(crbug.com/1247698): Calculate proper ratio.
-        return 1.0f;
-    }
-
-    @Override
-    public float getHalfHeightRatio() {
-        // TODO(crbug.com/1247698): Calculate proper ratio.
-        return 0.5f;
-    }
-
-    @Override
-    public boolean hideOnScroll() {
-        return false;
+        return mSheetItemListView.computeVerticalScrollOffset();
     }
 
     @Override
@@ -209,5 +149,37 @@ class TouchToFillCreditCardView implements BottomSheetContent {
     public int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/1247698): Introduce and use proper payments string.
         return android.R.string.ok;
+    }
+
+    @Override
+    protected View getHandlebar() {
+        return getContentView().findViewById(R.id.drag_handlebar);
+    }
+
+    @Override
+    protected View getFooter() {
+        return getContentView().findViewById(R.id.touch_to_fill_footer);
+    }
+
+    @Override
+    protected RecyclerView getItemList() {
+        return getContentView().findViewById(R.id.sheet_item_list);
+    }
+
+    @Override
+    protected int getConclusiveMarginHeightPx() {
+        return getContentView().getResources().getDimensionPixelSize(
+                R.dimen.ttf_for_payments_bottom_padding_button);
+    }
+
+    @Override
+    protected @Px int getSideMarginPx() {
+        return getContentView().getResources().getDimensionPixelSize(
+                R.dimen.ttf_for_payments_sheet_padding);
+    }
+
+    @Override
+    protected int listedItemType() {
+        return TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
     }
 }

@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/android:public_java",
+    "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",

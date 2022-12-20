@@ -23,8 +23,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import static java.util.Arrays.asList;
-
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -83,6 +82,7 @@ public class TouchToFillCreditCardViewTest {
 
     @Before
     public void setupTest() throws InterruptedException {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
@@ -109,6 +109,10 @@ public class TouchToFillCreditCardViewTest {
     @Test
     @MediumTest
     public void testVisibilityChangedByModel() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
+        });
         // After setting the visibility to true, the view should exist and be visible.
         runOnUiThreadBlocking(() -> mTouchToFillCreditCardModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -124,10 +128,11 @@ public class TouchToFillCreditCardViewTest {
     @MediumTest
     public void testCredentialsChangedByModel() {
         runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VISA)));
             mTouchToFillCreditCardModel.set(VISIBLE, true);
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
-                    .addAll(asList(new ListItem(CREDIT_CARD, createCardModel(VISA)),
-                            new ListItem(CREDIT_CARD, createCardModel(MASTER_CARD))));
+                    .add(new ListItem(CREDIT_CARD, createCardModel(MASTER_CARD)));
         });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
