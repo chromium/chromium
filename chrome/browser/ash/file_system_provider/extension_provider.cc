@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_system_provider/event_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
@@ -111,7 +112,7 @@ bool ExtensionProvider::RequestMount(Profile* profile,
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       REQUEST_MOUNT,
-      std::make_unique<MountRequestHandler>(event_router, provider_id_,
+      std::make_unique<MountRequestHandler>(event_dispatcher_.get(),
                                             std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_FAILED);
@@ -127,7 +128,11 @@ ExtensionProvider::ExtensionProvider(
     const ProvidingExtensionInfo& info)
     : provider_id_(ProviderId::CreateFromExtensionId(extension_id)),
       request_manager_(
-          new RequestManager(profile, /*notification_manager=*/nullptr)) {
+          new RequestManager(profile, /*notification_manager=*/nullptr)),
+      event_dispatcher_(std::make_unique<EventDispatcherImpl>(
+          extension_id,
+          extensions::EventRouter::Get(profile),
+          request_manager_.get())) {
   capabilities_.configurable = info.capabilities.configurable();
   capabilities_.watchable = info.capabilities.watchable();
   capabilities_.multiple_mounts = info.capabilities.multiple_mounts();
@@ -144,7 +149,11 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
       capabilities_(std::move(capabilities)),
       name_(std::move(name)),
       request_manager_(
-          new RequestManager(profile, /*notification_manager=*/nullptr)) {
+          new RequestManager(profile, /*notification_manager=*/nullptr)),
+      event_dispatcher_(std::make_unique<EventDispatcherImpl>(
+          provider_id_.GetExtensionId(),
+          extensions::EventRouter::Get(profile),
+          request_manager_.get())) {
   ObserveAppServiceForIcons(profile);
 }
 

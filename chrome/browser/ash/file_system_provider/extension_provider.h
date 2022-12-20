@@ -24,6 +24,8 @@ class ExtensionRegistry;
 namespace ash {
 namespace file_system_provider {
 
+class EventDispatcher;
+
 // Holds information for a providing extension.
 struct ProvidingExtensionInfo {
   ProvidingExtensionInfo();
@@ -79,6 +81,7 @@ class ExtensionProvider : public ProviderInterface,
   std::string name_;
   IconSet icon_set_;
   std::unique_ptr<RequestManager> request_manager_;
+  std::unique_ptr<EventDispatcher> event_dispatcher_;
 };
 
 }  // namespace file_system_provider
