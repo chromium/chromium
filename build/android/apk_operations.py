@@ -188,24 +188,75 @@ def _NormalizeProcessName(debug_process_name, package_name):
   return debug_process_name
 
 
-def _LaunchUrl(devices, package_name, argv=None, command_line_flags_file=None,
-               url=None, apk=None, wait_for_java_debugger=False,
-               debug_process_name=None, nokill=None):
+def _ResolveActivity(device, package_name, category, action):
+  # E.g.:
+  # Activity Resolver Table:
+  #   Schemes:
+  #     http:
+  #       67e97c0 org.chromium.pkg/.MainActivityfilter c91d43e
+  #         Action: "android.intent.action.VIEW"
+  #         Category: "android.intent.category.DEFAULT"
+  #         Category: "android.intent.category.BROWSABLE"
+  #         Scheme: "http"
+  #         Scheme: "https"
+  #
+  #   Non-Data Actions:
+  #     android.intent.action.MAIN:
+  #       67e97c0 org.chromium.pkg/.MainActivity filter 4a34cf9
+  #         Action: "android.intent.action.MAIN"
+  #         Category: "android.intent.category.LAUNCHER"
+  lines = device.RunShellCommand(['dumpsys', 'package', package_name],
+                                 check_return=True)
+
+  # Extract the Activity Resolver Table: section.
+  start_idx = next((i for i, l in enumerate(lines)
+                    if l.startswith('Activity Resolver Table:')), None)
+  if start_idx is None:
+    raise Exception('No Activity Resolver Table in:\n' + '\n'.join(lines))
+  line_count = next(i for i, l in enumerate(lines[start_idx + 1:])
+                    if l and not l[0].isspace())
+  data = '\n'.join(lines[start_idx:start_idx + line_count])
+
+  # Split on each Activity entry.
+  entries = re.split(r'^        [0-9a-f]+ ', data, flags=re.MULTILINE)
+
+  # Find the one with the text we want.
+  category_text = f'Category: "{category}"'
+  action_text = f'Action: "{action}"'
+  matched_entry = next(
+      (e for e in entries[1:] if category_text in e and action_text in e), None)
+  if matched_entry is None:
+    raise Exception(f'Did not find {category_text}, {action_text} in\n{data}')
+
+  assert matched_entry.startswith(package_name), 'Got: ' + matched_entry
+  activity_name = matched_entry[len(package_name) + 1:].split(' ', 1)[0]
+  if activity_name[0] == '.':
+    activity_name = package_name + activity_name
+  return activity_name
+
+
+def _LaunchUrl(devices,
+               package_name,
+               argv=None,
+               command_line_flags_file=None,
+               url=None,
+               wait_for_java_debugger=False,
+               debug_process_name=None,
+               nokill=None):
   if argv and command_line_flags_file is None:
     raise Exception('This apk does not support any flags.')
-  if url:
-    # TODO(agrieve): Launch could be changed to require only package name by
-    #     parsing "dumpsys package" rather than relying on the apk.
-    if not apk:
-      raise Exception('Launching with URL is not supported when using '
-                      '--package-name. Use --apk-path instead.')
-    view_activity = apk.GetViewActivityName()
-    if not view_activity:
-      raise Exception('APK does not support launching with URLs.')
 
   debug_process_name = _NormalizeProcessName(debug_process_name, package_name)
 
+  if url is None:
+    category = 'android.intent.category.LAUNCHER'
+    action = 'android.intent.action.MAIN'
+  else:
+    category = 'android.intent.category.BROWSABLE'
+    action = 'android.intent.action.VIEW'
+
   def launch(device):
+    activity = _ResolveActivity(device, package_name, category, action)
     # --persistent is required to have Settings.Global.DEBUG_APP be set, which
     # we currently use to allow reading of flags. https://crbug.com/784947
     if not nokill:
@@ -228,18 +279,13 @@ def _LaunchUrl(devices, package_name, argv=None, command_line_flags_file=None,
         except device_errors.AdbShellCommandFailedError:
           logging.exception('Failed to set flags')
 
-    if url is None:
-      # Simulate app icon click if no url is present.
-      cmd = [
-          'am', 'start', '-p', package_name, '-c',
-          'android.intent.category.LAUNCHER', '-a', 'android.intent.action.MAIN'
-      ]
-      device.RunShellCommand(cmd, check_return=True)
-    else:
-      launch_intent = intent.Intent(action='android.intent.action.VIEW',
-                                    activity=view_activity, data=url,
-                                    package=package_name)
-      device.StartActivity(launch_intent)
+    launch_intent = intent.Intent(action=action,
+                                  activity=activity,
+                                  data=url,
+                                  package=package_name)
+    logging.info('Sending launch intent for %s', activity)
+    device.StartActivity(launch_intent)
+
   device_utils.DeviceUtils.parallel(devices).pMap(launch)
   if wait_for_java_debugger:
     print('Waiting for debugger to attach to process: ' +
@@ -649,7 +695,7 @@ class _LogcatProcessor:
     # START u0 {act=android.intent.action.MAIN \
     # cat=[android.intent.category.LAUNCHER] \
     # flg=0x10000000 pkg=com.google.chromeremotedesktop} from uid 2000
-    self._start_pattern = re.compile(r'START .*pkg=' + package_name)
+    self._start_pattern = re.compile(r'START .*(?:cmp|pkg)=' + package_name)
 
     self.nonce = 'Chromium apk_operations.py nonce={}'.format(random.random())
     # Holds lines buffered on start-up, before we find our nonce message.
@@ -1403,9 +1449,11 @@ class _LaunchCommand(_Command):
       # TODO(digit): Support this, maybe by using 'dumpsys' as described
       # in the _LaunchUrl() comment.
       raise Exception('Launching with URL not supported for bundles yet!')
-    _LaunchUrl(self.devices, self.args.package_name, argv=self.args.args,
+    _LaunchUrl(self.devices,
+               self.args.package_name,
+               argv=self.args.args,
                command_line_flags_file=self.args.command_line_flags_file,
-               url=self.args.url, apk=self.apk_helper,
+               url=self.args.url,
                wait_for_java_debugger=self.args.wait_for_java_debugger,
                debug_process_name=self.args.debug_process_name,
                nokill=self.args.nokill)
