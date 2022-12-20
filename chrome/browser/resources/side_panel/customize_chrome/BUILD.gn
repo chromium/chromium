@@ -17,6 +17,7 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
+    "cards.ts",
     "shortcuts.ts",
     "categories.ts",
     "check_mark_wrapper.ts",

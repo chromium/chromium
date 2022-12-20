@@ -26,6 +26,15 @@ class SidePanelCustomizeChromeBrowserTest extends PolymerTest {
   };
 }
 
+var SidePanelCustomizeChromeCardsTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/cards_test.js';
+  }
+};
+
 var SidePanelCustomizeChromeShortcutsTest =
     class extends SidePanelCustomizeChromeBrowserTest {
   /** @override */
@@ -106,6 +115,10 @@ var SidePanelCustomizeChromeThemeSnapshotTest =
         '?module=side_panel_customize_chrome/theme_snapshot_test.js';
   }
 };
+
+TEST_F('SidePanelCustomizeChromeCardsTest', 'All', function() {
+  mocha.run();
+});
 
 TEST_F('SidePanelCustomizeChromeShortcutsTest', 'All', function() {
   mocha.run();

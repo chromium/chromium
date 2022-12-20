@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './appearance.js';
+import './cards.js';
 import './categories.js';
 import './shortcuts.js';
 import './themes.js';

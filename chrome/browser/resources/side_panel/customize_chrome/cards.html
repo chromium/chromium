@@ -1,0 +1,88 @@
+<style>
+  .container {
+    width: 320px;
+  }
+
+  #title {
+    font-weight: 500;
+    height: 20px;
+    margin-bottom: 16px;
+  }
+
+  #showToggleContainer {
+    align-items: center;
+    display: flex;
+    height: 20px;
+    margin-bottom: 16px;
+    margin-inline-end: 16px;
+    margin-inline-start: 16px;
+  }
+
+  #showToggleTitle {
+    flex-grow: 1;
+  }
+
+  #cards {
+    display: flex;
+  }
+
+  .card {
+    display: flex;
+    height: 20px;
+    margin-top: 16px;
+  }
+
+  .card-name {
+    flex-grow: 1;
+    margin-inline-start: 24px;
+  }
+
+  .card-checkbox {
+    margin-inline-start: 16px;
+    width: 16px;
+  }
+
+  iron-collapse {
+    --iron-collapse-transition-duration: 300ms;
+    margin-inline-start: 16px;
+  }
+
+  hr {
+    background-color: var(--horizontal-rule-color);
+    border: none;
+    height: 1px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    width: 288px;
+  }
+
+  cr-toggle {
+    margin-inline-start: 16px;
+  }
+</style>
+<div class="container">
+  <div id="showToggleContainer">
+    <div id="showToggleTitle">$i18n{showCardsToggleTitle}</div>
+    <cr-policy-indicator indicator-type="devicePolicy"
+        hidden="[[!managedByPolicy_]]">
+    </cr-policy-indicator>
+    <cr-toggle title="$i18n{showCardsToggleTitle}" checked="[[show_]]"
+        disabled="[[managedByPolicy_]]"
+        on-change="onShowChange_">
+    </cr-toggle>
+  </div>
+  <div id="cards">
+    <iron-collapse opened="[[show_]]">
+      <hr>
+      <template is="dom-repeat" items="[[modules_]]">
+        <div class="card">
+          <div class="card-name">[[item.name]]</div>
+          <cr-checkbox class="card-checkbox" checked="{{item.enabled}}"
+              disabled="[[managedByPolicy_]]"
+              title="[[item.name]]" on-change="onCardStatusChange_">
+          </cr-checkbox>
+        </div>
+      </template>
+    </iron-collapse>
+  </div>
+</div>
