@@ -137,7 +137,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_engagement::kUseClientConfigIPH,
     &feature_guide::features::kFeatureNotificationGuide,
     &feature_guide::features::kSkipCheckForLowEngagedUsers,
-    &feed::kClientGoodVisits,
     &feed::kFeedBackToTop,
     &feed::kFeedHeaderStickToTop,
     &feed::kFeedImageMemoryCacheSizePercentage,

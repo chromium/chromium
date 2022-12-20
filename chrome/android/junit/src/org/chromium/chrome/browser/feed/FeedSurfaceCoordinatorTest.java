@@ -99,8 +99,7 @@ import java.util.ArrayList;
         // default or removed if the flag is removed.
         ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })
-@Features.EnableFeatures(
-        {ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
+@Features.EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;

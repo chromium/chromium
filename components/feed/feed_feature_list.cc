@@ -158,32 +158,6 @@ BASE_FEATURE(kFeedVideoInlinePlayback,
              "FeedVideoInlinePlayback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientGoodVisits,
-             "FeedClientGoodVisits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kVisitTimeout{
-    &kClientGoodVisits, "visit_timeout", base::Minutes(5)};
-
-const base::FeatureParam<base::TimeDelta> kGoodTimeInFeed{
-    &kClientGoodVisits, "good_time_in_feed", base::Minutes(1)};
-
-const base::FeatureParam<base::TimeDelta> kLongOpenTime{
-    &kClientGoodVisits, "long_open_time", base::Seconds(10)};
-
-const base::FeatureParam<base::TimeDelta> kMinStableContentSliceVisibilityTime{
-    &kClientGoodVisits, "min_stable_content_slice_visibility_time",
-    base::Milliseconds(500)};
-
-const base::FeatureParam<base::TimeDelta> kMaxStableContentSliceVisibilityTime{
-    &kClientGoodVisits, "max_stable_content_slice_visibility_time",
-    base::Seconds(30)};
-
-const base::FeatureParam<double> kSliceVisibleExposureThreshold{
-    &kClientGoodVisits, "slice_exposure_threshold", 0.5f};
-
-const base::FeatureParam<double> kSliceVisibleCoverageThreshold{
-    &kClientGoodVisits, "slice_coverage_threshold", 0.25f};
 BASE_FEATURE(kFeedExperimentIDTagging,
              "FeedExperimentIDTagging",
              base::FEATURE_ENABLED_BY_DEFAULT);

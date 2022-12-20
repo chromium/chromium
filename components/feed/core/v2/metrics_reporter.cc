@@ -58,6 +58,23 @@ constexpr base::TimeDelta kOpenTimeout = base::Seconds(20);
 // timeout.
 constexpr base::TimeDelta kTimeSpentInFeedInteractionTimeout =
     base::Seconds(30);
+// The maximum time between sequential interactions with the feed that are
+// considered as a single visit.
+constexpr base::TimeDelta kVisitTimeout = base::Minutes(5);
+// A feed visit is "good" if the user spends at least this much time in the feed
+// and scrolls at least once.
+constexpr base::TimeDelta kGoodTimeInFeed = base::Minutes(1);
+// A feed visit is "good" if the user spends at least this much time in an
+// article.
+constexpr base::TimeDelta kLongOpenTime = base::Seconds(10);
+// When calculating time spent in feed for good visits, drop periods of
+// viewport-stable feed viewing shorter than this.
+constexpr base::TimeDelta kMinStableContentSliceVisibilityTime =
+    base::Milliseconds(500);
+// When calculating time spent in feed for good visits, cap long periods of
+// viewport-stable feed viewing to this time.
+constexpr base::TimeDelta kMaxStableContentSliceVisibilityTime =
+    base::Seconds(30);
 
 base::StringPiece HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
@@ -338,11 +355,7 @@ MetricsReporter::SurfaceWaiting& MetricsReporter::SurfaceWaiting::operator=(
     SurfaceWaiting&&) = default;
 
 MetricsReporter::MetricsReporter(PrefService* profile_prefs)
-    : profile_prefs_(profile_prefs),
-      good_visit_state_(
-          base::FeatureList::IsEnabled(kClientGoodVisits)
-              ? absl::make_optional<GoodVisitState>(persistent_data_)
-              : absl::nullopt) {
+    : profile_prefs_(profile_prefs), good_visit_state_(persistent_data_) {
   persistent_data_ = prefs::GetPersistentMetricsData(*profile_prefs_);
   ReportPersistentDataIfDayIsDone();
 }
@@ -437,7 +450,7 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
   scroll_distance_dp = std::abs(scroll_distance_dp);
   // Determine if this interaction is part of a new feed 'visit'.
   base::TimeTicks now = base::TimeTicks::Now();
-  if (now - visit_start_time_ > kVisitTimeout.Get()) {
+  if (now - visit_start_time_ > kVisitTimeout) {
     FinalizeVisit();
   }
   // Reset the last active time for visit measurement.
@@ -520,8 +533,7 @@ void MetricsReporter::StreamScrolled(const StreamType& stream_type,
     }
   }
 
-  if (good_visit_state_)
-    good_visit_state_->OnScroll();
+  good_visit_state_.OnScroll();
 }
 
 void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
@@ -577,8 +589,7 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
     load_latencies_ = nullptr;
   }
   ReportOpenFeedIfNeeded(surface_id, true);
-  if (good_visit_state_)
-    good_visit_state_->ExtendOrStartNewVisit();
+  good_visit_state_.ExtendOrStartNewVisit();
 }
 
 void MetricsReporter::OpenAction(const StreamType& stream_type,
@@ -604,16 +615,14 @@ void MetricsReporter::OpenAction(const StreamType& stream_type,
   }
   ReportContentSuggestionsOpened(stream_type, index_in_stream);
   RecordInteraction(stream_type);
-  if (good_visit_state_)
-    good_visit_state_->ExtendOrStartNewVisit();
+  good_visit_state_.ExtendOrStartNewVisit();
 }
 
 void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
   base::UmaHistogramLongTimes("ContentSuggestions.Feed.VisitDuration",
                               visit_time);
 
-  if (good_visit_state_)
-    good_visit_state_->OnOpenComplete(visit_time);
+  good_visit_state_.OnOpenComplete(visit_time);
 }
 
 void MetricsReporter::PageLoaded() {
@@ -624,8 +633,9 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
                                       FeedUserActionType action_type) {
   VVLOG << "Feed OtherUserAction " << stream_type << " id=" << action_type;
 
-  if (good_visit_state_ && IsGoodExplicitInteraction(action_type))
-    good_visit_state_->OnGoodExplicitInteraction();
+  if (IsGoodExplicitInteraction(action_type)) {
+    good_visit_state_.OnGoodExplicitInteraction();
+  }
 
   ReportUserActionHistogram(action_type);
   switch (action_type) {
@@ -769,8 +779,7 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
 
 void MetricsReporter::ReportStableContentSliceVisibilityTimeForGoodVisits(
     base::TimeDelta delta) {
-  if (good_visit_state_)
-    good_visit_state_->AddTimeInFeed(delta);
+  good_visit_state_.AddTimeInFeed(delta);
 }
 
 void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
@@ -1260,8 +1269,9 @@ MetricsReporter::GoodVisitState::GoodVisitState(PersistentMetricsData& data)
 void MetricsReporter::GoodVisitState::OnScroll() {
   ExtendOrStartNewVisit();
   data_.did_scroll_in_visit = true;
-  if (data_.time_in_feed_for_good_visit >= kGoodTimeInFeed.Get())
+  if (data_.time_in_feed_for_good_visit >= kGoodTimeInFeed) {
     MaybeReportGoodVisit();
+  }
 }
 
 void MetricsReporter::GoodVisitState::OnGoodExplicitInteraction() {
@@ -1271,16 +1281,18 @@ void MetricsReporter::GoodVisitState::OnGoodExplicitInteraction() {
 
 void MetricsReporter::GoodVisitState::OnOpenComplete(
     base::TimeDelta open_duration) {
-  if (open_duration >= kLongOpenTime.Get())
+  if (open_duration >= kLongOpenTime) {
     MaybeReportGoodVisit();
+  }
 }
 
 void MetricsReporter::GoodVisitState::ExtendOrStartNewVisit() {
   const base::Time now = base::Time::Now();
 
   // Reset visit state if enough time has passed since visit_end_.
-  if (now - data_.visit_end >= kVisitTimeout.Get())
+  if (now - data_.visit_end >= kVisitTimeout) {
     Reset();
+  }
 
   if (data_.visit_start == base::Time())
     data_.visit_start = now;
@@ -1288,17 +1300,19 @@ void MetricsReporter::GoodVisitState::ExtendOrStartNewVisit() {
 }
 
 void MetricsReporter::GoodVisitState::AddTimeInFeed(base::TimeDelta time) {
-  if (time < kMinStableContentSliceVisibilityTime.Get())
+  if (time < kMinStableContentSliceVisibilityTime) {
     return;
+  }
 
-  if (time > kMaxStableContentSliceVisibilityTime.Get())
-    time = kMaxStableContentSliceVisibilityTime.Get();
+  if (time > kMaxStableContentSliceVisibilityTime) {
+    time = kMaxStableContentSliceVisibilityTime;
+  }
 
   ExtendOrStartNewVisit();
 
   data_.time_in_feed_for_good_visit += time;
   if (data_.did_scroll_in_visit &&
-      data_.time_in_feed_for_good_visit >= kGoodTimeInFeed.Get()) {
+      data_.time_in_feed_for_good_visit >= kGoodTimeInFeed) {
     MaybeReportGoodVisit();
   }
 }

@@ -132,31 +132,6 @@ BASE_DECLARE_FEATURE(kFeedReplaceAll);
 // When enabled, play the feed video via inline playback.
 BASE_DECLARE_FEATURE(kFeedVideoInlinePlayback);
 
-// When enabled, compute Good Visits locally and log them to a histogram.
-BASE_DECLARE_FEATURE(kClientGoodVisits);
-// The maximum time between sequential interactions with the feed that are
-// considered as a single visit.
-extern const base::FeatureParam<base::TimeDelta> kVisitTimeout;
-// A feed visit is "good" if the user spends at least this much time in the feed
-// and scrolls at least once.
-extern const base::FeatureParam<base::TimeDelta> kGoodTimeInFeed;
-// A feed visit is "good" if the user spends at least this much time in an
-// article.
-extern const base::FeatureParam<base::TimeDelta> kLongOpenTime;
-// When calculating time spent in feed for good visits, drop periods of
-// viewport-stable feed viewing shorter than this.
-extern const base::FeatureParam<base::TimeDelta>
-    kMinStableContentSliceVisibilityTime;
-// When calculating time spent in feed for good visits, cap long periods of
-// viewport-stable feed viewing to this time.
-extern const base::FeatureParam<base::TimeDelta>
-    kMaxStableContentSliceVisibilityTime;
-// Minimum slice exposure needed for counting time in feed for good visits.
-extern const base::FeatureParam<double> kSliceVisibleExposureThreshold;
-// Minimum slice coverage of viewport needed for counting time in feed for good
-// visits.
-extern const base::FeatureParam<double> kSliceVisibleCoverageThreshold;
-
 // When enabled, allow tagging experiments with only an experiment ID.
 BASE_DECLARE_FEATURE(kFeedExperimentIDTagging);
 

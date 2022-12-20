@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.ArrayList;
@@ -57,10 +56,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     // changes. Each item in the waicther list consists of the view threshold percentage and the
     // callback.
     private HashMap<String, ArrayList<VisibilityObserver>> mWatchedSliceMap = new HashMap<>();
-    private boolean mTrackTimeForGoodVisits;
-    // Thresholds for counting a view as visible for calculating time spent in feed for good visits.
-    private float mGoodVisitExposureThreshold;
-    private float mGoodVisitCoverageThreshold;
     // Timestamp for keeping track of time spent in feed for good visits.
     private long mLastGoodVisibleTime;
 
@@ -84,17 +79,6 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         mContentManager = contentManager;
         mLayoutHelper = layoutHelper;
         mObserver = observer;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CLIENT_GOOD_VISITS)) {
-            mTrackTimeForGoodVisits = true;
-            mGoodVisitExposureThreshold =
-                    (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                            ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, "slice_exposure_threshold",
-                            GOOD_VISITS_EXPOSURE_THRESHOLD);
-            mGoodVisitCoverageThreshold =
-                    (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                            ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, "slice_coverage_threshold",
-                            GOOD_VISITS_COVERAGE_THRESHOLD);
-        }
     }
 
     /** Attaches the tracker to the root view. */
@@ -214,11 +198,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                 }
             }
 
-            if (mTrackTimeForGoodVisits) {
-                countTimeForGoodVisits = countTimeForGoodVisits
-                        || isViewVisible(childView, mGoodVisitExposureThreshold)
-                        || isViewCoveringViewport(childView, mGoodVisitCoverageThreshold);
-            }
+            countTimeForGoodVisits = countTimeForGoodVisits
+                    || isViewVisible(childView, GOOD_VISITS_EXPOSURE_THRESHOLD)
+                    || isViewCoveringViewport(childView, GOOD_VISITS_COVERAGE_THRESHOLD);
 
             if (mContentKeysVisible.contains(contentKey)
                     || !isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
@@ -229,11 +211,9 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
             mObserver.sliceVisible(contentKey);
         }
 
-        if (mTrackTimeForGoodVisits) {
-            reportTimeForGoodVisitsIfNeeded();
-            if (countTimeForGoodVisits) {
-                mLastGoodVisibleTime = SystemClock.elapsedRealtime();
-            }
+        reportTimeForGoodVisitsIfNeeded();
+        if (countTimeForGoodVisits) {
+            mLastGoodVisibleTime = SystemClock.elapsedRealtime();
         }
 
         return true;

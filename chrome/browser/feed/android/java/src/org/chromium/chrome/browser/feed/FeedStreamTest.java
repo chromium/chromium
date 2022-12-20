@@ -173,7 +173,6 @@ public class FeedStreamTest {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
         overrides.put(ChromeFeatureList.WEB_FEED_ONBOARDING, onboardingOn);
-        overrides.put(ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, true);
         FeatureList.setTestFeatures(overrides);
     }
 

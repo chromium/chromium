@@ -53,7 +53,6 @@ const MetricsReporter::LoadStreamResultSummary result_summary =
 class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kClientGoodVisits);
     feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
     feed::RegisterProfilePrefs(profile_prefs_.registry());
 
@@ -1501,56 +1500,6 @@ TEST_F(MetricsReporterTest, GoodVisit_LargeTimesCapped) {
       FeedEngagementType::kGoodVisit, 1);
 }
 
-TEST_F(MetricsReporterTest, GoodVisit_SmallTimesParam) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kClientGoodVisits,
-      {{"min_stable_content_slice_visibility_time", "200ms"}});
-  // Reach 59.9 seconds and a scroll.
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(30));
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(29) + base::Milliseconds(900));
-  reporter_->StreamScrolled(StreamType(StreamKind::kForYou), 1);
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Milliseconds(150));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Milliseconds(201));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-}
-
-TEST_F(MetricsReporterTest, GoodVisit_LargeTimesParam) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kClientGoodVisits, {{"max_stable_content_slice_visibility_time", "40s"}});
-  reporter_->StreamScrolled(StreamType(StreamKind::kForYou), 1);
-  // Capped to 40 seconds.
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(61));
-  // 59 seconds so far.
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(19));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(2));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-}
-
 TEST_F(MetricsReporterTest, GoodVisit_GoodExplicitInteraction_Share) {
   reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
                              FeedUserActionType::kShare);
@@ -1612,39 +1561,6 @@ TEST_F(MetricsReporterTest, GoodVisit_LongClick) {
       FeedEngagementType::kGoodVisit, 1);
 }
 
-TEST_F(MetricsReporterTest, GoodVisit_LongClickParam) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(kClientGoodVisits,
-                                                  {{"long_open_time", "15s"}});
-  reporter_->OpenVisitComplete(base::Seconds(14));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  reporter_->OpenVisitComplete(base::Seconds(15));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-}
-
-TEST_F(MetricsReporterTest, GoodVisit_GoodTimeInFeedParam) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kClientGoodVisits, {{"good_time_in_feed", "45s"}});
-
-  reporter_->StreamScrolled(StreamType(StreamKind::kForYou), 1);
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(30));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(15));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-}
-
 TEST_F(MetricsReporterTest, GoodVisit_OnlyLoggedOncePerVisit) {
   // Start with a good visit.
   reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
@@ -1668,55 +1584,6 @@ TEST_F(MetricsReporterTest, GoodVisit_OnlyLoggedOncePerVisit) {
   histogram_.ExpectBucketCount(
       "ContentSuggestions.Feed.AllFeeds.EngagementType",
       FeedEngagementType::kGoodVisit, 2);
-}
-
-TEST_F(MetricsReporterTest, GoodVisit_VisitTimeoutParam) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(kClientGoodVisits,
-                                                  {{"visit_timeout", "120s"}});
-  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
-                             FeedUserActionType::kShare);
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-
-  task_environment_.FastForwardBy(base::Minutes(2));
-  // A new visit has started and can be a good visit.
-  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
-                             FeedUserActionType::kShare);
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 2);
-}
-
-TEST_F(MetricsReporterTest, GoodVisit_DisableGoodVisits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kClientGoodVisits);
-  RecreateMetricsReporter();
-
-  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
-                             FeedUserActionType::kShare);
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  task_environment_.FastForwardBy(base::Minutes(5));
-
-  reporter_->OpenVisitComplete(base::Seconds(15));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
-
-  task_environment_.FastForwardBy(base::Minutes(5));
-
-  reporter_->StreamScrolled(StreamType(StreamKind::kForYou), 1);
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(30));
-  reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
-      base::Seconds(30));
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 0);
 }
 
 TEST_F(MetricsReporterTest, GoodVisitStateIsPersistent) {

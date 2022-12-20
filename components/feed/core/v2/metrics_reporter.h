@@ -273,7 +273,7 @@ class MetricsReporter {
     // GoodVisitState.
     PersistentMetricsData& data_;
   };
-  absl::optional<GoodVisitState> good_visit_state_;
+  GoodVisitState good_visit_state_;
 
   base::WeakPtrFactory<MetricsReporter> weak_ptr_factory_{this};
 };

@@ -43,9 +43,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.Arrays;
@@ -90,10 +88,6 @@ public class FeedSliceViewTrackerTest {
 
     @Before
     public void setUp() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, true);
-        FeatureList.setTestValues(testValues);
-
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
         mContentManager = new NtpListContentManager();
