@@ -814,7 +814,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   WebContents* rp_web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
-  DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
+  // RenderFrameHost should be in the primary page (ex not in the BFCache).
+  DCHECK(render_frame_host().GetPage().IsPrimary());
 
   bool screen_reader_is_on = rp_web_contents->GetAccessibilityMode().has_mode(
       ui::AXMode::kScreenReader);
@@ -1378,9 +1379,7 @@ bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediately() {
 }
 
 url::Origin FederatedAuthRequestImpl::GetEmbeddingOrigin() const {
-  RenderFrameHost* main_frame = render_frame_host().GetMainFrame();
-  DCHECK(main_frame->IsInPrimaryMainFrame());
-  return main_frame->GetLastCommittedOrigin();
+  return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(
