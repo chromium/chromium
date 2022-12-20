@@ -24,8 +24,6 @@
 
 namespace blink {
 
-class MediaStreamVideoTrackSignalObserver;
-
 // MediaStreamVideoTrack is a video-specific representation of a
 // MediaStreamTrackPlatform. It is owned by a MediaStreamComponent
 // and can be retrieved using MediaStreamComponent::GetPlatformTrack().
@@ -181,9 +179,6 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
 
-  MediaStreamVideoTrackSignalObserver* SignalObserver();
-  void SetSignalObserver(MediaStreamVideoTrackSignalObserver* observer);
-
   bool IsRefreshFrameTimerRunningForTesting() {
     return refresh_timer_.IsRunning();
   }
@@ -249,8 +244,6 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   absl::optional<double> computed_frame_rate_;
   media::VideoCaptureFormat computed_source_format_;
   base::RepeatingTimer refresh_timer_;
-
-  WeakPersistent<MediaStreamVideoTrackSignalObserver> signal_observer_;
 
   base::WeakPtrFactory<MediaStreamVideoTrack> weak_factory_{this};
 };
