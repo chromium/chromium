@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -58,8 +57,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogLaunchContext;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
@@ -782,16 +779,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         RecordUserAction.record("MobileNTPShown");
         mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
         SuggestionsMetrics.recordSurfaceVisible();
-
-        // TODO(https://crbug.com/1330704): Find a way to decouple this.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
-            // Once the NTP is loaded, launch the Privacy Sandbox prompt, if needed. This will only
-            // be displayed to the user one time.
-            PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE, mContext, mSettingsLauncher,
-                    /*isIncognito=*/false, // NTP is not displayed in incognito.
-                    mBottomSheetController);
-        }
 
         FeatureNotificationUtils.registerIPHCallback(FeatureType.VOICE_SEARCH,
                 mNewTabPageLayout::maybeShowFeatureNotificationVoiceSearchIPH);
