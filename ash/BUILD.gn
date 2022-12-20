@@ -1576,6 +1576,8 @@ component("ash") {
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
     "system/phonehub/app_stream_launcher_item.cc",
     "system/phonehub/app_stream_launcher_item.h",
+    "system/phonehub/app_stream_launcher_list_item.cc",
+    "system/phonehub/app_stream_launcher_list_item.h",
     "system/phonehub/app_stream_launcher_view.cc",
     "system/phonehub/app_stream_launcher_view.h",
     "system/phonehub/bluetooth_disabled_view.cc",
