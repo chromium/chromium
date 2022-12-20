@@ -286,6 +286,11 @@ vars = {
   # Rust toolchain.
   'checkout_rust_toolchain_deps': False,
 
+  # The Rust toolchain sources. It is a version tag from an instance of the
+  # CIPD `chromium/third_party/rust_src` package. This field is written by
+  # //tools/clang/scripts/upload_revision.py and shouldn't be updated by hand.
+  'rust_toolchain_version': 'version:2@2022-12-09',
+
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
@@ -580,7 +585,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/third_party/rust_src',
-        'version': 'version:2@2022-12-09',
+        'version': Var('rust_toolchain_version'),
       },
     ],
     'dep_type': 'cipd',

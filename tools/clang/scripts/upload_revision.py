@@ -17,14 +17,44 @@ import re
 import shutil
 import subprocess
 import sys
+import urllib3
 
 from build import CheckoutLLVM, GetCommitDescription, LLVM_DIR
 from update import CHROMIUM_DIR
 
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
-UPDATE_PY_PATH = os.path.join(THIS_DIR, "update.py")
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
+CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
+RUST_UPDATE_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
+                                   'update_rust.py')
+DEPS_PATH = os.path.join(CHROMIUM_DIR, 'DEPS')
+
+# URL prefix for LLVM git diff ranges.
+GOB_LLVM_URL = 'https://chromium.googlesource.com/external/github.com/llvm/llvm-project'
+
+# Constants for finding HEAD.
+CLANG_URL = 'https://api.github.com/repos/llvm/llvm-project/git/refs/heads/main'
+CLANG_REGEX = b'"sha":"([^"]+)"'
+RUST_CIPD_PATH = 'chromium/third_party/rust_src'
+RUST_INSTANCES_REGEX = bytes('([0-9A-Za-z-_]+) │ .*? latest\W*\n', 'utf-8')
+RUST_CIPD_VERSION_REGEX = '([0-9]+)@([0-9]{4})-([0-9]{2})-([0-9]{2})'
+RUST_CIPD_DESCRIBE_REGEX = f'version:({RUST_CIPD_VERSION_REGEX})'.encode(
+    'utf-8')
+
+# Constant for updating the DEPS file for fetching the right Rust sources.
+DEPS_RUST_SRC_SEARCH_REGEX = (
+    '\'rust_toolchain_version\': \'version:(([0-9]+)@(.+?))\'')
+DEPS_RUST_SRC_REPLACE_STRING = (
+    '\'rust_toolchain_version\': \'version:{VERSION}\'')
+
+# Bots where we build Clang + Rust.
+BOTS = [
+    'linux_upload_clang',
+    'mac_upload_clang',
+    'mac_upload_clang_arm',
+    'win_upload_clang',
+]
 
 # Keep lines in here at <= 72 columns, else they wrap in gerrit.
 COMMIT_FOOTER = \
@@ -49,85 +79,335 @@ Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
+Cq-Include-Trybots: luci.chromium.try:android-rust-arm-dbg
+Cq-Include-Trybots: luci.chromium.try:android-rust-arm-rel
+Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-dbg
+Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-rel
 '''
 
 is_win = sys.platform.startswith('win32')
 
 
-def PatchRevision(clang_git_revision, clang_sub_revision):
-  with open(UPDATE_PY_PATH) as f:
-    content = f.read()
-  m = re.search("CLANG_REVISION = '([0-9a-z-]+)'", content)
-  clang_old_git_revision = m.group(1)
-  m = re.search("CLANG_SUB_REVISION = ([0-9]+)", content)
-  clang_old_sub_revision = m.group(1)
+class RustVersion:
+  """Holds the nightly Rust version in an explicit format."""
 
-  content = re.sub("CLANG_REVISION = '[0-9a-z-]+'",
-                   "CLANG_REVISION = '{}'".format(clang_git_revision),
+  def __init__(self, cipd_tag: int, year: int, month: int, day: int,
+               sub_revision: int):
+    self.cipd_tag = cipd_tag
+    self.year = year
+    self.month = month
+    self.day = day
+    self.sub_revision = sub_revision
+
+  def from_cipd_date(cipd_date: str, sub_revision: SystemError):
+    """The `cipd_date` has the format `TAG@YYYY-MM-DD`."""
+    m = re.search(str(RUST_CIPD_VERSION_REGEX), cipd_date)
+    assert len(m.groups()) == 4, "Rust date format expected TAG@YYYY-MM-DD"
+    cipd_tag = int(m.group(1))
+    year = int(m.group(2))
+    month = int(m.group(3))
+    day = int(m.group(4))
+    return RustVersion(cipd_tag, year, month, day, int(sub_revision))
+
+  def from_date_without_dashes(cipd_tag: str, date_without_dashes: str,
+                               sub_revision: str):
+    """The `date_with_dashes` has the format `YYYYMMDD`."""
+    m = re.search('([0-9]{4})([0-9]{2})([0-9]{2})', date_without_dashes)
+    assert len(m.groups()) == 3, "Rust date format expected YYYYMMDD"
+    year = int(m.group(1))
+    month = int(m.group(2))
+    day = int(m.group(3))
+    return RustVersion(int(cipd_tag), year, month, day, int(sub_revision))
+
+  def string_with_dashes(self, with_tag: bool = False) -> str:
+    s = ''
+    if with_tag:
+      s += f'{self.cipd_tag}@'
+    s += f'{self.year:04}-{self.month:02}-{self.day:02}'
+    return s
+
+  def string_without_dashes(self,
+                            with_tag: bool = False,
+                            with_sub_revision: bool = False) -> str:
+    s = ''
+    if with_tag:
+      s += f'{self.cipd_tag}@'
+    s += f'{self.year:04}{self.month:02}{self.day:02}'
+    if with_sub_revision:
+      s += f'-{self.sub_revision}'
+    return s
+
+  def __str__(self) -> str:
+    """A string containing the Rust version and sub revision.
+
+    The string is useful for humans, it contains all info needed to identify
+    the Rust version being built. It is also unique to a given Rust version and
+    subversion.
+    """
+    return self.string_without_dashes(with_tag=True, with_sub_revision=True)
+
+  def __eq__(self, o) -> bool:
+    return (self.cipd_tag == o.cipd_tag and self.year == o.year
+            and self.month == o.month and self.day == o.day
+            and self.sub_revision == o.sub_revision)
+
+
+class ClangVersion:
+  """Holds the Clang version in an explicit format."""
+
+  def __init__(self, git_describe: str, sub_revision: str):
+    self.git_describe = git_describe
+    self.short_git_hash = re.search('-g([0-9a-f]+)', git_describe).group(1)
+    self.sub_revision = int(sub_revision)
+
+  def __str__(self) -> str:
+    """A string containing the Clang version and sub revision.
+
+    The string is useful for humans, it contains all info needed to identify
+    the Clang version being built. It is also unique to a given Clang version
+    and subversion.
+    """
+    return f'{self.git_describe}-{self.sub_revision}'
+
+  def __eq__(self, o) -> bool:
+    return (self.git_describe == o.git_describe
+            and self.sub_revision == o.sub_revision)
+
+
+def GetLatestClangGitHash():
+  http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED")
+  resp = http.request('GET', CLANG_URL)
+  if resp.status != 200:
+    raise RuntimeError(f'Unable to download {CLANG_URL}: status {resp.status}')
+  m = re.search(CLANG_REGEX, resp.data)
+  return m.group(1).decode('utf-8')
+
+
+def GetLatestRustVersion(sub_revision: int):
+  cmd = ['cipd', 'instances', RUST_CIPD_PATH]
+  output = subprocess.check_output(cmd)
+  m = re.search(RUST_INSTANCES_REGEX, output)
+  instance = m.group(1).decode('utf-8')
+  if not instance:
+    raise RuntimeError(f'No "latest" found in `{" ".join(cmd)}`')
+
+  cmd = ['cipd', 'describe', RUST_CIPD_PATH, '-version', instance]
+  output = subprocess.check_output(cmd)
+  m = re.search(RUST_CIPD_DESCRIBE_REGEX, output)
+  return RustVersion.from_cipd_date(m.group(1).decode('utf-8'), sub_revision)
+
+
+def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
+  with open(CLANG_UPDATE_PY_PATH) as f:
+    content = f.read()
+
+  REV = '\'([0-9a-z-]+)\''
+  SUB_REV = '([0-9]+)'
+
+  git_describe = re.search(f'CLANG_REVISION = {REV}', content).group(1)
+  sub_revision = re.search(f'CLANG_SUB_REVISION = {SUB_REV}', content).group(1)
+  old_version = ClangVersion(git_describe, sub_revision)
+
+  content = re.sub(f'CLANG_REVISION = {REV}',
+                   f'CLANG_REVISION = \'{new_version.git_describe}\'',
                    content,
                    count=1)
-  content = re.sub("CLANG_SUB_REVISION = [0-9]+",
-                   "CLANG_SUB_REVISION = {}".format(clang_sub_revision),
-                   content, count=1)
-  with open(UPDATE_PY_PATH, 'w') as f:
+  content = re.sub(f'CLANG_SUB_REVISION = {SUB_REV}',
+                   f'CLANG_SUB_REVISION = {new_version.sub_revision}',
+                   content,
+                   count=1)
+
+  with open(CLANG_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
-  return "{}-{}".format(clang_old_git_revision, clang_old_sub_revision)
+
+  return old_version
 
 
-def Git(args):
-  # Needs shell=True on Windows due to git.bat in depot_tools.
-  subprocess.check_call(["git"] + args, shell=is_win)
+def PatchRustRevision(new_version: RustVersion) -> RustVersion:
+  with open(RUST_UPDATE_PY_PATH) as f:
+    content = f.read()
+
+  REV = '\'([0-9]+)\''
+  SUB_REV = '([0-9]+)'
+  TAG = '\'([0-9]+)\''
+
+  tag = re.search(f'RUST_REVISION_TAG = {TAG}', content).group(1)
+  date = re.search(f'RUST_REVISION = {REV}', content).group(1)
+  sub_revision = re.search(f'RUST_SUB_REVISION = {SUB_REV}', content).group(1)
+  old_version = RustVersion.from_date_without_dashes(tag, date, sub_revision)
+
+  content = re.sub(f'RUST_REVISION_TAG = {TAG}',
+                   f'RUST_REVISION_TAG = \'{new_version.cipd_tag}\'',
+                   content,
+                   count=1)
+  content = re.sub(f'RUST_REVISION = {REV}',
+                   f'RUST_REVISION = \'{new_version.string_without_dashes()}\'',
+                   content,
+                   count=1)
+  content = re.sub(f'RUST_SUB_REVISION = {SUB_REV}',
+                   f'RUST_SUB_REVISION = {new_version.sub_revision}',
+                   content,
+                   count=1)
+
+  with open(RUST_UPDATE_PY_PATH, 'w') as f:
+    f.write(content)
+
+  with open(DEPS_PATH, 'r') as f:
+    deps = f.read()
+
+  DATE = '([0-9-]+)'
+
+  old_deps_match = re.search(DEPS_RUST_SRC_SEARCH_REGEX, deps)
+  assert len(old_deps_match.groups()
+             ) == 3, 'Unable to find `rust_toolchain_version` in //DEPS file.'
+  assert old_deps_match.group(1) == old_version.string_with_dashes(
+      with_tag=True), (
+          f'The Rust version from {RUST_UPDATE_PY_PATH} does not match '
+          '`rust_toolchain_version` in //DEPS file. They should always match.')
+
+  deps = re.sub(DEPS_RUST_SRC_SEARCH_REGEX,
+                DEPS_RUST_SRC_REPLACE_STRING.format(
+                    VERSION=new_version.string_with_dashes(with_tag=True)),
+                deps,
+                count=1)
+
+  with open(DEPS_PATH, 'w') as f:
+    f.write(deps)
+
+  return old_version
+
+
+def Git(*args, no_run: bool):
+  """Runs a git command, or just prints it out if `no_run` is True."""
+  if no_run:
+    print('\033[91m', end='')  # Color red
+    print('Skipped running: ', end='')
+    print('\033[0m', end='')  # No color
+    print(*['git'] + [f'\'{i}\'' for i in list(args)], end='')
+    print()
+  else:
+    # Needs shell=True on Windows due to git.bat in depot_tools.
+    subprocess.check_call(['git'] + list(args), shell=is_win)
+
 
 def main():
   parser = argparse.ArgumentParser(description='upload new clang revision')
-  parser.add_argument('clang_git_revision', nargs=1,
-                      help='Clang git revision to build the toolchain for.')
-  parser.add_argument('clang_sub_revision',
-                      type=int, nargs='?', default=1,
-                      help='Clang sub-revision to build the toolchain for.')
+  # TODO(crbug.com/1401042): Remove this when the cron job doesn't pass a SHA.
+  parser.add_argument(
+      'ignored',
+      nargs='?',
+      help='Ignored argument to handle the cron job passing a clang SHA')
+  parser.add_argument('--clang-git-hash',
+                      type=str,
+                      metavar='SHA1',
+                      help='Clang git hash to build the toolchain for.')
+  parser.add_argument(
+      '--clang-sub-revision',
+      type=int,
+      default=1,
+      metavar='NUM',
+      help='Clang sub-revision to build the toolchain for. Defaults to 1.')
+  parser.add_argument(
+      '--rust-cipd-version',
+      type=str,
+      metavar='TAG@YYYY-MM-DD',
+      help=
+      ('Rust version to build the toolchain for. The version string comes from '
+       '`cipd describe chromium/third_party/rust_src -version <INSTANCE>`, '
+       'where the <INSTANCE> comes from '
+       '`cipd instances chromium/third_party/rust_src`'))
+  parser.add_argument(
+      '--rust-sub-revision',
+      type=int,
+      default=1,
+      metavar='NUM',
+      help='Rust sub-revision to build the toolchain for. Defaults to 1.')
+  parser.add_argument(
+      '--no-git',
+      action='store_true',
+      default=False,
+      help=('Print out `git` commands instead of running them. Still generates '
+            'a local diff for debugging purposes.'))
 
   args = parser.parse_args()
 
-  clang_raw_git_revision = args.clang_git_revision[0]
+  if args.clang_git_hash:
+    clang_git_hash = args.clang_git_hash
+  else:
+    clang_git_hash = GetLatestClangGitHash()
 
-  # To `git describe`, we need a checkout.
-  CheckoutLLVM(clang_raw_git_revision, LLVM_DIR)
-  clang_git_revision = GetCommitDescription(clang_raw_git_revision)
-  clang_sub_revision = args.clang_sub_revision
-
+  # To `GetCommitDescription()`, we need a checkout. On success, the
+  # CheckoutLLVM() makes `LLVM_DIR` be the current working directory, so that
+  # we can GetCommitDescription() without changing directory.
+  CheckoutLLVM(clang_git_hash, LLVM_DIR)
+  clang_version = ClangVersion(GetCommitDescription(clang_git_hash),
+                               args.clang_sub_revision)
   os.chdir(CHROMIUM_DIR)
 
-  print("Making a patch for Clang {}-{}".format(clang_git_revision,
-                                                clang_sub_revision))
+  if args.rust_cipd_version:
+    rust_version = RustVersion.from_cipd_date(args.rust_cipd_version,
+                                              args.rust_sub_revision)
+  else:
+    rust_version = GetLatestRustVersion(args.rust_sub_revision)
 
-  rev_string = "{}-{}".format(clang_git_revision, clang_sub_revision)
-  Git(["checkout", "origin/main", "-b", "clang-{}".format(rev_string)])
+  print((f'Making a patch for Clang {clang_version} and Rust {rust_version}'))
 
-  old_rev_string = PatchRevision(clang_git_revision, clang_sub_revision)
-  old_git_shortref = re.search('-g([0-9a-f]+)', old_rev_string).group(1)
-  new_git_shortref = re.search('-g([0-9a-f]+)', rev_string).group(1)
+  branch_name = f'clang-{clang_version}_rust-{rust_version}'
+  Git('checkout', 'origin/main', '-b', branch_name, no_run=args.no_git)
 
-  Git(["add", UPDATE_PY_PATH])
+  old_clang_version = PatchClangRevision(clang_version)
+  old_rust_version = PatchRustRevision(rust_version)
+  assert (clang_version != old_clang_version
+          or rust_version != old_rust_version), (
+              'Change the sub-revision of Clang or Rust if there is '
+              'no major version change.')
 
-  commit_message = 'Ran `{}`.\n'.format(' '.join(sys.argv)) + COMMIT_FOOTER
-  if new_git_shortref != old_git_shortref:
-    commit_message = 'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/+log/{}..{}\n\n'.format(
-        old_git_shortref, new_git_shortref) + commit_message
+  # TODO: Turn the nightly dates into git hashes?
 
-  Git([
-      "commit", "-m",
-      "Roll clang {} : {}\n\n{}".format(old_rev_string, rev_string,
-                                        commit_message)
-  ])
+  clang_change = None
+  if clang_version.short_git_hash != old_clang_version.short_git_hash:
+    new = clang_version.short_git_hash
+    old = old_clang_version.short_git_hash
+    clang_change = f'{GOB_LLVM_URL}/+log/{old}..{new}'
 
-  Git(["cl", "upload", "-f", "--bypass-hooks"])
-  Git([
-      "cl", "try", "-B", "chromium/try", "-b", "linux_upload_clang", "-b",
-      "mac_upload_clang", "-b", "mac_upload_clang_arm", "-b", "win_upload_clang"
-  ])
+  rust_change = None
+  if (rust_version.string_without_dashes() !=
+      old_rust_version.string_without_dashes()):
+    new = rust_version.string_without_dashes()
+    old = old_rust_version.string_without_dashes()
+    rust_change = f'{old}..{new}'
 
-  print ("Please, wait until the try bots succeeded "
-         "and then push the binaries to goma.")
+  if not clang_change and not rust_change:
+    clang_sub_change = f'{old_clang_version}..{clang_version.sub_revision}'
+    rust_sub_change = f'{old_rust_version}..{rust_version.sub_revision}'
+    title = f'New sub-rev for clang+rust {clang_sub_change} / {rust_sub_change}'
+  elif not rust_change:
+    title = f'Roll clang {clang_change}'
+  elif not clang_change:
+    title = f'Roll rust {rust_change}'
+  else:
+    title = f'Roll clang+rust {clang_change} / {rust_change}'
+
+  cmd = ' \\\n        '.join(sys.argv)
+  commit_message = (f'{title}\n\nRan: {cmd}\n{COMMIT_FOOTER}')
+
+  Git('add',
+      CLANG_UPDATE_PY_PATH,
+      RUST_UPDATE_PY_PATH,
+      DEPS_PATH,
+      no_run=args.no_git)
+  Git('commit', '-m', commit_message, no_run=args.no_git)
+  Git('cl', 'upload', '-f', '--bypass-hooks', no_run=args.no_git)
+  Git('cl',
+      'try',
+      '-B',
+      "chromium/try",
+      *itertools.chain(*[['-b', bot] for bot in BOTS]),
+      no_run=args.no_git)
+
+  print('Please, wait until the try bots succeeded '
+        'and then push the binaries to goma.')
+
 
 if __name__ == '__main__':
   sys.exit(main())
