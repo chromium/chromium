@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 832 PASS, 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 833 PASS, 167 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["strikethrough",""]] "foo[]bar": execCommand("strikethrough", false, "") return value
 PASS [["strikethrough",""]] "foo[]bar" checks for modifications to non-editable content
 PASS [["strikethrough",""]] "foo[]bar" compare innerHTML
@@ -512,7 +512,7 @@ FAIL [["stylewithcss","true"],["strikethrough",""]] "foo<u>[bar]</u>baz" queryCo
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz": execCommand("strikethrough", false, "") return value
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<strike><u>bar</u></strike>baz" but got "foo<u><strike>bar</strike></u>baz"
+PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" compare innerHTML
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<u>[bar]</u>baz" queryCommandValue("stylewithcss") before

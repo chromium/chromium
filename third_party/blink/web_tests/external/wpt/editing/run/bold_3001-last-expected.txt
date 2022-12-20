@@ -19,5 +19,29 @@ PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"fal
 PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi": execCommand("bold", false, "") return value
 PASS [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" checks for modifications to non-editable content
 FAIL [["stylewithcss","false"],["bold",""]] "abc<b>[d<span contenteditable=\"false\"><span contenteditable><b>e</b></span></span>f]</b>ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcd<span contenteditable=\"false\"><span contenteditable=\"\">e</span></span>fghi" but got "abcd<span contenteditable=\"false\" style=\"\"><span contenteditable=\"\">e</span></span>fghi"
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def]</i>ghi" compare innerHTML
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" checks for modifications to non-editable content
+FAIL [["stylewithcss","false"],["bold",""]] "abc[<i>def</i>]ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>{def}</i>ghi" compare innerHTML
+PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" checks for modifications to non-editable content
+FAIL [["stylewithcss","false"],["bold",""]] "abc{<i>def</i>}ghi" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<b><i>def</i></b>ghi" but got "abc<i><b>def</b></i>ghi"
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["bold",""]] "abc<i>[def</i>]ghi" compare innerHTML
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi": execCommand("bold", false, "") return value
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["bold",""]] "abc[<i>def]</i>ghi" compare innerHTML
 Harness: the test ran to completion.
 

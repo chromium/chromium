@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 832 PASS, 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 831 PASS, 169 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["underline",""]] "foo[]bar": execCommand("underline", false, "") return value
 PASS [["underline",""]] "foo[]bar" checks for modifications to non-editable content
 PASS [["underline",""]] "foo[]bar" compare innerHTML
@@ -736,7 +736,7 @@ FAIL [["stylewithcss","true"],["underline",""]] "foo<s>[bar]</s>baz" queryComman
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz": execCommand("underline", false, "") return value
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u><s>bar</s></u>baz" but got "foo<u><strike>bar</strike></u>baz"
+FAIL [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s><u>bar</u></s>baz" but got "foo<u><strike>bar</strike></u>baz"
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["underline",""]] "foo<s>[bar]</s>baz" queryCommandValue("stylewithcss") before
@@ -992,7 +992,7 @@ FAIL [["stylewithcss","true"],["underline",""]] "foo<strike>[bar]</strike>baz" q
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz": execCommand("underline", false, "") return value
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" compare innerHTML
+FAIL [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<strike><u>bar</u></strike>baz" but got "foo<u><strike>bar</strike></u>baz"
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["underline",""]] "foo<strike>[bar]</strike>baz" queryCommandValue("stylewithcss") before
