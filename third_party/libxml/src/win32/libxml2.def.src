@@ -204,7 +204,9 @@ htmlAttrAllowed
 htmlAutoCloseTag
 #endif
 #ifdef LIBXML_HTML_ENABLED
+#ifdef LIBXML_HTML_ENABLED
 htmlCreateFileParserCtxt
+#endif
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlCreateMemoryParserCtxt
@@ -276,7 +278,9 @@ htmlGetMetaEncoding
 htmlHandleOmittedElem
 #endif
 #ifdef LIBXML_HTML_ENABLED
+#ifdef LIBXML_HTML_ENABLED
 htmlInitAutoClose
+#endif
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlIsAutoClosed
@@ -295,6 +299,9 @@ htmlNewDocNoDtD
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlNewParserCtxt
+#endif
+#ifdef LIBXML_HTML_ENABLED
+htmlNewSAXParserCtxt
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlNodeDump
@@ -757,7 +764,6 @@ xmlElemDump
 xmlEncodeEntities
 xmlEncodeEntitiesReentrant
 xmlEncodeSpecialChars
-xmlErrMemory
 #ifdef LIBXML_REGEXP_ENABLED
 xmlExpCtxtNbCons
 #endif
@@ -1214,6 +1220,7 @@ xmlNewParserCtxt
 xmlNewProp
 xmlNewRMutex
 xmlNewReference
+xmlNewSAXParserCtxt
 xmlNewStringInputStream
 xmlNewText
 xmlNewTextChild

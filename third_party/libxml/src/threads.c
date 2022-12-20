@@ -35,6 +35,9 @@
 #include <note.h>
 #endif
 
+#include "private/dict.h"
+#include "private/threads.h"
+
 /* #define DEBUG_THREADS */
 
 #ifdef HAVE_PTHREAD_H

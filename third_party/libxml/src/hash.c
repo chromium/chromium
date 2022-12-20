@@ -39,6 +39,8 @@
 #include <libxml/xmlerror.h>
 #include <libxml/globals.h>
 
+#include "private/dict.h"
+
 #define MAX_HASH_LEN 8
 
 /* #define DEBUG_GROW */
@@ -130,7 +132,7 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 	while ((ch = *prefix++) != 0) {
 	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name != NULL) {
 	while ((ch = *name++) != 0) {
@@ -142,7 +144,7 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 	while ((ch = *prefix2++) != 0) {
 	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name2 != NULL) {
 	while ((ch = *name2++) != 0) {
@@ -154,7 +156,7 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 	while ((ch = *prefix3++) != 0) {
 	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name3 != NULL) {
 	while ((ch = *name3++) != 0) {

@@ -59,6 +59,9 @@
 #include <libxml/nanoftp.h>
 #include <libxml/globals.h>
 
+#include "private/error.h"
+#include "private/io.h"
+
 /* #define DEBUG_FTP 1  */
 #ifdef STANDALONE
 #ifndef DEBUG_FTP

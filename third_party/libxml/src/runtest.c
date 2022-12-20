@@ -1726,7 +1726,11 @@ saxParseTest(const char *filename, const char *result,
 
 #ifdef LIBXML_HTML_ENABLED
     if (options & XML_PARSE_HTML) {
-	htmlSAXParseFile(filename, NULL, emptySAXHandler, NULL);
+        htmlParserCtxtPtr ctxt;
+
+        ctxt = htmlNewSAXParserCtxt(emptySAXHandler, NULL);
+        htmlCtxtReadFile(ctxt, filename, NULL, options);
+        htmlFreeParserCtxt(ctxt);
 	ret = 0;
     } else
 #endif
@@ -1750,7 +1754,11 @@ saxParseTest(const char *filename, const char *result,
     }
 #ifdef LIBXML_HTML_ENABLED
     if (options & XML_PARSE_HTML) {
-	htmlSAXParseFile(filename, NULL, debugHTMLSAXHandler, NULL);
+        htmlParserCtxtPtr ctxt;
+
+        ctxt = htmlNewSAXParserCtxt(debugHTMLSAXHandler, NULL);
+        htmlCtxtReadFile(ctxt, filename, NULL, options);
+        htmlFreeParserCtxt(ctxt);
 	ret = 0;
     } else
 #endif

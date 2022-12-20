@@ -40,8 +40,9 @@
 #include <libxml/globals.h>
 #include <libxml/xmlerror.h>
 
-#include "buf.h"
-#include "enc.h"
+#include "private/buf.h"
+#include "private/enc.h"
+#include "private/error.h"
 
 #ifdef LIBXML_ICU_ENABLED
 #include <unicode/ucnv.h>
@@ -532,7 +533,7 @@ UTF16LEToUTF8(unsigned char* out, int *outlen,
 	} else {
 	    tmp = (unsigned char *) in;
 	    c = *tmp++;
-	    c = c | (((unsigned int)*tmp) << 8);
+	    c = c | (*tmp << 8);
 	    in++;
 	}
         if ((c & 0xFC00) == 0xD800) {    /* surrogates */
@@ -544,7 +545,7 @@ UTF16LEToUTF8(unsigned char* out, int *outlen,
 	    } else {
 		tmp = (unsigned char *) in;
 		d = *tmp++;
-		d = d | (((unsigned int)*tmp) << 8);
+		d = d | (*tmp << 8);
 		in++;
 	    }
             if ((d & 0xFC00) == 0xDC00) {
@@ -655,7 +656,7 @@ UTF8ToUTF16LE(unsigned char* outb, int *outlen,
 		*out++ = c;
 	    } else {
 		tmp = (unsigned char *) out;
-		*tmp = c ;
+		*tmp = (unsigned char) c; /* Explicit truncation */
 		*(tmp + 1) = c >> 8 ;
 		out++;
 	    }
@@ -670,13 +671,13 @@ UTF8ToUTF16LE(unsigned char* outb, int *outlen,
 	    } else {
 		tmp1 = 0xD800 | (c >> 10);
 		tmp = (unsigned char *) out;
-		*tmp = (unsigned char) tmp1;
+		*tmp = (unsigned char) tmp1; /* Explicit truncation */
 		*(tmp + 1) = tmp1 >> 8;
 		out++;
 
 		tmp2 = 0xDC00 | (c & 0x03FF);
 		tmp = (unsigned char *) out;
-		*tmp  = (unsigned char) tmp2;
+		*tmp  = (unsigned char) tmp2; /* Explicit truncation */
 		*(tmp + 1) = tmp2 >> 8;
 		out++;
 	    }
@@ -773,7 +774,7 @@ UTF16BEToUTF8(unsigned char* out, int *outlen,
 	if (xmlLittleEndian) {
 	    tmp = (unsigned char *) in;
 	    c = *tmp++;
-	    c = (c << 8) | (unsigned int) *tmp;
+	    c = (c << 8) | *tmp;
 	    in++;
 	} else {
 	    c= *in++;
@@ -785,7 +786,7 @@ UTF16BEToUTF8(unsigned char* out, int *outlen,
 	    if (xmlLittleEndian) {
 		tmp = (unsigned char *) in;
 		d = *tmp++;
-		d = (d << 8) | (unsigned int) *tmp;
+		d = (d << 8) | *tmp;
 		in++;
 	    } else {
 		d= *in++;
@@ -895,7 +896,7 @@ UTF8ToUTF16BE(unsigned char* outb, int *outlen,
 	    if (xmlLittleEndian) {
 		tmp = (unsigned char *) out;
 		*tmp = c >> 8;
-		*(tmp + 1) = c;
+		*(tmp + 1) = (unsigned char) c; /* Explicit truncation */
 		out++;
 	    } else {
 		*out++ = c;
@@ -908,13 +909,13 @@ UTF8ToUTF16BE(unsigned char* outb, int *outlen,
 		tmp1 = 0xD800 | (c >> 10);
 		tmp = (unsigned char *) out;
 		*tmp = tmp1 >> 8;
-		*(tmp + 1) = (unsigned char) tmp1;
+		*(tmp + 1) = (unsigned char) tmp1; /* Explicit truncation */
 		out++;
 
 		tmp2 = 0xDC00 | (c & 0x03FF);
 		tmp = (unsigned char *) out;
 		*tmp = tmp2 >> 8;
-		*(tmp + 1) = (unsigned char) tmp2;
+		*(tmp + 1) = (unsigned char) tmp2; /* Explicit truncation */
 		out++;
 	    } else {
 		*out++ = 0xD800 | (c >> 10);
@@ -2056,11 +2057,10 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 }
 
 /**
- * xmlCharEncFirstLineInt:
+ * xmlCharEncFirstLine:
  * @handler:	char encoding transformation data structure
  * @out:  an xmlBuffer for the output.
  * @in:  an xmlBuffer for the input
- * @len:  number of bytes to convert for the first line, or -1
  *
  * Front-end for the encoding handler input function, but handle only
  * the very first line, i.e. limit itself to 45 chars.
@@ -2071,8 +2071,8 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
  *        the result of transformation can't fit into the encoding we want), or
  */
 int
-xmlCharEncFirstLineInt(xmlCharEncodingHandler *handler, xmlBufferPtr out,
-                       xmlBufferPtr in, int len) {
+xmlCharEncFirstLine(xmlCharEncodingHandler *handler, xmlBufferPtr out,
+                    xmlBufferPtr in) {
     int ret;
     int written;
     int toconv;
@@ -2092,13 +2092,8 @@ xmlCharEncFirstLineInt(xmlCharEncodingHandler *handler, xmlBufferPtr out,
      * The actual value depending on guessed encoding is passed as @len
      * if provided
      */
-    if (len >= 0) {
-        if (toconv > len)
-            toconv = len;
-    } else {
-        if (toconv > 180)
-            toconv = 180;
-    }
+    if (toconv > 180)
+        toconv = 180;
     if (toconv * 2 >= written) {
         xmlBufferGrow(out, toconv * 2);
 	written = out->size - out->use - 1;
@@ -2140,26 +2135,6 @@ xmlCharEncFirstLineInt(xmlCharEncodingHandler *handler, xmlBufferPtr out,
     if (ret == -3) ret = 0;
     if (ret == -1) ret = 0;
     return(written ? written : ret);
-}
-
-/**
- * xmlCharEncFirstLine:
- * @handler:	char encoding transformation data structure
- * @out:  an xmlBuffer for the output.
- * @in:  an xmlBuffer for the input
- *
- * Front-end for the encoding handler input function, but handle only
- * the very first line, i.e. limit itself to 45 chars.
- *
- * Returns the number of byte written if success, or
- *     -1 general error
- *     -2 if the transcoding fails (for *in is not valid utf8 string or
- *        the result of transformation can't fit into the encoding we want), or
- */
-int
-xmlCharEncFirstLine(xmlCharEncodingHandler *handler, xmlBufferPtr out,
-                 xmlBufferPtr in) {
-    return(xmlCharEncFirstLineInt(handler, out, in, -1));
 }
 
 /**
@@ -2569,7 +2544,7 @@ retry:
             break;
         case -2: {
 	    xmlChar charref[20];
-	    int len = (int) xmlBufUse(in);
+	    int len = xmlBufUse(in);
             xmlChar *content = xmlBufContent(in);
 	    int cur, charrefLen;
 

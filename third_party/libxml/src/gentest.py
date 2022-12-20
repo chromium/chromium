@@ -795,7 +795,7 @@ test_%s(void) {
         # assume that "size", "len", and "start" parameters apply to either
         # the nearest preceding or following char pointer
         if type == "int" and (nam == "size" or nam == "len" or nam == "start"):
-            for j in (*range(i - 1, -1, -1), *range(i + 1, len(t_args))):
+            for j in (list(range(i - 1, -1, -1)) + list(range(i + 1, len(t_args)))):
                 (bnam, btype) = t_args[j][:2]
                 if btype == "const_char_ptr" or btype == "const_xmlChar_ptr":
                     test.write(

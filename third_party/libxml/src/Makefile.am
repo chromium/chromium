@@ -28,7 +28,7 @@ check_PROGRAMS = \
 
 bin_PROGRAMS = xmllint xmlcatalog
 
-bin_SCRIPTS=xml2-config
+bin_SCRIPTS = xml2-config
 
 lib_LTLIBRARIES = libxml2.la
 libxml2_la_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS) $(Z_CFLAGS) $(LZMA_CFLAGS)
@@ -67,7 +67,7 @@ LDADDS = $(top_builddir)/libxml2.la
 
 
 m4datadir = $(datadir)/aclocal
-m4data_DATA = libxml.m4
+dist_m4data_DATA = libxml.m4
 
 runtest_SOURCES=runtest.c
 runtest_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS)
@@ -134,14 +134,6 @@ testdso_la_LDFLAGS = -module -no-undefined -avoid-version -rpath $(libdir)
 rebuild_testapi:
 	-@(if [ "$(PYTHON)" != "" ] ; then \
 	    $(PYTHON) $(srcdir)/gentest.py $(srcdir) ; fi )
-
-# that one is just to make sure it is rebuilt if missing
-# but adding the dependances generate mess
-testapi.c: $(srcdir)/gentest.py
-	-@(if [ "$(PYTHON)" != "" ] ; then \
-	    $(PYTHON) $(srcdir)/gentest.py $(srcdir) ; fi )
-
-BUILT_SOURCES = testapi.c
 
 testapi_SOURCES=testapi.c
 testapi_LDFLAGS = 
@@ -370,8 +362,7 @@ cleanup:
 	-@(find . -name \*.gcda -o -name \*.gcno -exec rm -f {} \;)
 	-@(find . -name \*.orig -o -name \*.rej -o -name \*.old -exec rm -f {} \;)
 
-dist-hook: cleanup libxml2.spec
-	-cp libxml2.spec $(distdir)
+dist-hook: cleanup
 	(cd $(srcdir) ; tar -cf - --exclude .git win32 os400 vms test result) | (cd $(distdir); tar xf -)
 
 dist-source: distdir
@@ -392,16 +383,14 @@ rpm: cleanup cleantar
 CLEANFILES = runxmlconf.log test.out *.gcda *.gcno *.res
 DISTCLEANFILES = COPYING missing.lst
 
-EXTRA_DIST = xml2-config.in libxml.spec.in libxml2.spec \
-             libxml.m4 Copyright check-xml-test-suite.py gentest.py \
+EXTRA_DIST = Copyright check-xml-test-suite.py gentest.py \
 	     check-relaxng-test-suite.py check-relaxng-test-suite2.py \
 	     check-xsddata-test-suite.py check-xinclude-test-suite.py \
              example/Makefile.am example/gjobread.c example/gjobs.xml \
-	     libxml-2.0.pc.in libxml-2.0-uninstalled.pc.in \
 	     libxml2-config.cmake.in autogen.sh \
 	     trionan.c trionan.h triostr.c triostr.h trio.c trio.h \
-	     triop.h triodef.h libxml.h xzlib.h buf.h \
-	     enc.h save.h genUnicode.py TODO_SCHEMAS \
+	     triop.h triodef.h libxml.h \
+	     genUnicode.py TODO_SCHEMAS \
 	     dbgen.pl dbgenattr.pl \
 	     README.tests Makefile.tests libxml2.syms timsort.h \
 	     README.zOS README.md \

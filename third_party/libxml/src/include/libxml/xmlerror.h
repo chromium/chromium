@@ -260,6 +260,7 @@ typedef enum {
     XML_DTD_DUP_TOKEN, /* 541 */
     XML_HTML_STRUCURE_ERROR = 800,
     XML_HTML_UNKNOWN_TAG, /* 801 */
+    XML_HTML_INCORRECTLY_OPENED_COMMENT, /* 802 */
     XML_RNGP_ANYNAME_ATTR_ANCESTOR = 1000,
     XML_RNGP_ATTR_CONFLICT, /* 1001 */
     XML_RNGP_ATTRIBUTE_CHILDREN, /* 1002 */
@@ -911,35 +912,6 @@ XMLPUBFUN int XMLCALL
     xmlCopyError		(xmlErrorPtr from,
 				 xmlErrorPtr to);
 
-#ifdef IN_LIBXML
-/*
- * Internal callback reporting routine
- */
-XMLPUBFUN void XMLCALL
-    __xmlRaiseError		(xmlStructuredErrorFunc schannel,
-				 xmlGenericErrorFunc channel,
-				 void *data,
-                                 void *ctx,
-				 void *node,
-				 int domain,
-				 int code,
-				 xmlErrorLevel level,
-				 const char *file,
-				 int line,
-				 const char *str1,
-				 const char *str2,
-				 const char *str3,
-				 int int1,
-				 int col,
-				 const char *msg,
-				 ...) LIBXML_ATTR_FORMAT(16,17);
-XMLPUBFUN void XMLCALL
-    __xmlSimpleError		(int domain,
-				 int code,
-				 xmlNodePtr node,
-				 const char *msg,
-				 const char *extra) LIBXML_ATTR_FORMAT(4,0);
-#endif
 #ifdef __cplusplus
 }
 #endif

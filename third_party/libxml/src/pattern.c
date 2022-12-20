@@ -2207,7 +2207,7 @@ stream_next:
 int
 xmlStreamPush(xmlStreamCtxtPtr stream,
               const xmlChar *name, const xmlChar *ns) {
-    return (xmlStreamPushInternal(stream, name, ns, (int) XML_ELEMENT_NODE));
+    return (xmlStreamPushInternal(stream, name, ns, XML_ELEMENT_NODE));
 }
 
 /**
@@ -2257,7 +2257,7 @@ xmlStreamPushNode(xmlStreamCtxtPtr stream,
 int
 xmlStreamPushAttr(xmlStreamCtxtPtr stream,
 		  const xmlChar *name, const xmlChar *ns) {
-    return (xmlStreamPushInternal(stream, name, ns, (int) XML_ATTRIBUTE_NODE));
+    return (xmlStreamPushInternal(stream, name, ns, XML_ATTRIBUTE_NODE));
 }
 
 /**

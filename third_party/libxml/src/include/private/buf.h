@@ -1,23 +1,7 @@
-/*
- * Summary: Internal Interfaces for memory buffers in libxml2
- * Description: this module describes most of the new xmlBuf buffer
- *              entry points, those are private routines, with a
- *              few exceptions exported in tree.h. This was added
- *              in 2.9.0.
- *
- * Copy: See Copyright for the status of this software.
- *
- * Author: Daniel Veillard
- */
-
-#ifndef __XML_BUF_H__
-#define __XML_BUF_H__
+#ifndef XML_BUF_H_PRIVATE__
+#define XML_BUF_H_PRIVATE__
 
 #include <libxml/tree.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 xmlBufPtr xmlBufCreate(void);
 xmlBufPtr xmlBufCreateSize(size_t size);
@@ -60,8 +44,5 @@ int xmlBufResetInput(xmlBufPtr buf, xmlParserInputPtr input);
 size_t xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input);
 int xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
                           size_t base, size_t cur);
-#ifdef __cplusplus
-}
-#endif
-#endif /* __XML_BUF_H__ */
 
+#endif /* XML_BUF_H_PRIVATE__ */
