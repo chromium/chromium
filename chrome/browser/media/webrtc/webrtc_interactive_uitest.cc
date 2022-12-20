@@ -283,10 +283,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 }
 
-// TODO(https://crbug.com/1399865): Deflake and re-enable
-IN_PROC_BROWSER_TEST_F(
-    WebRtcBrowserTest,
-    DISABLED_RunsAudioVideoWebRTCCallInTwoTabsGetStatsPromise) {
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
+                       RunsAudioVideoWebRTCCallInTwoTabsGetStatsPromise) {
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);
   SetupPeerconnectionWithLocalStream(right_tab_);
