@@ -144,11 +144,16 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state,
       element_.Get());
 }
 
-void DisplayLockContext::AdjustElementStyle(ComputedStyle* style) const {
+scoped_refptr<ComputedStyle> DisplayLockContext::AdjustElementStyle(
+    ComputedStyle* style) const {
   if (IsAlwaysVisible())
-    return;
-  if (IsLocked())
-    style->SetSkipsContents();
+    return style;
+  if (IsLocked()) {
+    ComputedStyleBuilder builder(*style);
+    builder.SetSkipsContents();
+    return builder.TakeStyle();
+  }
+  return style;
 }
 
 void DisplayLockContext::RequestLock(uint16_t activation_mask) {

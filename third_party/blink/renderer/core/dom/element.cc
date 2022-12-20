@@ -3014,7 +3014,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
       }
     }
     context->SetRequestedState(style->ContentVisibility(), toggle_visibility);
-    context->AdjustElementStyle(style.get());
+    style = context->AdjustElementStyle(style.get());
   }
 
   if (style->DependsOnSizeContainerQueries())

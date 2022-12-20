@@ -1137,7 +1137,6 @@
       name: "SkipsContents",
       field_template: "monotonic_flag",
       default_value: "false",
-      writable: true,
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert

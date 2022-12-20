@@ -107,7 +107,7 @@ class CORE_EXPORT DisplayLockContext final
   void SetRequestedState(EContentVisibility state,
                          const AtomicString& toggle_visibility);
   // Called by style to adjust the element's style based on the current state.
-  void AdjustElementStyle(ComputedStyle* style) const;
+  scoped_refptr<ComputedStyle> AdjustElementStyle(ComputedStyle*) const;
 
   // Is called by the intersection observer callback to inform us of the
   // intersection state.
