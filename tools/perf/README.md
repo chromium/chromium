@@ -105,12 +105,6 @@ to cloud storage, and finally send a CL to review with the new recordings.
 
 [wpr]: https://github.com/catapult-project/catapult/tree/master/web_page_replay_go
 
-## flakiness_cli
-
-A command line interface to the [flakiness dashboard][].
-
-[flakiness dashboard]: https://test-results.appspot.com/dashboards/flakiness_dashboard.html
-
 ## soundwave
 
 Allows to fetch data from the [Chrome Performance Dashboard][chromeperf] and
