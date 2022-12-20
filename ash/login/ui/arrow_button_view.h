@@ -33,6 +33,7 @@ class ArrowButtonView : public LoginButton {
 
   // LoginButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Causes the icon to transform bigger and smaller repeatedly to draw user
   // attention to click.

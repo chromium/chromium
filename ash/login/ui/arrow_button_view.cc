@@ -122,6 +122,11 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
 }
 
+void ArrowButtonView::OnThemeChanged() {
+  LoginButton::OnThemeChanged();
+  SchedulePaint();
+}
+
 void ArrowButtonView::RunTransformAnimation() {
   StopAnimating();
 
