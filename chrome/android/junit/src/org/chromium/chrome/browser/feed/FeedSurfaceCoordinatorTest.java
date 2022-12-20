@@ -92,7 +92,6 @@ import java.util.ArrayList;
         ChromeFeatureList.WEB_FEED_SORT,
         ChromeFeatureList.WEB_FEED_ONBOARDING,
         ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
-        ChromeFeatureList.FEED_INTERACTIVE_REFRESH,
         ChromeFeatureList.FEED_BACK_TO_TOP,
         ChromeFeatureList.FEED_MULTI_COLUMN,
         // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not

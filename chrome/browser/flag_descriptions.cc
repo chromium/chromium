@@ -3615,10 +3615,6 @@ const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
 const char kFeedHeaderStickToTopDescription[] =
     "Stick feed header to top on scroll.";
 
-const char kFeedInteractiveRefreshName[] = "Refresh feeds";
-const char kFeedInteractiveRefreshDescription[] =
-    "Enables refreshing feeds triggered by the users.";
-
 const char kFeedLoadingPlaceholderName[] = "Feed loading placeholder";
 const char kFeedLoadingPlaceholderDescription[] =
     "Enables a placeholder UI in "

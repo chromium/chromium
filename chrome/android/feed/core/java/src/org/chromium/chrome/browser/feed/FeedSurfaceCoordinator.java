@@ -564,9 +564,7 @@ public class FeedSurfaceCoordinator
 
     @Override
     public void reload() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
-            onRefresh();
-        }
+        onRefresh();
     }
 
     @Override
@@ -906,9 +904,7 @@ public class FeedSurfaceCoordinator
         }
 
         createHeaderIphScrollListener();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
-            createRefreshIphScrollListener();
-        }
+        createRefreshIphScrollListener();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BACK_TO_TOP)) {
             createBackToTopBubbleScrollListener();
         }
