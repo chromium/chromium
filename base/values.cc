@@ -1643,10 +1643,6 @@ Value* DictionaryValue::SetBoolean(StringPiece path, bool in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-Value* DictionaryValue::SetInteger(StringPiece path, int in_value) {
-  return Set(path, std::make_unique<Value>(in_value));
-}
-
 Value* DictionaryValue::SetString(StringPiece path, StringPiece in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
