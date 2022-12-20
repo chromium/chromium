@@ -74,15 +74,16 @@
 <iron-selector id="selector" selectable="ntp-realbox-match"
     items="{{selectableMatchElements_}}" selected="{{selectedMatchIndex}}"
     selected-class="selected">
-  <template is="dom-repeat" id="groups" items="[[groupIds_]]" as="groupId">
-    <template is="dom-if" if="[[groupHasHeader_(groupId)]]">
+  <template is="dom-repeat" items="[[groupIds_(result.matches.*)]]"
+      as="groupId">
+    <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
       <!-- Header cannot be tabbed into but gets focus when clicked. This stops
            the dropdown from losing focus and closing as a result. -->
       <div class="header" data-id$="[[groupId]]" tabindex="-1"
           on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
           aria-hidden="true">
         <span class="text">[[headerForGroup_(groupId)]]</span>
-        <cr-icon-button class$="action-icon [[expandIconNameForGroup_(groupId, hiddenGroupIds_.*)]]"
+        <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
             title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
             aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
             on-mousedown="onToggleButtonMouseDown_">
@@ -91,13 +92,13 @@
     </template>
     <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
         restamp>
-      <template is="dom-repeat" items="[[result.matches]]"
-          filter="[[computeMatchBelongsToGroup_(groupId)]]"
+      <template is="dom-repeat" items="[[result.matches]]" as="match"
+          filter="[[matchIsInGroupFilter_(groupId)]]"
           on-dom-change="onResultRepaint_">
-        <ntp-realbox-match tabindex="0" role="option" match="[[item]]"
-            match-index="[[matchIndex_(item)]]">
+        <ntp-realbox-match tabindex="0" role="option" match="[[match]]"
+            match-index="[[matchIndex_(match)]]">
         </ntp-realbox-match>
       </template>
     </template>
-  <template>
+  </template>
 </iron-selector>
