@@ -10,7 +10,7 @@ Refer to README.md for content description and update process.
 <annotations>
  <item id="accounts_image_fetcher" added_in_milestone="66" content_hash_code="02b53da6" os_list="linux,windows,chromeos,android" file_path="components/signin/internal/identity_manager/account_fetcher_service.cc" />
  <item id="adb_client_socket" added_in_milestone="65" content_hash_code="03607bec" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/adb/adb_client_socket.cc" />
- <item id="affiliation_lookup_by_hash" added_in_milestone="87" content_hash_code="04e2a551" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.cc" />
+ <item id="affiliation_lookup_by_hash" added_in_milestone="87" content_hash_code="04e2a551" os_list="windows,chromeos,android,linux" file_path="components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.cc" />
  <item id="aggregation_service_helper_keys" added_in_milestone="96" content_hash_code="006e2ea0" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregation_service_network_fetcher_impl.cc" />
  <item id="aggregation_service_report" added_in_milestone="95" content_hash_code="037768da" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc" />
  <item id="android_device_manager_socket" added_in_milestone="65" content_hash_code="00623801" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_device_manager.cc" />
@@ -401,6 +401,7 @@ Refer to README.md for content description and update process.
  <item id="customization_document" added_in_milestone="110" content_hash_code="007a3dda" os_list="chromeos" file_path="chrome/browser/ash/customization/customization_document.cc" />
  <item id="nearby_webrtc_connection" added_in_milestone="110" content_hash_code="070e1f72" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/webrtc.cc" />
  <item id="wallpaper_online_downloader" added_in_milestone="110" content_hash_code="060d5790" os_list="chromeos" file_path="ash/wallpaper/wallpaper_controller_impl.cc" />
+ <item id="fenced_frame_reporting_beacon" added_in_milestone="110" content_hash_code="03cebf59" os_list="linux,windows,android,chromeos" file_path="content/browser/renderer_host/render_frame_host_impl.cc" />
  <item id="password_sync_token_fetcher" added_in_milestone="110" content_hash_code="0451c1ff" os_list="chromeos" file_path="chrome/browser/ash/login/saml/password_sync_token_fetcher.cc" />
  <item id="projector_xhr_loader" added_in_milestone="110" content_hash_code="071c4ac5" os_list="chromeos" file_path="ash/webui/projector_app/projector_xhr_sender.cc" />
  <item id="bruschetta_installer_download" added_in_milestone="110" content_hash_code="01b953f4" os_list="chromeos" file_path="chrome/browser/ash/bruschetta/bruschetta_installer.cc" />

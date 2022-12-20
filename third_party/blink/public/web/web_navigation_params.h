@@ -472,12 +472,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // Null, otherwise.
   absl::optional<WebVector<WebURL>> ad_auction_components;
 
-  // If this is a navigation to a "opaque-ads" mode fenced frame, there might
-  // be associated reporting metadata. This is a map from destination type to
-  // reporting metadata which in turn is a map from the event type to the
-  // reporting url. Null, otherwise.
+  // This boolean flag indicates whether there is associated reporting metadata
+  // with the fenced frame.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  absl::optional<FencedFrame::FencedFrameReporting> fenced_frame_reporting;
+  bool has_fenced_frame_reporting = false;
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See

@@ -2310,6 +2310,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidChangeBaseURL(const GURL& base_url) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
+  void SendFencedFrameReportingBeacon(
+      const std::string& event_data,
+      const std::string& event_type,
+      blink::FencedFrame::ReportingDestination destination) override;
   void CreatePortal(
       mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
       mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,

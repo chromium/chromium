@@ -400,10 +400,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return ad_auction_components_;
   }
 
-  const absl::optional<blink::FencedFrameReporting>& FencedFrameReporting()
-      const {
-    return fenced_frame_reporting_;
-  }
+  bool HasFencedFrameReporting() const { return has_fenced_frame_reporting_; }
 
   const absl::optional<FencedFrame::RedactedFencedFrameProperties>&
   FencedFrameProperties() const {
@@ -786,12 +783,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // otherwise.
   absl::optional<Vector<KURL>> ad_auction_components_;
 
-  // If this is a navigation to a "opaque-ads" mode fenced frame, there might
-  // be associated reporting metadata. This is a map from destination type to
-  // reporting metadata which in turn is a map from the event type to the
-  // reporting url. `nullptr` otherwise.
+  // This boolean flag indicates whether there is associated reporting metadata
+  // with the fenced frame.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  absl::optional<blink::FencedFrameReporting> fenced_frame_reporting_;
+  bool has_fenced_frame_reporting_;
 
   std::unique_ptr<ExtraData> extra_data_;
 
