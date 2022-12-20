@@ -85140,6 +85140,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="No live Service Worker"/>
 </enum>
 
+<enum name="PushNotificationPermissionPromptStatus">
+  <int value="0" label="Accpeted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Error"/>
+</enum>
+
 <enum name="PushRegistrationStatus">
   <int value="0" label="Successful - from push service"/>
   <int value="1" label="Service Worker not found"/>

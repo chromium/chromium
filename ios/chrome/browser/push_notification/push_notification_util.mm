@@ -7,9 +7,30 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/metrics/histogram_functions.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+using PermissionResponseHandler = void (^)(BOOL granted, NSError* error);
+
+// This enum is used to record the action a user performed when prompted to
+// allow push notification permissions.
+enum class PermissionPromptAction {
+  ACCEPTED,
+  DECLINED,
+  ERROR,
+  kMaxValue = ERROR
+};
+
+// The histogram used to record the outcome of the permission prompt
+const char kEnabledPermissionsHistogram[] =
+    "IOS.PushNotification.EnabledPermisisons";
+
+}  // namespace
 
 @implementation PushNotificationUtil
 
@@ -34,15 +55,12 @@
 }
 
 + (void)requestPushNotificationPermission:
-    (void (^)(bool granted, NSError* error))completionHandler {
-  UNAuthorizationOptions options = UNAuthorizationOptionAlert |
-                                   UNAuthorizationOptionBadge |
-                                   UNAuthorizationOptionSound;
-
-  UNUserNotificationCenter* center =
-      UNUserNotificationCenter.currentNotificationCenter;
-  [center requestAuthorizationWithOptions:options
-                        completionHandler:completionHandler];
+    (PermissionResponseHandler)completionHandler {
+  [PushNotificationUtil getPermissionSettings:^(
+                            UNNotificationSettings* settings) {
+    [PushNotificationUtil requestPushNotificationPermission:completionHandler
+                                         permissionSettings:settings];
+  }];
 }
 
 + (void)getPermissionSettings:
@@ -50,6 +68,54 @@
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
   [center getNotificationSettingsWithCompletionHandler:completionHandler];
+}
+
+#pragma mark - Private
+
+// Displays the push notification permission prompt if the user has not decided
+// on the application's permission status.
++ (void)requestPushNotificationPermission:(PermissionResponseHandler)completion
+                       permissionSettings:(UNNotificationSettings*)settings {
+  if (settings.authorizationStatus != UNAuthorizationStatusNotDetermined) {
+    if (completion) {
+      completion(
+          settings.authorizationStatus == UNAuthorizationStatusAuthorized, nil);
+    }
+    return;
+  }
+  UNAuthorizationOptions options = UNAuthorizationOptionAlert |
+                                   UNAuthorizationOptionBadge |
+                                   UNAuthorizationOptionSound;
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  [center requestAuthorizationWithOptions:options
+                        completionHandler:^(bool granted, NSError* error) {
+                          [PushNotificationUtil
+                              requestAuthorizationResult:completion
+                                                 granted:granted
+                                                   error:error];
+                        }];
+}
+
+// Reports the push notification permission prompt's outcome to metrics.
++ (void)requestAuthorizationResult:(PermissionResponseHandler)completion
+                           granted:(BOOL)granted
+                             error:(NSError*)error {
+  if (granted) {
+    [PushNotificationUtil registerDeviceWithAPNS];
+    base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
+                                  PermissionPromptAction::ACCEPTED);
+  } else if (!error) {
+    base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
+                                  PermissionPromptAction::DECLINED);
+  } else {
+    base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
+                                  PermissionPromptAction::ERROR);
+  }
+
+  if (completion) {
+    completion(granted, error);
+  }
 }
 
 @end

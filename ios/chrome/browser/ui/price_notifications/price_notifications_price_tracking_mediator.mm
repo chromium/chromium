@@ -12,6 +12,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
+#import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/web/public/web_state.h"
@@ -73,8 +74,11 @@ using PriceNotificationItems =
 #pragma mark - PriceNotificationsMutator
 
 - (void)trackItem:(PriceNotificationsTableViewItem*)item {
-  // TODO(crbug.com/1362344): Add in functionality that will prompt the user to
-  // enable iOS push notifications permissions.
+  // Requests push notification permission. This will determine whether the user
+  // receives price tracking notifications to the current device. However, the
+  // device's permission status will not prevent the shopping service from
+  // subscribing the user to the product and its price tracking events.
+  [PushNotificationUtil requestPushNotificationPermission:nil];
 
   // The price tracking infrastructure is built on top of bookmarks, so a new
   // bookmark needs to be created before the item can be registered for price

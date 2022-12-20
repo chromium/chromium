@@ -22,6 +22,7 @@ source_set("price_notifications") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/price_notifications/cells",

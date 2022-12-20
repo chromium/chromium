@@ -1537,6 +1537,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.EnabledPermisisons"
+    enum="PushNotificationPermissionPromptStatus" expires_after="2023-12-12">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs whether the user decided to allow/disallow push notification
+    permissions for the current device or an error occured. This is logged each
+    time the user responds to a push notification permission prompt.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.IncomingNotificationProcessingTime"
     units="ms" expires_after="2023-07-01">
   <owner>ajuma@google.com</owner>
