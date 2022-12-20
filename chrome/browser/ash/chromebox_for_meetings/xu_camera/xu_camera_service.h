@@ -103,6 +103,8 @@ class XuCameraService : public CfmObserver,
   void ConvertLength(std::vector<uint8_t>& data, uint32_t type);
   template <typename T>
   void CopyToData(T* value, std::vector<uint8_t>& data, size_t size);
+  template <typename T>
+  void CopyFromData(T* value, std::vector<uint8_t>& data);
   Delegate* delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera> receivers_;

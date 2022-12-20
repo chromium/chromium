@@ -350,7 +350,7 @@ TEST_F(XuCameraServiceTest, XuCameraSetCtrlWithDevPathCtrlMapping) {
       /* id= */ std::move(devPath), /* ctrl= */ std::move(mapping),
       /* data= */ data,
       base::BindLambdaForTesting([&](const uint8_t error_code) {
-        EXPECT_EQ(error_code, ENOSYS);
+        EXPECT_EQ(error_code, 0);
         run_loop.Quit();
       }));
   run_loop.Run();

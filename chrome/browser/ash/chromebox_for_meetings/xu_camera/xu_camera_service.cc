@@ -225,8 +225,7 @@ void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
                               const mojom::CtrlTypePtr ctrl,
                               const std::vector<uint8_t>& data,
                               SetCtrlCallback callback) {
-  uint8_t error_code = ENOSYS;
-  mojom::ControlQueryPtr query;
+  uint8_t error_code = 0;
   std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
                                             : id->get_dev_path();
   int file_descriptor = delegate_->OpenFile(dev_path);
@@ -244,10 +243,14 @@ void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
           CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
                            data_, UVC_SET_CUR);
       break;
-    case mojom::CtrlType::Tag::kMappingCtrl:
-      NOTIMPLEMENTED();
-      error_code = ENOSYS;
+    case mojom::CtrlType::Tag::kMappingCtrl: {
+      mojom::ControlMappingPtr mapping = std::move(ctrl->get_mapping_ctrl());
+      int32_t newValue;
+      CopyFromData(&newValue, data_);
+      struct v4l2_control control = {.id = mapping->id, .value = newValue};
+      error_code = delegate_->Ioctl(file_descriptor, VIDIOC_S_CTRL, &control);
       break;
+    }
     default:
       LOG(ERROR) << __func__ << ": Invalid CtrlType::Tag";
       error_code = EINVAL;
@@ -388,6 +391,15 @@ void XuCameraService::CopyToData(T* value,
   for (size_t i = 0; i < size; ++i) {
     data.push_back(*valueAsUint8);
     valueAsUint8++;
+  }
+}
+
+template <typename T>
+void XuCameraService::CopyFromData(T* value, std::vector<uint8_t>& data) {
+  int shiftBit = 0;
+  for (size_t i = 0; i < data.size(); ++i) {
+    *value += data[i] << shiftBit;
+    shiftBit += 8;
   }
 }
 }  // namespace ash::cfm
