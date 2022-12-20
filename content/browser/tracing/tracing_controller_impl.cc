@@ -183,7 +183,7 @@ TracingControllerImpl::TracingControllerImpl()
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Bind hwclass once the statistics are available.
-  chromeos::system::StatisticsProvider::GetInstance()
+  ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(
           base::BindOnce(&TracingControllerImpl::OnMachineStatisticsLoaded,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -563,8 +563,8 @@ void TracingControllerImpl::OnReadBuffersComplete() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
   if (const absl::optional<base::StringPiece> hardware_class =
-          chromeos::system::StatisticsProvider::GetInstance()
-              ->GetMachineStatistic(chromeos::system::kHardwareClassKey)) {
+          ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+              ash::system::kHardwareClassKey)) {
     hardware_class_ = std::string(hardware_class.value());
   }
   are_statistics_loaded_ = true;

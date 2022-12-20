@@ -24,7 +24,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 // Result of loading values from the cached VPD file.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
@@ -169,6 +169,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
       statistics_loaded_callbacks_;
 };
 
-}  // namespace chromeos::system
+}  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_IMPL_H_

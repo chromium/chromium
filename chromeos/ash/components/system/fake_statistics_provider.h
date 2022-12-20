@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 // A fake StatisticsProvider implementation that is useful in tests.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
@@ -63,12 +63,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
   ~ScopedFakeStatisticsProvider() override;
 };
 
-}  // namespace chromeos::system
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash::system {
-using ::chromeos::system::ScopedFakeStatisticsProvider;
 }  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_

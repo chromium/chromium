@@ -117,7 +117,7 @@ class ChildStatusCollectorState : public StatusCollectorState {
 ChildStatusCollector::ChildStatusCollector(
     PrefService* pref_service,
     Profile* profile,
-    chromeos::system::StatisticsProvider* provider,
+    ash::system::StatisticsProvider* provider,
     const AndroidStatusFetcher& android_status_fetcher,
     base::TimeDelta activity_day_start)
     : StatusCollector(provider, ash::CrosSettings::Get()),

@@ -384,8 +384,7 @@ class DeviceActivityClientTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     SetUpDeviceActivityClient(
         {
@@ -563,7 +562,7 @@ class DeviceActivityClientTest : public testing::Test {
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
   base::HistogramTester histogram_tester_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {

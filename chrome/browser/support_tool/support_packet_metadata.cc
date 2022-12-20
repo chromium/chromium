@@ -134,7 +134,7 @@ void SupportPacketMetadata::PopulateMetadataContents(
       GetDataCollectorsListString(data_collectors_included);
   metadata_[kTimestampKey] = GetTimestampString(timestamp);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::StatisticsProvider::GetInstance()
+  ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(
           base::BindOnce(&SupportPacketMetadata::OnMachineStatisticsLoaded,
                          weak_ptr_factory_.GetWeakPtr(),
@@ -148,7 +148,7 @@ void SupportPacketMetadata::PopulateMetadataContents(
 void SupportPacketMetadata::OnMachineStatisticsLoaded(
     base::OnceClosure on_metadata_contents_populated) {
   const absl::optional<base::StringPiece> machine_serial =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineID();
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   if (machine_serial && !machine_serial->empty()) {
     pii_[PIIType::kSerial].insert(std::string(machine_serial.value()));
     metadata_[kSerialNumberKey] = std::string(machine_serial.value());

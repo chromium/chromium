@@ -198,7 +198,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   // DeviceDMToken callback is empty here because for device policies this
   // DMToken is already provided in the policy fetch requests.
   auto client = policy::CreateDeviceCloudPolicyClientAsh(
-      chromeos::system::StatisticsProvider::GetInstance(),
+      system::StatisticsProvider::GetInstance(),
       connector->device_management_service(),
       g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());

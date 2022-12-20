@@ -308,16 +308,15 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:
     explicit ScopedFakeSerialNumber(
-        chromeos::system::ScopedFakeStatisticsProvider*
-            fake_statistics_provider) {
+        ash::system::ScopedFakeStatisticsProvider* fake_statistics_provider) {
       // The fake serial number must be set before |configuration| is
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(
-          chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
+          ash::system::kSerialNumberKeyForTest, "fake_serial_number");
     }
   };
   ScopedFakeSerialNumber fake_serial_number_;

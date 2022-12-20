@@ -575,7 +575,7 @@ void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
           state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
           device_cloud_policy_manager_,
-          chromeos::system::StatisticsProvider::GetInstance());
+          ash::system::StatisticsProvider::GetInstance());
   device_cloud_policy_initializer_->Init();
 }
 

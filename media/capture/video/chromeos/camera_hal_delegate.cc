@@ -62,8 +62,7 @@ class LocalCameraClientObserver : public CameraClientObserver {
   CameraHalDelegate* camera_hal_delegate_;
 };
 
-// chromeos::system::StatisticsProvider::IsRunningOnVM() is not available in
-// unittest.
+// ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.
 bool IsRunningOnVM() {
   static bool is_vm = []() {
     std::string output;

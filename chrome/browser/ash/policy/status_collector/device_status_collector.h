@@ -148,7 +148,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Pool. Caller is responsible for passing already initialized |pref_service|.
   DeviceStatusCollector(
       PrefService* pref_service,
-      chromeos::system::StatisticsProvider* provider,
+      ash::system::StatisticsProvider* provider,
       ManagedSessionService* managed_session_service,
       const VolumeInfoFetcher& volume_info_fetcher,
       const CPUStatisticsFetcher& cpu_statistics_fetcher,
@@ -165,7 +165,7 @@ class DeviceStatusCollector : public StatusCollector,
   // Blocking Pool. Caller is responsible for passing already initialized
   // |pref_service|.
   DeviceStatusCollector(PrefService* pref_service,
-                        chromeos::system::StatisticsProvider* provider,
+                        ash::system::StatisticsProvider* provider,
                         ManagedSessionService* managed_session_service);
 
   DeviceStatusCollector(const DeviceStatusCollector&) = delete;

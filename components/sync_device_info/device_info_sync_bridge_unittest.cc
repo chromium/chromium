@@ -468,7 +468,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     statistics_provider_ =
-        std::make_unique<chromeos::system::ScopedFakeStatisticsProvider>();
+        std::make_unique<ash::system::ScopedFakeStatisticsProvider>();
 #endif
 
     local_device_name_info_ = GetLocalDeviceNameInfoBlocking();
@@ -567,7 +567,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider* statistics_provider() {
+  ash::system::ScopedFakeStatisticsProvider* statistics_provider() {
     EXPECT_TRUE(statistics_provider_);
     return statistics_provider_.get();
   }
@@ -721,7 +721,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   raw_ptr<TestLocalDeviceInfoProvider> local_device_info_provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
+  std::unique_ptr<ash::system::ScopedFakeStatisticsProvider>
       statistics_provider_;
 #endif
 };

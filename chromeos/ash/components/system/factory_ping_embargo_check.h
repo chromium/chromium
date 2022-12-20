@@ -8,8 +8,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 class StatisticsProvider;
 
@@ -40,7 +39,6 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 FactoryPingEmbargoState GetRlzPingEmbargoState(
     StatisticsProvider* statistics_provider);
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_

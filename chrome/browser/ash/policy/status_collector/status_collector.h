@@ -22,13 +22,10 @@ class Profile;
 
 namespace ash {
 class CrosSettings;
-}  // namespace ash
-
-namespace chromeos {
 namespace system {
 class StatisticsProvider;
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
@@ -84,9 +81,9 @@ class StatusCollector {
   // Simplifies filling the boot mode for any of the relevant status report
   // requests.
   static absl::optional<std::string> GetBootMode(
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
-  StatusCollector(chromeos::system::StatisticsProvider* provider,
+  StatusCollector(ash::system::StatisticsProvider* provider,
                   ash::CrosSettings* cros_settings,
                   base::Clock* clock = base::DefaultClock::GetInstance());
   virtual ~StatusCollector();
@@ -128,7 +125,7 @@ class StatusCollector {
   // activity time that is slightly in the future.
   base::TimeDelta max_stored_future_activity_interval_;
 
-  chromeos::system::StatisticsProvider* const statistics_provider_;
+  ash::system::StatisticsProvider* const statistics_provider_;
 
   ash::CrosSettings* const cros_settings_;
 

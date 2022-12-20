@@ -114,7 +114,7 @@ class TestingChildStatusCollector : public ChildStatusCollector {
   TestingChildStatusCollector(
       PrefService* pref_service,
       Profile* profile,
-      chromeos::system::StatisticsProvider* provider,
+      ash::system::StatisticsProvider* provider,
       const StatusCollector::AndroidStatusFetcher& android_status_fetcher,
       base::TimeDelta activity_day_start)
       : ChildStatusCollector(pref_service,
@@ -428,7 +428,7 @@ class ChildStatusCollectorTest : public testing::Test {
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
@@ -450,8 +450,7 @@ class ChildStatusCollectorTest : public testing::Test {
 
 TEST_F(ChildStatusCollectorTest, ReportingBootMode) {
   fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kDevSwitchBootKey,
-      chromeos::system::kDevSwitchBootValueVerified);
+      ash::system::kDevSwitchBootKey, ash::system::kDevSwitchBootValueVerified);
 
   GetStatus();
 

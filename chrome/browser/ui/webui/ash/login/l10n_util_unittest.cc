@@ -134,7 +134,7 @@ TEST_F(L10nUtilTest, FindMostRelevantLocale) {
 void InitStartupCustomizationDocumentForTesting(const std::string& manifest) {
   StartupCustomizationDocument::GetInstance()->LoadManifestFromString(manifest);
   StartupCustomizationDocument::GetInstance()->Init(
-      chromeos::system::StatisticsProvider::GetInstance());
+      system::StatisticsProvider::GetInstance());
 }
 
 const char kStartupManifest[] =

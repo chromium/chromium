@@ -204,7 +204,7 @@ CrostiniManager::RestartOptions& CrostiniManager::RestartOptions::operator=(
 
 class CrostiniManager::CrostiniRestarter
     : public ash::VmShutdownObserver,
-      public chromeos::SchedulerConfigurationManagerBase::Observer {
+      public ash::SchedulerConfigurationManagerBase::Observer {
  public:
   struct RestartRequest {
     RestartId restart_id;
@@ -282,7 +282,7 @@ class CrostiniManager::CrostiniRestarter
   void CreateDiskImageFinished(int64_t disk_size_bytes,
                                CrostiniResult result,
                                const base::FilePath& result_path);
-  // chromeos::SchedulerConfigurationManagerBase::Observer:
+  // ash::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
   void OnConfigureContainerFinished(bool success);
   void OnWaylandServerCreated(guest_os::GuestOsWaylandServer::Result result);
@@ -349,8 +349,8 @@ class CrostiniManager::CrostiniRestarter
 
   mojom::InstallerState stage_ = mojom::InstallerState::kStart;
 
-  base::ScopedObservation<chromeos::SchedulerConfigurationManagerBase,
-                          chromeos::SchedulerConfigurationManagerBase::Observer>
+  base::ScopedObservation<ash::SchedulerConfigurationManagerBase,
+                          ash::SchedulerConfigurationManagerBase::Observer>
       scheduler_configuration_manager_observation_{this};
   base::ScopedObservation<CrostiniManager, ash::VmShutdownObserver>
       vm_shutdown_observation_{this};
@@ -738,7 +738,7 @@ void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
                      scheduler_configuration->second);
 }
 
-// chromeos::SchedulerConfigurationManagerBase::Observer:
+// ash::SchedulerConfigurationManagerBase::Observer:
 void CrostiniManager::CrostiniRestarter::OnConfigurationSet(
     bool success,
     size_t num_cores_disabled) {

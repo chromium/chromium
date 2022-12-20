@@ -101,7 +101,7 @@ base::TimeDelta GetArcSignInTimeout() {
   constexpr base::TimeDelta kArcSignInTimeout = base::Minutes(5);
   constexpr base::TimeDelta kArcVmSignInTimeoutForVM = base::Minutes(20);
 
-  if (chromeos::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
+  if (ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
       arc::IsArcVmEnabled()) {
     return kArcVmSignInTimeoutForVM;
   } else {

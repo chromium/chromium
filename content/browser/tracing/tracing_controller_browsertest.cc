@@ -108,10 +108,10 @@ class TracingControllerTest : public ContentBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::DebugDaemonClient::InitializeFake();
     // Set statistic provider for hardware class tests.
-    chromeos::system::StatisticsProvider::SetTestProvider(
+    ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kHardwareClassKey, "test-hardware-class");
+        ash::system::kHardwareClassKey, "test-hardware-class");
 #endif
     ContentBrowserTest::SetUp();
   }
@@ -330,7 +330,7 @@ class TracingControllerTest : public ContentBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
  private:

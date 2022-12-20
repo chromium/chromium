@@ -389,8 +389,7 @@ class EnrollmentOnRevenWithNoStateKeysResponse
     // disables Forced Re-Enrollment (FRE). If FRE is enabled, state keys are
     // required.
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kFirmwareTypeKey,
-        chromeos::system::kFirmwareTypeValueNonchrome);
+        system::kFirmwareTypeKey, system::kFirmwareTypeValueNonchrome);
     // When using a fresh ScopedFakeStatisticsProvider we also need to configure
     // a few entries (serial number, machine model).
     // ConfigureFakeStatisticsForZeroTouch does that for us.

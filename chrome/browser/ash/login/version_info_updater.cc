@@ -163,7 +163,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   // Get the attested device ID and add the ZTE indication and the ID if needed.
   const absl::optional<base::StringPiece> attested_device_id =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kAttestedDeviceIdKey);
+          system::kAttestedDeviceIdKey);
   // Start with the ZTE indication and the attested device ID if it exists.
   if (attested_device_id && !attested_device_id->empty()) {
     device_ids_text.append(kZteReady);

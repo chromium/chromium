@@ -208,7 +208,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
 
     // Set statistic provider for hardware class tests.
-    chromeos::system::StatisticsProvider::SetTestProvider(
+    ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
   }
 
@@ -351,7 +351,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   ChromeMetricsServiceClient* chrome_metrics_service_client_;
 
   MockSyncService sync_service_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   TestingProfile* testing_profile_ = nullptr;
   ash::multidevice_setup::FakeMultiDeviceSetupClient*
       fake_multidevice_setup_client_;

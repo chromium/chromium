@@ -120,7 +120,7 @@ using ::testing::SetArgPointee;
 using ::testing::_;
 
 TEST(StartupCustomizationDocumentTest, Basic) {
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider;
 
   // hardware_class selects the appropriate entry in hwid_map in the manifest.
   fake_statistics_provider.SetMachineStatistic("hardware_class", "Mario 12345");
@@ -139,7 +139,7 @@ TEST(StartupCustomizationDocumentTest, Basic) {
 }
 
 TEST(StartupCustomizationDocumentTest, VPD) {
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider;
 
   // hardware_class selects the appropriate entry in hwid_map in the manifest.
   fake_statistics_provider.SetMachineStatistic("hardware_class", "Mario 12345");
@@ -156,7 +156,7 @@ TEST(StartupCustomizationDocumentTest, VPD) {
 }
 
 TEST(StartupCustomizationDocumentTest, BadManifest) {
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider;
   StartupCustomizationDocument customization(&fake_statistics_provider,
                                              kBadManifest);
   EXPECT_FALSE(customization.IsReady());
@@ -236,8 +236,8 @@ class ServicesCustomizationDocumentTest : public testing::Test {
   }
 
   void AddCustomizationIdToVp(const std::string& id) {
-    fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kCustomizationIdKey, id);
+    fake_statistics_provider_.SetMachineStatistic(system::kCustomizationIdKey,
+                                                  id);
   }
 
   void AddExpectedManifest(const std::string& id,
@@ -284,7 +284,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   TestingPrefServiceSimple local_state_;
   network::TestURLLoaderFactory loader_factory_;

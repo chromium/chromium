@@ -125,7 +125,7 @@ class AshSignalsDecoratorBrowserTest
   TestingPrefServiceSimple prefs_;
   policy::BrowserPolicyConnectorAsh* connector_;
 
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
                                             false);
   // Set fake serial number.
   fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+      ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
   // Set fake device hostname.
   ash::NetworkHandler::Get()->network_state_handler()->SetHostname(
       kFakeDeviceHostName);

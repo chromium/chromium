@@ -17,8 +17,7 @@
 
 class Profile;
 
-
-namespace chromeos {
+namespace ash {
 class SchedulerConfigurationManagerBase;
 }
 
@@ -36,8 +35,8 @@ class ArcVmDataMigrationNotifier;
 class ArcServiceLauncher {
  public:
   // |scheduler_configuration_manager| must outlive |this| object.
-  explicit ArcServiceLauncher(chromeos::SchedulerConfigurationManagerBase*
-                                  scheduler_configuration_manager);
+  explicit ArcServiceLauncher(
+      ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager);
 
   ArcServiceLauncher(const ArcServiceLauncher&) = delete;
   ArcServiceLauncher& operator=(const ArcServiceLauncher&) = delete;
@@ -101,7 +100,7 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
 
   // |scheduler_configuration_manager_| outlives |this|.
-  chromeos::SchedulerConfigurationManagerBase* const
+  ash::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

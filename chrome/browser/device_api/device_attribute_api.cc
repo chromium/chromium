@@ -109,7 +109,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const absl::optional<base::StringPiece> attribute =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineID();
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   std::move(callback).Run(Result::NewAttribute(
       attribute ? absl::optional<std::string>(attribute.value())
                 : absl::nullopt));

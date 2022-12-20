@@ -13,13 +13,10 @@ class PrefService;
 
 namespace ash {
 class InstallAttributes;
-}
-
-namespace chromeos {
 namespace system {
 class StatisticsProvider;
 }
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
@@ -120,7 +117,7 @@ struct EnrollmentConfig {
   static EnrollmentConfig GetPrescribedEnrollmentConfig(
       const PrefService& local_state,
       const ash::InstallAttributes& install_attributes,
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
   // Returns the respective manual fallback enrollment mode when given an
   // attestation mode.

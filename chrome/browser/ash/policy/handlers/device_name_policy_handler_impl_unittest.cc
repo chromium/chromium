@@ -217,7 +217,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> attributes_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   FakeObserver fake_observer_;
 };
 

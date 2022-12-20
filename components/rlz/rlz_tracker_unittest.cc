@@ -263,8 +263,7 @@ class RlzLibTest : public testing::Test {
   RlzLibTestNoMachineStateHelper m_rlz_test_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::system::FakeStatisticsProvider>
-      statistics_provider_;
+  std::unique_ptr<ash::system::FakeStatisticsProvider> statistics_provider_;
 #endif
 };
 
@@ -283,12 +282,11 @@ void RlzLibTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   statistics_provider_ =
-      std::make_unique<chromeos::system::FakeStatisticsProvider>();
-  chromeos::system::StatisticsProvider::SetTestProvider(
-      statistics_provider_.get());
+      std::make_unique<ash::system::FakeStatisticsProvider>();
+  ash::system::StatisticsProvider::SetTestProvider(statistics_provider_.get());
   statistics_provider_->SetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey,
-      chromeos::system::kShouldSendRlzPingValueTrue);
+      ash::system::kShouldSendRlzPingKey,
+      ash::system::kShouldSendRlzPingValueTrue);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -299,7 +297,7 @@ void RlzLibTest::TearDown() {
   m_rlz_test_helper_.TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
+  ash::system::StatisticsProvider::SetTestProvider(nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1033,8 +1031,8 @@ TEST_F(RlzLibTest, ClearRlzState) {
 TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   // Verify the event is recorded when |kShouldSendRlzPingKey| is true.
   ASSERT_EQ(statistics_provider_->GetMachineStatistic(
-                chromeos::system::kShouldSendRlzPingKey),
-            chromeos::system::kShouldSendRlzPingValueTrue);
+                ash::system::kShouldSendRlzPingKey),
+            ash::system::kShouldSendRlzPingValueTrue);
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
   ExpectEventRecorded(OmniboxFirstSearch(), true);
@@ -1043,11 +1041,11 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   RLZTracker::ClearRlzState();
   ExpectEventRecorded(OmniboxFirstSearch(), false);
   statistics_provider_->SetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey,
-      chromeos::system::kShouldSendRlzPingValueFalse);
+      ash::system::kShouldSendRlzPingKey,
+      ash::system::kShouldSendRlzPingValueFalse);
   ASSERT_EQ(statistics_provider_->GetMachineStatistic(
-                chromeos::system::kShouldSendRlzPingKey),
-            chromeos::system::kShouldSendRlzPingValueFalse);
+                ash::system::kShouldSendRlzPingKey),
+            ash::system::kShouldSendRlzPingValueFalse);
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
   ExpectEventRecorded(OmniboxFirstSearch(), false);
@@ -1055,9 +1053,9 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   // Verify the event is not recorded when |kShouldSendRlzPingKey| does not
   // exist.
   statistics_provider_->ClearMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey);
+      ash::system::kShouldSendRlzPingKey);
   ASSERT_FALSE(statistics_provider_->GetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey));
+      ash::system::kShouldSendRlzPingKey));
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
   ExpectEventRecorded(OmniboxFirstSearch(), false);

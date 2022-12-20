@@ -170,8 +170,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   MockArcAppInstallEventLogUploaderDelegate delegate_;
   std::unique_ptr<ArcAppInstallEventLogUploader> uploader_;
 
-  chromeos::system::ScopedFakeStatisticsProvider
-      scoped_fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
 };
 
 // Make a log upload request. Have serialization and log upload succeed. Verify

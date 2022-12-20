@@ -301,7 +301,7 @@ void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
 void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
     ManagedSessionService* managed_session_service) {
   auto collector = std::make_unique<DeviceStatusCollector>(
-      local_state_, chromeos::system::StatisticsProvider::GetInstance(),
+      local_state_, ash::system::StatisticsProvider::GetInstance(),
       managed_session_service);
 
   status_uploader_ = std::make_unique<StatusUploader>(

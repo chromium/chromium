@@ -10,11 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 class StatisticsProvider;
-}  // namespace system
-}  // namespace chromeos
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -30,7 +28,7 @@ class DeviceManagementService;
 // model, brand code etc.). |service|, |url_loader_factory| and
 // |device_dm_token_callback| are passed to the client as are.
 std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
-    chromeos::system::StatisticsProvider* statistics_provider,
+    ash::system::StatisticsProvider* statistics_provider,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     CloudPolicyClient::DeviceDMTokenCallback device_dm_token_callback);

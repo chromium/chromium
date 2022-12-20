@@ -123,7 +123,7 @@ class TPMFirmwareUpdateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::system::ScopedFakeStatisticsProvider statistics_provider_;
+  system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
 class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {

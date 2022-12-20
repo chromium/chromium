@@ -169,8 +169,8 @@ base::FilePath FindRegulatoryLabelDir() {
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
   const absl::optional<base::StringPiece> region =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kRegionKey);
+      ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          ash::system::kRegionKey);
   if (region && !region->empty()) {
     region_path = GetRegulatoryLabelDirForRegion(region.value());
   }

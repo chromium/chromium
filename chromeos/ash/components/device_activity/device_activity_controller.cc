@@ -162,8 +162,7 @@ DeviceActivityController::DeviceActivityController(
     base::Time chrome_first_run_time)
     : chrome_first_run_time_(chrome_first_run_time),
       chrome_passed_device_params_(chrome_passed_device_params),
-      statistics_provider_(
-          chromeos::system::StatisticsProvider::GetInstance()) {
+      statistics_provider_(system::StatisticsProvider::GetInstance()) {
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerConstructor);

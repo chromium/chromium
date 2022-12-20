@@ -57,8 +57,7 @@ class DeviceActiveUseCaseTest : public testing::Test {
   void SetUp() override {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
 
@@ -86,7 +85,7 @@ class DeviceActiveUseCaseTest : public testing::Test {
 
   // Fake pref service for unit testing the local state.
   TestingPrefServiceSimple local_state_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(DeviceActiveUseCaseTest, ClearSavedState) {

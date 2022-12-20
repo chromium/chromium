@@ -175,9 +175,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_ =
       std::make_unique<base::test::ScopedCommandLine>();
-  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
-      statistics_provider_ =
-          std::make_unique<chromeos::system::ScopedFakeStatisticsProvider>();
+  std::unique_ptr<system::ScopedFakeStatisticsProvider> statistics_provider_ =
+      std::make_unique<system::ScopedFakeStatisticsProvider>();
   std::unique_ptr<TestPrefServiceProvider> prefs_provider_ =
       std::make_unique<TestPrefServiceProvider>();
   std::unique_ptr<TestNotifierSettingsController>

@@ -179,7 +179,7 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
 
 void ChromeOSSystemProfileProvider::InitTaskGetFullHardwareClass(
     base::OnceClosure callback) {
-  chromeos::system::StatisticsProvider::GetInstance()
+  ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
           &ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -217,8 +217,8 @@ void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
 void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
   if (const absl::optional<base::StringPiece> full_hardware_class =
-          chromeos::system::StatisticsProvider::GetInstance()
-              ->GetMachineStatistic("hardware_class")) {
+          ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+              "hardware_class")) {
     full_hardware_class_ = std::string(full_hardware_class.value());
   }
   std::move(callback).Run();

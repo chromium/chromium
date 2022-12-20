@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   const ChromeDeviceMetadataParameters chrome_passed_device_params_;
 
   // Singleton lives throughout class lifetime.
-  chromeos::system::StatisticsProvider* const statistics_provider_;
+  system::StatisticsProvider* const statistics_provider_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

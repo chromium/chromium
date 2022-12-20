@@ -17,7 +17,7 @@
 
 namespace policy {
 
-using chromeos::system::StatisticsProvider;
+using ::ash::system::StatisticsProvider;
 
 // static
 const char EnrollmentRequisitionManager::kNoRequisition[] = "none";
@@ -40,8 +40,7 @@ void EnrollmentRequisitionManager::Initialize() {
       local_state->FindPreference(prefs::kDeviceEnrollmentRequisition);
   if (pref->IsDefaultValue()) {
     const absl::optional<base::StringPiece> requisition =
-        provider->GetMachineStatistic(
-            chromeos::system::kOemDeviceRequisitionKey);
+        provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
 
     if (requisition && !requisition->empty()) {
       // TODO(b/259661300): Remove copy of `requisition` once
@@ -54,13 +53,12 @@ void EnrollmentRequisitionManager::Initialize() {
         SetDeviceEnrollmentAutoStart();
       } else {
         const bool auto_start = StatisticsProvider::FlagValueToBool(
-            provider->GetMachineFlag(
-                chromeos::system::kOemIsEnterpriseManagedKey),
+            provider->GetMachineFlag(ash::system::kOemIsEnterpriseManagedKey),
             /*default_value=*/false);
         local_state->SetBoolean(prefs::kDeviceEnrollmentAutoStart, auto_start);
         const bool can_exit = StatisticsProvider::FlagValueToBool(
             provider->GetMachineFlag(
-                chromeos::system::kOemCanExitEnterpriseEnrollmentKey),
+                ash::system::kOemCanExitEnterpriseEnrollmentKey),
             /*default_value=*/false);
         local_state->SetBoolean(prefs::kDeviceEnrollmentCanExit, can_exit);
       }

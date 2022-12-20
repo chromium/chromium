@@ -61,8 +61,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     DeviceInfoService::Initialize();
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &fake_statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&fake_statistics_provider_);
   }
 
   void TearDown() override {
@@ -139,7 +138,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   FakeServiceConnectionImpl fake_service_connection_;
   ScopedTestDeviceSettingsService scoped_device_settings_service_;
   FakeSessionManagerClient session_manager_client_;
-  chromeos::system::FakeStatisticsProvider fake_statistics_provider_;
+  system::FakeStatisticsProvider fake_statistics_provider_;
   mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
   mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
   mojo::Remote<mojom::MeetDevicesInfo> device_info_remote_;
@@ -219,8 +218,8 @@ TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
 TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestMachineStatisticsInfo) {
   const std::string kExpectedHwid = "kExpectedHwid";
 
-  fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kHardwareClassKey, kExpectedHwid);
+  fake_statistics_provider_.SetMachineStatistic(system::kHardwareClassKey,
+                                                kExpectedHwid);
 
   const auto& details_remote = GetDeviceInfoRemote();
   base::RunLoop().RunUntilIdle();

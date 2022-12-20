@@ -39,14 +39,14 @@ class EnrollmentConfigTest : public testing::TestWithParam<ZeroTouchParam> {
   EnrollmentConfigTest() {
     RegisterLocalState(local_state_.registry());
     statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, "fake-serial");
-    statistics_provider_.SetMachineStatistic(
-        chromeos::system::kHardwareClassKey, "fake-hardware");
+        ash::system::kSerialNumberKeyForTest, "fake-serial");
+    statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
+                                             "fake-hardware");
   }
 
   void SetupZeroTouchFlag();
 
-  chromeos::system::ScopedFakeStatisticsProvider statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
 };
@@ -73,8 +73,8 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Set signals in increasing order of precedence, check results.
 
   // OEM manifest: advertised enrollment.
-  statistics_provider_.SetMachineFlag(
-      chromeos::system::kOemIsEnterpriseManagedKey, true);
+  statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
+                                      true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
@@ -85,7 +85,7 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // from the OEM manifest configuration, so clear the latter to at least
   // verify the pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
-      chromeos::system::kOemIsEnterpriseManagedKey);
+      ash::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
@@ -106,10 +106,10 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 
   // OEM manifest: forced enrollment.
+  statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
+                                      true);
   statistics_provider_.SetMachineFlag(
-      chromeos::system::kOemIsEnterpriseManagedKey, true);
-  statistics_provider_.SetMachineFlag(
-      chromeos::system::kOemCanExitEnterpriseEnrollmentKey, false);
+      ash::system::kOemCanExitEnterpriseEnrollmentKey, false);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
@@ -120,7 +120,7 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // the OEM manifest configuration, so clear the latter to at least verify the
   // pref configuration results in the expect behavior on its own.
   statistics_provider_.ClearMachineFlag(
-      chromeos::system::kOemIsEnterpriseManagedKey);
+      ash::system::kOemIsEnterpriseManagedKey);
   local_state_.SetBoolean(prefs::kDeviceEnrollmentCanExit, false);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
@@ -153,8 +153,8 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
 
   // Advertised enrollment gets ignored.
   local_state_.SetBoolean(prefs::kDeviceEnrollmentAutoStart, true);
-  statistics_provider_.SetMachineFlag(
-      chromeos::system::kOemIsEnterpriseManagedKey, true);
+  statistics_provider_.SetMachineFlag(ash::system::kOemIsEnterpriseManagedKey,
+                                      true);
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);

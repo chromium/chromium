@@ -10,8 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 namespace {
 
@@ -70,10 +69,11 @@ FactoryPingEmbargoState GetPingEmbargoState(
 FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
     StatisticsProvider* statistics_provider) {
   if (statistics_provider->GetMachineStatistic(
-          kEnterpriseManagementEmbargoEndDateKey))
+          kEnterpriseManagementEmbargoEndDateKey)) {
     return GetPingEmbargoState(statistics_provider,
                                kEnterpriseManagementEmbargoEndDateKey,
                                "FactoryPingEmbargo");
+  }
   // Default to the RLZ ping embargo if no value for an enterprise management
   // embargo.
   return GetRlzPingEmbargoState(statistics_provider);
@@ -85,5 +85,4 @@ FactoryPingEmbargoState GetRlzPingEmbargoState(
                              /*uma_prefix=*/nullptr);
 }
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system

@@ -12,13 +12,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::system {
-using ::chromeos::system::kAttestedDeviceIdKey;
-using ::chromeos::system::kDockMacAddressKey;
-using ::chromeos::system::kEthernetMacAddressKey;
-using ::chromeos::system::kManufactureDateKey;
-}  // namespace ash::system
-
 namespace policy {
 
 constexpr char kSerialNumberValue[] = "a_serial_value";

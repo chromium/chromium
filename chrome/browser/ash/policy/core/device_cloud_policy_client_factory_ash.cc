@@ -61,24 +61,24 @@ namespace policy {
 
 // static
 std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
-    chromeos::system::StatisticsProvider* statistics_provider,
+    ash::system::StatisticsProvider* statistics_provider,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     CloudPolicyClient::DeviceDMTokenCallback device_dm_token_callback) {
   return std::make_unique<CloudPolicyClient>(
       EmptyIfAbsent(statistics_provider->GetMachineID()),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey)),
+          ash::system::kHardwareClassKey)),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kRlzBrandCodeKey)),
+          ash::system::kRlzBrandCodeKey)),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kAttestedDeviceIdKey)),
+          ash::system::kAttestedDeviceIdKey)),
       ParseMacAddress(EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kEthernetMacAddressKey))),
+          ash::system::kEthernetMacAddressKey))),
       ParseMacAddress(EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kDockMacAddressKey))),
+          ash::system::kDockMacAddressKey))),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
-          chromeos::system::kManufactureDateKey)),
+          ash::system::kManufactureDateKey)),
       service, url_loader_factory, std::move(device_dm_token_callback));
 }
 

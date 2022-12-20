@@ -28,11 +28,11 @@ class DeviceAttributeAPIUnsetTest : public policy::DevicePolicyCrosBrowserTest {
 
     // Init machine statistic.
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, std::string());
+        ash::system::kSerialNumberKeyForTest, std::string());
   }
 
  private:
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributeAPIUnsetTest, AllAttributes) {
@@ -84,11 +84,11 @@ class DeviceAttributeAPITest : public policy::DevicePolicyCrosBrowserTest {
 
     // Init machine statistic.
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, kSerialNumber);
+        ash::system::kSerialNumberKeyForTest, kSerialNumber);
   }
 
  private:
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributeAPITest, AllAttributes) {

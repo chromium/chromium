@@ -45,8 +45,7 @@ class DeviceActivityControllerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     SessionManagerClient::InitializeFake();
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     DeviceActivityController::RegisterPrefs(local_state()->registry());
 
@@ -65,7 +64,7 @@ class DeviceActivityControllerTest : public testing::Test {
 
   std::unique_ptr<DeviceActivityController> device_activity_controller_;
 
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;

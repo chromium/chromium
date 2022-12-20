@@ -45,7 +45,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
 
   DeviceNamePolicyHandlerImpl(
       ash::CrosSettings* cros_settings,
-      chromeos::system::StatisticsProvider* statistics_provider,
+      ash::system::StatisticsProvider* statistics_provider,
       ash::NetworkStateHandler* handler);
 
   // NetworkStateHandlerObserver overrides
@@ -72,7 +72,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
                            const std::string& new_hostname);
 
   ash::CrosSettings* cros_settings_;
-  chromeos::system::StatisticsProvider* statistics_provider_;
+  ash::system::StatisticsProvider* statistics_provider_;
   ash::NetworkStateHandler* handler_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>

@@ -15,15 +15,17 @@
 
 class PrefService;
 
-namespace chromeos::system {
-class StatisticsProvider;
-}  // namespace chromeos::system
-
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-namespace ash::device_activity {
+namespace ash {
+
+namespace system {
+class StatisticsProvider;
+}
+
+namespace device_activity {
 
 // Fields used in setting device active metadata, that are explicitly
 // required from outside of ASH_CHROME due to the dependency limitations
@@ -248,7 +250,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   std::unique_ptr<PsmDelegateInterface> psm_delegate_;
 
   // Singleton lives throughout class lifetime.
-  chromeos::system::StatisticsProvider* const statistics_provider_;
+  system::StatisticsProvider* const statistics_provider_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // Client Generates protos used in request body of Oprf and Query requests.
@@ -256,6 +258,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       psm_rlwe_client_;
 };
 
-}  // namespace ash::device_activity
+}  // namespace device_activity
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_

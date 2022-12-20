@@ -209,10 +209,9 @@ class CustomizationVPDTest : public InProcessBrowserTest,
                              public testing::WithParamInterface<const char*> {
  public:
   CustomizationVPDTest()
-      : statistics_provider_(new chromeos::system::FakeStatisticsProvider()) {
+      : statistics_provider_(new system::FakeStatisticsProvider()) {
     // Set the instance returned by GetInstance() for testing.
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        statistics_provider_.get());
+    system::StatisticsProvider::SetTestProvider(statistics_provider_.get());
     statistics_provider_->SetMachineStatistic("initial_locale", GetParam());
     statistics_provider_->SetMachineStatistic("keyboard_layout", "");
     statistics_provider_->SetVpdStatus(
@@ -220,8 +219,7 @@ class CustomizationVPDTest : public InProcessBrowserTest,
   }
 
  private:
-  std::unique_ptr<chromeos::system::FakeStatisticsProvider>
-      statistics_provider_;
+  std::unique_ptr<system::FakeStatisticsProvider> statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {

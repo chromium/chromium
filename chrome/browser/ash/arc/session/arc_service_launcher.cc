@@ -125,8 +125,7 @@ ArcServiceLauncher* g_arc_service_launcher = nullptr;
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
-    chromeos::SchedulerConfigurationManagerBase*
-        scheduler_configuration_manager) {
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager) {
   auto delegate = std::make_unique<AdbSideloadingAvailabilityDelegateImpl>();
   auto runner = std::make_unique<ArcSessionRunner>(
       base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
@@ -138,8 +137,7 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
 }  // namespace
 
 ArcServiceLauncher::ArcServiceLauncher(
-    chromeos::SchedulerConfigurationManagerBase*
-        scheduler_configuration_manager)
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : arc_service_manager_(std::make_unique<ArcServiceManager>()),
       arc_session_manager_(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),

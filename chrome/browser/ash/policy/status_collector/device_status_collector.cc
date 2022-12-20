@@ -1552,7 +1552,7 @@ SampledData::~SampledData() = default;
 
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
-    chromeos::system::StatisticsProvider* provider,
+    ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service,
     const VolumeInfoFetcher& volume_info_fetcher,
     const CPUStatisticsFetcher& cpu_statistics_fetcher,
@@ -1724,7 +1724,7 @@ DeviceStatusCollector::DeviceStatusCollector(
 
 DeviceStatusCollector::DeviceStatusCollector(
     PrefService* pref_service,
-    chromeos::system::StatisticsProvider* provider,
+    ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service)
     : DeviceStatusCollector(
           pref_service,
@@ -2286,16 +2286,16 @@ bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
   const absl::optional<base::StringPiece> firmware_write_protect =
       statistics_provider_->GetMachineStatistic(
-          chromeos::system::kFirmwareWriteProtectCurrentKey);
+          ash::system::kFirmwareWriteProtectCurrentKey);
   if (!firmware_write_protect) {
     return false;
   }
 
   if (firmware_write_protect ==
-      chromeos::system::kFirmwareWriteProtectCurrentValueOff) {
+      ash::system::kFirmwareWriteProtectCurrentValueOff) {
     status->set_write_protect_switch(false);
   } else if (firmware_write_protect ==
-             chromeos::system::kFirmwareWriteProtectCurrentValueOn) {
+             ash::system::kFirmwareWriteProtectCurrentValueOn) {
     status->set_write_protect_switch(true);
   } else {
     return false;

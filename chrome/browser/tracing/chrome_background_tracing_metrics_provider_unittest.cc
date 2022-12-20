@@ -152,7 +152,7 @@ class ChromeBackgroundTracingMetricsProviderChromeOSTest
 TEST_F(ChromeBackgroundTracingMetricsProviderChromeOSTest, HardwareClass) {
   // Set a fake hardware class.
   constexpr char kFakeHardwareClass[] = "Fake hardware class";
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider;
   fake_statistics_provider.SetMachineStatistic("hardware_class",
                                                kFakeHardwareClass);
 

@@ -111,8 +111,7 @@ class ChromeOSTermsTest : public testing::Test {
 
   // Sets device region in VPD.
   void SetRegion(const std::string& region) {
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             region);
+    statistics_provider_.SetMachineStatistic(ash::system::kRegionKey, region);
   }
 
   // Starts data request with the |request_url|.
@@ -138,7 +137,7 @@ class ChromeOSTermsTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  chromeos::system::ScopedFakeStatisticsProvider statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
 
   std::unique_ptr<AboutUIHTMLSource> tested_html_source_;
 };

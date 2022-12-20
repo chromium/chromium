@@ -17,8 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
-namespace chromeos {  // NOLINT
-namespace system {
+namespace ash::system {
 
 namespace {
 
@@ -69,7 +68,7 @@ void GetUncommentedString(const std::string& input, std::string* uncommented) {
 // Parse a name from |input|, validating that it is in |format|, and assign it
 // to |name|.
 bool ParseName(const std::string& input,
-               system::NameValuePairsFormat format,
+               NameValuePairsFormat format,
                std::string* name) {
   bool parsed_ok = false;
   switch (format) {
@@ -96,7 +95,7 @@ bool ParseName(const std::string& input,
 // Parse a value from |input|, validating that it is in |format|, and assign it
 // to |name|.
 bool ParseValue(const std::string& input,
-                system::NameValuePairsFormat format,
+                NameValuePairsFormat format,
                 std::string* value) {
   if (format == NameValuePairsFormat::kCrossystem) {
     // The crossystem format allows for comments, remove them.
@@ -232,5 +231,4 @@ bool NameValuePairsParser::ParseNameValuePairs(
   return all_valid;
 }
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system

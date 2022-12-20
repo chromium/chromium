@@ -31,7 +31,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     ServerBackedStateKeysBroker* state_keys_broker,
     DeviceCloudPolicyStoreAsh* policy_store,
     DeviceCloudPolicyManagerAsh* policy_manager,
-    chromeos::system::StatisticsProvider* statistics_provider)
+    ash::system::StatisticsProvider* statistics_provider)
     : enterprise_service_(enterprise_service),
       install_attributes_(install_attributes),
       state_keys_broker_(state_keys_broker),

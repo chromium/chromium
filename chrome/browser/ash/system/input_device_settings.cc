@@ -471,9 +471,9 @@ bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
     return true;
   }
 
-  return chromeos::system::StatisticsProvider::FlagValueToBool(
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineFlag(
-          chromeos::system::kOemKeyboardDrivenOobeKey),
+  return StatisticsProvider::FlagValueToBool(
+      StatisticsProvider::GetInstance()->GetMachineFlag(
+          kOemKeyboardDrivenOobeKey),
       /*default_value=*/false);
 }
 

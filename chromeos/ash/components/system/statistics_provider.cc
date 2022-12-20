@@ -7,7 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 namespace {
 // These are the machine serial number keys that we check in order until we find
@@ -134,4 +134,4 @@ void StatisticsProvider::SetTestProvider(StatisticsProvider* test_provider) {
   g_test_statistics_provider = test_provider;
 }
 
-}  // namespace chromeos::system
+}  // namespace ash::system

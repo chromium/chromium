@@ -132,10 +132,8 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
       maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
 
   // Update the serial number.
-  serial_number_ =
-      std::string(chromeos::system::StatisticsProvider::GetInstance()
-                      ->GetMachineID()
-                      .value_or(""));
+  serial_number_ = std::string(
+      StatisticsProvider::GetInstance()->GetMachineID().value_or(""));
 
   // Update the disabled message.
   const std::string* maybe_disabled_message =
@@ -240,10 +238,8 @@ void DeviceDisablingManager::UpdateFromCrosSettings() {
       browser_policy_connector_->GetEnterpriseEnrollmentDomain();
 
   // Cache the device serial number.
-  serial_number_ =
-      std::string(chromeos::system::StatisticsProvider::GetInstance()
-                      ->GetMachineID()
-                      .value_or(""));
+  serial_number_ = std::string(
+      StatisticsProvider::GetInstance()->GetMachineID().value_or(""));
 
   // If no session or login is in progress, show the device disabled screen.
   delegate_->ShowDeviceDisabledScreen();

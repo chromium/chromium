@@ -77,9 +77,9 @@ std::string DeviceAnnotatedLocation(
 }
 
 std::string DeviceSerialNumber() {
-  return std::string(chromeos::system::StatisticsProvider::GetInstance()
-                         ->GetMachineID()
-                         .value_or(""));
+  return std::string(
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
+          ""));
 }
 
 // Map associating known variables to functions that return the corresponding

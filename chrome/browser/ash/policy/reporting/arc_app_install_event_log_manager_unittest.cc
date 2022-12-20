@@ -166,8 +166,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
         packages_{std::begin(kPackageNames), std::end(kPackageNames)},
         scoped_fake_statistics_provider_(
-            std::make_unique<
-                chromeos::system::ScopedFakeStatisticsProvider>()) {}
+            std::make_unique<ash::system::ScopedFakeStatisticsProvider>()) {}
 
   // testing::Test:
   void SetUp() override {
@@ -307,7 +306,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;
   base::Value::Dict events_value_;
-  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
+  std::unique_ptr<ash::system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
 
   em::AppInstallReportLogEvent event_;

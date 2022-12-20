@@ -630,7 +630,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
+        ash::system::kSerialNumberKeyForTest, "fake_serial_number");
 #endif
 
     SetAnalysisConnector(profile_->GetPrefs(),
@@ -649,7 +649,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 };
 

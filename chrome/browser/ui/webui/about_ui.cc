@@ -147,10 +147,10 @@ CountryRegionMap CreateCountryRegionMap() {
 // Reads device region from VPD. Returns "us" in case of read or parsing errors.
 std::string ReadDeviceRegionFromVpd() {
   std::string region = "us";
-  chromeos::system::StatisticsProvider* provider =
-      chromeos::system::StatisticsProvider::GetInstance();
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
   if (const absl::optional<base::StringPiece> region_statistic =
-          provider->GetMachineStatistic(chromeos::system::kRegionKey)) {
+          provider->GetMachineStatistic(ash::system::kRegionKey)) {
     // We only need the first part of the complex region codes like ca.ansi.
     std::vector<std::string> region_pieces =
         base::SplitString(region_statistic.value(), ".", base::TRIM_WHITESPACE,

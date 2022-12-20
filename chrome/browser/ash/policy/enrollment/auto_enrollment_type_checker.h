@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_TYPE_CHECKER_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_TYPE_CHECKER_H_
 
-namespace chromeos::system {
+namespace ash::system {
 class StatisticsProvider;
-}  // namespace chromeos::system
+}
 
 namespace policy {
 
@@ -77,7 +77,7 @@ class AutoEnrollmentTypeChecker {
   // VPD has actually been read successfully. If VPD read failed, the FRE check
   // is required.
   static FRERequirement GetFRERequirementAccordingToVPD(
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
   // Determines the type of auto-enrollment check that should be done. FRE has a
   // precedence over Initial state determination.
@@ -87,7 +87,7 @@ class AutoEnrollmentTypeChecker {
   // supposed to call this again after the system clock has been synchronized.
   static CheckType DetermineAutoEnrollmentCheckType(
       bool is_system_clock_synchronized,
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
  private:
   // Requirement for initial state determination.
@@ -105,13 +105,13 @@ class AutoEnrollmentTypeChecker {
 
   // Returns requirement for FRE.
   static FRERequirement GetFRERequirement(
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
   // Returns requirement for initial state determination.
   static InitialStateDeterminationRequirement
   GetInitialStateDeterminationRequirement(
       bool is_system_clock_synchronized,
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 };
 
 }  // namespace policy

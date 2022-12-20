@@ -37,8 +37,7 @@ DeviceActiveUseCase::DeviceActiveUseCase(
       psm_use_case_(psm_use_case),
       local_state_(local_state),
       psm_delegate_(std::move(psm_delegate)),
-      statistics_provider_(
-          chromeos::system::StatisticsProvider::GetInstance()) {
+      statistics_provider_(system::StatisticsProvider::GetInstance()) {
   DCHECK(psm_delegate_);
 }
 
@@ -268,8 +267,7 @@ std::string DeviceActiveUseCase::GetFullHardwareClass() const {
   // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
   // from machine statistics fails.
   const absl::optional<base::StringPiece> full_hardware_class =
-      statistics_provider_->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey);
+      statistics_provider_->GetMachineStatistic(system::kHardwareClassKey);
   return std::string(full_hardware_class.value_or(kHardwareClassKeyNotFound));
 }
 

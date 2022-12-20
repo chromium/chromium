@@ -258,7 +258,7 @@ struct ArcSessionDeleter {
 };
 
 class FakeSchedulerConfigurationManager
-    : public chromeos::SchedulerConfigurationManagerBase {
+    : public ash::SchedulerConfigurationManagerBase {
  public:
   FakeSchedulerConfigurationManager() = default;
 

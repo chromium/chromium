@@ -54,8 +54,8 @@ std::string GetBoardName() {
 // parsing its hardware class). Returns "" if it fails.
 std::string GetModelName() {
   if (const absl::optional<base::StringPiece> ret =
-          chromeos::system::StatisticsProvider::GetInstance()
-              ->GetMachineStatistic(chromeos::system::kCustomizationIdKey)) {
+          ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+              ash::system::kCustomizationIdKey)) {
     return std::string(ret.value());
   }
   LOG(WARNING)
@@ -65,8 +65,8 @@ std::string GetModelName() {
   // out of the hardware class. If The hardware class is unavailable, all bets
   // are off.
   const absl::optional<base::StringPiece> hardware_class_statistic =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey);
+      ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          ash::system::kHardwareClassKey);
   if (!hardware_class_statistic) {
     return "";
   }
@@ -131,7 +131,7 @@ std::string TokenHardwareChecker::H(std::string input,
 
 void TokenHardwareChecker::GetData(std::string token_hash,
                                    base::OnceCallback<void(Data)> callback) {
-  chromeos::system::StatisticsProvider::GetInstance()
+  ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
           [](base::OnceCallback<void(Data)> callback, std::string token_hash) {
             base::ThreadPool::PostTaskAndReplyWithResult(

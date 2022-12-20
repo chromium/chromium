@@ -21,14 +21,14 @@ namespace ash {
 
 class SchedulerConfigurationManagerTest
     : public testing::Test,
-      public chromeos::SchedulerConfigurationManagerBase::Observer {
+      public SchedulerConfigurationManagerBase::Observer {
  public:
   SchedulerConfigurationManagerTest() {
     SchedulerConfigurationManager::RegisterLocalStatePrefs(
         local_state_.registry());
   }
 
-  // chromeos::SchedulerConfigurationManagerBase::Observer:
+  // SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override {
     ++configuration_set_count_;
   }

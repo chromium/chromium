@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 namespace {
 
@@ -1018,8 +1018,8 @@ TEST_F(StatisticsProviderImplTest, SetsRegionFromCommandLine) {
           .Build();
 
   base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kCrosRegion, "region_switch");
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(switches::kCrosRegion,
+                                                          "region_switch");
 
   // Load statistics.
   auto provider =
@@ -1151,4 +1151,4 @@ TEST_F(StatisticsProviderImplTest,
   EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey));
 }
 
-}  // namespace chromeos::system
+}  // namespace ash::system

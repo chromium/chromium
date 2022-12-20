@@ -36,7 +36,7 @@ class CommonSignalsDecoratorTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   CommonSignalsDecorator decorator_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

@@ -297,8 +297,7 @@ class DemoSetupTestBase : public OobeBaseTest {
 class DemoSetupArcSupportedTest : public DemoSetupTestBase {
  public:
   DemoSetupArcSupportedTest() {
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             "us");
+    statistics_provider_.SetMachineStatistic(system::kRegionKey, "us");
     statistics_provider_.SetVpdStatus(
         system::StatisticsProvider::VpdStatus::kValid);
   }
@@ -1101,8 +1100,7 @@ class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
   ~DemoSetupVariantCountryCodeRegionTest() override = default;
 
   DemoSetupVariantCountryCodeRegionTest() {
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             "ca.fr");
+    statistics_provider_.SetMachineStatistic(system::kRegionKey, "ca.fr");
   }
 };
 
@@ -1145,8 +1143,7 @@ class DemoSetupVirtualSetRegionCodeTest : public DemoSetupArcSupportedTest {
   ~DemoSetupVirtualSetRegionCodeTest() override = default;
 
   DemoSetupVirtualSetRegionCodeTest() {
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             "nordic");
+    statistics_provider_.SetMachineStatistic(system::kRegionKey, "nordic");
   }
 };
 
@@ -1185,7 +1182,7 @@ class DemoSetupRegionCodeNotExistTest : public DemoSetupArcSupportedTest {
   ~DemoSetupRegionCodeNotExistTest() override = default;
 
   DemoSetupRegionCodeNotExistTest() {
-    statistics_provider_.ClearMachineStatistic(chromeos::system::kRegionKey);
+    statistics_provider_.ClearMachineStatistic(system::kRegionKey);
   }
 };
 
@@ -1217,8 +1214,7 @@ class DemoSetupBlazeyDeviceTest : public DemoSetupArcSupportedTest {
   ~DemoSetupBlazeyDeviceTest() override = default;
 
   DemoSetupBlazeyDeviceTest() {
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             "us");
+    statistics_provider_.SetMachineStatistic(system::kRegionKey, "us");
     feature_list_.InitAndEnableFeature(chromeos::features::kCloudGamingDevice);
   }
 

@@ -77,7 +77,7 @@ class ProfileIdServiceFactoryTest : public testing::Test {
     store_.set_policy_data_for_testing(std::move(policy_data));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, kFakeDeviceID);
+        ash::system::kSerialNumberKeyForTest, kFakeDeviceID);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
@@ -118,7 +118,7 @@ class ProfileIdServiceFactoryTest : public testing::Test {
 #else
   policy::MockCloudPolicyStore store_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||

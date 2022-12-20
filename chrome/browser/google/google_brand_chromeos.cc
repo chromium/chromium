@@ -87,10 +87,10 @@ std::string GetRlzBrand() {
 }
 
 void InitBrand(base::OnceClosure callback) {
-  ::chromeos::system::StatisticsProvider* provider =
-      ::chromeos::system::StatisticsProvider::GetInstance();
+  ::ash::system::StatisticsProvider* provider =
+      ::ash::system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> brand =
-      provider->GetMachineStatistic(::chromeos::system::kRlzBrandCodeKey);
+      provider->GetMachineStatistic(::ash::system::kRlzBrandCodeKey);
   if (brand && IsBrandValid(brand.value())) {
     SetBrand(std::move(callback), std::string(brand.value()));
     return;

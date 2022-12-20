@@ -146,9 +146,9 @@ TEST(BorealisFeaturesUtilTest, DataCanBeBuilt) {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedChromeOSVersionInfo version(
       "CHROMEOS_RELEASE_BOARD=board\n", base::Time());
-  chromeos::system::FakeStatisticsProvider fsp;
-  fsp.SetMachineStatistic(chromeos::system::kCustomizationIdKey, "model");
-  chromeos::system::StatisticsProvider::SetTestProvider(&fsp);
+  ash::system::FakeStatisticsProvider fsp;
+  fsp.SetMachineStatistic(ash::system::kCustomizationIdKey, "model");
+  ash::system::StatisticsProvider::SetTestProvider(&fsp);
 
   base::RunLoop loop;
   TokenHardwareChecker::GetData(

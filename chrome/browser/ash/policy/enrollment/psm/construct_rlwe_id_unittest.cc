@@ -21,16 +21,16 @@ constexpr char kTestBrandCodeHex[] = "54455354";
 
 class ConstructRlweIdTest : public testing::Test {
  public:
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(ConstructRlweIdTest, VerifyConstructedRlweId) {
   // Sets the values for serial number and RLZ brand code as the values must be
   // present to construct the RLWE ID without CHECK-failures.
   fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kSerialNumberKeyForTest, kTestSerialNumber);
-  fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzBrandCodeKey, kTestBrandCode);
+      ash::system::kSerialNumberKeyForTest, kTestSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
+                                                kTestBrandCode);
 
   // RLZ brand code "TEST" (as hex), "/" separator, and serial number "111111".
   const std::string kExpectedRlweIdStr =

@@ -177,8 +177,8 @@ using TestMojoConnectionManagerTest = testing::Test;
 
 TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   // Set fake statistics provider which is needed by crosapi_util.
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
-  chromeos::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+  ash::system::FakeStatisticsProvider statistics_provider_;
+  ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
   // Create temp dir before task environment, just in case lingering tasks need
   // to access it.

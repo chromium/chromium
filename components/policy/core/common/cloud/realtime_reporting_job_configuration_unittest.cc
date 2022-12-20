@@ -152,16 +152,15 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   StrictMock<MockCallbackObserver> callback_observer_;
   DeviceManagementService::Job job_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:
     explicit ScopedFakeSerialNumber(
-        chromeos::system::ScopedFakeStatisticsProvider*
-            fake_statistics_provider) {
+        ash::system::ScopedFakeStatisticsProvider* fake_statistics_provider) {
       // The fake serial number must be set before |configuration_| is
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(
-          chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
+          ash::system::kSerialNumberKeyForTest, "fake_serial_number");
     }
   };
   ScopedFakeSerialNumber fake_serial_number_;

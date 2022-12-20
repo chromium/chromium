@@ -33,10 +33,9 @@ class ArcBridgeHost;
 
 constexpr int64_t kMinimumFreeDiskSpaceBytes = 64 << 20;  // 64MB
 
-class ArcSessionImpl
-    : public ArcSession,
-      public ArcClientAdapter::Observer,
-      public chromeos::SchedulerConfigurationManagerBase::Observer {
+class ArcSessionImpl : public ArcSession,
+                       public ArcClientAdapter::Observer,
+                       public ash::SchedulerConfigurationManagerBase::Observer {
  public:
   // The possible states of the session. Expected state changes are as follows.
   //
@@ -164,11 +163,11 @@ class ArcSessionImpl
   using SystemMemoryInfoCallback =
       base::RepeatingCallback<bool(base::SystemMemoryInfoKB*)>;
 
-  ArcSessionImpl(std::unique_ptr<Delegate> delegate,
-                 chromeos::SchedulerConfigurationManagerBase*
-                     scheduler_configuration_manager,
-                 AdbSideloadingAvailabilityDelegate*
-                     adb_sideloading_availability_delegate);
+  ArcSessionImpl(
+      std::unique_ptr<Delegate> delegate,
+      ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
+      AdbSideloadingAvailabilityDelegate*
+          adb_sideloading_availability_delegate);
 
   ArcSessionImpl(const ArcSessionImpl&) = delete;
   ArcSessionImpl& operator=(const ArcSessionImpl&) = delete;
@@ -200,7 +199,7 @@ class ArcSessionImpl
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
   void SetUseVirtioBlkData(bool use_virtio_blk_data) override;
 
-  // chromeos::SchedulerConfigurationManagerBase::Observer overrides:
+  // ash::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
 
  private:
@@ -291,7 +290,7 @@ class ArcSessionImpl
   std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host_;
 
   int lcd_density_ = 0;
-  chromeos::SchedulerConfigurationManagerBase* const
+  ash::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
 
   // Owned by ArcSessionManager.

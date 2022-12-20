@@ -47,14 +47,14 @@ EnrollmentConfig::~EnrollmentConfig() = default;
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig() {
   return GetPrescribedEnrollmentConfig(
       *g_browser_process->local_state(), *ash::InstallAttributes::Get(),
-      chromeos::system::StatisticsProvider::GetInstance());
+      ash::system::StatisticsProvider::GetInstance());
 }
 
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
     const PrefService& local_state,
     const ash::InstallAttributes& install_attributes,
-    chromeos::system::StatisticsProvider* statistics_provider) {
+    ash::system::StatisticsProvider* statistics_provider) {
   DCHECK(statistics_provider);
 
   EnrollmentConfig config;
@@ -148,15 +148,14 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   const bool pref_enrollment_can_exit =
       local_state.GetBoolean(prefs::kDeviceEnrollmentCanExit);
 
-  const bool oem_is_managed =
-      chromeos::system::StatisticsProvider::FlagValueToBool(
-          statistics_provider->GetMachineFlag(
-              chromeos::system::kOemIsEnterpriseManagedKey),
-          /*default_value=*/false);
+  const bool oem_is_managed = ash::system::StatisticsProvider::FlagValueToBool(
+      statistics_provider->GetMachineFlag(
+          ash::system::kOemIsEnterpriseManagedKey),
+      /*default_value=*/false);
   const bool oem_can_exit_enrollment =
-      chromeos::system::StatisticsProvider::FlagValueToBool(
+      ash::system::StatisticsProvider::FlagValueToBool(
           statistics_provider->GetMachineFlag(
-              chromeos::system::kOemCanExitEnterpriseEnrollmentKey),
+              ash::system::kOemCanExitEnterpriseEnrollmentKey),
           /*default_value=*/true);
 
   // Decide enrollment mode. Give precedence to forced variants.

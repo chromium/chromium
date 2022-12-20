@@ -69,8 +69,7 @@ bool ForceFirstDisplayInternal() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Touch view mode is only available to internal display. We force the
   // display as internal for emulator to test touch view mode.
-  ret = ret ||
-        chromeos::system::StatisticsProvider::GetInstance()->IsRunningOnVm();
+  ret = ret || ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm();
 #endif
   return ret;
 }

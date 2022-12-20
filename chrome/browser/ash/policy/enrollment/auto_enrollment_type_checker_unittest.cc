@@ -15,15 +15,6 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::system {
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-using ::chromeos::system::kEmbargoEndDateGarbageDateThreshold;
-using ::chromeos::system::kFirmwareTypeKey;
-using ::chromeos::system::kFirmwareTypeValueNonchrome;
-using ::chromeos::system::kFirmwareTypeValueNormal;
-using ::chromeos::system::kRlzBrandCodeKey;
-}  // namespace ash::system
-
 namespace {
 
 constexpr char kSerialNumberValue[] = "a_value";

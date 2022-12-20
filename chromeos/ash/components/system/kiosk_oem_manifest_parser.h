@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 
 // Parser for app kiosk OEM manifest files.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) KioskOemManifestParser {
@@ -39,6 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) KioskOemManifestParser {
   static bool Load(const base::FilePath& kiosk_oem_file, Manifest* manifest);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_KIOSK_OEM_MANIFEST_PARSER_H_

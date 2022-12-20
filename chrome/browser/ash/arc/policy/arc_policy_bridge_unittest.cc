@@ -200,8 +200,7 @@ class ArcPolicyBridgeTestBase {
 
   void DoSetUp(bool is_affiliated) {
     // Set up fake StatisticsProvider.
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up ArcBridgeService.
     bridge_service_ = std::make_unique<ArcBridgeService>();
@@ -325,7 +324,7 @@ class ArcPolicyBridgeTestBase {
   TestingProfile* profile() { return profile_; }
   ArcBridgeService* bridge_service() { return bridge_service_.get(); }
   CertStoreService* cert_store_service() { return cert_store_service_; }
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  ash::system::FakeStatisticsProvider statistics_provider_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

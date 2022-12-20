@@ -51,7 +51,7 @@ class ResetScreenTest : public testing::Test {
 
  private:
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment browser_task_environment_;
 };
 

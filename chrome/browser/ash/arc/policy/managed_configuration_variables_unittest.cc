@@ -198,9 +198,8 @@ class ManagedConfigurationVariablesBase {
   void DoSetUp(bool is_affiliated) {
     // Set up fake StatisticsProvider.
     statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, kTestDeviceSerialNumber);
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+        ash::system::kSerialNumberKeyForTest, kTestDeviceSerialNumber);
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.
     auto* const user_manager = new ash::FakeChromeUserManager();
@@ -251,7 +250,7 @@ class ManagedConfigurationVariablesBase {
 
   TestingProfile* profile_;
 
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  ash::system::FakeStatisticsProvider statistics_provider_;
 
   std::unique_ptr<policy::FakeDeviceAttributes> fake_device_attributes_;
 };

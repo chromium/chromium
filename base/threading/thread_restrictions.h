@@ -160,6 +160,9 @@ class LoginEventRecorder;
 class StartupCustomizationDocument;
 class StartupUtils;
 bool CameraAppUIShouldEnableLocalOverride(const std::string&);
+namespace system {
+class StatisticsProviderImpl;
+}  // namespace system
 }  // namespace ash
 namespace audio {
 class OutputDevice;
@@ -196,7 +199,6 @@ class CrashUtil;
 namespace chromeos {
 class BlockingMethodCaller;
 namespace system {
-class StatisticsProviderImpl;
 bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
 }  // namespace system
@@ -749,7 +751,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
 
   // Usage that should be fixed:
   friend class ::NativeBackendKWallet;  // http://crbug.com/125331
-  friend class ::chromeos::system::
+  friend class ::ash::system::
       StatisticsProviderImpl;                      // http://crbug.com/125385
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
   friend class value_store::LeveldbValueStore;     // http://crbug.com/1330845

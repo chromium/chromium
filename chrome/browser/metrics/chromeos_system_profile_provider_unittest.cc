@@ -119,7 +119,7 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
     testing_profile_ = profile_manager_->CreateTestingProfile("test_name");
 
     // Set statistic provider for hardware class tests.
-    chromeos::system::StatisticsProvider::SetTestProvider(
+    ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
 
     // Initialize the login state trackers.
@@ -141,7 +141,7 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
   ash::multidevice_setup::FakeMultiDeviceSetupClient*
       fake_multidevice_setup_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* testing_profile_ = nullptr;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>

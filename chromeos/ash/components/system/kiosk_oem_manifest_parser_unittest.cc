@@ -7,7 +7,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 typedef testing::Test KioskOemManifestParserTest;
 
@@ -25,4 +25,4 @@ TEST_F(KioskOemManifestParserTest, LoadTest) {
   EXPECT_EQ(manifest.device_requisition, std::string("test"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

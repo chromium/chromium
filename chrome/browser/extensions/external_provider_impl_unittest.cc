@@ -244,7 +244,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
   // extensions::ExternalLoader and depends on a functioning StatisticsProvider.
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
 #if BUILDFLAG(IS_WIN)

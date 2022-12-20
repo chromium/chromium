@@ -17,8 +17,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 // The name value pairs formats the parser understands.
 enum class NameValuePairsFormat {
@@ -90,7 +89,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
   NameValueMap* map_;
 };
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_NAME_VALUE_PAIRS_PARSER_H_

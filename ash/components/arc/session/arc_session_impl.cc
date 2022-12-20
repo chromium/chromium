@@ -406,8 +406,7 @@ std::unique_ptr<ArcSessionImpl::Delegate> ArcSessionImpl::CreateDelegate(
 
 ArcSessionImpl::ArcSessionImpl(
     std::unique_ptr<Delegate> delegate,
-    chromeos::SchedulerConfigurationManagerBase*
-        scheduler_configuration_manager,
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
     AdbSideloadingAvailabilityDelegate* adb_sideloading_availability_delegate)
     : delegate_(std::move(delegate)),
       client_(delegate_->CreateClient()),

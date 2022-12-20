@@ -147,7 +147,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
  private:
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };

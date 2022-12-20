@@ -219,11 +219,10 @@ constexpr base::StringPiece kTurkeyRegionCode = "tr";
 constexpr base::StringPiece kTurkeyFLayoutRegionCode = "tr.f";
 
 mojom::MechanicalLayout GetSystemMechanicalLayout() {
-  chromeos::system::StatisticsProvider* stats_provider =
-      chromeos::system::StatisticsProvider::GetInstance();
+  system::StatisticsProvider* stats_provider =
+      system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> layout_string =
-      stats_provider->GetMachineStatistic(
-          chromeos::system::kKeyboardMechanicalLayoutKey);
+      stats_provider->GetMachineStatistic(system::kKeyboardMechanicalLayoutKey);
   if (!layout_string) {
     LOG(ERROR) << "Couldn't determine mechanical layout";
     return mojom::MechanicalLayout::kUnknown;
@@ -241,10 +240,10 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
 }
 
 absl::optional<std::string> GetRegionCode() {
-  chromeos::system::StatisticsProvider* stats_provider =
-      chromeos::system::StatisticsProvider::GetInstance();
+  system::StatisticsProvider* stats_provider =
+      system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> layout_string =
-      stats_provider->GetMachineStatistic(chromeos::system::kRegionKey);
+      stats_provider->GetMachineStatistic(system::kRegionKey);
   if (!layout_string) {
     LOG(ERROR) << "Couldn't determine region";
     return absl::nullopt;

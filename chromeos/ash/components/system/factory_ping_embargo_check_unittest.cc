@@ -9,8 +9,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 namespace {
 
@@ -59,7 +58,7 @@ TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementNoValue) {
 // There is a malformed initial state embargo end date in VPD.
 TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementMalformedValue) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kEnterpriseManagementEmbargoEndDateKey, "blabla");
+      kEnterpriseManagementEmbargoEndDateKey, "blabla");
   EXPECT_EQ(FactoryPingEmbargoState::kMissingOrMalformed,
             GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
 }
@@ -68,7 +67,7 @@ TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementMalformedValue) {
 // future to be plausible.
 TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementInvalidValue) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kEnterpriseManagementEmbargoEndDateKey,
+      kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(15 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kInvalid,
             GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
@@ -78,7 +77,7 @@ TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementInvalidValue) {
 // date.
 TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoNotPassed) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kEnterpriseManagementEmbargoEndDateKey,
+      kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(1 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kNotPassed,
             GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
@@ -88,7 +87,7 @@ TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoNotPassed) {
 // date.
 TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoPassed) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kEnterpriseManagementEmbargoEndDateKey,
+      kEnterpriseManagementEmbargoEndDateKey,
       GenerateEmbargoEndDate(-1 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kPassed,
             GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
@@ -98,8 +97,7 @@ TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoPassed) {
 TEST_F(FactoryPingEmbargoCheckTest,
        EnterpriseManagementFallbackToRlzEmbargoPassed) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzEmbargoEndDateKey,
-      GenerateEmbargoEndDate(-1 /* days_offset */));
+      kRlzEmbargoEndDateKey, GenerateEmbargoEndDate(-1 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kPassed,
             GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
 }
@@ -112,8 +110,7 @@ TEST_F(FactoryPingEmbargoCheckTest, NoValue) {
 
 // There is a malformed RLZ embargo end date in VPD.
 TEST_F(FactoryPingEmbargoCheckTest, MalformedValue) {
-  statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzEmbargoEndDateKey, "blabla");
+  statistics_provider_.SetMachineStatistic(kRlzEmbargoEndDateKey, "blabla");
   EXPECT_EQ(FactoryPingEmbargoState::kMissingOrMalformed,
             GetRlzPingEmbargoState(&statistics_provider_));
 }
@@ -122,8 +119,7 @@ TEST_F(FactoryPingEmbargoCheckTest, MalformedValue) {
 // future to be plausible.
 TEST_F(FactoryPingEmbargoCheckTest, InvalidValue) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzEmbargoEndDateKey,
-      GenerateEmbargoEndDate(15 /* days_offset */));
+      kRlzEmbargoEndDateKey, GenerateEmbargoEndDate(15 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kInvalid,
             GetRlzPingEmbargoState(&statistics_provider_));
 }
@@ -131,8 +127,7 @@ TEST_F(FactoryPingEmbargoCheckTest, InvalidValue) {
 // The current time is before a (valid and plausible) RLZ embargo end date.
 TEST_F(FactoryPingEmbargoCheckTest, EmbargoNotPassed) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzEmbargoEndDateKey,
-      GenerateEmbargoEndDate(1 /* days_offset */));
+      kRlzEmbargoEndDateKey, GenerateEmbargoEndDate(1 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kNotPassed,
             GetRlzPingEmbargoState(&statistics_provider_));
 }
@@ -140,11 +135,9 @@ TEST_F(FactoryPingEmbargoCheckTest, EmbargoNotPassed) {
 // The current time is after a (valid and plausible) RLZ embargo end date.
 TEST_F(FactoryPingEmbargoCheckTest, EmbargoPassed) {
   statistics_provider_.SetMachineStatistic(
-      chromeos::system::kRlzEmbargoEndDateKey,
-      GenerateEmbargoEndDate(-1 /* days_offset */));
+      kRlzEmbargoEndDateKey, GenerateEmbargoEndDate(-1 /* days_offset */));
   EXPECT_EQ(FactoryPingEmbargoState::kPassed,
             GetRlzPingEmbargoState(&statistics_provider_));
 }
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system

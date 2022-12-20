@@ -62,7 +62,7 @@ class EnterpriseDeviceAttributesTest
       : ForceInstalledAffiliatedExtensionApiTest(std::get<0>(GetParam()),
                                                  std::get<1>(GetParam())) {
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, kSerialNumber);
+        ash::system::kSerialNumberKeyForTest, kSerialNumber);
   }
 
  protected:
@@ -88,7 +88,7 @@ class EnterpriseDeviceAttributesTest
   }
 
  private:
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, PRE_Success) {

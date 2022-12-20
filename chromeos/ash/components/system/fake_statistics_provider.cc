@@ -9,7 +9,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 FakeStatisticsProvider::FakeStatisticsProvider() = default;
 
@@ -85,4 +85,4 @@ ScopedFakeStatisticsProvider::~ScopedFakeStatisticsProvider() {
   StatisticsProvider::SetTestProvider(nullptr);
 }
 
-}  // namespace chromeos::system
+}  // namespace ash::system

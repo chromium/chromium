@@ -17,12 +17,12 @@ namespace policy::psm {
 
 psm_rlwe::RlwePlaintextId ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
-  chromeos::system::StatisticsProvider* provider =
-      chromeos::system::StatisticsProvider::GetInstance();
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
   const absl::optional<base::StringPiece> device_serial_number =
       provider->GetMachineID();
   const absl::optional<base::StringPiece> device_rlz_brand_code =
-      provider->GetMachineStatistic(chromeos::system::kRlzBrandCodeKey);
+      provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
 
   // Verify the existence of the device's data.
   CHECK(device_serial_number);

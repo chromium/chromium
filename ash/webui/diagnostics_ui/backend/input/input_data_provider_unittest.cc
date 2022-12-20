@@ -656,9 +656,8 @@ class InputDataProviderTest : public AshTestBase {
     // SetUp, so we can safely invoke CreateTestWidget().
 
     statistics_provider_.SetMachineStatistic(
-        chromeos::system::kKeyboardMechanicalLayoutKey, "ANSI");
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+        system::kKeyboardMechanicalLayoutKey, "ANSI");
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     fake_udev_ = std::make_unique<testing::FakeUdevLoader>();
     widget_ = CreateTestWidget();
@@ -773,7 +772,7 @@ class InputDataProviderTest : public AshTestBase {
   }
 
   std::unique_ptr<testing::FakeUdevLoader> fake_udev_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<views::Widget> widget_;
   // All evdev watchers in use by provider_.
   watchers_t watchers_;
@@ -987,8 +986,8 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_NoExternalKeyboards) {
 }
 
 TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
-  statistics_provider_.SetMachineStatistic(
-      chromeos::system::kKeyboardMechanicalLayoutKey, "ISO");
+  statistics_provider_.SetMachineStatistic(system::kKeyboardMechanicalLayoutKey,
+                                           "ISO");
 
   ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
                          ui::DeviceEvent::ActionType::ADD,
@@ -1070,7 +1069,7 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
 }
 
 TEST_F(InputDataProviderTest, KeyboardRegionDetection) {
-  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey, "jp");
+  statistics_provider_.SetMachineStatistic(system::kRegionKey, "jp");
 
   ui::DeviceEvent event_internal(ui::DeviceEvent::DeviceType::INPUT,
                                  ui::DeviceEvent::ActionType::ADD,
@@ -1099,7 +1098,7 @@ TEST_F(InputDataProviderTest, KeyboardRegionDetection) {
 }
 
 TEST_F(InputDataProviderTest, KeyboardRegionDetection_Failure) {
-  statistics_provider_.ClearMachineStatistic(chromeos::system::kRegionKey);
+  statistics_provider_.ClearMachineStatistic(system::kRegionKey);
 
   ui::DeviceEvent event_internal(ui::DeviceEvent::DeviceType::INPUT,
                                  ui::DeviceEvent::ActionType::ADD,
@@ -1371,7 +1370,7 @@ TEST_F(InputDataProviderTest, SillyDeviceDoesNotCrash) {
 
 TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown1) {
   statistics_provider_.ClearMachineStatistic(
-      chromeos::system::kKeyboardMechanicalLayoutKey);
+      system::kKeyboardMechanicalLayoutKey);
 
   ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
                                      ui::DeviceEvent::ActionType::ADD,
@@ -1401,8 +1400,8 @@ TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown1) {
 }
 
 TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown2) {
-  statistics_provider_.SetMachineStatistic(
-      chromeos::system::kKeyboardMechanicalLayoutKey, kInvalidMechnicalLayout);
+  statistics_provider_.SetMachineStatistic(system::kKeyboardMechanicalLayoutKey,
+                                           kInvalidMechnicalLayout);
   ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
                                      ui::DeviceEvent::ActionType::ADD,
                                      base::FilePath("/dev/input/event6"));

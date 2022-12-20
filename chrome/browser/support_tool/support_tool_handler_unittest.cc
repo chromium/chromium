@@ -133,7 +133,7 @@ class SupportToolHandlerTest : public ::testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set serial number for testing.
     fake_statistics_provider_.SetMachineStatistic("serial_number", "000000");
-    chromeos::system::StatisticsProvider::SetTestProvider(
+    ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
@@ -180,7 +180,7 @@ class SupportToolHandlerTest : public ::testing::Test {
   // The temporary directory that we'll store the output files.
   base::ScopedTempDir temp_dir_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::FakeStatisticsProvider fake_statistics_provider_;
+  ash::system::FakeStatisticsProvider fake_statistics_provider_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::TaskEnvironment task_environment;
 };

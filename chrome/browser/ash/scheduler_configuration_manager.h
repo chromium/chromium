@@ -28,8 +28,7 @@ class DebugDaemonClient;
 // For more information on why H/T is configurable, see
 // https://www.chromium.org/chromium-os/mds-on-chromeos
 //
-class SchedulerConfigurationManager
-    : public chromeos::SchedulerConfigurationManagerBase {
+class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
  public:
   SchedulerConfigurationManager(DebugDaemonClient* debug_daemon_client,
                                 PrefService* local_state);
@@ -42,7 +41,7 @@ class SchedulerConfigurationManager
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  // chromeos::SchedulerConfigurationManagerBase overrides:
+  // SchedulerConfigurationManagerBase overrides:
   absl::optional<std::pair<bool, size_t>> GetLastReply() const override;
 
  private:

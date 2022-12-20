@@ -177,15 +177,15 @@ class DeviceCloudPolicyManagerAshTest
   DeviceCloudPolicyManagerAshTest()
       : state_keys_broker_(&session_manager_client_), store_(nullptr) {
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kSerialNumberKeyForTest, "test_sn");
+        ash::system::kSerialNumberKeyForTest, "test_sn");
     fake_statistics_provider_.SetMachineStatistic(
-        chromeos::system::kHardwareClassKey, "test_hw");
+        ash::system::kHardwareClassKey, "test_hw");
     session_manager_client_.AddObserver(this);
   }
 
   ~DeviceCloudPolicyManagerAshTest() override {
     session_manager_client_.RemoveObserver(this);
-    chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
   }
 
   virtual bool ShouldRegisterWithCert() const { return false; }
@@ -346,7 +346,7 @@ class DeviceCloudPolicyManagerAshTest
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   bool set_empty_system_salt_ = false;
   ServerBackedStateKeysBroker state_keys_broker_;
   StrictMock<ash::attestation::MockAttestationFlow> mock_attestation_flow_;

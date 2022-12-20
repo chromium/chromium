@@ -48,9 +48,9 @@ std::string DeviceAttributesImpl::GetDeviceAssetID() const {
 }
 
 std::string DeviceAttributesImpl::GetDeviceSerialNumber() const {
-  return std::string(chromeos::system::StatisticsProvider::GetInstance()
-                         ->GetMachineID()
-                         .value_or(""));
+  return std::string(
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
+          ""));
 }
 
 std::string DeviceAttributesImpl::GetMachineName() const {

@@ -7,8 +7,7 @@
 #include "base/command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 // A parameterized test class running tests for all the formats that are
 // compatible with VPD dumps.
@@ -196,5 +195,4 @@ TEST(NameValuePairsParser, DeletePairsWithValue) {
   EXPECT_EQ("good", map["baz"]);
 }
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system

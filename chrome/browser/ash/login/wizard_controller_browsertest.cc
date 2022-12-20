@@ -1380,8 +1380,8 @@ class WizardControllerDeviceStateExplicitRequirementTest
  protected:
   WizardControllerDeviceStateExplicitRequirementTest() {
     if (IsFREExplicitlyRequired()) {
-      fake_statistics_provider_.SetMachineStatistic(
-          chromeos::system::kCheckEnrollmentKey, "1");
+      fake_statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey,
+                                                    "1");
     }
   }
 

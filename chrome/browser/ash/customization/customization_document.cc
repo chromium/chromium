@@ -319,11 +319,11 @@ StartupCustomizationDocument::StartupCustomizationDocument()
                            &startup_customization_manifest);
     LoadManifestFromFile(startup_customization_manifest);
   }
-  Init(chromeos::system::StatisticsProvider::GetInstance());
+  Init(system::StatisticsProvider::GetInstance());
 }
 
 StartupCustomizationDocument::StartupCustomizationDocument(
-    chromeos::system::StatisticsProvider* statistics_provider,
+    system::StatisticsProvider* statistics_provider,
     const std::string& manifest)
     : CustomizationDocument(kAcceptedManifestVersion) {
   LoadManifestFromString(manifest);
@@ -339,7 +339,7 @@ StartupCustomizationDocument* StartupCustomizationDocument::GetInstance() {
 }
 
 void StartupCustomizationDocument::Init(
-    chromeos::system::StatisticsProvider* statistics_provider) {
+    system::StatisticsProvider* statistics_provider) {
   if (IsReady()) {
     const std::string* initial_locale_ptr =
         root_->FindString(kInitialLocaleAttr);
@@ -358,7 +358,7 @@ void StartupCustomizationDocument::Init(
 
     if (const absl::optional<base::StringPiece> hwid =
             statistics_provider->GetMachineStatistic(
-                chromeos::system::kHardwareClassKey)) {
+                system::kHardwareClassKey)) {
       base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
       if (hwid_list) {
         for (const base::Value& hwid_value : *hwid_list) {
@@ -401,18 +401,17 @@ void StartupCustomizationDocument::Init(
 
   // If manifest doesn't exist still apply values from VPD.
   if (const absl::optional<base::StringPiece> locale_statistic =
-          statistics_provider->GetMachineStatistic(
-              chromeos::system::kInitialLocaleKey)) {
+          statistics_provider->GetMachineStatistic(system::kInitialLocaleKey)) {
     initial_locale_ = std::string(locale_statistic.value());
   }
   if (const absl::optional<base::StringPiece> timezone_statistic =
           statistics_provider->GetMachineStatistic(
-              chromeos::system::kInitialTimezoneKey)) {
+              system::kInitialTimezoneKey)) {
     initial_timezone_ = std::string(timezone_statistic.value());
   }
   if (const absl::optional<base::StringPiece> keyboard_statistic =
           statistics_provider->GetMachineStatistic(
-              chromeos::system::kKeyboardLayoutKey)) {
+              system::kKeyboardLayoutKey)) {
     keyboard_layout_ = std::string(keyboard_statistic.value());
   }
   configured_locales_ = base::SplitString(
@@ -589,10 +588,10 @@ void ServicesCustomizationDocument::StartFetching() {
     return;
 
   if (!url_.is_valid()) {
-    chromeos::system::StatisticsProvider* provider =
-        chromeos::system::StatisticsProvider::GetInstance();
+    system::StatisticsProvider* provider =
+        system::StatisticsProvider::GetInstance();
     const absl::optional<base::StringPiece> customization_id =
-        provider->GetMachineStatistic(chromeos::system::kCustomizationIdKey);
+        provider->GetMachineStatistic(system::kCustomizationIdKey);
     if (customization_id && !customization_id->empty()) {
       url_ = GURL(base::StringPrintf(
           kManifestUrl, base::ToLowerASCII(customization_id.value()).c_str()));

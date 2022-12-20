@@ -19,12 +19,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
+namespace system {
+class StatisticsProvider;
+}
 class InstallAttributes;
 }  // namespace ash
-
-namespace chromeos::system {
-class StatisticsProvider;
-}  // namespace chromeos::system
 
 namespace policy {
 class CloudPolicyClient;
@@ -51,7 +50,7 @@ class DeviceCloudPolicyInitializer
       ServerBackedStateKeysBroker* state_keys_broker,
       DeviceCloudPolicyStoreAsh* policy_store,
       DeviceCloudPolicyManagerAsh* policy_manager,
-      chromeos::system::StatisticsProvider* statistics_provider);
+      ash::system::StatisticsProvider* statistics_provider);
 
   DeviceCloudPolicyInitializer(const DeviceCloudPolicyInitializer&) = delete;
   DeviceCloudPolicyInitializer& operator=(const DeviceCloudPolicyInitializer&) =
@@ -86,7 +85,7 @@ class DeviceCloudPolicyInitializer
   ServerBackedStateKeysBroker* state_keys_broker_;
   DeviceCloudPolicyStoreAsh* policy_store_;
   DeviceCloudPolicyManagerAsh* policy_manager_;
-  chromeos::system::StatisticsProvider* statistics_provider_;
+  ash::system::StatisticsProvider* statistics_provider_;
   bool is_initialized_ = false;
   bool policy_manager_store_ready_notified_ = false;
 

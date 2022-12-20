@@ -340,8 +340,8 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
 // Static function to default region from VPD.
 static std::string GetDefaultRegion() {
   const absl::optional<base::StringPiece> region_code =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kRegionKey);
+      system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kRegionKey);
   if (region_code) {
     std::string region_code_upper_case =
         base::ToUpperASCII(region_code.value());

@@ -107,12 +107,11 @@ class BrowserUtilTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   }
 
   void TearDown() override {
-    chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -132,7 +131,7 @@ class BrowserUtilTest : public testing::Test {
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  ash::system::FakeStatisticsProvider statistics_provider_;
 };
 
 class LacrosSupportBrowserUtilTest : public BrowserUtilTest {

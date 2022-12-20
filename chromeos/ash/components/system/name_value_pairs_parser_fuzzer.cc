@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/system/name_value_pairs_parser.h"
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 
 // We need a class that can be friend of NameValuePairsParser because we fuzz
 // input to private methods that underpin the public methods.
@@ -59,11 +58,10 @@ class NameValuePairsParserFuzzer {
   NameValuePairsParser::NameValueMap name_value_map_;
 };
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace ash::system
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  chromeos::system::NameValuePairsParserFuzzer fuzzer;
+  ash::system::NameValuePairsParserFuzzer fuzzer;
   fuzzer.testOneInput(data, size);
   return 0;
 }

@@ -64,8 +64,7 @@ class TwentyEightDayActiveUseCaseImplTest : public testing::Test {
 
     DeviceActivityController::RegisterPrefs(local_state_.registry());
 
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
     twenty_eight_day_active_use_case_impl_ =
@@ -85,7 +84,7 @@ class TwentyEightDayActiveUseCaseImplTest : public testing::Test {
   // Fake pref service for unit testing the local state.
   TestingPrefServiceSimple local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(TwentyEightDayActiveUseCaseImplTest,

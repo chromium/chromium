@@ -555,8 +555,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   // For testing purposes and the internal use (by the other ctor) only.
   explicit ArcVmClientAdapter(const FileSystemStatusRewriter& rewriter)
       : delegate_(std::make_unique<ArcVmClientAdapterDelegate>()),
-        is_host_on_vm_(chromeos::system::StatisticsProvider::GetInstance()
-                           ->IsRunningOnVm()),
+        is_host_on_vm_(
+            ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm()),
         file_system_status_rewriter_for_testing_(rewriter) {
     auto* client = GetConciergeClient();
     client->AddVmObserver(this);

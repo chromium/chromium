@@ -30,7 +30,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/system/kiosk_oem_manifest_parser.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 namespace {
 
@@ -306,7 +306,7 @@ absl::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
 
   // Test region should override any other value.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kCrosRegion)) {
+          switches::kCrosRegion)) {
     if (const absl::optional<base::StringPiece> region_result =
             GetRegionalInformation(name))
       return region_result;
@@ -473,9 +473,9 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
 
   // Set region from command line if present.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(ash::switches::kCrosRegion)) {
+  if (command_line->HasSwitch(switches::kCrosRegion)) {
     const std::string region =
-        command_line->GetSwitchValueASCII(ash::switches::kCrosRegion);
+        command_line->GetSwitchValueASCII(switches::kCrosRegion);
     machine_info_[kRegionKey] = region;
     VLOG(1) << "CrOS region set to '" << region << "'";
   }
@@ -640,4 +640,4 @@ StatisticsProviderImpl::GetRegionalInformation(base::StringPiece name) const {
   return absl::nullopt;
 }
 
-}  // namespace chromeos::system
+}  // namespace ash::system

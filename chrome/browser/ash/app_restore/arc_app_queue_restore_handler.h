@@ -109,7 +109,7 @@ class ArcAppQueueRestoreHandler
       public wm::ActivationChangeObserver,
       public aura::EnvObserver,
       public aura::WindowObserver,
-      public chromeos::SchedulerConfigurationManagerBase::Observer {
+      public SchedulerConfigurationManagerBase::Observer {
  public:
   struct WindowInfo {
     std::string app_id;
@@ -155,7 +155,7 @@ class ArcAppQueueRestoreHandler
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // chromeos::SchedulerConfigurationManagerBase::Observer:
+  // SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
 
   void set_desk_template_launch_id(int32_t desk_template_launch_id) {

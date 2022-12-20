@@ -92,8 +92,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   void SetUp() override {
     RegisterLocalState(pref_service_.registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     policy::EnrollmentRequisitionManager::Initialize();
   }
 
@@ -233,7 +232,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   TestingPrefServiceSimple pref_service_;
 
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
 
   std::unique_ptr<EnrollmentScreen> enrollment_screen_;
   WizardContext wizard_context_;

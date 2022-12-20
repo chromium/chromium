@@ -60,8 +60,7 @@ class RlzLibTestBase : public RlzLibTestNoMachineState {
   void TearDown() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::system::FakeStatisticsProvider>
-      statistics_provider_;
+  std::unique_ptr<ash::system::FakeStatisticsProvider> statistics_provider_;
 #endif
 };
 

@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A base class for SchedulerConfigurationManager.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
@@ -47,6 +47,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_SCHEDULER_CONFIGURATION_MANAGER_BASE_H_

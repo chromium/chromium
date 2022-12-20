@@ -83,26 +83,25 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 absl::optional<std::string> StatusCollector::GetBootMode(
-    chromeos::system::StatisticsProvider* statistics_provider) {
+    ash::system::StatisticsProvider* statistics_provider) {
   const absl::optional<base::StringPiece> dev_switch_mode =
-      statistics_provider->GetMachineStatistic(
-          chromeos::system::kDevSwitchBootKey);
+      statistics_provider->GetMachineStatistic(ash::system::kDevSwitchBootKey);
   if (!dev_switch_mode) {
     return absl::nullopt;
   }
 
-  if (dev_switch_mode == chromeos::system::kDevSwitchBootValueDev) {
+  if (dev_switch_mode == ash::system::kDevSwitchBootValueDev) {
     return std::string("Dev");
   }
 
-  if (dev_switch_mode == chromeos::system::kDevSwitchBootValueVerified) {
+  if (dev_switch_mode == ash::system::kDevSwitchBootValueVerified) {
     return std::string("Verified");
   }
 
   return absl::nullopt;
 }
 
-StatusCollector::StatusCollector(chromeos::system::StatisticsProvider* provider,
+StatusCollector::StatusCollector(ash::system::StatisticsProvider* provider,
                                  ash::CrosSettings* cros_settings,
                                  base::Clock* clock)
     : statistics_provider_(provider),

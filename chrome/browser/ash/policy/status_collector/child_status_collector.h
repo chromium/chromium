@@ -25,11 +25,9 @@
 
 class Profile;
 
-namespace chromeos {
-namespace system {
+namespace ash::system {
 class StatisticsProvider;
 }
-}  // namespace chromeos
 
 class PrefService;
 
@@ -54,7 +52,7 @@ class ChildStatusCollector : public StatusCollector,
   // distance from midnight.
   ChildStatusCollector(PrefService* pref_service,
                        Profile* profile,
-                       chromeos::system::StatisticsProvider* provider,
+                       ash::system::StatisticsProvider* provider,
                        const AndroidStatusFetcher& android_status_fetcher,
                        base::TimeDelta activity_day_start);
 

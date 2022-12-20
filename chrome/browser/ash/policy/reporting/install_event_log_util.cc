@@ -98,9 +98,9 @@ std::string GetTimeString(const base::Time& timestamp) {
 }  // namespace
 
 std::string GetSerialNumber() {
-  return std::string(chromeos::system::StatisticsProvider::GetInstance()
-                         ->GetMachineID()
-                         .value_or(""));
+  return std::string(
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
+          ""));
 }
 
 base::Value::List ConvertExtensionProtoToValue(

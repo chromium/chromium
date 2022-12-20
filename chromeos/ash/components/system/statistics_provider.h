@@ -10,7 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos::system {
+namespace ash::system {
 
 // Activation date key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
@@ -225,23 +225,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
   virtual ~StatisticsProvider() = default;
 };
 
-}  // namespace chromeos::system
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash::system {
-using ::chromeos::system::kActivateDateKey;
-using ::chromeos::system::kBlockDevModeKey;
-using ::chromeos::system::kCheckEnrollmentKey;
-using ::chromeos::system::kEnterpriseManagementEmbargoEndDateKey;
-using ::chromeos::system::kHardwareClassKey;
-using ::chromeos::system::kIsVmKey;
-using ::chromeos::system::kIsVmValueFalse;
-using ::chromeos::system::kIsVmValueTrue;
-using ::chromeos::system::kOemKeyboardDrivenOobeKey;
-using ::chromeos::system::kRlzBrandCodeKey;
-using ::chromeos::system::kSerialNumberKeyForTest;
-using ::chromeos::system::StatisticsProvider;
 }  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_H_

@@ -167,13 +167,12 @@ bool IsMachineHWIDCorrect() {
   if (!base::SysInfo::IsRunningOnChromeOS())
     return true;
 
-  chromeos::system::StatisticsProvider* stats =
-      chromeos::system::StatisticsProvider::GetInstance();
+  system::StatisticsProvider* stats = system::StatisticsProvider::GetInstance();
   if (stats->IsRunningOnVm())
     return true;
 
   const absl::optional<base::StringPiece> hwid =
-      stats->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+      stats->GetMachineStatistic(system::kHardwareClassKey);
   if (!hwid) {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";
     return false;

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 
-namespace chromeos {
+namespace ash {
 
 SchedulerConfigurationManagerBase::SchedulerConfigurationManagerBase() =
     default;
@@ -21,4 +21,4 @@ void SchedulerConfigurationManagerBase::RemoveObserver(
   observer_list_.RemoveObserver(obs);
 }
 
-}  // namespace chromeos
+}  // namespace ash

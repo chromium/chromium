@@ -121,10 +121,9 @@ void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
   // string. This is to be consistent with user policy identity string
   // expansions.
   base::flat_map<std::string, std::string> substitutions;
-  substitutions[::onc::substitutes::kDeviceSerialNumber] =
-      std::string(chromeos::system::StatisticsProvider::GetInstance()
-                      ->GetMachineID()
-                      .value_or(""));
+  substitutions[::onc::substitutes::kDeviceSerialNumber] = std::string(
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
+          ""));
   substitutions[::onc::substitutes::kDeviceAssetId] =
       device_asset_id_fetcher_.Run();
 

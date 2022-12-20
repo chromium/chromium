@@ -9,7 +9,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -59,4 +59,4 @@ bool KioskOemManifestParser::Load(const base::FilePath& kiosk_oem_file,
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

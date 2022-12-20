@@ -55,11 +55,11 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
   std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::StatisticsProvider* provider =
-      chromeos::system::StatisticsProvider::GetInstance();
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
 
   const absl::optional<base::StringPiece> hwclass =
-      provider->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+      provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   if (!hwclass) {
     LOG(ERROR) << "Failed to get machine information";
   }

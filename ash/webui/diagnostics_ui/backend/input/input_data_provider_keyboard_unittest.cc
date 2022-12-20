@@ -130,13 +130,11 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    chromeos::system::StatisticsProvider::SetTestProvider(
-        &statistics_provider_);
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     statistics_provider_.SetMachineStatistic(
-        chromeos::system::kKeyboardMechanicalLayoutKey, "ANSI");
-    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                             "us");
+        system::kKeyboardMechanicalLayoutKey, "ANSI");
+    statistics_provider_.SetMachineStatistic(system::kRegionKey, "us");
 
     keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
         &device_information, &aux_data_);
@@ -166,7 +164,7 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
  protected:
   InputDeviceInformation device_information;
   std::unique_ptr<InputDataProviderKeyboard> input_data_provider_keyboard_;
-  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  system::FakeStatisticsProvider statistics_provider_;
   mojom::KeyboardInfoPtr keyboard_info_;
   InputDataProviderKeyboard::AuxData aux_data_;
 };
@@ -312,7 +310,7 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesWithZeroScanCodes) {
 
 TEST_F(VivaldiKeyboardTestBase, TurkishNoFLayout) {
   SetCurrentImeId(std::string(kTurkishKeyboardLayoutId));
-  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+  statistics_provider_.SetMachineStatistic(system::kRegionKey,
                                            std::string(kTurkeyRegionCode));
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
@@ -323,7 +321,7 @@ TEST_F(VivaldiKeyboardTestBase, TurkishNoFLayout) {
 
 TEST_F(VivaldiKeyboardTestBase, TurkishFLayout) {
   SetCurrentImeId(std::string(kTurkishKeyboardFLayoutId));
-  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+  statistics_provider_.SetMachineStatistic(system::kRegionKey,
                                            std::string(kTurkeyRegionCode));
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
@@ -361,8 +359,8 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(MechanicalLayoutTest, CheckLayout) {
-  statistics_provider_.SetMachineStatistic(
-      chromeos::system::kKeyboardMechanicalLayoutKey, layout_string_);
+  statistics_provider_.SetMachineStatistic(system::kKeyboardMechanicalLayoutKey,
+                                           layout_string_);
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);
@@ -391,8 +389,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(RegionCodeTest, CheckRegionCode) {
-  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
-                                           region_code_);
+  statistics_provider_.SetMachineStatistic(system::kRegionKey, region_code_);
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);

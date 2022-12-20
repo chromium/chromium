@@ -54,7 +54,7 @@ class DeviceAttributesTest : public DevicePolicyCrosBrowserTest {
   DeviceAttributesTest() {
     device_state_.set_skip_initial_policy_setup(true);
     fake_statistics_provider_.SetVpdStatus(
-        chromeos::system::StatisticsProvider::VpdStatus::kValid);
+        ash::system::StatisticsProvider::VpdStatus::kValid);
   }
 
   ~DeviceAttributesTest() override = default;
@@ -67,7 +67,7 @@ class DeviceAttributesTest : public DevicePolicyCrosBrowserTest {
   DeviceAttributesImpl attributes_;
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   fake_statistics_provider_.SetMachineStatistic(
-      chromeos::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+      ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
 
   // Verify returned attributes correspond to what was set.
   EXPECT_EQ(kFakeDomain, attributes_.GetEnterpriseEnrollmentDomain());

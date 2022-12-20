@@ -26,7 +26,7 @@ void MetricsAsh::GetFullHardwareClass(GetFullHardwareClassCallback callback) {
 
   callbacks_.push_back(std::move(callback));
   if (callbacks_.size() == 1) {
-    chromeos::system::StatisticsProvider::GetInstance()
+    ash::system::StatisticsProvider::GetInstance()
         ->ScheduleOnMachineStatisticsLoaded(
             base::BindOnce(&MetricsAsh::OnMachineStatisticsLoaded,
                            weak_ptr_factory_.GetWeakPtr()));
@@ -35,7 +35,7 @@ void MetricsAsh::GetFullHardwareClass(GetFullHardwareClassCallback callback) {
 
 void MetricsAsh::OnMachineStatisticsLoaded() {
   const absl::optional<base::StringPiece> full_hardware_class =
-      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           "hardware_class");
   if (full_hardware_class) {
     full_hardware_class_ = std::string(full_hardware_class.value());
