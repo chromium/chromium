@@ -173,9 +173,14 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
       return base::subtle::PlatformSharedMemoryRegion();
   }
 
+  base::UnguessableToken guid =
+      internal::PlatformHandleInternal::UnmarshalUnguessableToken(&mojo_guid);
+  if (guid.is_empty()) {
+    return base::subtle::PlatformSharedMemoryRegion();
+  }
+
   return base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(region_handle), mode, size,
-      internal::PlatformHandleInternal::UnmarshalUnguessableToken(&mojo_guid));
+      std::move(region_handle), mode, size, std::move(guid));
 }
 
 ScopedHandle WrapPlatformHandle(PlatformHandle handle) {
