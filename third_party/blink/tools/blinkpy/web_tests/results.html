@@ -820,11 +820,11 @@ const Report = {
       traversal.html.push(`<pre class="warn">
 # The following script doesn't properly handle fallbacks. For example, if the
 # script changes a baseline that is in the fallback path of a test variant, the
-# test variant may be broken. Also this script will stop working when we finish
-# migrating results.html to ResultDB (https://crbug.com/1382949). Please use
-# blink_tool.py rebaseline-cl instead. You can use --builders=<builder> to
-# rebaseline for one builder, which can achieve basically the same result as
-# this script (but with correct fallback handling).
+# test variant may be broken. When possible, please use
+#   blink_tool.py rebaseline-cl
+# instead. You can use --builders=<builder> to rebaseline for one builder, which
+# can achieve basically the same result as this script (but with correct
+# fallback handling).
 </pre>`);
       traversal.html.push(`<pre>
 # Before running this script, you should cd into the proper baseline directory.
@@ -861,18 +861,21 @@ const Report = {
       traversal.rebaselineDir = dir;
     }
     for (let i=0; i<actualNames.length; i++) {
-      let resultLink;
-      parser.resultLink(actualNames[i]).then((href) => { resultLink = href; });
-      // This works only if resultLink() fulfills immediately.
-      console.assert(resultLink);
-      let url = new URL(resultLink, document.baseURI);
-      if (url.href.startsWith('file://')) {
-        let actualFile = url.href.substring('file://'.length);
-        traversal.html.push(`<div>cp ${actualFile} ${parser.basename + expectedNames[i]};</div>`);
-      } else {
-        traversal.html.push(`<div>wget ${url.href};</div>`);
-        traversal.html.push(`<div>mv ${parser.basename + actualNames[i]} ${parser.basename + expectedNames[i]};</div>`);
-      }
+      traversal.waitCount = (traversal.waitCount || 0) + 1;
+      let index = traversal.html.length;
+      traversal.html.push('');
+      parser.resultLink(actualNames[i]).then((href) => {
+        let url = new URL(href, document.baseURI);
+        if (url.href.startsWith('file://')) {
+          let actualFile = url.href.substring('file://'.length);
+          traversal.html[index] = `<div>cp "${actualFile}" "${parser.basename + expectedNames[i]}";</div>`;
+        } else {
+          traversal.html[index] =
+              `<div>wget "${url.href}";</div>
+               <div>mv "${parser.basename + actualNames[i]}" "${parser.basename + expectedNames[i]}";</div>`;
+        }
+        traversal.waitCount--;
+      });
     }
     traversal.rebaselinedTests = `${traversal.rebaselinedTests || ''} ${parser.dir}${parser.file}`;
   },
@@ -1210,6 +1213,10 @@ const Query = {
     let chunkSize = 1000;
     let index = 0;
     let callback = _ => {
+      if (traversal.waitCount) {
+        this.currentRAF = window.requestAnimationFrame(callback);
+        return;
+      }
       this.currentRAF = null;
       let html = traversal.html.slice(index, index + chunkSize);
       report.render(html, document.querySelector("#report"));
@@ -1228,7 +1235,6 @@ const Query = {
       this.updateFilters();
       this.currentRAF = window.requestAnimationFrame(callback);
     }, 0);
-    return this.currentPromise;
   }
 }; // Query
 
