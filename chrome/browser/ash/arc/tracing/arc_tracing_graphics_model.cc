@@ -1424,7 +1424,7 @@ base::Value::List SerializeEvents(
   return list;
 }
 
-// Helper that serializes |events| to the |base::DictionaryValue|.
+// Helper that serializes |events| to the |base::Value::Dict|.
 base::Value::Dict SerializeEventsContainer(
     const ArcTracingGraphicsModel::EventsContainer& events) {
   base::Value::Dict dictionary;

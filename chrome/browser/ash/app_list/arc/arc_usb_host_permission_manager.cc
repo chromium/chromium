@@ -492,14 +492,11 @@ void ArcUsbHostPermissionManager::UpdateArcUsbAccessPermission(
   if (!usb_device_entry.IsPersistent())
     return;
 
-  base::DictionaryValue new_permission;
-  new_permission.SetKey(kUsbSerialNumber,
-                        base::Value(usb_device_entry.serial_number));
-  new_permission.SetKey(kUsbDeviceName,
-                        base::Value(usb_device_entry.device_name));
-  new_permission.SetKey(kUsbVendorId, base::Value(usb_device_entry.vendor_id));
-  new_permission.SetKey(kUsbProductId,
-                        base::Value(usb_device_entry.product_id));
+  base::Value::Dict new_permission;
+  new_permission.Set(kUsbSerialNumber, usb_device_entry.serial_number);
+  new_permission.Set(kUsbDeviceName, usb_device_entry.device_name);
+  new_permission.Set(kUsbVendorId, usb_device_entry.vendor_id);
+  new_permission.Set(kUsbProductId, usb_device_entry.product_id);
 
   base::Value* access_permission_list_value =
       arc_app_list_prefs_->GetPackagePrefs(package_name, kUsbAccessPermission);
@@ -515,7 +512,8 @@ void ArcUsbHostPermissionManager::UpdateArcUsbAccessPermission(
                                          base::Value(base::Value::Type::LIST));
   }
   arc_app_list_prefs_->GetPackagePrefs(package_name, kUsbAccessPermission)
-      ->Append(std::move(new_permission));
+      ->GetList()
+      .Append(std::move(new_permission));
 }
 
 void ArcUsbHostPermissionManager::ClearPermissionForTesting() {

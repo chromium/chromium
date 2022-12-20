@@ -526,10 +526,10 @@ bool SetTouchMode(bool enable) {
   if (!intent_helper_instance)
     return false;
 
-  base::DictionaryValue extras;
-  extras.SetBoolKey("inTouchMode", enable);
+  base::Value::Dict extras;
+  extras.Set("inTouchMode", enable);
   std::string extras_string;
-  base::JSONWriter::Write(extras, &extras_string);
+  base::JSONWriter::Write(base::Value(std::move(extras)), &extras_string);
   intent_helper_instance->SendBroadcast(kSetInTouchModeIntent,
                                         kArcIntentHelperPackageName,
                                         kIntentHelperClassName, extras_string);

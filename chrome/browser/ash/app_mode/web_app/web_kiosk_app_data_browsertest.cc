@@ -82,17 +82,18 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
   void SetCached(bool installed, bool icon_valid = true) {
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
-    auto app_dict = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict app_dict;
 
-    app_dict->SetStringPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict->SetStringPath(app_key + '.' + std::string(kIconKey),
-                            GetFullPathToImage(icon_valid).value());
+    app_dict.SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
+    app_dict.SetByDottedPath(app_key + '.' + std::string(kIconKey),
+                             GetFullPathToImage(icon_valid).value());
     if (installed) {
-      app_dict->SetStringPath(app_key + '.' + std::string(kLaunchUrlKey),
-                              kLaunchUrl);
+      app_dict.SetByDottedPath(app_key + '.' + std::string(kLaunchUrlKey),
+                               kLaunchUrl);
     }
     g_browser_process->local_state()->Set(
-        WebKioskAppManager::kWebKioskDictionaryName, *app_dict);
+        WebKioskAppManager::kWebKioskDictionaryName,
+        base::Value(std::move(app_dict)));
   }
 
  private:

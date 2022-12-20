@@ -71,8 +71,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
 
   // Processes the parsed external update manifest, check the ErrorCode in
   // |result| for any manifest parsing error.
-  using ParseManifestResult =
-      std::pair<std::unique_ptr<base::DictionaryValue>, ErrorCode>;
+  using ParseManifestResult = std::pair<base::Value, ErrorCode>;
   void ProcessParsedManifest(const base::FilePath& external_update_dir,
                              const ParseManifestResult& result);
 

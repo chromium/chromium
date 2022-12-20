@@ -194,8 +194,6 @@ class ArcPolicyBridge : public KeyedService,
       base::OnceCallback<void(const std::string&)> callback,
       data_decoder::DataDecoder::ValueOrError result);
 
-  void UpdateComplianceReportMetrics(const base::DictionaryValue* report);
-
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

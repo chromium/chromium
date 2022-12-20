@@ -1712,16 +1712,16 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   else
     package_dict.Set(kVersionName, std::string());
 
-  base::DictionaryValue permissions_dict;
+  base::Value::Dict permissions_dict;
   if (package.permission_states.has_value()) {
     // Support new format
     for (const auto& permission : package.permission_states.value()) {
-      base::DictionaryValue permission_state_dict;
-      permission_state_dict.GetDict().Set(kPermissionStateGranted,
-                                          permission.second->granted);
-      permission_state_dict.GetDict().Set(kPermissionStateManaged,
-                                          permission.second->managed);
-      permissions_dict.GetDict().Set(
+      base::Value::Dict permission_state_dict;
+      permission_state_dict.Set(kPermissionStateGranted,
+                                permission.second->granted);
+      permission_state_dict.Set(kPermissionStateManaged,
+                                permission.second->managed);
+      permissions_dict.Set(
           base::NumberToString(static_cast<int64_t>(permission.first)),
           std::move(permission_state_dict));
     }

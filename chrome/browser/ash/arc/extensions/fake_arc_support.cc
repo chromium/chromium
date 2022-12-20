@@ -19,7 +19,7 @@
 namespace {
 
 void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
-                      const base::DictionaryValue& message) {
+                      const base::Value::Dict& message) {
   DCHECK(native_message_host);
   std::string message_string;
   if (!base::JSONWriter::Write(message, &message_string)) {
@@ -63,45 +63,45 @@ void FakeArcSupport::Close() {
 
 void FakeArcSupport::EmulateAuthSuccess() {
   DCHECK_EQ(ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH, ui_page_);
-  base::DictionaryValue message;
-  message.SetStringKey("event", "onAuthSucceeded");
+  base::Value::Dict message;
+  message.Set("event", "onAuthSucceeded");
   SerializeAndSend(native_message_host_.get(), message);
 }
 
 void FakeArcSupport::EmulateAuthFailure(const std::string& error_msg) {
   DCHECK(native_message_host_);
   DCHECK_EQ(ArcSupportHost::UIPage::ACTIVE_DIRECTORY_AUTH, ui_page_);
-  base::DictionaryValue message;
-  message.SetStringKey("event", "onAuthFailed");
-  message.SetStringKey("errorMessage", error_msg);
+  base::Value::Dict message;
+  message.Set("event", "onAuthFailed");
+  message.Set("errorMessage", error_msg);
   SerializeAndSend(native_message_host_.get(), message);
 }
 
 void FakeArcSupport::ClickAgreeButton() {
   DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
-  base::DictionaryValue message;
-  message.SetStringKey("event", "onAgreed");
-  message.SetStringKey("tosContent", tos_content_);
-  message.SetBoolKey("tosShown", tos_shown_);
-  message.SetBoolKey("isMetricsEnabled", metrics_mode_);
-  message.SetBoolKey("isBackupRestoreEnabled", backup_and_restore_mode_);
-  message.SetBoolKey("isBackupRestoreManaged", backup_and_restore_managed_);
-  message.SetBoolKey("isLocationServiceEnabled", location_service_mode_);
-  message.SetBoolKey("isLocationServiceManaged", location_service_managed_);
+  base::Value::Dict message;
+  message.Set("event", "onAgreed");
+  message.Set("tosContent", tos_content_);
+  message.Set("tosShown", tos_shown_);
+  message.Set("isMetricsEnabled", metrics_mode_);
+  message.Set("isBackupRestoreEnabled", backup_and_restore_mode_);
+  message.Set("isBackupRestoreManaged", backup_and_restore_managed_);
+  message.Set("isLocationServiceEnabled", location_service_mode_);
+  message.Set("isLocationServiceManaged", location_service_managed_);
   SerializeAndSend(native_message_host_.get(), message);
 }
 
 void FakeArcSupport::ClickCancelButton() {
   DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
-  base::DictionaryValue message;
-  message.SetStringKey("event", "onCanceled");
-  message.SetStringKey("tosContent", tos_content_);
-  message.SetBoolKey("tosShown", tos_shown_);
-  message.SetBoolKey("isMetricsEnabled", metrics_mode_);
-  message.SetBoolKey("isBackupRestoreEnabled", backup_and_restore_mode_);
-  message.SetBoolKey("isBackupRestoreManaged", backup_and_restore_managed_);
-  message.SetBoolKey("isLocationServiceEnabled", location_service_mode_);
-  message.SetBoolKey("isLocationServiceManaged", location_service_managed_);
+  base::Value::Dict message;
+  message.Set("event", "onCanceled");
+  message.Set("tosContent", tos_content_);
+  message.Set("tosShown", tos_shown_);
+  message.Set("isMetricsEnabled", metrics_mode_);
+  message.Set("isBackupRestoreEnabled", backup_and_restore_mode_);
+  message.Set("isBackupRestoreManaged", backup_and_restore_managed_);
+  message.Set("isLocationServiceEnabled", location_service_mode_);
+  message.Set("isLocationServiceManaged", location_service_managed_);
   SerializeAndSend(native_message_host_.get(), message);
   // The cancel button closes the window.
   Close();
