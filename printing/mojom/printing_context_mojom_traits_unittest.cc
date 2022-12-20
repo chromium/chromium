@@ -544,9 +544,7 @@ TEST(PrintingContextMojomTraitsTest,
                                    kPrintSettingsRequestedMedia));
   // `page_setup_device_units` is set programmatically by PrintSettings based
   // upon all other parameters, so rely upon the value from the constant input.
-  // TODO(crbug.com/1400852)  Fix expectation once page setup properly reflects
-  // the landscape setting.
-  EXPECT_FALSE(output.page_setup_device_units().Equals(
+  EXPECT_TRUE(output.page_setup_device_units().Equals(
       kInput.page_setup_device_units()));
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi2);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
