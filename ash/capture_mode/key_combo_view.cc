@@ -131,6 +131,10 @@ void KeyComboView::RefreshView(int modifiers,
     if (last_non_modifier_key != ui::VKEY_UNKNOWN) {
       non_modifier_view_ =
           AddChildView(CreateKeyItemView(last_non_modifier_key_));
+
+      // Ensure to trigger a relayout so that the newly added
+      // `non_modifier_view_` will be visible.
+      InvalidateLayout();
     }
   }
 }
