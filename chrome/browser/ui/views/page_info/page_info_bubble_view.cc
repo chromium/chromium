@@ -163,7 +163,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   SetShowCloseButton(false);
   // The title isn't visible, it is set for a11y purposes and the actual visible
   // title is a custom label in the content view.
-  SetTitle(presenter_->GetSiteOriginOrAppNameToDisplay());
+  SetTitle(presenter_->GetSiteNameOrAppNameToDisplay());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

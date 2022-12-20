@@ -852,18 +852,16 @@ permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
   return delegate_->GetChooserContext(ui_info.content_settings_type);
 }
 
-std::u16string PageInfo::GetSimpleSiteName() const {
-  if (!site_name_for_testing_.empty())
+std::u16string PageInfo::GetSiteNameOrAppNameToDisplay() const {
+  if (!site_name_for_testing_.empty()) {
     return site_name_for_testing_;
+  }
 
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      site_url_);
-}
+  if (IsIsolatedWebApp() && !isolated_web_app_name_.empty()) {
+    return isolated_web_app_name_;
+  }
 
-std::u16string PageInfo::GetSiteOriginOrAppNameToDisplay() const {
-  return IsIsolatedWebApp() && !isolated_web_app_name_.empty()
-             ? isolated_web_app_name_
-             : GetSimpleSiteName();
+  return GetSimpleSiteName();
 }
 
 void PageInfo::ComputeUIInputs(const GURL& url) {
@@ -1035,7 +1033,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // weakly encrypted connections.
   site_connection_status_ = SITE_CONNECTION_STATUS_UNKNOWN;
 
-  std::u16string subject_name(GetSimpleSiteName());
+  std::u16string subject_name(GetSiteNameOrAppNameToDisplay());
   if (subject_name.empty()) {
     subject_name.assign(
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
@@ -1294,7 +1292,7 @@ void PageInfo::PresentSiteIdentity() {
   DCHECK_NE(site_identity_status_, SITE_IDENTITY_STATUS_UNKNOWN);
   DCHECK_NE(site_connection_status_, SITE_CONNECTION_STATUS_UNKNOWN);
   PageInfoUI::IdentityInfo info;
-  info.site_identity = UTF16ToUTF8(GetSimpleSiteName());
+  info.site_identity = UTF16ToUTF8(GetSiteNameOrAppNameToDisplay());
 
   info.connection_status = site_connection_status_;
   info.connection_status_description = UTF16ToUTF8(site_connection_details_);
@@ -1353,6 +1351,11 @@ void PageInfo::RecordPasswordReuseEvent() {
 }
 #endif
 
+std::u16string PageInfo::GetSimpleSiteName() const {
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      site_url_);
+}
+
 HostContentSettingsMap* PageInfo::GetContentSettings() const {
   return delegate_->GetContentSettings();
 }
@@ -1374,6 +1377,7 @@ void PageInfo::SetIsolatedWebAppNameForTesting(
     const std::u16string& isolated_web_app_name) {
   is_isolated_web_app_for_testing_ = true;
   isolated_web_app_name_ = isolated_web_app_name;
+  PresentSiteIdentity();
 }
 
 void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(

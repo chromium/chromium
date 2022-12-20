@@ -300,15 +300,14 @@ class PageInfo : private content_settings::CookieControlsView {
     return safe_browsing_status_;
   }
 
-  // Returns site origin in a concise and human-friendly way, without the
-  // HTTP/HTTPS scheme, the username and password, the path and trivial
-  // subdomains.
-  std::u16string GetSimpleSiteName() const;
-
-  // For Isolated Web Apps the origin's host name is a non-human-readable string
-  // of characters, so instead of displaying the origin, the short name of the
-  // app will be displayed.
-  std::u16string GetSiteOriginOrAppNameToDisplay() const;
+  // For most sites, this returns a human-friendly string based on site origin,
+  // without scheme, the username and password, the path or trivial subdomains.
+  // See |GetSimpleSiteInfo()|.
+  //
+  // For Isolated Web Apps, the origin's host name is a non-human-readable
+  // string of characters, so instead of displaying the origin, the short name
+  // of the app will be displayed.
+  std::u16string GetSiteNameOrAppNameToDisplay() const;
 
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
@@ -364,6 +363,11 @@ class PageInfo : private content_settings::CookieControlsView {
   // function WILL record an event. Callers should check conditions beforehand.
   void RecordPasswordReuseEvent();
 #endif
+
+  // Returns site origin in a concise and human-friendly way, without the
+  // HTTP/HTTPS scheme, the username and password, the path and trivial
+  // subdomains.
+  std::u16string GetSimpleSiteName() const;
 
   // Helper function to get the |HostContentSettingsMap| associated with
   // |PageInfo|.
