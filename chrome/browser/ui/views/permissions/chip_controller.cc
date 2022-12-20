@@ -167,22 +167,7 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   }
 
   widget->RemoveObserver(this);
-
   CollapsePrompt(/*allow_restart=*/false);
-}
-
-void ChipController::OnWidgetActivationChanged(views::Widget* widget,
-                                               bool active) {
-  // This logic prevents clickjacking. See https://crbug.com/1160485
-  auto* prompt_bubble_widget = GetBubbleWidget();
-  if (active && !parent_was_visible_when_activation_changed_) {
-    // If the widget is active and the primary window wasn't active the last
-    // time activation changed, we know that the window just came to the
-    // foreground and trigger input protection.
-    GetPromptBubbleView()->AsDialogDelegate()->TriggerInputProtection();
-  }
-  parent_was_visible_when_activation_changed_ =
-      prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
 }
 
 bool ChipController::ShouldWaitForConfirmationToComplete() {
@@ -502,7 +487,7 @@ void ChipController::OpenPermissionPromptBubble() {
   // It is possible that a Chip got reset while the permission prompt bubble was
   // displayed.
   if (permission_prompt_model_ && IsBubbleShowing()) {
-    ObservePromptBubble();
+    GetBubbleWidget()->AddObserver(this);
     permission_prompt_model_->GetDelegate().value()->SetPromptShown();
   }
 }
@@ -519,11 +504,9 @@ void ChipController::RecordRequestChipButtonPressed(const char* recordKey) {
 }
 
 void ChipController::ObservePromptBubble() {
-  views::Widget* prompt_bubble_widget = GetBubbleWidget();
-  if (prompt_bubble_widget) {
-    parent_was_visible_when_activation_changed_ =
-        prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
-    prompt_bubble_widget->AddObserver(this);
+  views::Widget* promptBubbleWidget = GetBubbleWidget();
+  if (promptBubbleWidget) {
+    promptBubbleWidget->AddObserver(this);
   }
 }
 
@@ -643,11 +626,5 @@ LocationBarView* ChipController::GetLocationBarView() {
 }
 
 views::Widget* ChipController::GetBubbleWidget() {
-  auto* prompt_bubble_view = GetPromptBubbleView();
-  return prompt_bubble_view ? prompt_bubble_view->GetWidget() : nullptr;
-}
-
-PermissionPromptBubbleView* ChipController::GetPromptBubbleView() {
-  auto* view = bubble_tracker_.view();
-  return view ? static_cast<PermissionPromptBubbleView*>(view) : nullptr;
+  return bubble_tracker_.view() ? bubble_tracker_.view()->GetWidget() : nullptr;
 }

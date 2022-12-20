@@ -8,7 +8,6 @@
 #include "chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Browser;
 
@@ -31,7 +30,6 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // permissions::PermissionPrompt:
   bool UpdateAnchor() override;
@@ -46,8 +44,6 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   raw_ptr<PermissionPromptBubbleView> prompt_bubble_ = nullptr;
 
   base::TimeTicks permission_requested_time_;
-
-  bool parent_was_visible_when_activation_changed_;
 
   base::WeakPtrFactory<PermissionPromptBubble> weak_factory_{this};
 };
