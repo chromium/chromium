@@ -6,7 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "components/autofill/core/browser/validation.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 MultiProfileCredentialsFilter::MultiProfileCredentialsFilter(
@@ -35,6 +37,14 @@ bool MultiProfileCredentialsFilter::ShouldSave(
   if (dice_web_signin_interceptor_->is_interception_in_progress())
     return false;
 
+  std::string email =
+      gaia::SanitizeEmail(base::UTF16ToUTF8(form.username_value));
+
+  // Do not show password bubble for incomplete or invalid email address.
+  if (!autofill::IsValidEmailAddress(base::UTF8ToUTF16(email))) {
+    return false;
+  }
+
   // On Gaia signin page, suppress the password save bubble if the multi profile
   // promo is shown, to avoid saving a password for an account that will be
   // moved to another profile. If the interception outcome is not available,
@@ -46,7 +56,7 @@ bool MultiProfileCredentialsFilter::ShouldSave(
           // (whether it's a reauth). To be conservative and avoid showing both
           // bubbles, assume that it is new.
           /*is_new_account=*/true,
-          /*is_sync_signin=*/false, base::UTF16ToUTF8(form.username_value));
+          /*is_sync_signin=*/false, email);
   if (!heuristic_outcome ||
       SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
     return false;

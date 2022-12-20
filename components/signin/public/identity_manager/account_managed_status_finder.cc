@@ -68,14 +68,16 @@ bool MatchDomain(const std::u16string& domain,
 
 // static
 bool AccountManagedStatusFinder::IsNonEnterpriseUser(const std::string& email) {
-  if (email.empty() || email.find('@') == std::string::npos) {
+  size_t email_separator_pos = email.find('@');
+  if (email.empty() || email_separator_pos == std::string::npos ||
+      email_separator_pos == email.size() - 1) {
     // An empty email means no logged-in user, or incognito user in case of
     // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test");
     // these should be treated as non-enterprise too.
     return true;
   }
-  const std::u16string domain = base::UTF8ToUTF16(
-      gaia::ExtractDomainName(gaia::CanonicalizeEmail(email)));
+  const std::u16string domain =
+      base::UTF8ToUTF16(gaia::ExtractDomainName(email));
   for (size_t i = 0; i < std::size(kNonManagedDomainPatterns); i++) {
     std::u16string pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
     if (MatchDomain(domain, pattern, i))

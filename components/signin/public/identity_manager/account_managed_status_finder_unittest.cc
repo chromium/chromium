@@ -14,12 +14,15 @@ namespace signin {
 
 TEST(AccountManagedStatusFinderStaticTest, IsNonEnterpriseUser) {
   // List of example emails that are not enterprise users.
+  // clang-format off
   static const char* kNonEnterpriseUsers[] = {
       "fizz@aol.com",       "foo@gmail.com",         "bar@googlemail.com",
       "baz@hotmail.it",     "baz@hotmail.co.uk",     "baz@hotmail.com.tw",
       "user@msn.com",       "another_user@live.com", "foo@qq.com",
       "i_love@yahoo.com",   "i_love@yahoo.com.tw",   "i_love@yahoo.jp",
-      "i_love@yahoo.co.uk", "user@yandex.ru"};
+      "i_love@yahoo.co.uk", "user@yandex.ru",        "test",
+      "test@"};
+  // clang-format on
 
   // List of example emails that are potential enterprise users.
   static const char* kEnterpriseUsers[] = {
