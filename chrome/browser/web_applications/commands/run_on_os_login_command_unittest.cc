@@ -53,7 +53,7 @@ class TestOsIntegrationManager : public FakeOsIntegrationManager {
                       InstallOsHooksOptions options) override {
     if (options.os_hooks[OsHookType::kRunOnOsLogin]) {
       ScopedRegistryUpdate update(
-          &WebAppProvider::GetForTest(profile_)->sync_bridge());
+          &WebAppProvider::GetForTest(profile_)->sync_bridge_unsafe());
       update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
           RunOnOsLoginMode::kWindowed);
     }
@@ -66,7 +66,7 @@ class TestOsIntegrationManager : public FakeOsIntegrationManager {
                         UninstallOsHooksCallback callback) override {
     if (os_hooks[OsHookType::kRunOnOsLogin]) {
       ScopedRegistryUpdate update(
-          &WebAppProvider::GetForTest(profile_)->sync_bridge());
+          &WebAppProvider::GetForTest(profile_)->sync_bridge_unsafe());
       update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
           RunOnOsLoginMode::kNotRun);
     }
@@ -112,7 +112,7 @@ class RunOnOsLoginCommandTest
  protected:
   WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
-  WebAppSyncBridge& sync_bridge() { return provider()->sync_bridge(); }
+  WebAppSyncBridge& sync_bridge() { return provider()->sync_bridge_unsafe(); }
 
   FakeOsIntegrationManager* os_integration_manager() {
     return os_integration_manager_;

@@ -51,7 +51,7 @@ class WebAppProtocolHandlerManagerTest : public WebAppTest {
     web_app->SetAllowedLaunchProtocols(allowed_launch_protocols);
     web_app->SetDisallowedLaunchProtocols(disallowed_launch_protocols);
     {
-      ScopedRegistryUpdate update(&provider().sync_bridge());
+      ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
       update->CreateApp(std::move(web_app));
     }
     return app_id;
@@ -91,7 +91,7 @@ TEST_F(WebAppProtocolHandlerManagerTest, GetAppProtocolHandlerInfos) {
       protocol_handler_manager().GetAppProtocolHandlerInfos(app_id).size(), 0U);
 
   {
-    ScopedRegistryUpdate update(&provider().sync_bridge());
+    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     update->CreateApp(std::move(web_app));
   }
 

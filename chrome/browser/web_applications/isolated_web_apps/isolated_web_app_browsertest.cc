@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(
       isolated_web_app_dev_server().GetOrigin());
 
   WebAppProvider::GetForTest(browser()->profile())
-      ->sync_bridge()
+      ->sync_bridge_unsafe()
       .SetAppUserDisplayMode(url_info.app_id(), UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 

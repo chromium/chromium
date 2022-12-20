@@ -563,9 +563,9 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
     WebAppTestInstallObserver observer(browser()->profile());
 
-    GetProvider().sync_bridge().set_disable_checks_for_testing(true);
+    GetProvider().sync_bridge_unsafe().set_disable_checks_for_testing(true);
 
-    sync_bridge_test_utils::AddApps(GetProvider().sync_bridge(),
+    sync_bridge_test_utils::AddApps(GetProvider().sync_bridge_unsafe(),
                                     add_synced_apps_data);
 
     return observer.BeginListeningAndWait({app_id});
@@ -575,10 +575,10 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   void InstallAppLocally(const WebApp* web_app) {
     // Doesn't call GetProvider().os_integration_manager().InstallOsHooks() to
     // suppress OS hooks.
-    GetProvider().sync_bridge().SetAppIsLocallyInstalled(web_app->app_id(),
-                                                         true);
-    GetProvider().sync_bridge().SetAppInstallTime(web_app->app_id(),
-                                                  base::Time::Now());
+    GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalled(
+        web_app->app_id(), true);
+    GetProvider().sync_bridge_unsafe().SetAppInstallTime(web_app->app_id(),
+                                                         base::Time::Now());
   }
 
   void SetTimeOverride(base::Time time_override) {
@@ -945,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   AppId app_id = InstallWebApp();
 
-  GetProvider().sync_bridge().SetAppIsLocallyInstalled(app_id, false);
+  GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalled(app_id, false);
   EXPECT_FALSE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  GetProvider().sync_bridge().SetAppUserDisplayMode(
+  GetProvider().sync_bridge_unsafe().SetAppUserDisplayMode(
       app_id, UserDisplayMode::kStandalone, /*is_user_action=*/false);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
@@ -2466,7 +2466,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(
       ApiApprovalState::kRequiresPrompt,
       GetProvider().registrar_unsafe().GetAppFileHandlerApprovalState(app_id));
-  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+  GetProvider().sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id, ApiApprovalState::kAllowed);
 
   // Update manifest, adding an extension to the file handler. Permission should
@@ -2484,7 +2484,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(
       ApiApprovalState::kRequiresPrompt,
       GetProvider().registrar_unsafe().GetAppFileHandlerApprovalState(app_id));
-  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+  GetProvider().sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id, ApiApprovalState::kAllowed);
 
   // Update manifest, but keep same file handlers. Permission should be left on
@@ -2526,7 +2526,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 #endif
 
   // Block the permission, update manifest, permission should still be block.
-  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+  GetProvider().sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id, ApiApprovalState::kDisallowed);
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
   time_override += base::Days(10);
@@ -2576,7 +2576,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(
       ApiApprovalState::kRequiresPrompt,
       GetProvider().registrar_unsafe().GetAppFileHandlerApprovalState(app_id));
-  GetProvider().sync_bridge().SetAppFileHandlerApprovalState(
+  GetProvider().sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id, ApiApprovalState::kDisallowed);
 
   // Update manifest.
@@ -4243,7 +4243,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   // Manually set manifest_id to null. manifest_id can be null when the app is
   // sync installed from older versions of Chromium.
   {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge());
+    ScopedRegistryUpdate update(&GetProvider().sync_bridge_unsafe());
     WebApp* app = update->UpdateApp(app_id);
     app->SetManifestId(absl::nullopt);
   }

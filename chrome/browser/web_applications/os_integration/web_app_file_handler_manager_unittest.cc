@@ -195,7 +195,7 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
 
   WebAppProvider& provider() { return *provider_; }
 
-  WebAppSyncBridge& sync_bridge() { return provider_->sync_bridge(); }
+  WebAppSyncBridge& sync_bridge() { return provider_->sync_bridge_unsafe(); }
 
   const AppId& app_id() const { return app_id_; }
 

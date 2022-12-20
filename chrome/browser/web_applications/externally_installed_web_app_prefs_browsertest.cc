@@ -45,7 +45,7 @@ class ExternallyInstalledWebAppPrefsBrowserTest
   ~ExternallyInstalledWebAppPrefsBrowserTest() override = default;
 
   void SimulateInstallApp(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&provider().sync_bridge());
+    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     update->CreateApp(std::move(web_app));
   }
 
@@ -126,8 +126,9 @@ IN_PROC_BROWSER_TEST_P(
   auto web_app = test::CreateWebApp();
   id_a = web_app->app_id();
   SimulateInstallApp(std::move(web_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
-                          id_a, url_a, ExternalInstallSource::kExternalDefault);
+  test::AddInstallUrlData(profile()->GetPrefs(),
+                          &provider().sync_bridge_unsafe(), id_a, url_a,
+                          ExternalInstallSource::kExternalDefault);
 
   EXPECT_EQ(id_a, registrar.LookupExternalAppId(url_a).value_or("missing"));
   EXPECT_TRUE(registrar.HasExternalApp(id_a));
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(
       app_id, WebAppManagement::kPolicy));
   prefs.SetIsPlaceholder(url, true);
   {
-    ScopedRegistryUpdate update(&provider().sync_bridge());
+    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     WebApp* installed_app = update->UpdateApp(app_id);
     if (installed_app)
       installed_app->AddPlaceholderInfoToManagementExternalConfigMap(
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(
   external_prefs.SetIsPlaceholder(install_url, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
 
   // Verify install source, placeholder info and urls have been migrated.
   EXPECT_TRUE(provider().registrar_unsafe().IsPlaceholderApp(
@@ -366,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
 
   // On migration, only a app_id1 should be migrated.
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -389,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
 
   // On migration, nothing is migrated because default installs do not exist in
   // the external prefs.
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
 
   // On migration, everything (app_ids and both URLs should be migrated).
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -446,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
                        kWasExternalAppUninstalledByUser, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
   tester.ExpectBucketCount(kPreinstalledAppMigrationHistogram,
                            UserUninstalledPreinstalledAppMigrationState::
                                kPreinstalledAppDataMigratedByOldPref,
@@ -474,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
                        kWasExternalAppUninstalledByUser, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
 
   // On migration, everything (app_ids and both URLs should be migrated).
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -485,9 +486,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   // Call migration 2 more times, pref size should not grow if same
   // data is being migrated.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider().sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge_unsafe());
   EXPECT_EQ(1, preinstalled_prefs.Size());
 }
 
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   // Mock the startup by triggering a migration. Right now, only pref
   // data should be present.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
   EXPECT_EQ(tester.GetTotalSum(kPrefDataAbsentDBDataAbsent), 0);
   EXPECT_EQ(tester.GetTotalSum(kPrefDataAbsentDBDataPresent), 0);
   EXPECT_EQ(tester.GetTotalSum(kPrefDataPresentDBDataAbsent), 1);
@@ -551,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
 
   // Retrigger the migration once web_app has been installed.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
   EXPECT_EQ(tester.GetTotalSum(kPrefDataAbsentDBDataAbsent), 0);
   EXPECT_EQ(tester.GetTotalSum(kPrefDataAbsentDBDataPresent), 0);
   EXPECT_EQ(tester.GetTotalSum(kPrefDataPresentDBDataAbsent), 1);
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
                            InstallURLMigrationState::kInstallURLAlreadyInSync,
                            0);
   {
-    ScopedRegistryUpdate update(&provider().sync_bridge());
+    ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     WebApp* installed_app = update->UpdateApp(app_id);
     if (installed_app) {
       installed_app->AddPlaceholderInfoToManagementExternalConfigMap(
@@ -608,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   }
   // Retrigger the migration once web_app has been installed.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
   tester.ExpectBucketCount(
       kPlaceholderMigrationHistogram,
       PlaceholderMigrationState::kPlaceholderInfoAlreadyInSync, 1);
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
                          {GURL("https://a.com/"), GURL("https://b.com/")});
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
   tester.ExpectBucketCount(kPreinstalledAppMigrationHistogram,
                            UserUninstalledPreinstalledAppMigrationState::
                                kPreinstalledAppDataAlreadyInSync,
@@ -659,8 +660,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   auto id = web_app->app_id();
   GURL install_url = GURL("https://a.com/");
   SimulateInstallApp(std::move(web_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(), id,
-                          install_url, ExternalInstallSource::kExternalDefault);
+  test::AddInstallUrlData(profile()->GetPrefs(),
+                          &provider().sync_bridge_unsafe(), id, install_url,
+                          ExternalInstallSource::kExternalDefault);
 
   // Add data to both the old prefs and the new prefs
   external_prefs.Insert(install_url, id,
@@ -670,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   // When migrating, the code should detect that the app is still installed, and
   // remove the new pref.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
 
   EXPECT_THAT(tester.GetAllSamples(kPreinstalledAppMigrationHistogram),
               testing::IsEmpty());
@@ -708,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
   // When migrating, the code should detect that the app is still installed, and
   // remove the new pref.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      pref_service, &provider().sync_bridge());
+      pref_service, &provider().sync_bridge_unsafe());
 
   EXPECT_THAT(tester.GetAllSamples(kPreinstalledAppMigrationHistogram),
               testing::IsEmpty());

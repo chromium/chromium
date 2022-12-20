@@ -169,7 +169,7 @@ bool PreinstalledWebAppDuplicationFixer::RemoveInstallUrlForPreinstalledApp(
 
   bool url_removed_from_database = false;
   {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
+    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
     WebApp* installed_app = update->UpdateApp(preinstalled_app_id.value());
     if (installed_app) {
       url_removed_from_database = installed_app->RemoveInstallUrlForSource(

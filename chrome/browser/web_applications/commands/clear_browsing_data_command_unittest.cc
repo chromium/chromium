@@ -53,7 +53,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   auto app_id3 = web_app3->app_id();
 
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -97,7 +97,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
   auto app_id3 = web_app3->app_id();
 
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -155,7 +155,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
   auto app_id3 = web_app3->app_id();
 
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));
@@ -200,7 +200,7 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
   auto app_id3 = web_app3->app_id();
 
   {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
     update->CreateApp(std::move(web_app1));
     update->CreateApp(std::move(web_app2));
     update->CreateApp(std::move(web_app3));

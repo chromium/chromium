@@ -83,7 +83,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
         provider_->os_integration_manager());
   }
 
-  WebAppSyncBridge& sync_bridge() { return provider_->sync_bridge(); }
+  WebAppSyncBridge& sync_bridge() { return provider_->sync_bridge_unsafe(); }
 
   UrlHandlerManagerImpl& url_handler_manager() { return *url_handler_manager_; }
 

@@ -269,7 +269,7 @@ class WebAppIconManagerTest : public WebAppTest {
 
   WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   WebAppInstallManager& install_manager() { return *install_manager_; }
-  WebAppSyncBridge& sync_bridge() { return provider().sync_bridge(); }
+  WebAppSyncBridge& sync_bridge() { return provider().sync_bridge_unsafe(); }
   WebAppIconManager& icon_manager() { return *icon_manager_; }
   TestFileUtils& file_utils() {
     DCHECK(file_utils_);
