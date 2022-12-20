@@ -76,11 +76,8 @@ enum AshTextStyle {
   // Text styling specifically for the Chrome OS sharesheet.
   STYLE_SHARESHEET,
 
-  // Text styling for classic launcher's search result view.
-  STYLE_CLASSIC_LAUNCHER,
-
-  // Text styling for productivity launcher's search result view.
-  STYLE_PRODUCTIVITY_LAUNCHER,
+  // Text styling for launcher's search result view.
+  STYLE_LAUNCHER,
 
   ASH_TEXT_STYLE_END
 };

@@ -61,10 +61,7 @@ void ApplyAshFontStyles(int context,
              context == CONTEXT_SHARESHEET_BUBBLE_SMALL);
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
-    case STYLE_CLASSIC_LAUNCHER:
-      // Classic launcher uses default font styling.
-      break;
-    case STYLE_PRODUCTIVITY_LAUNCHER:
+    case STYLE_LAUNCHER:
       // TODO(https://crbug.com/1197600): Use font "Google Sans Text" when it is
       // available on Chrome OS. For now, use the default font for consistency.
       break;

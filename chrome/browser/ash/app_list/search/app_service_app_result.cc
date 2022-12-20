@@ -90,17 +90,9 @@ void AppServiceAppResult::Open(int event_flags) {
 }
 
 void AppServiceAppResult::GetContextMenuModel(GetMenuModelCallback callback) {
-  // TODO(crbug.com/826982): drop the (app_type_ == etc), and check
-  // show_in_launcher_ for all app types?
-  if ((app_type_ == apps::AppType::kBuiltIn) && !show_in_launcher_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  context_menu_ = std::make_unique<AppServiceContextMenu>(
-      this, profile(), app_id(), controller(),
-      ash::AppListItemContext::kSearchResults);
-  context_menu_->GetMenuModel(std::move(callback));
+  // TODO(b/263179505): Remove this method as the context menu is not available
+  // for search result now.
+  NOTREACHED();
 }
 
 ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {

@@ -228,7 +228,7 @@ views::Label* SetupChildLabelView(
       break;
   }
   label->SetTextContext(text_context);
-  label->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+  label->SetTextStyle(STYLE_LAUNCHER);
   return label;
 }
 

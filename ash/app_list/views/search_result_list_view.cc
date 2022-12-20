@@ -102,7 +102,7 @@ SearchResultListView::SearchResultListView(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   title_label_ = AddChildView(std::make_unique<views::Label>(
-      u"", CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_PRODUCTIVITY_LAUNCHER));
+      u"", CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_LAUNCHER));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetAutoColorReadabilityEnabled(false);
   title_label_->SetEnabledColorId(kColorAshTextColorSecondary);

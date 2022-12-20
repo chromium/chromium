@@ -151,10 +151,8 @@ enum class AppListItemContext {
   kNone,
   // The apps grid (the common case).
   kAppsGrid,
-  // Recent apps (part of productivity launcher).
+  // Recent apps.
   kRecentApps,
-  // Search results (part of peeking launcher).
-  kSearchResults,
 };
 
 // All possible orders to sort app list items.
@@ -285,10 +283,9 @@ ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
 enum class AppListViewState {
   // Closes |app_list_main_view_| and dismisses the delegate.
   kClosed,
-  // Default app list state in maximize and side shelf modes. Entered from an
-  // upward swipe from |PEEKING| or from clicking the chevron.
+  // Default app list state in maximize and side shelf modes.
   kFullscreenAllApps,
-  // Entered by entering text in the search box from |FULLSCREEN_ALL_APPS|.
+  // Entered by entering text in the search box.
   kFullscreenSearch
 };
 
@@ -339,9 +336,8 @@ enum class AppListLaunchedFrom {
 // The UI representation of the app that's being launched. Currently all search
 // results that are not apps (OminboxResult, LauncherSearcResult, etc.) are
 // grouped into kSearchResult. Meanwhile app search results, apps that appear in
-// the recent apps section, and suggested chips (if productivity launcher is
-// disabled) are considered kAppSearchResult. kApp is used for apps launched
-// from the apps grid.
+// the recent apps section are considered kAppSearchResult. kApp is used for
+// apps launched from the apps grid.
 enum class AppListLaunchType { kSearchResult, kAppSearchResult, kApp };
 
 // Type of the search result, which is set in Chrome.
