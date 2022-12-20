@@ -317,22 +317,24 @@ void VideoCaptureController::AddClient(
                 << media::VideoCaptureFormat::ToString(params.requested_format);
   EmitLogMessage(string_stream.str(), 1);
 
-  // Check that requested VideoCaptureParams are valid and supported.  If not,
-  // report an error immediately and punt.
-  if (!params.IsValid() ||
-      !(params.requested_format.pixel_format == media::PIXEL_FORMAT_I420 ||
+  // Params received from a renderer will have been validated by
+  // VideoCaptureHost, so here we can just require validity.
+  DCHECK(params.IsValid());
+
+  // Check that requested VideoCaptureParams are supported.  If not, report an
+  // error immediately and punt.
+  if (!(params.requested_format.pixel_format == media::PIXEL_FORMAT_I420 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_Y16 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_ARGB ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_UNKNOWN)) {
     // Crash in debug builds since the renderer should not have asked for
-    // invalid or unsupported parameters.
-    LOG(DFATAL) << "Invalid or unsupported video capture parameters requested: "
+    // unsupported parameters.
+    LOG(DFATAL) << "Unsupported video capture parameters requested: "
                 << media::VideoCaptureFormat::ToString(params.requested_format);
-    event_handler->OnError(
-        id,
-        media::VideoCaptureError::
-            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+    event_handler->OnError(id,
+                           media::VideoCaptureError::
+                               kVideoCaptureControllerUnsupportedPixelFormat);
     return;
   }
 

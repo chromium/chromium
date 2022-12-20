@@ -33,8 +33,7 @@ VideoCaptureErrorOrDevice::VideoCaptureErrorOrDevice(
 std::unique_ptr<VideoCaptureDevice> VideoCaptureErrorOrDevice::ReleaseDevice() {
   DCHECK_EQ(error_code_, VideoCaptureError::kNone);
 
-  error_code_ = VideoCaptureError::
-      kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested;
+  error_code_ = VideoCaptureError::kVideoCaptureDeviceAlreadyReleased;
   return std::move(device_);
 }
 

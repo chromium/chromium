@@ -233,11 +233,9 @@ class VideoCaptureTest : public testing::Test,
     params.requested_format = media::VideoCaptureFormat(
         gfx::Size(352, 288), 30, media::PIXEL_FORMAT_I420);
 
-    EXPECT_CALL(
-        *this,
-        DoOnVideoCaptureError(
-            media::VideoCaptureError::
-                kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested))
+    EXPECT_CALL(*this,
+                DoOnVideoCaptureError(
+                    media::VideoCaptureError::kVideoCaptureControllerInvalid))
         .Times(1);
     host_->Start(DeviceId(), base::UnguessableToken(), params,
                  observer_receiver_.BindNewPipeAndPassRemote());

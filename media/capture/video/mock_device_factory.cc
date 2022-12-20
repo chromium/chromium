@@ -69,8 +69,7 @@ VideoCaptureErrorOrDevice MockDeviceFactory::CreateDevice(
     const media::VideoCaptureDeviceDescriptor& device_descriptor) {
   if (devices_.find(device_descriptor) == devices_.end())
     return VideoCaptureErrorOrDevice(
-        VideoCaptureError::
-            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+        VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
   return VideoCaptureErrorOrDevice(
       std::make_unique<RawPointerVideoCaptureDevice>(
           devices_[device_descriptor]));

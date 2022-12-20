@@ -152,8 +152,7 @@ TEST_F(VideoCaptureServiceTest, ErrorCodeOnCreateDeviceForInvalidDescriptor) {
       create_device_remote_callback;
   EXPECT_CALL(
       create_device_remote_callback,
-      Run(media::VideoCaptureError::
-              kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested))
+      Run(media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
   factory_->GetDeviceInfos(device_info_receiver_.Get());

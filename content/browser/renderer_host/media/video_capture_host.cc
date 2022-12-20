@@ -474,8 +474,7 @@ void VideoCaptureHost::OnControllerAdded(
     if (base::Contains(device_id_to_observer_map_, controller_id)) {
       device_id_to_observer_map_[device_id]->OnStateChanged(
           media::mojom::VideoCaptureResult::NewErrorCode(
-              media::VideoCaptureError::
-                  kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested));
+              media::VideoCaptureError::kVideoCaptureControllerInvalid));
     }
     controllers_.erase(controller_id);
     return;

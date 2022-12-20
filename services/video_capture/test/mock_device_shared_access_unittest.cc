@@ -375,8 +375,7 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
   LetClient2ConnectWithRequestableSettings(
       false /*force_reopen_with_new_settings*/,
       mojom::CreatePushSubscriptionResultCode::NewErrorCode(
-          media::VideoCaptureError::
-              kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested));
+          media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound));
 }
 
 TEST_F(MockVideoCaptureDeviceSharedAccessTest,
