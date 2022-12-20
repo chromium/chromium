@@ -141,6 +141,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.PER_DEVICE_KEYBOARD) {
             map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
           }
+          // TODO(@wangdanny): Add routes for pointing stick settings page.
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');
           }
