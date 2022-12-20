@@ -22,11 +22,16 @@ def CheckFreeze(input_api, output_api):
         ts = input_api.time.localtime(t)
         return input_api.time.strftime('%Y/%m/%d %H:%M %z', ts)
 
+      # Don't report errors when on the presubmit --all bot or when testing
+      # with presubmit --files.
+      if input_api.no_diffs:
+        report_type = output_api.PresubmitPromptWarning
+      else:
+        report_type = output_api.PresubmitError
       return [
-          output_api.PresubmitError(
-              'There is a prod freeze in effect from {} until {},'
-              ' files in //tools/mb cannot be modified'.format(
-                  convert(_FREEZE_START), convert(_FREEZE_END)))
+          report_type('There is a prod freeze in effect from {} until {},'
+                      ' files in //tools/mb cannot be modified'.format(
+                          convert(_FREEZE_START), convert(_FREEZE_END)))
       ]
 
   return []

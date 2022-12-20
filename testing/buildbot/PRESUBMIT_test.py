@@ -48,6 +48,7 @@ class TestCheckFreeze(unittest.TestCase):
 
       time = FakeTime()
       change = FakeChange()
+      no_diffs = False
 
     return FakeInputApi()
 
