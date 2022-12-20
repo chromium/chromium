@@ -32,7 +32,7 @@
 namespace views::corewm {
 namespace {
 
-constexpr auto kDefaultShowTooltipDelay = base::Milliseconds(50);
+constexpr auto kDefaultShowTooltipDelay = base::Milliseconds(500);
 constexpr auto kDefaultHideTooltipDelay = base::Seconds(10);
 
 // Returns true if |target| is a valid window to get the tooltip from.
