@@ -50,8 +50,7 @@
     margin-inline-end: 8px;
   }
 </style>
-<cr-dialog id="apnDetailDialog"
-    close-text="[[i18n('close')]]" show-on-attach>
+<cr-dialog id="apnDetailDialog" show-on-attach>
   <div id="apnDetailDialogTitle" slot="title">
     [[getDialogTitle_(mode)]]
   </div>
@@ -146,7 +145,7 @@
         if="[[isUiElementVisible_(UiElement.ACTION_BUTTON, mode)]]" restamp>
       <cr-button id="apnDetailCancelBtn" class="cancel-button"
           on-click="onCancelClicked_">
-        [[i18n('cancel')]]
+        [[i18n('apnDetailDialogCancel')]]
       </cr-button>
       <cr-button id="apnDetailActionBtn" class="action-button"
           on-click="onActionButtonClicked_"
@@ -160,7 +159,7 @@
         if="[[isUiElementVisible_(UiElement.DONE_BUTTON, mode)]]" restamp>
       <cr-button id="apnDoneBtn" class="action-button"
           on-click="onCancelClicked_">
-        [[i18n('done')]]
+        [[i18n('apnDetailDialogDone')]]
       </cr-button>
     </template>
   </div>

@@ -366,9 +366,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
    */
   getActionButtonTitle_() {
     if (this.mode === ApnDetailDialogMode.EDIT) {
-      return this.i18n('save');
+      return this.i18n('apnDetailDialogSave');
     }
-    return this.i18n('add');
+    return this.i18n('apnDetailDialogAdd');
   }
   /**
    * @private

@@ -21,15 +21,15 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, IPConfigProperties, ManagedProperties, NetworkStateProperties, ProxySettings, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, IPConfigProperties, ManagedProperties, MAX_NUM_CUSTOM_APNS, NetworkStateProperties, ProxySettings, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -129,6 +129,17 @@ Polymer({
         return loadTimeData.valueExists('apnRevamp') &&
             loadTimeData.getBoolean('apnRevamp');
       },
+    },
+
+    /**
+     * Return true if custom APNs limit is reached.
+     * @private
+     */
+    isNumCustomApnsLimitReached_: {
+      type: Boolean,
+      notify: true,
+      value: false,
+      computed: 'computeIsNumCustomApnsLimitReached_(managedProperties_)',
     },
   },
 
@@ -837,5 +848,37 @@ Polymer({
   isPortalState_(portalState) {
     return portalState === PortalState.kPortal ||
         portalState === PortalState.kProxyAuthRequired;
+  },
+
+  /**
+   * Handles UI requests to add new APN.
+   * @private
+   */
+  onCreateCustomApnClicked_() {
+    if (this.isNumCustomApnsLimitReached_) {
+      return;
+    }
+
+    assert(!!this.guid);
+    const apnList = this.$$('#apnList');
+    assert(!!apnList);
+    apnList.openApnDetailDialogInCreateMode();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsNumCustomApnsLimitReached_() {
+    if (!this.managedProperties_ ||
+        this.managedProperties_.type !== NetworkType.kCellular ||
+        !this.managedProperties_.typeProperties ||
+        !this.managedProperties_.typeProperties.cellular) {
+      return false;
+    }
+
+    const customApnList =
+        this.managedProperties_.typeProperties.cellular.customApnList;
+    return !!customApnList && customApnList.length >= MAX_NUM_CUSTOM_APNS;
   },
 });

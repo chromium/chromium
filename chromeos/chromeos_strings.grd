@@ -3765,10 +3765,10 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_LABEL" desc="Title of the section with the IP type dropdown">
           IP type
         </message>
-        <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4" desc="Name of the IPv4 IP type dropdown select item ">
+        <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4" desc="Name of the IPv4 IP type dropdown select item">
           IPv4
         </message>
-        <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV6" desc="Name of the IPv6 IP type dropdown select item ">
+        <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV6" desc="Name of the IPv6 IP type dropdown select item">
           IPv6
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_IP_TYPE_IPV4_IPV6" desc="Name of the IPv4/IPv6 IP type dropdown select item ">
@@ -3784,13 +3784,25 @@ Try tapping the mic to ask me anything.
           Attach
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
-        A default APN is required
+          A default APN is required
         </message>
         <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
           Automatically detected
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
           Can't disable or remove this APN. Make sure enabled attached APNs are disabled or removed.
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_ADD" desc="Text used for adding a new APN.">
+          Add
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_SAVE" desc="Text used to save a modified APN.">
+          Save
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_CANCEL" desc="Text used to cancel the APN dialog.">
+          Cancel
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_DONE" desc="Text used to close the APN dialog in view mode.">
+          Done
         </message>
         <!-- End of APN -->
       </if>

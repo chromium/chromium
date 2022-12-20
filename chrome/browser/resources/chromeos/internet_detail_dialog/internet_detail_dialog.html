@@ -36,6 +36,30 @@
   #apnRowSublabel {
     color: var(--cros-text-color-positive);
   }
+
+  #createCustomApnButton {
+    margin-bottom: 10px;
+    margin-inline-start: 20px;
+  }
+
+  #createCustomApnButton iron-icon {
+    --iron-icon-fill-color: var(--text-color);
+    margin-inline-end: 8px;
+  }
+
+  #createCustomApnButton[disabled] iron-icon {
+    --iron-icon-fill-color: var(--disabled);
+  }
+
+  #apnTooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    text-align: center;
+  }
+
+  #apnButtonTitle {
+    display: inline-block;
+  }
 </style>
 
 <!-- Title section: Icon + name + connection state. -->
@@ -120,7 +144,30 @@
       </div>
     </cr-expand-button>
     <iron-collapse opened="[[apnExpanded_]]">
-      <apn-list should-omit-links></apn-list>
+      <apn-list
+          id="apnList"
+          managed-cellular-properties="[[managedProperties_.typeProperties.cellular]]"
+          guid="[[guid]]"
+          should-omit-links>
+      </apn-list>
+      <div id="apnButtonTitle">
+        <cr-button id="createCustomApnButton"
+            on-click="onCreateCustomApnClicked_"
+            class="cancel-button"
+            disabled="[[isNumCustomApnsLimitReached_]]">
+          <iron-icon icon="cr:add"></iron-icon>
+          $i18n{apnPageAddNewApn}
+        </cr-button>
+      </div>
+      <!-- TODO(b/162365553) Add a11y support-->
+      <template is="dom-if" if="[[isNumCustomApnsLimitReached_]]" restamp>
+        <paper-tooltip
+            id="apnTooltip"
+            for="apnButtonTitle"
+            position="right">
+          $i18n{customApnLimitReached}
+        </paper-tooltip>
+      </template>
     </iron-collapse>
   </template>
 

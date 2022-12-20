@@ -51,7 +51,7 @@
   </div>
   <div id="subLabel" class="cr-secondary-text" aria-hidden="true"
       hidden="[[!isConnected]]">
-    [[i18n('NetworkHealthStateConnected')]]
+    [[i18n('OncConnected')]]
   </div>
 </div>
 <cr-icon-button id="actionMenuButton" class="icon-more-vert"
@@ -60,7 +60,8 @@
     focus-row-control focus-type="menu">
 </cr-icon-button>
 
-<cr-action-menu id="dotsMenu" role-description="[[i18n('menu')]]">
+<!-- TODO(b/162365553) Add a11y support-->
+<cr-action-menu id="dotsMenu">
   <button id="detailsButton" class="dropdown-item"
       on-click="onDetailsClicked_">
     [[i18n('apnMenuDetails')]]
