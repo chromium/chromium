@@ -45,7 +45,7 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
       api->glBindTextureFn(target, texture->service_id());
 
       // Now bind the GLImage to |texture| via |target|.
-      // NOTE: GLImages created in this context (GLImageDXGI or GLImageD3D)
+      // NOTE: GLImages created in this context (GLImageEGLStream or GLImageD3D)
       // always bind.
       DCHECK(image->ShouldBindOrCopy() == gl::GLImage::BIND);
       image->BindTexImage(target);

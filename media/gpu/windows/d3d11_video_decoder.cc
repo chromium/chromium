@@ -916,8 +916,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   // the finch flag is enabled.  We may not choose to set ALLOW_OVERLAY if the
   // flag is off, however.
   //
-  // Also note that, since we end up binding textures with GLImageDXGI, it's
-  // probably okay just to allow overlay always, and let the swap chain
+  // Also note that, since we end up binding textures with GLImageEGLStream,
+  // it's probably okay just to allow overlay always, and let the swap chain
   // presenter decide if it wants to.
   frame->metadata().allow_overlay = true;
 

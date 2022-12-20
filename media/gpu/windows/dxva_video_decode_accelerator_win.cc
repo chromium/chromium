@@ -56,6 +56,7 @@
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/dxva_picture_buffer_win.h"
+#include "media/gpu/windows/gl_image_egl_stream.h"
 #include "media/gpu/windows/gl_image_pbuffer.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/parsers/vp8_parser.h"
@@ -71,7 +72,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 
@@ -3253,15 +3253,16 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
 
     std::unique_ptr<gpu::SharedImageBacking> shared_image;
     // Check if this picture buffer has a DX11 texture.
-    gl::GLImageDXGI* gl_image_dxgi =
-        gl::GLImage::ToGLImageDXGI(picture_buffer->gl_image().get());
-    if (gl_image_dxgi) {
+    GLImageEGLStream* gl_image_egl_stream =
+        gl::GLImage::ToGLImageEGLStream(picture_buffer->gl_image().get());
+    if (gl_image_egl_stream) {
       shared_image = gpu::D3DImageBacking::CreateFromGLTexture(
           mailbox, viz_formats[texture_idx],
           picture_buffer->texture_size(texture_idx),
           picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage, gl_image_dxgi->texture(),
-          std::move(gl_texture), gl_image_dxgi->level());
+          kPremul_SkAlphaType, shared_image_usage,
+          gl_image_egl_stream->texture(), std::move(gl_texture),
+          gl_image_egl_stream->level());
     } else {
       auto gl_image_pbuffer_ref = scoped_refptr<GLImagePbuffer>(
           gl::GLImage::ToGLImagePbuffer(picture_buffer->gl_image().get()));

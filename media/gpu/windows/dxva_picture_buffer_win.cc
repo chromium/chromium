@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
+#include "media/gpu/windows/gl_image_egl_stream.h"
 #include "media/gpu/windows/gl_image_pbuffer.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -14,7 +15,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image.h"
-#include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -376,7 +376,7 @@ bool EGLStreamPictureBuffer::Initialize() {
   };
   stream_ = eglCreateStreamKHR(egl_display, stream_attributes);
   RETURN_ON_FAILURE(!!stream_, "Could not create stream", false);
-  gl_image_ = base::MakeRefCounted<gl::GLImageDXGI>(size(), stream_);
+  gl_image_ = base::MakeRefCounted<GLImageEGLStream>(size(), stream_);
   gl::ScopedActiveTexture texture0(GL_TEXTURE0);
   gl::ScopedTextureBinder texture0_binder(
       GL_TEXTURE_EXTERNAL_OES, picture_buffer_.service_texture_ids()[0]);
@@ -461,11 +461,10 @@ bool EGLStreamPictureBuffer::BindSampleToTexture(
   RETURN_ON_FAILURE(result, "Could not post texture", false);
   result = eglStreamConsumerAcquireKHR(egl_display, stream_);
   RETURN_ON_FAILURE(result, "Could not post acquire stream", false);
-  gl::GLImageDXGI* gl_image_dxgi =
-      static_cast<gl::GLImageDXGI*>(gl_image_.get());
-  DCHECK(gl_image_dxgi);
-
-  gl_image_dxgi->SetTexture(dx11_decoding_texture_, subresource);
+  GLImageEGLStream* gl_image_egl_stream =
+      static_cast<GLImageEGLStream*>(gl_image_.get());
+  DCHECK(gl_image_egl_stream);
+  gl_image_egl_stream->SetTexture(dx11_decoding_texture_, subresource);
   return true;
 }
 
@@ -529,8 +528,8 @@ bool EGLStreamDelayedCopyPictureBuffer::Initialize(
   result = eglCreateStreamProducerD3DTextureANGLE(egl_display, stream_,
                                                   producer_attributes);
   RETURN_ON_FAILURE(result, "Could not create stream producer", false);
-  scoped_refptr<gl::CopyingGLImageDXGI> copying_image_ =
-      base::MakeRefCounted<gl::CopyingGLImageDXGI>(
+  scoped_refptr<CopyingGLImageEGLStream> copying_image_ =
+      base::MakeRefCounted<CopyingGLImageEGLStream>(
           ComD3D11Device(decoder.D3D11Device()), size(), stream_);
   gl_image_ = copying_image_;
   return copying_image_->Initialize();
@@ -539,7 +538,7 @@ bool EGLStreamDelayedCopyPictureBuffer::Initialize(
 bool EGLStreamDelayedCopyPictureBuffer::ReusePictureBuffer() {
   DCHECK_NE(UNUSED, state_);
 
-  static_cast<gl::CopyingGLImageDXGI*>(gl_image_.get())->UnbindFromTexture();
+  static_cast<CopyingGLImageEGLStream*>(gl_image_.get())->UnbindFromTexture();
   if (current_d3d_sample_) {
     dx11_decoding_texture_.Reset();
     current_d3d_sample_.Reset();
@@ -575,13 +574,13 @@ bool EGLStreamDelayedCopyPictureBuffer::BindSampleToTexture(
   DCHECK(decoder->d3d11_processor_);
   DCHECK(decoder->enumerator_);
 
-  gl::CopyingGLImageDXGI* gl_image_dxgi =
-      static_cast<gl::CopyingGLImageDXGI*>(gl_image_.get());
-  DCHECK(gl_image_dxgi);
+  CopyingGLImageEGLStream* copying_gl_image =
+      static_cast<CopyingGLImageEGLStream*>(gl_image_.get());
+  DCHECK(copying_gl_image);
 
-  gl_image_dxgi->SetTexture(dx11_decoding_texture_, subresource);
-  return gl_image_dxgi->InitializeVideoProcessor(decoder->d3d11_processor_,
-                                                 decoder->enumerator_);
+  copying_gl_image->SetTexture(dx11_decoding_texture_, subresource);
+  return copying_gl_image->InitializeVideoProcessor(decoder->d3d11_processor_,
+                                                    decoder->enumerator_);
 }
 
 bool EGLStreamDelayedCopyPictureBuffer::AllowOverlay() const {
@@ -615,7 +614,7 @@ bool EGLStreamCopyPictureBuffer::Initialize(
   };
   stream_ = eglCreateStreamKHR(egl_display, stream_attributes);
   RETURN_ON_FAILURE(!!stream_, "Could not create stream", false);
-  gl_image_ = base::MakeRefCounted<gl::GLImageDXGI>(size(), stream_);
+  gl_image_ = base::MakeRefCounted<GLImageEGLStream>(size(), stream_);
   gl::ScopedActiveTexture texture0(GL_TEXTURE0);
   gl::ScopedTextureBinder texture0_binder(
       GL_TEXTURE_EXTERNAL_OES, picture_buffer_.service_texture_ids()[0]);
@@ -735,12 +734,10 @@ bool EGLStreamCopyPictureBuffer::CopySurfaceComplete(
   RETURN_ON_FAILURE(result, "Could not post stream", false);
   result = eglStreamConsumerAcquireKHR(egl_display, stream_);
   RETURN_ON_FAILURE(result, "Could not post acquire stream", false);
-  gl::GLImageDXGI* gl_image_dxgi =
-      static_cast<gl::GLImageDXGI*>(gl_image_.get());
-  DCHECK(gl_image_dxgi);
-
-  gl_image_dxgi->SetTexture(angle_copy_texture_, 0);
-
+  GLImageEGLStream* gl_image_egl_stream =
+      static_cast<GLImageEGLStream*>(gl_image_.get());
+  DCHECK(gl_image_egl_stream);
+  gl_image_egl_stream->SetTexture(angle_copy_texture_, 0);
   return true;
 }
 

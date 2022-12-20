@@ -37,10 +37,11 @@ GLImageIOSurface* GLImage::ToGLImageIOSurface(GLImage* image) {
 }
 
 // static
-GLImageDXGI* GLImage::ToGLImageDXGI(GLImage* image) {
-  if (!image || image->GetType() != Type::DXGI_IMAGE)
+media::GLImageEGLStream* GLImage::ToGLImageEGLStream(GLImage* image) {
+  if (!image || image->GetType() != Type::EGL_STREAM) {
     return nullptr;
-  return reinterpret_cast<GLImageDXGI*>(image);
+  }
+  return reinterpret_cast<media::GLImageEGLStream*>(image);
 }
 
 // static

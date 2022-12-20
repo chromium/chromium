@@ -67,6 +67,7 @@ class ValidatingAbstractTextureImpl;
 }
 
 namespace media {
+class GLImageEGLStream;
 class GLImagePbuffer;
 class DXVAVideoDecodeAccelerator;
 class VaapiPictureNativePixmapAngle;
@@ -94,7 +95,6 @@ namespace gl {
 class DCompPresenterTest;
 class DirectCompositionSurfaceTest;
 class GLImageD3D;
-class GLImageDXGI;
 class GLImageIOSurface;
 class GLImageMemory;
 class SwapChainPresenter;
@@ -179,7 +179,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
     NONE,
     MEMORY,
     IOSURFACE,
-    DXGI_IMAGE,
+    EGL_STREAM,
     D3D,
     DCOMP_SURFACE,
     PBUFFER
@@ -200,7 +200,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   static GLImageD3D* ToGLImageD3D(GLImage* image);
   static GLImageMemory* ToGLImageMemory(GLImage* image);
   static GLImageIOSurface* ToGLImageIOSurface(GLImage* image);
-  static GLImageDXGI* ToGLImageDXGI(GLImage* image);
+  static media::GLImageEGLStream* ToGLImageEGLStream(GLImage* image);
   static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
   friend class DCompPresenterTest;

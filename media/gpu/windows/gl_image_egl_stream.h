@@ -2,26 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_GL_IMAGE_DXGI_H_
-#define UI_GL_GL_IMAGE_DXGI_H_
+#ifndef MEDIA_GPU_WINDOWS_GL_IMAGE_EGL_STREAM_H_
+#define MEDIA_GPU_WINDOWS_GL_IMAGE_EGL_STREAM_H_
 
-#include <DXGI1_2.h>
 #include <d3d11.h>
 #include <wrl/client.h>
 
-#include "base/win/scoped_handle.h"
-#include "ui/gfx/buffer_types.h"
-#include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
 typedef void* EGLStreamKHR;
 typedef void* EGLConfig;
 typedef void* EGLSurface;
 
-namespace gl {
-class GL_EXPORT GLImageDXGI : public GLImage {
+namespace media {
+class GLImageEGLStream : public gl::GLImage {
  public:
-  GLImageDXGI(const gfx::Size& size, EGLStreamKHR stream);
+  GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream);
 
   // GLImage implementation.
   BindOrCopy ShouldBindOrCopy() override;
@@ -39,36 +35,28 @@ class GL_EXPORT GLImageDXGI : public GLImage {
                     const std::string& dump_name) override;
   void ReleaseTexImage(unsigned target) override;
 
-  const gfx::ColorSpace& color_space() const { return color_space_; }
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex() { return keyed_mutex_; }
-  size_t level() const { return level_; }
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture() { return texture_; }
+  size_t level() const { return level_; }
 
-  bool InitializeHandle(base::win::ScopedHandle handle,
-                        uint32_t level,
-                        gfx::BufferFormat format);
   void SetTexture(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture,
                   size_t level);
 
  protected:
-  ~GLImageDXGI() override;
+  ~GLImageEGLStream() override;
 
-  gfx::BufferFormat buffer_format_ = gfx::BufferFormat::BGRA_8888;
-  base::win::ScopedHandle handle_;
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
-  size_t level_ = 0;
   gfx::Size size_;
-  EGLSurface surface_ = nullptr;
   EGLStreamKHR stream_ = nullptr;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
+  size_t level_ = 0;
 };
 
 // This copies to a new texture on bind.
-class GL_EXPORT CopyingGLImageDXGI : public GLImageDXGI {
+class CopyingGLImageEGLStream : public GLImageEGLStream {
  public:
-  CopyingGLImageDXGI(const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device,
-                     const gfx::Size& size,
-                     EGLStreamKHR stream);
+  CopyingGLImageEGLStream(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device,
+      const gfx::Size& size,
+      EGLStreamKHR stream);
 
   bool Initialize();
   bool InitializeVideoProcessor(
@@ -80,7 +68,7 @@ class GL_EXPORT CopyingGLImageDXGI : public GLImageDXGI {
   bool BindTexImage(unsigned target) override;
 
  private:
-  ~CopyingGLImageDXGI() override;
+  ~CopyingGLImageEGLStream() override;
 
   bool copied_ = false;
 
@@ -92,6 +80,7 @@ class GL_EXPORT CopyingGLImageDXGI : public GLImageDXGI {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> decoder_copy_texture_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> output_view_;
 };
-}
 
-#endif  // UI_GL_GL_IMAGE_DXGI_H_
+}  // namespace media
+
+#endif  // MEDIA_GPU_WINDOWS_GL_IMAGE_EGL_STREAM_H_

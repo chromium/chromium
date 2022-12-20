@@ -38,7 +38,7 @@ interface IDirect3DSurface9;
 
 namespace gl {
 class GLContext;
-class GLImageDXGI;
+class GLImageEGLStream;
 }
 
 namespace gpu {
@@ -382,7 +382,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   void DisableSharedTextureSupport();
 
   // Creates ScopedSharedImages for the provided PictureBuffer. If the buffer
-  // has a GLImageDXGI this function will create D3DImageBacking using the
+  // has a GLImageEGLStream this function will create D3DImageBacking using the
   // DX11 texture. Otherwise it will create thin GLImageBacking
   // wrappers around the existing textures in |picture_buffer|.
   std::vector<scoped_refptr<Picture::ScopedSharedImage>>
