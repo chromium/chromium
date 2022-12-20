@@ -236,9 +236,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeWebsite];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  // TODO(crbug.com/1358982): Update text to "Sites".
+  // TODO(crbug.com/1358982): Update text to "Sites" and display all sites in
+  // PasswordDetails.
   item.textFieldName = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
-  item.textFieldValue = passwordDetails.website;
+  item.textFieldValue = passwordDetails.websites[0];
   item.textFieldEnabled = NO;
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.hideIcon = YES;
@@ -1069,11 +1070,13 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
   switch (menuItem.itemType) {
     case ItemTypeWebsite:
+      // TODO(crbug.com/1358982): Copy to pasteboard all websites in
+      // PasswordDetails.
       generalPasteboard.string =
           self.passwords[IsPasswordGroupingEnabled()
                              ? self.tableView.indexPathForSelectedRow.section
                              : 0]
-              .website;
+              .websites[0];
       message =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
       break;

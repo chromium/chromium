@@ -82,6 +82,11 @@ GURL GetShownUrl(const CredentialUIEntry& credential) {
   return GetShownURL(facet_uri, credential.GetURL());
 }
 
+GURL GetShownUrl(const CredentialFacet& facet) {
+  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(facet.signon_realm);
+  return GetShownURL(facet_uri, facet.url);
+}
+
 std::string GetShownOrigin(const url::Origin& origin) {
   std::string original =
       base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(

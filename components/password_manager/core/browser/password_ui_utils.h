@@ -19,6 +19,7 @@ namespace password_manager {
 class PasswordFormManagerForUI;
 struct PasswordForm;
 struct CredentialUIEntry;
+struct CredentialFacet;
 
 // Reverses order of labels in hostname.
 std::string SplitByDotAndReverse(base::StringPiece host);
@@ -41,6 +42,9 @@ std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
 // |CredentialUIEntry|.
 std::string GetShownOrigin(const CredentialUIEntry& credential);
 GURL GetShownUrl(const CredentialUIEntry& credential);
+
+// Equivalent to |GetShownOriginAndLinkUrl| but works with |CredentialFacet|.
+GURL GetShownUrl(const CredentialFacet& facet);
 
 // Returns a string suitable for security display to the user (just like
 // |FormatUrlForSecurityDisplay| with OMIT_HTTP_AND_HTTPS) based on origin of

@@ -35,9 +35,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 // Short version of website.
 @property(nonatomic, copy, readonly) NSString* origin;
 
-// Associated website. It is determined by either the sign-on realm or the
+// Associated websites. It is determined by either the sign-on realm or the
 // display name of the Android app.
-@property(nonatomic, copy, readonly) NSString* website;
+@property(nonatomic, copy, readonly) NSArray<NSString*>* websites;
 
 // Associated username.
 @property(nonatomic, copy) NSString* username;
