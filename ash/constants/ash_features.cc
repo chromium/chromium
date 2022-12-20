@@ -1565,6 +1565,8 @@ BASE_FEATURE(kOverviewDeskNavigation,
 
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
+// TODO(crbug/1254930): Revisit this flag when there is a way to query billboard
+// devices correctly.
 BASE_FEATURE(kPcieBillboardNotification,
              "PcieBillboardNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
