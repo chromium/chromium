@@ -33,6 +33,15 @@ BASE_DECLARE_FEATURE(kReadLaterBackendMigration);
 BASE_DECLARE_FEATURE(kReadLaterReminderNotification);
 #endif
 
+// Feature flag that controls a technical rollout of a new codepath that doesn't
+// itself cause user-facing changes but sets the foundation for later rollouts
+// namely, `kReadingListEnableSyncTransportModeUponSignIn` below).
+BASE_DECLARE_FEATURE(kReadingListEnableDualReadingListModel);
+
+// Feature flag used for enabling sync (transport mode) for signed-in users that
+// haven't turned on full sync.
+BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
+
 }  // namespace switches
 }  // namespace reading_list
 

@@ -39,6 +39,7 @@ source_set("reading_list") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",
+    "//components/reading_list/features:flags",
     "//components/reading_list/ios",
     "//components/sync",
     "//ios/chrome/browser/application_context",

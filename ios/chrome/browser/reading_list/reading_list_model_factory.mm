@@ -7,14 +7,17 @@
 #import <utility>
 
 #import "base/bind.h"
+#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
 #import "components/reading_list/core/reading_list_pref_names.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -65,10 +68,24 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           ->GetStoreFactory();
   auto storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
-  std::unique_ptr<KeyedService> reading_list_model =
-      std::make_unique<ReadingListModelImpl>(std::move(storage),
+  auto reading_list_model = std::make_unique<ReadingListModelImpl>(
+      std::move(storage), base::DefaultClock::GetInstance());
+  if (!base::FeatureList::IsEnabled(
+          reading_list::switches::kReadingListEnableDualReadingListModel)) {
+    return reading_list_model;
+  }
+
+  syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
+      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+          ->GetStoreFactoryForAccountStorage();
+  auto account_storage = std::make_unique<ReadingListModelStorageImpl>(
+      std::move(store_factory_for_account_storage));
+  auto reading_list_model_for_account_storage =
+      std::make_unique<ReadingListModelImpl>(std::move(account_storage),
                                              base::DefaultClock::GetInstance());
-  return reading_list_model;
+  return std::make_unique<reading_list::DualReadingListModel>(
+      /*local_or_syncable_model=*/std::move(reading_list_model),
+      /*account_model=*/std::move(reading_list_model_for_account_storage));
 }
 
 web::BrowserState* ReadingListModelFactory::GetBrowserStateToUse(

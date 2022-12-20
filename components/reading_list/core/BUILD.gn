@@ -6,6 +6,8 @@ import("//components/reading_list/features/reading_list.gni")
 
 source_set("core") {
   sources = [
+    "dual_reading_list_model.cc",
+    "dual_reading_list_model.h",
     "offline_url_utils.cc",
     "offline_url_utils.h",
     "reading_list_entry.cc",

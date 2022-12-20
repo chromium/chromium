@@ -38,5 +38,13 @@ BASE_FEATURE(kReadLaterReminderNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kReadingListEnableDualReadingListModel,
+             "ReadingListEnableDualReadingListModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
+             "ReadingListEnableSyncTransportModeUponSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
 }  // namespace reading_list
