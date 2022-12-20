@@ -353,10 +353,6 @@ class CreditCard : public AutofillDataModel {
   std::u16string Expiration2DigitYearAsString() const;
   std::u16string Expiration4DigitYearAsString() const;
 
-  // Whether the cardholder name was created from separate first name and last
-  // name fields.
-  bool HasFirstAndLastName() const;
-
   // Returns whether the card has a cardholder name.
   bool HasNameOnCard() const;
 

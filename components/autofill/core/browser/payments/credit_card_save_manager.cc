@@ -326,12 +326,6 @@ void CreditCardSaveManager::OnDidUploadCard(
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedUploadCardResponse();
 
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess &&
-      upload_request_.card.HasFirstAndLastName()) {
-    autofill_metrics::LogSaveCardWithFirstAndLastNameComplete(
-        /*is_local=*/false);
-  }
-
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Log how many strikes the card had when it was saved.
     LogStrikesPresentWhenCardSaved(
@@ -508,10 +502,6 @@ void CreditCardSaveManager::OfferCardLocalSave() {
             .with_has_non_focusable_field(has_non_focusable_field_),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
-    // Log metrics.
-    if (local_card_save_candidate_.HasFirstAndLastName())
-      autofill_metrics::LogSaveCardWithFirstAndLastNameOffered(
-          /*is_local=*/true);
   }
   if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
     autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
@@ -552,10 +542,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     AutofillMetrics::LogUploadOfferedCardOriginMetric(
         uploading_local_card_ ? AutofillMetrics::OFFERING_UPLOAD_OF_LOCAL_CARD
                               : AutofillMetrics::OFFERING_UPLOAD_OF_NEW_CARD);
-    if (upload_request_.card.HasFirstAndLastName()) {
-      autofill_metrics::LogSaveCardWithFirstAndLastNameOffered(
-          /*is_local=*/false);
-    }
+
     // Set that upload was offered.
     upload_decision_metrics_ |= autofill_metrics::UPLOAD_OFFERED;
   } else {
@@ -575,9 +562,6 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
     AutofillClient::SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
-      if (local_card_save_candidate_.HasFirstAndLastName())
-        autofill_metrics::LogSaveCardWithFirstAndLastNameComplete(
-            /*is_local=*/true);
       // Log how many CreditCardSave strikes the card had when it was saved.
       LogStrikesPresentWhenCardSaved(
           /*is_local=*/true,

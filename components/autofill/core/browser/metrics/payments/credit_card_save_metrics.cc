@@ -169,18 +169,6 @@ void LogSaveCardRequestExpirationDateReasonMetric(
                             reason);
 }
 
-void LogSaveCardWithFirstAndLastNameOffered(bool is_local) {
-  std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameOffered.";
-  histogram_name += is_local ? "Local" : "Server";
-  base::UmaHistogramBoolean(histogram_name, true);
-}
-
-void LogSaveCardWithFirstAndLastNameComplete(bool is_local) {
-  std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameComplete.";
-  histogram_name += is_local ? "Local" : "Server";
-  base::UmaHistogramBoolean(histogram_name, true);
-}
-
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

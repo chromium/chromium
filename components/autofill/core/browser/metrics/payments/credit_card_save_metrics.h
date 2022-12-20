@@ -221,10 +221,6 @@ void LogSaveCardPromptResultMetric(
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
 
-void LogSaveCardWithFirstAndLastNameOffered(bool is_local);
-
-void LogSaveCardWithFirstAndLastNameComplete(bool is_local);
-
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

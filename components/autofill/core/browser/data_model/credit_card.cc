@@ -1032,11 +1032,6 @@ std::u16string CreditCard::Expiration4DigitYearAsString() const {
   return data_util::Expiration4DigitYearAsString(expiration_year_);
 }
 
-bool CreditCard::HasFirstAndLastName() const {
-  return !temp_card_first_name_.empty() && !temp_card_last_name_.empty() &&
-         !name_on_card_.empty();
-}
-
 bool CreditCard::HasNameOnCard() const {
   return !name_on_card_.empty();
 }
