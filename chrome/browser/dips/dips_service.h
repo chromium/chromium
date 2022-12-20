@@ -31,7 +31,7 @@ class PersistentRepeatingTimer;
 class DIPSService : public KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<
-      void(bool stateful, const GURL& url, base::Time time)>;
+      void(const GURL& url, base::Time time, bool stateful)>;
 
   ~DIPSService() override;
 
@@ -69,7 +69,7 @@ class DIPSService : public KeyedService {
                 DIPSRedirectChainInfoPtr chain,
                 size_t index,
                 const DIPSState url_state);
-  void RecordBounce(bool stateful, const GURL& url, base::Time time);
+  void RecordBounce(const GURL& url, base::Time time, bool stateful);
   static void HandleRedirect(const DIPSRedirectInfo& redirect,
                              const DIPSRedirectChainInfo& chain,
                              RecordBounceCallback callback);

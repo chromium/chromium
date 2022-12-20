@@ -117,7 +117,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   const std::vector<std::string>& redirects() const { return redirects_; }
 
  private:
-  void RecordBounce(bool stateful, const GURL& url, base::Time time) {
+  void RecordBounce(const GURL& url, base::Time time, bool stateful) {
     recorded_bounces_.insert(std::make_tuple(url, time, stateful));
   }
 

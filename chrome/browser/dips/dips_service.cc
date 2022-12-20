@@ -213,9 +213,9 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
                            std::move(redirects), std::move(chain), index + 1));
 }
 
-void DIPSService::RecordBounce(bool stateful,
-                               const GURL& url,
-                               base::Time time) {
+void DIPSService::RecordBounce(const GURL& url,
+                               base::Time time,
+                               bool stateful) {
   storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
 }
 
@@ -253,8 +253,8 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   // Record this bounce in the DIPS database.
   if (redirect.access_type != CookieAccessType::kUnknown) {
     record_bounce.Run(
-        /*stateful=*/redirect.access_type > CookieAccessType::kRead,
-        redirect.url, redirect.time);
+        redirect.url, redirect.time,
+        /*stateful=*/redirect.access_type > CookieAccessType::kRead);
   }
 
   RedirectCategory category =
