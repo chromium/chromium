@@ -72,6 +72,15 @@ void DateTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
 }
 
+void DateTray::CloseBubble() {
+  if (!is_active()) {
+    return;
+  }
+  // Lets the `unified_system_tray_` close the bubble since it's the owner of
+  // the bubble view.
+  unified_system_tray_->CloseBubble();
+}
+
 void DateTray::OnOpeningCalendarView() {
   SetIsActive(true);
 }

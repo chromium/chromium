@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/date_tray.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -183,6 +182,31 @@ TEST_F(DateTrayTest, EscapeKeyForClose) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
+  EXPECT_FALSE(GetDateTray()->is_active());
+}
+
+// Tests that calling `DateTray::CloseBubble()` actually closes the bubble.
+TEST_F(DateTrayTest, CloseBubble) {
+  ASSERT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+
+  // Clicking on the `DateTray` -> show the calendar bubble.
+  LeftClickOn(GetDateTray());
+  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
+  EXPECT_TRUE(GetDateTray()->is_active());
+
+  // Calling `DateTray::CloseBubble()` should close the bubble.
+  GetDateTray()->CloseBubble();
+  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
+  EXPECT_FALSE(GetDateTray()->is_active());
+
+  // Calling `DateTray::CloseBubble()` on an already-closed bubble should do
+  // nothing.
+  GetDateTray()->CloseBubble();
+  EXPECT_FALSE(GetUnifiedSystemTray()->IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
 }
