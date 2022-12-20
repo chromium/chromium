@@ -134,7 +134,13 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName2));
 }
 
-TEST_F(TaskSchedulerTests, RunAProgramNow) {
+// Test flaky for Win-ASAN: http://crbug.com/1402743
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RunAProgramNow DISABLED_RunAProgramNow
+#else
+#define MAYBE_RunAProgramNow RunAProgramNow
+#endif
+TEST_F(TaskSchedulerTests, MAYBE_RunAProgramNow) {
   base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   // Create a unique name for a shared event to be waited for in this process
