@@ -716,7 +716,7 @@ class BidderWorkletTest : public testing::Test {
   // Values used to construct the BiddingInterestGroup passed to the
   // BidderWorklet.
   //
-  // NOTE: For each new GURL field, GeneateBidLoadCompletionOrder /
+  // NOTE: For each new GURL field, GenerateBidLoadCompletionOrder /
   // ReportWinLoadCompletionOrder should be updated.
   std::string interest_group_name_;
   bool interest_group_enable_bidding_signals_prioritization_;
@@ -2359,7 +2359,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
 // It shouldn't matter the order in which network fetches complete. For each
 // required and optional generateBid() URL load prerequisite, ensure that
 // generateBid() completes when that URL is the last loaded URL.
-TEST_F(BidderWorkletTest, GeneateBidLoadCompletionOrder) {
+TEST_F(BidderWorkletTest, GenerateBidLoadCompletionOrder) {
   constexpr char kTrustedSignalsResponse[] = R"({"keys":{"1":1}})";
   constexpr char kJsonResponse[] = "{}";
   constexpr char kDirectFromSellerSignalsHeaders[] =
