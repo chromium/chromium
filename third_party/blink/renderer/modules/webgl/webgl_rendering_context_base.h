@@ -1997,10 +1997,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   PredefinedColorSpace drawing_buffer_color_space_ =
       PredefinedColorSpace::kSRGB;
   PredefinedColorSpace unpack_color_space_ = PredefinedColorSpace::kSRGB;
-
-  // The pixel format of the WebGL canvas. This is based on a deprecated
-  // specification that is being replaced by drawingBufferStorage.
-  CanvasPixelFormat pixel_format_deprecated_ = CanvasPixelFormat::kUint8;
 };
 
 template <>

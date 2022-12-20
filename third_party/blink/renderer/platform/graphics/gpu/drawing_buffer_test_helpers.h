@@ -443,7 +443,6 @@ class DrawingBufferForTests : public DrawingBuffer {
             DrawingBuffer::kAllowChromiumImage /* ChromiumImageUsage */,
             cc::PaintFlags::FilterQuality::kLow,
             PredefinedColorSpace::kSRGB,
-            CanvasPixelFormat::kUint8,
             gl::GpuPreference::kHighPerformance),
         live_(nullptr) {}
 

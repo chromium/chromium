@@ -142,7 +142,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       ChromiumImageUsage,
       cc::PaintFlags::FilterQuality,
       PredefinedColorSpace color_space,
-      CanvasPixelFormat pixel_format,
       gl::GpuPreference);
 
   DrawingBuffer(const DrawingBuffer&) = delete;
@@ -181,6 +180,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Resizes (or allocates if necessary) all buffers attached to the default
   // framebuffer. Returns whether the operation was successful.
   bool Resize(const gfx::Size&);
+  bool ResizeWithFormat(GLenum requested_format,
+                        SkAlphaType requested_alpha_type,
+                        const gfx::Size& new_size);
 
   // Set the color space of the default draw buffer. This will destroy the
   // contents of the drawing buffer.
@@ -351,7 +353,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 ChromiumImageUsage,
                 cc::PaintFlags::FilterQuality,
                 PredefinedColorSpace color_space,
-                CanvasPixelFormat pixel_format,
                 gl::GpuPreference gpu_preference);
 
   bool Initialize(const gfx::Size&, bool use_multisampling);
@@ -477,7 +478,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                                  ClearOption clear_option);
 
   // The same as reset(), but leaves GL state dirty.
-  bool ResizeFramebufferInternal(GLenum requested_format, const gfx::Size&);
+  bool ResizeFramebufferInternal(GLenum requested_format,
+                                 SkAlphaType requested_alpha_type,
+                                 const gfx::Size&);
 
   // The same as resolveAndBindForReadAndDraw(), but leaves GL state dirty.
   void ResolveMultisampleFramebufferInternal();
@@ -601,7 +604,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool discard_framebuffer_supported_;
 
   // The alpha type that was requested (opaque, premul, or unpremul).
-  const SkAlphaType requested_alpha_type_;
+  SkAlphaType requested_alpha_type_;
 
   // The requested format (GL_RGB, GL_RGBA, or GL_RGBA16F).
   GLenum requested_format_ = GL_NONE;

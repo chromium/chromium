@@ -633,7 +633,70 @@ void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
   if (!GetDrawingBuffer())
     return;
 
-  NOTIMPLEMENTED();
+  const char* function_name = "drawingBufferStorage";
+  const CanvasContextCreationAttributesCore& attrs = CreationAttributes();
+
+  // Ensure that the width and height are valid.
+  if (width <= 0) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name, "width < 0");
+    return;
+  }
+  if (height <= 0) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name, "height < 0");
+    return;
+  }
+  if (width > max_renderbuffer_size_) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      "width > MAX_RENDERBUFFER_SIZE");
+    return;
+  }
+  if (height > max_renderbuffer_size_) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      "height > MAX_RENDERBUFFER_SIZE");
+    return;
+  }
+
+  // Ensure that the format is supported, and set the corresponding alpha
+  // type.
+  SkAlphaType alpha_type =
+      attrs.premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
+  switch (sizedformat) {
+    case GL_RGB8:
+      alpha_type = kOpaque_SkAlphaType;
+      break;
+    case GL_RGBA8:
+      break;
+    case GL_SRGB8_ALPHA8:
+      if (!IsWebGL2() && !ExtensionEnabled(kEXTsRGBName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "EXT_sRGB not enabled");
+        return;
+      }
+      break;
+    case GL_RGBA16F:
+      if (IsWebGL2()) {
+        if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
+            !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+          SynthesizeGLError(
+              GL_INVALID_ENUM, function_name,
+              "EXT_color_buffer_float/EXT_color_buffer_half_float not enabled");
+          return;
+        } else {
+          if (!ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+            SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                              "EXT_color_buffer_half_float not enabled");
+            return;
+          }
+        }
+      }
+      break;
+    default:
+      SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid sizedformat");
+      return;
+  }
+
+  GetDrawingBuffer()->ResizeWithFormat(sizedformat, alpha_type,
+                                       gfx::Size(width, height));
 }
 
 void WebGLRenderingContextBase::commit() {
@@ -1067,12 +1130,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                                              max_viewport_dims_);
   InitializeWebGLContextLimits(context_provider.get());
 
-  // TODO(https://crbug.com/1230619): Remove this in favor of
-  // drawingBufferStorage.
-  if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled()) {
-    pixel_format_deprecated_ = requested_attributes.pixel_format;
-  }
-
   scoped_refptr<DrawingBuffer> buffer =
       CreateDrawingBuffer(std::move(context_provider), graphics_info);
   if (!buffer) {
@@ -1153,7 +1210,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
       preserve, web_gl_version, chromium_image_usage, Host()->FilterQuality(),
-      drawing_buffer_color_space_, pixel_format_deprecated_,
+      drawing_buffer_color_space_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
 
@@ -5447,8 +5504,12 @@ SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
   // have been intentional.
   const SkAlphaType alpha_type =
       CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+  SkColorType color_type = kN32_SkColorType;
+  if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
+    color_type = kRGBA_F16_SkColorType;
+  }
   return SkColorInfo(
-      CanvasPixelFormatToSkColorType(pixel_format_deprecated_), alpha_type,
+      color_type, alpha_type,
       PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
 }
 
