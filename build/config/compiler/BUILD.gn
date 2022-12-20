@@ -1650,7 +1650,7 @@ config("default_warnings") {
 # sizes, allocations, indices, or offsets.In cases where type conversion is not
 # possible or is superfluous, use base::strict_cast<> or base::checked_cast<>
 # to convert to size_t as needed.
-# See also: https://docs.google.com/document/d/14yKUwDaorqqNfgdGqHY_nck2nn02XBQcB5N0ue4fax8
+# See also: https://docs.google.com/document/d/1CTbQ-5cQjnjU8aCOtLiA7G6P0i5C6HpSDNlSNq6nl5E
 #
 # To enable in a GN target, use:
 #   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
