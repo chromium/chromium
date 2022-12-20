@@ -1354,15 +1354,14 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Fledge toggle.">
         Nunc aliquam consequat felis non tincidunt
       </message>
-      <!-- TODO(http://b/254412044): Format links.-->
       <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Description for the Fledge toggle.">
-        Donec pretium non elit vitae ornare. Morbi arcu elit, rutrum nec sapien quis, <ph name="BEGIN_LINK">&lt;link&gt;</ph>tristique tristique ante<ph name="END_LINK">&lt;/link&gt;</ph>
+        Donec pretium non elit vitae ornare. Morbi arcu elit, rutrum nec sapien quis
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_HEADING" translateable="false" desc="Section title for the current Fledge sites list.">
         Aliquam
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION" translateable="false" desc="Section description for the current Fledge sites list.">
-        Nullam sollicitudin elit vitae hendrerit suscipit. Nunc mi leo, placerat sit amet lorem non, semper convallis sapien.
+        Nullam sollicitudin elit vitae hendrerit suscipit. Nunc mi leo, placerat sit amet lorem non, semper convallis sapien. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_DISABLED" translateable="false" desc="Description which appears when Fledge is disabled.">
         Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos
@@ -1391,6 +1390,18 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" translateable="false" desc="">
         Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" translateable="false" desc="">
+        Vivamus nibh turpis
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="">
+        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
       </message>
 
       <!-- Privacy Sandbox v4 - Ad Measurement Page -->

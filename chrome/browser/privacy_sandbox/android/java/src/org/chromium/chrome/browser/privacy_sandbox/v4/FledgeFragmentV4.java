@@ -28,6 +28,8 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
@@ -82,6 +84,15 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
         mFledgeTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
+
+        mCurrentSitesCategory.setSummary(SpanApplier.applySpans(
+                getResources().getString(R.string.settings_fledge_page_current_sites_description),
+                new SpanApplier.SpanInfo("<link>", "</link>",
+                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+    }
+
+    private void onLearnMoreClicked(View view) {
+        launchSettingsActivity(FledgeLearnMoreFragment.class);
     }
 
     @Override

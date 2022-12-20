@@ -17,12 +17,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
@@ -127,6 +129,10 @@ public final class FledgeFragmentV4Test {
         return getRootViewSanitized(R.string.settings_fledge_page_blocked_sites_sub_page_title);
     }
 
+    private View getLearnMoreRootView() {
+        return getRootViewSanitized(R.string.settings_fledge_page_learn_more_heading);
+    }
+
     private void setFledgePrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> FledgeFragmentV4.setFledgePrefEnabled(isEnabled));
@@ -204,6 +210,17 @@ public final class FledgeFragmentV4Test {
         startFledgeSettings();
         onView(withText(R.string.settings_fledge_page_blocked_sites_heading)).perform(click());
         mRenderTestRule.render(getBlockedSitesPageRootView(), "fledge_blocked_sites_populated");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderLearnMore() throws IOException {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+        onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
+        mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more");
     }
 
     @Test
