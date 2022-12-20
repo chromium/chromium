@@ -292,9 +292,15 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
 
     @Override
     public void onSwipeStart() {
-        assert !mAnimatorSet.isStarted()
-            : "Swipe should impossibly be triggered while message is showing/hiding.";
+        // Message shouldn't consume swipe for now because animation is running, e.g.:
+        // the front message should not be swiped when back message is running showing animation.
+        assert isSwipeEnabled();
         mMessageQueueDelegate.onAnimationStart();
+    }
+
+    @Override
+    public boolean isSwipeEnabled() {
+        return !mAnimatorSet.isStarted();
     }
 
     @Override
