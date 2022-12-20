@@ -1001,7 +1001,7 @@ Instal·lació nova</translation>
 <translation id="6565007273808762236">La connexió eSIM no està disponible</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualitza el dispositiu en 1 hora}other{Actualitza el dispositiu en # hores}}</translation>
 <translation id="6570902864550063460">S'està carregant per USB</translation>
-<translation id="6574587113394758819"><ph name="APP_TITLE" /> està amagada perquè la protecció de visualització està activada</translation>
+<translation id="6574587113394758819"><ph name="APP_TITLE" /> està amagada perquè la protecció antimirades està activada</translation>
 <translation id="6574622320167699133">Desbloquejat pel teu telèfon. Toca o fes clic per entrar.</translation>
 <translation id="6578407462441924264">Sense nom</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1010,7 +1010,7 @@ Instal·lació nova</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="6612802754306526077">S'ha seleccionat el mode de gravació de pantalla</translation>
 <translation id="6614169507485700968">La pantalla de privadesa està activada</translation>
-<translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i altres notificacions estan amagades perquè la protecció de visualització està activada</translation>
+<translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i altres notificacions estan amagades perquè la protecció antimirades està activada</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
 <translation id="6637729079642709226">Canvia l'hora</translation>
 <translation id="6641720045729354415">Commuta la funció Subtítols instantanis. <ph name="STATE_TEXT" /></translation>
@@ -1322,7 +1322,7 @@ Instal·lació nova</translation>
 <translation id="8374601332003098278">Prem Retorn per gravar una part de la pantalla</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
 <translation id="8380784334203145311">Bona nit,</translation>
-<translation id="8382715499079447151">Protecció de visualització</translation>
+<translation id="8382715499079447151">Protecció antimirades</translation>
 <translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
 <translation id="8394567579869570560">El teu pare o mare han bloquejat aquest dispositiu</translation>
 <translation id="8401850874595457088">Menú per seleccionar l'idioma</translation>

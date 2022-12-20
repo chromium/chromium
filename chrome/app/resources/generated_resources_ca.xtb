@@ -1378,7 +1378,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2251218783371366160">Obre amb el lector del sistema</translation>
 <translation id="225163402930830576">Actualitza les xarxes</translation>
 <translation id="2251809247798634662">Finestra d'incògnit nova</translation>
-<translation id="2252017960592955005">Protecció de visualització (beta)</translation>
+<translation id="2252017960592955005">Protecció antimirades (beta)</translation>
 <translation id="225240747099314620">Permet els identificadors per a contingut protegit (és possible que calgui reiniciar l'ordinador)</translation>
 <translation id="2252617660166797081">Més informació sobre el canvi automàtic de contrasenyes</translation>
 <translation id="2255077166240162850">Aquest dispositiu s'ha bloquejat amb un domini o un mode diferents.</translation>
@@ -7913,7 +7913,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8380266723152870797">Nom de la finestra</translation>
 <translation id="8380941800586852976">Perillós</translation>
 <translation id="8382677870544805359">Hauràs de restablir les dades de fàbrica d'aquest dispositiu per poder utilitzar les funcions d'empresa.</translation>
-<translation id="8382715499079447151">Protecció de visualització</translation>
+<translation id="8382715499079447151">Protecció antimirades</translation>
 <translation id="8382913212082956454">Copia l'&amp;adreça electrònica</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Prova aquests passos per resoldre el problema:
     <ph name="BEGIN_LIST" />
