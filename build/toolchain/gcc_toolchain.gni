@@ -461,7 +461,7 @@ template("gcc_toolchain") {
         # -soname flag is not available on aix ld
         soname_flag = "-Wl,-soname=\"$soname\""
       }
-      link_command = "$ld -shared $soname_flag {{ldflags}}${extra_ldflags} -o \"$unstripped_sofile\" @\"$rspfile\""
+      link_command = "$ld -shared $soname_flag {{ldflags}}${extra_ldflags} -o \"$unstripped_sofile\" @\"$rspfile\" {{rlibs}}"
 
       # Generate a map file to be used for binary size analysis.
       # Map file adds ~10% to the link time on a z620.
@@ -494,13 +494,13 @@ template("gcc_toolchain") {
       command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
-        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
+        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group"
       } else if (current_os == "aix") {
         # --whole-archive, --no-whole-archive flags are not available on the aix
         # ld.
-        rspfile_content = "{{inputs}} {{solibs}} {{libs}} {{rlibs}}"
+        rspfile_content = "{{inputs}} {{solibs}} {{libs}}"
       } else {
-        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
+        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}}"
       }
 
       description = "SOLINK $sofile"
@@ -567,7 +567,8 @@ template("gcc_toolchain") {
       whole_archive_flag = ""
       no_whole_archive_flag = ""
       if (current_os != "aix") {
-        # -soname, --whole-archive, --no-whole-archive flags are not available on aix ld
+        # -soname, --whole-archive, --no-whole-archive flags are not available
+        # on aix ld
         soname_flag = "-Wl,-soname=\"$soname\""
         whole_archive_flag = "-Wl,--whole-archive"
         no_whole_archive_flag = "-Wl,--no-whole-archive"
@@ -578,7 +579,7 @@ template("gcc_toolchain") {
         strip_command = "${invoker.strip} -o \"$sofile\" \"$unstripped_sofile\""
         command += " && " + strip_command
       }
-      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} $whole_archive_flag {{rlibs}} $no_whole_archive_flag"
+      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} {{rlibs}}"
 
       description = "SOLINK_MODULE $sofile"
 
@@ -627,11 +628,12 @@ template("gcc_toolchain") {
       start_group_flag = ""
       end_group_flag = ""
       if (current_os != "aix") {
-        # the "--start-group .. --end-group" feature isn't available on the aix ld.
+        # the "--start-group .. --end-group" feature isn't available on the aix
+        # ld.
         start_group_flag = "-Wl,--start-group"
         end_group_flag = "-Wl,--end-group "
       }
-      link_command = "$ld {{ldflags}}${extra_ldflags} -o \"$unstripped_outfile\" $start_group_flag @\"$rspfile\" {{solibs}} $end_group_flag {{libs}}"
+      link_command = "$ld {{ldflags}}${extra_ldflags} -o \"$unstripped_outfile\" $start_group_flag @\"$rspfile\" {{solibs}} $end_group_flag {{libs}} {{rlibs}}"
 
       # Generate a map file to be used for binary size analysis.
       # Map file adds ~10% to the link time on a z620.
@@ -653,26 +655,7 @@ template("gcc_toolchain") {
 
       description = "LINK $outfile"
 
-      whole_archive_flag = ""
-      no_whole_archive_flag = ""
-      if (current_os != "aix") {
-        # --whole-archive, --no-whole-archive flags are not available on aix ld
-        whole_archive_flag = "-Wl,--whole-archive"
-        no_whole_archive_flag = "-Wl,--no-whole-archive"
-      }
-
-      # TODO(crbug.com/1296284): The {{rlibs}} contains the object files from
-      # the build target's source files. They should be treated as peers of the
-      # C++ object files in {{inputs}}, however an rlib is linked like a static
-      # library, which means object files can be dropped if the linker see them
-      # as being unused. This then drops test files, for example.
-      #
-      # However the rust stdlib is also present in the {{rlibs}} and should not
-      # be equally treated as the target's .o files. The linked bug should
-      # address this by moving the std library to be linked as a library and not
-      # as a set of rlibs.
-      rspfile_content =
-          "{{inputs}} $whole_archive_flag {{rlibs}} $no_whole_archive_flag "
+      rspfile_content = "{{inputs}}"
       outputs = [ outfile ]
       if (outfile != unstripped_outfile) {
         outputs += [ unstripped_outfile ]
