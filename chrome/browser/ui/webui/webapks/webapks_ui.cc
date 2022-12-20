@@ -20,25 +20,22 @@ using content::WebUIDataSource;
 
 namespace {
 
-WebUIDataSource* CreateWebApksUIDataSource() {
+void CreateAndAddWebApksUIDataSource(Profile* profile) {
   WebUIDataSource* html_source =
-      WebUIDataSource::Create(chrome::kChromeUIWebApksHost);
+      WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIWebApksHost);
   html_source->UseStringsJs();
 
   html_source->AddResourcePaths(
       base::make_span(kWebapksResources, kWebapksResourcesSize));
   html_source->SetDefaultResource(IDR_WEBAPKS_ABOUT_WEBAPKS_HTML);
-
-  return html_source;
 }
 
 }  // anonymous namespace
 
 WebApksUI::WebApksUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
   web_ui->AddMessageHandler(std::make_unique<WebApksHandler>());
-  WebUIDataSource::Add(profile, CreateWebApksUIDataSource());
+  CreateAndAddWebApksUIDataSource(Profile::FromWebUI(web_ui));
 }
 
 WebApksUI::~WebApksUI() {}

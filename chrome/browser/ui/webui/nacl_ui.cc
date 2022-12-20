@@ -55,13 +55,12 @@ using content::WebUIMessageHandler;
 
 namespace {
 
-content::WebUIDataSource* CreateNaClUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUINaClHost);
+void CreateAndAddNaClUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUINaClHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
-
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer-html-literal "
@@ -71,7 +70,6 @@ content::WebUIDataSource* CreateNaClUIHTMLSource() {
   source->AddResourcePath("about_nacl.css", IDR_ABOUT_NACL_CSS);
   source->AddResourcePath("about_nacl.js", IDR_ABOUT_NACL_JS);
   source->SetDefaultResource(IDR_ABOUT_NACL_HTML);
-  return source;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -408,6 +406,5 @@ NaClUI::NaClUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<NaClDomHandler>());
 
   // Set up the about:nacl source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateNaClUIHTMLSource());
+  CreateAndAddNaClUIHTMLSource(Profile::FromWebUI(web_ui));
 }

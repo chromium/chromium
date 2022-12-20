@@ -18,11 +18,11 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
 
-content::WebUIDataSource* CreateInvalidationsHTMLSource() {
+void CreateAndAddInvalidationsHTMLSource(Profile* profile) {
   // This is done once per opening of the page
   // This method does not fire when refreshing the page
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIInvalidationsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIInvalidationsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self' "
@@ -35,14 +35,13 @@ content::WebUIDataSource* CreateInvalidationsHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kInvalidationsResources, kInvalidationsResourcesSize));
   source->SetDefaultResource(IDR_INVALIDATIONS_ABOUT_INVALIDATIONS_HTML);
-  return source;
 }
 
 InvalidationsUI::InvalidationsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   if (profile) {
-    content::WebUIDataSource::Add(profile, CreateInvalidationsHTMLSource());
+    CreateAndAddInvalidationsHTMLSource(profile);
     web_ui->AddMessageHandler(std::make_unique<InvalidationsMessageHandler>());
   }
 }

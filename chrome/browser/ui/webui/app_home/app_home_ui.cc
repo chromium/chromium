@@ -15,13 +15,11 @@
 namespace webapps {
 
 AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIAppLauncherPageHost);
   webui::SetupWebUIDataSource(
       source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
       IDR_APP_HOME_APP_HOME_HTML);
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 void AppHomeUI::BindInterface(

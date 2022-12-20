@@ -17,7 +17,8 @@
 
 BrowsingTopicsInternalsUI::BrowsingTopicsInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIBrowsingTopicsInternalsHost);
 
   webui::SetupWebUIDataSource(
@@ -25,9 +26,6 @@ BrowsingTopicsInternalsUI::BrowsingTopicsInternalsUI(content::WebUI* web_ui)
       base::make_span(kBrowsingTopicsInternalsResources,
                       kBrowsingTopicsInternalsResourcesSize),
       IDR_BROWSING_TOPICS_INTERNALS_BROWSING_TOPICS_INTERNALS_HTML);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 BrowsingTopicsInternalsUI::~BrowsingTopicsInternalsUI() = default;

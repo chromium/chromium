@@ -43,9 +43,9 @@ void AddLocalizedString(content::WebUIDataSource* source,
   source->AddString(message, str);
 }
 
-content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIBookmarksHost);
+content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIBookmarksHost);
   webui::SetupWebUIDataSource(
       source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
       IDR_BOOKMARKS_BOOKMARKS_HTML);
@@ -136,9 +136,8 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
 BookmarksUI::BookmarksUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   // Set up the chrome://bookmarks/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
-  auto* source = CreateBookmarksUIHTMLSource(profile);
+  auto* source = CreateAndAddBookmarksUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, source);
-  content::WebUIDataSource::Add(profile, source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

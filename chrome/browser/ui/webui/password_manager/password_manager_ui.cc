@@ -33,10 +33,11 @@
 
 namespace {
 
-content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile,
-                                                      content::WebUI* web_ui) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      password_manager::kChromeUIPasswordManagerHost);
+content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
+    Profile* profile,
+    content::WebUI* web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, password_manager::kChromeUIPasswordManagerHost);
 
   webui::SetupWebUIDataSource(
       source,
@@ -157,10 +158,9 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
-  auto* source = CreatePasswordsUIHTMLSource(profile, web_ui);
+  auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
-  content::WebUIDataSource::Add(profile, source);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 }

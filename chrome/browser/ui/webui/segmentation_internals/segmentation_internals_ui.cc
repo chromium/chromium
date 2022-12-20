@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 
-#include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_page_handler_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -17,17 +16,14 @@
 SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   profile_ = Profile::FromWebUI(web_ui);
-  auto source = base::WrapUnique(content::WebUIDataSource::Create(
-      chrome::kChromeUISegmentationInternalsHost));
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUISegmentationInternalsHost);
   webui::SetupWebUIDataSource(
-      source.get(),
+      source,
       base::make_span(kSegmentationInternalsResources,
                       kSegmentationInternalsResourcesSize),
       IDR_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_HTML);
-
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source.release());
 }
 
 SegmentationInternalsUI::~SegmentationInternalsUI() = default;

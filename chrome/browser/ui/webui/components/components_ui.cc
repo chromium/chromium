@@ -41,9 +41,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIComponentsHost);
+void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIComponentsHost);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -84,7 +84,6 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
   source->UseStringsJs();
   source->AddResourcePath("components.js", IDR_COMPONENTS_COMPONENTS_JS);
   source->SetDefaultResource(IDR_COMPONENTS_COMPONENTS_HTML);
-  return source;
 }
 
 }  // namespace
@@ -100,8 +99,7 @@ ComponentsUI::ComponentsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
       g_browser_process->component_updater()));
 
   // Set up the chrome://components/ source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateComponentsUIHTMLSource(profile));
+  CreateAndAddComponentsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
 ComponentsUI::~ComponentsUI() {}

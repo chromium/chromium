@@ -21,8 +21,8 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   VLOG(3) << "chrome://webuijserror loading.";
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIWebUIJsErrorHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIWebUIJsErrorHost);
 
   // As this is just a debugging page, we don't waste the translators' time by
   // actually translating the i18n strings. However, we still want to be able to
@@ -40,8 +40,6 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
       source,
       base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
       IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 WebUIJsErrorUI::~WebUIJsErrorUI() = default;
