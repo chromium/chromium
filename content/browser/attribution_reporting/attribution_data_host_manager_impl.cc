@@ -283,7 +283,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   // invalid.
   if (header_value.empty()) {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, reporting_origin, SourceRegistrationError::kInvalidJson);
+        header_value, source_origin, reporting_origin,
+        SourceRegistrationError::kInvalidJson);
     return;
   }
 
@@ -584,7 +585,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     if (result->is_dict()) {
       // Source navigations need to navigate the primary main frame to be valid.
       source = ParseSourceRegistration(
-          std::move(*result).TakeDict(), /*source_time*/ base::Time::Now(),
+          std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
           reporting_origin, registrations.source_origin,
           AttributionSourceType::kNavigation,
           /*is_within_fenced_frame=*/false);
@@ -599,7 +600,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     attribution_manager_->HandleSource(std::move(*source));
   } else {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, reporting_origin, source.error());
+        header_value, registrations.source_origin, reporting_origin,
+        source.error());
   }
 
   if (registrations.pending_source_data == 0u &&

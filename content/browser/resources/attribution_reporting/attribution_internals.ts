@@ -735,17 +735,22 @@ const FAILED_SOURCE_REGISTRATION_COLS:
       new ValueColumn<FailedSourceRegistrationLog, string>(
           'Failure Reason', e => e.failureReason),
       new ValueColumn<FailedSourceRegistrationLog, string>(
+          'Source Origin', e => e.sourceOrigin),
+      new ValueColumn<FailedSourceRegistrationLog, string>(
           'Reporting Origin', e => e.reportingOrigin),
       new CodeColumn<FailedSourceRegistrationLog>(
           'Attribution-Reporting-Register-Source Header', e => e.headerValue),
     ];
 
 class FailedSourceRegistrationLog extends Log {
+  readonly sourceOrigin: string;
   readonly failureReason: string;
   readonly headerValue: string;
 
   constructor(mojo: FailedSourceRegistration) {
     super(mojo);
+
+    this.sourceOrigin = originToText(mojo.sourceOrigin);
 
     switch (mojo.error) {
       case SourceRegistrationError.kInvalidJson:

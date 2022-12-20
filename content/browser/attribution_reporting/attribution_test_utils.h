@@ -284,6 +284,7 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(void,
               NotifyFailedSourceRegistration,
               (const std::string& header_value,
+               const attribution_reporting::SuitableOrigin& source_origin,
                const attribution_reporting::SuitableOrigin& reporting_origin,
                attribution_reporting::mojom::SourceRegistrationError),
               (override));
@@ -307,6 +308,7 @@ class MockAttributionManager : public AttributionManager {
       absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
   void NotifySourceRegistrationFailure(
       const std::string& header_value,
+      const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError);
   void NotifyDebugReportSent(const AttributionDebugReport&,

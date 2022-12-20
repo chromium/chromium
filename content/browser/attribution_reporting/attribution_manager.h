@@ -79,6 +79,7 @@ class AttributionManager {
   // Called by `AttributionDataHostManagerImpl`.
   virtual void NotifyFailedSourceRegistration(
       const std::string& header_value,
+      const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) = 0;
 

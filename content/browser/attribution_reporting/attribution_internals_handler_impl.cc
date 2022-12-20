@@ -395,12 +395,14 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
 void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
     const std::string& header_value,
     base::Time source_time,
+    const attribution_reporting::SuitableOrigin& source_origin,
     const attribution_reporting::SuitableOrigin& reporting_origin,
     attribution_reporting::mojom::SourceRegistrationError error) {
   auto web_ui_log =
       attribution_internals::mojom::FailedSourceRegistration::New();
   web_ui_log->header_value = header_value;
   web_ui_log->time = source_time.ToJsTime();
+  web_ui_log->source_origin = source_origin;
   web_ui_log->reporting_origin = reporting_origin;
   web_ui_log->error = error;
 

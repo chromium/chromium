@@ -368,6 +368,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         'sources" target="_blank">Failed Source Registration' +
                         '</a>';
     const metadata = '<dl><dt>Failure Reason</dt><dd>invalid JSON</dd>' +
+                     '<dt>Source Origin</dt><dd>https://b.test</dd>' +
                      '<dt>Reporting Origin</dt><dd>https://a.test</dd>' +
                      '<dt>Attribution-Reporting-Register-Source Header</dt>'+
                      '<dd><pre><code>!</code></pre></dd></dl>';
@@ -388,7 +389,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifySourceRegistrationFailure(
-      "!", *SuitableOrigin::Deserialize("https://a.test"),
+      "!", *SuitableOrigin::Deserialize("https://b.test"),
+      *SuitableOrigin::Deserialize("https://a.test"),
       SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }

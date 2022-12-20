@@ -178,6 +178,7 @@ struct WebUITrigger {
 struct FailedSourceRegistration {
   double time;
   string header_value;
+  url.mojom.Origin source_origin;
   url.mojom.Origin reporting_origin;
   attribution_reporting.mojom.SourceRegistrationError error;
 };

@@ -389,12 +389,13 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 
 void MockAttributionManager::NotifySourceRegistrationFailure(
     const std::string& header_value,
+    const SuitableOrigin& source_origin,
     const SuitableOrigin& reporting_origin,
     attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnFailedSourceRegistration(header_value, source_time,
-                                        reporting_origin, error);
+                                        source_origin, reporting_origin, error);
   }
 }
 

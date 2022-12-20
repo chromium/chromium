@@ -788,7 +788,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
-                                 "!!!invalid json", reporter,
+                                 "!!!invalid json", source_site, reporter,
                                  SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
