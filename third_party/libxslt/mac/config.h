@@ -7,24 +7,6 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
-/* Define to 1 if you have the <errno.h> header file. */
-#define HAVE_ERRNO_H 1
-
-/* Define if fabs is there */
-/* #undef HAVE_FABS */
-
-/* Define to 1 if you have the <float.h> header file. */
-#define HAVE_FLOAT_H 1
-
-/* Define if floor is there */
-/* #undef HAVE_FLOOR */
-
-/* Define to 1 if you have the `fprintf' function. */
-#define HAVE_FPRINTF 1
-
-/* Define to 1 if you have the <fp_class.h> header file. */
-/* #undef HAVE_FP_CLASS_H */
-
 /* Define to 1 if you have the `ftime' function. */
 #define HAVE_FTIME 1
 
@@ -34,14 +16,8 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
 
-/* Define to 1 if you have the `gmtime' function. */
-#define HAVE_GMTIME 1
-
 /* Define to 1 if you have the `gmtime_r' function. */
 #define HAVE_GMTIME_R 1
-
-/* Define to 1 if you have the <ieeefp.h> header file. */
-/* #undef HAVE_IEEEFP_H */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -52,26 +28,11 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #define HAVE_LOCALE_H 1
 
-/* Define to 1 if you have the `localtime' function. */
-
-
 /* Define to 1 if you have the `localtime_r' function. */
 #define HAVE_LOCALTIME_R 1
 
-/* Define to 1 if you have the <math.h> header file. */
-#define HAVE_MATH_H 1
-
 /* Define to 1 if you have the <minix/config.h> header file. */
 /* #undef HAVE_MINIX_CONFIG_H */
-
-/* Define to 1 if you have the <nan.h> header file. */
-/* #undef HAVE_NAN_H */
-
-/* Define if pow is there */
-/* #undef HAVE_POW */
-
-/* Define to 1 if you have the `printf' function. */
-#define HAVE_PRINTF 1
 
 /* Define if <pthread.h> is there */
 #define HAVE_PTHREAD_H /**/
@@ -79,17 +40,8 @@
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_SNPRINTF 1
 
-/* Define to 1 if you have the `sprintf' function. */
-#define HAVE_SPRINTF 1
-
-/* Define to 1 if you have the `sscanf' function. */
-#define HAVE_SSCANF 1
-
 /* Define to 1 if you have the `stat' function. */
 #define HAVE_STAT 1
-
-/* Define to 1 if you have the <stdarg.h> header file. */
-#define HAVE_STDARG_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -124,23 +76,11 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
 
-/* Define to 1 if you have the `time' function. */
-#define HAVE_TIME 1
-
-/* Define to 1 if you have the <time.h> header file. */
-#define HAVE_TIME_H 1
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Define to 1 if you have the `vfprintf' function. */
-#define HAVE_VFPRINTF 1
-
 /* Define to 1 if you have the `vsnprintf' function. */
 #define HAVE_VSNPRINTF 1
-
-/* Define to 1 if you have the `vsprintf' function. */
-#define HAVE_VSPRINTF 1
 
 /* Define to 1 if you have the <wchar.h> header file. */
 #define HAVE_WCHAR_H 1

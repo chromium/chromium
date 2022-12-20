@@ -86,7 +86,6 @@ extern "C" {
 #define XSLT_NEED_TRIO
 #endif
 #ifdef __VMS
-#define HAVE_MATH_H 1
 #define HAVE_SYS_STAT_H 1
 #ifndef XSLT_NEED_TRIO
 #define XSLT_NEED_TRIO

@@ -102,7 +102,7 @@ exsltCryptoHex2Bin (const unsigned char *hex, int hexlen,
     return j;
 }
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 
 #define HAVE_CRYPTO
 #define PLATFORM_HASH	exsltCryptoCryptoApiHash
@@ -314,9 +314,6 @@ exsltCryptoCryptoApiRc4Decrypt (xmlXPathParserContextPtr ctxt,
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
-#endif
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
 #endif
 
 #ifdef HAVE_SYS_SELECT_H

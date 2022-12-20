@@ -65,6 +65,7 @@ import tempfile
 #       git cl try-results; etc.
 
 PATCHES = [
+    'remove-label.patch',
     'xslt-locale.patch',
 ]
 
@@ -287,7 +288,7 @@ def prepare_libxslt_distribution(src_path, libxslt_repo_path, temp_dir):
         # Work out what it is called
         tar_file = subprocess.check_output(
             '''awk '/PACKAGE =/ {p=$3} /VERSION =/ {v=$3} '''
-            '''END {printf("%s-%s.tar.gz", p, v)}' Makefile''',
+            '''END {printf("%s-%s.tar.xz", p, v)}' Makefile''',
             shell=True).decode('ascii')
         return commit, os.path.abspath(tar_file)
 
@@ -308,7 +309,7 @@ def roll_libxslt_linux(src_path, repo_path):
             # Export the libxslt distribution to the Chromium tree
             with WorkingDir(THIRD_PARTY_LIBXSLT_SRC):
                 subprocess.check_call(
-                    'tar xzf %s --strip-components=1' % tar_file,
+                    'tar xJf %s --strip-components=1' % tar_file,
                     shell=True)
         finally:
             shutil.rmtree(temp_dir)

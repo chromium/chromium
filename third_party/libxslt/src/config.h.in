@@ -6,24 +6,6 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define to 1 if you have the <errno.h> header file. */
-#undef HAVE_ERRNO_H
-
-/* Define if fabs is there */
-#undef HAVE_FABS
-
-/* Define to 1 if you have the <float.h> header file. */
-#undef HAVE_FLOAT_H
-
-/* Define if floor is there */
-#undef HAVE_FLOOR
-
-/* Define to 1 if you have the `fprintf' function. */
-#undef HAVE_FPRINTF
-
-/* Define to 1 if you have the <fp_class.h> header file. */
-#undef HAVE_FP_CLASS_H
-
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
 
@@ -33,14 +15,8 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
-/* Define to 1 if you have the `gmtime' function. */
-#undef HAVE_GMTIME
-
 /* Define to 1 if you have the `gmtime_r' function. */
 #undef HAVE_GMTIME_R
-
-/* Define to 1 if you have the <ieeefp.h> header file. */
-#undef HAVE_IEEEFP_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -51,26 +27,11 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
-/* Define to 1 if you have the `localtime' function. */
-#undef HAVE_LOCALTIME
-
 /* Define to 1 if you have the `localtime_r' function. */
 #undef HAVE_LOCALTIME_R
 
-/* Define to 1 if you have the <math.h> header file. */
-#undef HAVE_MATH_H
-
 /* Define to 1 if you have the <minix/config.h> header file. */
 #undef HAVE_MINIX_CONFIG_H
-
-/* Define to 1 if you have the <nan.h> header file. */
-#undef HAVE_NAN_H
-
-/* Define if pow is there */
-#undef HAVE_POW
-
-/* Define to 1 if you have the `printf' function. */
-#undef HAVE_PRINTF
 
 /* Define if <pthread.h> is there */
 #undef HAVE_PTHREAD_H
@@ -78,17 +39,8 @@
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
 
-/* Define to 1 if you have the `sprintf' function. */
-#undef HAVE_SPRINTF
-
-/* Define to 1 if you have the `sscanf' function. */
-#undef HAVE_SSCANF
-
 /* Define to 1 if you have the `stat' function. */
 #undef HAVE_STAT
-
-/* Define to 1 if you have the <stdarg.h> header file. */
-#undef HAVE_STDARG_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -123,23 +75,11 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
-/* Define to 1 if you have the `time' function. */
-#undef HAVE_TIME
-
-/* Define to 1 if you have the <time.h> header file. */
-#undef HAVE_TIME_H
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the `vfprintf' function. */
-#undef HAVE_VFPRINTF
-
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
-
-/* Define to 1 if you have the `vsprintf' function. */
-#undef HAVE_VSPRINTF
 
 /* Define to 1 if you have the <wchar.h> header file. */
 #undef HAVE_WCHAR_H
