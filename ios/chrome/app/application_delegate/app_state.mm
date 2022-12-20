@@ -216,8 +216,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   // Return YES if the First Run UI is showing.
-  return (self.initStage == InitStageFirstRun ||
-          self.initStage == InitStageEnterprise) &&
+  return self.initStage > InitStageSafeMode &&
+         self.initStage <= InitStageFirstRun &&
          self.startupInformation.isFirstRun;
 }
 
