@@ -48,6 +48,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
 
 constexpr base::TimeDelta kConfirmPasskeyTimeout = base::Seconds(15);
 
@@ -180,16 +181,23 @@ class FakeBluetoothAdapter
       return;
     }
 
+    if (connect_device_timeout_) {
+      return;
+    }
+
     std::move(callback).Run(GetDevice(address));
   }
 
   void SetConnectFailure() { connect_device_failure_ = true; }
+
+  void SetConnectDeviceTimeout() { connect_device_timeout_ = true; }
 
   void SetGetDeviceNullptr() { get_device_returns_nullptr_ = true; }
 
  protected:
   ~FakeBluetoothAdapter() override = default;
   bool connect_device_failure_ = false;
+  bool connect_device_timeout_ = false;
   bool get_device_returns_nullptr_ = false;
   device::BluetoothDevice::PairingDelegate* pairing_delegate_ = nullptr;
 };
@@ -220,10 +228,16 @@ class FakeBluetoothDevice
       return;
     }
 
+    if (pair_timeout_) {
+      return;
+    }
+
     std::move(callback).Run(absl::nullopt);
   }
 
   void SetPairFailure() { pair_failure_ = true; }
+
+  void SetPairTimeout() { pair_timeout_ = true; }
 
   void ConfirmPairing() override { is_device_paired_ = true; }
 
@@ -232,6 +246,7 @@ class FakeBluetoothDevice
  protected:
   FakeBluetoothAdapter* fake_adapter_;
   bool pair_failure_ = false;
+  bool pair_timeout_ = false;
   bool is_device_paired_ = false;
 };
 
@@ -393,7 +408,15 @@ class FastPairPairerImplTest : public AshTestBase {
 
   void SetPairFailure() { fake_bluetooth_device_ptr_->SetPairFailure(); }
 
+  // Causes FakeBluetoothDevice::Pair() to hang instead of triggering either a
+  // success or a failure callback.
+  void SetPairTimeout() { fake_bluetooth_device_ptr_->SetPairTimeout(); }
+
   void SetConnectFailure() { adapter_->SetConnectFailure(); }
+
+  // Causes FakeBluetoothAdapter::ConnectDevice() to hang instead of triggering
+  // either a success or a failure callback.
+  void SetConnectDeviceTimeout() { adapter_->SetConnectDeviceTimeout(); }
 
   void SetGetDeviceNullptr() { adapter_->SetGetDeviceNullptr(); }
 
@@ -2531,13 +2554,13 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
 // fail to pair with it directly using FastPairPairerImpl::Pair.
 TEST_F(FastPairPairerImplTest, CreateBondTimeout_AdapterHasDeviceAddress) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  base::RunLoop().RunUntilIdle();
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   CreatePairer();
-  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateBondTimeout);
-  base::RunLoop().RunUntilIdle();
+  SetPairTimeout();
+  fake_fast_pair_handshake_->InvokeCallback();
+  task_environment()->FastForwardBy(kCreateBondTimeout);
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
 }
 
@@ -2548,14 +2571,17 @@ TEST_F(FastPairPairerImplTest, CreateBondTimeout_AdapterHasDeviceAddress) {
 TEST_F(FastPairPairerImplTest,
        CreateBondTimeout_AdapterDoesNotHaveDeviceAddress) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
-  base::RunLoop().RunUntilIdle();
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
+
+  // This call mocks the scenario in which |adapter_| does not know |device_|'s
+  // address.
   SetGetDeviceNullptr();
   CreatePairer();
-  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateBondTimeout);
-  base::RunLoop().RunUntilIdle();
+  SetConnectDeviceTimeout();
+  fake_fast_pair_handshake_->InvokeCallback();
+  task_environment()->FastForwardBy(kCreateBondTimeout);
   EXPECT_EQ(GetPairFailure(), PairFailure::kCreateBondTimeout);
 }
 
