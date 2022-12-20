@@ -105,13 +105,14 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
 }
 
 void PrefetchProxyOriginDecider::SaveToPrefs() const {
-  base::DictionaryValue dictionary;
+  base::Value::Dict dictionary;
   for (const auto& element : origin_retry_afters_) {
     std::string key = element.first.GetURL().spec();
     base::Value value = base::TimeToValue(element.second);
-    dictionary.SetKey(std::move(key), std::move(value));
+    dictionary.Set(std::move(key), std::move(value));
   }
-  pref_service_->Set(prefetch::prefs::kRetryAfterPrefPath, dictionary);
+  pref_service_->SetDict(prefetch::prefs::kRetryAfterPrefPath,
+                         std::move(dictionary));
 }
 
 bool PrefetchProxyOriginDecider::ClearPastEntries() {
