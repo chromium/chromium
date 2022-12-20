@@ -245,36 +245,52 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <div id="exceptionHeader">
-      <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
-    </div>
-    <!-- TODO(crbug.com/1378703): Update site-list element to display
-      correct exceptions -->
-    <site-list id="allowExceptionsList"
-        category="[[cookiesContentSettingType_]]"
-        category-subtype="[[contentSetting_.ALLOW]]"
-        category-header="$i18n{cookiePageAllowExceptions}"
-        read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]"
-        cookies-exception-type="combined">
-    </site-list>
-    </site-list>
-    <site-list id="sessionOnlyExceptionsList"
-        category="[[cookiesContentSettingType_]]"
-        category-subtype="[[contentSetting_.SESSION_ONLY]]"
-        category-header="$i18n{cookiePageSessionOnlyExceptions}"
-        read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]"
-        cookies-exception-type="combined">
-    </site-list>
-    <site-list id="blockExceptionsList"
-        category="[[cookiesContentSettingType_]]"
-        category-subtype="[[contentSetting_.BLOCK]]"
-        category-header="$i18n{cookiePageBlockExceptions}"
-        read-only-list="[[exceptionListsReadOnly_]]"
-        search-filter="[[searchTerm]]"
-        cookies-exception-type="combined">
-    </site-list>
+    <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+      <div id="exceptionHeader">
+        <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+        <div id="exceptionHeaderSubLabel" class="secondary">
+          $i18n{siteSettingsCustomizedBehaviorsDescription}
+        </div>
+      </div>
+      <site-list id="allowExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.ALLOW]]"
+          category-header="$i18n{cookiePageAllowExceptions}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="third-party">
+      </site-list>
+    </template>
+    <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+      <div id="exceptionHeader">
+        <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+      </div>
+      <site-list id="allowExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.ALLOW]]"
+          category-header="$i18n{cookiePageAllowExceptions}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="combined">
+      </site-list>
+      </site-list>
+      <site-list id="sessionOnlyExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.SESSION_ONLY]]"
+          category-header="$i18n{cookiePageSessionOnlyExceptions}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="combined">
+      </site-list>
+      <site-list id="blockExceptionsList"
+          category="[[cookiesContentSettingType_]]"
+          category-subtype="[[contentSetting_.BLOCK]]"
+          category-header="$i18n{cookiePageBlockExceptions}"
+          read-only-list="[[exceptionListsReadOnly_]]"
+          search-filter="[[searchTerm]]"
+          cookies-exception-type="combined">
+      </site-list>
+    </template>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">
