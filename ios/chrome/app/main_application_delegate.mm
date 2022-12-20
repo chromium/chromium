@@ -62,6 +62,9 @@ const int kMainIntentCheckDelay = 1;
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
   // Delegate that handles delivered push notification workflow.
   PushNotificationDelegate* _pushNotificationDelegate;
+  // YES if the application was able to successfully register itself with APNS
+  // and obtain its APNS token.
+  BOOL _didRegisterDeviceWithAPNS;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -144,19 +147,6 @@ const int kMainIntentCheckDelay = 1;
          selector:@selector(firstSceneWillEnterForeground:)
              name:UIApplicationWillEnterForegroundNotification
            object:nil];
-
-  if (IsPriceNotificationsEnabled()) {
-    UNUserNotificationCenter* center =
-        UNUserNotificationCenter.currentNotificationCenter;
-    center.delegate = _pushNotificationDelegate;
-
-    [PushNotificationUtil
-        getPermissionSettings:^(UNNotificationSettings* settings) {
-          if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-            [PushNotificationUtil registerDeviceWithAPNS];
-          }
-        }];
-  }
 
   return requiresHandling;
 }
@@ -242,6 +232,7 @@ const int kMainIntentCheckDelay = 1;
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
   // This method is invoked by iOS on the successful registration of the app to
   // APNS and retrieval of the device's APNS token.
+  _didRegisterDeviceWithAPNS = YES;
   [_pushNotificationDelegate applicationDidRegisterWithAPNS:deviceToken];
 }
 
@@ -359,6 +350,9 @@ const int kMainIntentCheckDelay = 1;
           base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
         }
       });
+
+  [self registerDeviceForPushNotifications];
+
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                             metricsMediator:_metricsMediator
                                memoryHelper:_memoryHelper];
@@ -407,6 +401,22 @@ const int kMainIntentCheckDelay = 1;
 
 - (MainController*)mainController {
   return _mainController;
+}
+
+#pragma mark - Private
+
+// Registers the device with APNS to enable receiving push notifications to the
+// device. In addition, the function sets the UNUserNotificationCenter's
+// delegate which enables the application to display push notifications that
+// were received while Chrome was open.
+- (void)registerDeviceForPushNotifications {
+  if (!_didRegisterDeviceWithAPNS && IsPriceNotificationsEnabled()) {
+    UNUserNotificationCenter* center =
+        UNUserNotificationCenter.currentNotificationCenter;
+    center.delegate = _pushNotificationDelegate;
+
+    [PushNotificationUtil registerDeviceWithAPNS];
+  }
 }
 
 @end
