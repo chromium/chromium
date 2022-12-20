@@ -141,6 +141,18 @@ fuzzer_test("trigger_registration_fuzzer") {
       "//components/attribution_reporting/trigger_registration_fuzzer_corpus"
 }
 
+fuzzer_test("parse_eligible_header_fuzzer") {
+  sources = [ "parse_eligible_header_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+    "//base:i18n",
+  ]
+
+  seed_corpus =
+      "//components/attribution_reporting/parse_eligible_header_fuzzer_corpus/"
+}
+
 mojom("registration_mojom") {
   sources = [ "registration.mojom" ]
 

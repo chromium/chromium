@@ -19,8 +19,6 @@ namespace attribution_reporting {
 //
 // The structured-header items may have values and/or parameters, but they are
 // ignored.
-//
-// TODO(apaseltiner): Add a fuzzer for this function.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<mojom::RegistrationType, mojom::EligibilityError>
     ParseEligibleHeader(absl::optional<base::StringPiece>);
