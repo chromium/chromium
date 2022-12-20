@@ -25,7 +25,7 @@ namespace operations {
 // all contents of it (recursively) will be deleted too. Created per request.
 class DeleteEntry : public Operation {
  public:
-  DeleteEntry(EventDispatcher* dispatcher,
+  DeleteEntry(RequestDispatcher* dispatcher,
               const ProvidedFileSystemInfo& file_system_info,
               const base::FilePath& entry_path,
               bool recursive,

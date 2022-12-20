@@ -27,7 +27,7 @@ namespace operations {
 // actions request. Created per request.
 class GetActions : public Operation {
  public:
-  GetActions(EventDispatcher* dispatcher,
+  GetActions(RequestDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              const std::vector<base::FilePath>& entry_paths,
              ProvidedFileSystemInterface::GetActionsCallback callback);

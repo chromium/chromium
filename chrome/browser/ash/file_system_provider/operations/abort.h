@@ -21,7 +21,7 @@ namespace operations {
 // Aborts an operation. Created per request.
 class Abort : public Operation {
  public:
-  Abort(EventDispatcher* dispatcher,
+  Abort(RequestDispatcher* dispatcher,
         const ProvidedFileSystemInfo& file_system_info,
         int operation_request_id,
         storage::AsyncFileUtil::StatusCallback callback);

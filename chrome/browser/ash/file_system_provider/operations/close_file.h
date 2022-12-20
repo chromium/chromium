@@ -23,7 +23,7 @@ namespace operations {
 // not download the file locally. Created per request.
 class CloseFile : public Operation {
  public:
-  CloseFile(EventDispatcher* dispatcher,
+  CloseFile(RequestDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             int open_request_id,
             storage::AsyncFileUtil::StatusCallback callback);

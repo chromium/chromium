@@ -27,7 +27,7 @@ namespace operations {
 // files.
 class AddWatcher : public Operation {
  public:
-  AddWatcher(EventDispatcher* dispatcher,
+  AddWatcher(RequestDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              const base::FilePath& entry_path,
              bool recursive,

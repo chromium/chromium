@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EVENT_DISPATCHER_IMPL_H_
-#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EVENT_DISPATCHER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_DISPATCHER_IMPL_H_
+#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_DISPATCHER_IMPL_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/file_system_provider/event_dispatcher.h"
+#include "chrome/browser/ash/file_system_provider/request_dispatcher.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -20,19 +20,19 @@ namespace ash::file_system_provider {
 class RequestManager;
 
 // Routes fileSystemProvider events to an extension locally or in Lacros.
-class EventDispatcherImpl : public EventDispatcher {
+class RequestDispatcherImpl : public RequestDispatcher {
  public:
-  EventDispatcherImpl(const extensions::ExtensionId& extension_id,
-                      extensions::EventRouter* event_router,
-                      RequestManager* request_manager);
-  ~EventDispatcherImpl() override;
+  RequestDispatcherImpl(const extensions::ExtensionId& extension_id,
+                        extensions::EventRouter* event_router,
+                        RequestManager* request_manager);
+  ~RequestDispatcherImpl() override;
 
-  EventDispatcherImpl(const EventDispatcherImpl&) = delete;
-  EventDispatcherImpl& operator=(const EventDispatcherImpl&) = delete;
+  RequestDispatcherImpl(const RequestDispatcherImpl&) = delete;
+  RequestDispatcherImpl& operator=(const RequestDispatcherImpl&) = delete;
 
-  bool DispatchEvent(int request_id,
-                     absl::optional<std::string> file_system_id,
-                     std::unique_ptr<extensions::Event> event) override;
+  bool DispatchRequest(int request_id,
+                       absl::optional<std::string> file_system_id,
+                       std::unique_ptr<extensions::Event> event) override;
 
  private:
   // This method is only used when Lacros is enabled. It's a callback from
@@ -45,9 +45,9 @@ class EventDispatcherImpl : public EventDispatcher {
   const raw_ptr<extensions::EventRouter> event_router_;
   const raw_ptr<RequestManager> request_manager_;
 
-  base::WeakPtrFactory<EventDispatcherImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RequestDispatcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::file_system_provider
 
-#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EVENT_DISPATCHER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_DISPATCHER_IMPL_H_

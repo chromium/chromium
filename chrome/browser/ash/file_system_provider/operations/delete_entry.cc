@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-DeleteEntry::DeleteEntry(EventDispatcher* dispatcher,
+DeleteEntry::DeleteEntry(RequestDispatcher* dispatcher,
                          const ProvidedFileSystemInfo& file_system_info,
                          const base::FilePath& entry_path,
                          bool recursive,

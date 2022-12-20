@@ -11,7 +11,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-Configure::Configure(EventDispatcher* dispatcher,
+Configure::Configure(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      storage::AsyncFileUtil::StatusCallback callback)
     : Operation(dispatcher, file_system_info), callback_(std::move(callback)) {}

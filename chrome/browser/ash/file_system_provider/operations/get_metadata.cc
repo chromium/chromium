@@ -142,7 +142,7 @@ bool ValidateName(const std::string& name, bool root_entry) {
 }
 
 GetMetadata::GetMetadata(
-    EventDispatcher* dispatcher,
+    RequestDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     const base::FilePath& entry_path,
     ProvidedFileSystemInterface::MetadataFieldMask fields,

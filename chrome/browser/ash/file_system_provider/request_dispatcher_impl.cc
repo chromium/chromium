@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/event_dispatcher_impl.h"
+#include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -16,7 +16,7 @@
 
 namespace ash::file_system_provider {
 
-EventDispatcherImpl::EventDispatcherImpl(
+RequestDispatcherImpl::RequestDispatcherImpl(
     const extensions::ExtensionId& extension_id,
     extensions::EventRouter* event_router,
     RequestManager* request_manager)
@@ -24,9 +24,9 @@ EventDispatcherImpl::EventDispatcherImpl(
       event_router_(event_router),
       request_manager_(request_manager) {}
 
-EventDispatcherImpl::~EventDispatcherImpl() = default;
+RequestDispatcherImpl::~RequestDispatcherImpl() = default;
 
-bool EventDispatcherImpl::DispatchEvent(
+bool RequestDispatcherImpl::DispatchRequest(
     int request_id,
     absl::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
@@ -54,7 +54,7 @@ bool EventDispatcherImpl::DispatchEvent(
                       ->remotes();
   if (!remotes.empty()) {
     auto remote = remotes.begin();
-    auto callback = base::BindOnce(&EventDispatcherImpl::OperationForwarded,
+    auto callback = base::BindOnce(&RequestDispatcherImpl::OperationForwarded,
                                    weak_ptr_factory_.GetWeakPtr(), request_id);
     (*remote)->ForwardOperation(
         extension_id_, static_cast<int32_t>(event->histogram_value),
@@ -64,8 +64,8 @@ bool EventDispatcherImpl::DispatchEvent(
   return !remotes.empty();
 }
 
-void EventDispatcherImpl::OperationForwarded(int request_id,
-                                             bool delivery_failure) {
+void RequestDispatcherImpl::OperationForwarded(int request_id,
+                                               bool delivery_failure) {
   // Successful deliveries will get a response through the FileSystemProvider
   // mojom path.
   if (!delivery_failure) {

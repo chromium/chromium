@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-Abort::Abort(EventDispatcher* dispatcher,
+Abort::Abort(RequestDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              int operation_request_id,
              storage::AsyncFileUtil::StatusCallback callback)

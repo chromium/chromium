@@ -19,7 +19,7 @@ LoggingDispatchEventImpl::LoggingDispatchEventImpl(bool dispatch_reply)
 
 LoggingDispatchEventImpl::~LoggingDispatchEventImpl() = default;
 
-bool LoggingDispatchEventImpl::DispatchEvent(
+bool LoggingDispatchEventImpl::DispatchRequest(
     int request_id,
     absl::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {

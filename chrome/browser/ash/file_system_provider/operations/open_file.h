@@ -26,7 +26,7 @@ namespace operations {
 // operation will fail. Created per request.
 class OpenFile : public Operation {
  public:
-  OpenFile(EventDispatcher* dispatcher,
+  OpenFile(RequestDispatcher* dispatcher,
            const ProvidedFileSystemInfo& file_system_info,
            const base::FilePath& file_path,
            OpenFileMode mode,

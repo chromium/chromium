@@ -25,7 +25,7 @@ namespace operations {
 // Removes a watcher at |entry_path| with the |recursive| mode.
 class RemoveWatcher : public Operation {
  public:
-  RemoveWatcher(EventDispatcher* dispatcher,
+  RemoveWatcher(RequestDispatcher* dispatcher,
                 const ProvidedFileSystemInfo& file_system_info,
                 const base::FilePath& entry_path,
                 bool recursive,

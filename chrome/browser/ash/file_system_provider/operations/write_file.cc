@@ -16,7 +16,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-WriteFile::WriteFile(EventDispatcher* dispatcher,
+WriteFile::WriteFile(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      int file_handle,
                      scoped_refptr<net::IOBuffer> buffer,

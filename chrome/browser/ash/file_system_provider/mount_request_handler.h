@@ -10,12 +10,12 @@
 
 namespace ash::file_system_provider {
 
-class EventDispatcher;
+class RequestDispatcher;
 
 // Base class for operation bridges between fileapi and providing extensions.
 class MountRequestHandler : public RequestManager::HandlerInterface {
  public:
-  MountRequestHandler(EventDispatcher* dispatcher,
+  MountRequestHandler(RequestDispatcher* dispatcher,
                       RequestMountCallback callback);
 
   MountRequestHandler(const MountRequestHandler&) = delete;
@@ -34,7 +34,7 @@ class MountRequestHandler : public RequestManager::HandlerInterface {
   void OnAbort(int request_id) override;
 
  private:
-  raw_ptr<EventDispatcher> event_dispatcher_;
+  raw_ptr<RequestDispatcher> request_dispatcher_;
   RequestMountCallback callback_;
 };
 

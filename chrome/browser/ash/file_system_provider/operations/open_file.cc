@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-OpenFile::OpenFile(EventDispatcher* dispatcher,
+OpenFile::OpenFile(RequestDispatcher* dispatcher,
                    const ProvidedFileSystemInfo& file_system_info,
                    const base::FilePath& file_path,
                    OpenFileMode mode,

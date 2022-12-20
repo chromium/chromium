@@ -46,7 +46,7 @@ int CopyRequestValueToBuffer(std::unique_ptr<RequestValue> value,
 }  // namespace
 
 ReadFile::ReadFile(
-    EventDispatcher* dispatcher,
+    RequestDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     int file_handle,
     scoped_refptr<net::IOBuffer> buffer,

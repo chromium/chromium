@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-CloseFile::CloseFile(EventDispatcher* dispatcher,
+CloseFile::CloseFile(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      int open_request_id,
                      storage::AsyncFileUtil::StatusCallback callback)

@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-RemoveWatcher::RemoveWatcher(EventDispatcher* dispatcher,
+RemoveWatcher::RemoveWatcher(RequestDispatcher* dispatcher,
                              const ProvidedFileSystemInfo& file_system_info,
                              const base::FilePath& entry_path,
                              bool recursive,

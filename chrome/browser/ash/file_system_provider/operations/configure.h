@@ -22,7 +22,7 @@ namespace operations {
 // extension's configure request. Created per request.
 class Configure : public Operation {
  public:
-  Configure(EventDispatcher* dispatcher,
+  Configure(RequestDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             storage::AsyncFileUtil::StatusCallback callback);
 

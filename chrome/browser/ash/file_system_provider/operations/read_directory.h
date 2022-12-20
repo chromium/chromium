@@ -25,7 +25,7 @@ namespace operations {
 // read directory request. Created per request.
 class ReadDirectory : public Operation {
  public:
-  ReadDirectory(EventDispatcher* dispatcher,
+  ReadDirectory(RequestDispatcher* dispatcher,
                 const ProvidedFileSystemInfo& file_system_info,
                 const base::FilePath& directory_path,
                 storage::AsyncFileUtil::ReadDirectoryCallback callback);

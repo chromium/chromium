@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-MoveEntry::MoveEntry(EventDispatcher* dispatcher,
+MoveEntry::MoveEntry(RequestDispatcher* dispatcher,
                      const ProvidedFileSystemInfo& file_system_info,
                      const base::FilePath& source_path,
                      const base::FilePath& target_path,

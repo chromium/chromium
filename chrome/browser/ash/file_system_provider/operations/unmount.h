@@ -22,7 +22,7 @@ namespace operations {
 // extension's unmount request. Created per request.
 class Unmount : public Operation {
  public:
-  Unmount(EventDispatcher* dispatcher,
+  Unmount(RequestDispatcher* dispatcher,
           const ProvidedFileSystemInfo& file_system_info,
           storage::AsyncFileUtil::StatusCallback callback);
 

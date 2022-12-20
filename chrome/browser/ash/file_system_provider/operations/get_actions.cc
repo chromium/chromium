@@ -37,7 +37,7 @@ Actions ConvertRequestValueToActions(std::unique_ptr<RequestValue> value) {
 
 }  // namespace
 
-GetActions::GetActions(EventDispatcher* dispatcher,
+GetActions::GetActions(RequestDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
                        const std::vector<base::FilePath>& entry_paths,
                        ProvidedFileSystemInterface::GetActionsCallback callback)

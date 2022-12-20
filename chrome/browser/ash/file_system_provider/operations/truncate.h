@@ -28,7 +28,7 @@ namespace operations {
 // the FILE_ERROR_EXISTS error. Created per request.
 class Truncate : public Operation {
  public:
-  Truncate(EventDispatcher* dispatcher,
+  Truncate(RequestDispatcher* dispatcher,
            const ProvidedFileSystemInfo& file_system_info,
            const base::FilePath& file_path,
            int64_t length,

@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-Truncate::Truncate(EventDispatcher* dispatcher,
+Truncate::Truncate(RequestDispatcher* dispatcher,
                    const ProvidedFileSystemInfo& file_system_info,
                    const base::FilePath& file_path,
                    int64_t length,

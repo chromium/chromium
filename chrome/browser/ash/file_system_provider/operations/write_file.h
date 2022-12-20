@@ -27,7 +27,7 @@ namespace operations {
 // Created per request.
 class WriteFile : public Operation {
  public:
-  WriteFile(EventDispatcher* dispatcher,
+  WriteFile(RequestDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             int file_handle,
             scoped_refptr<net::IOBuffer> buffer,

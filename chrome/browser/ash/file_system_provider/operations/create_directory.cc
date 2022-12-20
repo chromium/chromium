@@ -14,7 +14,7 @@ namespace file_system_provider {
 namespace operations {
 
 CreateDirectory::CreateDirectory(
-    EventDispatcher* dispatcher,
+    RequestDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     const base::FilePath& directory_path,
     bool recursive,

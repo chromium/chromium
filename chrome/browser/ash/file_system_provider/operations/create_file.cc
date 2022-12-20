@@ -13,7 +13,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-CreateFile::CreateFile(EventDispatcher* dispatcher,
+CreateFile::CreateFile(RequestDispatcher* dispatcher,
                        const ProvidedFileSystemInfo& file_system_info,
                        const base::FilePath& file_path,
                        storage::AsyncFileUtil::StatusCallback callback)

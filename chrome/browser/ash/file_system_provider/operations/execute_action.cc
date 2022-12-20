@@ -14,7 +14,7 @@ namespace ash {
 namespace file_system_provider {
 namespace operations {
 
-ExecuteAction::ExecuteAction(EventDispatcher* dispatcher,
+ExecuteAction::ExecuteAction(RequestDispatcher* dispatcher,
                              const ProvidedFileSystemInfo& file_system_info,
                              const std::vector<base::FilePath>& entry_paths,
                              const std::string& action_id,

@@ -12,9 +12,9 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/file_system_provider/event_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
+#include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -112,7 +112,7 @@ bool ExtensionProvider::RequestMount(Profile* profile,
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       REQUEST_MOUNT,
-      std::make_unique<MountRequestHandler>(event_dispatcher_.get(),
+      std::make_unique<MountRequestHandler>(request_dispatcher_.get(),
                                             std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second).Run(base::File::FILE_ERROR_FAILED);
@@ -129,7 +129,7 @@ ExtensionProvider::ExtensionProvider(
     : provider_id_(ProviderId::CreateFromExtensionId(extension_id)),
       request_manager_(
           new RequestManager(profile, /*notification_manager=*/nullptr)),
-      event_dispatcher_(std::make_unique<EventDispatcherImpl>(
+      request_dispatcher_(std::make_unique<RequestDispatcherImpl>(
           extension_id,
           extensions::EventRouter::Get(profile),
           request_manager_.get())) {
@@ -150,7 +150,7 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
       name_(std::move(name)),
       request_manager_(
           new RequestManager(profile, /*notification_manager=*/nullptr)),
-      event_dispatcher_(std::make_unique<EventDispatcherImpl>(
+      request_dispatcher_(std::make_unique<RequestDispatcherImpl>(
           provider_id_.GetExtensionId(),
           extensions::EventRouter::Get(profile),
           request_manager_.get())) {

@@ -26,7 +26,7 @@ namespace operations {
 // the FILE_ERROR_EXISTS error. Created per request.
 class CreateFile : public Operation {
  public:
-  CreateFile(EventDispatcher* dispatcher,
+  CreateFile(RequestDispatcher* dispatcher,
              const ProvidedFileSystemInfo& file_system_info,
              const base::FilePath& file_path,
              storage::AsyncFileUtil::StatusCallback callback);

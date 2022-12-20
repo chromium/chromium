@@ -51,7 +51,7 @@ bool ConvertRequestValueToEntryList(std::unique_ptr<RequestValue> value,
 }  // namespace
 
 ReadDirectory::ReadDirectory(
-    EventDispatcher* dispatcher,
+    RequestDispatcher* dispatcher,
     const ProvidedFileSystemInfo& file_system_info,
     const base::FilePath& directory_path,
     storage::AsyncFileUtil::ReadDirectoryCallback callback)

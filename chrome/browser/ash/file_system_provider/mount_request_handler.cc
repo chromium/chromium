@@ -9,8 +9,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/file_system_provider/event_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
@@ -19,9 +19,9 @@
 
 namespace ash::file_system_provider {
 
-MountRequestHandler::MountRequestHandler(EventDispatcher* dispatcher,
+MountRequestHandler::MountRequestHandler(RequestDispatcher* dispatcher,
                                          RequestMountCallback callback)
-    : event_dispatcher_(dispatcher), callback_(std::move(callback)) {}
+    : request_dispatcher_(dispatcher), callback_(std::move(callback)) {}
 
 MountRequestHandler::~MountRequestHandler() = default;
 
@@ -35,8 +35,8 @@ bool MountRequestHandler::Execute(int request_id) {
       extensions::api::file_system_provider::OnMountRequested::kEventName,
       std::move(event_args));
 
-  return event_dispatcher_->DispatchEvent(request_id, absl::nullopt,
-                                          std::move(event));
+  return request_dispatcher_->DispatchRequest(request_id, absl::nullopt,
+                                              std::move(event));
 }
 
 void MountRequestHandler::OnSuccess(int /* request_id */,

@@ -26,7 +26,7 @@ namespace operations {
 // directory already exists. Created per request.
 class CreateDirectory : public Operation {
  public:
-  CreateDirectory(EventDispatcher* dispatcher,
+  CreateDirectory(RequestDispatcher* dispatcher,
                   const ProvidedFileSystemInfo& file_system_info,
                   const base::FilePath& directory_path,
                   bool recursive,

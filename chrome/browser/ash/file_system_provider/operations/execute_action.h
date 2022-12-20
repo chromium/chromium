@@ -30,7 +30,7 @@ namespace operations {
 // request.
 class ExecuteAction : public Operation {
  public:
-  ExecuteAction(EventDispatcher* dispatcher,
+  ExecuteAction(RequestDispatcher* dispatcher,
                 const ProvidedFileSystemInfo& file_system_info,
                 const std::vector<base::FilePath>& entry_path,
                 const std::string& action_id,

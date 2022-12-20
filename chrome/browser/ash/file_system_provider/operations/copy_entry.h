@@ -25,7 +25,7 @@ namespace operations {
 // Copies an entry (recursively if a directory). Created per request.
 class CopyEntry : public Operation {
  public:
-  CopyEntry(EventDispatcher* dispatcher,
+  CopyEntry(RequestDispatcher* dispatcher,
             const ProvidedFileSystemInfo& file_system_info,
             const base::FilePath& source_path,
             const base::FilePath& target_path,
