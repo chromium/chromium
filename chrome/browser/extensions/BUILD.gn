@@ -1338,6 +1338,7 @@ static_library("extensions") {
 
   if (enable_pdf) {
     deps += [
+      "//chrome/browser/pdf",
       "//components/pdf/browser",
       "//pdf:buildflags",
     ]

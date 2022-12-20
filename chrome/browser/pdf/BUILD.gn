@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(enable_pdf)
+
+source_set("pdf") {
+  sources = [
+    "chrome_pdf_stream_delegate.cc",
+    "chrome_pdf_stream_delegate.h",
+    "pdf_extension_util.cc",
+    "pdf_extension_util.h",
+    "pdf_frame_util.cc",
+    "pdf_frame_util.h",
+  ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/resources/pdf:resources",
+    "//chrome/common",
+    "//components/pdf/browser:interceptors",
+    "//components/zoom",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//extensions/common/api",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+    "//ui/base",
+    "//ui/gfx:color_utils",
+    "//url",
+  ]
+
+  if (enable_print_preview) {
+    deps += [ "//chrome/common" ]
+  }
+}
+
+source_set("pdf_pref_names") {
+  sources = [
+    "pdf_pref_names.cc",
+    "pdf_pref_names.h",
+  ]
+}
+
+source_set("pdf_extension_test_utils") {
+  testonly = true
+  sources = [
+    "pdf_extension_test_util.cc",
+    "pdf_extension_test_util.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/test:test_support",
+  ]
+}

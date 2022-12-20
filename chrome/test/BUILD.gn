@@ -1154,20 +1154,6 @@ if (is_android) {
   }
 }
 
-if (enable_pdf) {
-  source_set("pdf_extension_test_utils") {
-    testonly = true
-    sources = [
-      "../browser/pdf/pdf_extension_test_util.cc",
-      "../browser/pdf/pdf_extension_test_util.h",
-    ]
-    deps = [
-      ":test_support",
-      "//base",
-    ]
-  }
-}
-
 if (is_chromeos_ash) {
   static_library("ash_crosapi_tests_runner") {
     testonly = true
@@ -2502,7 +2488,8 @@ if (!is_android) {
         "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       ]
       deps += [
-        ":pdf_extension_test_utils",
+        "../browser/pdf",
+        "../browser/pdf:pdf_extension_test_utils",
         "//components/pdf/browser",
         "//components/pdf/common",
         "//pdf:features",
@@ -9902,7 +9889,7 @@ if (!is_android) {
       ]
       if (enable_pdf) {
         sources += [ "../browser/pdf/pdf_extension_interactive_uitest.cc" ]
-        deps += [ ":pdf_extension_test_utils" ]
+        deps += [ "../browser/pdf:pdf_extension_test_utils" ]
       }
       if (is_chromeos) {
         sources += [ "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc" ]

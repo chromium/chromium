@@ -7460,17 +7460,9 @@ static_library("browser") {
   }
 
   if (enable_pdf) {
-    sources += [
-      "pdf/chrome_pdf_stream_delegate.cc",
-      "pdf/chrome_pdf_stream_delegate.h",
-      "pdf/pdf_extension_util.cc",
-      "pdf/pdf_extension_util.h",
-      "pdf/pdf_frame_util.cc",
-      "pdf/pdf_frame_util.h",
-      "pdf/pdf_pref_names.cc",
-      "pdf/pdf_pref_names.h",
-    ]
     deps += [
+      "//chrome/browser/pdf",
+      "//chrome/browser/pdf:pdf_pref_names",
       "//components/pdf/browser",
       "//components/pdf/browser:interceptors",
       "//components/pdf/common",

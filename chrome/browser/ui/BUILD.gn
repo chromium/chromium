@@ -1225,8 +1225,6 @@ static_library("ui") {
       "passwords/passwords_leak_dialog_delegate.h",
       "passwords/passwords_model_delegate.cc",
       "passwords/passwords_model_delegate.h",
-      "pdf/chrome_pdf_web_contents_helper_client.cc",
-      "pdf/chrome_pdf_web_contents_helper_client.h",
       "performance_controls/battery_saver_bubble_delegate.cc",
       "performance_controls/battery_saver_bubble_delegate.h",
       "performance_controls/battery_saver_bubble_observer.h",
@@ -5714,7 +5712,14 @@ static_library("ui") {
   }
 
   if (enable_pdf) {
-    deps += [ "//components/pdf/browser" ]
+    sources += [
+      "pdf/chrome_pdf_web_contents_helper_client.cc",
+      "pdf/chrome_pdf_web_contents_helper_client.h",
+    ]
+    deps += [
+      "//chrome/browser/pdf",
+      "//components/pdf/browser",
+    ]
   }
 
   if (enable_plugins) {
