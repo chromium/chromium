@@ -70,11 +70,12 @@ TEST_F(ShillProfileClientTest, PropertyChanged) {
                                 std::vector<std::string>(1, kExampleEntryPath));
 
   // Set expectations.
-  base::ListValue value;
+  base::Value::List value;
   value.Append(kExampleEntryPath);
   MockPropertyChangeObserver observer;
   EXPECT_CALL(observer,
-              OnPropertyChanged(shill::kEntriesProperty, ValueEq(value)))
+              OnPropertyChanged(shill::kEntriesProperty,
+                                ValueEq(base::Value(std::move(value)))))
       .Times(1);
 
   // Add the observer

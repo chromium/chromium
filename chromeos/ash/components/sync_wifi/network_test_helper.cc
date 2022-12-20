@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -45,7 +46,7 @@ NetworkTestHelper::NetworkTestHelper()
   managed_network_configuration_handler_->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
       /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::ListValue(),
+      /*network_configs_onc=*/base::Value(base::Value::List()),
       /*global_network_config=*/base::DictionaryValue());
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();

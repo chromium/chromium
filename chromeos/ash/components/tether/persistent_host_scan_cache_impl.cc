@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -187,13 +188,13 @@ bool PersistentHostScanCacheImpl::DoesHostRequireSetup(
 
 void PersistentHostScanCacheImpl::StoreCacheEntriesToPrefs(
     const std::unordered_map<std::string, HostScanCacheEntry>& entries) {
-  base::ListValue entries_list;
+  base::Value::List entries_list;
 
   for (const auto& it : entries) {
     entries_list.Append(base::Value(HostScanCacheEntryToDictionary(it.second)));
   }
 
-  pref_service_->Set(prefs::kHostScanCache, entries_list);
+  pref_service_->SetList(prefs::kHostScanCache, std::move(entries_list));
 }
 
 }  // namespace tether

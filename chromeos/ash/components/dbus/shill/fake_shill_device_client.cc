@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "dbus/bus.h"
@@ -416,7 +417,7 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
       device_properties->FindKey(shill::kFoundNetworksProperty);
   if (!scan_results) {
     scan_results = device_properties->SetKey(shill::kFoundNetworksProperty,
-                                             base::ListValue());
+                                             base::Value(base::Value::List()));
   }
   base::Value new_result(base::Value::Type::DICTIONARY);
   int idx = static_cast<int>(scan_results->GetList().size());

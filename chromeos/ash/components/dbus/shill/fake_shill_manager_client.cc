@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -911,11 +912,11 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                        "stub_eth_device1");
     SetInitialDeviceProperty("/device/eth1", shill::kAddressProperty,
                              base::Value("0123456789ab"));
-    base::ListValue eth_ip_configs;
+    base::Value::List eth_ip_configs;
     eth_ip_configs.Append("ipconfig_v4_path");
     eth_ip_configs.Append("ipconfig_v6_path");
     SetInitialDeviceProperty("/device/eth1", shill::kIPConfigsProperty,
-                             eth_ip_configs);
+                             base::Value(std::move(eth_ip_configs)));
     const std::string kFakeEthernetNetworkPath = "/service/eth1";
     services->AddService(kFakeEthernetNetworkPath, kFakeEthernetNetworkGuid,
                          "eth1" /* name */, shill::kTypeEthernet, state,
@@ -937,11 +938,11 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     devices->AddDevice("/device/wifi1", shill::kTypeWifi, "stub_wifi_device1");
     SetInitialDeviceProperty("/device/wifi1", shill::kAddressProperty,
                              base::Value("23456789abcd"));
-    base::ListValue wifi_ip_configs;
+    base::Value::List wifi_ip_configs;
     wifi_ip_configs.Append("ipconfig_v4_path");
     wifi_ip_configs.Append("ipconfig_v6_path");
     SetInitialDeviceProperty("/device/wifi1", shill::kIPConfigsProperty,
-                             wifi_ip_configs);
+                             base::Value(std::move(wifi_ip_configs)));
 
     const std::string kWifi1Path = "/service/wifi1";
     services->AddService(kWifi1Path, "wifi1_guid", "wifi1" /* name */,
@@ -1108,11 +1109,12 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                    shill::kCellularApnProperty, apn);
       services->SetServiceProperty(kCellularServicePath,
                                    shill::kCellularLastGoodApnProperty, apn);
-      base::ListValue apn_list;
+      base::Value::List apn_list;
       apn_list.Append(std::move(apn));
       apn_list.Append(std::move(apn2));
       SetInitialDeviceProperty("/device/cellular1",
-                               shill::kCellularApnListProperty, apn_list);
+                               shill::kCellularApnListProperty,
+                               base::Value(std::move(apn_list)));
 
       profiles->AddService(shared_profile, kCellularServicePath);
     }
