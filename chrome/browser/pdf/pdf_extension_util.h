@@ -34,8 +34,11 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
 
 // Adds additional data used by the PDF Viewer UI in `dict`, for example
 // whether certain features are enabled/disabled.
+// `enable_printing` only applies for ChromeOS Ash.
 // `enable_annotations` only applies on platforms that supports annotations.
-void AddAdditionalData(bool enable_annotations, base::Value::Dict* dict);
+void AddAdditionalData(bool enable_printing,
+                       bool enable_annotations,
+                       base::Value::Dict* dict);
 
 }  // namespace pdf_extension_util
 

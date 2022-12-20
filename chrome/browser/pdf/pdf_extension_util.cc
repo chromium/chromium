@@ -19,10 +19,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace pdf_extension_util {
 
 namespace {
@@ -189,15 +185,16 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict) {
   }
 }
 
-void AddAdditionalData(bool enable_annotations, base::Value::Dict* dict) {
+void AddAdditionalData(bool enable_printing,
+                       bool enable_annotations,
+                       base::Value::Dict* dict) {
   // NOTE: This function should not include any data used for $i18n{}
   // replacements. The i18n string resources should be added using AddStrings()
   // above instead.
   bool printing_enabled = true;
   bool annotations_enabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Chrome OS, enable printing only if we are not at OOBE.
-  printing_enabled = !ash::LoginDisplayHost::default_host();
+  printing_enabled = enable_printing;
   annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   dict->Set("printingEnabled", printing_enabled);
