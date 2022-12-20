@@ -15,6 +15,18 @@ constexpr char kNoticeCardViewsCountThresholdParamName[] =
 constexpr char kNoticeCardClicksCountThresholdParamName[] =
     "notice-card-clicks-count-threshold";
 
+namespace {
+int GetNoticeCardExpectedIndex() {
+  // Infer that the notice card is at the 2nd position when the feature related
+  // to putting the notice card at the second position is enabled.
+  if (base::FeatureList::IsEnabled(
+          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
+    return 1;
+  }
+  return 0;
+}
+}  // namespace
+
 NoticeCardTracker::NoticeCardTracker(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   DCHECK(profile_prefs_);
@@ -70,7 +82,10 @@ bool NoticeCardTracker::HasNoticeCardActionsCountPrerequisites(int index) {
     return false;
   }
 
-  return index == 0;
+  if (index != GetNoticeCardExpectedIndex()) {
+    return false;
+  }
+  return true;
 }
 
 void NoticeCardTracker::MaybeUpdateNoticeCardViewsCount(int index) {

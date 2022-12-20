@@ -2102,6 +2102,14 @@ extern const char kInterestFeedV2HeartsDescription[];
 extern const char kInterestFeedV2AutoplayName[];
 extern const char kInterestFeedV2AutoplayDescription[];
 
+extern const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[];
+extern const char
+    kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[];
+
+extern const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[];
+extern const char
+    kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[];
+
 extern const char kMessagesForAndroidAdsBlockedName[];
 extern const char kMessagesForAndroidAdsBlockedDescription[];
 
