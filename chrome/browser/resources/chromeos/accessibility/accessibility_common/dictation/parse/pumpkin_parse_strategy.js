@@ -318,9 +318,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // Get results from Pumpkin.
     // TODO(crbug.com/1264544): Could increase the hypotheses count from 1
     // when we are ready to implement disambiguation.
-    // TODO(crbug.com/1362842) Add logic to check whether
-    // DictationMoreCommands is enabled or not before
-    // running the macros hidden within that flag.
     this.sendToSandboxedPumpkinTagger_({
       type: PumpkinConstants.ToPumpkinTaggerCommand.TAG,
       text,
