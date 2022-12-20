@@ -165,7 +165,7 @@ class DevToolsFrontend::AgentHostClient
       NOTREACHED();
       return;
     } else if (*method == "getPreferences") {
-      SendMessageAck(request_id, std::move(preferences_));
+      SendMessageAck(request_id, base::Value(std::move(preferences_)));
       return;
     } else if (*method == "setPreference") {
       if (params.size() < 2)
@@ -177,12 +177,12 @@ class DevToolsFrontend::AgentHostClient
       if (!name || !params[1].is_string())
         return;
 
-      preferences_.SetKey(*name, std::move(params[1]));
+      preferences_.Set(*name, std::move(params[1]));
     } else if (*method == "removePreference") {
       const std::string* name = params[0].GetIfString();
       if (!name)
         return;
-      preferences_.RemoveKey(*name);
+      preferences_.Remove(*name);
     } else if (*method == "requestFileSystems") {
       CallClientFunction("DevToolsAPI", "fileSystemsLoaded",
                          base::Value(base::Value::Type::LIST));
@@ -220,7 +220,7 @@ class DevToolsFrontend::AgentHostClient
 
   std::map<std::string, std::string> extensions_api_;
 
-  base::DictionaryValue preferences_;
+  base::Value::Dict preferences_;
 };
 
 class DevToolsFrontend::Pointer : public content::WebContentsUserData<Pointer> {
