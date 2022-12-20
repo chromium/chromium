@@ -168,6 +168,10 @@ declare_args() {
   # If true, linker crashes will be rerun with `--reproduce` which causes
   # a reproducer file to be saved.
   save_reproducers_on_lld_crash = false
+
+  # Allow projects that wish to stay on C++17 to override Chromium's default.
+  # TODO(crbug.com/1402249): evaluate removing this end of 2023
+  use_cxx17 = false
 }
 
 declare_args() {
@@ -601,7 +605,7 @@ config("compiler") {
         cflags_cc += [ "-fno-trigraphs" ]
       }
     } else if (is_clang) {
-      if (is_chromeos_device) {
+      if (is_chromeos_device || use_cxx17) {
         # TODO(crbug.com/1392471): Support C++20 in CrOS toolchain.
         cflags_cc += [ "-std=${standard_prefix}++17" ]
       } else {
@@ -614,7 +618,7 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17) {
+    if (use_cxx17 || (is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
       cflags_cc += [ "/std:c++17" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
@@ -627,7 +631,7 @@ config("compiler") {
     # clause, above.
     cflags_c += [ "-std=c11" ]
 
-    if (is_fuchsia) {
+    if (is_fuchsia || use_cxx17) {
       # TODO(crbug.com/fuchsia/108751): The FIDL compiler generates code that
       # will not compile in C++20 mode. Switch to C++20 when this is resolved.
       cflags_cc += [ "-std=c++17" ]
