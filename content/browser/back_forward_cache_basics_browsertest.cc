@@ -286,8 +286,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
   ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
   // Go back.
-  web_contents()->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // A is restored from BFCache.
   EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());

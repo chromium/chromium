@@ -450,8 +450,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
                     {}, FROM_HERE);
 }
@@ -527,8 +526,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
                     {}, FROM_HERE);
 }
@@ -587,8 +585,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
                     {}, FROM_HERE);
 }
@@ -652,8 +649,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
                     {}, FROM_HERE);
 }
@@ -701,8 +697,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
   // since receiving the response body started but this didn't end before the
   // navigation to B.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
       {}, {}, {}, FROM_HERE);
@@ -758,8 +753,7 @@ IN_PROC_BROWSER_TEST_P(
   // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
   // since receiving the response body started but this didn't end before the
   // navigation to B.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
       {}, {}, {}, FROM_HERE);
@@ -2405,8 +2399,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the page with IndexedDB. The connection is closed so it
   // should be restored from bfcache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -2429,8 +2422,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // 3) Go back to the page with IndexedDB.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::
                          kOutstandingIndexedDBTransaction},
@@ -2459,8 +2451,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back to the page with IndexedDB.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
