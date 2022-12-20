@@ -38,21 +38,38 @@ namespace {
 using privacy_sandbox_test_util::StateKey;
 constexpr auto kM1TopicsEnabledUserPrefValue =
     StateKey::kM1TopicsEnabledUserPrefValue;
+constexpr auto kM1FledgeEnabledUserPrefValue =
+    StateKey::kM1FledgeEnabledUserPrefValue;
+constexpr auto kM1AdMeasurementEnabledUserPrefValue =
+    StateKey::kM1AdMeasurementEnabledUserPrefValue;
 constexpr auto kCookieControlsModeUserPrefValue =
     StateKey::kCookieControlsModeUserPrefValue;
 constexpr auto kSiteDataUserDefault = StateKey::kSiteDataUserDefault;
 constexpr auto kSiteDataUserExceptions = StateKey::kSiteDataUserExceptions;
+constexpr auto kIsIncognito = StateKey::kIsIncognito;
+constexpr auto kIsRestrictedAccount = StateKey::kIsRestrictedAccount;
 
 // using enum privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::InputKey;
 constexpr auto kTopFrameOrigin = InputKey::kTopFrameOrigin;
 constexpr auto kTopicsURL = InputKey::kTopicsURL;
+constexpr auto kFledgeAuctionPartyOrigin = InputKey::kFledgeAuctionPartyOrigin;
+constexpr auto kAdMeasurementReportingOrigin =
+    InputKey::kAdMeasurementReportingOrigin;
+constexpr auto kAdMeasurementSourceOrigin =
+    InputKey::kAdMeasurementSourceOrigin;
+constexpr auto kAdMeasurementDestinationOrigin =
+    InputKey::kAdMeasurementDestinationOrigin;
 
 // using enum privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::OutputKey;
 constexpr auto kIsTopicsAllowed = OutputKey::kIsTopicsAllowed;
 constexpr auto kIsTopicsAllowedForContext =
     OutputKey::kIsTopicsAllowedForContext;
+constexpr auto kIsFledgeAllowed = OutputKey::kIsFledgeAllowed;
+constexpr auto kIsAttributionReportingAllowed =
+    OutputKey::kIsAttributionReportingAllowed;
+constexpr auto kMaySendAttributionReport = OutputKey::kMaySendAttributionReport;
 
 // using enum ContentSetting;
 constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -62,7 +79,9 @@ constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
 constexpr auto kBlockThirdParty =
     content_settings::CookieControlsMode::kBlockThirdParty;
 
+using privacy_sandbox_test_util::MultipleInputKeys;
 using privacy_sandbox_test_util::MultipleOutputKeys;
+using privacy_sandbox_test_util::MultipleStateKeys;
 using privacy_sandbox_test_util::SiteDataExceptions;
 using privacy_sandbox_test_util::TestCase;
 using privacy_sandbox_test_util::TestInput;
@@ -158,8 +177,8 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -206,8 +225,8 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -248,8 +267,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -290,8 +309,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -332,11 +351,11 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://unrelated.com"),
-      url::Origin::Create(GURL("https://unrelated.com"))));
+      url::Origin::Create(GURL("https://unrelated.com")),
+      GURL("https://unrelated.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -389,8 +408,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       /*managed_cookie_exceptions=*/{});
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -413,8 +432,8 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://top-level-origin.com"))));
+      url::Origin::Create(GURL("https://top-level-origin.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -450,11 +469,11 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://top-level-origin.com"))));
+      url::Origin::Create(GURL("https://top-level-origin.com")),
+      GURL("https://embedded.com")));
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -490,8 +509,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -525,8 +544,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -565,8 +584,8 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowed());
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
-      GURL("https://embedded.com"),
-      url::Origin::Create(GURL("https://test.com"))));
+      url::Origin::Create(GURL("https://test.com")),
+      GURL("https://embedded.com")));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsAttributionReportingAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -991,126 +1010,270 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   bool test_case_run_ = false;
 };
 
-TEST_F(PrivacySandboxSettingsM1Test, SpecificPreferenceEnabled) {
+TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
   // Confirm that M1 kAPI respect M1 targeted preferences when enabled.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
-  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, true}},
-              TestInput{{kTopFrameOrigin,
-                         url::Origin::Create(GURL("https://top-frame.com"))},
-                        {kTopicsURL, GURL("https://embedded.com")}},
-              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
-                                             kIsTopicsAllowedForContext},
-                          true}});
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           true}});
 }
 
-TEST_F(PrivacySandboxSettingsM1Test, SpecificPreferenceDisabled) {
+TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
   // Confirm that M1 kAPI respect M1 targeted preferences when disabled.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
-  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, false}},
-              TestInput{{kTopFrameOrigin,
-                         url::Origin::Create(GURL("https://top-frame.com"))},
-                        {kTopicsURL, GURL("https://embedded.com")}},
-              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
-                                             kIsTopicsAllowedForContext},
-                          false}});
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 false}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))},
+      },
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           false}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
   // Confirm that M1 kAPIs ignore the Cookie Controls mode preference.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
-  RunTestCase(TestState{{kM1TopicsEnabledUserPrefValue, true},
-                        {kCookieControlsModeUserPrefValue, kBlockThirdParty}},
-              TestInput{{kTopFrameOrigin,
-                         url::Origin::Create(GURL("https://top-frame.com"))},
-                        {kTopicsURL, GURL("https://embedded.com")}},
-              TestOutput{{MultipleOutputKeys{kIsTopicsAllowed,
-                                             kIsTopicsAllowedForContext},
-                          true}});
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kCookieControlsModeUserPrefValue, kBlockThirdParty}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           true}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockApplies) {
   // Confirm that blocking site data disabled M1 kAPIs.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
   RunTestCase(
       TestState{
-          {kM1TopicsEnabledUserPrefValue, true},
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
           {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
           {kSiteDataUserExceptions,
            SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_BLOCK}}}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")}},
-      TestOutput{{kIsTopicsAllowed, true},
-                 {kIsTopicsAllowedForContext, false}});
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {kIsTopicsAllowed, true},
+          {MultipleOutputKeys{kIsTopicsAllowedForContext, kIsFledgeAllowed,
+                              kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           false}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
   // Confirm that allowing site data doesn't override preference values, even
   // via exceptions.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
   RunTestCase(
       TestState{
-          {kM1TopicsEnabledUserPrefValue, false},
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           false},
           {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
           {kSiteDataUserExceptions,
            SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_ALLOW},
                               {"[*.]top-frame.com", CONTENT_SETTING_ALLOW}}}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")}},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+          {kIsTopicsAllowed, false},
+          {MultipleOutputKeys{kIsTopicsAllowedForContext, kIsFledgeAllowed,
+                              kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
            false}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
   // Confirm that site data exceptions override the default site data setting.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
   RunTestCase(
       TestState{
-          {kM1TopicsEnabledUserPrefValue, true},
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
           {kSiteDataUserDefault, CONTENT_SETTING_BLOCK},
           {kSiteDataUserExceptions,
            SiteDataExceptions{{"[*.]embedded.com", CONTENT_SETTING_ALLOW}}}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")}},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
            true}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
   // Confirm that unrelated site data block exceptions don't affect kAPIs.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
   RunTestCase(
       TestState{
-          {kM1TopicsEnabledUserPrefValue, true},
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
           {kSiteDataUserDefault, CONTENT_SETTING_ALLOW},
           {kSiteDataUserExceptions,
            SiteDataExceptions{{"[*.]unrelated.com", CONTENT_SETTING_BLOCK}}}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")}},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
-          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
            true}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
   // Confirm that unrelated site data allow exceptions don't affect kAPIs.
-  // TODO(crbug.com/1378703): Add testing for all kAPIs.
   RunTestCase(
       TestState{
-          {kM1TopicsEnabledUserPrefValue, true},
+          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                             kM1FledgeEnabledUserPrefValue,
+                             kM1AdMeasurementEnabledUserPrefValue},
+           true},
           {kSiteDataUserDefault, CONTENT_SETTING_BLOCK},
           {kSiteDataUserExceptions,
            SiteDataExceptions{{"[*.]unrelated.com", CONTENT_SETTING_ALLOW}}}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
-          {kTopicsURL, GURL("https://embedded.com")}},
-      TestOutput{{kIsTopicsAllowed, true},
-                 {kIsTopicsAllowedForContext, false}});
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {kIsTopicsAllowed, true},
+          {MultipleOutputKeys{kIsTopicsAllowedForContext, kIsFledgeAllowed,
+                              kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           false}});
 }
 
+TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue,
+                                   kIsIncognito},
+                 true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           false}});
+}
+
+TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue,
+                                   kIsRestrictedAccount},
+                 true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext,
+                              kIsFledgeAllowed, kIsAttributionReportingAllowed,
+                              kMaySendAttributionReport},
+           false}});
+}
 }  // namespace privacy_sandbox

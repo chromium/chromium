@@ -85,8 +85,8 @@ class PrivacySandboxSettings : public KeyedService {
   // Determines whether the Topics API is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both
   // affect 1P and 3P contexts.
-  bool IsTopicsAllowedForContext(const GURL& url,
-                                 const url::Origin& top_frame_origin) const;
+  bool IsTopicsAllowedForContext(const url::Origin& top_frame_origin,
+                                 const GURL& url) const;
 
   // Returns whether |topic| can be either considered as a top topic for the
   // current epoch, or provided to a website as a previous / current epochs
@@ -219,16 +219,16 @@ class PrivacySandboxSettings : public KeyedService {
   // for allowability (such as incognito) ontop of this. |cookie_settings| is
   // provided as a parameter to allow callers to cache it between calls.
   bool IsPrivacySandboxEnabledForContext(
-      const GURL& url,
-      const absl::optional<url::Origin>& top_frame_origin) const;
+      const absl::optional<url::Origin>& top_frame_origin,
+      const GURL& url) const;
 
   void SetTopicsDataAccessibleFromNow() const;
 
  private:
   // Whether the site associated with the URL is allowed to access privacy
   // sandbox APIs within the context of |top_frame_origin|.
-  bool IsAccessAllowed(const GURL& url,
-                       const url::Origin& top_frame_origin) const;
+  bool IsAccessAllowed(const url::Origin& top_frame_origin,
+                       const GURL& url) const;
   // Whether the privacy sandbox associated with  the |pref_name| is enabled.
   // For individual sites, check as well with IsSiteDataAllowed.
   bool IsM1PrivacySandboxApiEnabled(const std::string& pref_name) const;

@@ -232,7 +232,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowedForContext(
-          context_origin.GetURL(), main_frame->GetLastCommittedOrigin())) {
+          /*top_frame_origin=*/main_frame->GetLastCommittedOrigin(),
+          context_origin.GetURL())) {
     RecordBrowsingTopicsApiResultUkmMetrics(
         ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame,
         get_topics);

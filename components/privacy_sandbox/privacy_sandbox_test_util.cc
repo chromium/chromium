@@ -14,6 +14,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 namespace privacy_sandbox_test_util {
 
 namespace {
@@ -76,6 +77,19 @@ void ApplyTestState(
                                         base::Value(GetItemValue<bool>(value)));
       return;
     }
+    case (StateKey::kM1FledgeEnabledUserPrefValue): {
+      SCOPED_TRACE("State Setup: User M1 Fledge pref");
+      testing_pref_service->SetUserPref(prefs::kPrivacySandboxM1FledgeEnabled,
+                                        base::Value(GetItemValue<bool>(value)));
+      return;
+    }
+    case (StateKey::kM1AdMeasurementEnabledUserPrefValue): {
+      SCOPED_TRACE("State Setup: User M1 Ad measurement pref");
+      testing_pref_service->SetUserPref(
+          prefs::kPrivacySandboxM1AdMeasurementEnabled,
+          base::Value(GetItemValue<bool>(value)));
+      return;
+    }
     case (StateKey::kCookieControlsModeUserPrefValue): {
       SCOPED_TRACE("State Setup: User cookies controls mode");
 
@@ -106,6 +120,17 @@ void ApplyTestState(
       }
       return;
     }
+    case (StateKey::kIsIncognito): {
+      SCOPED_TRACE("State Setup: User Incognito");
+      mock_delegate->SetUpIsIncognitoProfileResponse(GetItemValue<bool>(value));
+      return;
+    }
+    case (StateKey::kIsRestrictedAccount): {
+      SCOPED_TRACE("State Setup: User restricted");
+      mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+          GetItemValue<bool>(value));
+      return;
+    }
     default:
       NOTREACHED();
   }
@@ -131,7 +156,45 @@ void CheckOutput(
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value,
                 privacy_sandbox_settings->IsTopicsAllowedForContext(
-                    topics_url, top_frame_origin));
+                    top_frame_origin, topics_url));
+      return;
+    }
+    case (OutputKey::kIsFledgeAllowed): {
+      SCOPED_TRACE("Check Output: IsFledgeAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin));
+      return;
+    }
+    case (OutputKey::kIsAttributionReportingAllowed): {
+      SCOPED_TRACE("Check Output: IsAttributionReportingAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsAttributionReportingAllowed(
+                    top_frame_origin, reporting_origin));
+      return;
+    }
+    case (OutputKey::kMaySendAttributionReport): {
+      SCOPED_TRACE("Check Output: MaySendAttributionReport()");
+      auto source_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementSourceOrigin, input);
+      auto destination_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementDestinationOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->MaySendAttributionReport(
+                    source_origin, destination_origin, reporting_origin));
       return;
     }
   }

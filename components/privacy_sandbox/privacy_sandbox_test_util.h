@@ -63,14 +63,20 @@ enum class StateKey {
   kCookieControlsModeUserPrefValue = 2,
   kSiteDataUserDefault = 3,
   kSiteDataUserExceptions = 4,
-  // TODO (crbug.com/1378703): Add support for testing remaining functions.
+  kM1FledgeEnabledUserPrefValue = 5,
+  kM1AdMeasurementEnabledUserPrefValue = 6,
+  kIsIncognito = 7,
+  kIsRestrictedAccount = 8,
 };
 
 // Defines the input to the functions under test.
 enum class InputKey {
   kTopFrameOrigin = 1,
   kTopicsURL = 2,
-  // TODO (crbug.com/1378703): Add support for testing remaining functions.
+  kFledgeAuctionPartyOrigin = 3,
+  kAdMeasurementReportingOrigin = 4,
+  kAdMeasurementSourceOrigin = 5,
+  kAdMeasurementDestinationOrigin = 6,
 };
 
 // Defines the expected output of the functions under test, when the profile is
@@ -78,7 +84,9 @@ enum class InputKey {
 enum class OutputKey {
   kIsTopicsAllowed = 1,
   kIsTopicsAllowedForContext = 2,
-  // TODO (crbug.com/1378703): Add support for testing remaining functions.
+  kIsFledgeAllowed = 3,
+  kIsAttributionReportingAllowed = 4,
+  kMaySendAttributionReport = 5,
 };
 
 // To allow multiple input keys to map to the same value, without having to
