@@ -201,4 +201,123 @@ TEST_F(StylusWritingGestureTest, TestGestureAddSpaceOrText) {
   EXPECT_EQ(7, range.EndOffset());
 }
 
+TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_RemovesAllSpaces) {
+  auto* input = SetUpSingleInput();
+  input->SetValue("ABCD    EFGH");
+  // Input value = "ABCD    EFGH". Try to merge after ABCD|.
+  // Expected value after gesture = "ABCDEFGH". And cursor to be after ABCD.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data->start_point = gfx::Point(105, 15);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCDEFGH", input->Value());
+  EXPECT_EQ(4, range.StartOffset());
+  EXPECT_EQ(4, range.EndOffset());
+
+  input->SetValue("ABCD    EFGH");
+  // Input value = "ABCD    EFGH". Try to merge before |EFGH.
+  // Expected value after gesture = "ABCDEFGH". And cursor to be after ABCD.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data1(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data1->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data1->start_point = gfx::Point(195, 15);
+  gesture_data1->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data1));
+  range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCDEFGH", input->Value());
+  EXPECT_EQ(4, range.StartOffset());
+  EXPECT_EQ(4, range.EndOffset());
+}
+
+TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_NonEmptyInput) {
+  auto* input = SetUpSingleInput();
+  input->SetValue("ABCDEFGH");
+
+  // Input value = "ABCDEFGH". Try to split after ABCD|.
+  // Expected value after gesture = "ABCD EFGH". And cursor to be after space.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data->start_point = gfx::Point(105, 15);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCD EFGH", input->Value());
+  EXPECT_EQ(5, range.StartOffset());
+  EXPECT_EQ(5, range.EndOffset());
+
+  // Input value = "ABCD EFGH". Try to merge after ABCD|.
+  // Expected value after gesture = "ABCDEFGH". And cursor to be after ABCD.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data1(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data1->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data1->start_point = gfx::Point(105, 15);
+  gesture_data1->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data1));
+  range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCDEFGH", input->Value());
+  EXPECT_EQ(4, range.StartOffset());
+  EXPECT_EQ(4, range.EndOffset());
+
+  // Try to do split-merge gesture outside the current input range.
+  // This should insert the text alternative at current cursor.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data2(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data2->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data2->start_point = gfx::Point(300, 15);
+  gesture_data2->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data2));
+  range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCDXXEFGH", input->Value());
+  EXPECT_EQ(6, range.StartOffset());
+  EXPECT_EQ(6, range.EndOffset());
+
+  // Try to do split-merge gesture at the start of input text. Space should not
+  // be inserted. Fallback text is inserted at cursor.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data3(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data3->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data3->start_point = gfx::Point(10, 15);
+  gesture_data3->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data3));
+  range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("ABCDXXXXEFGH", input->Value());
+  EXPECT_EQ(8, range.StartOffset());
+  EXPECT_EQ(8, range.EndOffset());
+}
+
+TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_EmptyInput) {
+  auto* input = SetUpSingleInput();
+  input->SetValue("");
+
+  // Split merge gesture in empty input inserts fallback text.
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action =
+      mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
+  gesture_data->start_point = gfx::Point(105, 15);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("XX", input->Value());
+  EXPECT_EQ(2, range.StartOffset());
+  EXPECT_EQ(2, range.EndOffset());
+}
+
 }  // namespace blink

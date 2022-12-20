@@ -72,6 +72,15 @@ class StylusWritingGestureAddText : public StylusWritingGesture {
   String text_to_insert_;
 };
 
+class StylusWritingGestureSplitOrMerge : public StylusWritingGesture {
+ public:
+  ~StylusWritingGestureSplitOrMerge() override = default;
+
+  StylusWritingGestureSplitOrMerge(const gfx::Point& start_point,
+                                   const String& text_alternative);
+  bool MaybeApplyGesture(LocalFrame*) override;
+};
+
 std::unique_ptr<StylusWritingGesture> CreateGesture(
     mojom::blink::StylusWritingGestureDataPtr gesture_data) {
   gfx::Point start_point = gesture_data->start_point;
@@ -90,6 +99,10 @@ std::unique_ptr<StylusWritingGesture> CreateGesture(
     case mojom::blink::StylusWritingGestureAction::REMOVE_SPACES: {
       return std::make_unique<blink::StylusWritingGestureRemoveSpaces>(
           start_point, gesture_data->end_point.value(), text_alternative);
+    }
+    case mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE: {
+      return std::make_unique<blink::StylusWritingGestureSplitOrMerge>(
+          start_point, text_alternative);
     }
     default: {
       NOTREACHED();
@@ -282,6 +295,68 @@ bool StylusWritingGestureAddText::MaybeApplyGesture(LocalFrame* frame) {
       PlainTextRange(gesture_text_index, gesture_text_index));
   frame->GetEditor().InsertText(text_to_insert_,
                                 /* triggering_event = */ nullptr);
+  return true;
+}
+
+StylusWritingGestureSplitOrMerge::StylusWritingGestureSplitOrMerge(
+    const gfx::Point& start_point,
+    const String& text_alternative)
+    : StylusWritingGesture(start_point, text_alternative) {}
+
+bool StylusWritingGestureSplitOrMerge::MaybeApplyGesture(LocalFrame* frame) {
+  wtf_size_t gesture_text_index = GetStartTextIndex(frame);
+  // When the gesture point is outside the input text range, we get a kNotFound.
+  // Return false here to insert the text alternative.
+  if (gesture_text_index == kNotFound) {
+    return false;
+  }
+
+  InputMethodController& input_method_controller =
+      frame->GetInputMethodController();
+  String input_text = input_method_controller.TextInputInfo().value;
+  // Gesture cannot be applied if there is no input text.
+  if (input_text.empty()) {
+    return false;
+  }
+
+  // Look for spaces on both side of gesture index.
+  wtf_size_t space_start = kNotFound;
+  wtf_size_t space_end = kNotFound;
+  for (wtf_size_t index = gesture_text_index;
+       index < input_text.length() && IsHTMLSpace(input_text[index]); ++index) {
+    if (space_start == kNotFound) {
+      space_start = index;
+    }
+    space_end = index + 1;
+  }
+
+  for (wtf_size_t index = gesture_text_index;
+       index && IsHTMLSpace(input_text[index - 1]); --index) {
+    if (space_end == kNotFound) {
+      space_end = index;
+    }
+    space_start = index - 1;
+  }
+
+  // No spaces found.
+  if (space_start == space_end) {
+    // Do not insert space at start of the input text.
+    if (gesture_text_index == 0) {
+      return false;
+    }
+
+    // Insert space at gesture location.
+    input_method_controller.SetEditableSelectionOffsets(
+        PlainTextRange(gesture_text_index, gesture_text_index));
+    frame->GetEditor().InsertText(" ", /* triggering_event = */ nullptr);
+    return true;
+  }
+
+  // Remove spaces found.
+  input_method_controller.ReplaceText("",
+                                      PlainTextRange(space_start, space_end));
+  input_method_controller.SetEditableSelectionOffsets(
+      PlainTextRange(space_start, space_start));
   return true;
 }
 

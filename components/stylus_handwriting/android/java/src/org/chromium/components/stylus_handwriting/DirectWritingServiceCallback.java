@@ -20,6 +20,7 @@ import androidx.annotation.BinderThread;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
@@ -48,6 +49,7 @@ class DirectWritingServiceCallback
     static final String GESTURE_BUNDLE_KEY_END_POINT = "end_point";
     static final String GESTURE_BUNDLE_KEY_LOWEST_POINT = "lowest_point";
     static final String GESTURE_BUNDLE_KEY_HIGHEST_POINT = "highest_point";
+    static final String GESTURE_BUNDLE_KEY_CENTER_POINT = "center_point";
     static final String GESTURE_BUNDLE_KEY_GESTURE_TYPE = "gesture_type";
     static final String GESTURE_BUNDLE_KEY_TEXT_ALTERNATIVE = "text_alternative";
     static final String GESTURE_BUNDLE_KEY_TEXT_INSERTION = "text_insertion";
@@ -59,19 +61,22 @@ class DirectWritingServiceCallback
     static final String GESTURE_TYPE_WEDGE_SPACE = "wedge_space";
     static final String GESTURE_TYPE_U_TYPE_REMOVE_SPACE = "u_type_remove_space";
     static final String GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE = "arch_type_remove_space";
+    static final String GESTURE_I_TYPE_FUNCTIONAL = "i_type_functional";
 
     // This should be kept in sync with the definition |StylusHandwritingGesture|
     // in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({StylusHandwritingGesture.DELETE_TEXT, StylusHandwritingGesture.ADD_SPACE_OR_TEXT,
-            StylusHandwritingGesture.REMOVE_SPACES, StylusHandwritingGesture.COUNT})
+            StylusHandwritingGesture.REMOVE_SPACES, StylusHandwritingGesture.SPLIT_OR_MERGE,
+            StylusHandwritingGesture.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface StylusHandwritingGesture {
         int DELETE_TEXT = 0;
         int ADD_SPACE_OR_TEXT = 1;
         int REMOVE_SPACES = 2;
-        int COUNT = 3;
+        int SPLIT_OR_MERGE = 3;
+        int COUNT = 4;
     }
 
     private static void recordGesture(@StylusHandwritingGesture int gesture) {
@@ -139,18 +144,7 @@ class DirectWritingServiceCallback
         if (gestureType.equals(GESTURE_TYPE_BACKSPACE) || gestureType.equals(GESTURE_TYPE_ZIGZAG)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
             float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
-            // Clamp coordinates of gesture to Editable bounds in order to allow delete gesture even
-            // if delete strokes cross editable bounds.
-            startPoint[0] =
-                    Math.max(mEditableBounds.left, Math.min(startPoint[0], mEditableBounds.right));
-            startPoint[1] =
-                    Math.max(mEditableBounds.top, Math.min(startPoint[1], mEditableBounds.bottom));
-            endPoint[0] =
-                    Math.max(mEditableBounds.left, Math.min(endPoint[0], mEditableBounds.right));
-            endPoint[1] =
-                    Math.max(mEditableBounds.top, Math.min(endPoint[1], mEditableBounds.bottom));
-
-            gestureData.endPoint = toMojoPoint(endPoint);
+            gestureData.endPoint = mojoPointClampedToEditableBounds(endPoint);
             gestureData.action = StylusWritingGestureAction.DELETE_TEXT;
         } else if (gestureType.equals(GESTURE_TYPE_V_SPACE)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_LOWEST_POINT);
@@ -162,11 +156,23 @@ class DirectWritingServiceCallback
                 || gestureType.equals(GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
             float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
-
-            gestureData.endPoint = toMojoPoint(endPoint);
+            gestureData.endPoint = mojoPointClampedToEditableBounds(endPoint);
             gestureData.action = StylusWritingGestureAction.REMOVE_SPACES;
+        } else if (gestureType.equals(GESTURE_I_TYPE_FUNCTIONAL)) {
+            startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_CENTER_POINT);
+            gestureData.action = StylusWritingGestureAction.SPLIT_OR_MERGE;
         } else {
-            return; // Not an expected gesture.
+            // Not an expected gesture.
+            if (!TextUtils.isEmpty(textAlternative)) {
+                // Commit fallback text if available for unsupported gesture. This is to provide
+                // default behaviour for any unsupported gesture which is yet to be implemented.
+                Log.d(TAG, "Commit fallback text for unsupported gesture: " + gestureType);
+                mStylusWritingImeCallback.sendCompositionToNative(
+                        textAlternative, textAlternative.length(), /* isCommit */ true);
+            } else {
+                Log.w(TAG, "Skip handling unsupported gesture: " + gestureType);
+            }
+            return;
         }
 
         switch (gestureData.action) {
@@ -179,15 +185,29 @@ class DirectWritingServiceCallback
             case StylusWritingGestureAction.REMOVE_SPACES:
                 recordGesture(StylusHandwritingGesture.REMOVE_SPACES);
                 break;
+            case StylusWritingGestureAction.SPLIT_OR_MERGE:
+                recordGesture(StylusHandwritingGesture.SPLIT_OR_MERGE);
+                break;
             default:
                 assert false : "Gesture type unset";
         }
 
         // Populate the common data for all the gestures.
-        gestureData.startPoint = toMojoPoint(startPoint);
+        gestureData.startPoint = mojoPointClampedToEditableBounds(startPoint);
         gestureData.textAlternative = javaStringToMojoString(textAlternative);
 
         mStylusWritingImeCallback.handleStylusWritingGestureAction(gestureData);
+    }
+
+    private org.chromium.gfx.mojom.Point mojoPointClampedToEditableBounds(float[] gesturePoint) {
+        // Clamp gesture point to Editable bounds so that gesture is within editable area while
+        // finding the gesture offset in blink, and to avoid hitting DCHECKs while doing so.
+        float[] adjustedPoint = new float[2];
+        adjustedPoint[0] =
+                MathUtils.clamp(gesturePoint[0], mEditableBounds.left, mEditableBounds.right);
+        adjustedPoint[1] =
+                MathUtils.clamp(gesturePoint[1], mEditableBounds.top, mEditableBounds.bottom);
+        return toMojoPoint(adjustedPoint);
     }
 
     private static org.chromium.gfx.mojom.Point toMojoPoint(float[] endPoint) {
