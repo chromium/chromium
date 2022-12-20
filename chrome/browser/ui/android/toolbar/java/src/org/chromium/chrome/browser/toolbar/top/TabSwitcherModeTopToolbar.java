@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -71,6 +72,8 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private boolean mIsFullscreenToolbar;
     private boolean mShowZoomingAnimation;
 
+    private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
+
     public TabSwitcherModeTopToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -94,11 +97,13 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     void initialize(boolean isGridTabSwitcherEnabled, boolean isFullscreenToolbar,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
+            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
+            ToolbarColorObserverManager toolbarColorObserverManager) {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsFullscreenToolbar = isFullscreenToolbar;
         mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
+        mToolbarAlphaInOverviewObserver = toolbarColorObserverManager;
 
         mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
         mNewTabImageButton.setStartSurfaceEnabled(false);
@@ -134,6 +139,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         if (mIncognitoToggleTabLayout != null) {
             mIncognitoToggleTabLayout.destroy();
             mIncognitoToggleTabLayout = null;
+        }
+        if (mToolbarAlphaInOverviewObserver != null) {
+            mToolbarAlphaInOverviewObserver = null;
         }
     }
 
@@ -187,7 +195,14 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
                 mVisiblityAnimator = null;
             }
         });
-
+        // Notify the observer that the toolbar alpha value is changed and pass the rendering
+        // toolbar alpha value to the observer.
+        if (mToolbarAlphaInOverviewObserver != null) {
+            mVisiblityAnimator.addUpdateListener((animation) -> {
+                mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                        (float) animation.getAnimatedValue());
+            });
+        }
         mVisiblityAnimator.start();
 
         if (DeviceClassManager.enableAccessibilityLayout(getContext())) mVisiblityAnimator.end();

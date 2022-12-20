@@ -81,6 +81,14 @@ public class TopToolbarCoordinator implements Toolbar {
         void onToolbarColorChanged(int color);
     }
 
+    /**
+     * Observes toolbar alpha change during overview mode fading animation.
+     */
+    public interface ToolbarAlphaInOverviewObserver {
+        /** @param fraction The toolbar alpha value. */
+        void onToolbarAlphaInOverviewChanged(float fraction);
+    }
+
     public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
     public static final int TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS = 150;
 
@@ -109,6 +117,8 @@ public class TopToolbarCoordinator implements Toolbar {
     private Supplier<ResourceManager> mResourceManagerSupplier;
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
     private boolean mStartSurfaceToolbarVisible;
+
+    private ToolbarColorObserverManager mToolbarColorObserverManager;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -185,6 +195,9 @@ public class TopToolbarCoordinator implements Toolbar {
         mResourceManagerSupplier = resourceManagerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
+        mToolbarColorObserverManager =
+                new ToolbarColorObserverManager(mToolbarLayout.getContext(), mToolbarLayout);
+        mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
             mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
@@ -193,12 +206,13 @@ public class TopToolbarCoordinator implements Toolbar {
                     isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
                     isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
                     startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled,
-                    shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished);
+                    shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished,
+                    mToolbarColorObserverManager);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
                     fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
                     isGridTabSwitcherEnabled, isTabletGtsPolishEnabled, isTabToGtsAnimationEnabled,
-                    isIncognitoModeEnabledSupplier);
+                    isIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
         }
         controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
                 constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
@@ -318,7 +332,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param toolbarColorObserver The observer that observes toolbar color change.
      */
     public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
-        mToolbarLayout.setToolbarColorObserver(toolbarColorObserver);
+        mToolbarColorObserverManager.setToolbarColorObserver(toolbarColorObserver);
     }
 
     /**
@@ -621,6 +635,7 @@ public class TopToolbarCoordinator implements Toolbar {
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.setIncognitoStateProvider(provider);
         }
+        mToolbarColorObserverManager.setIncognitoStateProvider(provider);
     }
 
     /**

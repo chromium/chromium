@@ -211,7 +211,9 @@ public class StatusBarColorController
                             return;
                         }
                         mIsInOverviewMode = true;
-                        updateStatusBarColor();
+                        if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+                            updateStatusBarColor();
+                        }
                     }
 
                     @Override
@@ -286,7 +288,6 @@ public class StatusBarColorController
     }
 
     // StatusIndicatorCoordinator.StatusIndicatorObserver implementation.
-
     @Override
     public void onStatusIndicatorColorChanged(@ColorInt int newColor) {
         mStatusIndicatorColor = newColor;
@@ -383,6 +384,12 @@ public class StatusBarColorController
 
         // Return status bar color in overview mode.
         if (mIsInOverviewMode) {
+            // Toolbar will notify status bar color controller about the toolbar color during
+            // overview animation.
+            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+                return mToolbarColor;
+            }
+
             return (mIsIncognito
                            && ToolbarColors.canUseIncognitoToolbarThemeColorInOverview(
                                    mWindow.getContext()))
