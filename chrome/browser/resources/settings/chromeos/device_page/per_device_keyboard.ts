@@ -43,7 +43,7 @@ class SettingsPerDeviceKeyboardElement extends
     };
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.PER_DEVICE_KEYBOARD) {
       return;
