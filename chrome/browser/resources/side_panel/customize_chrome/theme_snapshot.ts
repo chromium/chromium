@@ -76,16 +76,16 @@ export class ThemeSnapshotElement extends PolymerElement {
   }
 
   private computeThemeType_(): CustomizeThemeType|null {
-    if (!this.theme_) {
-      return null;
+    if (this.theme_) {
+      if (!this.theme_.backgroundImage) {
+        return CustomizeThemeType.CLASSIC_CHROME;
+      } else if (this.theme_.backgroundImage.isUploadedImage) {
+        return CustomizeThemeType.UPLOADED_IMAGE;
+      } else if (this.theme_.backgroundImage.snapshotUrl?.url) {
+        return CustomizeThemeType.CUSTOM_THEME;
+      }
     }
-    if (!this.theme_.backgroundImage) {
-      return CustomizeThemeType.CLASSIC_CHROME;
-    } else if (!this.theme_.backgroundImage.isUploadedImage) {
-      return CustomizeThemeType.CUSTOM_THEME;
-    } else {
-      return CustomizeThemeType.UPLOADED_IMAGE;
-    }
+    return null;
   }
 }
 

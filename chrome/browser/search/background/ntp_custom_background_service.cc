@@ -47,6 +47,8 @@ const char kNtpCustomBackgroundResumeToken[] = "resume_token";
 const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
 const char kNtpCustomBackgroundMainColor[] = "background_main_color";
 
+constexpr char kSidePanelSnapshotImageOptions[] = "=w320-h180-p-k-no-nd-mv";
+
 base::Value::Dict GetBackgroundInfoAsDict(
     const GURL& background_url,
     const std::string& attribution_line_1,
@@ -401,6 +403,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     GURL timestamped_url(local_string + "?ts=" + time_string);
     custom_background->custom_background_url = timestamped_url;
     custom_background->is_uploaded_image = true;
+    custom_background->custom_background_snapshot_url = GURL();
     custom_background->custom_background_attribution_line_1 = std::string();
     custom_background->custom_background_attribution_line_2 = std::string();
     custom_background->custom_background_attribution_action_url = GURL();
@@ -437,7 +440,16 @@ NtpCustomBackgroundService::GetCustomBackground() {
     custom_background->custom_background_url = custom_background_url;
     custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;
-
+    std::string custom_background_url_spec = custom_background_url.spec();
+    size_t image_options_index = custom_background_url_spec.find("=");
+    if (image_options_index != std::string::npos) {
+      custom_background->custom_background_snapshot_url =
+          GURL(custom_background_url_spec.substr(0, image_options_index) +
+               kSidePanelSnapshotImageOptions);
+    } else {
+      custom_background->custom_background_snapshot_url =
+          GURL(custom_background_url_spec + kSidePanelSnapshotImageOptions);
+    }
     if (attribution_line_1) {
       custom_background->custom_background_attribution_line_1 =
           background_info.Find(kNtpCustomBackgroundAttributionLine1)

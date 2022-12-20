@@ -41,6 +41,7 @@ export function $$(element: Element, selector: string) {
 export function createBackgroundImage(url: string): BackgroundImage {
   return {
     url: {url},
+    snapshotUrl: {url},
     isUploadedImage: false,
     title: '',
     mainColor: undefined,

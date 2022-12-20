@@ -120,6 +120,9 @@ struct CustomBackground {
   // Url of the custom background selected by the user.
   GURL custom_background_url;
 
+  // Url of snapshot for the custom background selected by the user.
+  GURL custom_background_snapshot_url;
+
   // Whether the image is a local resource.
   bool is_uploaded_image;
 

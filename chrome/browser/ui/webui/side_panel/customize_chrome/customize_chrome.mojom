@@ -11,6 +11,8 @@ import "url/mojom/url.mojom";
 struct BackgroundImage {
   // URL to the background image. Can point to untrusted content.
   url.mojom.Url url;
+  // URL to snapshot of the background image. Can point to untrusted content.
+  url.mojom.Url snapshot_url;
   // Whether the image is a local resource.
   bool is_uploaded_image;
   // Title of the background image.
