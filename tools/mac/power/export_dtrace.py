@@ -338,7 +338,7 @@ if __name__ == "__main__":
   parser.add_argument('--unit',
                       dest='unit',
                       choices=["cpu_samples", "wakeups"],
-                      default="pprof",
+                      default="cpu_samples",
                       help="The unit of counts acquired with DTrace")
   parser.add_argument('--format',
                       dest='format',
@@ -348,7 +348,7 @@ if __name__ == "__main__":
                       help="Output format to generate.")
   parser.add_argument('--shorten',
                       action='store_true',
-                      help="Shorten stacks by removing the base part ",
+                      help="Shorten stacks by removing the base part "
                       "of the stack that doesn't provide useful information")
   args = parser.parse_args()
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -375,10 +375,10 @@ if __name__ == "__main__":
   if args.format == "pprof":
     profile_builder = ProfileBuilder()
     profile_builder.AddComment(full_comment)
-    profile_builder.AddComment(f"Profile mode: {profile_mode}")
+    profile_builder.AddComment(f"Unit : {args.unit}")
     parser.ConvertToPprof(profile_builder)
     if output_filename is None:
-      output_filename = os.path.join(data_dir, f"profile_{profile_mode}.pb")
+      output_filename = os.path.join(data_dir, f"profile_{args.unit}.pb")
     with open(output_filename, "wb") as output_file:
       output_file.write(profile_builder.SerializeToString())
   else:
