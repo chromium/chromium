@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // It is generated on demand each time the state machine leaves the idle
   // state. It is reused by several states. It is reset to nullopt. This field
   // is used apart of PSM Import request.
-  std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
+  std::string GenerateWindowIdentifier(base::Time ts) const override;
 
   // Generate Fresnel PSM import request body.
   // Sets the monthly device metadata dimensions sent by PSM import.

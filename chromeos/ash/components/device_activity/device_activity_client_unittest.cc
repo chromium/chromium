@@ -37,6 +37,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "third_party/icu/source/i18n/unicode/gregocal.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -47,7 +49,11 @@ namespace psm_rlwe = private_membership::rlwe;
 namespace {
 
 // Set the current time to the following string.
-const char kFakeNowTimeString[] = "2000-01-01 00:00:00 UTC";
+// Note that we use midnight PST (UTC-8) for the unit tests.
+const char kFakeNowTimeString[] = "2000-01-01 08:00:00 GMT";
+
+// Milliseconds per minute.
+constexpr int kMillisecondsPerMinute = 60000;
 
 // URLs for the different network requests being performed.
 const char kTestFresnelBaseUrl[] = "https://dummy.googleapis.com";
@@ -94,12 +100,70 @@ bool ParseProtoFromFile(const base::FilePath& file_path,
   return out_proto->ParseFromString(file_content);
 }
 
-base::TimeDelta TimeUntilNextUTCMidnight() {
-  const auto now = base::Time::Now();
-  return (now.UTCMidnight() + base::Hours(base::Time::kHoursPerDay) - now);
+// Returns the total offset between Pacific Time (PT) and GMT.
+// Parameter ts is expected to be GMT/UTC.
+// TODO(hirthanan): Create utils library for commonly used methods.
+base::Time ConvertToPT(base::Time ts) {
+  // America/Los_Angleles is PT.
+  std::unique_ptr<icu::TimeZone> time_zone(
+      icu::TimeZone::createTimeZone("America/Los_Angeles"));
+  if (*time_zone == icu::TimeZone::getUnknown()) {
+    LOG(ERROR) << "Failed to get America/Los_Angeles timezone. "
+               << "Returning UTC-8 timezone as default.";
+    return ts - base::Hours(8);
+  }
+
+  // Calculate timedelta between PT and GMT. This method does not take day light
+  // savings (DST) into account.
+  const base::TimeDelta raw_time_diff =
+      base::Minutes(time_zone->getRawOffset() / kMillisecondsPerMinute);
+
+  UErrorCode status = U_ZERO_ERROR;
+  auto gregorian_calendar =
+      std::make_unique<icu::GregorianCalendar>(*time_zone, status);
+
+  // Calculates the time difference adjust by the possible daylight savings
+  // offset. If the status of any step fails, returns the default time
+  // difference without considering daylight savings.
+  if (!gregorian_calendar) {
+    return ts + raw_time_diff;
+  }
+
+  // Convert ts object to UDate.
+  UDate current_date =
+      static_cast<UDate>(ts.ToDoubleT() * base::Time::kMillisecondsPerSecond);
+  status = U_ZERO_ERROR;
+  gregorian_calendar->setTime(current_date, status);
+  if (U_FAILURE(status)) {
+    return ts + raw_time_diff;
+  }
+
+  status = U_ZERO_ERROR;
+  UBool day_light = gregorian_calendar->inDaylightTime(status);
+  if (U_FAILURE(status)) {
+    return ts + raw_time_diff;
+  }
+
+  // Calculate timedelta between PT and GMT, taking DST into account for an
+  // accurate PT.
+  int gmt_offset = time_zone->getRawOffset();
+  if (day_light) {
+    gmt_offset += time_zone->getDSTSavings();
+  }
+
+  return ts + base::Minutes(gmt_offset / kMillisecondsPerMinute);
 }
 
-base::TimeDelta TimeUntilNewUTCMonth() {
+base::TimeDelta TimeUntilNextPTMidnight() {
+  const auto pt_adjusted_ts = ConvertToPT(base::Time::Now());
+
+  base::Time new_pt_midnight =
+      pt_adjusted_ts.UTCMidnight() + base::Hours(base::Time::kHoursPerDay);
+
+  return new_pt_midnight - pt_adjusted_ts;
+}
+
+base::TimeDelta TimeUntilNewPTMonth() {
   const auto current_ts = base::Time::Now();
 
   base::Time::Exploded exploded_current_ts;
@@ -953,7 +1017,8 @@ TEST_F(DeviceActivityClientTest, DailyCheckInFailsButRemainingUseCasesSucceed) {
 
       // Successfully imported and updated the last ping timestamp to the
       // current mocked time for this test.
-      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::Now());
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(),
+                ConvertToPT(base::Time::Now()));
     }
   }
 
@@ -1001,7 +1066,8 @@ TEST_F(DeviceActivityClientTest,
 
       // Successfully imported and updated the last ping timestamp to the
       // current mocked time for this test.
-      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::Now());
+      EXPECT_EQ(use_case->GetLastKnownPingTimestamp(),
+                ConvertToPT(base::Time::Now()));
     }
   }
 
@@ -1212,7 +1278,7 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectionClearsUseCaseState) {
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
+TEST_F(DeviceActivityClientTest, CheckInAfterNextPTMidnight) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -1236,13 +1302,13 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 
-  task_environment_.FastForwardBy(TimeUntilNextUTCMidnight());
+  task_environment_.FastForwardBy(TimeUntilNextPTMidnight());
   task_environment_.RunUntilIdle();
 
   FireTimer();
 
   // Check that at least 1 network request is pending since the PSM id
-  // has NOT been imported for the new UTC period.
+  // has NOT been imported for the new PT period.
   EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
 
   // Verify state is |kCheckingIn| since local state was updated
@@ -1271,7 +1337,7 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
+TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextPTDay) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -1295,24 +1361,24 @@ TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 
-  base::TimeDelta before_utc_meridian =
-      TimeUntilNextUTCMidnight() - base::Minutes(1);
-  task_environment_.FastForwardBy(before_utc_meridian);
+  base::TimeDelta before_pt_meridian =
+      TimeUntilNextPTMidnight() - base::Minutes(1);
+  task_environment_.FastForwardBy(before_pt_meridian);
   task_environment_.RunUntilIdle();
 
   // Trigger attempt to report device active.
   FireTimer();
 
-  // Client should not send any network requests since device is still in same
-  // UTC day.
+  // Client should not send network requests since device is still in same
+  // PT day.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  // Remains in |kIdle| state since the device is still in same UTC day.
+  // Remains in |kIdle| state since the device is still in same PT day.
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
+TEST_F(DeviceActivityClientTest, CheckInAfterNextPTMonth) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -1336,13 +1402,13 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMonth) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 
-  task_environment_.FastForwardBy(TimeUntilNewUTCMonth());
+  task_environment_.FastForwardBy(TimeUntilNewPTMonth());
   task_environment_.RunUntilIdle();
 
   FireTimer();
 
   // Check that at least 1 network request is pending since the PSM id
-  // has NOT been imported for the new UTC period.
+  // has NOT been imported for the new PT period.
   EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
 
   // Verify state is |kCheckingIn| since local state was updated

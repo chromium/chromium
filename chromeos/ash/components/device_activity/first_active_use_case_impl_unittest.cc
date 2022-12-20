@@ -84,9 +84,8 @@ TEST_F(FirstActiveUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
   EXPECT_TRUE(
       base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_first_active_ts));
 
-  std::string window_id =
-      first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-          new_first_active_ts);
+  std::string window_id = first_active_use_case_impl_->GenerateWindowIdentifier(
+      new_first_active_ts);
 
   EXPECT_EQ(window_id, "FIRST_ACTIVE");
 }
@@ -101,16 +100,13 @@ TEST_F(FirstActiveUseCaseImplTest, DifferentDayTimestampsHaveSameWindowId) {
       base::Time::FromString("02 Jan 2022 00:00:00 GMT", &first_active_ts_2));
 
   std::string window_id_1 =
-      first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-          first_active_ts_1);
+      first_active_use_case_impl_->GenerateWindowIdentifier(first_active_ts_1);
   std::string window_id_2 =
-      first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-          first_active_ts_2);
+      first_active_use_case_impl_->GenerateWindowIdentifier(first_active_ts_2);
 
-  EXPECT_EQ(first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-                first_active_ts_1),
-            first_active_use_case_impl_->GenerateUTCWindowIdentifier(
-                first_active_ts_2));
+  EXPECT_EQ(
+      first_active_use_case_impl_->GenerateWindowIdentifier(first_active_ts_1),
+      first_active_use_case_impl_->GenerateWindowIdentifier(first_active_ts_2));
 }
 
 TEST_F(FirstActiveUseCaseImplTest, DevicePingIsAlwaysRequired) {

@@ -83,7 +83,7 @@ TEST_F(MonthlyUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
       base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_monthly_ts));
 
   std::string window_id =
-      monthly_use_case_impl_->GenerateUTCWindowIdentifier(new_monthly_ts);
+      monthly_use_case_impl_->GenerateWindowIdentifier(new_monthly_ts);
 
   EXPECT_EQ(window_id.size(), 6u);
   EXPECT_EQ(window_id, "202201");
@@ -98,8 +98,8 @@ TEST_F(MonthlyUseCaseImplTest, SameMonthTimestampsHaveSameWindowId) {
   EXPECT_TRUE(
       base::Time::FromString("31 Jan 2022 23:59:59 GMT", &monthly_ts_2));
 
-  EXPECT_EQ(monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_1),
-            monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_2));
+  EXPECT_EQ(monthly_use_case_impl_->GenerateWindowIdentifier(monthly_ts_1),
+            monthly_use_case_impl_->GenerateWindowIdentifier(monthly_ts_2));
 }
 
 TEST_F(MonthlyUseCaseImplTest, DifferentMonthTimestampsHaveDifferentWindowId) {
@@ -111,8 +111,8 @@ TEST_F(MonthlyUseCaseImplTest, DifferentMonthTimestampsHaveDifferentWindowId) {
   EXPECT_TRUE(
       base::Time::FromString("01 Feb 2022 00:00:00 GMT", &monthly_ts_2));
 
-  EXPECT_NE(monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_1),
-            monthly_use_case_impl_->GenerateUTCWindowIdentifier(monthly_ts_2));
+  EXPECT_NE(monthly_use_case_impl_->GenerateWindowIdentifier(monthly_ts_1),
+            monthly_use_case_impl_->GenerateWindowIdentifier(monthly_ts_2));
 }
 
 TEST_F(MonthlyUseCaseImplTest, ExpectedMetadataIsSet) {

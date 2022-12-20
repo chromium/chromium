@@ -172,7 +172,7 @@ TEST_F(DeviceActiveUseCaseTest, CheckPsmIdGeneratedCorrectly) {
     // tests.
     std::string unhashed_psm_id =
         base::JoinString({psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()),
-                          use_case->GenerateUTCWindowIdentifier(new_ts)},
+                          use_case->GenerateWindowIdentifier(new_ts)},
                          "|");
     std::string expected_psm_id_hex =
         use_case->GetDigestString(kFakePsmDeviceActiveSecret, unhashed_psm_id);
@@ -180,7 +180,7 @@ TEST_F(DeviceActiveUseCaseTest, CheckPsmIdGeneratedCorrectly) {
   }
 }
 
-TEST_F(DeviceActiveUseCaseTest, PingRequiredInNonOverlappingUTCWindows) {
+TEST_F(DeviceActiveUseCaseTest, PingRequiredInNonOverlappingPTWindows) {
   base::Time last_ts;
   base::Time current_ts;
 
@@ -223,7 +223,7 @@ TEST_F(DeviceActiveUseCaseTest, PingRequiredInNonOverlappingUTCWindows) {
   }
 }
 
-TEST_F(DeviceActiveUseCaseTest, PingNotRequiredInOverlappingUTCWindows) {
+TEST_F(DeviceActiveUseCaseTest, PingNotRequiredInOverlappingPTWindows) {
   base::Time last_ts;
   base::Time current_ts;
 
@@ -274,7 +274,7 @@ TEST_F(DeviceActiveUseCaseTest, PingNotRequiredInOverlappingUTCWindows) {
   }
 }
 
-TEST_F(DeviceActiveUseCaseTest, CheckPingRequiredInUTCBoundaryCases) {
+TEST_F(DeviceActiveUseCaseTest, CheckPingRequiredInPTBoundaryCases) {
   base::Time last_ts;
   base::Time current_ts;
 
@@ -446,8 +446,8 @@ TEST_F(DeviceActiveUseCaseTest, NonFirstActiveWindowIdsDependOnTimestamp) {
 
       // For use cases other than first active, the generated window identifier
       // depends on the timestamp passed to the method.
-      EXPECT_NE(use_case->GenerateUTCWindowIdentifier(base::Time::UnixEpoch()),
-                use_case->GenerateUTCWindowIdentifier(ts_1));
+      EXPECT_NE(use_case->GenerateWindowIdentifier(base::Time::UnixEpoch()),
+                use_case->GenerateWindowIdentifier(ts_1));
     }
   }
 }
@@ -464,10 +464,10 @@ TEST_F(DeviceActiveUseCaseTest, FirstActiveWindowIdIsAlwaysConstant) {
                    << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
       // Different timestamps passed to first active use case
-      // |GenerateUTCWindowIdentifier| method output the same constant string.
-      EXPECT_EQ(use_case->GenerateUTCWindowIdentifier(base::Time::UnixEpoch()),
+      // |GenerateWindowIdentifier| method output the same constant string.
+      EXPECT_EQ(use_case->GenerateWindowIdentifier(base::Time::UnixEpoch()),
                 kFirstActiveWindowIdentifier);
-      EXPECT_EQ(use_case->GenerateUTCWindowIdentifier(ts_1),
+      EXPECT_EQ(use_case->GenerateWindowIdentifier(ts_1),
                 kFirstActiveWindowIdentifier);
     }
   }

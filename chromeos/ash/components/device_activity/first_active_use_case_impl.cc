@@ -48,7 +48,7 @@ FirstActiveUseCaseImpl::FirstActiveUseCaseImpl(
 
 FirstActiveUseCaseImpl::~FirstActiveUseCaseImpl() = default;
 
-std::string FirstActiveUseCaseImpl::GenerateUTCWindowIdentifier(
+std::string FirstActiveUseCaseImpl::GenerateWindowIdentifier(
     base::Time ts) const {
   (void)ts;
   return "FIRST_ACTIVE";

@@ -37,7 +37,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   ~TwentyEightDayActiveUseCaseImpl() override;
 
   // DeviceActiveUseCase:
-  std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
   FresnelImportDataRequest GenerateImportRequestBody() override;
 
   // For example, the 28 day lookback queries on 01/28/2022 will generate the

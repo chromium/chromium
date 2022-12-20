@@ -38,14 +38,6 @@ TwentyEightDayActiveUseCaseImpl::TwentyEightDayActiveUseCaseImpl(
 
 TwentyEightDayActiveUseCaseImpl::~TwentyEightDayActiveUseCaseImpl() = default;
 
-std::string TwentyEightDayActiveUseCaseImpl::GenerateUTCWindowIdentifier(
-    base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
-}
-
 FresnelImportDataRequest
 TwentyEightDayActiveUseCaseImpl::GenerateImportRequestBody() {
   // Generate Fresnel PSM import request body.
@@ -68,6 +60,7 @@ TwentyEightDayActiveUseCaseImpl::GenerateImportRequestBody() {
     FresnelImportData* import_data = import_request.add_import_data();
     import_data->set_window_identifier(v.window_identifier());
     import_data->set_plaintext_id(v.plaintext_id());
+    import_data->set_is_pt_window_identifier(v.is_pt_window_identifier());
   }
 
   return import_request;
@@ -81,7 +74,7 @@ bool TwentyEightDayActiveUseCaseImpl::SavePsmIdToDateMap(base::Time cur_ts) {
     base::Time day_n = cur_ts - base::Days(i);
 
     absl::optional<psm_rlwe::RlwePlaintextId> id =
-        GeneratePsmIdentifier(GenerateUTCWindowIdentifier(day_n));
+        GeneratePsmIdentifier(GenerateWindowIdentifier(day_n));
 
     if (!id.has_value()) {
       LOG(ERROR) << "PSM ID is empty";
@@ -108,10 +101,11 @@ bool TwentyEightDayActiveUseCaseImpl::SetPsmIdentifiersToImport(
     base::Time day_n = cur_ts + base::Days(i);
 
     // Only generate import data for new identifiers to import.
-    if (day_n < (last_known_ping_ts + base::Days(kRollingWindowSize)))
+    if (day_n < (last_known_ping_ts + base::Days(kRollingWindowSize))) {
       continue;
+    }
 
-    std::string window_id = GenerateUTCWindowIdentifier(day_n);
+    std::string window_id = GenerateWindowIdentifier(day_n);
     absl::optional<psm_rlwe::RlwePlaintextId> id =
         GeneratePsmIdentifier(window_id);
 
@@ -123,6 +117,7 @@ bool TwentyEightDayActiveUseCaseImpl::SetPsmIdentifiersToImport(
     FresnelImportData import_data = FresnelImportData();
     import_data.set_window_identifier(window_id);
     import_data.set_plaintext_id(id.value().sensitive_id());
+    import_data.set_is_pt_window_identifier(true);
 
     new_import_data_.push_back(import_data);
   }

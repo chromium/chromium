@@ -80,7 +80,7 @@ absl::optional<std::string> DeviceActiveUseCase::GetWindowIdentifier() const {
 }
 
 bool DeviceActiveUseCase::SetWindowIdentifier(base::Time ts) {
-  std::string window_id = GenerateUTCWindowIdentifier(ts);
+  std::string window_id = GenerateWindowIdentifier(ts);
   psm_id_ = GeneratePsmIdentifier(window_id);
 
   // Check if |psm_id_| is generated.
@@ -110,6 +110,13 @@ DeviceActiveUseCase::GetPsmIdentifier() const {
   return psm_id_;
 }
 
+std::string DeviceActiveUseCase::GenerateWindowIdentifier(base::Time ts) const {
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
+                            exploded.day_of_month);
+}
+
 bool DeviceActiveUseCase::SavePsmIdToDateMap(base::Time ts) {
   DCHECK(psm_id_.has_value());
   psm_id_to_date_.clear();
@@ -135,7 +142,7 @@ bool DeviceActiveUseCase::SetPsmIdentifiersToImport(base::Time ts) {
   // Clear previous values of id's to import.
   new_import_data_.clear();
 
-  std::string window_id = GenerateUTCWindowIdentifier(ts);
+  std::string window_id = GenerateWindowIdentifier(ts);
   FresnelImportData import_data = FresnelImportData();
   import_data.set_window_identifier(window_id);
   import_data.set_plaintext_id(psm_id_.value().sensitive_id());
@@ -180,8 +187,8 @@ bool DeviceActiveUseCase::IsDevicePingRequired(base::Time new_ping_ts) const {
   // new, powerwashed, recovered, or a RMA device.
   base::Time prev_ping_ts = GetLastKnownPingTimestamp();
 
-  std::string prev_ping_window_id = GenerateUTCWindowIdentifier(prev_ping_ts);
-  std::string new_ping_window_id = GenerateUTCWindowIdentifier(new_ping_ts);
+  std::string prev_ping_window_id = GenerateWindowIdentifier(prev_ping_ts);
+  std::string new_ping_window_id = GenerateWindowIdentifier(new_ping_ts);
 
   // Safety check to avoid against clock drift, or unexpected timestamps.
   // Check should make sure that we are not reporting window id's for
@@ -219,10 +226,10 @@ base::Time DeviceActiveUseCase::DecryptPsmValueAsTimestamp(
   return base::Time::UnixEpoch();
 }
 
-std::string DeviceActiveUseCase::FormatUTCDateString(base::Time ts) {
+std::string DeviceActiveUseCase::FormatPTDateString(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d UTC",
+  return base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d GMT",
                             exploded.year, exploded.month,
                             exploded.day_of_month,
                             /* hour */ 0,

@@ -31,20 +31,15 @@ MonthlyUseCaseImpl::MonthlyUseCaseImpl(
 
 MonthlyUseCaseImpl::~MonthlyUseCaseImpl() = default;
 
-std::string MonthlyUseCaseImpl::GenerateUTCWindowIdentifier(
-    base::Time ts) const {
+std::string MonthlyUseCaseImpl::GenerateWindowIdentifier(base::Time ts) const {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
   return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
 }
 
 FresnelImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
-  std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
-  std::string window_id_str = GetWindowIdentifier().value();
-
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;
-  import_request.set_window_identifier(window_id_str);
 
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.
@@ -59,7 +54,14 @@ FresnelImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
   }
 
   import_request.set_use_case(GetPsmUseCase());
-  import_request.set_plaintext_identifier(psm_id_str);
+
+  std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
+  std::string window_id_str = GetWindowIdentifier().value();
+
+  FresnelImportData* import_data = import_request.add_import_data();
+  import_data->set_plaintext_id(psm_id_str);
+  import_data->set_window_identifier(window_id_str);
+  import_data->set_is_pt_window_identifier(true);
 
   return import_request;
 }

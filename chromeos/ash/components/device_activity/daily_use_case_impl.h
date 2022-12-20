@@ -34,7 +34,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
   ~DailyUseCaseImpl() override;
 
   // DeviceActiveUseCase:
-  std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
   FresnelImportDataRequest GenerateImportRequestBody() override;
 };
 

@@ -64,14 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   DeviceActiveUseCase& operator=(const DeviceActiveUseCase&) = delete;
   virtual ~DeviceActiveUseCase();
 
-  // Generate the window identifier for the use case.
-  // Granularity of formatted date will be based on the use case.
-  //
-  // Method is called to generate |window_id_| every time the machine
-  // transitions out of the idle state. When reporting the use case is
-  // completed for a use case, the |window_id_| is reset to absl::nullopt.
-  virtual std::string GenerateUTCWindowIdentifier(base::Time ts) const = 0;
-
   // Generate Fresnel PSM import request body.
   // This will create the device metadata dimensions sent by PSM import by use
   // case.
@@ -112,9 +104,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   absl::optional<private_membership::rlwe::RlwePlaintextId> GetPsmIdentifier()
       const;
 
+  // Generate the window identifier for the use case.
+  // Granularity of formatted date will be based on the use case.
+  //
+  // Method is called to generate |window_id_| every time the machine
+  // transitions out of the idle state. When reporting the use case is
+  // completed for a use case, the |window_id_| is reset to absl::nullopt.
+  virtual std::string GenerateWindowIdentifier(base::Time ts) const;
+
   // Compute the psm identifiers to date pairs for the use case object.
   // This is used to determine when the last sent psm id and its date is.
-  // Date is rounded to nearest UTC midnight for simplicity.
+  // Date is rounded to nearest PT midnight for simplicity.
   virtual bool SavePsmIdToDateMap(base::Time ts);
 
   // Generates the |psm_ids_to_query_| using the |psm_id_to_date_| map.
@@ -166,12 +166,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Retrieves and decrypts the AES-256 encrypted psm value to a timestamp.
   virtual base::Time DecryptPsmValueAsTimestamp(std::string ciphertext) const;
 
-  // Format a base::Time object to a valid UTC date.
+  // Format a PT adjusted base::Time object to a valid date string.
   // This function removes the exact time of day when generating the date string
   // by nulling out the hour, minute, second, and millisecond.
   // Method is used to store and read the last ping timestamp as a string
   // when interacting with preserved files over private_computingd dbus.
-  std::string FormatUTCDateString(base::Time ts);
+  std::string FormatPTDateString(base::Time ts);
 
   // Uniquely identifies a window of time for device active counting.
   //
