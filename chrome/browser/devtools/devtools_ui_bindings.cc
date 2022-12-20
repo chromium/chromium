@@ -98,7 +98,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 
-using base::DictionaryValue;
 using content::BrowserThread;
 
 namespace content {
@@ -132,15 +131,13 @@ static const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 // content/shell/browser/layout_test/devtools_protocol_test_bindings.cc.
 const size_t kMaxMessageChunkSize = IPC::Channel::kMaximumMessageSize / 4;
 
-base::DictionaryValue CreateFileSystemValue(
+base::Value::Dict CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {
-  base::DictionaryValue file_system_value;
-  file_system_value.SetStringKey("type", file_system.type);
-  file_system_value.SetStringKey("fileSystemName",
-                                 file_system.file_system_name);
-  file_system_value.SetStringKey("rootURL", file_system.root_url);
-  file_system_value.SetStringKey("fileSystemPath",
-                                 file_system.file_system_path);
+  base::Value::Dict file_system_value;
+  file_system_value.Set("type", file_system.type);
+  file_system_value.Set("fileSystemName", file_system.file_system_name);
+  file_system_value.Set("rootURL", file_system.root_url);
+  file_system_value.Set("fileSystemPath", file_system.file_system_path);
   return file_system_value;
 }
 
@@ -212,11 +209,10 @@ infobars::ContentInfoBarManager* DefaultBindingsDelegate::GetInfoBarManager() {
   return infobars::ContentInfoBarManager::FromWebContents(web_contents_);
 }
 
-std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
-    const net::HttpResponseHeaders* rh,
-    bool success,
-    int net_error) {
-  auto response = std::make_unique<base::DictionaryValue>();
+base::Value::Dict BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                         bool success,
+                                         int net_error) {
+  base::Value::Dict response;
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -224,20 +220,20 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
     // In case of no headers, assume file:// URL and failed to load
     responseCode = 404;
   }
-  response->SetIntKey("statusCode", responseCode);
-  response->SetIntKey("netError", net_error);
-  response->SetStringKey("netErrorName", net::ErrorToString(net_error));
+  response.Set("statusCode", responseCode);
+  response.Set("netError", net_error);
+  response.Set("netErrorName", net::ErrorToString(net_error));
 
-  base::DictionaryValue headers;
+  base::Value::Dict headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers.SetStringKey(name, value);
+    headers.Set(name, value);
 
-  response->SetKey("headers", std::move(headers));
+  response.Set("headers", std::move(headers));
   return response;
 }
 
@@ -511,9 +507,9 @@ class DevToolsUIBindings::NetworkResourceLoader
           stream_id_, bindings_, resource_request_, traffic_annotation_,
           std::move(url_loader_factory_), std::move(callback_), delay);
     } else {
-      auto response = BuildObjectForResponse(response_headers_.get(), success,
-                                             loader_->NetError());
-      std::move(callback_).Run(response.get());
+      auto response = base::Value(BuildObjectForResponse(
+          response_headers_.get(), success, loader_->NetError()));
+      std::move(callback_).Run(&response);
     }
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
@@ -824,9 +820,10 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
                                              int stream_id) {
   GURL gurl(url);
   if (!gurl.is_valid()) {
-    base::DictionaryValue response;
-    response.SetIntKey("statusCode", 404);
-    response.SetBoolKey("urlValid", false);
+    base::Value::Dict response_dict;
+    response_dict.Set("statusCode", 404);
+    response_dict.Set("urlValid", false);
+    auto response = base::Value(std::move(response_dict));
     std::move(callback).Run(&response);
     return;
   }
@@ -906,9 +903,10 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
               std::move(pending_remote)));
     } else {
-      base::DictionaryValue response;
-      response.SetBoolKey("schemeSupported", false);
-      response.SetIntKey("statusCode", 403);
+      base::Value::Dict response_dict;
+      response_dict.Set("schemeSupported", false);
+      response_dict.Set("statusCode", 403);
+      auto response = base::Value(std::move(response_dict));
       std::move(callback).Run(&response);
       return;
     }
@@ -921,8 +919,9 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
           target_tab->GetPrimaryMainFrame()->GetStoragePartition();
       url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
     } else {
-      base::DictionaryValue response;
-      response.SetIntKey("statusCode", 409);
+      base::Value::Dict response_dict;
+      response_dict.Set("statusCode", 409);
+      auto response = base::Value(std::move(response_dict));
       std::move(callback).Run(&response);
       return;
     }
@@ -1112,34 +1111,34 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
 }
 
 void DevToolsUIBindings::DevicesDiscoveryConfigUpdated() {
-  base::DictionaryValue config;
-  config.SetKey(kConfigDiscoverUsbDevices,
-                profile_->GetPrefs()
-                    ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
-                    ->GetValue()
-                    ->Clone());
-  config.SetKey(kConfigPortForwardingEnabled,
-                profile_->GetPrefs()
-                    ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
-                    ->GetValue()
-                    ->Clone());
-  config.SetKey(kConfigPortForwardingConfig,
-                profile_->GetPrefs()
-                    ->FindPreference(prefs::kDevToolsPortForwardingConfig)
-                    ->GetValue()
-                    ->Clone());
-  config.SetKey(kConfigNetworkDiscoveryEnabled,
-                profile_->GetPrefs()
-                    ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-                    ->GetValue()
-                    ->Clone());
-  config.SetKey(kConfigNetworkDiscoveryConfig,
-                profile_->GetPrefs()
-                    ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
-                    ->GetValue()
-                    ->Clone());
+  base::Value::Dict config;
+  config.Set(kConfigDiscoverUsbDevices,
+             profile_->GetPrefs()
+                 ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
+                 ->GetValue()
+                 ->Clone());
+  config.Set(kConfigPortForwardingEnabled,
+             profile_->GetPrefs()
+                 ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
+                 ->GetValue()
+                 ->Clone());
+  config.Set(kConfigPortForwardingConfig,
+             profile_->GetPrefs()
+                 ->FindPreference(prefs::kDevToolsPortForwardingConfig)
+                 ->GetValue()
+                 ->Clone());
+  config.Set(kConfigNetworkDiscoveryEnabled,
+             profile_->GetPrefs()
+                 ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
+                 ->GetValue()
+                 ->Clone());
+  config.Set(kConfigNetworkDiscoveryConfig,
+             profile_->GetPrefs()
+                 ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
+                 ->GetValue()
+                 ->Clone());
   CallClientMethod("DevToolsAPI", "devicesDiscoveryConfigChanged",
-                   std::move(config));
+                   base::Value(std::move(config)));
 }
 
 void DevToolsUIBindings::SendPortForwardingStatus(base::Value status) {
@@ -1186,7 +1185,7 @@ void DevToolsUIBindings::SetDevicesUpdatesEnabled(bool enabled) {
     remote_targets_handler_.reset();
     port_status_serializer_.reset();
     pref_change_registrar_.RemoveAll();
-    SendPortForwardingStatus(base::DictionaryValue());
+    SendPortForwardingStatus(base::Value());
   }
 }
 
@@ -1414,7 +1413,7 @@ void DevToolsUIBindings::FileSystemAdded(
     const DevToolsFileHelper::FileSystem* file_system) {
   if (file_system) {
     CallClientMethod("DevToolsAPI", "fileSystemAdded", base::Value(error),
-                     CreateFileSystemValue(*file_system));
+                     base::Value(CreateFileSystemValue(*file_system)));
   } else {
     CallClientMethod("DevToolsAPI", "fileSystemAdded", base::Value(error));
   }
@@ -1578,8 +1577,9 @@ namespace {
 
 void ShowSurveyCallback(DevToolsUIBindings::DispatchCallback callback,
                         bool survey_shown) {
-  base::DictionaryValue response;
-  response.SetBoolKey("surveyShown", survey_shown);
+  base::Value::Dict response_dict;
+  response_dict.Set("surveyShown", survey_shown);
+  base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
 
@@ -1606,8 +1606,9 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_->GetOriginalProfile(), true);
   bool can_show = hats_service ? hats_service->CanShowSurvey(trigger) : false;
-  base::DictionaryValue response;
-  response.SetBoolKey("canShowSurvey", can_show);
+  base::Value::Dict response_dict;
+  response_dict.Set("canShowSurvey", can_show);
+  base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
 

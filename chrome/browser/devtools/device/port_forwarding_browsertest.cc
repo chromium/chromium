@@ -100,10 +100,9 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest,
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
-  base::DictionaryValue config;
-  config.SetStringKey(forwarding_port,
-                      original_url.host() + ":" + original_url.port());
-  prefs->Set(prefs::kDevToolsPortForwardingConfig, config);
+  base::Value::Dict config;
+  config.Set(forwarding_port, original_url.host() + ":" + original_url.port());
+  prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));
 
   Listener wait_for_port_forwarding(profile);
   content::RunMessageLoop();
@@ -162,10 +161,9 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
-  base::DictionaryValue config;
-  config.SetStringKey(forwarding_port,
-                      original_url.host() + ":" + original_url.port());
-  prefs->Set(prefs::kDevToolsPortForwardingConfig, config);
+  base::Value::Dict config;
+  config.Set(forwarding_port, original_url.host() + ":" + original_url.port());
+  prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));
 
   std::unique_ptr<Listener> wait_for_port_forwarding(new Listener(profile));
   content::RunMessageLoop();

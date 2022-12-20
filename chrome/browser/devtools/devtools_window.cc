@@ -87,7 +87,6 @@
 #include "base/win/windows_h_disallowed.h"
 #endif  // defined(_WINDOWS_)
 
-using base::DictionaryValue;
 using blink::WebInputEvent;
 using content::BrowserThread;
 using content::DevToolsAgentHost;
@@ -1570,13 +1569,13 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
 }
 
 void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
-  base::DictionaryValue color;
-  color.SetIntKey("r", r);
-  color.SetIntKey("g", g);
-  color.SetIntKey("b", b);
-  color.SetIntKey("a", a);
+  base::Value::Dict color;
+  color.Set("r", r);
+  color.Set("g", g);
+  color.Set("b", b);
+  color.Set("a", a);
   bindings_->CallClientMethod("DevToolsAPI", "eyeDropperPickedColor",
-                              std::move(color));
+                              base::Value(std::move(color)));
 }
 
 void DevToolsWindow::InspectedContentsClosing() {
