@@ -144,11 +144,12 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   }
 
   void MaybeTuckWindow(bool left) {
+    // The order here matters: `is_tucked_for_tablet_` must be set to true
+    // while in the constructor and also before `AnimateUntuck()` gets the
+    // tucked window bounds.
+    is_tucked_for_tablet_ = true;
     scoped_window_tucker_ =
         std::make_unique<ScopedWindowTucker>(floated_window_, left);
-    // The order here matters: `is_tucked_for_tablet_` must be set to true
-    // before `AnimateUntuck()` gets the tucked window bounds.
-    is_tucked_for_tablet_ = true;
     scoped_window_tucker_->AnimateTuck();
   }
 
