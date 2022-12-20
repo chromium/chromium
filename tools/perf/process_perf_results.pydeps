@@ -548,6 +548,7 @@ contrib/power/perf_benchmark_with_profiling.py
 contrib/power/perf_benchmark_with_profiling_unittest.py
 contrib/power/perf_profile.py
 contrib/power/power_perf_benchmark_base.py
+contrib/power/powerups.py
 contrib/power/process_results.py
 contrib/power/profiling_util.py
 contrib/power/profiling_util_unittest.py
