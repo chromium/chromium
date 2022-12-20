@@ -599,7 +599,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_win && enable_library_cdms) {
+  if (is_win) {
     sources += [
       "windows/d3d11_copying_texture_wrapper_unittest.cc",
       "windows/d3d11_decoder_configurator_unittest.cc",
