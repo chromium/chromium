@@ -224,6 +224,8 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterOneVisit) {
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0))));
+  // Make sure triggerability was calculated.
+  EXPECT_TRUE(result_clusters[0].triggerability_calculated);
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,

@@ -1024,6 +1024,10 @@ struct Cluster {
   // Set to true if this cluster was loaded from SQL rather than dynamically
   // generated. Used for UI display only and should not be persisted.
   bool from_persistence = false;
+
+  // Set to true if the triggerability of this cluster (e.g. keywords, should
+  // show on prominent UI surfaces) has already been calculated.
+  bool triggerability_calculated = false;
 };
 
 // Navigation -----------------------------------------------------------------

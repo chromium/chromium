@@ -184,6 +184,10 @@ class VisitAnnotationsDatabase {
   // * password_state
   bool MigrateAnnotationsAddColumnsForSync();
 
+  // Called by the derived classes to migrate the older clusters table by adding
+  // a triggerability calculated column.
+  bool MigrateClustersAddTriggerabilityCalculated();
+
  private:
   // Helper to create the 'clusters' table and avoid duplicating the code.
   bool CreateClustersTable();

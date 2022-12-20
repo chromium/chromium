@@ -445,6 +445,8 @@ OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
     finalizer->FinalizeCluster(cluster);
   }
 
+  cluster.triggerability_calculated = true;
+
   return cluster;
 }
 

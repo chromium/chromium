@@ -4065,7 +4065,8 @@ TEST_F(HistoryBackendTest, ReserveNextClusterId_GetCluster) {
   // additional checking around visit count.
   auto cluster = backend_->db_->GetCluster(cluster_id);
   EXPECT_EQ(cluster.cluster_id, cluster_id);
-  EXPECT_TRUE(cluster.should_show_on_prominent_ui_surfaces);
+  EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
+  EXPECT_FALSE(cluster.triggerability_calculated);
 }
 
 TEST_F(HistoryBackendTest, ReserveNextClusterId_AddVisitsToCluster_GetCluster) {
