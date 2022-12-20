@@ -16,7 +16,6 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
-#include "components/enterprise/common/download_item_reroute_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -97,8 +96,6 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetHash() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
-  download::DownloadItemRenameHandler* GetRenameHandler() override;
-  const download::DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsInsecure() const override;
   download::DownloadDangerType GetDangerType() const override;
@@ -203,7 +200,6 @@ class FakeDownloadItem : public download::DownloadItem {
   std::string last_modified_time_;
   std::string hash_;
   int percent_complete_ = 0;
-  download::DownloadItemRerouteInfo reroute_info_;
   bool open_when_complete_ = false;
   bool is_dangerous_ = false;
   bool is_insecure_ = false;

@@ -55,13 +55,6 @@ InProgressInfo CreateInProgressInfo() {
   return info;
 }
 
-InProgressInfo CreateInProgressInfoWithRerouteInfo(
-    DownloadItemRerouteInfo reroute_info) {
-  InProgressInfo info = CreateInProgressInfo();
-  info.reroute_info = std::move(reroute_info);
-  return info;
-}
-
 DownloadInfo CreateDownloadInfo() {
   DownloadInfo info;
   info.guid = "abcdefg";
@@ -155,19 +148,6 @@ TEST_F(DownloadDBConversionsTest, InProgressInfo) {
   info.range_request_from = 5;
   info.range_request_from = 10;
   EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
-}
-
-TEST_F(DownloadDBConversionsTest, RerouteInfo) {
-  DownloadItemRerouteInfo reroute_info;
-  reroute_info.set_service_provider(
-      enterprise_connectors::FileSystemServiceProvider::BOX);
-  reroute_info.mutable_box()->set_file_id("12345");
-
-  // InProgressInfo with valid fields.
-  InProgressInfo info = CreateInProgressInfoWithRerouteInfo(reroute_info);
-  EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
-  EXPECT_EQ(reroute_info.SerializeAsString(),
-            info.reroute_info.SerializeAsString());
 }
 
 TEST_F(DownloadDBConversionsTest, UkmInfo) {

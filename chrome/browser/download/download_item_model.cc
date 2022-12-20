@@ -565,50 +565,6 @@ const download::DownloadItem* DownloadItemModel::GetDownloadItem() const {
   return download_;
 }
 
-std::u16string DownloadItemModel::GetWebDriveName() const {
-  const auto& reroute_info = download_->GetRerouteInfo();
-  if (!reroute_info.IsInitialized() || !reroute_info.has_service_provider()) {
-    return std::u16string();
-  }
-  using Provider = enterprise_connectors::FileSystemServiceProvider;
-  switch (reroute_info.service_provider()) {
-    case (Provider::BOX):
-      return l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
-    case (Provider::GOOGLE_DRIVE):
-      return l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_GOOGLE_DRIVE);
-  }
-}
-
-std::u16string DownloadItemModel::GetWebDriveMessage(bool verbose) const {
-  const auto& reroute_info = download_->GetRerouteInfo();
-  if (!reroute_info.IsInitialized() || !reroute_info.has_service_provider()) {
-    return std::u16string();
-  }
-  using Provider = enterprise_connectors::FileSystemServiceProvider;
-  switch (reroute_info.service_provider()) {
-    case (Provider::BOX): {
-      DCHECK(reroute_info.has_box());
-      const auto& info = reroute_info.box();
-      std::u16string msg, supp_msg;
-      if (info.has_error_message()) {
-        msg = base::UTF8ToUTF16(info.error_message());
-      }
-      if (msg.size() && verbose && info.has_additional_message()) {
-        supp_msg = base::UTF8ToUTF16(info.additional_message());
-      }
-      if (supp_msg.empty()) {
-        return msg;
-      }
-      // "<WEB_DRIVE_MESSAGE> (<SUPPORT_INFO>)"
-      return l10n_util::GetStringFUTF16(
-          IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_WEB_DRIVE_ERROR, msg, supp_msg);
-    }
-    case (Provider::GOOGLE_DRIVE):
-      break;
-  }
-  return std::u16string();
-}
-
 base::FilePath DownloadItemModel::GetFileNameToReportUser() const {
   return download_->GetFileNameToReportUser();
 }

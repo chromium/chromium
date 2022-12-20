@@ -466,15 +466,6 @@ download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
   return nullptr;
 }
 
-download::DownloadItemRenameHandler* FakeDownloadItem::GetRenameHandler() {
-  return nullptr;
-}
-
-const download::DownloadItemRerouteInfo& FakeDownloadItem::GetRerouteInfo()
-    const {
-  return reroute_info_;
-}
-
 bool FakeDownloadItem::IsDangerous() const {
   return is_dangerous_;
 }

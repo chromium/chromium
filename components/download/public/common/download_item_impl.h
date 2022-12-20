@@ -217,7 +217,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       base::Time last_access_time,
       bool transient,
       const std::vector<DownloadItem::ReceivedSlice>& received_slices,
-      const DownloadItemRerouteInfo& reroute_info,
       int64_t range_request_from,
       int64_t range_request_to,
       std::unique_ptr<DownloadEntry> download_entry);
@@ -301,8 +300,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool GetFileExternallyRemoved() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   DownloadFile* GetDownloadFile() override;
-  DownloadItemRenameHandler* GetRenameHandler() override;
-  const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsInsecure() const override;
   DownloadDangerType GetDangerType() const override;
@@ -618,15 +615,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // DownloadItem::Completed().
   void OnDownloadCompleting();
 
-  // Called by |rename_handler_| to update state variables when necessary.
-  // This may update |destination_info_.target_file_path| as confirmed by
-  // rerouted location to be reflected in the UI/UX, and attach other reroute
-  // specific metadata into |reroute_info_| to be persisted into the databases.
-  // However, this will not transition the internal |state_|, because the
-  // |rename_handler_| will eventually run OnDownloadRenamedToFinalName() on
-  // completion.
-  void OnRenameHandlerUpdate(const DownloadItemRenameProgressUpdate& update);
-
   void OnDownloadRenamedToFinalName(DownloadInterruptReason reason,
                                     const base::FilePath& full_path);
 
@@ -893,11 +881,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The InsecureDownloadStatus if determined.
   InsecureDownloadStatus insecure_download_status_ =
       InsecureDownloadStatus::UNKNOWN;
-
-  // A handler for renaming and helping with display the item.
-  std::unique_ptr<DownloadItemRenameHandler> rename_handler_;
-  // Metadata specific to the rename handler.
-  DownloadItemRerouteInfo reroute_info_;
 
   THREAD_CHECKER(thread_checker_);
 

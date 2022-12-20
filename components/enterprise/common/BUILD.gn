@@ -9,14 +9,6 @@ static_library("strings") {
   ]
 }
 
-static_library("download_item_reroute_info") {
-  sources = [
-    "download_item_reroute_info.cc",
-    "download_item_reroute_info.h",
-  ]
-  deps = [ "proto:download_item_reroute_info_proto" ]
-}
-
 if (!is_ios) {
   static_library("files_scan_data") {
     sources = [

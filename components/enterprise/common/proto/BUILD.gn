@@ -15,8 +15,3 @@ proto_library("extensions_workflow_events_proto") {
   proto_in_dir = "//"
   sources = [ "extensions_workflow_events.proto" ]
 }
-
-proto_library("download_item_reroute_info_proto") {
-  proto_in_dir = "//"
-  sources = [ "download_item_reroute_info.proto" ]
-}

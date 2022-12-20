@@ -33,7 +33,6 @@
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
-#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/mock_download_file.h"
 #include "crypto/secure_hash.h"
@@ -60,7 +59,6 @@ const base::FilePath::CharType kDummyTargetPath[] =
     FILE_PATH_LITERAL("/testpath");
 const base::FilePath::CharType kDummyIntermediatePath[] =
     FILE_PATH_LITERAL("/testpathx");
-const char kGuid[] = "8DF158E8-C980-4618-BB03-EBA3242EB48B";
 
 namespace download {
 namespace {
@@ -69,24 +67,6 @@ template <typename T>
 base::HistogramBase::Sample ToHistogramSample(T t) {
   return static_cast<base::HistogramBase::Sample>(t);
 }
-
-class MockDownloadItemRenameHandler : public DownloadItemRenameHandler {
- public:
-  explicit MockDownloadItemRenameHandler(DownloadItem* item)
-      : DownloadItemRenameHandler(item) {}
-  ~MockDownloadItemRenameHandler() override = default;
-
-  MOCK_METHOD(void,
-              Start,
-              (ProgressUpdateCallback, DownloadCallback),
-              (override));
-  MOCK_METHOD(void, OpenDownload, (), (override));
-  MOCK_METHOD(void, ShowDownloadInContext, (), (override));
-
-  void VerifyAndClearExpectations() {
-    ::testing::Mock::VerifyAndClearExpectations(this);
-  }
-};
 
 class MockDelegate : public DownloadItemImplDelegate {
  public:
@@ -127,8 +107,6 @@ class MockDelegate : public DownloadItemImplDelegate {
   MOCK_METHOD1(DownloadRemoved, void(DownloadItemImpl*));
   MOCK_CONST_METHOD0(IsOffTheRecord, bool());
   MOCK_METHOD(bool, IsActiveNetworkMetered, (), (const override));
-  MOCK_METHOD1(GetRenameHandlerForDownload,
-               std::unique_ptr<DownloadItemRenameHandler>(DownloadItemImpl*));
 
   void VerifyAndClearExpectations() {
     ::testing::Mock::VerifyAndClearExpectations(this);
@@ -279,32 +257,6 @@ class DownloadItemTest : public testing::Test {
         mock_delegate(), ++next_download_id_, *create_info_);
     allocated_downloads_[download] = base::WrapUnique(download);
     return download;
-  }
-
-  std::unique_ptr<DownloadItemImpl> CreateReroutedDownloadItem(
-      DownloadItem::DownloadState state,
-      download::DownloadInterruptReason reason,
-      const download::DownloadItemRerouteInfo& reroute_info) {
-    auto item = std::make_unique<download::DownloadItemImpl>(
-        mock_delegate(), kGuid, 10, base::FilePath(), base::FilePath(),
-        std::vector<GURL>(), GURL("http://example.com/a"), std::string(),
-        GURL("http://example.com/a"), GURL("http://example.com/a"),
-        url::Origin::Create(GURL("http://example.com")),
-        "application/octet-stream", "application/octet-stream",
-        base::Time::Now(), base::Time::Now(), std::string(), std::string(), 10,
-        10, 0, std::string(), state,
-        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, reason, false, false,
-        false, base::Time::Now(), true,
-        std::vector<download::DownloadItem::ReceivedSlice>(), reroute_info,
-        kInvalidRange, kInvalidRange, nullptr /* download_entry */);
-    return item;
-  }
-
-  std::unique_ptr<DownloadItemImpl> CreateDownloadItem(
-      DownloadItem::DownloadState state,
-      download::DownloadInterruptReason reason) {
-    download::DownloadItemRerouteInfo empty_reroute_info;
-    return CreateReroutedDownloadItem(state, reason, empty_reroute_info);
   }
 
   // Add DownloadFile to DownloadItem.
@@ -500,8 +452,6 @@ TEST_F(DownloadItemTest, NotificationAfterComplete) {
   TestDownloadItemObserver observer(item);
   MockDownloadFile* download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
   DoDestinationComplete(item, download_file);
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
@@ -580,8 +530,6 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(_))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
   unsafeurl_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafeurl_observer.CheckAndResetDownloadUpdated());
@@ -600,8 +548,6 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(_))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
   unsafefile_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafefile_observer.CheckAndResetDownloadUpdated());
@@ -837,8 +783,6 @@ TEST_F(DownloadItemTest, UnresumableInterrupt) {
   // Fail final rename with unresumable reason.
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(
       *download_file,
@@ -1358,8 +1302,6 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _, _))
       .WillOnce(WithArg<5>([&task_runner, &final_path](
                                DownloadFile::RenameCompletionCallback cb) {
@@ -1833,8 +1775,6 @@ TEST_F(DownloadItemTest, EnabledActionsForNormalDownload) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   EXPECT_CALL(*download_file, FullPath())
       .WillOnce(ReturnRefOfCopy(base::FilePath()));
   EXPECT_CALL(*download_file, Detach());
@@ -1865,7 +1805,6 @@ TEST_F(DownloadItemTest, EnabledActionsForTemporaryDownload) {
   // Complete Temporary
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item)).Times(0);
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(
@@ -1931,8 +1870,6 @@ TEST_F(DownloadItemTest, CompleteDelegate_ReturnTrue) {
   // Drive the delegate interaction.
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   item->DestinationObserverAsWeakPtr()->DestinationCompleted(
       0, std::unique_ptr<crypto::SecureHash>());
   EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
@@ -1972,8 +1909,6 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockOnce) {
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(DoAll(MoveArg<1>(&delegate_callback), Return(false)))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   item->DestinationObserverAsWeakPtr()->DestinationCompleted(
       0, std::unique_ptr<crypto::SecureHash>());
   ASSERT_TRUE(delegate_callback);
@@ -2017,8 +1952,6 @@ TEST_F(DownloadItemTest, CompleteDelegate_SetDanger) {
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(DoAll(MoveArg<1>(&delegate_callback), Return(false)))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   item->DestinationObserverAsWeakPtr()->DestinationCompleted(
       0, std::unique_ptr<crypto::SecureHash>());
   ASSERT_TRUE(delegate_callback);
@@ -2072,8 +2005,6 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
       .WillOnce(DoAll(MoveArg<1>(&delegate_callback), Return(false)))
       .WillOnce(DoAll(MoveArg<1>(&delegate_callback), Return(false)))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   item->DestinationObserverAsWeakPtr()->DestinationCompleted(
       0, std::unique_ptr<crypto::SecureHash>());
   ASSERT_TRUE(delegate_callback);
@@ -2216,8 +2147,6 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
           }));
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   EXPECT_CALL(*download_file, FullPath())
       .WillOnce(ReturnRefOfCopy(base::FilePath()));
   EXPECT_CALL(*download_file, Detach());
@@ -2245,8 +2174,6 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   EXPECT_CALL(*download_file, FullPath())
       .WillOnce(ReturnRefOfCopy(base::FilePath()));
   EXPECT_CALL(*download_file, Detach());
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
   item->DestinationObserverAsWeakPtr()->DestinationCompleted(
       0, std::unique_ptr<crypto::SecureHash>());
   task_environment_.RunUntilIdle();
@@ -2657,109 +2584,6 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
 
   item_->Cancel(true);
   task_environment_.RunUntilIdle();
-}
-
-TEST_F(DownloadItemTest, ExternalRenameHandler) {
-  using ProgressUpdate = DownloadItemRenameProgressUpdate;
-  using UpdateCallback = DownloadItemRenameHandler::ProgressUpdateCallback;
-  using DownloadCallback = DownloadItemRenameHandler::DownloadCallback;
-  using RerouteProvider = enterprise_connectors::FileSystemServiceProvider;
-
-  // Start a download.
-  DownloadItemImpl* item = CreateDownloadItem();
-  MockDownloadFile* download_file =
-      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
-  EXPECT_CALL(*download_file, Detach());
-
-  // Create a rename handler and make sure the delegate returns it.
-  DownloadCallback callback;
-  UpdateCallback update_callback;
-  auto rename_handler = std::make_unique<MockDownloadItemRenameHandler>(item);
-  MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
-
-  ASSERT_EQ(item, rename_handler->download_item());
-
-  EXPECT_CALL(*rename_handler, Start(_, _))
-      .WillOnce(Invoke([&](UpdateCallback update_cb, DownloadCallback cb) {
-        callback = std::move(cb);
-        update_callback = update_cb;
-      }));
-  // Cannot use DoAll(MoveArg<0>(), MoveArg<1>()): DoAll() only gets a const ref
-  // of the arguments, but const T& is just T& if T itself is a reference.
-
-  EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::move(rename_handler))));
-
-  // The standard rename should not be called.
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _)).Times(0);
-
-  item->DestinationObserverAsWeakPtr()->DestinationCompleted(
-      0, std::unique_ptr<crypto::SecureHash>());
-  EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
-  ASSERT_FALSE(callback.is_null());
-
-  ASSERT_NE(nullptr, item->GetRenameHandler());
-  ASSERT_FALSE(item->GetRerouteInfo().IsInitialized());
-
-  TestDownloadItemObserver observer(item);
-
-  // Invoke the update callback. This should update the target name and stored
-  // reroute info.
-  base::FilePath file_name(FILE_PATH_LITERAL("foo.txt"));
-  DownloadItemRerouteInfo reroute_info;
-  reroute_info.set_service_provider(RerouteProvider::GOOGLE_DRIVE);
-
-  update_callback.Run(ProgressUpdate{file_name, reroute_info});
-  EXPECT_EQ(item->GetFileNameToReportUser(), file_name);
-  EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
-  // Check that reroute info got updated.
-  ASSERT_TRUE(item->GetRerouteInfo().IsInitialized());
-  EXPECT_EQ(reroute_info.SerializeAsString(),
-            item->GetRerouteInfo().SerializeAsString());
-  // Check that observers are updated.
-  ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
-
-  // Invoke the rename callback.  This should complete the download.
-  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_NONE, file_name);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(item->GetTargetFilePath(), file_name);
-  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
-  // Check that reroute info is intact.
-  ASSERT_TRUE(item->GetRerouteInfo().IsInitialized());
-  EXPECT_EQ(reroute_info.SerializeAsString(),
-            item->GetRerouteInfo().SerializeAsString());
-  // Check that observers are updated.
-  ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
-
-  ASSERT_NE(nullptr, item->GetRenameHandler());
-  rename_handler_ptr->VerifyAndClearExpectations();
-}
-
-TEST_F(DownloadItemTest, RerouteInfoLoadedFromDB) {
-  using RerouteProvider = enterprise_connectors::FileSystemServiceProvider;
-  DownloadItemRerouteInfo reroute_info;
-  reroute_info.set_service_provider(RerouteProvider::BOX);
-  reroute_info.mutable_box()->set_file_id("12345");
-  // reroute_info.mutable_box()->set_folder_id("67890");
-  ASSERT_TRUE(reroute_info.IsInitialized());
-
-  std::unique_ptr<DownloadItemImpl> item = CreateReroutedDownloadItem(
-      DownloadItem::COMPLETE, DOWNLOAD_INTERRUPT_REASON_NONE, reroute_info);
-  ASSERT_EQ(reroute_info.SerializeAsString(),
-            item->GetRerouteInfo().SerializeAsString());
-
-  auto rename_handler =
-      std::make_unique<MockDownloadItemRenameHandler>(item.get());
-  MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
-
-  ASSERT_EQ(item.get(), rename_handler->download_item());
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item.get()))
-      .WillOnce(Return(ByMove(std::move(rename_handler))));
-
-  ASSERT_TRUE(item->GetRenameHandler());
-  rename_handler_ptr->VerifyAndClearExpectations();
 }
 
 }  // namespace

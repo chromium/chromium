@@ -10,9 +10,6 @@ package download_pb;
 
 import "components/download/database/proto/download_source.proto";
 
-// For DownloadItemRerouteInfo.
-import "components/enterprise/common/proto/download_item_reroute_info.proto";
-
 message HttpRequestHeader {
   optional string key = 1;
   optional string value = 2;
@@ -83,7 +80,9 @@ message InProgressInfo {
   optional int64 bytes_wasted = 26;
   optional int32 auto_resume_count = 27;
   optional DownloadSchedule download_schedule = 28;  // // Deprecated.
-  optional enterprise_connectors.DownloadItemRerouteInfo reroute_info = 29;
+  // Removing DownloadItemRerouteInfo since FileSystem Connector will not
+  // be released, implementation deleted.
+  reserved 29;
   optional int32 credentials_mode = 30;  // network::mojom::CredentialsMode
   optional int64 range_request_from = 31;
   optional int64 range_request_to = 32;

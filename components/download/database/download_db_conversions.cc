@@ -215,12 +215,6 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   proto.set_metered(in_progress_info.metered);
   proto.set_bytes_wasted(in_progress_info.bytes_wasted);
   proto.set_auto_resume_count(in_progress_info.auto_resume_count);
-  // Fill in the output proto's |reroute_info| iff |in_progress_info|'s
-  // |reroute_info| is initialized, because it has a required field and parsing
-  // an uninitialized one to and from serialized strings would fail.
-  if (in_progress_info.reroute_info.IsInitialized()) {
-    *proto.mutable_reroute_info() = in_progress_info.reroute_info;
-  }
   proto.set_credentials_mode(
       static_cast<int32_t>(in_progress_info.credentials_mode));
   proto.set_range_request_from(in_progress_info.range_request_from);
@@ -276,9 +270,6 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   info.metered = proto.metered();
   info.bytes_wasted = proto.bytes_wasted();
   info.auto_resume_count = proto.auto_resume_count();
-  if (proto.has_reroute_info()) {
-    info.reroute_info = proto.reroute_info();
-  }
   if (proto.has_credentials_mode()) {
     info.credentials_mode = static_cast<::network::mojom::CredentialsMode>(
         proto.credentials_mode());

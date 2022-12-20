@@ -3,7 +3,6 @@ include_rules = [
   "+components/download/downloader/in_progress",
   "+components/download/internal/common/jni_headers",
   "+components/download/public/common",
-  "+components/enterprise/common/download_item_reroute_info.h",
   "+components/filename_generation/filename_generation.h",
   "+components/leveldb_proto",
   "+components/safe_browsing/buildflags.h",

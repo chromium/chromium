@@ -37,7 +37,6 @@ MockDownloadItemImpl::MockDownloadItemImpl(DownloadItemImplDelegate* delegate)
                        base::Time(),
                        true,
                        DownloadItem::ReceivedSlices(),
-                       DownloadItemRerouteInfo(),
                        kInvalidRange,
                        kInvalidRange,
                        nullptr /* download_entry */) {}

@@ -1815,11 +1815,6 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     ON_CALL(*ash_download_item, GetOpenWhenComplete)
         .WillByDefault(testing::ReturnPointee(open_when_complete.get()));
 
-    // Mock `download::DownloadItem::GetRerouteInfo()`.
-    ON_CALL(*ash_download_item, GetRerouteInfo)
-        .WillByDefault(
-            testing::ReturnRefOfCopy(download::DownloadItemRerouteInfo()));
-
     // Mock `download::DownloadItem::GetReceivedBytes()`.
     ON_CALL(*ash_download_item, GetReceivedBytes)
         .WillByDefault(testing::Return(received_bytes));

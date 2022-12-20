@@ -819,8 +819,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false, false, false,
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
-          download::DownloadItemRerouteInfo(), download::kInvalidRange,
-          download::kInvalidRange, nullptr));
+          download::kInvalidRange, download::kInvalidRange, nullptr));
 }
 
 void DownloadManagerService::InitializeForProfile(ProfileKey* profile_key) {

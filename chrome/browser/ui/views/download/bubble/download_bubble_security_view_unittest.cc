@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/enterprise/common/download_item_reroute_info.h"
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,9 +77,6 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     bubble_controller_ =
         std::make_unique<MockDownloadBubbleUIController>(browser_.get());
 
-    ON_CALL(download_item_, GetRerouteInfo())
-        .WillByDefault(testing::ReturnRefOfCopy(
-            enterprise_connectors::DownloadItemRerouteInfo()));
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
         /*is_partial_view=*/true, browser_.get());
     row_view_ = std::make_unique<DownloadBubbleRowView>(

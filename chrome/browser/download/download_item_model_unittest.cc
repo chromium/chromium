@@ -31,7 +31,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/enterprise/common/download_item_reroute_info.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -81,29 +80,6 @@ const base::FilePath::CharType kDefaultDisplayFileName[] =
 
 // Default URL for a mock download item in DownloadItemModelTest.
 const char kDefaultURL[] = "http://example.com/foo.bar";
-
-// Constants and helper functions to test rerouted items.
-using Provider = enterprise_connectors::FileSystemServiceProvider;
-using RerouteInfo = enterprise_connectors::DownloadItemRerouteInfo;
-const char kTestProviderDisplayName[] = "Box";
-const char kTestProviderErrorMessage[] = "400 - \"item_name_invalid\"";
-const char kTestProviderAdditionalMessage[] = "abcdefg";
-const Provider kTestProvider = Provider::BOX;
-RerouteInfo MakeTestRerouteInfo(Provider provider) {
-  RerouteInfo info;
-  info.set_service_provider(provider);
-  switch (provider) {
-    case (Provider::BOX):
-      info.mutable_box()->set_error_message(kTestProviderErrorMessage);
-      info.mutable_box()->set_additional_message(
-          kTestProviderAdditionalMessage);
-      break;
-    default:
-      NOTREACHED();
-  }
-  return info;
-}
-const RerouteInfo kTestRerouteInfo = MakeTestRerouteInfo(kTestProvider);
 
 // A DownloadCoreService that returns the TestChromeDownloadManagerDelegate.
 class TestDownloadCoreService : public DownloadCoreServiceImpl {
@@ -201,8 +177,6 @@ class DownloadItemModelTest : public testing::Test {
         .WillByDefault(Return(base::FilePath(kDefaultDisplayFileName)));
     ON_CALL(item_, GetTargetFilePath())
         .WillByDefault(ReturnRefOfCopy(base::FilePath(kDefaultTargetFilePath)));
-    ON_CALL(item_, GetRerouteInfo())
-        .WillByDefault(ReturnRefOfCopy(RerouteInfo()));
     ON_CALL(item_, GetTargetDisposition())
         .WillByDefault(
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
@@ -370,29 +344,6 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     SetStatusTextBuilder(/*for_bubble=*/true);
     EXPECT_EQ(expected_bubble_status_msg, model().GetStatusText());
   }
-
-  const std::string provider_failed_msg =
-      base::StringPrintf("Failed to save to %s", kTestProviderDisplayName);
-  for (const auto& test_case : kTestCases) {
-    SetupInterruptedDownloadItem(test_case.reason);
-    EXPECT_CALL(item(), GetRerouteInfo())
-        .WillRepeatedly(ReturnRef(kTestRerouteInfo));
-    std::string expected_status_msg, expected_history_page_text;
-    if (test_case.reason == download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED) {
-      expected_status_msg =
-          provider_failed_msg + " - " + kTestProviderErrorMessage;
-      expected_history_page_text =
-          expected_status_msg + " (" + kTestProviderAdditionalMessage + ")";
-    } else {
-      expected_status_msg = base::StringPrintf(test_case.expected_status_msg,
-                                               provider_failed_msg.c_str());
-      expected_history_page_text = expected_status_msg;
-    }
-    SetStatusTextBuilder(/*for_bubble=*/false);
-    EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
-    EXPECT_EQ(expected_history_page_text,
-              base::UTF16ToUTF8(model().GetHistoryPageStatusText()));
-  }
 }
 
 TEST_F(DownloadItemModelTest, InterruptTooltip) {
@@ -474,16 +425,12 @@ TEST_F(DownloadItemModelTest, InterruptTooltip) {
 }
 
 TEST_F(DownloadItemModelTest, InProgressStatus) {
-  const std::string provider_sending_str =
-      base::StringPrintf("Sending to %s", kTestProviderDisplayName);
-  const char* reroute_status = provider_sending_str.c_str();
   const struct TestCase {
     int64_t received_bytes;             // Return value of GetReceivedBytes().
     int64_t total_bytes;                // Return value of GetTotalBytes().
     bool  time_remaining_known;         // If TimeRemaining() is known.
     bool  open_when_complete;           // GetOpenWhenComplete().
-    bool  is_paused;                    // IsPaused().
-    const RerouteInfo reroute_info;     // GetRerouteInfo().
+    bool is_paused;                     // IsPaused().
     const char* expected_status_msg;    // Expected status text.
     // Expected bubble status string. This will include the progress as well.
     // If empty, use the expected_status_msg.
@@ -500,173 +447,43 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
       // For GetReceivedBytes()/GetTotalBytes(), we only check whether each is
       // non-zero. In addition, if |total_bytes| is zero, then
       // |time_remaining_known| is also false.
-      {0,
-       0,
-       false,
-       false,
-       false,
-       {},
-       "Starting\xE2\x80\xA6",
+      {0, 0, false, false, false, "Starting\xE2\x80\xA6",
        "0 B \xE2\x80\xA2 Starting\xE2\x80\xA6"},
-      {1,
-       0,
-       false,
-       false,
-       false,
-       {},
-       "1 B",
+      {1, 0, false, false, false, "1 B",
        "1 B \xE2\x80\xA2 Resuming\xE2\x80\xA6"},
-      {0,
-       2,
-       false,
-       false,
-       false,
-       {},
-       "Starting\xE2\x80\xA6",
+      {0, 2, false, false, false, "Starting\xE2\x80\xA6",
        "0/2 B \xE2\x80\xA2 Starting\xE2\x80\xA6"},
-      {1,
-       2,
-       false,
-       false,
-       false,
-       {},
-       "1/2 B",
+      {1, 2, false, false, false, "1/2 B",
        "1/2 B \xE2\x80\xA2 Resuming\xE2\x80\xA6"},
-      {0,
-       2,
-       true,
-       false,
-       false,
-       {},
-       "0/2 B, 10 secs left",
+      {0, 2, true, false, false, "0/2 B, 10 secs left",
        "\xE2\x86\x93 0/2 B \xE2\x80\xA2 10 seconds left"},
-      {1,
-       2,
-       true,
-       false,
-       false,
-       {},
-       "1/2 B, 10 secs left",
+      {1, 2, true, false, false, "1/2 B, 10 secs left",
        "\xE2\x86\x93 1/2 B \xE2\x80\xA2 10 seconds left"},
-      {0,
-       0,
-       false,
-       true,
-       false,
-       {},
-       "Opening when complete",
+      {0, 0, false, true, false, "Opening when complete",
        "0 B \xE2\x80\xA2 Opening when complete"},
-      {1,
-       0,
-       false,
-       true,
-       false,
-       {},
-       "Opening when complete",
+      {1, 0, false, true, false, "Opening when complete",
        "1 B \xE2\x80\xA2 Opening when complete"},
-      {0,
-       2,
-       false,
-       true,
-       false,
-       {},
-       "Opening when complete",
+      {0, 2, false, true, false, "Opening when complete",
        "0/2 B \xE2\x80\xA2 Opening when complete"},
-      {1,
-       2,
-       false,
-       true,
-       false,
-       {},
-       "Opening when complete",
+      {1, 2, false, true, false, "Opening when complete",
        "1/2 B \xE2\x80\xA2 Opening when complete"},
-      {0,
-       2,
-       true,
-       true,
-       false,
-       {},
-       "Opening in 10 secs\xE2\x80\xA6",
+      {0, 2, true, true, false, "Opening in 10 secs\xE2\x80\xA6",
        "\xE2\x86\x93 0/2 B \xE2\x80\xA2 Opening in 10 seconds\xE2\x80\xA6"},
-      {1,
-       2,
-       true,
-       true,
-       false,
-       {},
-       "Opening in 10 secs\xE2\x80\xA6",
+      {1, 2, true, true, false, "Opening in 10 secs\xE2\x80\xA6",
        "\xE2\x86\x93 1/2 B \xE2\x80\xA2 Opening in 10 seconds\xE2\x80\xA6"},
-      {0, 0, false, false, true, {}, "0 B, Paused", "0 B \xE2\x80\xA2 Paused"},
-      {1, 0, false, false, true, {}, "1 B, Paused", "1 B \xE2\x80\xA2 Paused"},
-      {0,
-       2,
-       false,
-       false,
-       true,
-       {},
-       "0/2 B, Paused",
-       "0/2 B \xE2\x80\xA2 Paused"},
-      {1,
-       2,
-       false,
-       false,
-       true,
-       {},
-       "1/2 B, Paused",
-       "1/2 B \xE2\x80\xA2 Paused"},
-      {0,
-       2,
-       true,
-       false,
-       true,
-       {},
-       "0/2 B, Paused",
-       "0/2 B \xE2\x80\xA2 Paused"},
-      {1,
-       2,
-       true,
-       false,
-       true,
-       {},
-       "1/2 B, Paused",
-       "1/2 B \xE2\x80\xA2 Paused"},
-      {0, 0, false, true, true, {}, "0 B, Paused", "0 B \xE2\x80\xA2 Paused"},
-      {1, 0, false, true, true, {}, "1 B, Paused", "1 B \xE2\x80\xA2 Paused"},
-      {0,
-       2,
-       false,
-       true,
-       true,
-       {},
-       "0/2 B, Paused",
-       "0/2 B \xE2\x80\xA2 Paused"},
-      {1,
-       2,
-       false,
-       true,
-       true,
-       {},
-       "1/2 B, Paused",
-       "1/2 B \xE2\x80\xA2 Paused"},
-      {0,
-       2,
-       true,
-       true,
-       true,
-       {},
-       "0/2 B, Paused",
-       "0/2 B \xE2\x80\xA2 Paused"},
-      {1,
-       2,
-       true,
-       true,
-       true,
-       {},
-       "1/2 B, Paused",
-       "1/2 B \xE2\x80\xA2 Paused"},
-      {5, 5, false, false, false, {}, "", "5 B \xE2\x80\xA2 Done"},
-      {5, 5, true, true, false, kTestRerouteInfo, reroute_status,
-       base::StrCat({"5 B \xE2\x80\xA2 ", reroute_status})}};
+      {0, 0, false, false, true, "0 B, Paused", "0 B \xE2\x80\xA2 Paused"},
+      {1, 0, false, false, true, "1 B, Paused", "1 B \xE2\x80\xA2 Paused"},
+      {0, 2, false, false, true, "0/2 B, Paused", "0/2 B \xE2\x80\xA2 Paused"},
+      {1, 2, false, false, true, "1/2 B, Paused", "1/2 B \xE2\x80\xA2 Paused"},
+      {0, 2, true, false, true, "0/2 B, Paused", "0/2 B \xE2\x80\xA2 Paused"},
+      {1, 2, true, false, true, "1/2 B, Paused", "1/2 B \xE2\x80\xA2 Paused"},
+      {0, 0, false, true, true, "0 B, Paused", "0 B \xE2\x80\xA2 Paused"},
+      {1, 0, false, true, true, "1 B, Paused", "1 B \xE2\x80\xA2 Paused"},
+      {0, 2, false, true, true, "0/2 B, Paused", "0/2 B \xE2\x80\xA2 Paused"},
+      {1, 2, false, true, true, "1/2 B, Paused", "1/2 B \xE2\x80\xA2 Paused"},
+      {0, 2, true, true, true, "0/2 B, Paused", "0/2 B \xE2\x80\xA2 Paused"},
+      {1, 2, true, true, true, "1/2 B, Paused", "1/2 B \xE2\x80\xA2 Paused"},
+      {5, 5, false, false, false, "", "5 B \xE2\x80\xA2 Done"}};
 
   SetupDownloadItemDefaults();
 
@@ -683,10 +500,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
                            Return(test_case.time_remaining_known)));
     EXPECT_CALL(item(), GetOpenWhenComplete())
         .WillRepeatedly(Return(test_case.open_when_complete));
-    EXPECT_CALL(item(), IsPaused())
-        .WillRepeatedly(Return(test_case.is_paused));
-    EXPECT_CALL(item(), GetRerouteInfo())
-        .WillRepeatedly(ReturnRef(test_case.reroute_info));
+    EXPECT_CALL(item(), IsPaused()).WillRepeatedly(Return(test_case.is_paused));
 
     SetStatusTextBuilder(/*for_bubble=*/false);
     EXPECT_EQ(test_case.expected_status_msg,
@@ -732,19 +546,6 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
 #else  // BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in folder", base::UTF16ToUTF8(model().GetShowInFolderText()));
 #endif
-
-  // Different texts for file rerouted:
-  EXPECT_CALL(item(), GetRerouteInfo())
-      .WillRepeatedly(ReturnRef(kTestRerouteInfo));
-  // "Saved to <WEB_DRIVE>".
-  std::string expected_status_msg =
-      base::StringPrintf("Saved to %s", kTestProviderDisplayName);
-  EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
-  // "Show in <WEB_DRIVE>".
-  std::string expected_show_in_folder_text =
-      base::StringPrintf("Show in %s", kTestProviderDisplayName);
-  EXPECT_EQ(expected_show_in_folder_text,
-            base::UTF16ToUTF8(model().GetShowInFolderText()));
 }
 
 TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {

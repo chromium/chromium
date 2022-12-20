@@ -37,9 +37,6 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
 
     content::DownloadItemUtils::AttachInfoForTesting(
         &download_item_, browser()->profile(), nullptr);
-    ON_CALL(download_item_, GetRerouteInfo())
-        .WillByDefault(testing::ReturnRefOfCopy(
-            enterprise_connectors::DownloadItemRerouteInfo()));
 
     DownloadToolbarButtonView* button =
         browser_view()->toolbar()->download_button();

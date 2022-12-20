@@ -93,9 +93,6 @@ struct InProgressInfo {
   // by their offset.
   std::vector<DownloadItem::ReceivedSlice> received_slices;
 
-  // The download's |reroute_info|.
-  download::DownloadItemRerouteInfo reroute_info;
-
   // Hash of the downloaded content.
   std::string hash;
 

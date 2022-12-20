@@ -176,8 +176,8 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
-      const download::DownloadItemRerouteInfo& reroute_info) override {
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
+      override {
     // For history download only as history don't have auto resumption count
     // saved.
     int auto_resume_count = download::DownloadItemImpl::kMaxAutoResumeAttempts;
@@ -189,7 +189,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
         start_time, end_time, etag, last_modified, received_bytes, total_bytes,
         auto_resume_count, hash, state, danger_type, interrupt_reason,
         false /* paused */, false /* allow_metered */, opened, last_access_time,
-        transient, received_slices, reroute_info, download::kInvalidRange,
+        transient, received_slices, download::kInvalidRange,
         download::kInvalidRange, nullptr /* download_entry */);
   }
 
@@ -794,7 +794,6 @@ void DownloadManagerImpl::CheckForFileRemoval(
     download::DownloadItemImpl* download_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if ((download_item->GetState() != download::DownloadItem::COMPLETE) ||
-      download_item->GetRenameHandler() ||
       download_item->GetFileExternallyRemoved()) {
     return;
   }
@@ -1074,7 +1073,6 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     DeleteDownloadedFileOnUIThread(current_path);
     return nullptr;
   }
-  download::DownloadItemRerouteInfo reroute_info;
   auto item = base::WrapUnique(item_factory_->CreatePersistedItem(
       this, guid, id, current_path, target_path, url_chain, referrer_url,
       StoragePartitionConfigToSerializedEmbedderDownloadData(
@@ -1082,7 +1080,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
       tab_url, tab_refererr_url, request_initiator, mime_type,
       original_mime_type, start_time, end_time, etag, last_modified,
       received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,
-      opened, last_access_time, transient, received_slices, reroute_info));
+      opened, last_access_time, transient, received_slices));
   if (in_progress_download) {
     // If a download is in both history DB and in-progress DB, we should
     // be able to remove the in-progress entry if the following 2 conditions

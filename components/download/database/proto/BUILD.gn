@@ -13,8 +13,5 @@ proto_library("download_entry_proto") {
   proto_in_dir = "//"
   visibility = [ "//components/download/database:*" ]
   sources = [ "download_entry.proto" ]
-  deps = [
-    ":download_source_proto",
-    "//components/enterprise/common:download_item_reroute_info",
-  ]
+  deps = [ ":download_source_proto" ]
 }

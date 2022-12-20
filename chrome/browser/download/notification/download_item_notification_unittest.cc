@@ -38,7 +38,6 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/enterprise/common/download_item_reroute_info.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
@@ -60,8 +59,6 @@ using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRefOfCopy;
 using testing::ValuesIn;
-using Provider = enterprise_connectors::FileSystemServiceProvider;
-using RerouteInfo = enterprise_connectors::DownloadItemRerouteInfo;
 
 namespace {
 
@@ -137,8 +134,6 @@ class DownloadItemNotificationTest : public testing::Test {
         .WillByDefault(Return(base::FilePath("TITLE.bin")));
     ON_CALL(*download_item_, GetTargetFilePath())
         .WillByDefault(ReturnRefOfCopy(download_item_target_path));
-    ON_CALL(*download_item_, GetRerouteInfo())
-        .WillByDefault(ReturnRefOfCopy(RerouteInfo()));
     ON_CALL(*download_item_, GetDangerType())
         .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     ON_CALL(*download_item_, IsDone()).WillByDefault(Return(false));
@@ -673,92 +668,4 @@ TEST_P(DownloadItemNotificationParameterizedTest,
   EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
 }
 #endif
-
-struct FileReroutedTestCase {
-  download::DownloadItem::DownloadState state;
-  download::DownloadInterruptReason reason;
-  RerouteInfo reroute_info;
-};
-
-RerouteInfo MakeTestRerouteInfo(std::string file_id = std::string()) {
-  RerouteInfo info;
-  info.set_service_provider(Provider::BOX);
-  if (!file_id.empty())
-    info.mutable_box()->set_file_id(file_id);
-  return info;
-}
-
-RerouteInfo MakeTestRerouteInfoWithError(const std::string& error_message) {
-  RerouteInfo info;
-  info.set_service_provider(Provider::BOX);
-  info.mutable_box()->set_error_message(error_message);
-  return info;
-}
-
-class DownloadItemNotificationFileReroutedParametrizedTest
-    : public DownloadItemNotificationTest,
-      public ::testing::WithParamInterface<std::tuple<
-          /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
-          bool,
-          FileReroutedTestCase>> {
- public:
-  DownloadItemNotificationFileReroutedParametrizedTest()
-      : DownloadItemNotificationTest(
-            /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
-            std::get<0>(GetParam())) {}
-
- protected:
-  const FileReroutedTestCase& GetTestCase() const {
-    return std::get<1>(GetParam());
-  }
-};
-
-TEST_P(DownloadItemNotificationFileReroutedParametrizedTest,
-       CreateDownloadItemNotification) {
-  RerouteInfo reroute_info;
-  reroute_info.set_service_provider(Provider::BOX);
-
-  // Setup file rerouted to Box info.
-  EXPECT_CALL(*download_item_, GetRerouteInfo())
-      .WillRepeatedly(ReturnRefOfCopy(GetTestCase().reroute_info));
-  EXPECT_CALL(*download_item_, GetState())
-      .WillRepeatedly(Return(GetTestCase().state));
-
-  switch (GetTestCase().state) {
-    case (download::DownloadItem::INTERRUPTED):
-      EXPECT_CALL(*download_item_, GetLastReason())
-          .WillRepeatedly(Return(GetTestCase().reason));
-      break;
-    case (download::DownloadItem::COMPLETE):
-      EXPECT_CALL(*download_item_, IsDone()).WillRepeatedly(Return(true));
-      [[fallthrough]];
-    default:
-      EXPECT_CALL(*download_item_, GetLastReason()).Times(0);
-  }
-
-  // Show the download item notification.
-  CreateDownloadItemNotification();
-  download_item_->NotifyObserversDownloadOpened();
-}
-
-const FileReroutedTestCase kFileReroutedTestCases[] = {
-    {download::DownloadItem::DownloadState::IN_PROGRESS,
-     download::DOWNLOAD_INTERRUPT_REASON_NONE, MakeTestRerouteInfo()},
-    {download::DownloadItem::DownloadState::INTERRUPTED,
-     download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-     MakeTestRerouteInfo()},
-    {download::DownloadItem::DownloadState::INTERRUPTED,
-     download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
-     MakeTestRerouteInfoWithError("400 - \"item_name_invalid\"")},
-    {download::DownloadItem::DownloadState::COMPLETE,
-     download::DOWNLOAD_INTERRUPT_REASON_NONE, MakeTestRerouteInfo("13579")}};
-
-INSTANTIATE_TEST_SUITE_P(
-    ReroutedByFileSystemConnectorTest,
-    DownloadItemNotificationFileReroutedParametrizedTest,
-    testing::Combine(
-        /*is_holding_space_in_progress_downloads_notification_suppression_enabled=*/
-        testing::Bool(),
-        ValuesIn(kFileReroutedTestCases)));
-
 }  // namespace test

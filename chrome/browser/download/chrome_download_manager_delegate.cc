@@ -873,14 +873,6 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   DownloadUtils::OpenDownload(download, DownloadOpenSource::kUnknown);
 #else
 
-  download::DownloadItemRenameHandler* handler = download->GetRenameHandler();
-  if (handler) {
-    handler->OpenDownload();
-    RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_RENAME_HANDLER,
-                       download->GetMimeType());
-    return;
-  }
-
   if (!DownloadItemModel(download).ShouldPreferOpeningInBrowser()) {
     RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_DEFAULT_PLATFORM,
                        download->GetMimeType());
@@ -948,12 +940,6 @@ void ChromeDownloadManagerDelegate::ShowDownloadInShell(
 
   MaybeSendDangerousDownloadOpenedReport(download,
                                          true /* show_download_in_folder */);
-
-  download::DownloadItemRenameHandler* handler = download->GetRenameHandler();
-  if (handler) {
-    handler->ShowDownloadInContext();
-    return;
-  }
 
   base::FilePath platform_path(
       GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
