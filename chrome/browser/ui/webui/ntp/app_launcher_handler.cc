@@ -1113,15 +1113,7 @@ void AppLauncherHandler::HandleInstallAppLocally(
     const base::Value::List& args) {
   const std::string& app_id = args[0].GetString();
 
-  if (!web_app_provider_->registrar_unsafe().IsInstalled(app_id))
-    return;
-
-  InstallOsHooks(app_id);
-
-  web_app_provider_->sync_bridge_unsafe().SetAppIsLocallyInstalled(app_id,
-                                                                   true);
-  web_app_provider_->sync_bridge_unsafe().SetAppInstallTime(app_id,
-                                                            base::Time::Now());
+  web_app_provider_->scheduler().InstallAppLocally(app_id, base::DoNothing());
 }
 
 void AppLauncherHandler::HandleShowAppInfo(const base::Value::List& args) {
@@ -1352,20 +1344,6 @@ void AppLauncherHandler::PromptToEnableApp(const std::string& extension_id) {
   extension_enable_flow_->StartForWebContents(web_ui()->GetWebContents());
 }
 
-void AppLauncherHandler::OnOsHooksInstalled(
-    const web_app::AppId& app_id,
-    const web_app::OsHooksErrors os_hooks_errors) {
-  // TODO(dmurph): Once installation takes the OsHooksErrors bitfield, then
-  // use that to compare with the results, and record if they all were
-  // successful, instead of just shortcuts.
-  bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
-  // TODO(b/260863656): Move the metric measurement to
-  // ShortcutHandlingSubManager::Execute()
-  base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
-                            !error);
-  web_app_provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
-}
-
 void AppLauncherHandler::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
     const std::u16string& error) {
@@ -1432,45 +1410,4 @@ bool AppLauncherHandler::ShouldShow(const Extension* extension) {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   return extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile);
-}
-
-void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
-  web_app::InstallOsHooksOptions options;
-  options.add_to_desktop = true;
-  options.add_to_quick_launch_bar = false;
-  options.os_hooks[web_app::OsHookType::kShortcuts] = true;
-  options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
-  options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
-  options.os_hooks[web_app::OsHookType::kProtocolHandlers] = true;
-  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] =
-      web_app_provider_->registrar_unsafe()
-          .GetAppRunOnOsLoginMode(app_id)
-          .value == web_app::RunOnOsLoginMode::kWindowed;
-
-  // Installed WebApp here is user uninstallable app, but it needs to
-  // check user uninstall-ability if there are apps with different source types.
-  // WebApp::CanUserUninstallApp will handles it.
-  const web_app::WebApp* web_app =
-      web_app_provider_->registrar_unsafe().GetAppById(app_id);
-  options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] =
-      web_app->CanUserUninstallWebApp();
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
-#else
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
-#endif
-
-  auto os_hooks_barrier =
-      web_app::OsIntegrationManager::GetBarrierForSynchronize(
-          base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
-                         weak_ptr_factory_.GetWeakPtr(), app_id));
-
-  // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
-  // sub managers have been implemented.
-  web_app_provider_->os_integration_manager().InstallOsHooks(
-      app_id, os_hooks_barrier, /*web_app_info=*/nullptr, std::move(options));
-  web_app_provider_->os_integration_manager().Synchronize(
-      app_id, base::BindOnce(os_hooks_barrier, web_app::OsHooksErrors()));
 }

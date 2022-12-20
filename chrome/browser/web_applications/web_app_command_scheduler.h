@@ -203,6 +203,10 @@ class WebAppCommandScheduler {
   void LaunchAppWithCustomParams(apps::AppLaunchParams params,
                                  LaunchWebAppCallback callback);
 
+  // Used to locally install an app from the chrome://apps page, triggered
+  // by the AppLauncherHandler.
+  void InstallAppLocally(const AppId& app_id, base::OnceClosure callback);
+
   // Used to schedule a synchronization of a web app's OS states with the
   // current DB states.
   void SynchronizeOsIntegration(const AppId& app_id,

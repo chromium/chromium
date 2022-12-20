@@ -208,10 +208,6 @@ class AppLauncherHandler
   // Prompts the user to re-enable the app for |extension_id|.
   void PromptToEnableApp(const std::string& extension_id);
 
-  // Records result to UMA after OS Hooks are installed.
-  void OnOsHooksInstalled(const web_app::AppId& app_id,
-                          const web_app::OsHooksErrors os_hooks_errors);
-
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const std::u16string& error) override;
@@ -238,9 +234,6 @@ class AppLauncherHandler
 
   // True if the extension should be displayed.
   bool ShouldShow(const extensions::Extension* extension);
-
-  // Handle installing OS hooks for Web App installs from chrome://apps page.
-  void InstallOsHooks(const web_app::AppId& app_id);
 
   // The apps are represented in the extensions model, which
   // outlives us since it's owned by our containing profile.

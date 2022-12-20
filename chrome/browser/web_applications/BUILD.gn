@@ -18,6 +18,8 @@ source_set("web_applications") {
     "commands/fetch_installability_for_chrome_management.h",
     "commands/fetch_manifest_and_install_command.cc",
     "commands/fetch_manifest_and_install_command.h",
+    "commands/install_app_locally_command.cc",
+    "commands/install_app_locally_command.h",
     "commands/install_from_info_command.cc",
     "commands/install_from_info_command.h",
     "commands/install_from_sync_command.cc",

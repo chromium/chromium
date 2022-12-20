@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
@@ -112,8 +113,8 @@ class AppLauncherHandlerTest
  protected:
   std::unique_ptr<TestAppLauncherHandler> GetAppLauncherHandler(
       content::TestWebUI* test_web_ui) {
-    return std::make_unique<TestAppLauncherHandler>(
-        extension_service_, WebAppProvider::GetForTest(profile()), test_web_ui);
+    return std::make_unique<TestAppLauncherHandler>(extension_service_,
+                                                    provider(), test_web_ui);
   }
 
   // Install a web app and sets the locally installed property based on
@@ -124,11 +125,10 @@ class AppLauncherHandlerTest
     if (is_locally_installed)
       return installed_app_id;
 
-    auto* web_app_provider = WebAppProvider::GetForTest(profile());
-    web_app_provider->sync_bridge_unsafe().SetAppIsLocallyInstalled(
-        installed_app_id, false);
-    web_app_provider->sync_bridge_unsafe().SetAppInstallTime(installed_app_id,
-                                                             base::Time::Min());
+    provider()->sync_bridge_unsafe().SetAppIsLocallyInstalled(installed_app_id,
+                                                              false);
+    provider()->sync_bridge_unsafe().SetAppInstallTime(installed_app_id,
+                                                       base::Time::Min());
     return installed_app_id;
   }
 
@@ -178,6 +178,8 @@ class AppLauncherHandlerTest
     return ext_service;
   }
 
+  WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
+
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   raw_ptr<extensions::ExtensionService> extension_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -204,6 +206,7 @@ TEST_P(AppLauncherHandlerTest, HandleInstallAppLocally) {
   // Call AppLauncherHandler::HandleInstallAppLocally for the web_ui and expect
   // that the JS is made correctly.
   app_launcher_handler->HandleInstallAppLocally(args);
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 
   ValidateLocallyInstalledCallData(app_launcher_handler.get(),
                                    installed_app_id);
@@ -241,6 +244,7 @@ TEST_P(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
   // handler and expect the correct JS call is made to both the web_ui
   // instances.
   app_launcher_handler_1->HandleInstallAppLocally(args);
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 
   ValidateLocallyInstalledCallData(app_launcher_handler_1.get(),
                                    installed_app_id);
