@@ -1622,8 +1622,10 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
 TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
        LastSyncTimestampSetIfEcheEnabled) {
-  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
-                                 /* disabled_features= */ {});
+  feature_list_.InitWithFeatures(
+      /* enabled_features= */ {features::kEcheSWA,
+                               features::kCryptauthAttestationSyncing},
+      /* disabled_features= */ {});
 
   CryptAuthDevice device = GetLocalDeviceForTest();
   device.feature_states[multidevice::SoftwareFeature::kEcheHost] =

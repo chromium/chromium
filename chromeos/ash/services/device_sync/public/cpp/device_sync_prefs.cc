@@ -38,7 +38,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
   }
 
-  if (base::FeatureList::IsEnabled(features::kEcheSWA)) {
+  if (features::IsCryptauthAttestationSyncingEnabled()) {
     AttestationCertificatesSyncerImpl::RegisterPrefs(registry);
   }
 }

@@ -41,8 +41,10 @@ class AttestationCertificatesSyncerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
-                                   /* disabled_features= */ {});
+    feature_list_.InitWithFeatures(
+        /* enabled_features= */ {features::kEcheSWA,
+                                 features::kCryptauthAttestationSyncing},
+        /* disabled_features= */ {});
 
     AttestationCertificatesSyncerImpl::RegisterPrefs(pref_service_.registry());
 

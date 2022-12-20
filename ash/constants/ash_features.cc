@@ -442,6 +442,12 @@ BASE_FEATURE(kCrosPrivacyHubV2,
              "CrosPrivacyHubV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables syncing attestation certificates to cryptauth for use by Cross Device
+// features, including Eche and Phone Hub.
+BASE_FEATURE(kCryptauthAttestationSyncing,
+             "CryptauthAttestationSyncing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -2421,6 +2427,10 @@ bool IsClipboardHistoryRefreshEnabled() {
 
 bool IsClipboardHistoryReorderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
+}
+
+bool IsCryptauthAttestationSyncingEnabled() {
+  return base::FeatureList::IsEnabled(kCryptauthAttestationSyncing);
 }
 
 bool IsDesksCloseAllEnabled() {
