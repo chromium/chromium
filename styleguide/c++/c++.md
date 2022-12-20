@@ -230,7 +230,7 @@ code when you find it, or at least not make such usage any more widespread.
 
 Use `const raw_ref<T>` or `raw_ptr<T>` for class and struct fields in place of a
 raw C++ reference `T&` or pointer `T*` whenever possible, except in paths that include
-`/renderer/` or `blink/public/web/`.  These a non-owning smart pointers that
+`/renderer/` or `blink/public/web/`.  These are non-owning smart pointers that
 have improved memory-safety over raw pointers and references, and can prevent
 exploitation of a significant percentage of Use-after-Free bugs.
 
