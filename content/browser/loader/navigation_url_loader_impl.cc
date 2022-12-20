@@ -18,6 +18,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
 #include "content/browser/about_url_loader_factory.h"
@@ -340,6 +341,7 @@ void NavigationURLLoaderImpl::Start(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
     std::string accept_langs,
     bool needs_loader_factory_interceptor) {
+
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   DCHECK(!head_);
@@ -393,6 +395,35 @@ void NavigationURLLoaderImpl::Start(
   CreateInterceptors(appcache_handle, prefetched_signed_exchange_cache,
                      signed_exchange_prefetch_metric_recorder, accept_langs);
   Restart();
+
+
+  // Send a message to the render process to trigger network monitor
+  // events for RecordReplay to observe.  Content processes are
+  // not recorded so this event will be lost otherwise.
+  base::DictionaryValue dict;
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%d",
+    global_request_id_.child_id,
+    global_request_id_.request_id
+  );
+  dict.SetString("requestId", request_id);
+  dict.SetString("requestMethod", resource_request_->method);
+  dict.SetString("requestUrl", url_.spec());
+
+  base::ListValue headers;
+  for (auto header_entry : resource_request_->headers.GetHeaderVector()) {
+    base::DictionaryValue header_obj;
+    header_obj.SetString("name", header_entry.key);
+    header_obj.SetString("value", header_entry.value);
+    headers.Append(std::move(header_obj));
+  }
+  dict.SetKey("requestHeaders", std::move(headers));
+
+  FrameTreeNode* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  RenderFrameHostImpl* render_frame_host = frame_tree_node->current_frame_host();
+  RenderProcessHost* render_process_host = render_frame_host->GetProcess();
+  mojom::Renderer* renderer = render_process_host->GetRendererInterface();
+  renderer->RecordReplayBrowserEvent("Network.Navigation", std::move(dict));
 }
 
 void NavigationURLLoaderImpl::CreateInterceptors(
@@ -880,6 +911,36 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
 void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
+  // Notify the render process about the redirect, to allow
+  // for RecordReplay network monitor to register it.
+  {
+    base::DictionaryValue dict;
+    char request_id[64];
+    snprintf(request_id, 64, "%d.%d",
+      (int) global_request_id_.child_id,
+      (int) global_request_id_.request_id
+    );
+    dict.SetString("requestId", request_id);
+    dict.SetString("originalUrl", url_chain_[0].spec());
+    dict.SetString("requestMethod", resource_request_->method);
+    dict.SetString("requestUrl", redirect_info.new_url.spec());
+
+    base::ListValue headers;
+    for (auto header_entry : resource_request_->headers.GetHeaderVector()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header_entry.key);
+      header_obj.SetString("value", header_entry.value);
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("requestHeaders", std::move(headers));
+
+    FrameTreeNode* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+    RenderFrameHostImpl* render_frame_host = frame_tree_node->current_frame_host();
+    RenderProcessHost* render_process_host = render_frame_host->GetProcess();
+    mojom::Renderer* renderer = render_process_host->GetRendererInterface();
+    renderer->RecordReplayBrowserEvent("Network.NavigationRedirect", std::move(dict));
+  }
+
   net::Error error = net::OK;
   if (!bypass_redirect_checks_ &&
       !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
