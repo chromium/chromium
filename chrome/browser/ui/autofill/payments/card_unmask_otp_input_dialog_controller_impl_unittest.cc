@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,12 +86,12 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result.WithNoTemporaryError",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
 }
@@ -108,15 +108,15 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.ErrorMessageShown",
-      AutofillMetrics::OtpInputDialogError::kOtpMismatchError, 1);
+      autofill_metrics::OtpInputDialogError::kOtpMismatchError, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result.WithPreviousTemporaryError",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserBeforeConfirmation,
       1);
 }
@@ -134,15 +134,15 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.ErrorMessageShown",
-      AutofillMetrics::OtpInputDialogError::kOtpExpiredError, 1);
+      autofill_metrics::OtpInputDialogError::kOtpExpiredError, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserAfterConfirmation,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result.WithPreviousTemporaryError",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogCancelledByUserAfterConfirmation,
       1);
 }
@@ -156,12 +156,12 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest, ServerRequestSucceeded) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogClosedAfterVerificationSucceeded,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result.WithNoTemporaryError",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogClosedAfterVerificationSucceeded,
       1);
 }
@@ -174,12 +174,12 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest, ServerRequestFailed) {
                                /*server_request_succeeded=*/false);
 
   histogram_tester.ExpectUniqueSample("Autofill.OtpInputDialog.SmsOtp.Result",
-                                      AutofillMetrics::OtpInputDialogResult::
+                                      autofill_metrics::OtpInputDialogResult::
                                           kDialogClosedAfterVerificationFailed,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpInputDialog.SmsOtp.Result.WithNoTemporaryError",
-      AutofillMetrics::OtpInputDialogResult::
+      autofill_metrics::OtpInputDialogResult::
           kDialogClosedAfterVerificationFailed,
       1);
 }

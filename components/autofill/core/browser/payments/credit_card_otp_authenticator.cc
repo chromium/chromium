@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
@@ -65,8 +65,8 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(bool user_closed_dialog) {
             OtpAuthenticationResponse::Result::kFlowCancelled));
   }
 
-  AutofillMetrics::LogOtpAuthResult(
-      AutofillMetrics::OtpAuthEvent::kFlowCancelled);
+  autofill_metrics::LogOtpAuthResult(
+      autofill_metrics::OtpAuthEvent::kFlowCancelled);
   Reset();
 }
 
@@ -106,7 +106,7 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
   context_token_ = context_token;
   billing_customer_number_ = billing_customer_number;
 
-  AutofillMetrics::LogOtpAuthAttempt();
+  autofill_metrics::LogOtpAuthAttempt();
 
   // Asynchronously prepare payments_client. This is only needed once per
   // session.
@@ -144,7 +144,7 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   selected_challenge_option_request_ongoing_ = false;
 
   if (select_challenge_option_request_timestamp_.has_value()) {
-    AutofillMetrics::LogOtpAuthSelectChallengeOptionRequestLatency(
+    autofill_metrics::LogOtpAuthSelectChallengeOptionRequestLatency(
         AutofillTickClock::NowTicks() -
         *select_challenge_option_request_timestamp_);
   }
@@ -180,14 +180,14 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
         result ==
             AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
-      AutofillMetrics::LogOtpAuthResult(
-          AutofillMetrics::OtpAuthEvent::
+      autofill_metrics::LogOtpAuthResult(
+          autofill_metrics::OtpAuthEvent::
               kSelectedChallengeOptionVirtualCardRetrievalError);
       response.result =
           OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
     } else {
-      AutofillMetrics::LogOtpAuthResult(
-          AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
+      autofill_metrics::LogOtpAuthResult(
+          autofill_metrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
       response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
     }
     requester_->OnOtpAuthenticationComplete(response);
@@ -236,7 +236,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
-    AutofillMetrics::LogOtpAuthUnmaskCardRequestLatency(
+    autofill_metrics::LogOtpAuthUnmaskCardRequestLatency(
         AutofillTickClock::NowTicks() - *unmask_card_request_timestamp_);
   }
 
@@ -268,15 +268,15 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
           std::string::npos) {
         autofill_client_->OnUnmaskOtpVerificationResult(
             OtpUnmaskResult::kOtpMismatch);
-        AutofillMetrics::LogOtpAuthRetriableError(
-            AutofillMetrics::OtpAuthEvent::kOtpMismatch);
+        autofill_metrics::LogOtpAuthRetriableError(
+            autofill_metrics::OtpAuthEvent::kOtpMismatch);
       } else {
         DCHECK(response_details.flow_status.find("EXPIRED_OTP") !=
                std::string::npos);
         autofill_client_->OnUnmaskOtpVerificationResult(
             OtpUnmaskResult::kOtpExpired);
-        AutofillMetrics::LogOtpAuthRetriableError(
-            AutofillMetrics::OtpAuthEvent::kOtpExpired);
+        autofill_metrics::LogOtpAuthRetriableError(
+            autofill_metrics::OtpAuthEvent::kOtpExpired);
       }
       return;
     }
@@ -306,7 +306,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
     autofill_client_->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kSuccess);
 
-    AutofillMetrics::LogOtpAuthResult(AutofillMetrics::OtpAuthEvent::kSuccess);
+    autofill_metrics::LogOtpAuthResult(
+        autofill_metrics::OtpAuthEvent::kSuccess);
     Reset();
     return;
   }
@@ -322,12 +323,12 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
             AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
       response.result =
           OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
-      AutofillMetrics::LogOtpAuthResult(
-          AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
+      autofill_metrics::LogOtpAuthResult(
+          autofill_metrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
     } else {
       response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
-      AutofillMetrics::LogOtpAuthResult(
-          AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
+      autofill_metrics::LogOtpAuthResult(
+          autofill_metrics::OtpAuthEvent::kUnmaskCardAuthError);
     }
     requester_->OnOtpAuthenticationComplete(response);
   }

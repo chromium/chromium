@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -170,7 +171,7 @@ TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
-                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      autofill_metrics::OtpAuthEvent::kSuccess,
                                       1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
@@ -207,7 +208,7 @@ TEST_F(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.Result",
-      AutofillMetrics::OtpAuthEvent::
+      autofill_metrics::OtpAuthEvent::
           kSelectedChallengeOptionVirtualCardRetrievalError,
       1);
   histogram_tester.ExpectTotalCount(
@@ -245,7 +246,7 @@ TEST_F(CreditCardOtpAuthenticatorTest,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.Result",
-      AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError, 1);
+      autofill_metrics::OtpAuthEvent::kSelectedChallengeOptionGenericError, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.SelectChallengeOptionRequest", 1);
 }
@@ -296,7 +297,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
                                         1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.OtpAuth.SmsOtp.Result",
-        AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError, 1);
+        autofill_metrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError,
+        1);
     histogram_tester.ExpectTotalCount(
         "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
     histogram_tester.ExpectTotalCount(
@@ -340,7 +342,7 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.Result",
-      AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError, 1);
+      autofill_metrics::OtpAuthEvent::kUnmaskCardAuthError, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 1);
   histogram_tester.ExpectTotalCount(
@@ -400,11 +402,11 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
-                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      autofill_metrics::OtpAuthEvent::kSuccess,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.RetriableError",
-      AutofillMetrics::OtpAuthEvent::kOtpMismatch, 1);
+      autofill_metrics::OtpAuthEvent::kOtpMismatch, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 2);
   histogram_tester.ExpectTotalCount(
@@ -480,11 +482,11 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Result",
-                                      AutofillMetrics::OtpAuthEvent::kSuccess,
+                                      autofill_metrics::OtpAuthEvent::kSuccess,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.RetriableError",
-      AutofillMetrics::OtpAuthEvent::kOtpExpired, 1);
+      autofill_metrics::OtpAuthEvent::kOtpExpired, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 2);
   histogram_tester.ExpectTotalCount(
@@ -519,7 +521,7 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OtpAuth.SmsOtp.Result",
-      AutofillMetrics::OtpAuthEvent::kFlowCancelled, 1);
+      autofill_metrics::OtpAuthEvent::kFlowCancelled, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.OtpAuth.SmsOtp.RequestLatency.UnmaskCardRequest", 0);
   histogram_tester.ExpectTotalCount(
