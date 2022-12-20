@@ -316,7 +316,10 @@ TEST_F(ListMarkerTest, WidthOfSymbolForFontSizeZero) {
   const auto& target_layout_object = *target.GetLayoutObject();
 
   EXPECT_EQ(LayoutUnit(),
-            ListMarker::WidthOfSymbol(target_layout_object.StyleRef()));
+            ListMarker::WidthOfSymbol(target_layout_object.StyleRef(),
+                                      target_layout_object.StyleRef()
+                                          .ListStyleType()
+                                          ->GetCounterStyleName()));
 }
 
 // crbug.com/1310599

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<style>
+.columns {
+  font-size: 30px;
+  display: flex;
+}
+ol {
+  padding-inline-start: 2em;
+}
+
+.disc {
+  list-style-type: disc;
+}
+.disc-counter::marker {
+  content: "[" counter(list-item, disc) "]";
+}
+
+.circle {
+  list-style-type: circle;
+}
+.circle-counter::marker {
+  content: "[" counter(list-item, circle) "]";
+}
+
+.square {
+  list-style-type: square;
+}
+.square-counter::marker {
+  content: "[" counter(list-item, square) "]";
+}
+
+.dc {
+  list-style-type: disclosure-closed;
+}
+.dc-counter::marker {
+  content: "[" counter(list-item, disclosure-closed) "]";
+}
+.dc-rtl {
+  list-style-type: disclosure-closed;
+}
+.dc-rtl::marker {
+  direction: rtl;
+}
+.dc-rtl-counter::marker {
+  content: "[" counter(list-item, disclosure-closed) "]";
+  direction: rtl;
+}
+
+.do {
+  list-style-type: disclosure-open;
+}
+.do-counter::marker {
+  content: "[" counter(list-item, disclosure-open) "]";
+}
+
+.counters::marker {
+  content: counters(list-item, " => ", disclosure-closed);
+}
+</style>
+<body>
+<p>Symbols in a pairs for "disc", "circle", or "square" may have differences.
+Triangles in a "Disclosure-*" pair should point to an identical direction.</p>
+
+<div class="columns">
+<ol style="flex: 1">
+  <li class="disc">disc</li>
+  <li class="disc-counter">disc</li>
+  <li class="circle">circle</li>
+  <li class="circle-counter">circle</li>
+  <li class="square">square</li>
+  <li class="square-counter">square</li>
+  <li class="dc">disclosure-closed</li>
+  <li class="dc-counter">disclosure-closed</li>
+  <li class="dc-rtl">disclosure-closed in RTL</li>
+  <li class="dc-rtl-counter">disclosure-closed in RTL</li>
+  <li class="do">disclosure-open</li>
+  <li class="do-counter">disclosure-open</li>
+  <li>counters()
+   <ol>
+    <li class="counters">Sub-item</li>
+   </ol>
+  </li>
+</ol>
+<ol style="writing-mode: vertical-rl;">
+  <li class="dc">disclosure-closed</li>
+  <li class="dc-counter">disclosure-closed</li>
+  <li class="do">disclosure-open</li>
+  <li class="do-counter">disclosure-open</li>
+</ol>
+<ol style="writing-mode: vertical-lr;">
+  <li class="dc">disclosure-closed</li>
+  <li class="dc-counter">disclosure-closed</li>
+  <li class="do">disclosure-open</li>
+  <li class="do-counter">disclosure-open</li>
+</ol>
+</div>
+</body>

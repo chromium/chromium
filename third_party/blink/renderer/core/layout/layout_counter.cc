@@ -606,15 +606,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   DCHECK(child);
 
   int value = ValueForText(child);
-  const CounterStyle* counter_style = nullptr;
-  // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
-  // allow it for backward compatibility.
-  // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
-  if (counter_->ListStyle() != "none") {
-    counter_style =
-        &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
-            counter_->ListStyle(), counter_->GetTreeScope());
-  }
+  const CounterStyle* counter_style = NullableCounterStyle();
   String text = GenerateCounterText(counter_style, value);
   // If the separator exists, we need to append all of the parent values as well,
   // including the ones that cross the style containment boundary.
@@ -869,6 +861,39 @@ CounterMap* LayoutCounter::GetCounterMap(LayoutObject* object) {
   if (object->HasCounterNodeMap())
     return GetCounterMaps().at(object);
   return nullptr;
+}
+
+const CounterStyle* LayoutCounter::NullableCounterStyle() const {
+  // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+  // allow it for backward compatibility.
+  // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+  if (counter_->ListStyle() == "none") {
+    return nullptr;
+  }
+  return &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
+      counter_->ListStyle(), counter_->GetTreeScope());
+}
+
+bool LayoutCounter::IsDirectionalSymbolMarker() const {
+  const auto* counter_style = NullableCounterStyle();
+  if (!counter_style || !counter_style->IsPredefinedSymbolMarker()) {
+    return false;
+  }
+  const AtomicString& list_style = counter_->ListStyle();
+  return list_style == "disclosure-open" || list_style == "disclosure-closed";
+}
+
+const AtomicString& LayoutCounter::Separator() const {
+  return counter_->Separator();
+}
+
+// static
+const AtomicString& LayoutCounter::ListStyle(const LayoutObject* object,
+                                             const ComputedStyle& style) {
+  if (const auto* counter = DynamicTo<LayoutCounter>(object)) {
+    return counter->counter_->ListStyle();
+  }
+  return style.ListStyleType()->GetCounterStyleName();
 }
 
 }  // namespace blink

@@ -259,7 +259,8 @@ MinMaxSizes LayoutListMarker::ComputeIntrinsicLogicalWidths() const {
       case ListMarker::ListStyleCategory::kNone:
         break;
       case ListMarker::ListStyleCategory::kSymbol:
-        sizes = ListMarker::WidthOfSymbol(StyleRef());
+        sizes = ListMarker::WidthOfSymbol(
+            StyleRef(), StyleRef().ListStyleType()->GetCounterStyleName());
         break;
       case ListMarker::ListStyleCategory::kLanguage:
       case ListMarker::ListStyleCategory::kStaticString:
@@ -358,7 +359,9 @@ LayoutRect LayoutListMarker::GetRelativeMarkerRect() const {
     case ListMarker::ListStyleCategory::kNone:
       return LayoutRect();
     case ListMarker::ListStyleCategory::kSymbol:
-      return ListMarker::RelativeSymbolMarkerRect(StyleRef(), Size().Width());
+      return ListMarker::RelativeSymbolMarkerRect(
+          StyleRef(), StyleRef().ListStyleType()->GetCounterStyleName(),
+          Size().Width());
     case ListMarker::ListStyleCategory::kLanguage:
     case ListMarker::ListStyleCategory::kStaticString: {
       const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();

@@ -74,6 +74,18 @@ class LayoutCounter : public LayoutText {
 
   void UpdateCounter();
 
+  // Returns true if <counter-style> is "disclosure-open" or
+  // "disclosure-closed".
+  bool IsDirectionalSymbolMarker() const;
+  // Returns <string> in counters().
+  const AtomicString& Separator() const;
+
+  // Returns LayoutCounter::counter_->ListStyle() if `object` is a
+  // LayoutCounter.
+  // Returns style.ListStyleType()->GetCounterStyleName() otherwise.
+  static const AtomicString& ListStyle(const LayoutObject* object,
+                                       const ComputedStyle& style);
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutCounter";
@@ -93,6 +105,8 @@ class LayoutCounter : public LayoutText {
   // This is used to cause a counter display update when the CounterNode tree
   // changes.
   void Invalidate();
+
+  const CounterStyle* NullableCounterStyle() const;
 
   Member<const CounterContentData> counter_;
   Member<CounterNode> counter_node_;
