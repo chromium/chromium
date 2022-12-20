@@ -3823,7 +3823,7 @@
   {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "force-show-update-menu-badge",
@@ -5481,7 +5481,7 @@
   {
     "name": "password-notes",
     "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "password-strength-indicator",
@@ -5491,7 +5491,7 @@
   {
     "name": "password-view-page-in-settings",
     "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "passwords-grouping",
@@ -6344,7 +6344,7 @@
   {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "smart-lock-sign-in-removed",
