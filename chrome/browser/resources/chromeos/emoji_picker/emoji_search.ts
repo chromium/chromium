@@ -38,12 +38,6 @@ export class EmojiSearch extends PolymerElement {
       categoryMetadata: {type: Array, readonly: true},
       lazyIndexing: {type: Boolean, value: true},
       searchResults: {type: Array},
-      v2Enabled: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        readonly: true,
-      },
       needIndexing: {type: Boolean, value: false},
     };
   }
@@ -51,7 +45,6 @@ export class EmojiSearch extends PolymerElement {
   categoryMetadata: CategoryData[];
   lazyIndexing: boolean;
   private searchResults: EmojiGroupData;
-  private v2Enabled: boolean;
   private needIndexing: boolean;
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
@@ -74,13 +67,11 @@ export class EmojiSearch extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.addEventListener('scroll', () => this.onSearchScroll());
     // Cast here is safe since that is the spec from the cr search field mixin.
     this.addEventListener(
         'search', (ev) => this.onSearch((ev as CustomEvent<string>).detail));
     this.$.search.getSearchInput().addEventListener(
         'keydown', (ev: KeyboardEvent) => this.onSearchKeyDown(ev));
-    this.addEventListener('keydown', (ev: KeyboardEvent) => this.onKeyDown(ev));
   }
 
   private onSearch(newSearch: string): void {
@@ -112,54 +103,6 @@ export class EmojiSearch extends PolymerElement {
   }
 
   /**
-   * Event handler for keydown anywhere in the search component.
-   * Used to move the focused result up/down on arrow presses.
-   */
-  private onKeyDown(ev: KeyboardEvent): void {
-    // TODO(b/233567886): Implement navigation by keyboard for V2.
-    if (this.v2Enabled) {
-      return;
-    }
-
-    const isUp = ev.key === 'ArrowUp';
-    const isDown = ev.key === 'ArrowDown';
-    const isEnter = ev.key === 'Enter';
-    // get emoji-button which has focus.
-    const focusedResult =
-        this.shadowRoot!.querySelector<HTMLElement>('.result:focus-within');
-
-    if (isEnter && focusedResult) {
-      focusedResult.click();
-    }
-    if (!isUp && !isDown) {
-      return;
-    }
-
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    // TODO(v/b/234673356): Move the navigation logic to emoji-group.
-    if (!focusedResult) {
-      return;
-    }
-
-    const prev = focusedResult.previousElementSibling as HTMLElement | null;
-    const next = focusedResult.nextElementSibling as HTMLElement | null;
-
-    // moving up from first result focuses search box.
-    // need to check classList in case prev is sr-only.
-    if (isUp && prev && !prev.classList.contains('result')) {
-      this.$.search.getSearchInput().focus();
-      return;
-    }
-
-    const newResult = isDown ? next : prev;
-    if (newResult) {
-      newResult.focus();
-    }
-  }
-
-  /**
    * Event handler for keydown on the search input. Used to switch focus to the
    * results list on down arrow or enter key presses.
    */
@@ -177,21 +120,6 @@ export class EmojiSearch extends PolymerElement {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // TODO(b/234673356): Remove this block.
-      if (!this.v2Enabled) {
-        // focus first item in result list.
-        const firstButton =
-            this.shadowRoot!.querySelector<HTMLElement>('.result');
-        if (firstButton) {
-          firstButton.focus();
-
-          // if there is only one result, select it on enter.
-          if (isEnter && resultsCount === 1) {
-            // ! is safe here since we are getting the first result
-            firstButton.querySelector('emoji-button')!.click();
-          }
-        }
-      } else {
         if (resultsCount === 0) {
           return;
         }
@@ -207,7 +135,6 @@ export class EmojiSearch extends PolymerElement {
         } else {
           firstResultButton.focus();
         }
-      }
     }
   }
 
@@ -268,15 +195,6 @@ export class EmojiSearch extends PolymerElement {
           category, new Fuse(indexableEmojis, this.fuseConfig));
     }
     this.needIndexing = false;
-  }
-
-  private onSearchScroll(): void {
-    if (!this.v2Enabled) {
-      this.$.searchShadow.style.boxShadow =
-          this.shadowRoot!.getElementById('results')?.scrollTop ?? 0 > 0 ?
-          'var(--cr-elevation-3)' :
-          'none';
-    }
   }
 
   /**
@@ -345,16 +263,6 @@ export class EmojiSearch extends PolymerElement {
       }
     }
     return null;
-  }
-
-  /**
-   * Determines visibility of the search results for V1.
-   *
-   */
-  private shouldShowV1Results(
-      searchResults: EmojiGroupData, v2Enabled: boolean): boolean {
-    // TODO(b/234673356): Remove this function.
-    return !v2Enabled && searchResults.length > 0;
   }
 
   /**

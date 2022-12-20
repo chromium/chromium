@@ -45,7 +45,7 @@ export type CategoryDataLoadEvent = CustomEvent<{category: string}>;
  */
 export const CATEGORY_DATA_LOADED = 'category-data-loaded';
 
-export type EmojiPickerReadyEvent = CustomEvent<{v2Enabled: boolean}>;
+export type EmojiPickerReadyEvent = CustomEvent;
 
 /**
  * The event that all the data are loaded and rendered and all the

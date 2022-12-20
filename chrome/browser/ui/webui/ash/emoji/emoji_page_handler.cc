@@ -150,10 +150,6 @@ void EmojiPageHandler::IsIncognitoTextField(
 
 void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
   std::vector<emoji_picker::mojom::Feature> enabled_features;
-  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerExtension)) {
-    enabled_features.push_back(
-        emoji_picker::mojom::Feature::EMOJI_PICKER_EXTENSION);
-  }
   if (base::FeatureList::IsEnabled(
           features::kImeSystemEmojiPickerSearchExtension)) {
     enabled_features.push_back(

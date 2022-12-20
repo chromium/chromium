@@ -168,14 +168,14 @@ const CATEGORY_TABS = {
  * The list of tabs based on the order of category buttons and basic tab info
  * of each category.
  */
-export const V2_SUBCATEGORY_TABS = makeGroupTabs(
+export const SUBCATEGORY_TABS = makeGroupTabs(
     CATEGORY_METADATA.map(item => item.name),
     CATEGORY_TABS,
 );
 
 // A mapping from each category to the index of their first tab.
-export const V2_TABS_CATEGORY_START_INDEX: Map<CategoryEnum, number> = new Map(
-    V2_SUBCATEGORY_TABS.map((item, index) => [item.category, index] as const)
+export const TABS_CATEGORY_START_INDEX: Map<CategoryEnum, number> = new Map(
+    SUBCATEGORY_TABS.map((item, index) => [item.category, index] as const)
         .reverse());
 
 export const EMOJI_GROUP_TABS =

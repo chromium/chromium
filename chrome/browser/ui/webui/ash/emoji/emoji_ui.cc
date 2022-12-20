@@ -26,7 +26,6 @@
 #include "ui/resources/grit/webui_resources.h"
 
 namespace {
-constexpr gfx::Size kDefaultWindowSize(396, 454);
 constexpr gfx::Size kExtensionWindowSize(420, 480);
 constexpr int kPaddingAroundCursor = 8;
 
@@ -92,10 +91,7 @@ void EmojiUI::Show(Profile* profile) {
     caret_bounds.set_y(0);
   }
 
-  gfx::Size window_size =
-      base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerExtension)
-          ? kExtensionWindowSize
-          : kDefaultWindowSize;
+  gfx::Size window_size = kExtensionWindowSize;
   // This rect is used for positioning the emoji picker. It anchors either top
   // right / bottom left of the emoji picker window depending on where the text
   // field is. 8px padding around cursor is applied so that the emoji picker
