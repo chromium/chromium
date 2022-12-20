@@ -861,7 +861,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(photos_documents_provider)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
-  PRINT_IF_NOT_DEFAULT(enable_virtio_blk_for_data)
+  PRINT_IF_NOT_DEFAULT(enable_arc_vm)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1973,10 +1973,8 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
   }
 
-  if (options.enable_virtio_blk_for_data) {
-    enabled_features.push_back(arc::kEnableVirtioBlkForData);
-  } else {
-    disabled_features.push_back(arc::kEnableVirtioBlkForData);
+  if (options.enable_arc_vm) {
+    command_line->AppendSwitch(ash::switches::kEnableArcVm);
   }
 
   if (options.enable_filters_in_recents_v2) {
