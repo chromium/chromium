@@ -41,10 +41,13 @@ namespace {
 
 std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
     const PaintPreviewFrameProto& proto) {
+  auto embedding_token = base::UnguessableToken::Deserialize(
+      proto.embedding_token_high(), proto.embedding_token_low());
+  if (embedding_token.is_empty()) {
+    embedding_token = base::UnguessableToken::Create();
+  }
   std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> out(
-      base::UnguessableToken::Deserialize(proto.embedding_token_high(),
-                                          proto.embedding_token_low()),
-      std::make_unique<HitTester>());
+      std::move(embedding_token), std::make_unique<HitTester>());
   out.second->Build(proto);
   return out;
 }

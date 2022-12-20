@@ -61,9 +61,14 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
   if (!root_frame_recording.IsValid())
     return {};
 
-  entries.emplace_back(base::UnguessableToken::Deserialize(
-                           proto.root_frame().embedding_token_high(),
-                           proto.root_frame().embedding_token_low()),
+  auto root_frame_embedding_token = base::UnguessableToken::Deserialize(
+      proto.root_frame().embedding_token_high(),
+      proto.root_frame().embedding_token_low());
+  if (root_frame_embedding_token.is_empty()) {
+    return {};
+  }
+
+  entries.emplace_back(std::move(root_frame_embedding_token),
                        std::move(root_frame_recording));
 
   for (const auto& subframe : proto.subframes()) {
@@ -73,10 +78,14 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
     if (!frame_recording.IsValid())
       continue;
 
-    entries.emplace_back(
-        base::UnguessableToken::Deserialize(subframe.embedding_token_high(),
-                                            subframe.embedding_token_low()),
-        std::move(frame_recording));
+    auto subframe_embedding_token = base::UnguessableToken::Deserialize(
+        subframe.embedding_token_high(), subframe.embedding_token_low());
+    if (subframe_embedding_token.is_empty()) {
+      continue;
+    }
+
+    entries.emplace_back(std::move(subframe_embedding_token),
+                         std::move(frame_recording));
   }
 
   return RecordingMap(std::move(entries));
