@@ -173,7 +173,9 @@ TEST_F(EpochTopicsTest, CandidateTopicForSite) {
         HashTopDomainForRandomTopicIndexDecision(kTestKey, kCalculationTime,
                                                  top_site);
 
-    // The random topic index is 185, thus Topic(186) will be returned.
+    // The real topic would have been 4, but a random topic (186) is returned
+    // instead. Only callers that are able to receive 4 (domains 2 and 3) should
+    // receive the random topic.
     ASSERT_EQ(random_topic_index_decision % kTaxonomySize, 185ULL);
 
     {
@@ -182,7 +184,7 @@ TEST_F(EpochTopicsTest, CandidateTopicForSite) {
 
       EXPECT_EQ(candidate_topic.topic(), Topic(186));
       EXPECT_FALSE(candidate_topic.is_true_topic());
-      EXPECT_FALSE(candidate_topic.should_be_filtered());
+      EXPECT_TRUE(candidate_topic.should_be_filtered());
     }
 
     {

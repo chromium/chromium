@@ -166,20 +166,6 @@ CandidateTopic EpochTopics::CandidateTopicForSite(
       HashTopDomainForRandomOrTopTopicDecision(hmac_key, calculation_time_,
                                                top_domain);
 
-  if (ShouldUseRandomTopic(random_or_top_topic_decision_hash)) {
-    uint64_t random_topic_index_decision =
-        HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
-                                                 top_domain);
-
-    size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
-
-    Topic topic = Topic(base::checked_cast<int>(random_topic_index + 1));
-
-    return CandidateTopic::Create(topic, /*is_true_topic=*/false,
-                                  /*should_be_filtered=*/false,
-                                  taxonomy_version(), model_version());
-  }
-
   uint64_t top_topic_index_decision_hash =
       HashTopDomainForTopTopicIndexDecision(hmac_key, calculation_time_,
                                             top_domain);
@@ -197,6 +183,20 @@ CandidateTopic EpochTopics::CandidateTopicForSite(
 
   bool should_be_filtered = !topic_and_observing_domains.hashed_domains().count(
       hashed_context_domain);
+
+  if (ShouldUseRandomTopic(random_or_top_topic_decision_hash)) {
+    uint64_t random_topic_index_decision =
+        HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
+                                                 top_domain);
+
+    size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
+
+    Topic topic = Topic(base::checked_cast<int>(random_topic_index + 1));
+
+    return CandidateTopic::Create(topic, /*is_true_topic=*/false,
+                                  should_be_filtered, taxonomy_version(),
+                                  model_version());
+  }
 
   return CandidateTopic::Create(topic_and_observing_domains.topic(),
                                 is_true_topic, should_be_filtered,
