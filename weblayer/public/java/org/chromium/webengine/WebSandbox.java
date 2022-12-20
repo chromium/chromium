@@ -245,15 +245,15 @@ public class WebSandbox {
             // WebSandbox was already shut down.
             return;
         }
+        mWebSandboxService = null;
 
         for (WebEngine engine : mActiveWebEngines) {
             // This will shut down the WebEngine, its fragment, and remove {@code engine} from
             // {@code mActiveWebEngines}.
-            removeWebEngine(engine);
             engine.invalidate();
         }
+        mActiveWebEngines.clear();
 
-        mWebSandboxService = null;
         mConnection.unbind();
     }
 }

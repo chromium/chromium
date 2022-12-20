@@ -82,12 +82,9 @@ class Browser {
     }
 
     // Constructor for browserfragment to inject the {@code tabListCallback} on startup.
-    Browser(IBrowser impl, @Nullable TabListCallback tabListCallback) {
+    Browser(IBrowser impl) {
         mImpl = impl;
         mTabListCallbacks = new ObserverList<TabListCallback>();
-        if (tabListCallback != null) {
-            mTabListCallbacks.addObserver(tabListCallback);
-        }
         mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
 
         try {

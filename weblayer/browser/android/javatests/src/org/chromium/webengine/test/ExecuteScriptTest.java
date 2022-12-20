@@ -19,7 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.webengine.RestrictedAPIException;
 import org.chromium.webengine.Tab;
@@ -29,7 +29,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Tests executing JavaScript in a Tab.
  */
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Tests need separate Activities and WebFragments")
 @RunWith(WebEngineJUnit4ClassRunner.class)
 public class ExecuteScriptTest {
     @Rule
@@ -58,8 +58,10 @@ public class ExecuteScriptTest {
     }
 
     private Tab navigate() throws Exception {
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(mDefaultUrl);
-        return mActivityTestRule.getFragment().getTabManager().get().getActiveTab().get();
+        mActivityTestRule.createWebEngineAttachThenNavigateAndWait(mDefaultUrl);
+        return runOnUiThreadBlocking(
+                () -> mActivityTestRule.getFragment().getWebEngine().getTabManager().getActiveTab())
+                .get();
     }
 
     @Test

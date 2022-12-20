@@ -21,8 +21,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.webengine.Tab;
-import org.chromium.webengine.TabManager;
-import org.chromium.webengine.WebFragment;
+import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebSandbox;
 
 /**
@@ -61,18 +60,17 @@ public class WebFragmentTest {
     @Test
     @SmallTest
     public void loadsPage() throws Exception {
-        WebFragment fragment = runOnUiThreadBlocking(() -> mWebSandbox.createFragment());
-        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(fragment));
+        WebEngine webEngine = runOnUiThreadBlocking(() -> mWebSandbox.createWebEngine()).get();
+        runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine.getFragment()));
 
-        TabManager tabManager = fragment.getTabManager().get();
-        Tab activeTab = tabManager.getActiveTab().get();
+        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
 
         Assert.assertEquals(activeTab.getDisplayUri(), Uri.EMPTY);
 
         String url = getTestDataURL("simple_page.html");
         mActivityTestRule.navigateAndWait(activeTab, url);
 
-        Assert.assertEquals(activeTab.getDisplayUri(), Uri.parse(url));
+        Assert.assertEquals(runOnUiThreadBlocking(() -> activeTab.getDisplayUri()), Uri.parse(url));
     }
 
     /**
@@ -82,13 +80,15 @@ public class WebFragmentTest {
     @Test
     @SmallTest
     public void successfullyLoadDifferentPage() throws Exception {
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page2.html"));
+        mActivityTestRule.createWebEngineAttachThenNavigateAndWait(
+                getTestDataURL("simple_page2.html"));
     }
 
     @Test
     @SmallTest
     public void fragmentTabCanLoadMultiplePages() throws Exception {
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page.html"));
+        mActivityTestRule.createWebEngineAttachThenNavigateAndWait(
+                getTestDataURL("simple_page.html"));
 
         Tab tab = mActivityTestRule.getActiveTab();
         mActivityTestRule.navigateAndWait(tab, getTestDataURL("simple_page2.html"));
@@ -99,9 +99,11 @@ public class WebFragmentTest {
     @Test
     @SmallTest
     public void fragmentsCanBeReplaced() throws Exception {
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page.html"));
+        mActivityTestRule.createWebEngineAttachThenNavigateAndWait(
+                getTestDataURL("simple_page.html"));
         // New fragment
-        mActivityTestRule.attachNewFragmentThenNavigateAndWait(getTestDataURL("simple_page2.html"));
+        mActivityTestRule.createWebEngineAttachThenNavigateAndWait(
+                getTestDataURL("simple_page2.html"));
 
         Tab tab = mActivityTestRule.getActiveTab();
         Assert.assertTrue(tab.getDisplayUri().toString().endsWith("simple_page2.html"));
@@ -111,7 +113,7 @@ public class WebFragmentTest {
     @SmallTest
     public void navigationFailure() {
         try {
-            mActivityTestRule.attachNewFragmentThenNavigateAndWait(
+            mActivityTestRule.createWebEngineAttachThenNavigateAndWait(
                     getTestDataURL("missingpage.html"));
             Assert.fail("exception not thrown");
         } catch (RuntimeException e) {

@@ -7,9 +7,13 @@ package org.chromium.webengine.interfaces;
 import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabProxy;
 import org.chromium.webengine.interfaces.ITabCallback;
+import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 
 oneway interface ITabManagerDelegate {
-    void getActiveTab(ITabCallback callback) = 14;
-    void tryNavigateBack(IBooleanCallback callback) = 17;
-    void createTab(ITabCallback callback) = 18;
+
+    void setTabListObserverDelegate(ITabListObserverDelegate tabListObserverDelegate) = 1;
+
+    void getActiveTab(ITabCallback callback) = 2;
+    void tryNavigateBack(IBooleanCallback callback) = 3;
+    void createTab(ITabCallback callback) = 4;
 }

@@ -6,8 +6,6 @@ package org.chromium.webengine;
 
 import android.os.RemoteException;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
@@ -27,20 +25,16 @@ public class WebEngine {
     private TabManager mTabManager;
     private CookieManager mCookieManager;
 
-    private final TabListObserverDelegate mTabListObserverDelegate;
-
     private WebEngine(WebSandbox webSandbox, IWebEngineDelegate delegate,
             IWebFragmentEventsDelegate fragmentEventsDelegate,
             ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate) {
         ThreadCheck.ensureOnUiThread();
-        mTabListObserverDelegate = new TabListObserverDelegate();
         mWebSandbox = webSandbox;
 
         mDelegate = delegate;
         mFragment = new WebFragment();
         try {
             mFragment.initialize(webSandbox, this, fragmentEventsDelegate);
-            mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
         } catch (RemoteException e) {
         }
         mTabManager = new TabManager(tabManagerDelegate);
@@ -60,7 +54,6 @@ public class WebEngine {
      * @return TabManager Tab manager to interact with tabs.
      */
     public TabManager getTabManager() {
-        ThreadCheck.ensureOnUiThread();
         return mTabManager;
     }
 
@@ -70,7 +63,6 @@ public class WebEngine {
      * @return CookiesManager CookieManager to interact with cookies of the associated Profile.
      */
     public CookieManager getCookieManager() {
-        ThreadCheck.ensureOnUiThread();
         return mCookieManager;
     }
 
@@ -89,6 +81,7 @@ public class WebEngine {
     }
 
     void invalidate() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabManager != null) {
             mTabManager.invalidate();
             mTabManager = null;
@@ -111,10 +104,10 @@ public class WebEngine {
             mDelegate = null;
         }
 
-        if (mWebSandbox != null) {
+        if (mWebSandbox != null && !mWebSandbox.isShutdown()) {
             mWebSandbox.removeWebEngine(this);
-            mWebSandbox = null;
         }
+        mWebSandbox = null;
     }
 
     /**
@@ -122,27 +115,5 @@ public class WebEngine {
      */
     public void close() {
         invalidate();
-    }
-
-    /**
-     * Registers a browser observer and returns if successful.
-     *
-     * @param tabListObserver The TabListObserver.
-     *
-     * @return true if observer was added to the list of observers.
-     */
-    public boolean registerTabListObserver(@NonNull TabListObserver tabListObserver) {
-        return mTabListObserverDelegate.registerObserver(tabListObserver);
-    }
-
-    /**
-     * Unregisters a browser observer and returns if successful.
-     *
-     * @param tabListObserver The TabListObserver to remove.
-     *
-     * @return true if observer was removed from the list of observers.
-     */
-    public boolean unregisterTabListObserver(@NonNull TabListObserver tabListObserver) {
-        return mTabListObserverDelegate.unregisterObserver(tabListObserver);
     }
 }

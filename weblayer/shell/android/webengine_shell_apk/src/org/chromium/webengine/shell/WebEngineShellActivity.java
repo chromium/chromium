@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -19,8 +21,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Log;
 import org.chromium.webengine.CookieManager;
+import org.chromium.webengine.Navigation;
+import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
+import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
+import org.chromium.webengine.TabObserver;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebMessageCallback;
@@ -150,6 +156,102 @@ public class WebEngineShellActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable thrown) {}
         }, mContext.getMainExecutor());
+
+        mTabManager.registerTabListObserver(new TabListObserver() {
+            @Override
+            public void onActiveTabChanged(@Nullable Tab activeTab) {
+                Log.i(TAG, "received TabList Event: 'onActiveTabChanged'-event");
+            }
+
+            @Override
+            public void onTabAdded(@NonNull Tab tab) {
+                Log.i(TAG, "received TabList Event: 'onTabAdded'-event");
+                tab.registerTabObserver(new TabObserver() {
+                    @Override
+                    public void onVisibleUriChanged(@NonNull String uri) {
+                        Log.i(TAG, "received Tab Event: 'onVisibleUriChanged(" + uri + ")'");
+                    }
+
+                    @Override
+                    public void onTitleUpdated(@NonNull String title) {
+                        Log.i(TAG, "received Tab Event: 'onTitleUpdated(" + title + ")'");
+                    }
+
+                    @Override
+                    public void onRenderProcessGone() {
+                        Log.i(TAG, "received Tab Event: 'onRenderProcessGone()'");
+                    }
+                });
+
+                tab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
+                    @Override
+                    public void onNavigationFailed(@NonNull Navigation navigation) {
+                        Log.i(TAG, "received NavigationEvent: 'onNavigationFailed()';");
+                        Log.i(TAG,
+                                "Navigation: url:" + navigation.getUri()
+                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
+                                        + ", samePage: " + navigation.isSameDocument());
+                    }
+
+                    @Override
+                    public void onNavigationCompleted(@NonNull Navigation navigation) {
+                        Log.i(TAG, "received NavigationEvent: 'onNavigationCompleted()';");
+                        Log.i(TAG,
+                                "Navigation: url:" + navigation.getUri()
+                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
+                                        + ", samePage: " + navigation.isSameDocument());
+                        ListenableFuture<String> scriptResultFuture =
+                                tab.executeScript("1+1", true);
+                        Futures.addCallback(scriptResultFuture, new FutureCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                Log.w(TAG, "executeScript result: " + result);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable thrown) {
+                                Log.w(TAG, "executeScript failed: " + thrown);
+                            }
+                        }, mContext.getMainExecutor());
+                    }
+
+                    @Override
+                    public void onNavigationStarted(@NonNull Navigation navigation) {
+                        Log.i(TAG, "received NavigationEvent: 'onNavigationStarted()'");
+                        Log.i(TAG,
+                                "Navigation: url:" + navigation.getUri()
+                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
+                                        + ", samePage: " + navigation.isSameDocument());
+                    }
+
+                    @Override
+                    public void onNavigationRedirected(@NonNull Navigation navigation) {
+                        Log.i(TAG, "received NavigationEvent: 'onNavigationRedirected()'");
+                        Log.i(TAG,
+                                "Navigation: url:" + navigation.getUri()
+                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
+                                        + ", samePage: " + navigation.isSameDocument());
+                    }
+
+                    @Override
+                    public void onLoadProgressChanged(double progress) {
+                        Log.i(TAG,
+                                "received NavigationEvent: 'onLoadProgressChanged(" + progress
+                                        + ")'");
+                    }
+                });
+            }
+
+            @Override
+            public void onTabRemoved(@NonNull Tab tab) {
+                Log.i(TAG, "received TabList Event: 'onTabRemoved'-event");
+            }
+
+            @Override
+            public void onWillDestroyFragmentAndAllTabs() {
+                Log.i(TAG, "received TabList Event: 'onWillDestroyFragmentAndAllTabs'-event");
+            }
+        });
 
         ListenableFuture<Void> setCookieFuture =
                 cookieManager.setCookie("https://sadchonks.com", "foo=bar123");

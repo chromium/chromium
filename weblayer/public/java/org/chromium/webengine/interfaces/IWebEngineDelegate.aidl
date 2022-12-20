@@ -7,9 +7,5 @@ package org.chromium.webengine.interfaces;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 
 oneway interface IWebEngineDelegate {
-    // Tab operations.
-    // TODO(swestphal): Move to TabManager;
-    void setTabListObserverDelegate(ITabListObserverDelegate tabListObserverDelegate) = 15;
-
     void shutdown() = 1;
 }

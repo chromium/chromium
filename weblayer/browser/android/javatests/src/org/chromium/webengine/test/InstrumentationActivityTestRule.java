@@ -18,7 +18,7 @@ import org.junit.Assert;
 import org.chromium.webengine.Navigation;
 import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
-import org.chromium.webengine.TabManager;
+import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
 import org.chromium.webengine.shell.InstrumentationActivity;
@@ -88,21 +88,24 @@ public class InstrumentationActivityTestRule
     }
 
     public Tab getActiveTab() throws Exception {
-        return getFragment().getTabManager().get().getActiveTab().get();
+        return runOnUiThreadBlocking(
+                () -> getFragment().getWebEngine().getTabManager().getActiveTab())
+                .get();
     }
 
     /**
-     * Creates and attaches a new WebFragment before navigating.
+     * Creates a new WebEngine and attaches its Fragment before navigating.
      */
-    public void attachNewFragmentThenNavigateAndWait(String path) throws Exception {
+    public WebEngine createWebEngineAttachThenNavigateAndWait(String path) throws Exception {
         WebSandbox sandbox = getWebSandbox();
-        WebFragment fragment = runOnUiThreadBlocking(() -> sandbox.createFragment());
-        runOnUiThreadBlocking(() -> attachFragment(fragment));
+        WebEngine webEngine = runOnUiThreadBlocking(() -> sandbox.createWebEngine()).get();
 
-        TabManager tabManager = fragment.getTabManager().get();
-        Tab activeTab = tabManager.getActiveTab().get();
+        runOnUiThreadBlocking(() -> attachFragment(webEngine.getFragment()));
+
+        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
 
         navigateAndWait(activeTab, path);
+        return webEngine;
     }
 
     /**

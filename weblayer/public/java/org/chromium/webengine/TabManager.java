@@ -30,6 +30,8 @@ import org.chromium.webengine.interfaces.ITabParams;
 public class TabManager {
     private ITabManagerDelegate mDelegate;
 
+    private final TabListObserverDelegate mTabListObserverDelegate = new TabListObserverDelegate();
+
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
 
@@ -68,6 +70,32 @@ public class TabManager {
 
     TabManager(ITabManagerDelegate delegate) {
         mDelegate = delegate;
+        try {
+            mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
+        } catch (RemoteException e) {
+        }
+    }
+
+    /**
+     * Registers a tab observer and returns if successful.
+     *
+     * @param tabListObserver The TabListObserver.
+     *
+     * @return true if observer was added to the list of observers.
+     */
+    public boolean registerTabListObserver(@NonNull TabListObserver tabListObserver) {
+        return mTabListObserverDelegate.registerObserver(tabListObserver);
+    }
+
+    /**
+     * Unregisters a tab observer and returns if successful.
+     *
+     * @param tabListObserver The TabListObserver to remove.
+     *
+     * @return true if observer was removed from the list of observers.
+     */
+    public boolean unregisterTabListObserver(@NonNull TabListObserver tabListObserver) {
+        return mTabListObserverDelegate.unregisterObserver(tabListObserver);
     }
 
     /**

@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
-import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
 import org.chromium.webengine.interfaces.IWebEngineParams;
@@ -24,21 +23,14 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
 
     private Browser mBrowser;
 
-    // TODO(swestphal): initialize the tabs in a second step so that the TabManager can attach a
-    // listener before.
-    private WebFragmentTabListDelegate mTabListDelegate = new WebFragmentTabListDelegate();
-
-    WebEngineDelegate(Browser browser, WebFragmentTabListDelegate tabListDelegate) {
+    WebEngineDelegate(Browser browser) {
         mBrowser = browser;
-        mTabListDelegate = tabListDelegate;
     }
 
     static void create(Context context, WebLayer webLayer, IWebEngineParams params,
             IWebEngineDelegateClient client) {
         new Handler(Looper.getMainLooper()).post(() -> {
-            WebFragmentTabListDelegate tabListDelegate = new WebFragmentTabListDelegate();
-            Browser browser = new Browser(
-                    webLayer.createBrowser(context, bundleParams(params)), tabListDelegate);
+            Browser browser = new Browser(webLayer.createBrowser(context, bundleParams(params)));
 
             WebFragmentEventsDelegate fragmentEventsDelegate =
                     new WebFragmentEventsDelegate(context, browser);
@@ -47,7 +39,7 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
                     new CookieManagerDelegate(browser.getProfile().getCookieManager());
             TabManagerDelegate tabManagerDelegate = new TabManagerDelegate(browser);
 
-            WebEngineDelegate webEngineDelegate = new WebEngineDelegate(browser, tabListDelegate);
+            WebEngineDelegate webEngineDelegate = new WebEngineDelegate(browser);
             try {
                 client.onWebEngineReady(webEngineDelegate, fragmentEventsDelegate,
                         tabManagerDelegate, cookieManagerDelegate);
@@ -71,11 +63,6 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
         args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
 
         return args;
-    }
-
-    @Override
-    public void setTabListObserverDelegate(ITabListObserverDelegate browserObserverDelegate) {
-        mTabListDelegate.setObserver(browserObserverDelegate);
     }
 
     @Override
