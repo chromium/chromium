@@ -19,7 +19,6 @@ DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 REPO_ALIAS = 'fuchsia.com'
 SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
-
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 

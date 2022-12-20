@@ -13,11 +13,11 @@ import sys
 
 from typing import List, Optional
 
-from common import SDK_ROOT, get_component_uri, get_host_arch, \
+from common import get_component_uri, get_host_arch, \
                    register_common_args, register_device_args, \
-                   register_log_args, run_ffx_command
+                   register_log_args
 from compatible_utils import map_filter_file_to_package_file
-from ffx_integration import FfxTestRunner
+from ffx_integration import FfxTestRunner, run_symbolizer
 from test_runner import TestRunner
 from test_server import setup_test_server
 
@@ -190,20 +190,14 @@ class ExecutableTestRunner(TestRunner):
             test_proc = test_runner.run_test(
                 get_component_uri(self._test_name), test_args, self._target_id)
 
-            # Symbolize output from test process and print to terminal.
-            symbolize_cmd = [
-                'debug', 'symbolize', '--', '--omit-module-lines',
-                '--build-id-dir',
-                os.path.join(SDK_ROOT, '.build-id')
-            ]
+            symbol_paths = []
             for pkg_path in self._package_deps.values():
-                symbol_path = os.path.join(os.path.dirname(pkg_path),
-                                           'ids.txt')
-                symbolize_cmd.extend(('--ids-txt', symbol_path))
-            run_ffx_command(symbolize_cmd,
-                            stdin=test_proc.stdout,
-                            stdout=sys.stdout,
-                            stderr=subprocess.STDOUT)
+                symbol_paths.append(
+                    os.path.join(os.path.dirname(pkg_path), 'ids.txt'))
+            # Symbolize output from test process and print to terminal.
+            symbolizer_proc = run_symbolizer(symbol_paths, test_proc.stdout,
+                                             sys.stdout)
+            symbolizer_proc.communicate()
 
             if test_proc.wait() == 0:
                 logging.info('Process exited normally with status code 0.')

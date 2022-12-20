@@ -13,7 +13,7 @@ import sys
 import tempfile
 
 from contextlib import AbstractContextManager
-from typing import Iterable, Optional
+from typing import IO, Iterable, List, Optional
 
 from common import check_ssh_config_file, run_ffx_command, \
                    run_continuous_ffx_command, SDK_ROOT
@@ -347,3 +347,19 @@ class FfxTestRunner(AbstractContextManager):
         """
         self._parse_test_outputs()
         return self._debug_data_directory
+
+
+def run_symbolizer(symbol_paths: List[str], input_fd: IO,
+                   output_fd: IO) -> subprocess.Popen:
+    """Runs symbolizer that symbolizes |input| and outputs to |output|."""
+
+    symbolize_cmd = ([
+        'debug', 'symbolize', '--', '--omit-module-lines', '--build-id-dir',
+        os.path.join(SDK_ROOT, '.build-id')
+    ])
+    for path in symbol_paths:
+        symbolize_cmd.extend(['--ids-txt', path])
+    return run_continuous_ffx_command(symbolize_cmd,
+                                      stdin=input_fd,
+                                      stdout=output_fd,
+                                      stderr=subprocess.STDOUT)

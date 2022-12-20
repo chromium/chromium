@@ -4,14 +4,11 @@
 # found in the LICENSE file.
 """File for testing log_manager.py."""
 
-import os
 import sys
 import unittest
 import unittest.mock as mock
 
 import log_manager
-
-from common import SDK_ROOT
 
 _LOGS_DIR = 'test_logs_dir'
 
@@ -62,20 +59,14 @@ class LogManagerTest(unittest.TestCase):
         """Test symbols are used when pkg_paths are set."""
 
         log = log_manager.LogManager(_LOGS_DIR)
-        with mock.patch('os.path.isfile', return_value=True):
-            with mock.patch('builtins.open'):
-                log_manager.start_system_log(log,
-                                             False,
-                                             pkg_paths=['test_pkg'])
-                log.stop()
+        with mock.patch('os.path.isfile', return_value=True), \
+                mock.patch('builtins.open'), \
+                mock.patch('log_manager.run_symbolizer'):
+            log_manager.start_system_log(log, False, pkg_paths=['test_pkg'])
+            log.stop()
+        self.assertEqual(mock_ffx.call_count, 1)
         self.assertEqual(mock_ffx.call_args_list[0][0][0],
                          ['log', '--no-symbols'])
-        self.assertEqual(mock_ffx.call_args_list[1][0][0], [
-            'debug', 'symbolize', '--', '--omit-module-lines',
-            '--build-id-dir',
-            os.path.join(SDK_ROOT, '.build-id'), '--ids-txt', 'ids.txt'
-        ])
-        self.assertEqual(mock_ffx.call_count, 2)
 
     def test_no_logging_dir_exception(self) -> None:
         """Tests empty LogManager throws an exception on |open_log_file|."""
