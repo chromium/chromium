@@ -165,6 +165,10 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
 
   base::UnguessableToken guid = base::UnguessableToken::Deserialize(
       serialized_state->guid_high, serialized_state->guid_low);
+  if (guid.is_empty()) {
+    AssertNotExtractingHandlesFromMessage();
+    return nullptr;
+  }
 
   base::subtle::PlatformSharedMemoryRegion::Mode mode;
   switch (serialized_state->access_mode) {
@@ -186,7 +190,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
       CreateSharedMemoryRegionHandleFromPlatformHandles(std::move(handles[0]),
                                                         std::move(handles[1])),
-      mode, static_cast<size_t>(serialized_state->num_bytes), guid);
+      mode, static_cast<size_t>(serialized_state->num_bytes), std::move(guid));
   if (!region.IsValid()) {
     AssertNotExtractingHandlesFromMessage();
     LOG(ERROR)

@@ -252,6 +252,9 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
 
   auto guid =
       base::UnguessableToken::Deserialize(header.guid_high, header.guid_low);
+  if (guid.is_empty()) {
+    return nullptr;
+  }
 
   auto handle = CreateRegionHandleFromPlatformHandles(handles, mode);
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(

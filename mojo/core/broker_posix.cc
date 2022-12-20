@@ -131,7 +131,11 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     const BufferResponseData* data;
     if (!GetBrokerMessageData(message.get(), &data))
       return base::WritableSharedMemoryRegion();
-
+    base::UnguessableToken guid =
+        base::UnguessableToken::Deserialize(data->guid_high, data->guid_low);
+    if (guid.is_empty()) {
+      return base::WritableSharedMemoryRegion();
+    }
     if (handles.size() == 1)
       handles.emplace_back();
     return base::WritableSharedMemoryRegion::Deserialize(
@@ -139,9 +143,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
             CreateSharedMemoryRegionHandleFromPlatformHandles(
                 std::move(handles[0]), std::move(handles[1])),
             base::subtle::PlatformSharedMemoryRegion::Mode::kWritable,
-            num_bytes,
-            base::UnguessableToken::Deserialize(data->guid_high,
-                                                data->guid_low)));
+            num_bytes, std::move(guid)));
   }
 
   return base::WritableSharedMemoryRegion();
