@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUISource_DebugReporting, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
@@ -241,7 +241,7 @@ class Source {
   status: string;
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: string;
-  debugReportingEnabled: boolean;
+  debugReportingEnabled: string;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -271,7 +271,7 @@ class Source {
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys.join(', ');
     this.status = attributabilityToText(mojo.attributability);
-    this.debugReportingEnabled = mojo.debugReportingEnabled;
+    this.debugReportingEnabled = sourceDebugReportingToText(mojo.debugReportingEnabled);
   }
 }
 
@@ -311,8 +311,7 @@ class SourceTableModel extends TableModel<Source> {
           new ValueColumn<Source, string>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
           new ValueColumn<Source, string>(
-              'Verbose Debug Reporting',
-              (e) => e.debugReportingEnabled ? 'enabled' : 'disabled'),
+              'Verbose Debug Reporting', (e) => e.debugReportingEnabled),
         ],
         5,  // Sort by source registration time by default.
         'No sources.',
@@ -988,6 +987,19 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Excessive event-level reports';
     default:
       return status.toString();
+  }
+}
+
+function sourceDebugReportingToText(debugReporting: WebUISource_DebugReporting): string {
+  switch (debugReporting) {
+    case WebUISource_DebugReporting.kDisabled:
+      return 'Disabled';
+    case WebUISource_DebugReporting.kEnabled:
+      return 'Enabled';
+    case WebUISource_DebugReporting.kNotApplicable:
+      return 'N/A';
+    default:
+      return debugReporting.toString();
   }
 }
 
