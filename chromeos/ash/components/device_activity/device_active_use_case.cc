@@ -213,19 +213,6 @@ void DeviceActiveUseCase::SetPsmRlweClient(
   psm_rlwe_client_ = std::move(status_or_client.value());
 }
 
-bool DeviceActiveUseCase::EncryptPsmValueAsCiphertext(base::Time ts) {
-  (void)ts;
-  NOTREACHED();
-  return false;
-}
-
-base::Time DeviceActiveUseCase::DecryptPsmValueAsTimestamp(
-    std::string ciphertext) const {
-  (void)ciphertext;
-  NOTREACHED();
-  return base::Time::UnixEpoch();
-}
-
 std::string DeviceActiveUseCase::FormatPTDateString(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
@@ -253,7 +240,6 @@ DeviceActiveUseCase::GeneratePsmIdentifier(
       base::JoinString({psm_use_case, window_id.value()}, "|");
 
   // |psm_id_str| represents a 64 byte hex encoded value by default.
-  // However for the first active use case, this value is a 32 byte string.
   std::string psm_id_str =
       GetDigestString(psm_device_active_secret_, unhashed_psm_id);
 

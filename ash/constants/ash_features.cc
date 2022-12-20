@@ -2201,18 +2201,6 @@ BASE_FEATURE(kDeviceActiveClientDailyCheckMembership,
              "DeviceActiveClientDailyCheckMembership",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables PSM CheckIn for the first active device active pings
-// on ChromeOS.
-BASE_FEATURE(kDeviceActiveClientFirstActiveCheckIn,
-             "DeviceActiveClientFirstActiveCheckIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables PSM CheckMembership for all time device active pings
-// on ChromeOS.
-BASE_FEATURE(kDeviceActiveClientFirstActiveCheckMembership,
-             "DeviceActiveClientFirstActiveCheckMembership",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables PSM CheckIn for the monthly device active pings
 // on ChromeOS.
 BASE_FEATURE(kDeviceActiveClientMonthlyCheckIn,

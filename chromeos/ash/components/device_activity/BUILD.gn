@@ -46,8 +46,6 @@ component("device_activity") {
     "device_activity_controller.h",
     "fake_psm_delegate.cc",
     "fake_psm_delegate.h",
-    "first_active_use_case_impl.cc",
-    "first_active_use_case_impl.h",
     "fresnel_pref_names.cc",
     "fresnel_pref_names.h",
     "monthly_use_case_impl.cc",
@@ -65,7 +63,6 @@ source_set("unit_tests") {
     "device_active_use_case_unittest.cc",
     "device_activity_client_unittest.cc",
     "device_activity_controller_unittest.cc",
-    "first_active_use_case_impl_unittest.cc",
     "monthly_use_case_impl_unittest.cc",
     "twenty_eight_day_active_use_case_impl_unittest.cc",
   ]

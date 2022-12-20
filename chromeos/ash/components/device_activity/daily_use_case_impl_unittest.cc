@@ -22,7 +22,6 @@ namespace psm_rlwe = private_membership::rlwe;
 
 namespace {
 
-// Initialize fake value used by the FirstActiveUseCaseImpl.
 // This secret should be of exactly length 64, since it is a 256 bit string
 // encoded as a hexadecimal.
 constexpr char kFakePsmDeviceActiveSecret[] =

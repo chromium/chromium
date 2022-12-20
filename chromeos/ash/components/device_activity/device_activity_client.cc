@@ -384,8 +384,6 @@ DeviceActivityClient::GetSaveStatusRequest() {
                                 CROS_FRESNEL_28DAY_ACTIVE);
         status.set_last_ping_date(last_ping_pt_date);
         break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
-        break;
       default:
         VLOG(1) << "Use case is not supported yet. "
                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase());
@@ -481,11 +479,6 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
             CROS_FRESNEL_28DAY_ACTIVE:
           device_active_use_case_ptr =
               GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE);
-          break;
-        case private_computing::PrivateComputingUseCase::
-            CROS_FRESNEL_FIRST_ACTIVE:
-          device_active_use_case_ptr =
-              GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE);
           break;
         default:
           VLOG(1) << "PSM use case is not supported yet.";
@@ -667,7 +660,7 @@ void DeviceActivityClient::TransitionOutOfIdle(
   // Begin phase one of checking membership if the device has not pinged yet
   // within the given use case window.
   // TODO(https://crbug.com/1262187): Remove hardcoded use case when adding
-  // support for additional use cases (i.e MONTHLY, FIRST_ACTIVE, etc.).
+  // support for additional use cases (i.e MONTHLY, etc.).
   if (current_use_case->IsDevicePingRequired(
           last_transition_out_of_idle_time_)) {
     bool success = current_use_case->SetWindowIdentifier(
@@ -707,27 +700,6 @@ void DeviceActivityClient::TransitionOutOfIdle(
         // |TransitionToCheckIn| if the local state pref is set.
         if (base::FeatureList::IsEnabled(
                 features::kDeviceActiveClientMonthlyCheckIn)) {
-          // During rollout, we perform CheckIn without CheckMembership for
-          // powerwash, recovery, or RMA devices.
-          TransitionToCheckIn(current_use_case);
-          return;
-        }
-
-        break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
-        // Check membership continues when the cached local state pref
-        // is not set. The local state pref may not be set if the device is
-        // new, powerwashed, recovered, RMA, or the local state was corrupted.
-        if (base::FeatureList::IsEnabled(
-                features::kDeviceActiveClientFirstActiveCheckMembership) &&
-            !current_use_case->IsLastKnownPingTimestampSet()) {
-          TransitionToCheckMembershipOprf(current_use_case);
-          return;
-        }
-
-        // |TransitionToCheckIn| if the local state pref is set.
-        if (base::FeatureList::IsEnabled(
-                features::kDeviceActiveClientFirstActiveCheckIn)) {
           // During rollout, we perform CheckIn without CheckMembership for
           // powerwash, recovery, or RMA devices.
           TransitionToCheckIn(current_use_case);
@@ -1055,7 +1027,6 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
       rlwe_membership_responses.membership_responses(0).membership_response();
 
   bool is_psm_id_member = membership_response.is_member();
-  std::string timestamp_ciphertext = membership_response.value();
 
   // Record the query membership result to UMA histogram.
   RecordQueryMembershipResultBoolean(is_psm_id_member);
@@ -1066,20 +1037,10 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
     return;
   }
 
-  if (current_use_case->GetPsmUseCase() ==
-      psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
-    // The first active use case stores the first active ts ciphertext
-    // in the psm serverside.
-    // This allows us to retrieve and decrypt the timestamp since the
-    // membership is true.
-    current_use_case->SetLastKnownPingTimestamp(
-        current_use_case->DecryptPsmValueAsTimestamp(timestamp_ciphertext));
-  } else {
-    // Update local state to signal ping has already been sent for use case
-    // window.
-    current_use_case->SetLastKnownPingTimestamp(
-        last_transition_out_of_idle_time_);
-  }
+  // Update local state to signal ping has already been sent for use case
+  // window.
+  current_use_case->SetLastKnownPingTimestamp(
+      last_transition_out_of_idle_time_);
 
   RecordDurationStateMetric(state_, state_timer_.Elapsed());
   TransitionToIdle(current_use_case);
@@ -1128,17 +1089,6 @@ void DeviceActivityClient::TransitionToCheckIn(
 
   // Report UMA histogram for transitioning state to |kCheckingIn|.
   RecordStateCountMetric(state_);
-
-  if (current_use_case->GetPsmUseCase() ==
-          psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE &&
-      !current_use_case->EncryptPsmValueAsCiphertext(
-          last_transition_out_of_idle_time_)) {
-    VLOG(1) << "Failed to encrypt and store psm value as ciphertext for the "
-               "first active use case.";
-    TransitionToIdle(current_use_case);
-    RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    return;
-  }
 
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request =

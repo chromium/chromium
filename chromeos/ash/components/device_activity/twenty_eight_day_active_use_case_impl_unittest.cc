@@ -34,8 +34,7 @@ constexpr size_t kRollingWindowSize = 28;
 constexpr char kFakePsmDeviceActiveSecret[] =
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
-// TODO(hirthanan): Enable when rolling out check membership requests for the
-// first active use case.
+// TODO(hirthanan): Enable when rolling out check membership requests.
 // constexpr char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
@@ -143,8 +142,7 @@ TEST_F(TwentyEightDayActiveUseCaseImplTest, ExpectedMetadataIsSet) {
   EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
   EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
 
-  // TODO(hirthanan): Enable when rolling out check membership requests for the
-  // first active use case.
+  // TODO(hirthanan): Enable when rolling out check membership requests.
   // EXPECT_EQ(req.device_metadata().hardware_id(), kHardwareClassKeyNotFound);
   // EXPECT_EQ(req.device_metadata().market_segment(),
   //          MarketSegment::MARKET_SEGMENT_UNKNOWN);

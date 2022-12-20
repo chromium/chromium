@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_client.h"
-#include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/twenty_eight_day_active_use_case_impl.h"
@@ -99,8 +98,6 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
   registry->RegisterTimePref(prefs::kDeviceActiveLastKnownMonthlyPingTimestamp,
                              unix_epoch);
-  registry->RegisterTimePref(
-      prefs::kDeviceActiveLastKnownFirstActivePingTimestamp, unix_epoch);
   registry->RegisterTimePref(
       prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
 }
@@ -237,8 +234,7 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerOnMachineStatisticsLoaded);
 
-  // Initialize all device active use cases, sorted by
-  // smallest to largest window. i.e. Daily > Monthly > First Active.
+  // smallest to largest window. i.e. Daily > Monthly.
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
@@ -247,9 +243,6 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<TwentyEightDayActiveUseCaseImpl>(
-      psm_device_active_secret, chrome_passed_device_params_, local_state,
-      std::make_unique<PsmDelegateImpl>()));
-  use_cases.push_back(std::make_unique<FirstActiveUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
 

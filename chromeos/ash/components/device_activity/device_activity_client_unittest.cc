@@ -21,7 +21,6 @@
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
-#include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
@@ -252,26 +251,6 @@ class MonthlyUseCaseImplUnderTest : public MonthlyUseCaseImpl {
   ~MonthlyUseCaseImplUnderTest() override = default;
 };
 
-class FirstActiveUseCaseImplUnderTest : public FirstActiveUseCaseImpl {
- public:
-  FirstActiveUseCaseImplUnderTest(
-      PrefService* local_state,
-      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
-          test_case)
-      : FirstActiveUseCaseImpl(
-            kFakePsmDeviceActiveSecret,
-            kFakeChromeParameters,
-            local_state,
-            std::make_unique<FakePsmDelegate>(test_case.ec_cipher_key(),
-                                              test_case.seed(),
-                                              GetPlaintextIds(test_case))) {}
-  FirstActiveUseCaseImplUnderTest(const FirstActiveUseCaseImplUnderTest&) =
-      delete;
-  FirstActiveUseCaseImplUnderTest& operator=(
-      const FirstActiveUseCaseImplUnderTest&) = delete;
-  ~FirstActiveUseCaseImplUnderTest() override = default;
-};
-
 class TwentyEightDayActiveUseCaseImplUnderTest
     : public TwentyEightDayActiveUseCaseImpl {
  public:
@@ -455,7 +434,6 @@ class DeviceActivityClientTest : public testing::Test {
             features::kDeviceActiveClientMonthlyCheckIn,
             features::kDeviceActiveClientDailyCheckMembership,
             features::kDeviceActiveClientMonthlyCheckMembership,
-            features::kDeviceActiveClientFirstActiveCheckMembership,
             features::kDeviceActiveClient28DayActiveCheckIn,
             features::kDeviceActiveClient28DayActiveCheckMembership,
         },
@@ -523,13 +501,6 @@ class DeviceActivityClientTest : public testing::Test {
           &local_state_, psm_test_case));
     }
     if (base::FeatureList::IsEnabled(
-            features::kDeviceActiveClientFirstActiveCheckIn) ||
-        base::FeatureList::IsEnabled(
-            features::kDeviceActiveClientFirstActiveCheckMembership)) {
-      use_cases.push_back(std::make_unique<FirstActiveUseCaseImplUnderTest>(
-          &local_state_, psm_test_case));
-    }
-    if (base::FeatureList::IsEnabled(
             features::kDeviceActiveClient28DayActiveCheckIn) ||
         base::FeatureList::IsEnabled(
             features::kDeviceActiveClient28DayActiveCheckMembership)) {
@@ -551,8 +522,6 @@ class DeviceActivityClientTest : public testing::Test {
         prefs::kDeviceActiveLastKnownDailyPingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnownMonthlyPingTimestamp);
-    local_state_.RemoveUserPref(
-        prefs::kDeviceActiveLastKnownFirstActivePingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnown28DayActivePingTimestamp);
   }
@@ -630,7 +599,7 @@ class DeviceActivityClientTest : public testing::Test {
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {
-  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 4);
+  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 3);
 }
 
 TEST_F(DeviceActivityClientTest,
@@ -907,14 +876,6 @@ TEST_F(DeviceActivityClientTest, CheckInOnLocalStateSetAndPingRequired) {
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
-
-    // First active use case only updates the last ping timestamp once. Since
-    // the timestamp is already set, the client does not attempt to report first
-    // active use case again.
-    if (use_case->GetPsmUseCase() ==
-        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
-      continue;
-    }
 
     EXPECT_EQ(device_activity_client_->GetState(),
               DeviceActivityClient::State::kCheckingIn);

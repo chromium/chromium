@@ -146,25 +146,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Determine if a device ping is needed for a given device window.
   // Performing this check helps reduce QPS to the |CheckingMembership|
   // network requests.
-  //
-  // The first active use case will always return true since the window
-  // identifier is constant.
-  virtual bool IsDevicePingRequired(base::Time new_ping_ts) const;
+  bool IsDevicePingRequired(base::Time new_ping_ts) const;
 
   // Regenerated when the state machine enters check membership Oprf state.
   // Client Generates protos used in request body of Oprf and Query requests.
   void SetPsmRlweClient(
       std::vector<private_membership::rlwe::RlwePlaintextId> psm_ids);
-
-  // Generates the AES-256 encrypted ciphertext, which is used to store
-  // the timestamp for only the first active use case.
-  // The device stable secret (only known to the chromebook itself) is needed to
-  // encrypt/decrypt this value. This ensures the first active timestamp is
-  // reversible by only the device itself.
-  virtual bool EncryptPsmValueAsCiphertext(base::Time ts);
-
-  // Retrieves and decrypts the AES-256 encrypted psm value to a timestamp.
-  virtual base::Time DecryptPsmValueAsTimestamp(std::string ciphertext) const;
 
   // Format a PT adjusted base::Time object to a valid date string.
   // This function removes the exact time of day when generating the date string
