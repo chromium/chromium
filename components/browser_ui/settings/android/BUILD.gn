@@ -8,6 +8,7 @@ _jni_sources = [ "java/src/org/chromium/components/browser_ui/settings/SettingsF
 
 android_library("java") {
   sources = [
+              "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
               "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsLauncher.java",
               "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
               "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",

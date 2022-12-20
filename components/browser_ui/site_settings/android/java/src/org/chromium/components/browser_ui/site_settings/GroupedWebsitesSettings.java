@@ -13,14 +13,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
  * Shows the permissions and other settings for a group of websites.
  */
-public class GroupedWebsitesSettings
-        extends SiteSettingsPreferenceFragment implements Preference.OnPreferenceClickListener {
+public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
+        implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 
     // Preference keys, see grouped_websites_preferences.xml.
@@ -45,7 +46,11 @@ public class GroupedWebsitesSettings
     public void onActivityCreated(Bundle savedInstanceState) {
         init();
         super.onActivityCreated(savedInstanceState);
-        setDivider(null);
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     private void init() {

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
@@ -64,7 +65,7 @@ import java.util.List;
  * Note: This can be triggered from a web page, e.g. a GAIA sign-in page.
  */
 public class AccountManagementFragment extends PreferenceFragmentCompat
-        implements Listener, SignInStateObserver, ProfileDataCache.Observer {
+        implements Listener, SignInStateObserver, ProfileDataCache.Observer, CustomDividerFragment {
     private static final String TAG = "AcctManagementPref";
 
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
@@ -117,10 +118,13 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setDivider(null);
-
         // Disable animations of preference changes (crbug.com/986401).
         getListView().setItemAnimator(null);
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     @Override

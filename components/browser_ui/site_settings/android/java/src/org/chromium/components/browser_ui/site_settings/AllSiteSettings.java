@@ -32,6 +32,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -51,7 +52,8 @@ import java.util.Set;
  */
 @UsedByReflection("all_site_preferences.xml")
 public class AllSiteSettings extends SiteSettingsPreferenceFragment
-        implements PreferenceManager.OnPreferenceTreeClickListener, View.OnClickListener {
+        implements PreferenceManager.OnPreferenceTreeClickListener, View.OnClickListener,
+                   CustomDividerFragment {
     // The key to use to pass which category this preference should display,
     // should only be All Sites or Storage.
     public static final String EXTRA_CATEGORY = "category";
@@ -142,10 +144,13 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         // Disable animations of preference changes.
         mListView.setItemAnimator(null);
 
-        // Remove dividers between preferences.
-        setDivider(null);
-
         return view;
+    }
+
+    @Override
+    public boolean hasDivider() {
+        // Remove dividers between preferences.
+        return false;
     }
 
     /**

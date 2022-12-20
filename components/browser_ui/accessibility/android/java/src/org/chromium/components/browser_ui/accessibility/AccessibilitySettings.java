@@ -16,13 +16,14 @@ import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDel
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
  * Fragment to keep track of all the accessibility related preferences.
  */
-public class AccessibilitySettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class AccessibilitySettings extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceChangeListener, CustomDividerFragment {
     public static final String PREF_TEXT_SCALE = "text_scale";
     public static final String PREF_PAGE_ZOOM_DEFAULT_ZOOM = "page_zoom_default_zoom";
     public static final String PREF_PAGE_ZOOM_ALWAYS_SHOW = "page_zoom_always_show";
@@ -64,7 +65,11 @@ public class AccessibilitySettings
 
         getActivity().setTitle(
                 ContextUtils.getApplicationContext().getString(R.string.prefs_accessibility));
-        setDivider(null);
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     @Override

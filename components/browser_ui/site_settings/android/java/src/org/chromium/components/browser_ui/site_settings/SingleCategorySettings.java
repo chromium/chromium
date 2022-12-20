@@ -48,6 +48,7 @@ import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -95,7 +96,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         implements OnPreferenceChangeListener, OnPreferenceClickListener, SiteAddedCallback,
                    OnPreferenceTreeClickListener, FragmentSettingsLauncher,
                    OnCookiesDetailsRequested,
-                   TriStateCookieSettingsPreference.OnCookiesDetailsRequested {
+                   TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
+                   CustomDividerFragment {
     @IntDef({GlobalToggleLayout.BINARY_TOGGLE, GlobalToggleLayout.TRI_STATE_TOGGLE,
             GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE,
             GlobalToggleLayout.FOUR_STATE_COOKIE_TOGGLE})
@@ -409,10 +411,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         // Disable animations of preference changes.
         mListView.setItemAnimator(null);
 
-        // Remove dividers between preferences.
-        setDivider(null);
-
         return view;
+    }
+
+    @Override
+    public boolean hasDivider() {
+        // Remove dividers between preferences.
+        return false;
     }
 
     /**

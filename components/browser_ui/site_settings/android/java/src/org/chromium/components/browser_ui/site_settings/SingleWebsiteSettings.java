@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -47,7 +48,8 @@ import java.util.Map;
  * Shows the permissions and other settings for a particular website.
  */
 public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
-        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener,
+                   CustomDividerFragment {
     /**
      * Interface for a class that wants to receive updates from SingleWebsiteSettings.
      */
@@ -326,10 +328,13 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             assert false : "Exactly one of EXTRA_SITE or EXTRA_SITE_ADDRESS must be provided.";
         }
 
-        setDivider(null);
-
         // Disable animations of preference changes.
         getListView().setItemAnimator(null);
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     @Override

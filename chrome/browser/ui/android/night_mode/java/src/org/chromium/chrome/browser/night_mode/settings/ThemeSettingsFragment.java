@@ -20,13 +20,15 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.UiUtils;
 
 /**
  * Fragment to manage the theme user settings.
  */
-public class ThemeSettingsFragment extends PreferenceFragmentCompat {
+public class ThemeSettingsFragment
+        extends PreferenceFragmentCompat implements CustomDividerFragment {
     static final String PREF_UI_THEME_PREF = "ui_theme_pref";
 
     public static final String KEY_THEME_SETTINGS_ENTRY = "theme_settings_entry";
@@ -90,7 +92,10 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
             UiUtils.setNavigationBarIconColor(getActivity().getWindow().getDecorView(),
                     getResources().getBoolean(R.bool.window_light_navigation_bar));
         }
+    }
 
-        setDivider(null);
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 }

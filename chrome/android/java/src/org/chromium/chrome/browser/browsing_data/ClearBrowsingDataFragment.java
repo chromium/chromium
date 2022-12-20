@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.signin.GAIAServiceType;
@@ -66,7 +67,8 @@ import java.util.Set;
 public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                    Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-                   SignOutDialogCoordinator.Listener, SigninManager.SignInStateObserver {
+                   SignOutDialogCoordinator.Listener, SigninManager.SignInStateObserver,
+                   CustomDividerFragment {
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     /**
@@ -626,9 +628,12 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         super.onActivityCreated(savedInstanceState);
         // Now that the dialog's view has been created, update the button state.
         updateButtonState();
+    }
 
+    @Override
+    public boolean hasDivider() {
         // Remove the dividers between checkboxes.
-        setDivider(null);
+        return false;
     }
 
     @Override

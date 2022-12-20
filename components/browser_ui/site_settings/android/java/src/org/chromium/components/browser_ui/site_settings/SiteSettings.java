@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -23,8 +24,8 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * permissions that have been granted to websites, as well as enable or disable permissions
  * browser-wide.
  */
-public class SiteSettings
-        extends SiteSettingsPreferenceFragment implements Preference.OnPreferenceClickListener {
+public class SiteSettings extends SiteSettingsPreferenceFragment
+        implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     // The keys for each category shown on the Site Settings page
     // are defined in the SiteSettingsCategory.
 
@@ -41,9 +42,8 @@ public class SiteSettings
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setDivider(null);
+    public boolean hasDivider() {
+        return false;
     }
 
     private Preference findPreference(@Type int type) {

@@ -22,6 +22,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ import java.util.Locale;
  * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been
  * granted access to it by the user.
  */
-public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
+public class ChosenObjectSettings
+        extends SiteSettingsPreferenceFragment implements CustomDividerFragment {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =
@@ -59,7 +61,6 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
     @Override
     @SuppressWarnings("unchecked")
     public void onActivityCreated(Bundle savedInstanceState) {
-        setDivider(null);
         int contentSettingsType = getArguments().getInt(EXTRA_CATEGORY);
         mCategory = SiteSettingsCategory.createFromContentSettingsType(
                 getSiteSettingsDelegate().getBrowserContextHandle(), contentSettingsType);
@@ -73,6 +74,11 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public boolean hasDivider() {
+        return false;
     }
 
     /**

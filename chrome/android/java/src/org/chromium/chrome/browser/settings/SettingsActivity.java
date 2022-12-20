@@ -68,6 +68,7 @@ import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
@@ -156,11 +157,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (initialFragment == null) initialFragment = MainSettings.class.getName();
 
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
-            getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, fragment)
+                    // Set width constraints after commit is done, since recycler view is not
+                    // accessible before transaction completes.
+                    .runOnCommit(this::configureWideDisplayStyle)
+                    .commit();
         }
 
-        // Set width constraints
-        configureWideDisplayStyle();
         setStatusBarColor();
         initBottomSheet();
         BackPressHelper.create(this, getOnBackPressedDispatcher(), this::handleBackPressed);
@@ -186,6 +191,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             View view = findViewById(R.id.content);
             mUiConfig = new UiConfig(view);
             ViewResizer.createAndAttach(view, mUiConfig, 0, minWidePaddingPixels);
+
+            // Configure divider style for the fragment.
+            if (getMainFragment() instanceof CustomDividerFragment
+                    && getMainFragment() instanceof PreferenceFragmentCompat) {
+                boolean hasDivider = ((CustomDividerFragment) getMainFragment()).hasDivider();
+                if (!hasDivider) {
+                    ((PreferenceFragmentCompat) getMainFragment()).setDivider(null);
+                }
+            }
         } else {
             mUiConfig.updateDisplayStyle();
         }
