@@ -13,6 +13,7 @@ import abc
 import argparse
 import collections
 import errno
+import functools
 import os
 import re
 import struct
@@ -49,11 +50,39 @@ _DEX_HEADER_FMT = (
     ('data_off', 'I'),
 )
 
+
+class TypeCode:
+  LOOKUP = {}
+
+  def __init__(self, name, value):
+    assert value not in TypeCode.LOOKUP
+    self.name = name
+    self.value = value
+    TypeCode.LOOKUP[value] = self
+
 # Full list of type codes:
 # https://source.android.com/devices/tech/dalvik/dex-format#type-codes
-_TYPE_TYPE_LIST = 0x1001
-_TYPE_CLASS_DATA_ITEM = 0x2000
-_TYPE_CODE_ITEM = 0x2001
+_TYPE_HEADER_ITEM = TypeCode('HEADER', 0x0000)
+_TYPE_STRING_ID_ITEM = TypeCode('STRING_ID', 0x0001)
+_TYPE_TYPE_ID_ITEM = TypeCode('TYPE_ID', 0x0002)
+_TYPE_PROTO_ID_ITEM = TypeCode('PROTO_ID', 0x0003)
+_TYPE_FIELD_ID_ITEM = TypeCode('FIELD_ID', 0x0004)
+_TYPE_METHOD_ID_ITEM = TypeCode('METHOD_ID', 0x0005)
+_TYPE_CLASS_DEF_ITEM = TypeCode('CLASS_DEF', 0x0006)
+_TYPE_CALL_SITE_ID_ITEM = TypeCode('CALL_SITE_ID', 0x0007)
+_TYPE_METHOD_HANDLE_ITEM = TypeCode('METHOD_HANDLE', 0x0008)
+_TYPE_MAP_LIST = TypeCode('MAP', 0x1000)
+_TYPE_TYPE_LIST = TypeCode('TYPE', 0x1001)
+_TYPE_ANNOTATION_SET_REF_LIST = TypeCode('ANNOTATION_SET_REF', 0x1002)
+_TYPE_ANNOTATION_SET_ITEM = TypeCode('ANNOTATION_SET', 0x1003)
+_TYPE_CLASS_DATA_ITEM = TypeCode('CLASS_DATA', 0x2000)
+_TYPE_CODE_ITEM = TypeCode('CODE', 0x2001)
+_TYPE_STRING_DATA_ITEM = TypeCode('STRING_DATA', 0x2002)
+_TYPE_DEBUG_INFO_ITEM = TypeCode('DEBUG_INFO', 0x2003)
+_TYPE_ANNOTATION_ITEM = TypeCode('ANNOTATION', 0x2004)
+_TYPE_ENCODED_ARRAY_ITEM = TypeCode('ENCODED_ARRAY', 0x2005)
+_TYPE_ANNOTATIONS_DIRECTORY_ITEM = TypeCode('ANNOTATIONS_DIRECTORY', 0x2006)
+_TYPE_HIDDENAPI_CLASS_DATA_ITEM = TypeCode('HIDDENAPI_CLASS_DATA', 0xF000)
 
 _CLASS_ACCESS_FLAGS = {
     0x1: 'public',
@@ -210,8 +239,11 @@ class _MemoryItemList:
     """
     self.offset = offset
     self.size = size
-    reader.Seek(first_item_offset or offset)
-    self._items = reader.NextList(size, factory)
+    if self.size > 0:
+      reader.Seek(first_item_offset or offset)
+      self._items = reader.NextList(size, factory)
+    else:
+      self._items = []
     if alignment:
       reader.AlignUpTo(alignment)
 
@@ -321,10 +353,19 @@ class _CodeItemList(_MemoryItemList):
 
 class _DexMapItem:
   def __init__(self, reader):
-    self.type = reader.NextUShort()
-    reader.NextUShort()  # Unused.
-    self.size = reader.NextUInt()
-    self.offset = reader.NextUInt()
+    if reader:
+      self.type = reader.NextUShort()
+      reader.NextUShort()  # Unused.
+      self.size = reader.NextUInt()
+      self.offset = reader.NextUInt()
+    else:
+      self.type = None
+      self.size = 0
+      self.offset = 0
+
+  def GetName(self):
+    type_code = TypeCode.LOOKUP.get(self.type)
+    return type_code.name if type_code else ('(Type code %04x)' % self.type)
 
   def __repr__(self):
     return '_DexMapItem(type={}, size={}, offset={:#x})'.format(
@@ -342,6 +383,9 @@ class _DexMapList:
 
   def get(self, key):
     return self._map.get(key)
+
+  def GetMapItemsSortedByOffset(self):
+    return sorted(self._map.values(), key=lambda x: x.offset)
 
   def __repr__(self):
     return '_DexMapList(size={}, items={})'.format(self._size, self._map)
@@ -370,68 +414,134 @@ class DexFile:
     code_item_list: _CodeItemList containing _CodeItems.
   """
 
-  def __init__(self, data):
+  def __init__(self, data, is_eager=False):
     """Decodes dex file memory sections.
 
     Args:
       data: bytearray containing the contents of a DEX file.
+      is_eager: Whether to parse |data| fully (slower) instead of lazy parsing.
     """
+    self.size = len(data)
     self.reader = _DexReader(data)
     self.header = self.reader.NextDexHeader()
     self.map_list = _DexMapList(self.reader, self.header.map_off)
-    self.string_data_item_list = _StringItemList(self.reader,
-                                                 self.header.string_ids_off,
-                                                 self.header.string_ids_size)
-    self.type_id_item_list = _TypeIdItemList(self.reader,
-                                             self.header.type_ids_off,
-                                             self.header.type_ids_size)
-    self.proto_id_item_list = _ProtoIdItemList(self.reader,
-                                               self.header.proto_ids_off,
-                                               self.header.proto_ids_size)
-    self.field_id_item_list = _FieldIdItemList(self.reader,
-                                               self.header.field_ids_off,
-                                               self.header.field_ids_size)
-    self.method_id_item_list = _MethodIdItemList(self.reader,
-                                                 self.header.method_ids_off,
-                                                 self.header.method_ids_size)
-    self.class_def_item_list = _ClassDefItemList(self.reader,
-                                                 self.header.class_defs_off,
-                                                 self.header.class_defs_size)
 
-    type_list_item = self.map_list.get(_TYPE_TYPE_LIST)
-    if type_list_item:
-      self.type_list_item_list = _TypeListItemList(self.reader,
-                                                   type_list_item.offset,
-                                                   type_list_item.size)
-    else:
-      self.type_list_item_list = _TypeListItemList(self.reader, 0, 0)
-    self._type_lists_by_offset = {
+    # Data that require nontrivial processing are lazily initialized by default,
+    # with support for eager initialization if desired.
+    if is_eager:
+      _ = self.string_data_item_list
+      _ = self.type_id_item_list
+      _ = self.proto_id_item_list
+      _ = self.field_id_item_list
+      _ = self.method_id_item_list
+      _ = self.class_def_item_list
+      _ = self.type_list_item_list
+      _ = self.class_data_item_list
+      _ = self.code_item_list
+      _ = self._type_lists_by_offset
+      _ = self._class_data_item_by_offset
+      _ = self._code_item_by_offset
+
+  @property
+  @functools.lru_cache
+  def string_data_item_list(self):
+    return _StringItemList(self.reader, self.header.string_ids_off,
+                           self.header.string_ids_size)
+
+  @property
+  @functools.lru_cache
+  def type_id_item_list(self):
+    return _TypeIdItemList(self.reader, self.header.type_ids_off,
+                           self.header.type_ids_size)
+
+  @property
+  @functools.lru_cache
+  def proto_id_item_list(self):
+    return _ProtoIdItemList(self.reader, self.header.proto_ids_off,
+                            self.header.proto_ids_size)
+
+  @property
+  @functools.lru_cache
+  def field_id_item_list(self):
+    return _FieldIdItemList(self.reader, self.header.field_ids_off,
+                            self.header.field_ids_size)
+
+  @property
+  @functools.lru_cache
+  def method_id_item_list(self):
+    return _MethodIdItemList(self.reader, self.header.method_ids_off,
+                             self.header.method_ids_size)
+
+  @property
+  @functools.lru_cache
+  def class_def_item_list(self):
+    return _ClassDefItemList(self.reader, self.header.class_defs_off,
+                             self.header.class_defs_size)
+
+  @property
+  @functools.lru_cache
+  def type_list_item_list(self):
+    item = self.map_list.get(_TYPE_TYPE_LIST.value) or _DexMapItem(None)
+    return _TypeListItemList(self.reader, item.offset, item.size)
+
+  @property
+  @functools.lru_cache
+  def class_data_item_list(self):
+    item = self.map_list.get(_TYPE_CLASS_DATA_ITEM.value) or _DexMapItem(None)
+    return _ClassDataItemList(self.reader, item.offset, item.size)
+
+  @property
+  @functools.lru_cache
+  def code_item_list(self):
+    item = self.map_list.get(_TYPE_CODE_ITEM.value) or _DexMapItem(None)
+    return _CodeItemList(self.reader, item.offset, item.size)
+
+  @property
+  @functools.lru_cache
+  def _type_lists_by_offset(self):
+    return {
         type_list.offset: type_list
         for type_list in self.type_list_item_list
     }
 
-    class_data_item = self.map_list.get(_TYPE_CLASS_DATA_ITEM)
-    if class_data_item:
-      self.class_data_item_list = _ClassDataItemList(self.reader,
-                                                     class_data_item.offset,
-                                                     class_data_item.size)
-    else:
-      self.class_data_item_list = []
-    self._class_data_item_by_offset = {
+  @property
+  @functools.lru_cache
+  def _class_data_item_by_offset(self):
+    return {
         class_data_item.offset: class_data_item
         for class_data_item in self.class_data_item_list
     }
 
-    code_item = self.map_list.get(_TYPE_CODE_ITEM)
-    if code_item:
-      self.code_item_list = _CodeItemList(self.reader, code_item.offset,
-                                          code_item.size)
-    else:
-      self.code_item_list = []
-    self._code_item_by_offset = {
-        code_item.offset: code_item
-        for code_item in self.code_item_list
-    }
+  @property
+  @functools.lru_cache
+  def _code_item_by_offset(self):
+    return {code_item.offset: code_item for code_item in self.code_item_list}
+
+  def ComputeMapItemSizes(self):
+    """Returns map item offsets and sizes.
+
+    Returns: A list of dicts containing offsets and sizes of each DEX map item
+      (i.e., DEX section). Fields:
+      * name: Simplified item type code name (FOO = TYPE_FOO_ITEM).
+      * offset: Byte offset of map item.
+      * size: Number of elements in map item.
+      * byte_size: Number of bytes spanned by map item, estimated by subtracting
+        element offsets (and file length for the last map item). Therefore this
+        also includes alignment paddings.
+    """
+    map_items = self.map_list.GetMapItemsSortedByOffset()
+    n = len(map_items)
+    ret = []
+    for i in range(n):
+      end = self.size if i + 1 >= n else map_items[i + 1].offset
+      item = map_items[i]
+      ret.append({
+          'name': item.GetName(),
+          'offset': item.offset,
+          'size': item.size,
+          'byte_size': end - item.offset
+      })
+    return ret
 
   def GetString(self, string_idx):
     string_data_item = self.string_data_item_list[string_idx]
@@ -525,6 +635,12 @@ class _DumpStrings(_DumpCommand):
       print('string(%08X): %s' % (i, rep_str))
 
 
+class _DumpMap(_DumpCommand):
+  def Run(self):
+    for item_info in self._dexfile.ComputeMapItemSizes():
+      print(item_info)
+
+
 class _DumpFields(_DumpCommand):
   def Run(self):
     dexfile = self._dexfile
@@ -594,11 +710,12 @@ class _DumpCodes(_DumpCommand):
     print('Total tries bytes:       %d' % (total_tries_count * (4 + 2 + 2)))
 
 
-def _DumpDexItems(dexfile_data, name, item):
-  dexfile = DexFile(bytearray(dexfile_data))
+def _DumpDexItems(dexfile_data, name, item, is_eager):
+  dexfile = DexFile(data=bytearray(dexfile_data), is_eager=is_eager)
   print('dex_parser: Dumping {} for {}'.format(item, name))
   cmds = {
       'summary': _DumpSummary,
+      'map': _DumpMap,
       'strings': _DumpStrings,
       'fields': _DumpFields,
       'methods': _DumpMethods,
@@ -618,12 +735,16 @@ def main():
   parser.add_argument('input',
                       help='Input (.dex, .jar, .zip, .aab, .apk) file path.')
   parser.add_argument('item',
-                      choices=('summary', 'strings', 'fields', 'methods',
+                      choices=('summary', 'map', 'strings', 'fields', 'methods',
                                'classes', 'codes'),
                       help='Item to dump',
                       nargs='?',
                       default='summary')
+  parser.add_argument('--eager', action='store_true')
   args = parser.parse_args()
+
+  if args.item == 'summary':
+    args.eager = True
 
   if os.path.splitext(args.input)[1] in ('.apk', '.jar', '.zip', '.aab'):
     with zipfile.ZipFile(args.input) as z:
@@ -636,11 +757,11 @@ def main():
         sys.exit(1)
 
       for path in dex_file_paths:
-        _DumpDexItems(z.read(path), path, args.item)
+        _DumpDexItems(z.read(path), path, args.item, args.eager)
 
   else:
     with open(args.input, 'rb') as f:
-      _DumpDexItems(f.read(), args.input, args.item)
+      _DumpDexItems(f.read(), args.input, args.item, args.eager)
 
 
 if __name__ == '__main__':
