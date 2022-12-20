@@ -14,6 +14,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+// TODO(crbug/1296829): Add a non-flaky test for keyboard navigation.
 suite('reimagingCalibrationFailedPageTest', function() {
   /**
    * ShimlessRma is needed to handle the 'transition-state' event used
@@ -100,8 +101,8 @@ suite('reimagingCalibrationFailedPageTest', function() {
         component.shadowRoot.querySelector('#componentTouchpad');
     assertEquals('Camera', cameraComponent.componentName);
     assertFalse(cameraComponent.checked);
-    assertFalse(cameraComponent.failed);
-    assertTrue(cameraComponent.disabled);
+    assertTrue(cameraComponent.failed);
+    assertFalse(cameraComponent.disabled);
     assertEquals('Battery', batteryComponent.componentName);
     assertFalse(batteryComponent.checked);
     assertFalse(batteryComponent.failed);
@@ -113,8 +114,8 @@ suite('reimagingCalibrationFailedPageTest', function() {
     assertTrue(baseAccelerometerComponent.disabled);
     assertEquals('Lid Accelerometer', lidAccelerometerComponent.componentName);
     assertFalse(lidAccelerometerComponent.checked);
-    assertTrue(lidAccelerometerComponent.failed);
-    assertFalse(lidAccelerometerComponent.disabled);
+    assertFalse(lidAccelerometerComponent.failed);
+    assertTrue(lidAccelerometerComponent.disabled);
     assertEquals('Touchpad', touchpadComponent.componentName);
     assertFalse(touchpadComponent.checked);
     assertFalse(touchpadComponent.failed);
@@ -123,9 +124,21 @@ suite('reimagingCalibrationFailedPageTest', function() {
 
   test('ToggleComponent', async () => {
     await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
-    getComponentsList().forEach(
-        component =>
-            assertEquals(CalibrationStatus.kCalibrationSkip, component.status));
+    const componentList = getComponentsList();
+    assertEquals(
+        3,
+        componentList
+            .filter(
+                component =>
+                    component.status === CalibrationStatus.kCalibrationSkip)
+            .length);
+    assertEquals(
+        4,
+        componentList
+            .filter(
+                component =>
+                    component.status === CalibrationStatus.kCalibrationComplete)
+            .length);
 
     // Click the camera button to check it.
     await clickComponentCameraToggle();
@@ -133,7 +146,7 @@ suite('reimagingCalibrationFailedPageTest', function() {
     assertEquals(
         CalibrationStatus.kCalibrationWaiting, getComponentsList()[0].status);
 
-    // Click the camera button to check it.
+    // Click the camera button to uncheck it.
     await clickComponentCameraToggle();
     // Camera should be the first entry in the list.
     assertEquals(
@@ -148,7 +161,7 @@ suite('reimagingCalibrationFailedPageTest', function() {
       assertEquals(5, components.length);
       components.forEach(
           component => assertEquals(
-              CalibrationStatus.kCalibrationSkip, component.status));
+              CalibrationStatus.kCalibrationComplete, component.status));
       startCalibrationCalls++;
       return resolver.promise;
     };
@@ -169,20 +182,24 @@ suite('reimagingCalibrationFailedPageTest', function() {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
-    getComponentsList().forEach(
-        component =>
-            assertEquals(CalibrationStatus.kCalibrationSkip, component.status));
     await clickComponentCameraToggle();
 
     let startCalibrationCalls = 0;
     service.startCalibration = (components) => {
       assertEquals(7, components.length);
-      components.forEach(
-          component => assertEquals(
-              component.component === ComponentType.kCamera ?
-                  CalibrationStatus.kCalibrationWaiting :
-                  CalibrationStatus.kCalibrationSkip,
-              component.status));
+      components.forEach(component => {
+        let expectedStatus;
+        if (component.component === ComponentType.kCamera) {
+          expectedStatus = CalibrationStatus.kCalibrationWaiting;
+        } else if (
+            component.component === ComponentType.kScreen ||
+            component.component === ComponentType.kBaseGyroscope) {
+          expectedStatus = CalibrationStatus.kCalibrationSkip;
+        } else {
+          expectedStatus = CalibrationStatus.kCalibrationComplete;
+        }
+        assertEquals(expectedStatus, component.status);
+      });
       startCalibrationCalls++;
       return resolver.promise;
     };
@@ -201,12 +218,12 @@ suite('reimagingCalibrationFailedPageTest', function() {
   test('ComponentChipAllButtonsDisabled', async () => {
     await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
-    // Lid Accelerometer is a failed component so it starts off not disabled.
-    const lidAccelerometerComponent =
-        component.shadowRoot.querySelector('#componentLidAccelerometer');
-    assertFalse(lidAccelerometerComponent.disabled);
+    // Base Gyroscope is a failed component so it starts off not disabled.
+    const baseGyroscopeComponent =
+        component.shadowRoot.querySelector('#componentBaseGyroscope');
+    assertFalse(baseGyroscopeComponent.disabled);
     component.allButtonsDisabled = true;
-    assertTrue(lidAccelerometerComponent.disabled);
+    assertTrue(baseGyroscopeComponent.disabled);
   });
 
   test('SkipCalibrationWithFailedComponents', async () => {
@@ -277,8 +294,8 @@ suite('reimagingCalibrationFailedPageTest', function() {
     let disableNextButtonEventFired = false;
     let disableNextButton = false;
 
-    const componentLidAccelerometerButton =
-        component.shadowRoot.querySelector('#componentLidAccelerometer')
+    const componentBaseGyroscopeButton =
+        component.shadowRoot.querySelector('#componentBaseGyroscope')
             .shadowRoot.querySelector('#componentButton');
 
     const disableHandler = (event) => {
@@ -289,103 +306,18 @@ suite('reimagingCalibrationFailedPageTest', function() {
     component.addEventListener('disable-next-button', disableHandler);
 
     // If a component is selected, enable the next button.
-    componentLidAccelerometerButton.click();
+    componentBaseGyroscopeButton.click();
     await flushTasks();
     assertTrue(disableNextButtonEventFired);
     assertFalse(disableNextButton);
 
     // If no components are selected, disable the next button.
     disableNextButtonEventFired = false;
-    componentLidAccelerometerButton.click();
+    componentBaseGyroscopeButton.click();
     await flushTasks();
     assertTrue(disableNextButtonEventFired);
     assertTrue(disableNextButton);
 
     component.removeEventListener('disable-next-button', disableHandler);
-  });
-
-  test('CalibrationFailedPageKeyboardNavigationWorks', async () => {
-    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
-
-    const componentLidAccelerometerButton =
-        component.shadowRoot.querySelector('#componentLidAccelerometer')
-            .shadowRoot.querySelector('#componentButton');
-    const componentScreenButton =
-        component.shadowRoot.querySelector('#componentScreen')
-            .shadowRoot.querySelector('#componentButton');
-    // There are two screens, so we can only get the first one by the id. We get
-    // the second one by the unique id.
-    const componentSecondScreenButton =
-        component.shadowRoot.querySelector('[unique-id="6"]')
-            .shadowRoot.querySelector('#componentButton');
-
-    await flushTasks();
-
-    componentLidAccelerometerButton.click();
-    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
-    // We are at the beginning of the list, so left arrow should do nothing.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
-
-    // Skip disabled buttons until an enable button is found.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-
-    // If the next component is not disabled, we don't skip it.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
-
-    // We have reached the end of the list, so we can't go any further.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
-
-    // Check that we can go backwards the same way.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
-
-    // Check that the down button navigates down the column. There is only one
-    // column, so it should be the same as the right button.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
-
-
-    // The up button should work in a similar way.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
-    await flushTasks();
-    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
-
-    // Click on the screen button. It should come into focus.
-    componentScreenButton.click();
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-
-    // Click on the battery button. It's disabled, so we shouldn't focus on it.
-    const componentBatteryButton =
-        component.shadowRoot.querySelector('#componentBattery')
-            .shadowRoot.querySelector('#componentButton');
-    componentBatteryButton.click();
-    await flushTasks();
-    assertDeepEquals(componentScreenButton, getDeepActiveElement());
-
-    // Make sure we can bring both screens into focus, even though they have the
-    // same id.
-    componentSecondScreenButton.click();
-    await flushTasks();
-    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
   });
 });

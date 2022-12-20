@@ -286,10 +286,23 @@ export class ReimagingCalibrationFailedPage extends
    */
   getComponentsList_() {
     return this.componentCheckboxes_.map(item => {
+      // These statuses tell rmad how to treat each component in this request.
+      // If the component didn't fail a calibration, its status needs to be
+      // `kCalibrationComplete`. If the user checked a component, it wants to
+      // retry its calibration. If the user didn't select a failed component for
+      // retry, then skip it.
+      let status;
+      if (!item.failed) {
+        status = CalibrationStatus.kCalibrationComplete;
+      } else if (item.checked) {
+        status = CalibrationStatus.kCalibrationWaiting;
+      } else {
+        status = CalibrationStatus.kCalibrationSkip;
+      }
+
       return {
         component: item.component,
-        status: item.checked ? CalibrationStatus.kCalibrationWaiting :
-                               CalibrationStatus.kCalibrationSkip,
+        status: status,
         progress: 0.0,
       };
     });
@@ -303,7 +316,11 @@ export class ReimagingCalibrationFailedPage extends
     const skippedComponents = this.componentCheckboxes_.map(item => {
       return {
         component: item.component,
-        status: CalibrationStatus.kCalibrationSkip,
+        // This status tells rmad how to treat each component in this request.
+        // Because the user requested to skip all calibrations, make sure to
+        // only mark the failed components as `kCalibrationSkip`.
+        status: item.failed ? CalibrationStatus.kCalibrationSkip :
+                              CalibrationStatus.kCalibrationComplete,
         progress: 0.0,
       };
     });

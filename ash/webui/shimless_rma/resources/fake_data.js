@@ -238,7 +238,7 @@ export const fakeComponentsForRepairStateTest = [
 export const fakeCalibrationComponentsWithFails = [
   {
     component: ComponentType.kCamera,
-    status: CalibrationStatus.kCalibrationWaiting,
+    status: CalibrationStatus.kCalibrationFailed,
     progress: 0.0,
   },
   {
@@ -248,17 +248,17 @@ export const fakeCalibrationComponentsWithFails = [
   },
   {
     component: ComponentType.kLidAccelerometer,
-    status: CalibrationStatus.kCalibrationFailed,
+    status: CalibrationStatus.kCalibrationComplete,
     progress: 1.0,
   },
   {
     component: ComponentType.kBaseAccelerometer,
-    status: CalibrationStatus.kCalibrationInProgress,
+    status: CalibrationStatus.kCalibrationComplete,
     progress: 1.0,
   },
   {
     component: ComponentType.kTouchpad,
-    status: CalibrationStatus.kCalibrationSkip,
+    status: CalibrationStatus.kCalibrationComplete,
     progress: 0.0,
   },
   {
@@ -267,7 +267,7 @@ export const fakeCalibrationComponentsWithFails = [
     progress: 1.0,
   },
   {
-    component: ComponentType.kScreen,
+    component: ComponentType.kBaseGyroscope,
     status: CalibrationStatus.kCalibrationFailed,
     progress: 1.0,
   },
