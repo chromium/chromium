@@ -158,6 +158,10 @@ constexpr bool kPrintSettingsSendUserInfo1 = true;
 constexpr bool kPrintSettingsSendUserInfo2 = false;
 #endif
 
+struct GenerationParams {
+  bool set_printable_area = true;
+};
+
 PrintSettings GenerateSamplePrintSettingsCommon() {
   PrintSettings settings;
 
@@ -214,7 +218,8 @@ PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
   return settings;
 }
 
-PrintSettings GenerateSamplePrintSettingsCustomMargins() {
+PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
+    GenerationParams params) {
   PrintSettings settings = GenerateSamplePrintSettingsCommon();
 
   settings.set_selection_only(kPrintSettingsSetSelection2);
@@ -243,7 +248,18 @@ PrintSettings GenerateSamplePrintSettingsCustomMargins() {
   settings.set_send_user_info(kPrintSettingsSendUserInfo2);
 #endif
 
+  if (params.set_printable_area) {
+    settings.SetPrinterPrintableArea(kPageSetupPhysicalSize,
+                                     kPageSetupPrintableArea,
+                                     /*landscape_needs_flip=*/true);
+  }
+
   return settings;
+}
+
+PrintSettings GenerateSamplePrintSettingsCustomMargins() {
+  const GenerationParams kParams;
+  return GenerateSamplePrintSettingsCustomMarginsWithParams(kParams);
 }
 
 bool RequestedMediasEqual(const PrintSettings::RequestedMedia& lhs,
@@ -528,7 +544,9 @@ TEST(PrintingContextMojomTraitsTest,
                                    kPrintSettingsRequestedMedia));
   // `page_setup_device_units` is set programmatically by PrintSettings based
   // upon all other parameters, so rely upon the value from the constant input.
-  EXPECT_TRUE(output.page_setup_device_units().Equals(
+  // TODO(crbug.com/1400852)  Fix expectation once page setup properly reflects
+  // the landscape setting.
+  EXPECT_FALSE(output.page_setup_device_units().Equals(
       kInput.page_setup_device_units()));
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi2);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
@@ -569,6 +587,20 @@ TEST(PrintingContextMojomTraitsTest,
       mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
 
   EXPECT_EQ(output.ranges(), kEmptyPageRanges);
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsEmptyPrintableArea) {
+  const GenerationParams kParams{.set_printable_area = false};
+  const PrintSettings kInput =
+      GenerateSamplePrintSettingsCustomMarginsWithParams(kParams);
+  PrintSettings output;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
+      kInput, output));
+
+  EXPECT_TRUE(output.page_setup_device_units().Equals(
+      kInput.page_setup_device_units()));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
