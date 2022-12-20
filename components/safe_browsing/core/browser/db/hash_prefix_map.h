@@ -102,7 +102,7 @@ class HashPrefixMap {
   virtual ApplyUpdateResult IsValid() const = 0;
 
   // Returns a hash prefix if it matches the prefixes stored in this map.
-  virtual HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) = 0;
+  virtual HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) = 0;
 
   // Migrates the file format between the different types of HashPrefixMap.
   enum class MigrateResult { kSuccess, kFailure, kNotNeeded };
@@ -124,7 +124,7 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
-  HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) override;
+  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
 
@@ -148,7 +148,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
-  HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash) override;
+  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
 
@@ -169,7 +169,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
 
     HashPrefixesView GetView() const;
     bool IsReadable() const { return file_.IsValid(); }
-    HashPrefix Matches(base::StringPiece full_hash) const;
+    HashPrefixStr Matches(base::StringPiece full_hash) const;
     BufferedFileWriter* GetOrCreateWriter(size_t buffer_size);
 
     const std::string& GetExtensionForTesting() const;

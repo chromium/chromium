@@ -38,8 +38,8 @@ namespace {
 typedef std::vector<FullHashInfo> FullHashInfos;
 
 // Utility function for populating hashes.
-FullHash HashForUrl(const GURL& url) {
-  std::vector<FullHash> full_hashes;
+FullHashStr HashForUrl(const GURL& url) {
+  std::vector<FullHashStr> full_hashes;
   V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   // ASSERT_GE(full_hashes.size(), 1u);
   return full_hashes[0];
@@ -126,7 +126,7 @@ class FakeV4Database : public V4Database {
 
   // V4Database implementation
   void GetStoresMatchingFullHash(
-      const FullHash& full_hash,
+      const FullHashStr& full_hash,
       const StoresToCheck& stores_to_check,
       StoreAndHashPrefixes* store_and_hash_prefixes) override {
     store_and_hash_prefixes->clear();
@@ -278,11 +278,11 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
 
 class TestExtensionClient : public SafeBrowsingDatabaseManager::Client {
  public:
-  TestExtensionClient(const std::set<FullHash>& expected_bad_crxs)
+  TestExtensionClient(const std::set<FullHashStr>& expected_bad_crxs)
       : expected_bad_crxs_(expected_bad_crxs),
         on_check_extensions_result_called_(false) {}
 
-  void OnCheckExtensionsResult(const std::set<FullHash>& bad_crxs) override {
+  void OnCheckExtensionsResult(const std::set<FullHashStr>& bad_crxs) override {
     EXPECT_EQ(expected_bad_crxs_, bad_crxs);
     on_check_extensions_result_called_ = true;
   }
@@ -292,7 +292,7 @@ class TestExtensionClient : public SafeBrowsingDatabaseManager::Client {
   }
 
  private:
-  const std::set<FullHash> expected_bad_crxs_;
+  const std::set<FullHashStr> expected_bad_crxs_;
   bool on_check_extensions_result_called_;
 };
 
@@ -508,8 +508,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   WaitForTasksOnTaskRunner();
 
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes);
@@ -530,8 +530,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
   WaitForTasksOnTaskRunner();
 
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
-  const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  const HashPrefixStr safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
@@ -556,7 +556,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
 TEST_F(V4LocalDatabaseManagerTest,
        TestCheckCsdAllowlistWithPrefixTheFullMatch) {
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Setup to receive full-hash hit. We won't make URL requests.
   FullHashInfos infos(
@@ -565,7 +565,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
 
-  const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
+  const HashPrefixStr safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
@@ -592,7 +592,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   WaitForTasksOnTaskRunner();
 
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(), safe_full_hash);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
@@ -616,7 +616,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
 
   // Add a full hash that won't match the URL we check.
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), safe_full_hash);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
@@ -673,10 +673,10 @@ TEST_F(V4LocalDatabaseManagerTest,
        TestCheckUrlForHCAllowlistWithPrefixMatchButNoLocalFullHashMatch) {
   SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Setup to match hash prefix in the local database.
-  const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
+  const HashPrefixStr safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
@@ -697,7 +697,7 @@ TEST_F(V4LocalDatabaseManagerTest,
        TestCheckUrlForHCAllowlistWithLocalFullHashMatch) {
   SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Setup to match full hash in the local database.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -719,7 +719,7 @@ TEST_F(V4LocalDatabaseManagerTest,
 TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
-  FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Add a full hash that won't match the URL we check.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -777,23 +777,23 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
   base::HistogramTester histograms;
   WaitForTasksOnTaskRunner();
 
-  FullHash fh_malware("Malware");
+  FullHashStr fh_malware("Malware");
   FullHashInfo fhi_malware(fh_malware, GetUrlMalwareId(), base::Time::Now());
   fhi_malware.metadata.population_id = "malware_popid";
 
-  FullHash fh_api("api");
+  FullHashStr fh_api("api");
   FullHashInfo fhi_api(fh_api, GetChromeUrlApiId(), base::Time::Now());
   fhi_api.metadata.population_id = "api_popid";
 
-  FullHash fh_example("example");
+  FullHashStr fh_example("example");
   std::vector<FullHashInfo> fhis({fhi_malware, fhi_api});
-  std::vector<FullHash> full_hashes({fh_malware, fh_example, fh_api});
+  std::vector<FullHashStr> full_hashes({fh_malware, fh_example, fh_api});
 
   std::vector<SBThreatType> full_hash_threat_types(full_hashes.size(),
                                                    SB_THREAT_TYPE_SAFE);
   SBThreatType result_threat_type;
   ThreatMetadata metadata;
-  FullHash matching_full_hash;
+  FullHashStr matching_full_hash;
 
   const std::vector<SBThreatType> expected_full_hash_threat_types(
       {SB_THREAT_TYPE_URL_MALWARE, SB_THREAT_TYPE_SAFE,
@@ -857,8 +857,8 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
 
   // Put a match in the db that will cause a protocol-manager request.
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes);
@@ -927,8 +927,8 @@ TEST_F(V4LocalDatabaseManagerTest, PerformFullHashCheckCalledAsync) {
   SetupFakeManager();
 
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes);
@@ -952,8 +952,8 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   SetupFakeManager();
 
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes);
@@ -1005,10 +1005,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchMalwareIP) {
   // '::ffff:192.168.1.2')).digest() + chr(128)
   // '\xb3\xe0z\xafAv#h\x9a\xcf<\xf3ee\x94\xda\xf6y\xb1\xad\x80'
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetIpMalwareId(),
-                                       FullHash("\xB3\xE0z\xAF"
-                                                "Av#h\x9A\xCF<\xF3"
-                                                "ee\x94\xDA\xF6y\xB1\xAD\x80"));
+  store_and_hash_prefixes.emplace_back(
+      GetIpMalwareId(), FullHashStr("\xB3\xE0z\xAF"
+                                    "Av#h\x9A\xCF<\xF3"
+                                    "ee\x94\xDA\xF6y\xB1\xAD\x80"));
   ReplaceV4Database(store_and_hash_prefixes);
 
   EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP(""));
@@ -1030,7 +1030,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithSameClientAndCancel) {
 
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(),
-                                       HashPrefix("sن\340\t\006_"));
+                                       HashPrefixStr("sن\340\t\006_"));
   ReplaceV4Database(store_and_hash_prefixes);
 
   GURL first_url("http://example.com/a");
@@ -1067,8 +1067,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckResourceUrl) {
   WaitForTasksOnTaskRunner();
 
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeUrlClientIncidentId(),
                                        bad_hash_prefix);
@@ -1091,8 +1091,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestSubresourceFilterCallback) {
   WaitForTasksOnTaskRunner();
 
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
 
   // Put a match in the db that will cause a protocol-manager request.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -1115,7 +1115,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestSubresourceFilterCallback) {
 TEST_F(V4LocalDatabaseManagerTest, TestCheckResourceUrlReturnsBad) {
   // Setup to receive full-hash hit.
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
   FullHashInfo fhi(bad_full_hash, GetChromeUrlClientIncidentId(), base::Time());
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({fhi}));
 
@@ -1124,7 +1124,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckResourceUrlReturnsBad) {
   WaitForTasksOnTaskRunner();
 
   // Put a match in the db that will cause a protocol-manager request.
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeUrlClientIncidentId(),
                                        bad_hash_prefix);
@@ -1147,7 +1147,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlocklisted) {
   WaitForTasksOnTaskRunner();
 
   // bad_extension_id is in the local DB but the full hash won't match.
-  const FullHash bad_extension_id("aaaabbbbccccdddd"),
+  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
       good_extension_id("ddddccccbbbbaaaa");
 
   // Put a match in the db that will cause a protocol-manager request.
@@ -1156,8 +1156,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlocklisted) {
                                        bad_extension_id);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
-  const std::set<FullHash> expected_bad_crxs({});
-  const std::set<FullHash> extension_ids({good_extension_id, bad_extension_id});
+  const std::set<FullHashStr> expected_bad_crxs({});
+  const std::set<FullHashStr> extension_ids(
+      {good_extension_id, bad_extension_id});
   TestExtensionClient client(expected_bad_crxs);
   EXPECT_FALSE(
       v4_local_database_manager_->CheckExtensionIDs(extension_ids, &client));
@@ -1168,7 +1169,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlocklisted) {
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlocklisted) {
   // bad_extension_id is in the local DB and the full hash will match.
-  const FullHash bad_extension_id("aaaabbbbccccdddd"),
+  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
       good_extension_id("ddddccccbbbbaaaa");
   FullHashInfo fhi(bad_extension_id, GetChromeExtMalwareId(), base::Time());
 
@@ -1185,8 +1186,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlocklisted) {
                                        bad_extension_id);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
-  const std::set<FullHash> expected_bad_crxs({bad_extension_id});
-  const std::set<FullHash> extension_ids({good_extension_id, bad_extension_id});
+  const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
+  const std::set<FullHashStr> extension_ids(
+      {good_extension_id, bad_extension_id});
   TestExtensionClient client(expected_bad_crxs);
   EXPECT_FALSE(
       v4_local_database_manager_->CheckExtensionIDs(extension_ids, &client));
@@ -1205,8 +1207,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlocklisted) {
 
   // Put a match in the db that will cause a protocol-manager request.
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalBinId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
@@ -1226,7 +1228,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlocklisted) {
 TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlocklisted) {
   // Setup to receive full-hash hit.
   std::string url_bad_no_scheme("example.com/bad/");
-  FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
+  FullHashStr bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
   FullHashInfo fhi(bad_full_hash, GetUrlMalBinId(), base::Time());
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({fhi}));
 
@@ -1239,7 +1241,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlocklisted) {
   const std::vector<GURL> url_chain({url_good, url_bad});
 
   // Put a match in the db that will cause a protocol-manager request.
-  const HashPrefix bad_hash_prefix(bad_full_hash.substr(0, 5));
+  const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalBinId(), bad_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);

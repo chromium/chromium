@@ -157,7 +157,7 @@ RealTimeUrlChecksAllowlist::IsInAllowlistInternal(const GURL& url) {
     return IsInAllowlistResult::kAllowlistUnavailable;
   }
 
-  std::vector<FullHash> full_hashes;
+  std::vector<FullHashStr> full_hashes;
   V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   for (auto fh : full_hashes) {
     auto truncated_hash = fh.substr(0, kHashSizeInBytes);

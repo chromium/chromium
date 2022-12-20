@@ -52,14 +52,14 @@ bool TestV4Store::HasValidData() {
   return true;
 }
 
-void TestV4Store::MarkPrefixAsBad(HashPrefix prefix) {
+void TestV4Store::MarkPrefixAsBad(HashPrefixStr prefix) {
   auto& vec = mock_prefixes_[prefix.size()];
   vec.insert(std::upper_bound(vec.begin(), vec.end(), prefix), prefix);
   hash_prefix_map_->Clear();
   hash_prefix_map_->Append(prefix.size(), base::StrCat(vec));
 }
 
-void TestV4Store::SetPrefixes(std::vector<HashPrefix> prefixes,
+void TestV4Store::SetPrefixes(std::vector<HashPrefixStr> prefixes,
                               PrefixSize size) {
   std::sort(prefixes.begin(), prefixes.end());
   mock_prefixes_[size] = prefixes;
@@ -73,7 +73,7 @@ TestV4Database::TestV4Database(
     : V4Database(db_task_runner, std::move(store_map)) {}
 
 void TestV4Database::MarkPrefixAsBad(ListIdentifier list_id,
-                                     HashPrefix prefix) {
+                                     HashPrefixStr prefix) {
   V4Store* base_store = store_map_->at(list_id).get();
   TestV4Store* test_store = static_cast<TestV4Store*>(base_store);
   test_store->MarkPrefixAsBad(prefix);
@@ -111,7 +111,7 @@ TestV4DatabaseFactory::Create(
 }
 
 void TestV4DatabaseFactory::MarkPrefixAsBad(ListIdentifier list_id,
-                                            HashPrefix prefix) {
+                                            HashPrefixStr prefix) {
   v4_db_->MarkPrefixAsBad(list_id, prefix);
 }
 

@@ -162,7 +162,7 @@ ApplyUpdateResult InMemoryHashPrefixMap::IsValid() const {
   return APPLY_UPDATE_SUCCESS;
 }
 
-HashPrefix InMemoryHashPrefixMap::GetMatchingHashPrefix(
+HashPrefixStr InMemoryHashPrefixMap::GetMatchingHashPrefix(
     base::StringPiece full_hash) {
   for (const auto& [size, prefixes] : map_) {
     base::StringPiece hash_prefix = full_hash.substr(0, size);
@@ -171,7 +171,7 @@ HashPrefix InMemoryHashPrefixMap::GetMatchingHashPrefix(
       return std::string(hash_prefix);
     }
   }
-  return HashPrefix();
+  return HashPrefixStr();
 }
 
 HashPrefixMap::MigrateResult InMemoryHashPrefixMap::MigrateFileFormat(
@@ -335,14 +335,14 @@ ApplyUpdateResult MmapHashPrefixMap::IsValid() const {
   return APPLY_UPDATE_SUCCESS;
 }
 
-HashPrefix MmapHashPrefixMap::GetMatchingHashPrefix(
+HashPrefixStr MmapHashPrefixMap::GetMatchingHashPrefix(
     base::StringPiece full_hash) {
   for (const auto& kv : map_) {
-    HashPrefix matching_prefix = kv.second.Matches(full_hash);
+    HashPrefixStr matching_prefix = kv.second.Matches(full_hash);
     if (!matching_prefix.empty())
       return matching_prefix;
   }
-  return HashPrefix();
+  return HashPrefixStr();
 }
 
 HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
@@ -439,9 +439,9 @@ bool MmapHashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
   return true;
 }
 
-HashPrefix MmapHashPrefixMap::FileInfo::Matches(
+HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
     base::StringPiece full_hash) const {
-  HashPrefix hash_prefix(full_hash.substr(0, prefix_size_));
+  HashPrefixStr hash_prefix(full_hash.substr(0, prefix_size_));
   HashPrefixesView prefixes = GetView();
 
   uint32_t start = 0;
@@ -456,12 +456,12 @@ HashPrefix MmapHashPrefixMap::FileInfo::Matches(
 
     // If the start is the same as end, the hash doesn't exist.
     if (start == end)
-      return HashPrefix();
+      return HashPrefixStr();
   }
 
   if (HashPrefixMatches(hash_prefix, prefixes, prefix_size_, start, end))
     return hash_prefix;
-  return HashPrefix();
+  return HashPrefixStr();
 }
 
 MmapHashPrefixMap::BufferedFileWriter*

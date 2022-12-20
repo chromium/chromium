@@ -54,7 +54,7 @@ class SubresourceFilterInterceptingBrowserTest
         safe_browsing::GetUrlSubresourceFilterId().platform_type());
     threat_match.set_threat_entry_type(safe_browsing::URL);
 
-    safe_browsing::FullHash enforce_full_hash =
+    safe_browsing::FullHashStr enforce_full_hash =
         safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
     threat_match.mutable_threat()->set_hash(enforce_full_hash);
     threat_match.mutable_cache_duration()->set_seconds(300);

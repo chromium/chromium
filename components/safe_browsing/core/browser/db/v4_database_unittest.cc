@@ -29,8 +29,8 @@ class FakeV4Store : public V4Store {
             std::make_unique<InMemoryHashPrefixMap>()),
         hash_prefix_should_match_(hash_prefix_matches) {}
 
-  HashPrefix GetMatchingHashPrefix(const FullHash& full_hash) override {
-    return hash_prefix_should_match_ ? full_hash : HashPrefix();
+  HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override {
+    return hash_prefix_should_match_ ? full_hash : HashPrefixStr();
   }
 
   bool HasValidData() override { return true; }

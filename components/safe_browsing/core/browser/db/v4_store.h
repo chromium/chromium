@@ -134,7 +134,7 @@ class V4Store {
 
   // If a hash prefix in this store matches |full_hash|, returns that hash
   // prefix; otherwise returns an empty hash prefix.
-  virtual HashPrefix GetMatchingHashPrefix(const FullHash& full_hash);
+  virtual HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash);
 
   // True if this store has valid contents, either from a successful read
   // from disk or a full update.  This does not mean the checksum was verified.
@@ -283,7 +283,7 @@ class V4Store {
   static bool GetNextSmallestUnmergedPrefix(
       const HashPrefixMap& hash_prefix_map,
       const IteratorMap& iterator_map,
-      HashPrefix* smallest_hash_prefix);
+      HashPrefixStr* smallest_hash_prefix);
 
   // For each key in |hash_prefix_map|, sets the iterator at that key
   // |iterator_map| to hash_prefix_map[key].begin().
@@ -302,7 +302,7 @@ class V4Store {
 
   // Same as the public GetMatchingHashPrefix method, but takes a StringPiece,
   // for performance reasons.
-  HashPrefix GetMatchingHashPrefix(base::StringPiece full_hash);
+  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash);
 
   // Merges the prefix map from the old store (|old_hash_prefix_map|) and the
   // update (additions_map) to populate the prefix map for the current store.

@@ -191,7 +191,7 @@ std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
 }
 
 StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,
-                                       const HashPrefix& hash_prefix)
+                                       const HashPrefixStr& hash_prefix)
     : list_id(list_id), hash_prefix(hash_prefix) {}
 
 StoreAndHashPrefix::~StoreAndHashPrefix() {}
@@ -335,7 +335,7 @@ void V4ProtocolManagerUtil::UpdateHeaders(net::HttpRequestHeaders* headers) {
 // static
 void V4ProtocolManagerUtil::UrlToFullHashes(
     const GURL& url,
-    std::vector<FullHash>* full_hashes) {
+    std::vector<FullHashStr>* full_hashes) {
   std::string canon_host, canon_path, canon_query;
   CanonicalizeUrl(url, &canon_host, &canon_path, &canon_query);
 
@@ -358,9 +358,9 @@ void V4ProtocolManagerUtil::UrlToFullHashes(
 }
 
 // static
-bool V4ProtocolManagerUtil::FullHashToHashPrefix(const FullHash& full_hash,
+bool V4ProtocolManagerUtil::FullHashToHashPrefix(const FullHashStr& full_hash,
                                                  PrefixSize prefix_size,
-                                                 HashPrefix* hash_prefix) {
+                                                 HashPrefixStr* hash_prefix) {
   if (full_hash.size() < prefix_size) {
     return false;
   }
@@ -370,15 +370,15 @@ bool V4ProtocolManagerUtil::FullHashToHashPrefix(const FullHash& full_hash,
 
 // static
 bool V4ProtocolManagerUtil::FullHashToSmallestHashPrefix(
-    const FullHash& full_hash,
-    HashPrefix* hash_prefix) {
+    const FullHashStr& full_hash,
+    HashPrefixStr* hash_prefix) {
   return FullHashToHashPrefix(full_hash, kMinHashPrefixLength, hash_prefix);
 }
 
 // static
 bool V4ProtocolManagerUtil::FullHashMatchesHashPrefix(
-    const FullHash& full_hash,
-    const HashPrefix& hash_prefix) {
+    const FullHashStr& full_hash,
+    const HashPrefixStr& hash_prefix) {
   return full_hash.compare(0, hash_prefix.length(), hash_prefix) == 0;
 }
 
@@ -421,7 +421,7 @@ void V4ProtocolManagerUtil::GeneratePatternsToCheck(
 }
 
 // static
-FullHash V4ProtocolManagerUtil::GetFullHash(const GURL& url) {
+FullHashStr V4ProtocolManagerUtil::GetFullHash(const GURL& url) {
   std::string host;
   std::string path;
   CanonicalizeUrl(url, &host, &path, nullptr);
@@ -632,7 +632,7 @@ bool V4ProtocolManagerUtil::GetIPV6AddressFromString(
 // static
 bool V4ProtocolManagerUtil::IPAddressToEncodedIPV6Hash(
     const std::string& ip_address,
-    FullHash* hashed_encoded_ip) {
+    FullHashStr* hashed_encoded_ip) {
   net::IPAddress address;
   if (!GetIPV6AddressFromString(ip_address, &address)) {
     return false;

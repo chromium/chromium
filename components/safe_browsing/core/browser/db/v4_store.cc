@@ -536,8 +536,8 @@ ApplyUpdateResult V4Store::AddUnlumpedHashes(PrefixSize prefix_size,
 bool V4Store::GetNextSmallestUnmergedPrefix(
     const HashPrefixMap& hash_prefix_map,
     const IteratorMap& iterator_map,
-    HashPrefix* smallest_hash_prefix) {
-  HashPrefix current_hash_prefix;
+    HashPrefixStr* smallest_hash_prefix) {
+  HashPrefixStr current_hash_prefix;
   bool has_unmerged = false;
 
   for (const auto& iterator_pair : iterator_map) {
@@ -548,7 +548,7 @@ bool V4Store::GetNextSmallestUnmergedPrefix(
     PrefixSize distance = std::distance(start, hash_prefixes.end());
     CHECK_EQ(0u, distance % prefix_size);
     if (prefix_size <= distance) {
-      current_hash_prefix = HashPrefix(start, start + prefix_size);
+      current_hash_prefix = HashPrefixStr(start, start + prefix_size);
       if (!has_unmerged || *smallest_hash_prefix > current_hash_prefix) {
         has_unmerged = true;
         smallest_hash_prefix->swap(current_hash_prefix);
@@ -606,13 +606,13 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
                           hash_prefix_map_.get());
 
   IteratorMap old_iterator_map;
-  HashPrefix next_smallest_prefix_old;
+  HashPrefixStr next_smallest_prefix_old;
   InitializeIteratorMap(old_prefixes_map, &old_iterator_map);
   bool old_has_unmerged = GetNextSmallestUnmergedPrefix(
       old_prefixes_map, old_iterator_map, &next_smallest_prefix_old);
 
   IteratorMap additions_iterator_map;
-  HashPrefix next_smallest_prefix_additions;
+  HashPrefixStr next_smallest_prefix_additions;
   InitializeIteratorMap(additions_map, &additions_iterator_map);
   bool additions_has_unmerged = GetNextSmallestUnmergedPrefix(
       additions_map, additions_iterator_map, &next_smallest_prefix_additions);
@@ -856,11 +856,11 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
   return WRITE_SUCCESS;
 }
 
-HashPrefix V4Store::GetMatchingHashPrefix(const FullHash& full_hash) {
+HashPrefixStr V4Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
   return GetMatchingHashPrefix(base::StringPiece(full_hash));
 }
 
-HashPrefix V4Store::GetMatchingHashPrefix(base::StringPiece full_hash) {
+HashPrefixStr V4Store::GetMatchingHashPrefix(base::StringPiece full_hash) {
   // It should never be the case that more than one hash prefixes match a given
   // full hash. However, if that happens, this method returns any one of them.
   // It does not guarantee which one of those will be returned.
@@ -880,7 +880,7 @@ bool V4Store::VerifyChecksum() {
   }
 
   IteratorMap iterator_map;
-  HashPrefix next_smallest_prefix;
+  HashPrefixStr next_smallest_prefix;
   InitializeIteratorMap(*hash_prefix_map_, &iterator_map);
   CHECK_EQ(hash_prefix_map_->view().size(), iterator_map.size());
   bool has_unmerged = GetNextSmallestUnmergedPrefix(

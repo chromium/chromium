@@ -140,7 +140,7 @@ void TestSafeBrowsingDatabaseHelper::AddFullHashToDbAndFullHashCache(
 void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
     const GURL& url,
     const safe_browsing::ListIdentifier& list_id) {
-  safe_browsing::FullHash full_hash =
+  safe_browsing::FullHashStr full_hash =
       safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
   v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
 }

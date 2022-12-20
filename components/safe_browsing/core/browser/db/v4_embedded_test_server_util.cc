@@ -29,7 +29,7 @@ namespace {
 // 1. Finding the "req" query param.
 // 2. Base64 decoding it.
 // 3. Parsing the FindFullHashesRequest from the decoded string.
-std::vector<HashPrefix> GetPrefixesForRequest(const GURL& url) {
+std::vector<HashPrefixStr> GetPrefixesForRequest(const GURL& url) {
   // Find the "req" query param.
   std::string req;
   bool success = net::GetValueForKeyInQuery(url, "$req", &req);
@@ -48,7 +48,7 @@ std::vector<HashPrefix> GetPrefixesForRequest(const GURL& url) {
 
   // Extract HashPrefixes from the request proto.
   const ThreatInfo& info = full_hash_req.threat_info();
-  std::vector<HashPrefix> prefixes;
+  std::vector<HashPrefixStr> prefixes;
   for (int i = 0; i < info.threat_entries_size(); ++i) {
     prefixes.push_back(info.threat_entries(i).hash());
   }
@@ -72,12 +72,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFullHashRequest(
   //
   // This loops through all prefixes requested, and finds all of the full hashes
   // that match the prefix.
-  std::vector<HashPrefix> request_prefixes =
+  std::vector<HashPrefixStr> request_prefixes =
       GetPrefixesForRequest(request.GetURL());
   const base::TimeDelta* delay = nullptr;
-  for (const HashPrefix& prefix : request_prefixes) {
+  for (const HashPrefixStr& prefix : request_prefixes) {
     for (const auto& response : response_map) {
-      FullHash full_hash = V4ProtocolManagerUtil::GetFullHash(response.first);
+      FullHashStr full_hash =
+          V4ProtocolManagerUtil::GetFullHash(response.first);
       if (V4ProtocolManagerUtil::FullHashMatchesHashPrefix(full_hash, prefix)) {
         ThreatMatch* match = find_full_hashes_response.add_matches();
         *match = response.second;

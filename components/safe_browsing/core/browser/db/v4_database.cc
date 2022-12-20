@@ -265,7 +265,7 @@ bool V4Database::AreAllStoresAvailable(
 }
 
 void V4Database::GetStoresMatchingFullHash(
-    const FullHash& full_hash,
+    const FullHashStr& full_hash,
     const StoresToCheck& stores_to_check,
     StoreAndHashPrefixes* matched_store_and_hash_prefixes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
@@ -276,7 +276,7 @@ void V4Database::GetStoresMatchingFullHash(
     const auto& store_pair = store_map_->find(identifier);
     DCHECK(store_pair != store_map_->end());
     const std::unique_ptr<V4Store>& store = store_pair->second;
-    HashPrefix hash_prefix = store->GetMatchingHashPrefix(full_hash);
+    HashPrefixStr hash_prefix = store->GetMatchingHashPrefix(full_hash);
     if (!hash_prefix.empty()) {
       matched_store_and_hash_prefixes->emplace_back(identifier, hash_prefix);
     }

@@ -43,10 +43,10 @@ const PrefixSize kMinHashPrefixLength = 4;
 const PrefixSize kMaxHashPrefixLength = 32;
 
 // A hash prefix sent by the SafeBrowsing PVer4 service.
-using HashPrefix = std::string;
+using HashPrefixStr = std::string;
 
 // A full SHA256 hash.
-using FullHash = HashPrefix;
+using FullHashStr = HashPrefixStr;
 
 using ListUpdateRequest = FetchThreatListUpdatesRequest::ListUpdateRequest;
 using ListUpdateResponse = FetchThreatListUpdatesResponse::ListUpdateResponse;
@@ -265,9 +265,9 @@ using ParsedServerResponse = std::vector<std::unique_ptr<ListUpdateResponse>>;
 struct StoreAndHashPrefix {
  public:
   ListIdentifier list_id;
-  HashPrefix hash_prefix;
+  HashPrefixStr hash_prefix;
 
-  StoreAndHashPrefix(ListIdentifier list_id, const HashPrefix& hash_prefix);
+  StoreAndHashPrefix(ListIdentifier list_id, const HashPrefixStr& hash_prefix);
   ~StoreAndHashPrefix();
 
   bool operator==(const StoreAndHashPrefix& other) const;
@@ -348,9 +348,9 @@ class V4ProtocolManagerUtil {
   static void GeneratePatternsToCheck(const GURL& url,
                                       std::vector<std::string>* urls);
 
-  // Returns a FullHash for the basic host+path pattern for a given URL after
+  // Returns a FullHashStr for the basic host+path pattern for a given URL after
   // canonicalization. Not intended for general use.
-  static FullHash GetFullHash(const GURL& url);
+  static FullHashStr GetFullHash(const GURL& url);
 
   // Generates a Pver4 request URL and sets the appropriate header values.
   // |request_base64| is the serialized request protocol buffer encoded in
@@ -375,17 +375,17 @@ class V4ProtocolManagerUtil {
 
   // Generate the set of FullHashes to check for |url|.
   static void UrlToFullHashes(const GURL& url,
-                              std::vector<FullHash>* full_hashes);
+                              std::vector<FullHashStr>* full_hashes);
 
-  static bool FullHashToHashPrefix(const FullHash& full_hash,
+  static bool FullHashToHashPrefix(const FullHashStr& full_hash,
                                    PrefixSize prefix_size,
-                                   HashPrefix* hash_prefix);
+                                   HashPrefixStr* hash_prefix);
 
-  static bool FullHashToSmallestHashPrefix(const FullHash& full_hash,
-                                           HashPrefix* hash_prefix);
+  static bool FullHashToSmallestHashPrefix(const FullHashStr& full_hash,
+                                           HashPrefixStr* hash_prefix);
 
-  static bool FullHashMatchesHashPrefix(const FullHash& full_hash,
-                                        const HashPrefix& hash_prefix);
+  static bool FullHashMatchesHashPrefix(const FullHashStr& full_hash,
+                                        const HashPrefixStr& hash_prefix);
 
   static void SetClientInfoFromConfig(ClientInfo* client_info,
                                       const V4ProtocolConfig& config);
@@ -398,7 +398,7 @@ class V4ProtocolManagerUtil {
   // extra byte containing the value 128 at the end. This is done to match the
   // server implementation for calculating the hash prefix of an IP address.
   static bool IPAddressToEncodedIPV6Hash(const std::string& ip_address,
-                                         FullHash* hashed_encoded_ip);
+                                         FullHashStr* hashed_encoded_ip);
 
   // Stores the client state values for each of the lists in |store_state_map|
   // into |list_client_states|.

@@ -44,7 +44,7 @@ TEST_F(V4StorePerftest, StressTest) {
 #endif
 
   static_assert(kMaxHashPrefixLength == crypto::kSHA256Length,
-                "SHA256 produces a valid FullHash");
+                "SHA256 produces a valid FullHashStr");
   CHECK(base::IsValidForType<size_t>(
       base::CheckMul(kNumPrefixes, kMaxHashPrefixLength)));
 

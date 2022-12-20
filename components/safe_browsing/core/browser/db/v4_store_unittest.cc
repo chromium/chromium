@@ -209,7 +209,7 @@ TEST_F(V4StoreTest, TestGetNextSmallestUnmergedPrefixWithEmptyPrefixMap) {
   IteratorMap iterator_map;
   V4Store::InitializeIteratorMap(prefix_map, &iterator_map);
 
-  HashPrefix prefix;
+  HashPrefixStr prefix;
   EXPECT_FALSE(V4Store::GetNextSmallestUnmergedPrefix(prefix_map, iterator_map,
                                                       &prefix));
 }
@@ -223,7 +223,7 @@ TEST_F(V4StoreTest, TestGetNextSmallestUnmergedPrefix) {
   IteratorMap iterator_map;
   V4Store::InitializeIteratorMap(prefix_map, &iterator_map);
 
-  HashPrefix prefix;
+  HashPrefixStr prefix;
   EXPECT_TRUE(V4Store::GetNextSmallestUnmergedPrefix(prefix_map, iterator_map,
                                                      &prefix));
   EXPECT_EQ("****", prefix);
@@ -619,42 +619,42 @@ TEST_F(V4StoreTest, TestReadFullResponseWithInvalidHashPrefixMap) {
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginning) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbbccccc");
-  HashPrefix hash_prefix = "abcde";
+  HashPrefixStr hash_prefix = "abcde";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsInTheMiddle) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbbccccc");
-  HashPrefix hash_prefix = "bbbbb";
+  HashPrefixStr hash_prefix = "bbbbb";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEnd) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbbccccc");
-  HashPrefix hash_prefix = "ccccc";
+  HashPrefixStr hash_prefix = "ccccc";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginningOfEven) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbb");
-  HashPrefix hash_prefix = "abcde";
+  HashPrefixStr hash_prefix = "abcde";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheEndOfEven) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbb");
-  HashPrefix hash_prefix = "bbbbb";
+  HashPrefixStr hash_prefix = "bbbbb";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), hash_prefix);
 }
 
 TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInConcatenatedList) {
   InMemoryHashPrefixMap map;
   map.Append(5, "abcdebbbbb");
-  HashPrefix hash_prefix = "bbbbc";
+  HashPrefixStr hash_prefix = "bbbbc";
   EXPECT_EQ(map.GetMatchingHashPrefix(hash_prefix), "");
 }
 
@@ -662,7 +662,7 @@ TEST_F(V4StoreTest, TestFullHashExistsInMapWithSingleSize) {
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(
       32, "0111222233334444555566667777888811112222333344445555666677778888");
-  FullHash full_hash = "11112222333344445555666677778888";
+  FullHashStr full_hash = "11112222333344445555666677778888";
   EXPECT_EQ("11112222333344445555666677778888",
             store.GetMatchingHashPrefix(full_hash));
 }
@@ -671,7 +671,7 @@ TEST_F(V4StoreTest, TestFullHashExistsInMapWithDifferentSizes) {
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
   store.hash_prefix_map_->Append(32, "11112222333344445555666677778888");
-  FullHash full_hash = "11112222333344445555666677778888";
+  FullHashStr full_hash = "11112222333344445555666677778888";
   EXPECT_EQ("11112222333344445555666677778888",
             store.GetMatchingHashPrefix(full_hash));
 }
@@ -679,7 +679,7 @@ TEST_F(V4StoreTest, TestFullHashExistsInMapWithDifferentSizes) {
 TEST_F(V4StoreTest, TestHashPrefixExistsInMapWithSingleSize) {
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
-  FullHash full_hash = "22222222222222222222222222222222";
+  FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
 }
 
@@ -687,7 +687,7 @@ TEST_F(V4StoreTest, TestHashPrefixExistsInMapWithDifferentSizes) {
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(4, "22223333aaaa");
   store.hash_prefix_map_->Append(5, "11111hhhhh");
-  FullHash full_hash = "22222222222222222222222222222222";
+  FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
 }
 
@@ -695,22 +695,22 @@ TEST_F(V4StoreTest, TestHashPrefixDoesNotExistInMapWithDifferentSizes) {
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(4, "3333aaaa");
   store.hash_prefix_map_->Append(5, "11111hhhhh");
-  FullHash full_hash = "22222222222222222222222222222222";
+  FullHashStr full_hash = "22222222222222222222222222222222";
   EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
 }
 
 TEST_F(V4StoreTest, GetMatchingHashPrefixSize32Or21) {
-  HashPrefix prefix = "0123";
+  HashPrefixStr prefix = "0123";
   InMemoryV4Store store(task_runner_, store_path_);
   store.hash_prefix_map_->Append(4, prefix);
 
-  FullHash full_hash_21 = "0123456789ABCDEF01234";
+  FullHashStr full_hash_21 = "0123456789ABCDEF01234";
   EXPECT_EQ(prefix, store.GetMatchingHashPrefix(full_hash_21));
-  FullHash full_hash_32 = "0123456789ABCDEF0123456789ABCDEF";
+  FullHashStr full_hash_32 = "0123456789ABCDEF0123456789ABCDEF";
   EXPECT_EQ(prefix, store.GetMatchingHashPrefix(full_hash_32));
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
   // This hits a DCHECK so it is release mode only.
-  FullHash full_hash_22 = "0123456789ABCDEF012345";
+  FullHashStr full_hash_22 = "0123456789ABCDEF012345";
   EXPECT_EQ(prefix, store.GetMatchingHashPrefix(full_hash_22));
 #endif
 }
