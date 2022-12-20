@@ -20,11 +20,14 @@ import org.chromium.webengine.interfaces.ITabParams;
 class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private TabRegistry mTabRegistry;
     private ObserverList<TabListObserver> mTabListObservers = new ObserverList<TabListObserver>();
 
-    public TabListObserverDelegate() {
+    public TabListObserverDelegate(TabRegistry tabRegistry) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
+
+        mTabRegistry = tabRegistry;
     }
 
     /**
@@ -52,7 +55,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
         mHandler.post(() -> {
             Tab tab = null;
             if (tabParams != null) {
-                tab = TabRegistry.getInstance().getOrCreateTab(tabParams);
+                tab = mTabRegistry.getOrCreateTab(tabParams);
             }
             for (TabListObserver observer : mTabListObservers) {
                 observer.onActiveTabChanged(tab);
@@ -63,7 +66,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     @Override
     public void notifyTabAdded(@NonNull ITabParams tabParams) {
         mHandler.post(() -> {
-            Tab tab = TabRegistry.getInstance().getOrCreateTab(tabParams);
+            Tab tab = mTabRegistry.getOrCreateTab(tabParams);
             for (TabListObserver observer : mTabListObservers) {
                 observer.onTabAdded(tab);
             }
@@ -73,11 +76,11 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     @Override
     public void notifyTabRemoved(@NonNull ITabParams tabParams) {
         mHandler.post(() -> {
-            Tab tab = TabRegistry.getInstance().getOrCreateTab(tabParams);
+            Tab tab = mTabRegistry.getOrCreateTab(tabParams);
             for (TabListObserver observer : mTabListObservers) {
                 observer.onTabRemoved(tab);
             }
-            TabRegistry.getInstance().removeTab(tab);
+            mTabRegistry.removeTab(tab);
         });
     }
 

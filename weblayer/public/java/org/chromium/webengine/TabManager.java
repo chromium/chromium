@@ -30,7 +30,8 @@ import org.chromium.webengine.interfaces.ITabParams;
 public class TabManager {
     private ITabManagerDelegate mDelegate;
 
-    private final TabListObserverDelegate mTabListObserverDelegate = new TabListObserverDelegate();
+    private TabRegistry mTabRegistry = new TabRegistry();
+    private final TabListObserverDelegate mTabListObserverDelegate;
 
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
@@ -60,7 +61,7 @@ public class TabManager {
         public void onResult(@Nullable ITabParams tabParams) {
             if (tabParams != null) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    mCompleter.set(TabRegistry.getInstance().getOrCreateTab(tabParams));
+                    mCompleter.set(mTabRegistry.getOrCreateTab(tabParams));
                 });
                 return;
             }
@@ -70,6 +71,7 @@ public class TabManager {
 
     TabManager(ITabManagerDelegate delegate) {
         mDelegate = delegate;
+        mTabListObserverDelegate = new TabListObserverDelegate(mTabRegistry);
         try {
             mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
         } catch (RemoteException e) {
@@ -170,6 +172,6 @@ public class TabManager {
 
     void invalidate() {
         mDelegate = null;
-        TabRegistry.getInstance().invalidate();
+        mTabRegistry.invalidate();
     }
 }

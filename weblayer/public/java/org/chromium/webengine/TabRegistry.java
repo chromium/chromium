@@ -10,23 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Tab registry for storing open {@link Tab}s on the webengine side.
+ * Tab registry for storing open {@link Tab}s per WebEngine on the webengine side.
  *
  * For internal use only.
  */
 class TabRegistry {
     private Map<String, Tab> mGuidToTab = new HashMap<String, Tab>();
 
-    private static TabRegistry sInstance;
-
-    private TabRegistry() {}
-
-    static TabRegistry getInstance() {
-        if (sInstance == null) {
-            sInstance = new TabRegistry();
-        }
-        return sInstance;
-    }
+    TabRegistry() {}
 
     Tab getOrCreateTab(ITabParams tabParams) {
         Tab tab = mGuidToTab.get(tabParams.tabGuid);
