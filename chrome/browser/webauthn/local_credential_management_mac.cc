@@ -31,7 +31,7 @@ void LocalCredentialManagementMac::HasCredentials(
   Enumerate(
       base::BindOnce(
           [](absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
-                 metadata) { return !metadata->empty(); })
+                 metadata) { return metadata ? !metadata->empty() : false; })
           .Then(std::move(callback)));
 }
 
@@ -44,7 +44,8 @@ void LocalCredentialManagementMac::Enumerate(
       credential_store.FindResidentCredentials(/*rp_id=*/absl::nullopt);
 
   if (!credentials) {
-    std::move(callback).Run(/*credentials=*/{});
+    // FindResidentCredentials() encountered an error.
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::vector<device::DiscoverableCredentialMetadata> credential_metadata;
