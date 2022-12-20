@@ -2029,6 +2029,51 @@ TEST_P(DesksTest, AnimationLatencyDeskRemoval) {
                                     1);
 }
 
+// Tests that the MRU window in a desk is focused when that desk is activated.
+TEST_P(DesksTest, MruFocusedOnDeskSwitchDualDisplay) {
+  UpdateDisplay("700x600,400x500");
+  auto* controller = DesksController::Get();
+  auto roots = Shell::GetAllRootWindows();
+
+  // Create two desks, each with 2 windows
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(750, 50, 200, 200));
+
+  // Ensure there is one window on each display.
+  ASSERT_EQ(win1->GetRootWindow(), roots[0]);
+  ASSERT_EQ(win2->GetRootWindow(), roots[1]);
+
+  // Focus window 2
+  win2->Focus();
+
+  // Create and switch to the second desk.
+  NewDesk();
+  const Desk* desk_1 = controller->desks()[0].get();
+  const Desk* desk_2 = controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  auto win3 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto win4 = CreateAppWindow(gfx::Rect(750, 50, 200, 200));
+  ASSERT_EQ(win3->GetRootWindow(), roots[0]);
+  ASSERT_EQ(win4->GetRootWindow(), roots[1]);
+
+  // Focus window 3
+  win3->Focus();
+
+  // Switch back to desk 1 and ensure window 2 regains focus.
+  ActivateDesk(desk_1);
+  ASSERT_TRUE(win2->HasFocus());
+  ASSERT_FALSE(win1->HasFocus());
+  ASSERT_FALSE(win3->HasFocus());
+  ASSERT_FALSE(win4->HasFocus());
+
+  // Switch back to desk 2 and ensure window 3 regains focus.
+  ActivateDesk(desk_2);
+  ASSERT_TRUE(win3->HasFocus());
+  ASSERT_FALSE(win1->HasFocus());
+  ASSERT_FALSE(win2->HasFocus());
+  ASSERT_FALSE(win4->HasFocus());
+}
+
 class DesksWithMultiDisplayOverview : public AshTestBase {
  public:
   DesksWithMultiDisplayOverview() = default;

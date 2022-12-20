@@ -204,10 +204,10 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
 
   aura::Window* window = nullptr;
   for (int i = starting_container_index; !window && i < container_count; i++)
-    window = GetTopmostWindowToActivateForContainerIndex(i, ignore);
+    window = GetTopmostWindowToActivateForContainerIndex(i, ignore, root);
   if (!window && starting_container_index > 0) {
     for (int i = starting_container_index - 1; !window && i >= 0; i--)
-      window = GetTopmostWindowToActivateForContainerIndex(i, ignore);
+      window = GetTopmostWindowToActivateForContainerIndex(i, ignore, root);
   }
   return window;
 }
@@ -217,16 +217,19 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
 
 aura::Window* AshFocusRules::GetTopmostWindowToActivateForContainerIndex(
     int index,
-    aura::Window* ignore) const {
+    aura::Window* ignore,
+    aura::Window* priority_root) const {
   const int container_id = activatable_container_ids_[index];
   // Inactive desk containers should be ignored, since windows in them should
   // never be returned as a next activatable window.
   if (IsInactiveDeskContainerId(container_id))
     return nullptr;
   aura::Window* window = nullptr;
-  aura::Window* root = ignore ? ignore->GetRootWindow() : nullptr;
   aura::Window::Windows containers =
-      GetContainersForAllRootWindows(container_id, root);
+      GetContainersForAllRootWindows(container_id, priority_root);
+  // Favor the top-most window (if any) on `priority_root`, since
+  // `GetContainersForAllRootWindows()` will put the container belonging to
+  // `priority_root` first.
   for (aura::Window* container : containers) {
     window = GetTopmostWindowToActivateInContainer(container, ignore);
     if (window)

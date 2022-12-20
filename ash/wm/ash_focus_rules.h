@@ -34,7 +34,8 @@ class ASH_EXPORT AshFocusRules : public ::wm::BaseFocusRules {
  private:
   aura::Window* GetTopmostWindowToActivateForContainerIndex(
       int index,
-      aura::Window* ignore) const;
+      aura::Window* ignore,
+      aura::Window* priority_root) const;
   aura::Window* GetTopmostWindowToActivateInContainer(
       aura::Window* container,
       aura::Window* ignore) const;
