@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -2665,6 +2666,11 @@ class MixinBasedExtensionPolicyTest
     extensions::MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
   }
 
+  void AddScreenplayTag() {
+    base::AddTagToTestResult("feature_id",
+                             "screenplay-3c0007b0-8082-4b7d-bdeb-675a4dc1bbb4");
+  }
+
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 
  private:
@@ -2676,6 +2682,7 @@ class MixinBasedExtensionPolicyTest
 // will not affect incognito profile.
 IN_PROC_BROWSER_TEST_F(MixinBasedExtensionPolicyTest,
                        ForcedProxyExtensionHasNoEffectInIncognitoMode) {
+  AddScreenplayTag();
 #if BUILDFLAG(IS_WIN)
   // Mark as enterprise managed.
   base::win::ScopedDomainStateForTesting scoped_domain(true);
