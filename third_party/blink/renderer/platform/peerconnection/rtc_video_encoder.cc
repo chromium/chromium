@@ -1561,14 +1561,8 @@ RTCVideoEncoder::RTCVideoEncoder(
 
   // The default values of EncoderInfo.
   encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
-#if BUILDFLAG(IS_ANDROID)
-  // MediaCodec requires 16x16 alignment, see https://crbug.com/1084702.
-  encoder_info_.requested_resolution_alignment = 16;
-  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
-#else
   encoder_info_.requested_resolution_alignment = 1;
   encoder_info_.apply_alignment_to_all_simulcast_layers = false;
-#endif
   encoder_info_.supports_native_handle = true;
   encoder_info_.implementation_name = "ExternalEncoder";
   encoder_info_.has_trusted_rate_controller = false;

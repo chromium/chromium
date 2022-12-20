@@ -440,22 +440,19 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
   return MEDIA_CODEC_OK;
 }
 
-MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatStride(int* stride) {
+MediaCodecStatus MediaCodecBridgeImpl::GetInputFormat(int* stride,
+                                                      int* slice_height,
+                                                      gfx::Size* encoded_size) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
   MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK)
+  if (status == MEDIA_CODEC_OK) {
     *stride = Java_MediaFormatWrapper_stride(env, result);
-  return status;
-}
-MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatYPlaneHeight(int* height) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> result =
-      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
-  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
-  if (status == MEDIA_CODEC_OK)
-    *height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
+    *slice_height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
+    *encoded_size = gfx::Size(Java_MediaFormatWrapper_width(env, result),
+                              Java_MediaFormatWrapper_height(env, result));
+  }
   return status;
 }
 

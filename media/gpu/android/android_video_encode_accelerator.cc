@@ -94,8 +94,7 @@ static bool GetSupportedColorFormatForMime(const std::string& mime,
   return true;
 }
 
-AndroidVideoEncodeAccelerator::AndroidVideoEncodeAccelerator()
-    : num_buffers_at_codec_(0), last_set_bitrate_(0), error_occurred_(false) {}
+AndroidVideoEncodeAccelerator::AndroidVideoEncodeAccelerator() = default;
 
 AndroidVideoEncodeAccelerator::~AndroidVideoEncodeAccelerator() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -148,13 +147,12 @@ bool AndroidVideoEncodeAccelerator::Initialize(
   DCHECK(!media_codec_);
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client);
-
+  log_ = std::move(media_log);
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
 
   if (config.input_format != PIXEL_FORMAT_I420) {
-    MEDIA_LOG(ERROR, media_log.get())
-        << "Unexpected combo: " << config.input_format << ", "
-        << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, log_) << "Unexpected combo: " << config.input_format
+                           << ", " << GetProfileName(config.output_profile);
     return false;
   }
 
@@ -180,29 +178,19 @@ bool AndroidVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Non 16x16 aligned resolutions don't work with MediaCodec unfortunately, see
-  // https://crbug.com/1084702 for details.
-  if (config.input_visible_size.width() % 16 != 0 ||
-      config.input_visible_size.height() % 16 != 0) {
-    MEDIA_LOG(ERROR, media_log.get())
-        << "MediaCodec is only tested with resolutions "
-           "that are 16x16 aligned.";
-    return false;
-  }
-
   frame_size_ = config.input_visible_size;
   last_set_bitrate_ = config.bitrate.target_bps();
 
   // Only consider using MediaCodec if it's likely backed by hardware.
   if (MediaCodecUtil::IsKnownUnaccelerated(codec,
                                            MediaCodecDirection::ENCODER)) {
-    MEDIA_LOG(ERROR, media_log.get()) << "No HW support";
+    MEDIA_LOG(ERROR, log_) << "No HW support";
     return false;
   }
 
   PixelFormat pixel_format = COLOR_FORMAT_YUV420_SEMIPLANAR;
   if (!GetSupportedColorFormatForMime(mime_type, &pixel_format)) {
-    MEDIA_LOG(ERROR, media_log.get()) << "No color format support.";
+    MEDIA_LOG(ERROR, log_) << "No color format support.";
     return false;
   }
   media_codec_ = MediaCodecBridgeImpl::CreateVideoEncoder(
@@ -210,22 +198,13 @@ bool AndroidVideoEncodeAccelerator::Initialize(
       INITIAL_FRAMERATE, i_frame_interval, pixel_format);
 
   if (!media_codec_) {
-    MEDIA_LOG(ERROR, media_log.get()) << "Failed to create/start the codec: "
-                                      << config.input_visible_size.ToString();
+    MEDIA_LOG(ERROR, log_) << "Failed to create/start the codec: "
+                           << config.input_visible_size.ToString();
     return false;
   }
 
-  auto status = media_codec_->GetInputFormatStride(&input_buffer_stride_);
-  if (status != MEDIA_CODEC_OK || input_buffer_stride_ <= 0) {
-    MEDIA_LOG(ERROR, media_log.get()) << "Can't read stride from input format";
-    return false;
-  }
-
-  status =
-      media_codec_->GetInputFormatYPlaneHeight(&input_buffer_yplane_height_);
-  if (status != MEDIA_CODEC_OK || input_buffer_yplane_height_ <= 0) {
-    MEDIA_LOG(ERROR, media_log.get())
-        << "Can't read y-plane height from input format";
+  if (!SetInputBufferLayout()) {
+    MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
     return false;
   }
 
@@ -265,18 +244,6 @@ void AndroidVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                     kInvalidArgumentError);
   RETURN_ON_FAILURE(frame->visible_rect().size() == frame_size_,
                     "Unexpected resolution", kInvalidArgumentError);
-  // MediaCodec doesn't have a way to specify stride for non-Packed formats, so
-  // we insist on being called with packed frames and no cropping :(
-  RETURN_ON_FAILURE(frame->row_bytes(VideoFrame::kYPlane) ==
-                            frame->stride(VideoFrame::kYPlane) &&
-                        frame->row_bytes(VideoFrame::kUPlane) ==
-                            frame->stride(VideoFrame::kUPlane) &&
-                        frame->row_bytes(VideoFrame::kVPlane) ==
-                            frame->stride(VideoFrame::kVPlane) &&
-                        frame->coded_size() == frame->visible_rect().size(),
-                    "Non-packed frame, or visible_rect != coded_size",
-                    kInvalidArgumentError);
-
   pending_frames_.push(
       std::make_tuple(std::move(frame), force_keyframe, base::Time::Now()));
   DoIOTask();
@@ -361,6 +328,9 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   RETURN_ON_FAILURE(status == MEDIA_CODEC_OK, "GetInputBuffer failed.",
                     kPlatformFailureError);
 
+  const auto visible_size =
+      aligned_size_.value_or(frame->visible_rect().size());
+
   uint8_t* dst_y = buffer;
   const int dst_stride_y = input_buffer_stride_;
   const int uv_plane_offset =
@@ -369,7 +339,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   const int dst_stride_uv = input_buffer_stride_;
 
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
-      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, frame->coded_size());
+      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, visible_size);
   const size_t queued_size =
       // size of Y-plane plus padding till UV-plane
       uv_plane_offset +
@@ -387,11 +357,13 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // Why NV12?  Because COLOR_FORMAT_YUV420_SEMIPLANAR.  See comment at other
   // mention of that constant.
   bool converted = !libyuv::I420ToNV12(
-      frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
-      frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
-      frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane),
-      dst_y, dst_stride_y, dst_uv, dst_stride_uv, frame->coded_size().width(),
-      frame->coded_size().height());
+      frame->visible_data(VideoFrame::kYPlane),
+      frame->stride(VideoFrame::kYPlane),
+      frame->visible_data(VideoFrame::kUPlane),
+      frame->stride(VideoFrame::kUPlane),
+      frame->visible_data(VideoFrame::kVPlane),
+      frame->stride(VideoFrame::kVPlane), dst_y, dst_stride_y, dst_uv,
+      dst_stride_uv, visible_size.width(), visible_size.height());
   RETURN_ON_FAILURE(converted, "Failed to I420ToNV12!", kPlatformFailureError);
 
   // MediaCodec encoder assumes the presentation timestamps to be monotonically
@@ -485,12 +457,52 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
   media_codec_->ReleaseOutputBuffer(buf_index, false);
   --num_buffers_at_codec_;
 
+  auto metadata = BitstreamBufferMetadata(size, key_frame, frame_timestamp);
+  if (aligned_size_) {
+    metadata.encoded_size = *aligned_size_;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &VideoEncodeAccelerator::Client::BitstreamBufferReady,
-          client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
-          BitstreamBufferMetadata(size, key_frame, frame_timestamp)));
+      base::BindOnce(&VideoEncodeAccelerator::Client::BitstreamBufferReady,
+                     client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
+                     metadata));
+}
+
+bool AndroidVideoEncodeAccelerator::SetInputBufferLayout() {
+  // Non 16x16 aligned resolutions don't work well with MediaCodec
+  // unfortunately, see https://crbug.com/1084702 for details. It seems they
+  // only work when stride/y_plane_height information is provided.
+  gfx::Size encoded_size;
+  auto status = media_codec_->GetInputFormat(
+      &input_buffer_stride_, &input_buffer_yplane_height_, &encoded_size);
+  if (status != MEDIA_CODEC_OK) {
+    return false;
+  }
+
+  // If the size is the same, nothing to do.
+  if (encoded_size == frame_size_) {
+    return true;
+  }
+
+  aligned_size_ = encoded_size;
+
+  // Give the client a chance to handle realignment itself.
+  DCHECK_EQ(aligned_size_->width() % 16, 0);
+  DCHECK_EQ(aligned_size_->height() % 16, 0);
+  VideoEncoderInfo encoder_info;
+  encoder_info.requested_resolution_alignment = 16;
+  encoder_info.apply_alignment_to_all_simulcast_layers = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+                     client_ptr_factory_->GetWeakPtr(), encoder_info));
+
+  MEDIA_LOG(INFO, log_)
+      << "MediaCodec encoder requires 16x16 aligned resolution. Cropping to "
+      << aligned_size_->ToString();
+
+  return true;
 }
 
 }  // namespace media

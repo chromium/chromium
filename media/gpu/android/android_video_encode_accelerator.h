@@ -74,12 +74,20 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   void MaybeStartIOTimer();
   void MaybeStopIOTimer();
 
+  // Ask MediaCodec what input buffer layout it prefers and set values of
+  // |input_buffer_stride_| and |input_buffer_yplane_height_|. If the codec
+  // does not provide these values, sets up |aligned_size_| such that encoded
+  // frames are cropped to the nearest 16x16 alignment.
+  bool SetInputBufferLayout();
+
   // Used to DCHECK that we are called on the correct thread.
   base::ThreadChecker thread_checker_;
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
   // error triggers.
   std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
+
+  std::unique_ptr<MediaLog> log_;
 
   std::unique_ptr<MediaCodecBridge> media_codec_;
 
@@ -96,7 +104,7 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   base::RepeatingTimer io_timer_;
 
   // The difference between number of buffers queued & dequeued at the codec.
-  int32_t num_buffers_at_codec_;
+  int32_t num_buffers_at_codec_ = 0;
 
   // A monotonically-growing value.
   base::TimeDelta presentation_timestamp_;
@@ -115,10 +123,13 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // Y-plane height in the encoder's input
   int input_buffer_yplane_height_ = 0;
 
-  uint32_t last_set_bitrate_;  // In bps.
+  uint32_t last_set_bitrate_ = 0;  // In bps.
 
   // True if there is encoder error.
-  bool error_occurred_;
+  bool error_occurred_ = false;
+
+  // Required for encoders which are missing stride information.
+  absl::optional<gfx::Size> aligned_size_;
 };
 
 }  // namespace media

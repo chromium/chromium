@@ -191,12 +191,14 @@ class MediaCodecBridge {
 
         @CalledByNative("MediaFormatWrapper")
         private int stride() {
+            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
             if (!mFormat.containsKey(MediaFormat.KEY_STRIDE)) return width();
             return mFormat.getInteger(MediaFormat.KEY_STRIDE);
         }
 
         @CalledByNative("MediaFormatWrapper")
         private int yPlaneHeight() {
+            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
             if (!mFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT)) return height();
             return mFormat.getInteger(MediaFormat.KEY_SLICE_HEIGHT);
         }
@@ -693,14 +695,50 @@ class MediaCodecBridge {
         return mMediaCodec.dequeueOutputBuffer(info, timeoutUs);
     }
 
-    // TODO(sanfin): Move this out of MediaCodecBridge.
+    private static int alignDown(int size, int alignment) {
+        return size & ~(alignment - 1);
+    }
+
     boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
         try {
             mMediaCodec.configure(format, surface, crypto, flags);
-            if (format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
-                mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-                return true;
+
+            // This is always provided by MediaFormatBuilder.
+            mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+
+            if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) return true;
+
+            // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
+            // unfortunately, see https://crbug.com/1084702 for details. It seems they
+            // only work when the stride and slice height information are provided.
+            MediaFormat inputFormat = mMediaCodec.getInputFormat();
+            boolean requireAlignedResolution = !inputFormat.containsKey(MediaFormat.KEY_STRIDE)
+                    || !inputFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT);
+
+            if (!requireAlignedResolution) return true;
+
+            int currentWidth = inputFormat.getInteger(MediaFormat.KEY_WIDTH);
+            int alignedWidth = alignDown(currentWidth, 16);
+
+            int currentHeight = inputFormat.getInteger(MediaFormat.KEY_HEIGHT);
+            int alignedHeight = alignDown(currentHeight, 16);
+
+            if (alignedHeight == 0 || alignedWidth == 0) {
+                Log.e(TAG,
+                        "MediaCodec requires 16x16 alignment, which is not possible for: "
+                                + currentWidth + "x" + currentHeight);
+                return false;
             }
+
+            if (alignedWidth == currentWidth && alignedHeight == currentHeight) return true;
+
+            // We must reconfigure the MediaCodec now since setParameters() doesn't work
+            // consistently across devices and versions of Android.
+            mMediaCodec.reset();
+            format.setInteger(MediaFormat.KEY_WIDTH, alignedWidth);
+            format.setInteger(MediaFormat.KEY_HEIGHT, alignedHeight);
+            mMediaCodec.configure(format, surface, crypto, flags);
+            return true;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot configure the video codec, wrong format or surface", e);
         } catch (IllegalStateException e) {
