@@ -14,6 +14,7 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * This class is similar in principle to MemoryPurgeManager in blink, but on the browser process
@@ -26,6 +27,7 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     private boolean mStarted;
     private long mLastBackgroundPeriodStart = NEVER;
     private boolean mDelayedPurgeTaskPending;
+    private boolean mHasBeenInForeground;
 
     // Arbitrary delay, a few minutes is what is used for background renderer purge, and 5 minutes
     // for freezing.
@@ -34,6 +36,9 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     @VisibleForTesting
     static final long PURGE_DELAY_MS = 4 * 60 * 1000;
     private static final long NEVER = -1;
+    @VisibleForTesting
+    static final String BACKGROUND_DURATION_HISTOGRAM_NAME =
+            "Android.ApplicationState.TimeInBackgroundBeforeForegroundedAgain";
 
     private static final MemoryPurgeManager sInstance = new MemoryPurgeManager();
 
@@ -68,6 +73,13 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
             case ApplicationState.UNKNOWN:
             case ApplicationState.HAS_RUNNING_ACTIVITIES:
             case ApplicationState.HAS_PAUSED_ACTIVITIES:
+                if (mLastBackgroundPeriodStart != NEVER && mHasBeenInForeground) {
+                    long durationInBackgroundMs =
+                            TimeUtils.elapsedRealtimeMillis() - mLastBackgroundPeriodStart;
+                    RecordHistogram.recordLongTimesHistogram(
+                            BACKGROUND_DURATION_HISTOGRAM_NAME, durationInBackgroundMs);
+                }
+                mHasBeenInForeground = true;
                 mLastBackgroundPeriodStart = NEVER;
                 break;
             case ApplicationState.HAS_STOPPED_ACTIVITIES:

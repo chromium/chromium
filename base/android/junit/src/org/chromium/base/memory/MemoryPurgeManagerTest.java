@@ -21,9 +21,11 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,6 +36,10 @@ import java.util.concurrent.TimeUnit;
 public class MemoryPurgeManagerTest {
     @Rule
     public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    private Callable<Integer> mGetCount = () -> {
+        return RecordHistogram.getHistogramTotalCountForTesting(
+                MemoryPurgeManager.BACKGROUND_DURATION_HISTOGRAM_NAME);
+    };
 
     private class MemoryPurgeManagerForTest extends MemoryPurgeManager {
         public MemoryPurgeManagerForTest(int initialState) {
@@ -72,9 +78,10 @@ public class MemoryPurgeManagerTest {
 
     @Test
     @SmallTest
-    public void testSimple() {
+    public void testSimple() throws Exception {
         FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
 
+        int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
 
@@ -82,6 +89,7 @@ public class MemoryPurgeManagerTest {
         Assert.assertEquals(0, manager.mMemoryPressureNotifiedCount);
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS);
         Assert.assertEquals(0, manager.mMemoryPressureNotifiedCount);
+        Assert.assertEquals(count, (int) mGetCount.call());
 
         // Notify after a delay.
         manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
@@ -93,18 +101,27 @@ public class MemoryPurgeManagerTest {
         manager.onApplicationStateChange(ApplicationState.HAS_DESTROYED_ACTIVITIES);
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS);
         Assert.assertEquals(1, manager.mMemoryPressureNotifiedCount);
+
+        // Started in foreground, went to background once, and came back.
+        manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        Assert.assertEquals(count + 1, (int) mGetCount.call());
     }
 
     @Test
     @SmallTest
-    public void testInitializedOnceInBackground() {
+    public void testInitializedOnceInBackground() throws Exception {
         FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
 
+        int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_STOPPED_ACTIVITIES);
         manager.start();
         Assert.assertEquals(0, manager.mMemoryPressureNotifiedCount);
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS);
         Assert.assertEquals(1, manager.mMemoryPressureNotifiedCount);
+
+        // Started in background, no histogram recording when coming to foreground.
+        manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        Assert.assertEquals(count, (int) mGetCount.call());
     }
 
     @Test
@@ -129,9 +146,10 @@ public class MemoryPurgeManagerTest {
 
     @Test
     @SmallTest
-    public void testMultiple() {
+    public void testMultiple() throws Exception {
         FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
 
+        int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
 
@@ -144,11 +162,17 @@ public class MemoryPurgeManagerTest {
         manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS);
         Assert.assertEquals(1, manager.mMemoryPressureNotifiedCount);
+        Assert.assertEquals(count + 1, (int) mGetCount.call());
 
         // Background again, notify
         manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS);
         Assert.assertEquals(2, manager.mMemoryPressureNotifiedCount);
+        Assert.assertEquals(count + 1, (int) mGetCount.call());
+
+        // Foreground again, record the histogram.
+        manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        Assert.assertEquals(count + 2, (int) mGetCount.call());
     }
 
     @Test

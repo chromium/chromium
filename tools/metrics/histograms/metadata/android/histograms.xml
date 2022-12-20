@@ -327,6 +327,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.ApplicationState.TimeInBackgroundBeforeForegroundedAgain"
+    units="ms" expires_after="2023-06-04">
+  <owner>lizeb@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Record the time the application spent in the background in-between two
+    foregrounded periods, meaning that when the application is started in
+    background, then foregrounded, no data points are recorded. This is recorded
+    at the end of each such background interval. Saturates at 1h.
+  </summary>
+</histogram>
+
 <histogram name="Android.AppNotificationStatus" enum="NotificationAppStatus"
     expires_after="never">
 <!-- expires-never: Indicates whether Chrome has notification permission. -->
