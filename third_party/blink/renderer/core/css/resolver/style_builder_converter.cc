@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -62,7 +63,9 @@
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_scroll_value.h"
@@ -1943,8 +1946,24 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
           value_id);
     }
   }
-  // TODO(crbug.com/1362022): We will need to store an unresolved color-mix
-  // value in order to account for currentColor.
+
+  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
+    const StyleColor c1 = StyleBuilderConverter::ConvertStyleColor(
+        state, color_mix_value->Color1(), for_visited_link);
+    const StyleColor c2 = StyleBuilderConverter::ConvertStyleColor(
+        state, color_mix_value->Color2(), for_visited_link);
+
+    // If neither color is "currentcolor" (or a color-mix function containing a
+    // currentcolor) then color-mix functions can be resolved right now like
+    // other colors. Otherwise we need to store an unresolved value on
+    // StyleColor.
+    if (c1.IsCurrentColor() || c1.IsUnresolvedColorMixFunction() ||
+        c2.IsCurrentColor() || c2.IsUnresolvedColorMixFunction()) {
+      return StyleColor(
+          StyleColor::UnresolvedColorMix(color_mix_value, c1, c2));
+    }
+  }
+
   return StyleColor(state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
       value, Color(), state.StyleBuilder().UsedColorScheme(),
       for_visited_link));

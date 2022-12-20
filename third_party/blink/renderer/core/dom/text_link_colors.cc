@@ -132,7 +132,6 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
     return color_value->Value();
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    // TODO(crbug.com/1362022): This is not correct for CurrentColor
     Color c1 = ColorFromCSSValue(color_mix_value->Color1(), current_color,
                                  color_scheme, for_visited_link);
     Color c2 = ColorFromCSSValue(color_mix_value->Color2(), current_color,
