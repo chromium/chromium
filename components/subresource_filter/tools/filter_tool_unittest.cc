@@ -26,10 +26,10 @@ namespace {
 std::string CreateJsonLine(const std::string& origin,
                            const std::string& request_url,
                            const std::string& request_type) {
-  base::DictionaryValue dictionary;
-  dictionary.SetString("origin", origin);
-  dictionary.SetString("request_url", request_url);
-  dictionary.SetString("request_type", request_type);
+  base::Value::Dict dictionary;
+  dictionary.Set("origin", origin);
+  dictionary.Set("request_url", request_url);
+  dictionary.Set("request_type", request_type);
 
   std::string output;
   EXPECT_TRUE(base::JSONWriter::Write(dictionary, &output));
