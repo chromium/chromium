@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -81,6 +82,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1401705")
     public void testOpenWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
@@ -99,6 +101,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1401705")
     public void testNewWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
@@ -118,6 +121,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1401705")
     public void testCloseWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
@@ -151,6 +155,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @Test
     @SmallTest
     @SuppressWarnings("unchecked")
+    @DisabledTest(message = "crbug.com/1401705")
     public void testMaxNumberOfWindows() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
@@ -174,6 +179,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1401705")
     public void testSkipCloseConfirmation() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
@@ -207,6 +213,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1401705")
     public void testBackOnConfirmDialog() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
