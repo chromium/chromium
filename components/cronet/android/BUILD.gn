@@ -725,13 +725,22 @@ _jar_excluded_patterns = [
 # Excluded from repackage_jars, but not from jar_src().
 _build_jar_excluded_patterns = [ "org/chromium/build/NativeLibraries.class" ]
 
+# See crbug.com/1401015 for more info on why GEN_JNI is excluded by default
 template("repackage_jars") {
+  _excludes = []
+  if (defined(invoker.jar_excluded_patterns)) {
+    _excludes += invoker.jar_excluded_patterns
+  }
+  if (!defined(invoker.remove_gen_jni) || invoker.remove_gen_jni) {
+    _excludes += ["*/GEN_JNI.class"]
+  }
   dist_jar(target_name) {
     requires_android = true
     direct_deps_only = true
     use_unprocessed_jars = true
     no_build_hooks = true
-    forward_variables_from(invoker, "*")
+    jar_excluded_patterns = _excludes
+    forward_variables_from(invoker, "*", ["jar_excluded_patterns"])
   }
 }
 
@@ -764,6 +773,7 @@ repackage_jars("repackage_native") {
     ":cronet_jni_registration_java",
     ":repackage_native_java",
   ]
+  remove_gen_jni = false
   jar_excluded_patterns = _jar_excluded_patterns + _build_jar_excluded_patterns
 }
 
