@@ -111,7 +111,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool HasPendingRequest() const;
 
   void OnAllConfigAndWellKnownFetched(
-      std::unique_ptr<FederatedProviderFetcher> provider_fetcher,
       base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
@@ -250,6 +249,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
   RequestTokenCallback auth_request_callback_;
+
+  std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
 
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;

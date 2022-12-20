@@ -557,18 +557,13 @@ void FederatedAuthRequestImpl::RequestToken(
 
   int icon_ideal_size = request_dialog_controller_->GetBrandIconIdealSize();
   int icon_minimum_size = request_dialog_controller_->GetBrandIconMinimumSize();
-  std::unique_ptr<FederatedProviderFetcher> provider_fetcher =
-      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
 
-  // FederatedProviderFetcher is passed as a parameter of
-  // OnAllConfigAndWellKnownFetched() so that FederatedProviderFetcher is
-  // destroyed when FederatedAuthRequestImpl is destroyed.
-  FederatedProviderFetcher* provider_fetcher_ptr = provider_fetcher.get();
-  provider_fetcher_ptr->Start(
+  provider_fetcher_ =
+      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
+  provider_fetcher_->Start(
       idp_order_, icon_ideal_size, icon_minimum_size,
       base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(provider_fetcher), std::move(get_infos)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(get_infos)));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -665,9 +660,10 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
 }
 
 void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
-    std::unique_ptr<FederatedProviderFetcher> provider_fetcher,
     base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
     std::vector<FederatedProviderFetcher::FetchResult> fetch_results) {
+  provider_fetcher_.reset();
+
   for (const FederatedProviderFetcher::FetchResult& fetch_result :
        fetch_results) {
     const GURL& identity_provider_config_url =
@@ -1324,6 +1320,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   network_manager_.reset();
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
+  provider_fetcher_.reset();
   account_id_ = std::string();
   start_time_ = base::TimeTicks();
   show_accounts_dialog_time_ = base::TimeTicks();
