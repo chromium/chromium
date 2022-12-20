@@ -423,8 +423,13 @@ TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1402772): Fix this test.
+TEST(MediaCodecBridgeTest, DISABLED_H264VideoEncodeAndValidate) {
+#else
 // Test MediaCodec HW H264 encoding and validate the format of encoded frames.
 TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
+#endif
   SKIP_TEST_IF_HW_H264_IS_NOT_AVAILABLE();
 
   const int width = 640;
