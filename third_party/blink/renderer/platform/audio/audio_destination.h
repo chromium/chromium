@@ -62,13 +62,13 @@ class WebAudioSinkDescriptor;
 //    AudioDeviceThread.
 //  - Dual-thread (experimental): Use WebThread for the WebAudio rendering with
 //    AudioWorkletThread.
-class PLATFORM_EXPORT AudioDestination
+class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
       public WebAudioDevice::RenderCallback {
   USING_FAST_MALLOC(AudioDestination);
 
  public:
-  // Represents the current state of the underlying |WebAudioDevice| object
+  // Represents the current state of the underlying `WebAudioDevice` object
   // (RendererWebAudioDeviceImpl).
   enum DeviceState {
     kRunning,
@@ -95,10 +95,10 @@ class PLATFORM_EXPORT AudioDestination
               double delay,
               double delay_timestamp) override;
 
-  virtual void Start();
-  virtual void Stop();
-  virtual void Pause();
-  virtual void Resume();
+  void Start();
+  void Stop();
+  void Pause();
+  void Resume();
 
   // Starts the destination with the AudioWorklet support.
   void StartWithWorkletTaskRunner(
@@ -110,7 +110,7 @@ class PLATFORM_EXPORT AudioDestination
   bool IsPlaying();
 
   // This is the context sample rate, not the device one.
-  double SampleRate() const { return context_sample_rate_; }
+  double SampleRate() const;
 
   // Returns the audio buffer size in frames used by the underlying audio
   // hardware.
@@ -121,19 +121,19 @@ class PLATFORM_EXPORT AudioDestination
   static float HardwareSampleRate();
   static uint32_t MaxChannelCount();
 
-  // Sets the detect silence flag for |web_audio_device_|.
+  // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);
 
   // This should only be called from the audio thread.
-  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+  unsigned RenderQuantumFrames() const;
 
  private:
-  AudioDestination(AudioIOCallback&,
-                   const WebAudioSinkDescriptor& sink_descriptor,
-                   unsigned number_of_output_channels,
-                   const WebAudioLatencyHint&,
-                   absl::optional<float> context_sample_rate,
-                   unsigned render_quantum_frames);
+  explicit AudioDestination(AudioIOCallback&,
+                            const WebAudioSinkDescriptor& sink_descriptor,
+                            unsigned number_of_output_channels,
+                            const WebAudioLatencyHint&,
+                            absl::optional<float> context_sample_rate,
+                            unsigned render_quantum_frames);
 
   void SetDeviceState(DeviceState);
 
@@ -151,7 +151,7 @@ class PLATFORM_EXPORT AudioDestination
   // Check if the buffer size chosen by the WebAudioDevice is too large.
   bool CheckBufferSize(unsigned render_quantum_frames);
 
-  void SendLogMessage(const String& message);
+  void SendLogMessage(const String& message) const;
 
   // Accessed by the main thread.
   std::unique_ptr<WebAudioDevice> web_audio_device_;
@@ -160,7 +160,7 @@ class PLATFORM_EXPORT AudioDestination
 
   const unsigned number_of_output_channels_;
 
-  unsigned render_quantum_frames_;
+  const unsigned render_quantum_frames_;
 
   // The sample rate used for rendering the Web Audio graph.
   float context_sample_rate_;
@@ -181,7 +181,7 @@ class PLATFORM_EXPORT AudioDestination
   AudioIOCallback& callback_;
 
   // Accessed by rendering thread.
-  size_t frames_elapsed_;
+  size_t frames_elapsed_ = 0;
 
   // Used for resampling if the Web Audio sample rate differs from the platform
   // one.
@@ -195,12 +195,12 @@ class PLATFORM_EXPORT AudioDestination
   // the AudioWorklet is activated.
   scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner_;
 
-  // This protects |device_state_| below.
-  mutable base::Lock state_change_lock_;
+  // This protects `device_state_` below.
+  mutable base::Lock device_state_lock_;
 
   // Modified only on the main thread, so it can be read without holding a lock
   // there.
-  DeviceState device_state_;
+  DeviceState device_state_ = kStopped;
 
   AudioCallbackMetricReporter metric_reporter_;
 

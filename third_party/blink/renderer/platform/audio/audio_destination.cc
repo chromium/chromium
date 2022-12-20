@@ -57,7 +57,7 @@ namespace {
 // that we would ever need. The current UMA stats indicates that this is, in
 // fact, probably too small. There are Android devices out there with a size of
 // 8000 or so.  We might need to make this larger. See: crbug.com/670747
-const uint32_t kFIFOSize = 96 * 128;
+constexpr uint32_t kFIFOSize = 96 * 128;
 
 const char* DeviceStateToString(AudioDestination::DeviceState state) {
   switch (state) {
@@ -131,7 +131,7 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
 
   if (worklet_task_runner_) {
     // Use the dual-thread rendering if the AudioWorklet is activated.
-    size_t frames_to_render =
+    const size_t frames_to_render =
         fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
     PostCrossThreadTask(
         *worklet_task_runner_, FROM_HERE,
@@ -140,7 +140,8 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
                             frames_to_render, delay, delay_timestamp));
   } else {
     // Otherwise use the single-thread rendering.
-    size_t frames_to_render = fifo_->Pull(output_bus_.get(), number_of_frames);
+    const size_t frames_to_render =
+        fifo_->Pull(output_bus_.get(), number_of_frames);
     RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp);
   }
   TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
@@ -169,7 +170,7 @@ void AudioDestination::Stop() {
   }
   web_audio_device_->Stop();
 
-  // Resetting |worklet_task_runner_| here is safe because
+  // Resetting `worklet_task_runner_` here is safe because
   // AudioDestination::Render() won't be called after WebAudioDevice::Stop()
   // call above.
   worklet_task_runner_ = nullptr;
@@ -212,7 +213,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
     return;
   }
 
-  // The dual-thread rendering kicks off, so updates the earmark frames
+  // The dual-thread rendering kicks off, so update the earmark frames
   // accordingly.
   fifo_->SetEarmarkFrames(callback_buffer_size_);
 
@@ -223,8 +224,12 @@ void AudioDestination::StartWithWorkletTaskRunner(
 
 bool AudioDestination::IsPlaying() {
   DCHECK(IsMainThread());
-  base::AutoLock locker(state_change_lock_);
+  base::AutoLock locker(device_state_lock_);
   return device_state_ == DeviceState::kRunning;
+}
+
+double AudioDestination::SampleRate() const {
+  return context_sample_rate_;
 }
 
 uint32_t AudioDestination::CallbackBufferSize() const {
@@ -259,6 +264,10 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
   web_audio_device_->SetDetectSilence(detect_silence);
 }
 
+unsigned AudioDestination::RenderQuantumFrames() const {
+  return render_quantum_frames_;
+}
+
 AudioDestination::AudioDestination(
     AudioIOCallback& callback,
     const WebAudioSinkDescriptor& sink_descriptor,
@@ -276,9 +285,7 @@ AudioDestination::AudioDestination(
                                    false)),
       render_bus_(
           AudioBus::Create(number_of_output_channels, render_quantum_frames)),
-      callback_(callback),
-      frames_elapsed_(0),
-      device_state_(DeviceState::kStopped) {
+      callback_(callback) {
   SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
                                 number_of_output_channels));
   SendLogMessage(
@@ -350,9 +357,9 @@ AudioDestination::AudioDestination(
   // Record the selected sample rate and ratio if the sampleRate was given.  The
   // ratio is recorded as a percentage, rounded to the nearest percent.
   if (context_sample_rate.has_value()) {
-    // The actual supplied |sampleRate| is probably a small set including 44100,
-    // 48000, 22050, and 2400 Hz.  Other valid values range from 3000 to 384000
-    // Hz, but are not expected to be used much.
+    // The actual supplied `context_sample_rate` is probably a small set
+    // including 44100, 48000, 22050, and 2400 Hz.  Other valid values range
+    // from 3000 to 384000 Hz, but are not expected to be used much.
     base::UmaHistogramSparse("WebAudio.AudioContextOptions.sampleRate",
                              context_sample_rate.value());
     // From the expected values above and the common HW sample rates, we expect
@@ -365,7 +372,7 @@ AudioDestination::AudioDestination(
 
 void AudioDestination::SetDeviceState(DeviceState state) {
   DCHECK(IsMainThread());
-  base::AutoLock locker(state_change_lock_);
+  base::AutoLock locker(device_state_lock_);
 
   device_state_ = state;
 }
@@ -378,7 +385,7 @@ void AudioDestination::RequestRender(size_t frames_requested,
                "frames_to_render", frames_to_render, "timestamp (s)",
                delay_timestamp);
 
-  base::AutoTryLock locker(state_change_lock_);
+  base::AutoTryLock locker(device_state_lock_);
 
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
@@ -401,21 +408,23 @@ void AudioDestination::RequestRender(size_t frames_requested,
       delay;
   output_position_.timestamp = delay_timestamp;
   output_position_.hardware_output_latency = delay;
-  base::TimeTicks callback_request = base::TimeTicks::Now();
+  const base::TimeTicks callback_request = base::TimeTicks::Now();
 
   for (size_t pushed_frames = 0; pushed_frames < frames_to_render;
        pushed_frames += RenderQuantumFrames()) {
-    // If platform buffer is more than two times longer than |framesToProcess|
-    // we do not want output position to get stuck so we promote it
-    // using the elapsed time from the moment it was initially obtained.
+    // If platform buffer is more than two times longer than
+    // `RenderQuantumFrames` we do not want output position to get stuck so we
+    // promote it using the elapsed time from the moment it was initially
+    // obtained.
     if (callback_buffer_size_ > RenderQuantumFrames() * 2) {
-      double delta = (base::TimeTicks::Now() - callback_request).InSecondsF();
+      const double delta =
+          (base::TimeTicks::Now() - callback_request).InSecondsF();
       output_position_.position += delta;
       output_position_.timestamp += delta;
     }
 
-    // Some implementations give only rough estimation of |delay| so
-    // we might have negative estimation |outputPosition| value.
+    // Some implementations give only rough estimation of `delay` so
+    // we might have negative estimation `output_position_` value.
     if (output_position_.position < 0.0) {
       output_position_.position = 0.0;
     }
@@ -455,13 +464,13 @@ bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
                            callback_buffer_size_);
 
   // Check if the requested buffer size is too large.
-  bool is_buffer_size_valid =
+  const bool is_buffer_size_valid =
       callback_buffer_size_ + render_quantum_frames <= kFIFOSize;
   DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
   return is_buffer_size_valid;
 }
 
-void AudioDestination::SendLogMessage(const String& message) {
+void AudioDestination::SendLogMessage(const String& message) const {
   WebRtcLogMessage(String::Format("[WA]AD::%s [state=%s]",
                                   message.Utf8().c_str(),
                                   DeviceStateToString(device_state_))
