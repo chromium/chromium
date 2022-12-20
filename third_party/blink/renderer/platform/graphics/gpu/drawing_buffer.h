@@ -418,8 +418,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 const gfx::Size&,
                 const gfx::ColorSpace& color_space,
                 viz::ResourceFormat,
+                GLenum texture_target,
                 GLuint texture_id,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
+                bool is_overlay_candidate,
                 gpu::Mailbox mailbox);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
@@ -436,18 +438,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::Size size;
     const gfx::ColorSpace color_space;
     const viz::ResourceFormat format;
-    const GLuint texture_id = 0;
+    const GLenum texture_target;
+    const GLuint texture_id;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-
-    // If we're emulating an RGB back buffer using an RGBA Chromium
-    // image (essentially macOS only), then when performing
-    // BlitFramebuffer calls, we have to swap in an RGB texture in
-    // place of the RGBA texture bound to the image. The reason is
-    // that BlitFramebuffer requires the internal formats of the
-    // source and destination to match (e.g. RGB8 on both sides).
-    // There are bugs in the semantics of RGB8 textures in this
-    // situation (the alpha channel is zeroed), requiring more fixups.
-    GLuint rgb_workaround_texture_id = 0;
+    const bool is_overlay_candidate;
 
     // The mailbox used to send this buffer to the compositor.
     gpu::Mailbox mailbox;
@@ -616,9 +610,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool using_swap_chain_;
   bool low_latency_enabled_ = false;
   bool has_implicit_stencil_buffer_ = false;
-
-  // The texture target (2D or RECTANGLE) for our allocations.
-  GLenum texture_target_ = 0;
 
   // The current state restorer, which is used to track state dirtying. It is an
   // error to dirty state shared with WebGL while there is no existing state
