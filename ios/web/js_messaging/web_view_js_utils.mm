@@ -47,29 +47,28 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     result = std::make_unique<base::Value>();
     DCHECK(result->is_none());
   } else if (result_type == CFDictionaryGetTypeID()) {
-    std::unique_ptr<base::DictionaryValue> dictionary =
-        std::make_unique<base::DictionaryValue>();
+    base::Value::Dict dictionary;
     for (id key in wk_result) {
       NSString* obj_c_string = base::mac::ObjCCast<NSString>(key);
       const std::string path = base::SysNSStringToUTF8(obj_c_string);
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(wk_result[obj_c_string], max_depth - 1);
       if (value) {
-        dictionary->Set(path, std::move(value));
+        dictionary.SetByDottedPath(
+            path, base::Value::FromUniquePtrValue(std::move(value)));
       }
     }
-    result = std::move(dictionary);
+    result = std::make_unique<base::Value>(std::move(dictionary));
   } else if (result_type == CFArrayGetTypeID()) {
-    std::unique_ptr<base::ListValue> list = std::make_unique<base::ListValue>();
+    base::Value::List list;
     for (id list_item in wk_result) {
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(list_item, max_depth - 1);
       if (value) {
-        list->GetList().Append(
-            base::Value::FromUniquePtrValue(std::move(value)));
+        list.Append(base::Value::FromUniquePtrValue(std::move(value)));
       }
     }
-    result = std::move(list);
+    result = std::make_unique<base::Value>(std::move(list));
   } else {
     NOTREACHED();  // Convert other types as needed.
   }
