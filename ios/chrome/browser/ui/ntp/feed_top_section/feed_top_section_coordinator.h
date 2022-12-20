@@ -19,8 +19,8 @@
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
-// Handles the feed top section changing visibility in the NTP.
-- (void)feedTopSectionHasChangedVisibility:(BOOL)visible;
+// Handles the feed top section's signin promo changing visibility.
+- (void)signinPromoHasChangedVisibility:(BOOL)visible;
 
 @end
 

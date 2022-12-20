@@ -822,7 +822,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
   DCHECK(!self.identity);
-  DCHECK(self.signinPromoViewVisible);
+  // The promo on top of the feed is only logged as visible when most of it can
+  // be seen, so it can be used without `self.signinPromoViewVisible`.
+  DCHECK(self.signinPromoViewVisible ||
+         self.accessPoint ==
+             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
   // On iOS, the promo does not have a button to add and account when there is
@@ -859,8 +863,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
-  DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
+  // The promo on top of the feed is only logged as visible when most of it can
+  // be seen, so it can be dismissed without `self.signinPromoViewVisible`.
+  DCHECK(self.signinPromoViewVisible ||
+         self.accessPoint ==
+             signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
   self.signinPromoViewState = ios::SigninPromoViewState::Closed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);

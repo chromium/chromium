@@ -14,8 +14,8 @@
 // YES if the content requires the header to stick while scrolling.
 - (BOOL)isContentHeaderSticky;
 
-// Handles what happens when the feed top section changes visibility in the NTP.
-- (void)feedTopSectionHasChangedVisibility:(BOOL)visible;
+// Handles what happens when the signin promo changes visibility in the NTP.
+- (void)signinPromoHasChangedVisibility:(BOOL)visible;
 
 @end
 
