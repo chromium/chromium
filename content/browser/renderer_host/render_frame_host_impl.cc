@@ -1492,6 +1492,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       perfetto::StaticString{LifecycleStateImplToString(lifecycle_state_)},
       perfetto::Track::FromPointer(this));
 
+  DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
