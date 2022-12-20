@@ -17,6 +17,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/services/device_sync/cryptauth_api_call_flow.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
@@ -140,18 +141,6 @@ void NotCalledConstRef(const T& type) {
   EXPECT_TRUE(false);
 }
 
-// Callback that saves the result returned by CryptAuthClient.
-template <class T>
-void SaveResult(T* out, T result) {
-  *out = result;
-}
-
-// Callback that saves the result returned by CryptAuthClient.
-template <class T>
-void SaveResultConstRef(T* out, const T& result) {
-  *out = result;
-}
-
 }  // namespace
 
 class DeviceSyncCryptAuthClientTest : public testing::Test {
@@ -248,15 +237,12 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetMyDevicesSuccess) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "getmydevices");
 
-  cryptauth::GetMyDevicesResponse result_proto;
+  base::test::TestFuture<const cryptauth::GetMyDevicesResponse&> future;
   cryptauth::GetMyDevicesRequest request_proto;
   request_proto.set_allow_stale_read(true);
-  client_->GetMyDevices(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::GetMyDevicesResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  client_->GetMyDevices(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NetworkRequestError>),
+                        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -280,6 +266,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetMyDevicesSuccess) {
   }
 
   // Check that the result received in callback is the same as the response.
+  cryptauth::GetMyDevicesResponse result_proto = future.Take();
   ASSERT_EQ(2, result_proto.devices_size());
   EXPECT_EQ(kPublicKey1, result_proto.devices(0).public_key());
   EXPECT_TRUE(result_proto.devices(0).unlock_key());
@@ -293,18 +280,17 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetMyDevicesFailure) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "getmydevices");
 
-  NetworkRequestError error;
+  base::test::TestFuture<NetworkRequestError> future;
   client_->GetMyDevices(
       cryptauth::GetMyDevicesRequest(),
       base::BindOnce(&NotCalledConstRef<cryptauth::GetMyDevicesResponse>),
-      base::BindOnce(&SaveResult<NetworkRequestError>, &error),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+      future.GetCallback(), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
 
   FailApiCallFlow(NetworkRequestError::kInternalServerError);
-  EXPECT_EQ(NetworkRequestError::kInternalServerError, error);
+  EXPECT_EQ(NetworkRequestError::kInternalServerError, future.Get());
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleUnlockDevicesSuccess) {
@@ -312,14 +298,12 @@ TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleUnlockDevicesSuccess) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "findeligibleunlockdevices");
 
-  cryptauth::FindEligibleUnlockDevicesResponse result_proto;
+  base::test::TestFuture<const cryptauth::FindEligibleUnlockDevicesResponse&>
+      future;
   cryptauth::FindEligibleUnlockDevicesRequest request_proto;
   request_proto.set_callback_bluetooth_address(kBluetoothAddress2);
   client_->FindEligibleUnlockDevices(
-      request_proto,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauth::FindEligibleUnlockDevicesResponse>,
-          &result_proto),
+      request_proto, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -345,6 +329,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleUnlockDevicesSuccess) {
   FinishApiCallFlow(&response_proto);
 
   // Check that the result received in callback is the same as the response.
+  cryptauth::FindEligibleUnlockDevicesResponse result_proto = future.Take();
   ASSERT_EQ(1, result_proto.eligible_devices_size());
   EXPECT_EQ(kPublicKey1, result_proto.eligible_devices(0).public_key());
   ASSERT_EQ(1, result_proto.ineligible_devices_size());
@@ -360,20 +345,20 @@ TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleUnlockDevicesFailure) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "findeligibleunlockdevices");
 
-  NetworkRequestError error;
+  base::test::TestFuture<NetworkRequestError> future;
   cryptauth::FindEligibleUnlockDevicesRequest request_proto;
   request_proto.set_callback_bluetooth_address(kBluetoothAddress1);
   client_->FindEligibleUnlockDevices(
       request_proto,
       base::BindOnce(
           &NotCalledConstRef<cryptauth::FindEligibleUnlockDevicesResponse>),
-      base::BindOnce(&SaveResult<NetworkRequestError>, &error));
+      future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
 
   FailApiCallFlow(NetworkRequestError::kAuthenticationError);
-  EXPECT_EQ(NetworkRequestError::kAuthenticationError, error);
+  EXPECT_EQ(NetworkRequestError::kAuthenticationError, future.Get());
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleForPromotionSuccess) {
@@ -381,12 +366,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, FindEligibleForPromotionSuccess) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "findeligibleforpromotion");
 
-  cryptauth::FindEligibleForPromotionResponse result_proto;
+  base::test::TestFuture<const cryptauth::FindEligibleForPromotionResponse&>
+      future;
   client_->FindEligibleForPromotion(
-      cryptauth::FindEligibleForPromotionRequest(),
-      base::BindOnce(
-          &SaveResultConstRef<cryptauth::FindEligibleForPromotionResponse>,
-          &result_proto),
+      cryptauth::FindEligibleForPromotionRequest(), future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -404,14 +387,11 @@ TEST_F(DeviceSyncCryptAuthClientTest, SendDeviceSyncTickleSuccess) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "senddevicesynctickle");
 
-  cryptauth::SendDeviceSyncTickleResponse result_proto;
-  client_->SendDeviceSyncTickle(
-      cryptauth::SendDeviceSyncTickleRequest(),
-      base::BindOnce(
-          &SaveResultConstRef<cryptauth::SendDeviceSyncTickleResponse>,
-          &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  base::test::TestFuture<const cryptauth::SendDeviceSyncTickleResponse&> future;
+  client_->SendDeviceSyncTickle(cryptauth::SendDeviceSyncTickleRequest(),
+                                future.GetCallback(),
+                                base::BindOnce(&NotCalled<NetworkRequestError>),
+                                PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -428,16 +408,13 @@ TEST_F(DeviceSyncCryptAuthClientTest, ToggleEasyUnlockSuccess) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "toggleeasyunlock");
 
-  cryptauth::ToggleEasyUnlockResponse result_proto;
+  base::test::TestFuture<const cryptauth::ToggleEasyUnlockResponse&> future;
   cryptauth::ToggleEasyUnlockRequest request_proto;
   request_proto.set_enable(true);
   request_proto.set_apply_to_all(false);
   request_proto.set_public_key(kPublicKey1);
-  client_->ToggleEasyUnlock(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::ToggleEasyUnlockResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  client_->ToggleEasyUnlock(request_proto, future.GetCallback(),
+                            base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -462,16 +439,13 @@ TEST_F(DeviceSyncCryptAuthClientTest, SetupEnrollmentSuccess) {
   supported_protocols.push_back("gcmV1");
   supported_protocols.push_back("testProtocol");
 
-  cryptauth::SetupEnrollmentResponse result_proto;
+  base::test::TestFuture<const cryptauth::SetupEnrollmentResponse&> future;
   cryptauth::SetupEnrollmentRequest request_proto;
   request_proto.set_application_id(kApplicationId);
   request_proto.add_types("gcmV1");
   request_proto.add_types("testProtocol");
-  client_->SetupEnrollment(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::SetupEnrollmentResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  client_->SetupEnrollment(request_proto, future.GetCallback(),
+                           base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -495,6 +469,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, SetupEnrollmentSuccess) {
   }
 
   // Check that the returned proto is the same as the one just created.
+  cryptauth::SetupEnrollmentResponse result_proto = future.Take();
   EXPECT_EQ("OK", result_proto.status());
   ASSERT_EQ(1, result_proto.infos_size());
   EXPECT_EQ("gcmV1", result_proto.infos(0).type());
@@ -510,16 +485,13 @@ TEST_F(DeviceSyncCryptAuthClientTest, FinishEnrollmentSuccess) {
   static const char kEnrollmentSessionId[] = "enrollment_session_id";
   static const char kEnrollmentMessage[] = "enrollment_message";
   static const char kDeviceEphemeralKey[] = "device_ephermal_key";
-  cryptauth::FinishEnrollmentResponse result_proto;
+  base::test::TestFuture<const cryptauth::FinishEnrollmentResponse&> future;
   cryptauth::FinishEnrollmentRequest request_proto;
   request_proto.set_enrollment_session_id(kEnrollmentSessionId);
   request_proto.set_enrollment_message(kEnrollmentMessage);
   request_proto.set_device_ephemeral_key(kDeviceEphemeralKey);
-  client_->FinishEnrollment(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::FinishEnrollmentResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  client_->FinishEnrollment(request_proto, future.GetCallback(),
+                            base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -535,6 +507,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, FinishEnrollmentSuccess) {
     response_proto.set_status("OK");
     FinishApiCallFlow(&response_proto);
   }
+  cryptauth::FinishEnrollmentResponse result_proto = future.Take();
   EXPECT_EQ("OK", result_proto.status());
 }
 
@@ -548,12 +521,9 @@ TEST_F(DeviceSyncCryptAuthClientTest, SyncKeysSuccess) {
   cryptauthv2::SyncKeysRequest request_proto;
   request_proto.set_application_name(kApplicationName);
 
-  cryptauthv2::SyncKeysResponse result_proto;
-  client_->SyncKeys(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauthv2::SyncKeysResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  base::test::TestFuture<const cryptauthv2::SyncKeysResponse&> future;
+  client_->SyncKeys(request_proto, future.GetCallback(),
+                    base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -567,6 +537,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, SyncKeysSuccess) {
     response_proto.set_random_session_id(kRandomSessionId);
     FinishApiCallFlow(&response_proto);
   }
+  cryptauthv2::SyncKeysResponse result_proto = future.Take();
   EXPECT_EQ(kRandomSessionId, result_proto.random_session_id());
 }
 
@@ -580,12 +551,9 @@ TEST_F(DeviceSyncCryptAuthClientTest, EnrollKeysSuccess) {
   cryptauthv2::EnrollKeysRequest request_proto;
   request_proto.set_random_session_id(kRandomSessionId);
 
-  cryptauthv2::EnrollKeysResponse result_proto;
-  client_->EnrollKeys(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauthv2::EnrollKeysResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  base::test::TestFuture<const cryptauthv2::EnrollKeysResponse&> future;
+  client_->EnrollKeys(request_proto, future.GetCallback(),
+                      base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -601,6 +569,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, EnrollKeysSuccess) {
         ->set_common_name(kCertificateName);
     FinishApiCallFlow(&response_proto);
   }
+  cryptauthv2::EnrollKeysResponse result_proto = future.Take();
   ASSERT_EQ(1, result_proto.enroll_single_key_responses_size());
   ASSERT_EQ(1, result_proto.enroll_single_key_responses(0).certificate_size());
   EXPECT_EQ(
@@ -624,12 +593,9 @@ TEST_F(DeviceSyncCryptAuthClientTest, SyncMetadataSuccess) {
   request.set_group_public_key(kPublicKey1);
   request.set_need_group_private_key(true);
 
-  cryptauthv2::SyncMetadataResponse result;
-  client_->SyncMetadata(
-      request,
-      base::BindOnce(&SaveResultConstRef<cryptauthv2::SyncMetadataResponse>,
-                     &result),
-      base::BindOnce(&NotCalled<NetworkRequestError>));
+  base::test::TestFuture<const cryptauthv2::SyncMetadataResponse&> future;
+  client_->SyncMetadata(request, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -661,6 +627,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, SyncMetadataSuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::SyncMetadataResponse result = future.Take();
   ASSERT_EQ(2, result.encrypted_metadata_size());
   EXPECT_EQ(kDeviceId1, result.encrypted_metadata(0).device_id());
   EXPECT_EQ(kMyDeviceName, result.encrypted_metadata(0).device_name());
@@ -690,12 +657,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, ShareGroupPrivateKeySuccess) {
   request.add_encrypted_group_private_keys()->CopyFrom(
       encrypted_group_private_key);
 
-  cryptauthv2::ShareGroupPrivateKeyResponse result;
+  base::test::TestFuture<const cryptauthv2::ShareGroupPrivateKeyResponse&>
+      future;
   client_->ShareGroupPrivateKey(
-      request,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauthv2::ShareGroupPrivateKeyResponse>,
-          &result),
+      request, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -715,6 +680,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, ShareGroupPrivateKeySuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::ShareGroupPrivateKeyResponse result = future.Take();
   EXPECT_TRUE(result.SerializeAsString().empty());
 }
 
@@ -735,12 +701,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchNotifyGroupDevicesSuccess) {
   request.set_target_service(cryptauthv2::TargetService::DEVICE_SYNC);
   request.set_feature_type(kFeatureType1);
 
-  cryptauthv2::BatchNotifyGroupDevicesResponse result;
+  base::test::TestFuture<const cryptauthv2::BatchNotifyGroupDevicesResponse&>
+      future;
   client_->BatchNotifyGroupDevices(
-      request,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauthv2::BatchNotifyGroupDevicesResponse>,
-          &result),
+      request, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -767,6 +731,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchNotifyGroupDevicesSuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::BatchNotifyGroupDevicesResponse result = future.Take();
   EXPECT_TRUE(result.SerializeAsString().empty());
 }
 
@@ -787,12 +752,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchGetFeatureStatusesSuccess) {
   request.add_feature_types(kFeatureType1);
   request.add_feature_types(kFeatureType2);
 
-  cryptauthv2::BatchGetFeatureStatusesResponse result;
+  base::test::TestFuture<const cryptauthv2::BatchGetFeatureStatusesResponse&>
+      future;
   client_->BatchGetFeatureStatuses(
-      request,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauthv2::BatchGetFeatureStatusesResponse>,
-          &result),
+      request, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -827,6 +790,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchGetFeatureStatusesSuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::BatchGetFeatureStatusesResponse result = future.Take();
   ASSERT_EQ(2, result.device_feature_statuses_size());
 
   EXPECT_EQ(kDeviceId1, result.device_feature_statuses(0).device_id());
@@ -869,12 +833,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchSetFeatureStatusesSuccess) {
                        {kFeatureType2, false /* enabled */}}));
   request.set_enable_exclusively(true);
 
-  cryptauthv2::BatchSetFeatureStatusesResponse result;
+  base::test::TestFuture<const cryptauthv2::BatchSetFeatureStatusesResponse&>
+      future;
   client_->BatchSetFeatureStatuses(
-      request,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauthv2::BatchSetFeatureStatusesResponse>,
-          &result),
+      request, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -926,6 +888,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, BatchSetFeatureStatusesSuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::BatchSetFeatureStatusesResponse result = future.Take();
   EXPECT_TRUE(result.SerializeAsString().empty());
 }
 
@@ -942,12 +905,10 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetDevicesActivityStatusSuccess) {
                           kClientMetadataSessionId),
       cryptauthv2::kTestInstanceId, cryptauthv2::kTestInstanceIdToken));
 
-  cryptauthv2::GetDevicesActivityStatusResponse result;
+  base::test::TestFuture<const cryptauthv2::GetDevicesActivityStatusResponse&>
+      future;
   client_->GetDevicesActivityStatus(
-      request,
-      base::BindOnce(
-          &SaveResultConstRef<cryptauthv2::GetDevicesActivityStatusResponse>,
-          &result),
+      request, future.GetCallback(),
       base::BindOnce(&NotCalled<NetworkRequestError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -982,6 +943,7 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetDevicesActivityStatusSuccess) {
     FinishApiCallFlow(&response);
   }
 
+  cryptauthv2::GetDevicesActivityStatusResponse result = future.Take();
   ASSERT_EQ(2, result.device_activity_statuses_size());
 
   EXPECT_EQ(kDeviceId1, result.device_activity_statuses(0).device_id());
@@ -1001,17 +963,16 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetDevicesActivityStatusSuccess) {
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest, FetchAccessTokenFailure) {
-  NetworkRequestError error;
+  base::test::TestFuture<NetworkRequestError> future;
   client_->GetMyDevices(
       cryptauth::GetMyDevicesRequest(),
       base::BindOnce(&NotCalledConstRef<cryptauth::GetMyDevicesResponse>),
-      base::BindOnce(&SaveResult<NetworkRequestError>, &error),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+      future.GetCallback(), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
           GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
 
-  EXPECT_EQ(NetworkRequestError::kAuthenticationError, error);
+  EXPECT_EQ(NetworkRequestError::kAuthenticationError, future.Get());
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest, ParseResponseProtoFailure) {
@@ -1019,19 +980,18 @@ TEST_F(DeviceSyncCryptAuthClientTest, ParseResponseProtoFailure) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "getmydevices");
 
-  NetworkRequestError error;
+  base::test::TestFuture<NetworkRequestError> future;
   client_->GetMyDevices(
       cryptauth::GetMyDevicesRequest(),
       base::BindOnce(&NotCalledConstRef<cryptauth::GetMyDevicesResponse>),
-      base::BindOnce(&SaveResult<NetworkRequestError>, &error),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+      future.GetCallback(), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
 
   std::move(flow_result_callback_)
       .Run("Not a valid serialized response message.");
-  EXPECT_EQ(NetworkRequestError::kResponseMalformed, error);
+  EXPECT_EQ(NetworkRequestError::kResponseMalformed, future.Get());
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest,
@@ -1041,25 +1001,22 @@ TEST_F(DeviceSyncCryptAuthClientTest,
       "getmydevices");
 
   // Make first request.
-  cryptauth::GetMyDevicesResponse result_proto;
-  client_->GetMyDevices(
-      cryptauth::GetMyDevicesRequest(),
-      base::BindOnce(&SaveResultConstRef<cryptauth::GetMyDevicesResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  base::test::TestFuture<const cryptauth::GetMyDevicesResponse&> future;
+  client_->GetMyDevices(cryptauth::GetMyDevicesRequest(), future.GetCallback(),
+                        base::BindOnce(&NotCalled<NetworkRequestError>),
+                        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
 
   // With request pending, make second request.
   {
-    NetworkRequestError error;
+    base::test::TestFuture<NetworkRequestError> future2;
     EXPECT_DCHECK_DEATH(client_->FindEligibleUnlockDevices(
         cryptauth::FindEligibleUnlockDevicesRequest(),
         base::BindOnce(
             &NotCalledConstRef<cryptauth::FindEligibleUnlockDevicesResponse>),
-        base::BindOnce(&SaveResult<NetworkRequestError>, &error)));
+        future2.GetCallback()));
   }
 
   // Complete first request.
@@ -1070,6 +1027,7 @@ TEST_F(DeviceSyncCryptAuthClientTest,
     FinishApiCallFlow(&response_proto);
   }
 
+  cryptauth::GetMyDevicesResponse result_proto = future.Take();
   ASSERT_EQ(1, result_proto.devices_size());
   EXPECT_EQ(kPublicKey1, result_proto.devices(0).public_key());
 }
@@ -1081,13 +1039,11 @@ TEST_F(DeviceSyncCryptAuthClientTest,
     ExpectPostRequest(
         "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
         "getmydevices");
-    cryptauth::GetMyDevicesResponse result_proto;
-    client_->GetMyDevices(
-        cryptauth::GetMyDevicesRequest(),
-        base::BindOnce(&SaveResultConstRef<cryptauth::GetMyDevicesResponse>,
-                       &result_proto),
-        base::BindOnce(&NotCalled<NetworkRequestError>),
-        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+    base::test::TestFuture<const cryptauth::GetMyDevicesResponse&> future;
+    client_->GetMyDevices(cryptauth::GetMyDevicesRequest(),
+                          future.GetCallback(),
+                          base::BindOnce(&NotCalled<NetworkRequestError>),
+                          PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
     identity_test_environment_
         .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
             kAccessToken, base::Time::Max());
@@ -1096,18 +1052,19 @@ TEST_F(DeviceSyncCryptAuthClientTest,
     response_proto.add_devices();
     response_proto.mutable_devices(0)->set_public_key(kPublicKey1);
     FinishApiCallFlow(&response_proto);
+    cryptauth::GetMyDevicesResponse result_proto = future.Take();
     ASSERT_EQ(1, result_proto.devices_size());
     EXPECT_EQ(kPublicKey1, result_proto.devices(0).public_key());
   }
 
   // Second request fails.
   {
-    NetworkRequestError error;
+    base::test::TestFuture<NetworkRequestError> future;
     EXPECT_DCHECK_DEATH(client_->FindEligibleUnlockDevices(
         cryptauth::FindEligibleUnlockDevicesRequest(),
         base::BindOnce(
             &NotCalledConstRef<cryptauth::FindEligibleUnlockDevicesResponse>),
-        base::BindOnce(&SaveResult<NetworkRequestError>, &error)));
+        future.GetCallback()));
   }
 }
 
@@ -1116,15 +1073,12 @@ TEST_F(DeviceSyncCryptAuthClientTest, DeviceClassifierIsSet) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "getmydevices");
 
-  cryptauth::GetMyDevicesResponse result_proto;
+  base::test::TestFuture<const cryptauth::GetMyDevicesResponse&> future;
   cryptauth::GetMyDevicesRequest request_proto;
   request_proto.set_allow_stale_read(true);
-  client_->GetMyDevices(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::GetMyDevicesResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  client_->GetMyDevices(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NetworkRequestError>),
+                        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
@@ -1149,15 +1103,12 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetAccessTokenUsed) {
       "https://www.testgoogleapis.com/cryptauth/v1/deviceSync/"
       "getmydevices");
 
-  cryptauth::GetMyDevicesResponse result_proto;
+  base::test::TestFuture<const cryptauth::GetMyDevicesResponse&> future;
   cryptauth::GetMyDevicesRequest request_proto;
   request_proto.set_allow_stale_read(true);
-  client_->GetMyDevices(
-      request_proto,
-      base::BindOnce(&SaveResultConstRef<cryptauth::GetMyDevicesResponse>,
-                     &result_proto),
-      base::BindOnce(&NotCalled<NetworkRequestError>),
-      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  client_->GetMyDevices(request_proto, future.GetCallback(),
+                        base::BindOnce(&NotCalled<NetworkRequestError>),
+                        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
