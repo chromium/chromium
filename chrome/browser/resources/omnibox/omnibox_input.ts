@@ -196,10 +196,6 @@ export class OmniboxInput extends OmniboxElement {
 
   private onQueryInputsChanged() {
     this.elements.importedWarning.hidden = true;
-    this.elements.currentUrl.disabled = this.elements.zeroSuggest.checked;
-    if (this.elements.zeroSuggest.checked) {
-      this.elements.currentUrl.value = this.elements.inputText.value;
-    }
     this.dispatchEvent(
         new CustomEvent('query-inputs-changed', {detail: this.queryInputs}));
   }

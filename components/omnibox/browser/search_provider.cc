@@ -314,7 +314,6 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
     // Don't display any suggestions for on-focus requests.
-    DCHECK(done_);
     ClearAllResults();
   } else if (input.text().empty()) {
     // User typed "?" alone.  Give them a placeholder result indicating what

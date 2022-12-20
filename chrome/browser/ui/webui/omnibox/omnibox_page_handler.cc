@@ -358,10 +358,11 @@ void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
   input.set_prefer_keyword(prefer_keyword);
   if (prefer_keyword)
     input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
-  input.set_focus_type(zero_suggest
-                           ? metrics::OmniboxFocusType::INTERACTION_FOCUS
-                           : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
-
+  input.set_focus_type(
+      zero_suggest ? input.text().empty() && current_url_gurl.is_valid()
+                         ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                         : metrics::OmniboxFocusType::INTERACTION_FOCUS
+                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   controller_->Start(input);
 }
 
