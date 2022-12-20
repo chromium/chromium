@@ -137,21 +137,20 @@ IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
     const GlobalRenderFrameHostId& rfh_id) {
   mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
-  if (rfh_id.frame_routing_id == MSG_ROUTING_NONE) {
-    // If the `frame_routing_id` is `MSG_ROUTING_NONE` (the default value for
-    // the `GlobalRenderFrameHostId`), it means there is actually no
+  if (RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id)) {
+    DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh)
+        ->Bind(
+            client_state_checker_remote.InitWithNewEndpointAndPassReceiver());
+  } else {
+    // If the `rfh` is null, it means there is actually no valid
     // `RenderFrameHost` associated with the client. We should use a default
     // checker instance for it.
     // See comments from `NoDocumentIndexedDBClientStateChecker`.
     mojo::MakeSelfOwnedAssociatedReceiver(
         std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
         client_state_checker_remote.InitWithNewEndpointAndPassReceiver());
-  } else {
-    DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(
-        RenderFrameHost::FromID(rfh_id))
-        ->Bind(
-            client_state_checker_remote.InitWithNewEndpointAndPassReceiver());
   }
+
   return client_state_checker_remote;
 }
 
