@@ -3157,9 +3157,7 @@ bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
 }
 
 bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() && DropTable(db_, "autofill_profiles_trash") &&
-         transaction.Commit();
+  return DropTable(db_, "autofill_profiles_trash");
 }
 
 bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
@@ -3199,21 +3197,15 @@ bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
 }
 
 bool AutofillTable::MigrateToVersion101RemoveCreditCardArtImageTable() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         db_->Execute("DROP TABLE IF EXISTS credit_card_art_images") &&
-         transaction.Commit();
+  return db_->Execute("DROP TABLE IF EXISTS credit_card_art_images");
 }
 
 bool AutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         CreateTable(db_, kAutofillProfileBirthdatesTable,
+  return CreateTable(db_, kAutofillProfileBirthdatesTable,
                      {{kGuid, "VARCHAR"},
                       {kDay, "INTEGER DEFAULT 0"},
                       {kMonth, "INTEGER DEFAULT 0"},
-                      {kYear, "INTEGER DEFAULT 0"}}) &&
-         transaction.Commit();
+                      {kYear, "INTEGER DEFAULT 0"}});
 }
 
 bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
@@ -3234,15 +3226,12 @@ bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
 }
 
 bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
-  sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         CreateTable(db_, kIBANsTable,
+  return CreateTable(db_, kIBANsTable,
                      {{kGuid, "VARCHAR"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                       {kValue, "VARCHAR"},
-                      {kNickname, "VARCHAR"}}) &&
-         transaction.Commit();
+                      {kNickname, "VARCHAR"}});
 }
 
 bool AutofillTable::MigrateToVersion106RecreateAutofillIBANTable() {
@@ -3277,21 +3266,10 @@ bool AutofillTable::MigrateToVersion107AddContactInfoTables() {
 }
 
 bool AutofillTable::MigrateToVersion108AddCardIssuerIdColumn() {
-  sql::Transaction transaction(db_);
-
-  if (!transaction.Begin())
-    return false;
-
-  if (!db_->DoesTableExist(kMaskedCreditCardsTable))
-    return false;
-
   // Add card_issuer_id to masked_credit_cards.
-  if (!AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kCardIssuerId,
-                            "VARCHAR")) {
-    return false;
-  }
-
-  return transaction.Commit();
+  return db_->DoesTableExist(kMaskedCreditCardsTable) &&
+         AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kCardIssuerId,
+                              "VARCHAR");
 }
 
 bool AutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
