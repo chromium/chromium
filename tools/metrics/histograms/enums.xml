@@ -59294,6 +59294,7 @@ from previous Chrome versions.
   <int value="-856407187" label="OnDeviceGrammarCheck:disabled"/>
   <int value="-856146376"
       label="disable_idle_sockets_close_on_memory_pressure:disabled"/>
+  <int value="-856068660" label="EcheLauncherListView:disabled"/>
   <int value="-856016114" label="NTPOfflinePages:disabled"/>
   <int value="-855513281" label="SyncRequiresPoliciesLoaded:disabled"/>
   <int value="-855433657" label="WebRtcAllowInputVolumeAdjustment:disabled"/>
@@ -59937,6 +59938,7 @@ from previous Chrome versions.
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
   <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
+  <int value="-475537287" label="EcheLauncherListView:enabled"/>
   <int value="-475049740" label="disable-vr-shell"/>
   <int value="-475042780" label="DialMediaRouteProvider:enabled"/>
   <int value="-474833105" label="CrostiniUseBusterImage:enabled"/>

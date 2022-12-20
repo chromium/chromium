@@ -1438,6 +1438,11 @@ BASE_FEATURE(kMojoDBusRelay,
 // Enables the full apps list in Phone Hub bubble.
 BASE_FEATURE(kEcheLauncher, "EcheLauncher", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Switch full apps list in Phone Hub from grid view to list view.
+BASE_FEATURE(kEcheLauncherListView,
+             "EcheLauncherListView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for multilingual assistive typing on ChromeOS.
 BASE_FEATURE(kMultilingualTyping,
              "MultilingualTyping",
@@ -2834,6 +2839,11 @@ bool IsMinimumChromeVersionEnabled() {
 bool IsEcheLauncherEnabled() {
   return base::FeatureList::IsEnabled(kEcheLauncher) &&
          base::FeatureList::IsEnabled(kEcheSWA);
+}
+
+bool IsEcheLauncherListViewEnabled() {
+  return IsEcheLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kEcheLauncherListView);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {

@@ -3020,6 +3020,9 @@ extern const char kEcheSWADescription[];
 extern const char kEcheLauncherName[];
 extern const char kEcheLauncherDescription[];
 
+extern const char kEcheLauncherListViewName[];
+extern const char kEcheLauncherListViewDescription[];
+
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 
