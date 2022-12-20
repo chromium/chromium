@@ -128,9 +128,19 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize();
-      case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
-        return !chromeos::TabletState::Get()->InTabletMode() &&
-               frame_->widget_delegate()->CanMaximize();
+      case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
+        if (!frame_->widget_delegate()->CanMaximize()) {
+          return false;
+        }
+
+        if (!chromeos::TabletState::Get()->InTabletMode()) {
+          return true;
+        }
+
+        // In tablet mode, only show the size button if the window is floated.
+        return frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
+               WindowStateType::kFloated;
+      }
       // Resizable widget can be snapped.
       case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
       case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
@@ -525,19 +535,38 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
 
 void FrameCaptionButtonContainerView::UpdateSizeButton() {
   const bool use_zoom_icons = model_->InZoomMode();
+  const bool floated = frame_->GetNativeWindow()->GetProperty(
+                           kWindowStateTypeKey) == WindowStateType::kFloated;
+
   const gfx::VectorIcon& restore_icon = use_zoom_icons
                                             ? chromeos::kWindowControlDezoomIcon
                                             : views::kWindowControlRestoreIcon;
   const gfx::VectorIcon& maximize_icon =
       use_zoom_icons ? chromeos::kWindowControlZoomIcon
-                     : views::kWindowControlMaximizeIcon;
+                     : (floated ? chromeos::kUnfloatButtonIcon
+                                : views::kWindowControlMaximizeIcon);
 
   const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(frame_);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
                  use_restore_frame ? maximize_icon : restore_icon);
-  size_button_->SetTooltipText(
-      use_restore_frame ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE)
-                        : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
+
+  int message_id;
+  if (floated) {
+    message_id = IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME;
+  } else if (use_restore_frame) {
+    message_id = IDS_APP_ACCNAME_MAXIMIZE;
+  } else {
+    message_id = IDS_APP_ACCNAME_RESTORE;
+  }
+  size_button_->SetTooltipText(l10n_util::GetStringUTF16(message_id));
+
+  // Size button also needs to update its visibility when float state changes.
+  size_button_->SetVisible(
+      model_->IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
+      use_zoom_icons);
+  size_button_->SetEnabled(
+      model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
+      use_zoom_icons);
 }
 
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
@@ -596,6 +625,9 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
   } else if (frame_->IsMaximized()) {
     frame_->Restore();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Restore"));
+  } else if (frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
+             WindowStateType::kFloated) {
+    FloatControllerBase::Get()->ToggleFloat(frame_->GetNativeWindow());
   } else {
     frame_->Maximize();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Maximize"));

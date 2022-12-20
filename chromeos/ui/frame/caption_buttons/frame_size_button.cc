@@ -369,8 +369,10 @@ void FrameSizeButton::StartSetButtonsToSnapModeTimer(
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
+  if (!chromeos::wm::features::IsFloatWindowEnabled() ||
+      chromeos::TabletState::Get()->InTabletMode()) {
     return;
+  }
 
   base::OnceClosure cancel_animation = base::BindOnce(
       &FrameSizeButton::DestroyPieAnimation, base::Unretained(this));

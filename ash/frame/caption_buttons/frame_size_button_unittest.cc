@@ -889,4 +889,5 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
   // multiple buckets.
   histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 2);
 }
+
 }  // namespace ash

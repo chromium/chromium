@@ -393,10 +393,10 @@ TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
             chromeos::WindowStateType::kNormal);
 }
 
-TEST_F(WindowFloatButtonTest, TabletFloatButtonVisibility) {
+TEST_F(WindowFloatButtonTest, TabletSizeButtonVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
-  // Create a window in tablet mode. It should be maximized and the float button
+  // Create a window in tablet mode. It should be maximized and the size button
   // should be hidden.
   auto window = CreateAppWindow();
   auto* window_state = WindowState::Get(window.get());
@@ -408,13 +408,13 @@ TEST_F(WindowFloatButtonTest, TabletFloatButtonVisibility) {
       frame->GetHeaderView()->caption_button_container();
   FrameCaptionButtonContainerView::TestApi test_api(container);
 
-  auto* float_button = test_api.float_button();
-  EXPECT_FALSE(float_button->GetVisible());
+  auto* size_button = test_api.size_button();
+  EXPECT_FALSE(size_button->GetVisible());
 
-  // Float the window. Test that the float button is visible.
+  // Float the window. Test that the size button is visible.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(window_state->IsFloated());
-  EXPECT_TRUE(float_button->GetVisible());
+  EXPECT_TRUE(size_button->GetVisible());
 }
 
 }  // namespace ash
