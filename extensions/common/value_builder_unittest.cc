@@ -22,19 +22,20 @@ TEST(ValueBuilderTest, Basic) {
   ListBuilder permission_list;
   permission_list.Append("tabs").Append("history");
 
-  std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue);
+  base::Value::Dict settings;
+  ASSERT_FALSE(settings.FindList("permissions"));
+  settings = DictionaryBuilder()
+                 .Set("permissions", permission_list.Build())
+                 .BuildDict();
 
-  ASSERT_FALSE(settings->GetList("permissions", nullptr));
-  settings =
-      DictionaryBuilder().Set("permissions", permission_list.Build()).Build();
-  base::ListValue* list_value;
-  ASSERT_TRUE(settings->GetList("permissions", &list_value));
+  base::Value::List* list_value = settings.FindList("permissions");
 
-  ASSERT_EQ(list_value->GetList().size(), 2u);
-  ASSERT_TRUE(list_value->GetList()[0].is_string());
-  ASSERT_EQ(list_value->GetList()[0].GetString(), "tabs");
-  ASSERT_TRUE(list_value->GetList()[1].is_string());
-  ASSERT_EQ(list_value->GetList()[1].GetString(), "history");
+  ASSERT_TRUE(list_value);
+  ASSERT_EQ(list_value->size(), 2u);
+  ASSERT_TRUE(list_value->front().is_string());
+  ASSERT_EQ(list_value->front().GetString(), "tabs");
+  ASSERT_TRUE(list_value->back().is_string());
+  ASSERT_EQ(list_value->back().GetString(), "history");
 }
 
 TEST(ValueBuilderTest, AppendList) {
