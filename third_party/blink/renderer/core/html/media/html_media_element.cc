@@ -597,8 +597,6 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   // TODO(liberato): Consider checking that the new document's opener is the old
   // document: GetDocument().GetFrame()->Opener() == old_document.GetFrame().
   ignore_preload_none_ = false;
-  auto new_origin = GetDocument().TopFrameOrigin();
-  auto old_origin = old_document.TopFrameOrigin();
 
   // Experimental: Try to avoid destroying the media player when transferring a
   // media element to a new document. This is a work in progress, and may cause
@@ -611,13 +609,7 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   // guaranteed not to outlive its opener document because
   // DocumentPictureInPictureController watches the destruction and navigation
   // of the opener's WebContents.
-  const bool reuse_player =
-      RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled() &&
-      new_origin && old_origin &&
-      old_origin->IsSameOriginWith(new_origin.get()) &&
-      (GetDocument().domWindow()->IsPictureInPictureWindow() ||
-       old_document.domWindow()->IsPictureInPictureWindow());
-  if (!reuse_player) {
+  if (!ShouldReusePlayer(old_document, GetDocument())) {
     // Don't worry about notifications from any previous document if we're not
     // re-using the player.
     if (opener_context_observer_)
@@ -651,6 +643,37 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   old_document.DecrementLoadEventDelayCount();
 
   HTMLElement::DidMoveToNewDocument(old_document);
+}
+
+bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
+                                         Document& new_document) const {
+  if (!RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled()) {
+    return false;
+  }
+
+  if (!old_document.GetFrame() || !new_document.GetFrame()) {
+    return false;
+  }
+
+  auto* new_origin = new_document.GetFrame()
+                         ->LocalFrameRoot()
+                         .GetSecurityContext()
+                         ->GetSecurityOrigin();
+  auto* old_origin = old_document.GetFrame()
+                         ->LocalFrameRoot()
+                         .GetSecurityContext()
+                         ->GetSecurityOrigin();
+
+  if (!old_origin || !new_origin || !old_origin->IsSameOriginWith(new_origin)) {
+    return false;
+  }
+
+  // Reuse player if the two documents have opener-pip relationship (for either
+  // direction).
+  return (new_document.domWindow()->IsPictureInPictureWindow() &&
+          new_document.GetFrame()->Opener() == old_document.GetFrame()) ||
+         (old_document.domWindow()->IsPictureInPictureWindow() &&
+          old_document.GetFrame()->Opener() == new_document.GetFrame());
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
