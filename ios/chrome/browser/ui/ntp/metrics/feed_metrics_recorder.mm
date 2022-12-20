@@ -76,6 +76,10 @@ using feed::FeedUserActionType;
 
 #pragma mark - Public
 
++ (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger {
+  base::UmaHistogramEnumeration(kDiscoverFeedRefreshTrigger, trigger);
+}
+
 - (void)recordFeedScrolled:(int)scrollDistance {
   [self recordEngagement:scrollDistance interacted:NO];
 

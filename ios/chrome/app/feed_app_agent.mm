@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,7 +26,10 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     @"FeedLastBackgroundRefreshTimestamp";
 }  // namespace
 
-@implementation FeedAppAgent
+@implementation FeedAppAgent {
+  // Set to YES when the app is foregrounded.
+  BOOL _wasForegroundedAtLeastOnce;
+}
 
 #pragma mark - AppStateObserver
 
@@ -78,6 +82,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 }
 
 - (void)appDidEnterForeground {
+  _wasForegroundedAtLeastOnce = YES;
   if (IsFeedBackgroundRefreshEnabled()) {
     // This is not strictly necessary, but it makes it more explicit. The OS
     // limits to 1 refresh task at any time, and a new request will replace a
@@ -161,6 +166,13 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // changed during a cold start.
   if (!IsFeedBackgroundRefreshEnabled()) {
     return;
+  }
+  if (_wasForegroundedAtLeastOnce) {
+    [FeedMetricsRecorder
+        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
+  } else {
+    [FeedMetricsRecorder
+        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
   }
   if (IsRecurringBackgroundRefreshScheduleEnabled()) {
     [self scheduleBackgroundRefresh];

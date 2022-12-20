@@ -56,6 +56,8 @@ const char kDiscoverFeedActivityLoggingEnabled[] =
     "ContentSuggestions.Feed.ActivityLoggingEnabled";
 const char kDiscoverFeedBrokenNTPHierarchy[] =
     "ContentSuggestions.Feed.BrokenNTPHierarchy";
+const char kDiscoverFeedRefreshTrigger[] =
+    "ContentSuggestions.Feed.RefreshTrigger";
 const char kFeedUserSettingsOnStart[] =
     "ContentSuggestions.Feed.UserSettingsOnStart";
 const char kFollowingFeedSortType[] =

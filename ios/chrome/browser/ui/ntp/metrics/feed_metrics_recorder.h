@@ -30,6 +30,9 @@ class Time;
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;
 
+// Records the trigger where a feed refresh is requested.
++ (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger;
+
 // Record metrics for when the user has scrolled `scrollDistance` in the Feed.
 - (void)recordFeedScrolled:(int)scrollDistance;
 

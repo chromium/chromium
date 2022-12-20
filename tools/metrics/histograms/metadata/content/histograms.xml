@@ -1350,6 +1350,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.RefreshTrigger"
+    enum="FeedRefreshTrigger" expires_after="2023-03-18">
+  <owner>edchin@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks triggers that ask the Discover engine to refresh the feed. However, a
+    network call may or may not occur based on configuration thresholds.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.Scheduler.ContentAgeDifference"
     units="ms" expires_after="2020-10-01">
   <owner>carlosk@chromium.org</owner>
