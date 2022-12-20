@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/version.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,29 +22,11 @@
 
 namespace web_app {
 
-class LacrosWebAppBrowserTest : public WebAppControllerBrowserTest {
- public:
-  LacrosWebAppBrowserTest() = default;
-  ~LacrosWebAppBrowserTest() override = default;
-
- protected:
-  // If ash is does not contain the relevant test controller functionality, then
-  // there's nothing to do for this test. We require https://crrev.com/c/3688993
-  // (SelectContextMenuForShelfItem bug fix) and https://crrev.com/c/3703077
-  // (ApplyBackgroundAndMask fix for PWA shortcuts without icons).
-  bool IsServiceAvailable() {
-    DCHECK(IsWebAppsCrosapiEnabled());
-    return chromeos::IsAshVersionAtLeastForTesting(
-        base::Version({105, 0, 5120}));
-  }
-};
+using LacrosWebAppBrowserTest = WebAppControllerBrowserTest;
 
 // Test that for a PWA with a file handler, App info from the Shelf context menu
 // launches the Settings SWA. Regression test for https://crbug.com/1315958.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, AppInfo) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP() << "Unsupported ash version.";
-
   crosapi::mojom::TestControllerAsyncWaiter waiter(
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
@@ -106,9 +87,6 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, AppInfo) {
 
 // Regression test for crbug.com/1335266
 IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, Shortcut) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP() << "Unsupported ash version.";
-
   // The menu contains 5 items common across running web apps, then a separator
   // and label for each of the 6 shortcut entries.
   const uint32_t kNumShortcutItems = 17U;

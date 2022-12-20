@@ -45,13 +45,6 @@ class LacrosTtsApiTest : public ExtensionApiTest,
   }
 
  protected:
-  bool IsServiceAvailable() {
-    // Ash version must have the change to allow enabling lacros_tts_support
-    // for testing.
-    return chromeos::IsAshVersionAtLeastForTesting(
-        base::Version({106, 0, 5228}));
-  }
-
   bool HasVoiceWithName(const std::string& name) {
     std::vector<content::VoiceData> voices;
     content::TtsController::GetInstance()->GetVoices(profile(), GURL(),
@@ -163,9 +156,6 @@ class LacrosTtsApiTest : public ExtensionApiTest,
 // TTS Engine tests.
 //
 IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, LoadAndUnloadLacrosTtsEngine) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP() << "Unsupported ash version.";
-
   // Before tts engine extension is loaded, verify the internal states are
   // clean.
   EXPECT_FALSE(VoicesChangedNotified());
