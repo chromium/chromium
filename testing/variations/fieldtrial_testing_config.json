@@ -8849,7 +8849,7 @@
             ]
         }
     ],
-    "PrivacyHub": [
+    "PrivacyHubBetaStudy": [
         {
             "platforms": [
                 "chromeos",
@@ -8857,7 +8857,13 @@
             ],
             "experiments": [
                 {
-                    "name": "PrivacyHubDogfoodStudy",
+                    "name": "Enabled_20230101",
+                    "enable_features": [
+                        "CrosPrivacyHubV0"
+                    ]
+                },
+                {
+                    "name": "Enabled_20230101_Dogfood",
                     "enable_features": [
                         "CrosPrivacyHubV0"
                     ]
