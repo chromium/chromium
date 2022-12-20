@@ -5,8 +5,10 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
@@ -37,6 +39,8 @@ class PermissionsPolicyTest : public testing::Test {
       : feature_list_(
             {{kDefaultOnFeature, PermissionsPolicyFeatureDefault::EnableForAll},
              {kDefaultSelfFeature,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kBrowsingTopics,
               PermissionsPolicyFeatureDefault::EnableForSelf},
              {mojom::PermissionsPolicyFeature::kClientHintDPR,
               PermissionsPolicyFeatureDefault::EnableForSelf},
@@ -1479,6 +1483,181 @@ TEST_F(PermissionsPolicyTest, TestUndefinedFeaturesInFramePolicy) {
       policy2.get(), mojom::PermissionsPolicyFeature::kNotFound));
   EXPECT_FALSE(
       PolicyContainsInheritedValue(policy2.get(), kUnavailableFeature));
+}
+
+// Tests for proposed algorithm change in
+// https://github.com/w3c/webappsec-permissions-policy/pull/499 to construct
+// the policy for subresource request when there exists an equivalent and
+// enabled opt-in flag for the request.
+
+// A cross-origin subresource request that explicitly sets the browsingTopics
+// flag should have the browsing-topics permission as long as it passes
+// allowlist check, regardless of the feature's default state.
+TEST_F(PermissionsPolicyTest,
+       ProposedTestIsBrowsingTopicsFeatureEnabledForSubresourceRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kBrowsingTopics);
+
+  network::ResourceRequest request_without_topics_opt_in;
+
+  network::ResourceRequest request_with_topics_opt_in;
+  request_with_topics_opt_in.browsing_topics = true;
+
+  {
+    // +-------------------------------------------------+
+    // |(1)Origin A                                      |
+    // |No Policy                                        |
+    // |                                                 |
+    // | fetch(<Origin B's url>, {browsingTopics: true}) |
+    // +-------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_with_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_with_topics_opt_in));
+  }
+
+  {
+    // +-------------------------------------------------+
+    // |(1)Origin A                                      |
+    // |Permissions-Policy: browsing-topics=(self)       |
+    // |                                                 |
+    // | fetch(<Origin B's url>, {browsingTopics: true}) |
+    // +-------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    policy->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::
+                                   kBrowsingTopics, /*allowed_origins=*/
+                               {blink::OriginWithPossibleWildcards(
+                                   origin_a_,
+                                   /*has_subdomain_wildcard=*/false)},
+                               /*matches_all_origins=*/false,
+                               /*matches_opaque_src=*/false}}});
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_with_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_without_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_with_topics_opt_in));
+  }
+
+  {
+    // +-------------------------------------------------+
+    // |(1)Origin A                                      |
+    // |Permissions-Policy: browsing-topics=(none)       |
+    // |                                                 |
+    // | fetch(<Origin B's url>, {browsingTopics: true}) |
+    // +-------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    policy->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::
+                                   kBrowsingTopics, /*allowed_origins=*/
+                               {},
+                               /*matches_all_origins=*/false,
+                               /*matches_opaque_src=*/false}}});
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_without_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_with_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_without_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_with_topics_opt_in));
+  }
+
+  {
+    // +-------------------------------------------------+
+    // |(1)Origin A                                      |
+    // |Permissions-Policy: browsing-topics=*            |
+    // |                                                 |
+    // | fetch(<Origin B's url>, {browsingTopics: true}) |
+    // +-------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    policy->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::
+                                   kBrowsingTopics, /*allowed_origins=*/
+                               {},
+                               /*matches_all_origins=*/true,
+                               /*matches_opaque_src=*/false}}});
+
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_with_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_with_topics_opt_in));
+  }
+
+  {
+    // +-------------------------------------------------+
+    // |(1)Origin A                                      |
+    // |Permissions-Policy: browsing-topics=(Origin B)   |
+    // |                                                 |
+    // | fetch(<Origin B's url>, {browsingTopics: true}) |
+    // | fetch(<Origin C's url>, {browsingTopics: true}) |
+    // +-------------------------------------------------+
+
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr, origin_a_);
+    policy->SetHeaderPolicy({{{mojom::PermissionsPolicyFeature::
+                                   kBrowsingTopics, /*allowed_origins=*/
+                               {blink::OriginWithPossibleWildcards(
+                                   origin_b_,
+                                   /*has_subdomain_wildcard=*/false)},
+                               /*matches_all_origins=*/false,
+                               /*matches_opaque_src=*/false}}});
+
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_without_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
+        request_with_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_without_topics_opt_in));
+    EXPECT_TRUE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_b_,
+        request_with_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c_,
+        request_without_topics_opt_in));
+    EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
+        mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_c_,
+        request_with_topics_opt_in));
+  }
 }
 
 // Tests for proposed algorithm change. These tests construct policies in

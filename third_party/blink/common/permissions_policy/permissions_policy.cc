@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
@@ -143,24 +144,24 @@ bool PermissionsPolicy::IsFeatureEnabled(
 bool PermissionsPolicy::IsFeatureEnabledForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
-  DCHECK(base::Contains(*feature_list_, feature));
-  DCHECK(base::Contains(inherited_policies_, feature));
+  return IsFeatureEnabledForOriginImpl(feature, origin, /*opt_in_features=*/{});
+}
 
-  auto inherited_value = inherited_policies_.at(feature);
-  allowlists_checked_ = true;
-  auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end()) {
-    return inherited_value && allowlist->second.Contains(origin);
+bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
+    mojom::PermissionsPolicyFeature feature,
+    const url::Origin& origin,
+    const network::ResourceRequest& request) const {
+  // Derive the opt-in features from the request attributes.
+  std::set<mojom::PermissionsPolicyFeature> opt_in_features;
+  if (request.browsing_topics) {
+    DCHECK(base::FeatureList::IsEnabled(blink::features::kBrowsingTopics));
+
+    opt_in_features.insert(mojom::PermissionsPolicyFeature::kBrowsingTopics);
+    opt_in_features.insert(
+        mojom::PermissionsPolicyFeature::kBrowsingTopicsBackwardCompatible);
   }
 
-  // If no "allowlist" is specified, return default feature value.
-  const PermissionsPolicyFeatureDefault default_policy =
-      feature_list_->at(feature);
-  if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf &&
-      !origin_.IsSameOriginWith(origin))
-    return false;
-
-  return inherited_value;
+  return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
 bool PermissionsPolicy::GetFeatureValueForOrigin(
@@ -368,6 +369,54 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
                                              container_policy);
   }
   return new_policy;
+}
+
+// Implements Permissions Policy 9.9: Is feature enabled in document for origin?
+bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
+    mojom::PermissionsPolicyFeature feature,
+    const url::Origin& origin,
+    const std::set<mojom::PermissionsPolicyFeature>& opt_in_features) const {
+  DCHECK(base::Contains(*feature_list_, feature));
+  DCHECK(base::Contains(inherited_policies_, feature));
+
+  auto inherited_value = inherited_policies_.at(feature);
+
+  // 9.9.2: If policy’s inherited policy for feature is Disabled, return
+  // "Disabled".
+  if (!inherited_value) {
+    return false;
+  }
+
+  // 9.9.3: If feature is present in policy’s declared policy:
+  //    1. If the allowlist for feature in policy’s declared policy matches
+  //       origin, then return "Enabled".
+  //    2. Otherwise return "Disabled".
+  allowlists_checked_ = true;
+  auto allowlist = allowlists_.find(feature);
+  if (allowlist != allowlists_.end()) {
+    return allowlist->second.Contains(origin);
+  }
+
+  // Proposed algorithm change in
+  // https://github.com/w3c/webappsec-permissions-policy/pull/499: if
+  // optInFeatures contains feature, then return "Enabled".
+  if (base::Contains(opt_in_features, feature)) {
+    return true;
+  }
+
+  const PermissionsPolicyFeatureDefault default_policy =
+      feature_list_->at(feature);
+
+  // 9.9.4: If feature’s default allowlist is *, return "Enabled".
+  if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
+    return true;
+  }
+
+  // 9.9.5: If feature’s default allowlist is 'self', and origin is same origin
+  // with document’s origin, return "Enabled".
+  // 9.9.6: Return "Disabled".
+  DCHECK_EQ(default_policy, PermissionsPolicyFeatureDefault::EnableForSelf);
+  return origin_.IsSameOriginWith(origin);
 }
 
 // Implements Permissions Policy 9.7: Define an inherited policy for feature in
