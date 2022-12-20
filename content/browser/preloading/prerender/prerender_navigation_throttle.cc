@@ -107,8 +107,7 @@ PrerenderNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  if (frame_tree_node->IsMainFrame() &&
-      frame_tree_node->frame_tree().is_prerendering()) {
+  if (frame_tree_node->GetFrameType() == FrameType::kPrerenderMainFrame) {
     PrerenderHost* prerender_host =
         static_cast<PrerenderHost*>(frame_tree_node->frame_tree().delegate());
     DCHECK(prerender_host);
@@ -158,8 +157,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // Take the root frame tree node of the prerendering page.
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  DCHECK(frame_tree_node->IsMainFrame());
-  DCHECK(frame_tree_node->frame_tree().is_prerendering());
+  DCHECK_EQ(frame_tree_node->GetFrameType(), FrameType::kPrerenderMainFrame);
 
   PrerenderHostRegistry* prerender_host_registry =
       frame_tree_node->current_frame_host()
@@ -278,8 +276,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
 
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  DCHECK(frame_tree_node->IsMainFrame());
-  DCHECK(frame_tree_node->frame_tree().is_prerendering());
+  DCHECK_EQ(frame_tree_node->GetFrameType(), FrameType::kPrerenderMainFrame);
 
   PrerenderHostRegistry* prerender_host_registry =
       frame_tree_node->current_frame_host()
