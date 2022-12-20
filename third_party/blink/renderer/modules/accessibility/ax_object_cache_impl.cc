@@ -694,8 +694,9 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       permission_service_(document.GetExecutionContext()),
       permission_observer_receiver_(this, document.GetExecutionContext()),
       ax_tree_source_(BlinkAXTreeSource::Create(*this)),
-      ax_tree_serializer_(
-          std::make_unique<ui::AXTreeSerializer<AXObject*>>(ax_tree_source_)) {
+      ax_tree_serializer_(std::make_unique<ui::AXTreeSerializer<AXObject*>>(
+          ax_tree_source_,
+          /*crash_on_error*/ true)) {
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
 
@@ -3828,18 +3829,12 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
     return false;
   }
 
-  if (serializer.SerializeChanges(tree_source->GetRoot(), response)) {
-    tree_source->Thaw();
-    return true;
-  }
+  bool success = serializer.SerializeChanges(tree_source->GetRoot(), response);
+  DCHECK(success)
+      << "Serializer failed. Should have hit DCHECK inside of serializer.";
 
-  // It's possible for the page to fail to serialize the first time due to
-  // aria-owns rearranging the page while it's being scanned. Try a second
-  // time.
-  *response = ui::AXTreeUpdate();
-  bool result = serializer.SerializeChanges(tree_source->GetRoot(), response);
   tree_source->Thaw();
-  return result;
+  return true;
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithDetails(
@@ -3935,11 +3930,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     if (has_plugin_tree_source)
       update.has_tree_data = true;
 
-    if (!SerializeChanges(*obj, &update)) {
-      VLOG(1) << "Failed to serialize a dirty object: " << obj->ToString(true);
-      continue;
-    }
-
+    bool success = SerializeChanges(*obj, &update);
+    DCHECK(success);
     DCHECK_GT(update.nodes.size(), 0U);
 
     for (auto& node_data : update.nodes) {
