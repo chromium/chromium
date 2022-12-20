@@ -258,6 +258,10 @@ bool PrefProvider::SetLastVisitTime(
   }
 
   auto it = GetRuleIterator(content_type, false);
+  if (!it) {
+    return false;
+  }
+
   Rule rule;
   while (it->HasNext()) {
     rule = it->Next();
