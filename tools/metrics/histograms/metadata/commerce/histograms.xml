@@ -125,7 +125,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.XHRIsAddToCart" enum="BooleanIsAddToCart"
-    expires_after="2023-04-16">
+    expires_after="2023-06-18">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -163,7 +163,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.MerchantNameSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2023-04-16">
+    enum="CommerceHeuristicsDataSource" expires_after="2023-06-18">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
