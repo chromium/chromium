@@ -74,8 +74,9 @@ TEST_F(MediaValuesTest, Basic) {
     bool success = media_values.ComputeLength(test_cases[i].value,
                                               test_cases[i].type, output);
     EXPECT_EQ(test_cases[i].success, success);
-    if (success)
+    if (success) {
       EXPECT_FLOAT_EQ(test_cases[i].output, output);
+    }
   }
 }
 

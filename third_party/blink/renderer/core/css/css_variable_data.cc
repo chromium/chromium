@@ -35,8 +35,9 @@ static void UpdateTokens(const CSSParserTokenRange& range,
 }
 
 static bool IsFontUnitToken(CSSParserToken token) {
-  if (token.GetType() != kDimensionToken)
+  if (token.GetType() != kDimensionToken) {
     return false;
+  }
   switch (token.GetUnitType()) {
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kChs:
@@ -74,15 +75,18 @@ String CSSVariableData::Serialize() const {
       serialized_text.Resize(serialized_text.length() - 1);
       DCHECK_NE(0u, num_tokens_);
       const CSSParserToken& last = TokenInternalPtr()[num_tokens_ - 1];
-      if (last.GetType() != kStringToken)
+      if (last.GetType() != kStringToken) {
         serialized_text.Append(kReplacementCharacter);
+      }
 
       // Certain token types implicitly include terminators when serialized.
       // https://drafts.csswg.org/cssom/#common-serializing-idioms
-      if (last.GetType() == kStringToken)
+      if (last.GetType() == kStringToken) {
         serialized_text.Append('"');
-      if (last.GetType() == kUrlToken)
+      }
+      if (last.GetType() == kUrlToken) {
         serialized_text.Append(')');
+      }
 
       return serialized_text.ReleaseString();
     }
@@ -104,18 +108,20 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
 
   while (!local_range.AtEnd()) {
     CSSParserToken token = local_range.Consume();
-    if (token.HasStringBacking())
+    if (token.HasStringBacking()) {
       string_builder.Append(token.Value());
+    }
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
     has_line_height_units_ |= IsLineHeightUnitToken(token);
     ++num_tokens_;
   }
   backing_string_ = string_builder.ToAtomicString();
-  if (backing_string_.Is8Bit())
+  if (backing_string_.Is8Bit()) {
     UpdateTokens<LChar>(range, backing_string_, TokenInternalPtr());
-  else
+  } else {
     UpdateTokens<UChar>(range, backing_string_, TokenInternalPtr());
+  }
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -134,8 +140,9 @@ bool IsSubspan(base::span<const CharacterType> inner,
 bool TokenValueIsBacked(const CSSParserToken& token,
                         const String& backing_string) {
   StringView value = token.Value();
-  if (value.Is8Bit() != backing_string.Is8Bit())
+  if (value.Is8Bit() != backing_string.Is8Bit()) {
     return false;
+  }
   return value.Is8Bit() ? IsSubspan(value.Span8(), backing_string.Span8())
                         : IsSubspan(value.Span16(), backing_string.Span16());
 }

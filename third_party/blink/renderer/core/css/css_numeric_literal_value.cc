@@ -33,14 +33,16 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
                                                        UnitType type) {
   // NOTE: This will also deal with NaN and infinities.
   // Writing value < 0 || value > ... is not equivalent.
-  if (!(value >= 0 && value <= CSSValuePool::kMaximumCacheableIntegerValue))
+  if (!(value >= 0 && value <= CSSValuePool::kMaximumCacheableIntegerValue)) {
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
+  }
 
   // At this point, we know that value is in a small range,
   // so we can use a simple cast instead of ClampTo<int>.
   int int_value = static_cast<int>(value);
-  if (value != int_value)
+  if (value != int_value) {
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
+  }
 
   CSSValuePool& pool = CssValuePool();
   CSSNumericLiteralValue* result = nullptr;
@@ -78,10 +80,12 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
 double CSSNumericLiteralValue::ComputeSeconds() const {
   DCHECK(IsTime());
   UnitType current_type = GetType();
-  if (current_type == UnitType::kSeconds)
+  if (current_type == UnitType::kSeconds) {
     return num_;
-  if (current_type == UnitType::kMilliseconds)
+  }
+  if (current_type == UnitType::kMilliseconds) {
     return num_ / 1000;
+  }
   NOTREACHED();
   return 0;
 }
@@ -120,8 +124,9 @@ bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
   LengthUnitType length_type;
   bool conversion_success = UnitTypeToLengthUnitType(GetType(), length_type);
   DCHECK(conversion_success);
-  if (length_type >= CSSLengthArray::kSize)
+  if (length_type >= CSSLengthArray::kSize) {
     return false;
+  }
   length_array.values[length_type] +=
       num_ * ConversionToCanonicalUnitsScaleFactor(GetType()) * multiplier;
   length_array.type_flags.set(length_type);
@@ -130,8 +135,9 @@ bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
 
 void CSSNumericLiteralValue::AccumulateLengthUnitTypes(
     LengthTypeFlags& types) const {
-  if (!IsLength())
+  if (!IsLength()) {
     return;
+  }
   LengthUnitType length_type;
   bool conversion_success = UnitTypeToLengthUnitType(GetType(), length_type);
   DCHECK(conversion_success);
@@ -139,10 +145,12 @@ void CSSNumericLiteralValue::AccumulateLengthUnitTypes(
 }
 
 bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
-  if (!IsLength())
+  if (!IsLength()) {
     return true;
-  if (IsViewportPercentageLength())
+  }
+  if (IsViewportPercentageLength()) {
     return true;
+  }
   return !IsRelativeUnit(GetType());
 }
 
@@ -160,18 +168,20 @@ static String FormatNumber(double number, const char* suffix) {
 static String FormatInfinityOrNaN(double number, const char* suffix) {
   String result;
   if (std::isinf(number)) {
-    if (number > 0)
+    if (number > 0) {
       result = "infinity";
-    else
+    } else {
       result = "-infinity";
+    }
 
   } else {
     DCHECK(std::isnan(number));
     result = "NaN";
   }
 
-  if (strlen(suffix) > 0)
+  if (strlen(suffix) > 0) {
     result = result + String::Format(" * 1%s", suffix);
+  }
   return result;
 }
 
@@ -273,8 +283,9 @@ String CSSNumericLiteralValue::CustomCSSText() const {
 }
 
 bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
-  if (GetType() != other.GetType())
+  if (GetType() != other.GetType()) {
     return false;
+  }
 
   switch (GetType()) {
     case UnitType::kUnknown:

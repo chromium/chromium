@@ -29,7 +29,7 @@
 namespace gfx {
 class SizeF;
 class Vector2dF;
-}
+}  // namespace gfx
 
 namespace blink {
 

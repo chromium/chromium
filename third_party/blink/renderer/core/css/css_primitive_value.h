@@ -53,10 +53,12 @@ template <>
 inline float RoundForImpreciseConversion(double value) {
   double ceiled_value = ceil(value);
   double proximity_to_next_int = ceiled_value - value;
-  if (proximity_to_next_int <= 0.01 && value > 0)
+  if (proximity_to_next_int <= 0.01 && value > 0) {
     return static_cast<float>(ceiled_value);
-  if (proximity_to_next_int >= 0.99 && value < 0)
+  }
+  if (proximity_to_next_int >= 0.99 && value < 0) {
     return static_cast<float>(floor(value));
+  }
   return static_cast<float>(value);
 }
 
@@ -362,8 +364,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {
-    if (string.Is8Bit())
+    if (string.Is8Bit()) {
       return StringToUnitType(string.Characters8(), string.length());
+    }
     return StringToUnitType(string.Characters16(), string.length());
   }
 

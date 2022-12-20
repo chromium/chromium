@@ -48,14 +48,17 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
                                                 Element* context_element) {
   Element* container = ContainerQueryEvaluator::FindContainer(
       context_element, ContainerSelector(requested_axis));
-  if (!container)
+  if (!container) {
     return absl::nullopt;
+  }
   auto* evaluator = container->GetContainerQueryEvaluator();
-  if (!evaluator)
+  if (!evaluator) {
     return absl::nullopt;
+  }
   evaluator->SetReferencedByUnit();
-  if (requested_axis == kPhysicalAxisHorizontal)
+  if (requested_axis == kPhysicalAxisHorizontal) {
     return evaluator->Width();
+  }
   DCHECK_EQ(requested_axis, kPhysicalAxisVertical);
   return evaluator->Height();
 }
@@ -81,8 +84,9 @@ float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
-  if (!font_data || !font_data->GetFontMetrics().HasXHeight())
+  if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
     return em_ / 2.0f;
+  }
   // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return font_data->GetFontMetrics().XHeight() / font_zoom_ * zoom;
@@ -103,8 +107,9 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_data);
   absl::optional<float> full_width =
       font_data->GetFontMetrics().IdeographicFullWidth();
-  if (!full_width.has_value())
+  if (!full_width.has_value()) {
     return Em(zoom);
+  }
   // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return full_width.value() / font_zoom_ * zoom;
@@ -181,8 +186,9 @@ absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
 void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
     PhysicalAxes requested_axis,
     absl::optional<double>& cache) const {
-  if ((cached_physical_axes_ & requested_axis) == requested_axis)
+  if ((cached_physical_axes_ & requested_axis) == requested_axis) {
     return;
+  }
   cached_physical_axes_ |= requested_axis;
   cache = FindSizeForContainerAxis(requested_axis, context_element_);
 }
