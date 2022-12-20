@@ -320,6 +320,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1401566
   "lockscreen.CloseLid.finch_on",
 
+  # https://crbug.com/1402582
+  "inputs.VirtualKeyboardAccent",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
