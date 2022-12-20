@@ -6323,7 +6323,7 @@
   {
     "name": "signin-intercept-bubble-v2",
     "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "sim-lock-policy",
@@ -6466,7 +6466,7 @@
   {
     "name": "sync-promo-after-signin-intercept",
     "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "sync-standalone-invalidations",
