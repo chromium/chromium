@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.PolicyAuditor;
 import com.ark.browser.core.utils.PolicyAuditor.AuditEvent;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -143,7 +144,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void renderProcessGone() {
-            Log.i(TAG,
+            ArkLogger.i(TAG,
                     "renderProcessGone() for tab id: " + mTab.getId()
                             + ", already needs reload: " + Boolean.toString(mTab.needsReload()));
             // Do nothing for subsequent calls that happen while the tab remains crashed. This

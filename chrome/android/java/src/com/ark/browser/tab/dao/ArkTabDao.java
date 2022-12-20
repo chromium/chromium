@@ -50,13 +50,13 @@ public class ArkTabDao {
         }
     }
 
-    public static ITabGroup loadTabGroup(ArkWindowAndroid nativeWindow, boolean incognito) {
+    public static ITabGroup loadTabGroup(boolean incognito) {
         int id = incognito ? 1 : 0;
         File groupFile = new File(getGroupsDir(), "group_" + id);
         if (groupFile.exists()) {
-            return new TabGroupImpl(nativeWindow, incognito, groupFile);
+            return new TabGroupImpl(incognito, groupFile);
         } else {
-            return new TabGroupImpl(nativeWindow, incognito);
+            return new TabGroupImpl(incognito);
         }
     }
 
@@ -90,7 +90,7 @@ public class ArkTabDao {
 //    }
 
     public static DataInputStream readFile(File file) {
-        Log.i(TAG, "Starting to fetch tab list for " + file);
+        ArkLogger.i(TAG, "Starting to fetch tab list for " + file);
         if (!file.exists()) {
             return null;
         }
@@ -101,12 +101,12 @@ public class ArkTabDao {
             data = new byte[(int) file.length()];
             stream.read(data);
         } catch (IOException exception) {
-            Log.e(TAG, "Could not read state file.", exception);
+            ArkLogger.e(TAG, "Could not read state file.", exception);
             return null;
         } finally {
             StreamUtil.closeQuietly(stream);
         }
-        Log.i(TAG, "Finished fetching tab list.");
+        ArkLogger.i(TAG, "Finished fetching tab list.");
         return new DataInputStream(new ByteArrayInputStream(data));
     }
 

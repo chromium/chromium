@@ -6,6 +6,8 @@ package com.ark.browser.core.utils;
 
 import android.text.TextUtils;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -71,7 +73,7 @@ public class TabPrinter implements Printable {
         Tab tab = mTab.get();
         if (tab == null || !tab.isInitialized()) {
             // Tab.isInitialized() will be false if tab is in destroy process.
-            Log.d(TAG, "Tab is not avaliable for printing.");
+            ArkLogger.d(TAG, "Tab is not avaliable for printing.");
             return false;
         }
         return true;

@@ -529,7 +529,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         ArkLogger.e(TAG, "initLayoutTabFromHost tabId=" + tabId + " getActiveLayout=" + getActiveLayout());
         if (getActiveLayout() == null) return;
 
-        Tab tab = PageCacheManager.getInstance().findPage(tabId);
+        Tab tab = PageCacheManager.getInstance().findTab(tabId);
         ArkLogger.e(TAG, "initLayoutTabFromHost tab=" + tab);
         if (tab == null) return;
 

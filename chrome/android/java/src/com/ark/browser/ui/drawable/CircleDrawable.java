@@ -10,6 +10,8 @@ import android.graphics.PixelFormat;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Log;
 
 public class CircleDrawable extends Drawable {
@@ -67,7 +69,7 @@ public class CircleDrawable extends Drawable {
 
 //        size = ViewUnit.dp2px(context, Math.min(mBitmap.getWidth(), mBitmap.getHeight()));
         size = mBitmap.getWidth();
-        Log.d("CircleDrawable", "size=" + size);
+        ArkLogger.d("CircleDrawable", "size=" + size);
 
         cx = size / 2;
         cy = cx;
@@ -85,7 +87,7 @@ public class CircleDrawable extends Drawable {
 
 //        size = ViewUnit.dp2px(context, Math.min(mBitmap.getWidth(), mBitmap.getHeight()));
         this.size = size;
-        Log.d("CircleDrawable", "size=" + size);
+        ArkLogger.d("CircleDrawable", "size=" + size);
 
         cx = size / 2;
         cy = cx;

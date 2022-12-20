@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
+import com.ark.browser.utils.ArkLogger;
 import com.zpj.skin.SkinEngine;
 
 import org.chromium.base.Callback;
@@ -223,7 +224,7 @@ public class ArkSwipeRefreshHandler
                 return false;
             }
 
-            Log.d(TAG, "HISTORY_NAVIGATION startX=" + startX + " startY=" + startY + " navigateForward=" + navigateForward);
+            ArkLogger.d(TAG, "HISTORY_NAVIGATION startX=" + startX + " startY=" + startY + " navigateForward=" + navigateForward);
 
             boolean handle;
 

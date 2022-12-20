@@ -32,7 +32,7 @@ public class PageImpl implements IPage {
 
     @Override
     public Tab getNativePage() {
-        return PageCacheManager.getInstance().findPage(getId());
+        return PageCacheManager.getInstance().findTab(getId());
     }
 
 }

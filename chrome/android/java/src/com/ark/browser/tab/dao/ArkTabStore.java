@@ -182,7 +182,7 @@ public class ArkTabStore {
         stream.writeInt(incognitoCount);
         stream.writeInt(incognitoInfo.index);
         stream.writeInt(standardInfo.index + incognitoCount);
-        Log.i(TAG, "Serializing tab lists; counts: " + standardCount + ", " + incognitoCount);
+        ArkLogger.i(TAG, "Serializing tab lists; counts: " + standardCount + ", " + incognitoCount);
 
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.REGULAR_TAB_COUNT, standardCount);

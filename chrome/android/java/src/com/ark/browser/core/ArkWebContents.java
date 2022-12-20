@@ -1,18 +1,17 @@
 package com.ark.browser.core;
 
 import android.text.TextUtils;
-import android.util.LongSparseArray;
 import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.core.IPage;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.WarmupManager;
@@ -29,6 +28,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -60,6 +60,9 @@ public class ArkWebContents {
      */
     private LoadUrlParams mPendingLoadParams;
 
+    private boolean mStartLoad = false;
+    private boolean mFinishLoad = false;
+
     public ArkWebContents(PageInfo pageInfo, @NonNull WebContents webContents) {
         mPageInfo = pageInfo;
         mWebContents = webContents;
@@ -71,12 +74,54 @@ public class ArkWebContents {
                     mPageInfo.setTitle(title);
                 }
             }
+
+            @Override
+            public void didStartLoading(GURL url) {
+                mFinishLoad = false;
+                mStartLoad = true;
+            }
+
+            @Override
+            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
+                mStartLoad = true;
+                mFinishLoad = true;
+            }
         });
+    }
+
+    public boolean isStartLoad() {
+        return mStartLoad;
+    }
+
+    public boolean isFinishLoad() {
+        return mFinishLoad;
     }
 
     @NonNull
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    public boolean canGoBack() {
+        return mWebContents.getNavigationController().canGoBack();
+    }
+
+    public boolean canGoForward() {
+        return mWebContents.getNavigationController().canGoForward();
+    }
+
+    /**
+     * Goes to the first non-skippable navigation entry before the current.
+     */
+    public void goBack() {
+        mWebContents.getNavigationController().goBack();
+    }
+
+    /**
+     * Goes to the first non-skippable navigation entry following the current.
+     */
+    public void goForward() {
+        mWebContents.getNavigationController().goForward();
     }
 
     public GURL getUrl() {
@@ -193,14 +238,14 @@ public class ArkWebContents {
         mWebContents.getNavigationController().loadIfNecessary();
     }
 
-    public void attach(ArkTabImpl tab, ArkWindowAndroid windowAndroid) {
+    public void attach(ArkTabImpl tab) {
         ContentView cv = ContentView.createContentView(
                 ContextUtils.getApplicationContext(), null /* eventOffsetHandler */, mWebContents);
         cv.setContentDescription(ContextUtils.getApplicationContext().getResources().getString(
                 org.chromium.chrome.R.string.accessibility_content_view));
         mContentView = cv;
         mWebContents.initialize(VersionInfo.getProductVersion(), new ArkTabViewAndroidDelegate(tab, cv), cv,
-                windowAndroid, WebContents.createDefaultInternalsHolder());
+                tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
 
         mWebContents.setImportance(mImportance);
         mContentView.addOnAttachStateChangeListener(tab.mAttachStateChangeListener);
@@ -215,10 +260,10 @@ public class ArkWebContents {
         }
     }
 
-    public void destroy() {
-        // TODO
-//        ArkWebManager.getInstance().remove()
-    }
+//    public void destroy() {
+//        // TODO
+////        ArkWebManager.getInstance().remove()
+//    }
 
     public boolean isDestroyed() {
         return mWebContents.isDestroyed();
@@ -286,6 +331,16 @@ public class ArkWebContents {
         return arkWeb;
     }
 
+    public static void destroy() {
+        for (int i = 0; i < TAB_CACHE.size(); i++) {
+            ArkWebContents web = TAB_CACHE.valueAt(i);
+            if (web != null && !web.isDestroyed()) {
+                web.getWebContents().destroy();
+            }
+        }
+        TAB_CACHE.clear();
+    }
+
     public static ArkWebContents get(int id) {
         return TAB_CACHE.get(id, null);
     }
@@ -309,6 +364,10 @@ public class ArkWebContents {
 
         public Builder(PageInfo pageInfo) {
             mPageInfo = pageInfo;
+        }
+
+        public Builder(IPage page) {
+            mPageInfo = page.getPageInfo();
         }
 
         /**

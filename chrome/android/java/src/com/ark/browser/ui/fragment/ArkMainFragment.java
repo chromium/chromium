@@ -12,12 +12,12 @@ import androidx.annotation.Nullable;
 import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
@@ -79,6 +79,8 @@ public class ArkMainFragment extends BaseFragment implements
                     mViewHolder.shutDown();
                     mViewHolder = null;
                 }
+                PageCacheManager.getInstance().destroy();
+                ArkWebContents.destroy();
                 super.destroy();
             }
 
@@ -124,7 +126,7 @@ public class ArkMainFragment extends BaseFragment implements
                 .doOnChange(this::onSearchEvent)
                 .subscribe();
 
-        TabListManager.getInstance().restore(getWindowAndroid(), new Callback<Void>() {
+        TabListManager.getInstance().restore(new Callback<Void>() {
             @Override
             public void onResult(Void result) {
                 Runnable runnable = () -> {
@@ -407,7 +409,7 @@ public class ArkMainFragment extends BaseFragment implements
         if (tab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findPage(tab.getId());
+        return PageCacheManager.getInstance().findTab(tab.getId());
     }
 
 
@@ -448,7 +450,9 @@ public class ArkMainFragment extends BaseFragment implements
         } else {
             loadUrlInNewTab(event.getPageInfo(), loadUrlParams);
         }
-    }public void loadUrl(String url) {
+    }
+
+    public void loadUrl(String url) {
         loadUrl(new LoadUrlParams(url));
     }
 
@@ -487,7 +491,6 @@ public class ArkMainFragment extends BaseFragment implements
 //        mLauncherManager.goToBrowser();
         TabListManager.getInstance().openNewTab(pageInfo, params, TabLaunchType.FROM_CHROME_UI, incognito);
     }
-
 
 
 }

@@ -32,7 +32,7 @@ public class TabImpl implements ITab {
 
     @Override
     public int getId() {
-        return this.tabInfo.getTabId();
+        return this.tabInfo.getId();
     }
 
     @Override
@@ -63,11 +63,11 @@ public class TabImpl implements ITab {
         List<IPage> temp = new ArrayList<>(mPageGroup.getPageInfoList());
         TabInfo mFloatingTabInfo = mFloatingTab.getTabInfo();
 
-        tabInfo.setTabId(mFloatingTabInfo.getTabId());
+        tabInfo.setId(mFloatingTabInfo.getId());
         tabInfo.setCreateTime(mFloatingTabInfo.getCreateTime());
 
         tabInfo.setPageIndex(mFloatingTabInfo.getPageIndex());
-        tabInfo.setCurrentTabId(mFloatingTabInfo.getCurrentTabId());
+        tabInfo.setCurrentTabId(mFloatingTabInfo.getCurrentPageId());
         tabInfo.setPosition(mFloatingTabInfo.getPosition());
         tabInfo.setLocked(mFloatingTabInfo.isLocked());
         tabInfo.setIncognito(mFloatingTabInfo.isIncognito());
@@ -86,7 +86,7 @@ public class TabImpl implements ITab {
         TabInfo currentTabInfo = tabList.getCurrentTabInfo();
         ArkLogger.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
         if (currentTabInfo != null
-                && currentTabInfo.getTabId() == getTabInfo().getTabId()) {
+                && currentTabInfo.getId() == getTabInfo().getId()) {
             ArkLogger.d(TAG, "exitFloatingTabInfo tab=" + getCurrentPageInfo());
             TabListManager.getInstance().selectTab(this);
         }

@@ -46,7 +46,7 @@ public class TabInfo {
 
     protected int parentId;
 
-    public void setTabId(int tabId) {
+    public void setId(int tabId) {
         this.tabId = tabId;
     }
 
@@ -62,7 +62,7 @@ public class TabInfo {
         this.pageIndex = pageIndex;
     }
 
-    public int getCurrentTabId() {
+    public int getCurrentPageId() {
         return currentPageId;
     }
 
@@ -106,7 +106,7 @@ public class TabInfo {
         this.currentPageId = currentPageId;
     }
 
-    public int getTabId() {
+    public int getId() {
         return tabId;
     }
 
@@ -181,7 +181,7 @@ public class TabInfo {
     public static TabInfo from(DataInputStream is, List<Integer> pageIds) throws IOException {
         TabInfo newTabInfo = new TabInfo();
         int version = is.readInt();
-        newTabInfo.setTabId(is.readInt());
+        newTabInfo.setId(is.readInt());
         newTabInfo.setCreateTime(is.readLong());
         newTabInfo.setIncognito(is.readBoolean());
         newTabInfo.setLocked(is.readBoolean());

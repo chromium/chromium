@@ -1,6 +1,5 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
@@ -30,8 +29,6 @@ public class TabGroupImpl implements ITabGroup {
 
     private final List<ITab> mTabList = new ArrayList<>();
 
-    private final ArkWindowAndroid nativeWindow;
-
     private final ObserverList<TabInfoObserver> mObservers;
 
     private final boolean incognito;
@@ -40,14 +37,12 @@ public class TabGroupImpl implements ITabGroup {
 
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
-    public TabGroupImpl(ArkWindowAndroid nativeWindow, boolean incognito) {
-        this.nativeWindow = nativeWindow;
+    public TabGroupImpl(boolean incognito) {
         this.mObservers = new ObserverList<>();
         this.incognito = incognito;
     }
 
-    public TabGroupImpl(ArkWindowAndroid nativeWindow, boolean incognito, File groupFile) {
-        this.nativeWindow = nativeWindow;
+    public TabGroupImpl(boolean incognito, File groupFile) {
         this.mObservers = new ObserverList<>();
         this.incognito = incognito;
         mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
@@ -140,7 +135,7 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public void init(ArkWindowAndroid nativeWindow) {
+    public void init() {
         long start = System.currentTimeMillis();
         this.index = ITab.INVALID_TAB_INDEX;
         this.mTabList.clear();
@@ -157,7 +152,7 @@ public class TabGroupImpl implements ITabGroup {
                     TabInfo tabInfo = TabInfo.from(tabFile, pageIds);
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo + " pageIds=" + pageIds);
 
-                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getTabId());
+                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getId());
                     List<IPage> pageList = new ArrayList<>();
                     for (int pageId : pageIds) {
                         File file = new File(pagesDir, String.valueOf(pageId));
@@ -229,11 +224,6 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public int getIndex() {
         return index;
-    }
-
-    @Override
-    public ArkWindowAndroid getWindowAndroid() {
-        return nativeWindow;
     }
 
     @Override
@@ -317,7 +307,7 @@ public class TabGroupImpl implements ITabGroup {
 
 
 
-        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getTabId(),
+        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getId(),
                 newTab.getPageSize(),
                 newTab.getTabInfo().isIncognito());
         IPage newPage = new PageImpl(pageInfo);
@@ -444,7 +434,7 @@ public class TabGroupImpl implements ITabGroup {
         if (tabInfo != null && tabInfo.removePage(page)) {
             TabInfo newTabInfo = TabInfo.create();
             ITab newTab = new TabImpl(newTabInfo);
-            page.getPageInfo().setTabId(newTabInfo.getTabId());
+            page.getPageInfo().setTabId(newTabInfo.getId());
             newTab.getPageGroup().addPage(page);
 
             int index = indexOf(tabInfo) + 1;

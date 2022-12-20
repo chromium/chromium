@@ -22,7 +22,10 @@ import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
+import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.IPageGroup;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.PageImpl;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -35,18 +38,14 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuPopulator;
 import org.chromium.chrome.browser.tab.TabContextMenuPopulatorFactory;
@@ -86,6 +85,9 @@ import org.chromium.content_public.browser.navigation_controller.UserAgentOverri
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
@@ -404,23 +406,60 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     public void loadInNewPage(LoadUrlParams params) {
-        WebContents webContents = WarmupManager.getInstance().takeSpareWebContents(
-                isIncognito(), isHidden(), isCustomTab());
-        if (webContents == null) {
-            Profile profile =
-                    IncognitoUtils.getProfileFromWindowAndroid(getWindowAndroid(), isIncognito());
-            webContents = WebContentsFactory.createWebContents(profile, isHidden());
+        int index = mTabInfo.getPageIndex();
+        int nextIndex = index + 1;
+        PageInfo pageInfo = PageInfo.from(getId(), nextIndex, isIncognito());
+
+        IPage page = new PageImpl(pageInfo);
+
+        IPageGroup pageInfoList = mTab.getPageGroup();
+        pageInfoList.getPageInfoList().add(nextIndex, page);
+
+        if (++nextIndex < pageInfoList.getCount()) {
+            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
+                    .subList(nextIndex, pageInfoList.getCount());
+
+            List<IPage> tempPages = new ArrayList<>(pageRemoved);
+            ThreadPool.postOnUIThread(() -> {
+                long start = System.currentTimeMillis();
+                ArkLogger.d(mTab, "openNewPage pageRemovedCount=" + tempPages.size());
+
+                for (IPage info : tempPages) {
+                    info.remove();
+                }
+
+                ArkLogger.d(mTab, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
+            });
+            pageRemoved.clear();
         }
+
+        ArkWebContents arkWeb = new ArkWebContents.Builder(pageInfo)
+                .setInitiallyHidden(isHidden())
+                .build();
+        swapWebContents(arkWeb, false, false);
+
+        mTab.selectPage(page);
 
         GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
         params.setUrl(fixedUrl.getSpec());
-        ContentUtils.setUserAgentOverride(webContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
+        ContentUtils.setUserAgentOverride(arkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(fixedUrl));
+        arkWeb.getWebContents().getNavigationController().loadUrl(params);
+    }
 
-        PageInfo pageInfo = PageInfo.from(getId(), mTabInfo.getIndex() + 1, isIncognito());
-        ArkWebContents arkWeb = new ArkWebContents(pageInfo, webContents);
+    public void selectPage(IPage page) {
+        boolean hastWeb = ArkWebContents.get(page.getId()) != null;
+        ArkLogger.e(TAG, "selectPage page=" + page.getId() + " hastWeb=" + hastWeb);
+        ArkWebContents arkWeb = new ArkWebContents.Builder(page)
+                .setInitiallyHidden(isHidden())
+                .build();
+        swapWebContents(arkWeb, arkWeb.isStartLoad(), arkWeb.isFinishLoad());
 
-        webContents.getNavigationController().loadUrl(params);
-        swapWebContents(arkWeb, true, false);
+        mTab.selectPage(page);
+        if (!hastWeb) {
+            LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
+            params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+            loadUrl(params);
+        }
     }
 
     @Override
@@ -555,7 +594,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public int getId() {
-        return mTabInfo.getTabId();
+        return mTabInfo.getId();
     }
 
     @Override
@@ -812,43 +851,64 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public boolean canGoBack() {
-        if (mTestWebContents != null) {
+        if (mArkWeb != null && mArkWeb.canGoBack()) {
             return true;
         }
-        return getWebContents() != null && getWebContents().getNavigationController().canGoBack();
+        ArkLogger.e(TAG, "canGoBack pageIndex=" + mTabInfo.getPageIndex());
+        return mTabInfo.getPageIndex() > 0;
     }
 
     @Override
     public boolean canGoForward() {
-        return getWebContents() != null
-                && getWebContents().getNavigationController().canGoForward();
+        if (mArkWeb != null && mArkWeb.canGoForward()) {
+            return true;
+        }
+        return mTabInfo.getPageIndex() < mTab.getPageSize() - 1;
     }
 
     @Override
     public void goBack() {
-        if (mTestWebContents != null) {
-            swapWebContents(mTestWebContents, true, true);
-            mTestWebContents = null;
+        if (mArkWeb != null && mArkWeb.canGoBack()) {
+            mArkWeb.goBack();
             return;
         }
-        if (getWebContents() != null) getWebContents().getNavigationController().goBack();
+        IPage page = mTab.getPreviousPage();
+        if (page != null) {
+            selectPage(page);
+//            ArkWebContents arkWeb = new ArkWebContents.Builder(page)
+//                    .setInitiallyHidden(isHidden())
+//                    .build();
+//            swapWebContents(arkWeb, false, false);
+//            mTab.selectPage(page);
+        }
     }
 
     @Override
     public void goForward() {
-        if (getWebContents() != null) getWebContents().getNavigationController().goForward();
+        if (mArkWeb != null && mArkWeb.canGoForward()) {
+            mArkWeb.goForward();
+            return;
+        }
+        IPage page = mTab.getNextPage();
+        if (page != null) {
+//            ArkWebContents arkWeb = new ArkWebContents.Builder(page)
+//                    .setInitiallyHidden(isHidden())
+//                    .build();
+//            swapWebContents(arkWeb, false, false);
+//            mTab.selectPage(page);
+            selectPage(page);
+        }
     }
 
     public boolean canGoBack2() {
-        if (getWebContents() != null && getWebContents().getNavigationController().canGoBack()) {
+        if (mArkWeb != null && mArkWeb.canGoBack()) {
             return true;
         }
         return mWindowAndroid != null && mWindowAndroid.getNavigationHandler().canGoBack();
     }
 
     public boolean canGoForward2() {
-        if (getWebContents() != null
-                && getWebContents().getNavigationController().canGoForward()) {
+        if (mArkWeb != null && mArkWeb.canGoForward()) {
             return true;
         }
         return mWindowAndroid != null && mWindowAndroid.getNavigationHandler().canGoForward();
@@ -1078,7 +1138,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 state.contentsState.getDisplayTitleFromState());
         CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
         CriticalPersistedTabData.from(this).setRootId(
-                state.rootId == Tab.INVALID_TAB_ID ? mTabInfo.getTabId() : state.rootId);
+                state.rootId == Tab.INVALID_TAB_ID ? mTabInfo.getId() : state.rootId);
         CriticalPersistedTabData.from(this).setUserAgent(state.userAgent);
     }
 
@@ -1346,7 +1406,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) observer.onBackgroundColorChanged(this, color);
     }
 
-    private ArkWebContents mTestWebContents;
+//    private ArkWebContents mTestWebContents;
 
     /**
      * This is currently called when committing a pre-rendered page or activating a portal.
@@ -1361,6 +1421,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     public void swapWebContents(ArkWebContents arkWeb, boolean didStartLoad, boolean didFinishLoad) {
         // TODO swapWebContents
         ArkLogger.e(TAG, "swapWebContents");
+        if (arkWeb == mArkWeb) {
+            ArkLogger.e(TAG, "swapWebContents same web!");
+            return;
+        }
         boolean hasWebContents = mArkWeb != null && mArkWeb.getContentView() != null;
         Rect original = hasWebContents
                 ? new Rect(0, 0, mArkWeb.getContentView().getWidth(), mArkWeb.getContentView().getHeight())
@@ -1374,7 +1438,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         if (bounds != null) original.set(bounds);
 
         mArkWeb.getWebContents().setFocus(false);
-        mTestWebContents = mArkWeb;
+//        mTestWebContents = mArkWeb;
         destroyWebContents(false /* do not delete native web contents */);
         hideNativePage(false, () -> {
             // Size of the new content is zero at this point. Set the view size in advance
@@ -1453,7 +1517,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             ArkWebContents oldWebContents = mArkWeb;
             mArkWeb = webContents;
 
-            mArkWeb.attach(this, windowAndroid);
+            mArkWeb.attach(this);
 
             if (oldWebContents != null) {
                 oldWebContents.detach(this);
@@ -1820,7 +1884,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         ThreadPool.executeIO(() -> {
             long start = System.currentTimeMillis();
             ArkTabDao.savePageState(ArkTabImpl.this);
-            Log.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
+            ArkLogger.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
         });
     }
 

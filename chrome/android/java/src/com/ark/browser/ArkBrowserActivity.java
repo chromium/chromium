@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
@@ -30,12 +28,10 @@ import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 import com.zpj.skin.SkinEngine;
 import com.zpj.skin.SkinLayoutInflater;
-import com.zpj.utils.StatusBarUtils;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -231,7 +227,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         if (tab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findPage(tab.getId());
+        return PageCacheManager.getInstance().findTab(tab.getId());
     }
 
 

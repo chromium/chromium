@@ -33,19 +33,15 @@ public class PageCacheManager {
 
     }
 
-    public Tab findPageById(int id) {
+    public Tab findTab(int id) {
         return tabCache.get(id);
     }
 
-    public Tab findPage(int id) {
-        return tabCache.get(id);
-    }
-
-    public Tab findPage(TabInfo tabInfo) {
+    public Tab findTab(TabInfo tabInfo) {
         if (tabInfo == null) {
             return null;
         }
-        return findPage(tabInfo.getTabId());
+        return findTab(tabInfo.getId());
     }
 
 //    public PageInfo findPageInfo(int id) {
@@ -60,7 +56,7 @@ public class PageCacheManager {
 //        return findPageById(pageInfo.getPageId());
 //    }
 
-    private void putPage(@NonNull Tab tab) {
+    private void putTab(@NonNull Tab tab) {
         tabCache.put(tab.getId(), tab);
     }
 
@@ -119,7 +115,7 @@ public class PageCacheManager {
                 .setLaunchType(type)
                 .setLoadUrlParams(params)
                 .build();
-        putPage(tab);
+        putTab(tab);
 
 //        tab.loadUrl(params);
 
@@ -134,14 +130,14 @@ public class PageCacheManager {
 
         ArkLogger.e(this, "createLivePage tabInfo=" + iTab.getTabInfo());
 
-        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
-        params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
+//        params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
 //        tab.loadUrl(params);
         Tab tab = ArkTabBuilder.createLiveTab(iTab, false)
-                .setLoadUrlParams(params)
+//                .setLoadUrlParams(params)
                 .build();
 
-        putPage(tab);
+        putTab(tab);
         ArkLogger.d(TAG, "createLivePage create tab deltaTime="
                 + (System.currentTimeMillis() - start));
         return tab;
@@ -155,7 +151,7 @@ public class PageCacheManager {
         Tab tab = ArkTabBuilder.createFromFrozenState(iTab)
                 .setTabState(state)
                 .build();
-        putPage(tab);
+        putTab(tab);
         ArkLogger.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }

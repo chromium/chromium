@@ -26,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.chrome.R;
 
 /**
@@ -114,7 +116,7 @@ public class CoolIndicator extends ProgressBar {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 if (getProgress() == getMax()) {
-                    Log.i(TAG, "progress:" + getProgress() + "  max:" + getMax());
+                    ArkLogger.i(TAG, "progress:" + getProgress() + "  max:" + getMax());
                     animateClosing();
                 }
             }
@@ -207,7 +209,7 @@ public class CoolIndicator extends ProgressBar {
 
         if (mPrimaryAnimator != null) {
             if (nextProgress == getMax()) {
-                Log.i(TAG, "finished duration:" + (FINISHED_DURATION * (1 - ((float) getProgress() / getMax()))));
+                ArkLogger.i(TAG, "finished duration:" + (FINISHED_DURATION * (1 - ((float) getProgress() / getMax()))));
                 mPrimaryAnimator.setDuration((long) (FINISHED_DURATION * (1 - (((float) getProgress() / getMax())))));
                 mPrimaryAnimator.setInterpolator(mAccelerateDecelerateInterpolator);
             } else {

@@ -10,6 +10,8 @@ import android.util.JsonToken;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
@@ -91,7 +93,7 @@ public class WebContextFetcher {
             }
             jsonReader.endObject();
         } catch (IOException | AssertionError e) {
-            Log.e(TAG, "Web context json was malformed: %s", e.getMessage());
+            ArkLogger.e(TAG, "Web context json was malformed: %s", e.getMessage());
             fetchResponse.error = e.getMessage();
         }
         return fetchResponse;

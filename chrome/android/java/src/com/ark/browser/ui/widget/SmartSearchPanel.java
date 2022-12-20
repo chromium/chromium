@@ -520,7 +520,7 @@ public class SmartSearchPanel extends FrameLayout {
     }
 
     public void updateKeyword(String keyword) {
-        Log.e(TAG, "updateKeyword keyword=" + keyword);
+        ArkLogger.e(TAG, "updateKeyword keyword=" + keyword);
         this.keyword = keyword;
     }
 
@@ -629,9 +629,9 @@ public class SmartSearchPanel extends FrameLayout {
         if (mFloatTabList == null) {
             return null;
         }
-        IPage page = mFloatTabList.getCurrentPage();
-        if (page != null) {
-            return page.getNativePage();
+        ITab tab = mFloatTabList.getCurrentTab();
+        if (tab != null) {
+            return PageCacheManager.getInstance().findTab(tab.getId());
         }
         return null;
     }
@@ -641,7 +641,7 @@ public class SmartSearchPanel extends FrameLayout {
     private ITabGroup getFloatTabList() {
         if (mFloatTabList == null) {
 
-            mFloatTabList = new TabGroupImpl(mNativeWindow, false) {
+            mFloatTabList = new TabGroupImpl(false) {
 
                 @Override
                 public void onIndexChanged(int index) {
@@ -672,7 +672,7 @@ public class SmartSearchPanel extends FrameLayout {
             loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
             index = openNewTab(loadUrlParams);
         } else {
-            Tab tab = page.getNativePage();
+            Tab tab = PageCacheManager.getInstance().findTab(page.getPageInfo().getTabId());
             ArkLogger.e(TAG, "loadUrl tab=" + tab);
             if (tab != null) {
                 ArkLogger.e(TAG, "loadUrl oldKey=" + item.getKeyword() + " newKey=" + keyword);
@@ -706,7 +706,7 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getTabId(), newTab.getPageSize(),
+        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getId(), newTab.getPageSize(),
                 newTab.getTabInfo().isIncognito());
         IPage newPage = new PageImpl(pageInfo);
         newTab.getPageGroup().addPage(newPage);
@@ -741,13 +741,13 @@ public class SmartSearchPanel extends FrameLayout {
 
         @Override
         public void didAddTab(ITab page, int type) {
-            Tab tab = PageCacheManager.getInstance().findPage(page.getId());
+            Tab tab = PageCacheManager.getInstance().findTab(page.getId());
             mViewHolder.setTab(tab);
         }
 
         @Override
         public void didSelectTab(ITab tab, int type, int lastId) {
-            mViewHolder.setTab(PageCacheManager.getInstance().findPage(tab.getId()));
+            mViewHolder.setTab(PageCacheManager.getInstance().findTab(tab.getId()));
         }
 
         public void onDestroy() {

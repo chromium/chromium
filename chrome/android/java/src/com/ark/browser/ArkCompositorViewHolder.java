@@ -1610,6 +1610,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
 
         if (mTabVisible != null) {
+            mTabVisible.loadIfNeeded();
             initializeTab(mTabVisible);
             mLayoutManager.onPageSelected(mTabVisible);
             mTabVisible.show(TabSelectionType.FROM_USER);
@@ -1657,6 +1658,7 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     private void initializeTab(Tab tab) {
         WebContents webContents = tab.getWebContents();
+        ArkLogger.e(TAG, "initializeTab webContents=" + webContents);
         if (webContents != null) {
             onPhysicalBackingSizeChanged(
                     webContents, mCompositorView.getWidth(), mCompositorView.getHeight());
@@ -1848,7 +1850,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
                 for (int i = 0; i < mMenu.size(); i++) {
                     MenuItem item = mMenu.getItem(i);
-                    Log.e(TAG, "invalidate item=" + item.getTitle());
+                    ArkLogger.e(TAG, "invalidate item=" + item.getTitle());
                     mContainer.addView(createItem(item));
                 }
             }

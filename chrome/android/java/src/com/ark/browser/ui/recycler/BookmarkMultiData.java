@@ -16,6 +16,7 @@ import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.ui.fragment.dialog.BookmarkFolderPickerDialog;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.KeywordUtil;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
@@ -48,7 +49,7 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
     private final BookmarkBridge.BookmarkModelObserver observer = new BookmarkBridge.BookmarkModelObserver() {
         @Override
         public void bookmarkModelChanged() {
-            Log.d(TAG, "bookmarkModelChanged");
+            ArkLogger.d(TAG, "bookmarkModelChanged");
             refresh();
         }
     };
@@ -173,7 +174,7 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
             getAdapter().post(() -> {
                 mData.clear();
                 mData.addAll(bookmarks);
-                Log.d(TAG, "showContent size=" + mData.size() + " count=" + getCount());
+                ArkLogger.d(TAG, "showContent size=" + mData.size() + " count=" + getCount());
                 showContent();
             });
         });

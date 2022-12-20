@@ -27,6 +27,16 @@ public class ArkLogger {
         }
     }
 
+    public static void i(Object tag, String messageTemplate, Object... args) {
+        Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
+        if (tr != null) {
+            android.util.Log.i(normalizeTag(tag), message, tr);
+        } else {
+            android.util.Log.i(normalizeTag(tag), message);
+        }
+    }
+
     public static String normalizeTag(Object tag) {
         if (tag instanceof Class) {
             return String.format(TAG_PREFIX, ((Class<?>) tag).getSimpleName());

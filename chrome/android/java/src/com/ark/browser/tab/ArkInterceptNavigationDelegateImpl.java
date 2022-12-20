@@ -143,14 +143,14 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
 
     @Override
     public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
-        Log.e(TAG, "shouldIgnoreNavigation navigationHandle=" + navigationHandle + "\nescapedUrl=" + escapedUrl);
+        ArkLogger.e(TAG, "shouldIgnoreNavigation navigationHandle=" + navigationHandle + "\nescapedUrl=" + escapedUrl);
         boolean shouldIgnore = super.shouldIgnoreNavigation(navigationHandle, escapedUrl);
         if (shouldIgnore) {
             return true;
         }
 
         int pageTransition = navigationHandle.pageTransition();
-        Log.e(TAG, "shouldIgnoreNavigation url=" + mTab.getUrl()
+        ArkLogger.e(TAG, "shouldIgnoreNavigation url=" + mTab.getUrl()
                 + "\noriginUrl=" + mTab.getOriginalUrl()
                 + "\npageTransition=" + pageTransition
                 + "\ngetLastCommittedEntryIndex=" + getLastCommittedEntryIndex()
@@ -167,7 +167,7 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
             return false;
         }
 
-        Log.e(TAG, "shouldIgnoreNavigation isRedirect=" + navigationHandle.isRedirect()
+        ArkLogger.e(TAG, "shouldIgnoreNavigation isRedirect=" + navigationHandle.isRedirect()
                 + " isDownload=" + navigationHandle.isDownload()
                 + " isFragmentNavigation=" + navigationHandle.isFragmentNavigation());
         if (!navigationHandle.isRedirect() && !navigationHandle.isDownload()
@@ -220,7 +220,7 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
                     ReferrerPolicy.DEFAULT));
             params.setIsRendererInitiated(navigationHandle.isRendererInitiated());
 
-            Log.e(TAG, "shouldIgnoreNavigation params=" + params);
+            ArkLogger.e(TAG, "shouldIgnoreNavigation params=" + params);
 
             ((ArkTabImpl) mTab).loadInNewPage(params);
 

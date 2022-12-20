@@ -2,7 +2,6 @@ package com.ark.browser.tab;
 
 import androidx.annotation.NonNull;
 
-import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
@@ -76,7 +75,7 @@ public class TabListManager {
         return mLoaded;
     }
 
-    public void restore(ArkWindowAndroid nativeWindow, Callback<Void> callback) {
+    public void restore(Callback<Void> callback) {
 
 //        tabLists[0] = new TabGroupImpl(nativeWindow, false);
 //        tabLists[1] = new TabGroupImpl(nativeWindow, true);
@@ -92,12 +91,12 @@ public class TabListManager {
 //        });
 
 
-        tabLists[0] = ArkTabDao.loadTabGroup(nativeWindow, false);
+        tabLists[0] = ArkTabDao.loadTabGroup(false);
 
-        tabLists[1] = ArkTabDao.loadTabGroup(nativeWindow, true);
+        tabLists[1] = ArkTabDao.loadTabGroup(true);
 
         ThreadPool.execute(() -> {
-            tabLists[0].init(nativeWindow);
+            tabLists[0].init();
             ThreadPool.runOnUIThread(() -> {
                 tabLists[0].addObserver(tabInfoObserver);
                 mLoaded = true;
@@ -219,7 +218,7 @@ public class TabListManager {
         if (iTab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findPage(iTab.getId());
+        return PageCacheManager.getInstance().findTab(iTab.getId());
     }
 
     public int getCurrentPageId() {
@@ -241,8 +240,8 @@ public class TabListManager {
         selectPageInfo(tabInfo, tabInfo.getCurrentPage());
     }
 
-    public void selectTab(ITab tabInfo, IPage pageInfo) {
-        selectPageInfo(tabInfo, pageInfo);
+    public void selectTab(ITab tabInfo, IPage page) {
+        selectPageInfo(tabInfo, page);
     }
 
     public void selectPrePage(ITab tabInfo) {
@@ -253,9 +252,9 @@ public class TabListManager {
         selectPageInfo(tabInfo, tabInfo.getNextPage());
     }
 
-    private void selectPageInfo(ITab tabInfo, IPage pageInfo) {
+    private void selectPageInfo(ITab tabInfo, IPage page) {
         ITabGroup tabList = getTabList(tabInfo.getTabInfo().isIncognito());
-        tabList.selectTab(tabInfo, pageInfo);
+        tabList.selectTab(tabInfo, page);
     }
 
     public int getTotalTabCount() {

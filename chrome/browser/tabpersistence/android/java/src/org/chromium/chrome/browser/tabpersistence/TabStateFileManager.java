@@ -9,6 +9,8 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
@@ -77,7 +79,7 @@ public class TabStateFileManager {
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
         }
-        Log.e(TAG, "restoreTabState id=" + id + " deltaTime="
+        ArkLogger.e(TAG, "restoreTabState id=" + id + " deltaTime="
                 + (SystemClock.elapsedRealtime() - startTime) + " folder=" + stateFolder);
         return tabState;
     }
@@ -95,9 +97,9 @@ public class TabStateFileManager {
             stream = new FileInputStream(tabFile);
             tabState = readState(stream, isEncrypted);
         } catch (FileNotFoundException exception) {
-            Log.e(TAG, "Failed to restore tab state for tab: " + tabFile);
+            ArkLogger.e(TAG, "Failed to restore tab state for tab: " + tabFile);
         } catch (IOException exception) {
-            Log.e(TAG, "Failed to restore tab state.", exception);
+            ArkLogger.e(TAG, "Failed to restore tab state.", exception);
         } finally {
             StreamUtil.closeQuietly(stream);
         }

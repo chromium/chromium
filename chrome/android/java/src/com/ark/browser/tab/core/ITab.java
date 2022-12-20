@@ -221,7 +221,7 @@ public interface ITab {
         int pageIndex = parentPageInfo.getOriginalIndex() + 1;
 //        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(this, params, type);
 
-        PageInfo pageInfo = PageInfo.from(getTabInfo().getTabId(), pageIndex,
+        PageInfo pageInfo = PageInfo.from(getTabInfo().getId(), pageIndex,
                 getTabInfo().isIncognito());
         IPage page = new PageImpl(pageInfo);
         IPageGroup pageInfoList = getPageGroup();
@@ -264,7 +264,7 @@ public interface ITab {
     }
 
     default void selectPage(IPage page) {
-        if (getTabInfo().getCurrentTabId() == page.getId()) {
+        if (getTabInfo().getCurrentPageId() == page.getId()) {
             return;
         }
         selectPage(getPageGroup().indexOf(page));
@@ -315,12 +315,12 @@ public interface ITab {
             DataOutputStream os = new DataOutputStream(stream);
             int version = 1;
             os.writeInt(version);
-            os.writeInt(getTabInfo().getTabId());
+            os.writeInt(getTabInfo().getId());
             os.writeLong(getTabInfo().getCreateTime());
             os.writeBoolean(getTabInfo().isIncognito());
             os.writeBoolean(getTabInfo().isLocked());
             os.writeInt(getTabInfo().getPageIndex());
-            os.writeInt(getTabInfo().getCurrentTabId());
+            os.writeInt(getTabInfo().getCurrentPageId());
             os.writeInt(getTabInfo().getPosition());
             os.writeLong(getTabInfo().getAccessTime());
             os.writeInt(getPageSize());
@@ -340,7 +340,7 @@ public interface ITab {
                 @Override
                 public void run() {
                     long time = System.currentTimeMillis();
-                    File tabFile = ArkTabDao.getTabFile(getTabInfo().getTabId());
+                    File tabFile = ArkTabDao.getTabFile(getTabInfo().getId());
                     AtomicFile file = new AtomicFile(tabFile);
                     FileOutputStream fos = null;
                     try {
@@ -391,5 +391,42 @@ public interface ITab {
 //                    + (System.currentTimeMillis() - time));
 //        });
     }
+
+//    default void openNewPage(LoadUrlParams params) {
+//        int index = mTabInfo.getPageIndex();
+//        int nextIndex = index + 1;
+//        PageInfo pageInfo = PageInfo.from(getId(), nextIndex, isIncognito());
+//
+//        IPage page = new PageImpl(pageInfo);
+//
+//        IPageGroup pageInfoList = mTab.getPageGroup();
+//        pageInfoList.getPageInfoList().add(nextIndex, page);
+//
+//        if (++index < pageInfoList.getCount()) {
+//            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
+//                    .subList(index, pageInfoList.getCount());
+//
+//            List<IPage> tempPages = new ArrayList<>(pageRemoved);
+//            ThreadPool.postOnUIThread(() -> {
+//                long start = System.currentTimeMillis();
+//                ArkLogger.d(mTab, "openNewPage pageRemovedCount=" + tempPages.size());
+//
+//                for (IPage info : tempPages) {
+//                    info.remove();
+//                }
+//
+//                ArkLogger.d(ITab.this, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
+//            });
+//            pageRemoved.clear();
+//        }
+//
+//        ArkWebContents arkWeb = new ArkWebContents.Builder(pageInfo).build();
+//        swapWebContents(arkWeb, false, false);
+//
+//        GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
+//        params.setUrl(fixedUrl.getSpec());
+//        ContentUtils.setUserAgentOverride(arkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(fixedUrl));
+//        arkWeb.getWebContents().getNavigationController().loadUrl(params);
+//    }
 
 }

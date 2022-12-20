@@ -4,7 +4,8 @@ import android.widget.Toast;
 
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
@@ -34,7 +35,7 @@ import java.util.List;
 public interface ITabGroup {
 
 
-    void init(ArkWindowAndroid nativeWindow);
+    void init();
 
     int getId();
 
@@ -45,8 +46,6 @@ public interface ITabGroup {
     default int getCount() {
         return getTabInfoList().size();
     }
-
-    public ArkWindowAndroid getWindowAndroid();
 
     List<ITab> getTabInfoList();
 
@@ -152,21 +151,21 @@ public interface ITabGroup {
         return tab.getCurrentPage();
     }
 
-    default IPage getPreviousPage() {
-        ITab tab = getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return tab.getPreviousPage();
-    }
+//    default IPage getPreviousPage() {
+//        ITab tab = getCurrentTab();
+//        if (tab == null) {
+//            return null;
+//        }
+//        return tab.getPreviousPage();
+//    }
 
-    default IPage getForwardPage() {
-        ITab tab = getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return tab.getNextPage();
-    }
+//    default IPage getForwardPage() {
+//        ITab tab = getCurrentTab();
+//        if (tab == null) {
+//            return null;
+//        }
+//        return tab.getNextPage();
+//    }
 
     default PageInfo getCurrentPageInfo() {
         ITab tab = getCurrentTab();
@@ -176,21 +175,21 @@ public interface ITabGroup {
         return tab.getCurrentPageInfo();
     }
 
-    default PageInfo getPreviousPageInfo() {
-        ITab tab = getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return tab.getPreviousPageInfo();
-    }
+//    default PageInfo getPreviousPageInfo() {
+//        ITab tab = getCurrentTab();
+//        if (tab == null) {
+//            return null;
+//        }
+//        return tab.getPreviousPageInfo();
+//    }
 
-    default PageInfo getForwardPageInfo() {
-        ITab tab = getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return tab.getNextPageInfo();
-    }
+//    default PageInfo getForwardPageInfo() {
+//        ITab tab = getCurrentTab();
+//        if (tab == null) {
+//            return null;
+//        }
+//        return tab.getNextPageInfo();
+//    }
 
     default TabInfo getCurrentTabInfo() {
         return getTabInfoAt(getIndex());
@@ -234,7 +233,7 @@ public interface ITabGroup {
             lastId = currentTab.getCurrentPageId();
             ArkLogger.e(this, "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
             if (lastId != page.getId()) {
-                Tab lastTab = PageCacheManager.getInstance().findPage(lastId);
+                Tab lastTab = PageCacheManager.getInstance().findTab(lastId);
                 if (lastTab != null && !lastTab.needsReload()) {
                     if (lastTab.isInitialized() && !lastTab.isDestroyed()) {
                         if (!lastTab.isClosing()) {
@@ -248,44 +247,84 @@ public interface ITabGroup {
         }
 
 
-        int finalLastId = lastId;
-        ThreadPool.executeIO(() -> {
+
+        TabState state = null;
+        if (ArkWebContents.get(page.getId()) == null) {
+            state = ArkTabDao.restorePageState(page.getId());
+        }
+
+        ArkTabImpl tab = (ArkTabImpl) PageCacheManager.getInstance().findTab(iTab.getId());
+
+        if (tab == null) {
+            if (state == null) {
+                tab = (ArkTabImpl) PageCacheManager.getInstance()
+                        .createLivePage(iTab, page);
+            } else {
+                tab = (ArkTabImpl) PageCacheManager.getInstance()
+                        .createFrozenPageFromState(iTab, state);
+            }
+        }
+
+        onIndexChanged(indexOf(iTab));
+        iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
+//        iTab.selectPage(page);
+
+        if (state == null) {
+            iTab.selectPage(page);
+        } else {
+            tab.selectPage(page);
+        }
 
 
-            TabState state = ArkTabDao.restorePageState(page.getId());
 
-            ArkLogger.e(ITabGroup.this, "selectTabInfo state=" + state);
-
-            TabState finalState = state;
-            ThreadPool.runOnUIThread(() -> {
-                long start = System.currentTimeMillis();
+        for (TabInfoObserver obs : getObservers()) {
+            ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
+            obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
+        }
 
 
-                Tab tab = PageCacheManager.getInstance().findPage(iTab.getId());
-
-                if (tab == null) {
-                    if (finalState == null) {
-                        tab = PageCacheManager.getInstance().createLivePage(iTab, page);
-                    } else {
-                        tab = PageCacheManager.getInstance().createFrozenPageFromState(
-                                iTab, finalState);
-                    }
-                }
-//                innerTab.setImportance(ChildProcessImportance.IMPORTANT);
-//                innerTab.show(TabSelectionType.FROM_USER);
-
-                onIndexChanged(indexOf(iTab));
-                iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
-                iTab.selectPage(page);
-
-
-                for (TabInfoObserver obs : getObservers()) {
-                    ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
-                    obs.didSelectTab(iTab, TabSelectionType.FROM_USER, finalLastId);
-                }
-                ArkLogger.e(ITabGroup.this, "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
-            });
-        });
+//        int finalLastId = lastId;
+//        ThreadPool.executeIO(() -> {
+//
+//
+//            TabState state = ArkTabDao.restorePageState(page.getId());
+//
+//            ArkLogger.e(ITabGroup.this, "selectTabInfo state=" + state);
+//
+//            TabState finalState = state;
+//            ThreadPool.runOnUIThread(() -> {
+//                long start = System.currentTimeMillis();
+//
+//
+//                ArkTabImpl tab = (ArkTabImpl) PageCacheManager.getInstance().findTab(iTab.getId());
+//
+//                if (tab == null) {
+//                    if (finalState == null) {
+//                        tab = (ArkTabImpl) PageCacheManager.getInstance().createLivePage(iTab, page);
+//                    } else {
+//                        tab = (ArkTabImpl) PageCacheManager.getInstance().createFrozenPageFromState(
+//                                iTab, finalState);
+//                    }
+//                } else {
+//                    finalState = null;
+//                }
+////                innerTab.setImportance(ChildProcessImportance.IMPORTANT);
+////                innerTab.show(TabSelectionType.FROM_USER);
+//
+//                onIndexChanged(indexOf(iTab));
+//                iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
+//                iTab.selectPage(page);
+//
+//                tab.selectPage(page);
+//
+//
+//                for (TabInfoObserver obs : getObservers()) {
+//                    ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
+//                    obs.didSelectTab(iTab, TabSelectionType.FROM_USER, finalLastId);
+//                }
+//                ArkLogger.e(ITabGroup.this, "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
+//            });
+//        });
 
 
         return true;
@@ -294,44 +333,31 @@ public interface ITabGroup {
 
 
     default boolean canGoBack() {
-        final PageInfo pageInfo = getCurrentPageInfo();
-        if (pageInfo != null) {
-            Tab currentTab = PageCacheManager.getInstance().findPage(pageInfo.getTabId());
-            if (currentTab != null && currentTab.canGoBack()) {
-                return true;
-            } else {
-                return getPreviousPageInfo() != null;
-            }
-
+        final TabInfo tabInfo = getCurrentTabInfo();
+        if (tabInfo != null) {
+            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            return currentTab != null && currentTab.canGoBack();
         }
         return false;
     }
 
     default boolean goBack() {
-        ITab tabInfo = getCurrentTab();
-        if (tabInfo != null) {
-            IPage page = tabInfo.getCurrentPage();
-            Tab currentTab;
-            if (page != null && (currentTab = page.getNativePage()) != null && currentTab.canGoBack()) {
+        ITab tab = getCurrentTab();
+        if (tab != null) {
+            Tab currentTab = PageCacheManager.getInstance().findTab(tab.getId());
+            if (currentTab.canGoBack()) {
                 currentTab.goBack();
                 return true;
-            } else {
-                return selectPrePage(tabInfo);
             }
         }
         return false;
     }
 
     default boolean canGoForward() {
-        final PageInfo pageInfo = getCurrentPageInfo();
-        if (pageInfo != null) {
-            Tab currentTab = PageCacheManager.getInstance().findPage(pageInfo.getTabId());
-            if (currentTab != null && currentTab.canGoForward()) {
-                return true;
-            } else {
-                return getForwardPageInfo() != null;
-            }
-
+        final TabInfo tabInfo = getCurrentTabInfo();
+        if (tabInfo != null) {
+            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            return currentTab != null && currentTab.canGoForward();
         }
         return false;
     }
@@ -339,13 +365,10 @@ public interface ITabGroup {
     default boolean goForward() {
         ITab tabInfo = getCurrentTab();
         if (tabInfo != null) {
-            IPage page = tabInfo.getCurrentPage();
-            Tab currentTab;
-            if (page != null && (currentTab = page.getNativePage()) != null && currentTab.canGoForward()) {
+            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            if (currentTab.canGoForward()) {
                 currentTab.goForward();
                 return true;
-            } else {
-                return selectNextPage(tabInfo);
             }
         }
         return false;
@@ -462,9 +485,9 @@ public interface ITabGroup {
     public void removeObserver(TabInfoObserver observer);
 
     default Profile getProfile() {
-        IPage page = getCurrentPage();
-        if (page != null) {
-            Tab tab = page.getNativePage();
+        ITab iTab = getCurrentTab();
+        if (iTab != null) {
+            Tab tab = PageCacheManager.getInstance().findTab(iTab.getId());
             if (tab != null) {
                 return Profile.fromWebContents(tab.getWebContents());
             }
