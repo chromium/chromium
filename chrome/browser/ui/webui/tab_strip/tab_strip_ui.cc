@@ -47,8 +47,10 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       ->SetZoomLevelForHostAndScheme(content::kChromeUIScheme,
                                      chrome::kChromeUITabStripHost, 0);
 
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUITabStripHost);
+      content::WebUIDataSource::CreateAndAdd(profile,
+                                             chrome::kChromeUITabStripHost);
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
       IDR_TAB_STRIP_TAB_STRIP_HTML);
@@ -78,8 +80,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
   html_source->AddLocalizedStrings(kStrings);
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

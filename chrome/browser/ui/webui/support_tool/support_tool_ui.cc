@@ -46,9 +46,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateSupportToolHTMLSource(const GURL& url) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISupportToolHost);
+void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUISupportToolHost);
 
   source->AddString("caseId", GetSupportCaseIDFromURL(url));
 
@@ -58,8 +58,6 @@ content::WebUIDataSource* CreateSupportToolHTMLSource(const GURL& url) {
 
   source->AddResourcePath("url-generator",
                           IDR_SUPPORT_TOOL_URL_GENERATOR_CONTAINER_HTML);
-
-  return source;
 }
 
 }  // namespace
@@ -376,9 +374,8 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SupportToolMessageHandler>());
 
   // Set up the chrome://support-tool/ source.
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(
-      profile, CreateSupportToolHTMLSource(web_ui->GetWebContents()->GetURL()));
+  CreateAndAddSupportToolHTMLSource(Profile::FromWebUI(web_ui),
+                                    web_ui->GetWebContents()->GetURL());
 }
 
 SupportToolUI::~SupportToolUI() = default;

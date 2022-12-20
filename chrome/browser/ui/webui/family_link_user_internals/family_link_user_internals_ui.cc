@@ -16,9 +16,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateFamilyLinkUserInternalsHTMLSource() {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIFamilyLinkUserInternalsHost);
+void CreateAndAddFamilyLinkUserInternalsHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIFamilyLinkUserInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
@@ -31,16 +31,13 @@ content::WebUIDataSource* CreateFamilyLinkUserInternalsHTMLSource() {
   source->AddResourcePath("family_link_user_internals.css",
                           IDR_FAMILY_LINK_USER_INTERNALS_CSS);
   source->SetDefaultResource(IDR_FAMILY_LINK_USER_INTERNALS_HTML);
-  return source;
 }
 
 }  // namespace
 
 FamilyLinkUserInternalsUI::FamilyLinkUserInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile,
-                                CreateFamilyLinkUserInternalsHTMLSource());
+  CreateAndAddFamilyLinkUserInternalsHTMLSource(Profile::FromWebUI(web_ui));
 
   web_ui->AddMessageHandler(
       std::make_unique<FamilyLinkUserInternalsMessageHandler>());

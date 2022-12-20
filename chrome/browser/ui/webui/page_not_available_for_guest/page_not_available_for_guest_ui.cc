@@ -17,10 +17,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateHTMLSource(Profile* profile,
-                                           const std::string& host_name) {
+void CreateAndAddHTMLSource(Profile* profile, const std::string& host_name) {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(host_name);
+      content::WebUIDataSource::CreateAndAdd(profile, host_name);
 
   std::u16string page_title;
   if (host_name == chrome::kChromeUIBookmarksHost)
@@ -40,8 +39,6 @@ content::WebUIDataSource* CreateHTMLSource(Profile* profile,
   source->AddString("pageHeading", page_heading);
 
   source->SetDefaultResource(IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML);
-
-  return source;
 }
 
 }  // namespace
@@ -50,6 +47,5 @@ PageNotAvailableForGuestUI::PageNotAvailableForGuestUI(
     content::WebUI* web_ui,
     const std::string& host_name)
     : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateHTMLSource(profile, host_name));
+  CreateAndAddHTMLSource(Profile::FromWebUI(web_ui), host_name);
 }

@@ -18,8 +18,10 @@
 OfflineInternalsUI::OfflineInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // chrome://offline-internals source.
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIOfflineInternalsHost);
+      content::WebUIDataSource::CreateAndAdd(
+          profile, chrome::kChromeUIOfflineInternalsHost);
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
@@ -34,10 +36,7 @@ OfflineInternalsUI::OfflineInternalsUI(content::WebUI* web_ui)
                                IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS);
   html_source->SetDefaultResource(IDR_OFFLINE_INTERNALS_HTML);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
   html_source->AddBoolean("isIncognito", profile->IsOffTheRecord());
-
-  content::WebUIDataSource::Add(profile, html_source);
 
   web_ui->AddMessageHandler(
       std::make_unique<offline_internals::OfflineInternalsUIMessageHandler>());

@@ -162,9 +162,9 @@ void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
       commerce::kNtpChromeCartModuleDiscountConsentInlineShowCloseButton.Get());
 }
 
-content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUINewTabPageHost);
+content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUINewTabPageHost);
 
   ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
@@ -546,14 +546,13 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       navigation_start_time_(base::Time::Now()),
       module_id_names_(ntp::MakeModuleIdNames(
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))) {
-  auto* source = CreateNewTabPageUiHtmlSource(profile_);
+  auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   source->AddBoolean(
       "customBackgroundDisabledByPolicy",
       ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy());
   source->AddBoolean(
       "modulesVisibleManagedByPolicy",
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
-  content::WebUIDataSource::Add(profile_, source);
 
   source->AddBoolean("customizeChromeEnabled",
                      customize_chrome::IsSidePanelEnabled());

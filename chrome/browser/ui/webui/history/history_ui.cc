@@ -60,9 +60,9 @@ bool IsUserSignedIn(Profile* profile) {
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
-content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIHistoryHost);
+content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIHistoryHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).
@@ -143,9 +143,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 HistoryUI::HistoryUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource* data_source = CreateHistoryUIHTMLSource(profile);
+  content::WebUIDataSource* data_source =
+      CreateAndAddHistoryUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, data_source);
-  content::WebUIDataSource::Add(profile, data_source);
 
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(history_clusters::prefs::kVisible,

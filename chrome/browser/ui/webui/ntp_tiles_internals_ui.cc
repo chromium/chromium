@@ -123,9 +123,9 @@ void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
   web_ui()->CallJavascriptFunctionUnsafe(name, values);
 }
 
-content::WebUIDataSource* CreateNTPTilesInternalsHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUINTPTilesInternalsHost);
+void CreateAndAddNTPTilesInternalsHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUINTPTilesInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
@@ -137,7 +137,6 @@ content::WebUIDataSource* CreateNTPTilesInternalsHTMLSource() {
   source->AddResourcePath("ntp_tiles_internals.css",
                           IDR_NTP_TILES_INTERNALS_CSS);
   source->SetDefaultResource(IDR_NTP_TILES_INTERNALS_HTML);
-  return source;
 }
 
 }  // namespace
@@ -145,7 +144,7 @@ content::WebUIDataSource* CreateNTPTilesInternalsHTMLSource() {
 NTPTilesInternalsUI::NTPTilesInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateNTPTilesInternalsHTMLSource());
+  CreateAndAddNTPTilesInternalsHTMLSource(profile);
   web_ui->AddMessageHandler(
       std::make_unique<ChromeNTPTilesInternalsMessageHandlerClient>(
           FaviconServiceFactory::GetForProfile(

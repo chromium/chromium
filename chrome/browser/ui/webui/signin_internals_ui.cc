@@ -22,9 +22,9 @@
 
 namespace {
 
-content::WebUIDataSource* CreateSignInInternalsHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISignInInternalsHost);
+void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUISignInInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
@@ -36,15 +36,13 @@ content::WebUIDataSource* CreateSignInInternalsHTMLSource() {
   source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
   source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
   source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
-  return source;
 }
 
 }  //  namespace
 
 SignInInternalsUI::SignInInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateSignInInternalsHTMLSource());
+  CreateAndAddSignInInternalsHTMLSource(Profile::FromWebUI(web_ui));
   web_ui->AddMessageHandler(std::make_unique<SignInInternalsHandler>());
 }
 

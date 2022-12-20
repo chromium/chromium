@@ -27,8 +27,8 @@
 OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://omnibox/ source.
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIOmniboxHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxHost);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
@@ -41,8 +41,6 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->AddResourcePaths(
       base::make_span(kOmniboxResources, kOmniboxResourcesSize));
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());
 }
 

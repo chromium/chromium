@@ -64,7 +64,8 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 #endif
 {
   profile_ = Profile::FromWebUI(web_ui);
-  source_ = content::WebUIDataSource::Create(chrome::kChromeUIInternalsHost);
+  source_ = content::WebUIDataSource::CreateAndAdd(
+      profile_, chrome::kChromeUIInternalsHost);
   source_->AddResourcePaths(
       base::make_span(kInternalsResources, kInternalsResourcesSize));
   webui::EnableTrustedTypesCSP(source_);
@@ -103,8 +104,6 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_->SetRequestFilter(
       base::BindRepeating(&ShouldHandleWebUIRequestCallback),
       base::BindRepeating(&HandleWebUIRequestCallback, profile_));
-
-  content::WebUIDataSource::Add(profile_, source_);
 }
 
 InternalsUI::~InternalsUI() = default;
