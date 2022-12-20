@@ -324,7 +324,6 @@ js_type_check("closure_compile_local_module") {
   deps = [
     ":deep_linking_behavior",
     ":find_shortcut_behavior",
-    ":global_scroll_target_behavior",
     ":icon",
     ":lazy_load",
     ":metrics_recorder",
@@ -368,14 +367,6 @@ js_library("find_shortcut_behavior") {
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
     "//ash/webui/common/resources:util",
-  ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":route_observer_behavior",
-    ":router",
-    "//ash/webui/common/resources:promise_resolver",
   ]
 }
 

@@ -32,7 +32,6 @@ import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://res
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
 import {castExists} from '../assert_extras.js';
-import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
@@ -277,7 +276,6 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
     document.fonts.load('bold 12px Roboto');
-    setGlobalScrollTarget(this.$.container);
 
     const scrollToTop = (top: number) => new Promise<void>(resolve => {
       if (this.$.container.scrollTop === top) {

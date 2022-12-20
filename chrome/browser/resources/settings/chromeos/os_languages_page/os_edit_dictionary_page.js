@@ -18,10 +18,7 @@ import '../../settings_shared.css.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route} from '../router.js';
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {routes} from '../os_route.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import {getTemplate} from './os_edit_dictionary_page.html.js';
@@ -42,10 +39,9 @@ const NewWordState = {
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {GlobalScrollTargetBehaviorInterface}
  */
 const OsSettingsEditDictionaryPageElementBase =
-    mixinBehaviors([I18nBehavior, GlobalScrollTargetBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
 class OsSettingsEditDictionaryPageElement extends
@@ -64,16 +60,6 @@ class OsSettingsEditDictionaryPageElement extends
       newWordValue_: {
         type: String,
         value: '',
-      },
-
-      /**
-       * Needed for GlobalScrollTargetBehavior.
-       * @type {!Route}
-       * @override
-       */
-      subpageRoute: {
-        type: Object,
-        value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
       },
 
       /** @private {!Array<string>} */

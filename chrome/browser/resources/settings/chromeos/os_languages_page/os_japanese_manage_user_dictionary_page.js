@@ -13,20 +13,15 @@ import '../../settings_shared.css.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route} from '../router.js';
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
-import {routes} from '../os_route.js';
-
 import {getTemplate} from './os_japanese_manage_user_dictionary_page.html.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {GlobalScrollTargetBehaviorInterface}
  */
 const OsSettingsJapaneseManageUserDictionaryPageElementBase =
-    mixinBehaviors([I18nBehavior, GlobalScrollTargetBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
 class OsSettingsJapaneseManageUserDictionaryPageElement extends
@@ -40,17 +35,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
   }
 
   static get properties() {
-    return {
-      /**
-       * Needed for GlobalScrollTargetBehavior.
-       * @type {!Route}
-       * @override
-       */
-      subpageRoute: {
-        type: Object,
-        value: routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY,
-      },
-    };
+    return {};
   }
 }
 
