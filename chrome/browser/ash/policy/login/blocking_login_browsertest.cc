@@ -15,7 +15,9 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -26,9 +28,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -87,7 +86,7 @@ struct BlockingLoginTestParam {
 // intended to test. We need to fix this test or remove it (crbug.com/580537).
 class BlockingLoginTest
     : public ash::OobeBaseTest,
-      public content::NotificationObserver,
+      public ProfileManagerObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
   BlockingLoginTest() : profile_added_(nullptr) {}
@@ -104,8 +103,7 @@ class BlockingLoginTest
   }
 
   void SetUpOnMainThread() override {
-    registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                   content::NotificationService::AllSources());
+    g_browser_process->profile_manager()->AddObserver(this);
 
     ash::OobeBaseTest::SetUpOnMainThread();
   }
@@ -113,19 +111,16 @@ class BlockingLoginTest
   void TearDownOnMainThread() override {
     RunUntilIdle();
     EXPECT_TRUE(responses_.empty());
+    g_browser_process->profile_manager()->RemoveObserver(this);
     ash::OobeBaseTest::TearDownOnMainThread();
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    ASSERT_EQ(chrome::NOTIFICATION_PROFILE_ADDED, type);
-    if (ash::ProfileHelper::IsLockScreenAppProfile(
-            content::Source<Profile>(source).ptr())) {
+  void OnProfileAdded(Profile* profile) override {
+    if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
       return;
     }
-    ASSERT_FALSE(profile_added_);
-    profile_added_ = content::Source<Profile>(source).ptr();
+    ASSERT_EQ(profile_added_, nullptr);
+    profile_added_ = profile;
   }
 
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
@@ -218,7 +213,6 @@ class BlockingLoginTest
 
  private:
   std::vector<std::unique_ptr<net::test_server::HttpResponse>> responses_;
-  content::NotificationRegistrar registrar_;
 };
 
 IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {
