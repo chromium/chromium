@@ -2197,7 +2197,7 @@ xmlCharEncFirstLineInput(xmlParserInputBufferPtr input, int len)
     toconv = xmlBufUse(in);
     if (toconv == 0)
         return (0);
-    written = xmlBufAvail(out) - 1; /* count '\0' */
+    written = xmlBufAvail(out);
     /*
      * echo '<?xml version="1.0" encoding="UCS4"?>' | wc -c => 38
      * 45 chars should be sufficient to reach the end of the encoding
@@ -2215,7 +2215,7 @@ xmlCharEncFirstLineInput(xmlParserInputBufferPtr input, int len)
     }
     if (toconv * 2 >= written) {
         xmlBufGrow(out, toconv * 2);
-        written = xmlBufAvail(out) - 1;
+        written = xmlBufAvail(out);
     }
     if (written > 360)
         written = 360;
@@ -2307,13 +2307,9 @@ xmlCharEncInput(xmlParserInputBufferPtr input, int flush)
     if ((toconv > 64 * 1024) && (flush == 0))
         toconv = 64 * 1024;
     written = xmlBufAvail(out);
-    if (written > 0)
-        written--; /* count '\0' */
     if (toconv * 2 >= written) {
         xmlBufGrow(out, toconv * 2);
         written = xmlBufAvail(out);
-        if (written > 0)
-            written--; /* count '\0' */
     }
     if ((written > 128 * 1024) && (flush == 0))
         written = 128 * 1024;
@@ -2495,8 +2491,6 @@ xmlCharEncOutput(xmlOutputBufferPtr output, int init)
 retry:
 
     written = xmlBufAvail(out);
-    if (written > 0)
-        written--; /* count '\0' */
 
     /*
      * First specific handling of the initialization call
@@ -2525,7 +2519,7 @@ retry:
         toconv = 64 * 1024;
     if (toconv * 4 >= written) {
         xmlBufGrow(out, toconv * 4);
-        written = xmlBufAvail(out) - 1;
+        written = xmlBufAvail(out);
     }
     if (written > 256 * 1024)
         written = 256 * 1024;
@@ -2600,7 +2594,7 @@ retry:
                              "&#%d;", cur);
             xmlBufShrink(in, len);
             xmlBufGrow(out, charrefLen * 4);
-            c_out = xmlBufAvail(out) - 1;
+            c_out = xmlBufAvail(out);
             c_in = charrefLen;
             ret = xmlEncOutputChunk(output->encoder, xmlBufEnd(out), &c_out,
                                     charref, &c_in);

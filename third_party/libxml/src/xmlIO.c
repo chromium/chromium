@@ -3547,7 +3547,7 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 	 * how many bytes to consume and how many bytes to store.
 	 */
 	cons = len;
-	chunk = xmlBufAvail(out->buffer) - 1;
+	chunk = xmlBufAvail(out->buffer);
 
         /*
 	 * make sure we have enough room to save first, if this is
