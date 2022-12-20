@@ -51,6 +51,21 @@ IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest,
 
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ(2, tab_strip->count());
+
+  // Minimized browser windows should be treated as exceptions and have to be
+  // activated since they won't receive activation events from the OS.
+  new_browser->window()->Minimize();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(new_browser->window()->IsMinimized());
+  EXPECT_FALSE(new_browser->window()->IsActive());
+
+  [ac application:NSApp
+         openURLs:@[ [NSURL URLWithString:@"http://example.com"] ]];
+
+  EXPECT_TRUE(new_browser->window()->IsActive());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(new_browser->window()->IsMinimized());
 }
 
 }  // namespace

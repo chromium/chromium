@@ -344,10 +344,11 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, LaunchServices will send activation events if necessary.
-  // Prefer not activating the browser window when opening new tabs, leaving the
-  // activation task to the system.
+  // Prefer not activating non-minimized browser window when opening new tabs,
+  // leaving the activation task to the system.
   if (process_startup == chrome::startup::IsProcessStartup::kNo &&
-      BrowserList::GetInstance()->GetLastActive() == browser) {
+      BrowserList::GetInstance()->GetLastActive() == browser &&
+      !browser->window()->IsMinimized()) {
     browser->window()->ShowInactive();
   } else {
 #endif
