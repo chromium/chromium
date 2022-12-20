@@ -332,7 +332,7 @@ TEST_F(RawPtrTest, ArrowDereference) {
 
 TEST_F(RawPtrTest, Delete) {
   CountingRawPtr<int> ptr = new int(42);
-  delete ptr;
+  delete ptr.ExtractAsDangling();
   // The pointer was extracted using implicit cast before passing to |delete|.
   EXPECT_THAT((CountingRawPtrExpectations{
                   .get_for_dereference_cnt = 0,
@@ -1104,9 +1104,9 @@ TEST_F(RawPtrTest, FunctionParameters_Copy) {
 }
 
 TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
-  std::set<CountingRawPtr<int>> set;
   int x = 123;
   CountingRawPtr<int> ptr(&x);
+  std::set<CountingRawPtr<int>> set;
 
   RawPtrCountingImpl::ClearCounters();
   set.emplace(&x);
@@ -1242,7 +1242,7 @@ TEST_F(RawPtrTest, TrivialRelocability) {
       vector.emplace_back(&x);
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || BUILDFLAG(USE_ASAN_UNOWNED_PTR)
   // TODO(lukasza): In the future (once C++ language and std library
   // support custom trivially relocatable objects) this #if branch can
   // be removed (keeping only the right long-term expectation from the
@@ -1258,7 +1258,8 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   // the EXPECT_EQ is correct + the assertion should be true in the
   // long-term.)
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
   // Basic smoke test that raw_ptr elements in a vector work okay.
   for (const auto& elem : vector) {
@@ -1271,7 +1272,8 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   RawPtrCountingImpl::ClearCounters();
   size_t number_of_cleared_elements = vector.size();
   vector.clear();
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+
   EXPECT_EQ((int)number_of_cleared_elements,
             RawPtrCountingImpl::release_wrapped_ptr_cnt);
 #else
@@ -1283,7 +1285,8 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   // ships to the Stable channel).
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
   std::ignore = number_of_cleared_elements;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 }
 
 struct BaseStruct {

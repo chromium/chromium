@@ -235,3 +235,25 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
 }  // namespace base::internal
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+
+#include <sanitizer/asan_interface.h>
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/compiler_specific.h"
+#include "base/debug/asan_service.h"
+#include "base/memory/raw_ptr_asan_service.h"
+#include "base/process/process.h"
+
+namespace base::internal {
+
+NO_SANITIZE("address")
+bool AsanUnownedPtrImpl::EndOfAliveAllocation(const volatile void* ptr) {
+  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+  return __asan_region_is_poisoned(reinterpret_cast<void*>(address), 1) &&
+         !__asan_region_is_poisoned(reinterpret_cast<void*>(address - 1), 1);
+}
+
+}  // namespace base::internal
+
+#endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
