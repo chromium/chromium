@@ -1,0 +1,7 @@
+{
+  "name": "Extension with default side panel path",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["sidePanel"],
+  "side_panel": {"default_path": "default_path.html"}
+}
