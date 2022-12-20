@@ -1312,10 +1312,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // the end of the path can be returned in the form specified.
   // `out_value` is optional and will only be set if non-NULL.
   //
-  // DEPRECATED: prefer `Value::Dict::FindString()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::FindStringByDottedPath()`
-  // otherwise.
-  bool GetString(StringPiece path, std::string* out_value) const;
   // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
   // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
   // otherwise.

@@ -93,16 +93,14 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   }
 
   std::string result_str = result.GetString();
-  std::unique_ptr<base::Value> value_result =
-      base::JSONReader::ReadDeprecated(result_str);
-  CHECK_EQ(base::Value::Type::DICTIONARY, value_result->type());
-  base::DictionaryValue* dict_value =
-      static_cast<base::DictionaryValue*>(value_result.get());
+  absl::optional<base::Value> value_result = base::JSONReader::Read(result_str);
+  const base::Value::Dict& dict_value = value_result->GetDict();
 
-  std::string test_result_message;
-  bool test_result = dict_value->FindBoolKey("result").value();
-  CHECK(dict_value->GetString("message", &test_result_message));
-  if (!test_result_message.empty())
-    ADD_FAILURE() << test_result_message;
+  bool test_result = dict_value.FindBool("result").value();
+  const std::string* test_result_message = dict_value.FindString("message");
+  CHECK(test_result_message);
+  if (!test_result_message->empty()) {
+    ADD_FAILURE() << *test_result_message;
+  }
   return test_result;
 }

@@ -2130,9 +2130,9 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   child->SetStringKey("test", "value");
   EXPECT_EQ(1U, child->DictSize());
 
-  std::string value;
-  EXPECT_TRUE(child->GetString("test", &value));
-  EXPECT_EQ("value", value);
+  std::string* value = child->GetDict().FindString("test");
+  ASSERT_TRUE(value);
+  EXPECT_EQ("value", *value);
 
   std::unique_ptr<DictionaryValue> base(new DictionaryValue);
   base->Set("dict", std::move(child));
@@ -2147,13 +2147,15 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   EXPECT_EQ(1U, merged->DictSize());
   EXPECT_TRUE(merged->GetDictionary("dict", &ptr));
   EXPECT_NE(original_child, ptr);
-  EXPECT_TRUE(ptr->GetString("test", &value));
-  EXPECT_EQ("value", value);
+  value = ptr->GetDict().FindString("test");
+  ASSERT_TRUE(value);
+  EXPECT_EQ("value", *value);
 
   original_child->SetStringKey("test", "overwrite");
   base.reset();
-  EXPECT_TRUE(ptr->GetString("test", &value));
-  EXPECT_EQ("value", value);
+  value = ptr->GetDict().FindString("test");
+  ASSERT_TRUE(value);
+  EXPECT_EQ("value", *value);
 }
 
 TEST(ValuesTest, DictionaryIterator) {
@@ -2283,18 +2285,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_dict.Get("dict", nullptr));
   EXPECT_TRUE(main_dict.Get("list", nullptr));
   EXPECT_FALSE(main_dict.Get("DNE", nullptr));
-
-  EXPECT_FALSE(main_dict.GetString("bool", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("int", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(
-      main_dict.GetString("double", static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(
-      main_dict.GetString("string", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(
-      main_dict.GetString("binary", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("dict", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("list", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("DNE", static_cast<std::string*>(nullptr)));
 
   EXPECT_FALSE(main_dict.GetDictionary("bool", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("int", nullptr));
