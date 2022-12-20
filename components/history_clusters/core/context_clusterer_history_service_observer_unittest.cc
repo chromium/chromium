@@ -166,6 +166,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   // code path.
   void SetPersistenceExpectedConfig() {
     Config config;
+    config.persist_clusters_in_history_db = true;
     config.persist_context_clusters_at_navigation = true;
     SetConfigForTesting(config);
   }
