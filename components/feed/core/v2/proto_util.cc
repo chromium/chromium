@@ -280,6 +280,16 @@ void SetTimesFollowedFromWebPageMenu(feedwire::Request* request,
           request_metadata.followed_from_web_page_menu_count);
 }
 
+// Set the sign in status for the feed query to Discover from the request
+// metadata.sign_in_status
+void SetChromeSignInStatus(feedwire::Request* request,
+                           const RequestMetadata& request_metadata) {
+  request->mutable_feed_request()
+      ->mutable_feed_query()
+      ->mutable_chrome_fulfillment_info()
+      ->mutable_sign_in_status()
+      ->set_sign_in_status(request_metadata.sign_in_status);
+}
 }  // namespace
 
 std::string ContentIdString(const feedwire::ContentId& content_id) {
@@ -388,6 +398,7 @@ feedwire::Request CreateFeedQueryRefreshRequest(
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);
   SetTimesFollowedFromWebPageMenu(&request, request_metadata);
+  SetChromeSignInStatus(&request, request_metadata);
   return request;
 }
 

@@ -6,6 +6,7 @@ syntax = "proto2";
 
 package feedwire;
 
+import "components/feed/core/proto/v2/wire/capabilities_debug_data.proto";
 import "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.proto";
 import "components/feed/core/proto/v2/wire/content_lifetime.proto";
 import "components/feed/core/proto/v2/wire/data_operation.proto";
@@ -26,5 +27,6 @@ message FeedResponseMetadata {
   optional ServerExperimentData server_experiment_data = 5;
   optional ContentLifetime content_lifetime = 6;
   optional InfoCardServingInfo info_card_serving_info = 7;
+  optional CapabilitiesDebugData capabilities_debug_data = 8;
   optional ChromeFeedResponseMetadata chrome_feed_response_metadata = 326233599;
 }

@@ -59,6 +59,17 @@ message FollowWebFeedRequest {
   ConsistencyToken consistency_token = 4;
   WebFeedChangeReason change_reason = 6;
 }
+message QueryWebFeedRequest {
+  oneof identifier {
+    string name = 1;
+    WebFeedUris web_feed_uris = 2;
+  }
+  ConsistencyToken consistency_token = 3;
+}
+message QueryWebFeedResponse {
+  WebFeed web_feed = 1;
+  ConsistencyToken consistency_token = 2;
+}
 message FollowWebFeedResponse {
   WebFeed web_feed = 1;
   ConsistencyToken consistency_token = 2;
@@ -82,4 +93,9 @@ message QueryWebFeedsContentsRequest {
 }
 message QueryWebFeedsContentsResponse {
   Response response = 1;
+}
+message WebFeedUris {
+  string web_page_uri = 1;
+  string canonical_uri = 2;
+  repeated string page_rss_uris = 3;
 }

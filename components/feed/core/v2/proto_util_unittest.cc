@@ -333,5 +333,23 @@ TEST(ProtoUtilTest, InlinePlayback) {
               Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
 }
 
+TEST(ProtoUtilTest, SignInStatusSetOnRequest) {
+  RequestMetadata request_metadata;
+  request_metadata.sign_in_status = feedwire::ChromeSignInStatus::NOT_SIGNED_IN;
+
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+      request_metadata,
+      /*consistency_token=*/std::string());
+
+  feedwire::ChromeSignInStatus::SignInStatus status =
+      request.feed_request()
+          .feed_query()
+          .chrome_fulfillment_info()
+          .sign_in_status()
+          .sign_in_status();
+  ASSERT_EQ(status, request_metadata.sign_in_status);
+}
+
 }  // namespace
 }  // namespace feed

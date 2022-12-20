@@ -29,6 +29,7 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/feed_feature_list.h"
+#include "feed_api_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -4146,6 +4147,39 @@ TEST_F(FeedApiTest, SingleWebFeed_ReattachedSingleWebStreamFetches) {
   // verify no new fetches were required to populate reattach.
   EXPECT_EQ("loading -> 2 slices",
             single_web_feed_feed_surface.DescribeUpdates());
+}
+
+TEST_F(FeedApiTest, GetRequestMetadataForSignedOutUser) {
+  TestForYouSurface surface(stream_.get());
+  account_info_ = {};
+  is_sync_on_ = false;
+
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  ASSERT_EQ(metadata.sign_in_status,
+            feedwire::ChromeSignInStatus::NOT_SIGNED_IN);
+}
+
+TEST_F(FeedApiTest, GetRequestMetadataForSignedInButNotSyncedUser) {
+  TestForYouSurface surface(stream_.get());
+  is_sync_on_ = false;
+
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  ASSERT_EQ(metadata.sign_in_status,
+            feedwire::ChromeSignInStatus::SIGNED_IN_WITHOUT_SYNC);
+}
+
+TEST_F(FeedApiTest, GetRequestMetadataForSyncedUser) {
+  TestForYouSurface surface(stream_.get());
+  is_sync_on_ = true;
+
+  RequestMetadata metadata =
+      stream_->GetRequestMetadata(StreamType(StreamKind::kForYou), false);
+
+  ASSERT_EQ(metadata.sign_in_status, feedwire::ChromeSignInStatus::SYNCED);
 }
 
 // Keep instantiations at the bottom.
