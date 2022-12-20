@@ -231,12 +231,18 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
   status = media_codec->GetInputBuffer(input_buf_index, &buffer, &capacity);
   ASSERT_EQ(MEDIA_CODEC_OK, status);
 
+  int stride, yplane_height;
+  gfx::Size encoded_size;
+  status = media_codec->GetInputFormat(&stride, &yplane_height, &encoded_size);
+  ASSERT_EQ(MEDIA_CODEC_OK, status);
+
   // Convert to NV12 because H264 encoder is created with color format
   // COLOR_FormatYUV420SemiPlanar, both in main code path and unittest here.
   bool converted =
       !libyuv::I420ToNV12(src_data, width, src_data + width * height, width / 2,
                           src_data + width * height * 5 / 4, width / 2, buffer,
-                          width, buffer + width * height, width, width, height);
+                          stride, buffer + stride * yplane_height, stride,
+                          encoded_size.width(), encoded_size.height());
   ASSERT_TRUE(converted == true);
 
   status = media_codec->QueueInputBuffer(input_buf_index, nullptr, src_size,
@@ -423,13 +429,8 @@ TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1402772): Fix this test.
-TEST(MediaCodecBridgeTest, DISABLED_H264VideoEncodeAndValidate) {
-#else
 // Test MediaCodec HW H264 encoding and validate the format of encoded frames.
 TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
-#endif
   SKIP_TEST_IF_HW_H264_IS_NOT_AVAILABLE();
 
   const int width = 640;
