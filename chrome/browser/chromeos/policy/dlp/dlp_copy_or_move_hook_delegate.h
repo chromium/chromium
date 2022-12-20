@@ -50,10 +50,6 @@ class DlpCopyOrMoveHookDelegate
   void OnEnd(const storage::FileSystemURL& source_url,
              const storage::FileSystemURL& destination_url);
 
-  void RequestCopyAccess(const storage::FileSystemURL& source,
-                         const storage::FileSystemURL& destination,
-                         DlpCopyOrMoveHookDelegate::StatusCallback callback);
-
   friend DlpCopyOrMoveHookDelegateTest;
 
   // Keeps the ScopedFileAccess object for the whole copy operation between the

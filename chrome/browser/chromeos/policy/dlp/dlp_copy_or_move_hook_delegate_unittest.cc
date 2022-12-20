@@ -184,6 +184,47 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileDeny) {
   status_callback_run_loop.Run();
 }
 
+TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllowHookDestruct) {
+  base::RunLoop hook_destruction_run_loop;
+  base::RunLoop continuation_run_loop;
+  base::RunLoop status_callback_run_loop;
+  base::MockCallback<base::OnceCallback<void()>> destructor_continuation;
+  EXPECT_CALL(destructor_continuation, Run)
+      .WillOnce([&continuation_run_loop]() { continuation_run_loop.Quit(); });
+  EXPECT_CALL(*manager_, GetDlpFilesController)
+      .WillOnce(testing::Return(controller_.get()));
+
+  EXPECT_CALL(*controller_, RequestCopyAccess(source, destination,
+                                              base::test::IsNotNullCallback()))
+      .WillOnce(
+          [&](const storage::FileSystemURL& source,
+              const storage::FileSystemURL& destination,
+              base::OnceCallback<void(
+                  std::unique_ptr<file_access::ScopedFileAccess>)> callback) {
+            hook_.reset();
+            hook_destruction_run_loop.Quit();
+            std::move(callback).Run(
+                std::make_unique<file_access::ScopedFileAccessCopy>(
+                    true, base::ScopedFD(), destructor_continuation.Get()));
+          });
+
+  auto task_runner = content::GetIOThreadTaskRunner({});
+  base::MockCallback<base::OnceCallback<void(base::File::Error)>> status;
+  EXPECT_CALL(status, Run)
+      .WillOnce([&status_callback_run_loop](base::File::Error status) {
+        DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+        EXPECT_EQ(base::File::FILE_OK, status);
+        status_callback_run_loop.Quit();
+      });
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&DlpCopyOrMoveHookDelegate::OnBeginProcessFile,
+                                base::Unretained(hook_.get()), source,
+                                destination, status.Get()));
+  hook_destruction_run_loop.Run();
+  status_callback_run_loop.Run();
+  continuation_run_loop.Run();
+}
+
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoManager) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       profile_.get(),
