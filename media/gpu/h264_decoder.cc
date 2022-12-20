@@ -838,8 +838,16 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         if (to_mark) {
           to_mark->ref = false;
         } else {
+          // |to_mark| may be null for a variety of reasons. For example, the
+          // video frame it refers to may have been dropped by the network, or
+          // the bitstream is non-conformant and the frame it refers to is
+          // already marked as "unused for reference," etc. In any case, it
+          // should be safe to ignore this case and continue processing further
+          // memory management control operations since the frame won't be used
+          // for reference after this in any case.
+          //
+          // In real life, this case was observed in https://crbug.com/1394965.
           DVLOG(1) << "Invalid short ref pic num to unmark";
-          return false;
         }
         break;
 
@@ -851,6 +859,9 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         if (to_mark) {
           to_mark->ref = false;
         } else {
+          // TODO(crbug.com/1402627): consider doing the same for mmco 2 when
+          // we can have testing for it, as how we handle missing |to_mark| for
+          // mmco 1.
           DVLOG(1) << "Invalid long term ref pic num to unmark";
           return false;
         }
