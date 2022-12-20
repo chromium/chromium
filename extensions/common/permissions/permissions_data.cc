@@ -517,6 +517,7 @@ bool PermissionsData::CanCaptureVisiblePage(
     if (!has_page_capture) {
       if (error)
         *error = manifest_errors::kPageCaptureNeeded;
+      return false;
     }
 
     // If the URL is a typical web URL, the pageCapture permission is
