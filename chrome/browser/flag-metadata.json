@@ -1175,7 +1175,7 @@
   {
     "name": "crostini-ime-support",
     "owners": [ "timloh", "sophialin@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 115
   },
   {
     "name": "crostini-multi-container",
@@ -1190,7 +1190,7 @@
   {
     "name": "crostini-virtual-keyboard-support",
     "owners": [ "timloh", "sophialin@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "cryptauth-v2-dedup-device-last-activity-time",
