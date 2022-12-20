@@ -189,8 +189,14 @@ enum ConfigFlag {
 // Describes a single extension ruleset.
 struct TestRulesetInfo {
   TestRulesetInfo(const std::string& manifest_id_and_path,
-                  const base::Value& rules_value,
+                  base::Value::List rules_value,
                   bool enabled = true);
+  TestRulesetInfo(const std::string& manifest_id,
+                  const std::string& relative_file_path,
+                  base::Value::List rules_value,
+                  bool enabled = true);
+  // Used to support the copy ctor, or to deliberately create `rules_value` of
+  // the wrong type.
   TestRulesetInfo(const std::string& manifest_id,
                   const std::string& relative_file_path,
                   const base::Value& rules_value,
@@ -225,11 +231,11 @@ base::Value::Dict CreateManifest(
     unsigned flags = ConfigFlag::kConfig_None,
     const std::string& extension_name = "Test Extension");
 
-// Returns a Value corresponding to a vector of strings.
-base::Value ToListValue(const std::vector<std::string>& vec);
+// Returns a base::Value::List corresponding to a vector of strings.
+base::Value::List ToListValue(const std::vector<std::string>& vec);
 
-// Returns a alue corresponding to a vector of TestRules.
-base::Value ToListValue(const std::vector<TestRule>& rules);
+// Returns a base::Value::List corresponding to a vector of TestRules.
+base::Value::List ToListValue(const std::vector<TestRule>& rules);
 
 // Writes the rulesets specified in |ruleset_info| in the given |extension_dir|
 // together with the manifest file. |hosts| specifies the host permissions, the

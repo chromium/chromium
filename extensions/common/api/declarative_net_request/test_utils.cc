@@ -4,6 +4,8 @@
 
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -221,12 +223,21 @@ TestRule CreateRegexRule(int id) {
 }
 
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id_and_path,
-                                 const base::Value& rules_value,
+                                 base::Value::List rules_value,
                                  bool enabled)
     : TestRulesetInfo(manifest_id_and_path,
                       manifest_id_and_path,
-                      rules_value,
+                      std::move(rules_value),
                       enabled) {}
+
+TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id,
+                                 const std::string& relative_file_path,
+                                 base::Value::List rules_value,
+                                 bool enabled)
+    : manifest_id(manifest_id),
+      relative_file_path(relative_file_path),
+      rules_value(std::move(rules_value)),
+      enabled(enabled) {}
 
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id,
                                  const std::string& relative_file_path,
@@ -240,7 +251,7 @@ TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id,
 TestRulesetInfo::TestRulesetInfo(const TestRulesetInfo& info)
     : TestRulesetInfo(info.manifest_id,
                       info.relative_file_path,
-                      info.rules_value,
+                      info.rules_value.Clone(),
                       info.enabled) {}
 
 base::Value::Dict TestRulesetInfo::GetManifestValue() const {
@@ -302,12 +313,12 @@ base::Value::Dict CreateManifest(
       .BuildDict();
 }
 
-base::Value ToListValue(const std::vector<std::string>& vec) {
-  return base::Value(ToValue(vec));
+base::Value::List ToListValue(const std::vector<std::string>& vec) {
+  return ToValue(vec);
 }
 
-base::Value ToListValue(const std::vector<TestRule>& rules) {
-  return base::Value(ToValue(rules));
+base::Value::List ToListValue(const std::vector<TestRule>& rules) {
+  return ToValue(rules);
 }
 
 void WriteManifestAndRulesets(const base::FilePath& extension_dir,

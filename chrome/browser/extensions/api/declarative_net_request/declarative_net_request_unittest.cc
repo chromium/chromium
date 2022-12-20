@@ -267,7 +267,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
             .BuildList();
-    base::Value rules_to_add_value = ToListValue(rules_to_add);
+    base::Value::List rules_to_add_value = ToListValue(rules_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -334,8 +334,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       const std::vector<std::string>& ruleset_ids_to_remove,
       const std::vector<std::string>& ruleset_ids_to_add,
       absl::optional<std::string> expected_error) {
-    base::Value ids_to_remove_value = ToListValue(ruleset_ids_to_remove);
-    base::Value ids_to_add_value = ToListValue(ruleset_ids_to_add);
+    base::Value::List ids_to_remove_value = ToListValue(ruleset_ids_to_remove);
+    base::Value::List ids_to_add_value = ToListValue(ruleset_ids_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -518,11 +518,12 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
   // DeclarativeNetRequestUnittest override:
   void WriteExtensionData() override {
     if (!rules_value_)
-      rules_value_ = ToListValue(rules_list_);
+      rules_value_ = base::Value(ToListValue(rules_list_));
 
     WriteManifestAndRuleset(
         extension_dir(),
-        TestRulesetInfo(kDefaultRulesetID, kJSONRulesFilename, *rules_value_),
+        TestRulesetInfo(kDefaultRulesetID, kJSONRulesFilename,
+                        rules_value_->Clone()),
         {} /* hosts */);
 
     // Overwrite the JSON rules file with some invalid json.
@@ -1445,9 +1446,10 @@ TEST_P(MultipleRulesetsTest, ListNotPassed) {
     AddRuleset(TestRulesetInfo(kId1, "path1", ToListValue(rules)));
 
     // Persist a ruleset with an invalid rules file.
-    AddRuleset(TestRulesetInfo(kId2, "path2", base::DictionaryValue()));
+    AddRuleset(
+        TestRulesetInfo(kId2, "path2", base::Value(base::Value::Type::DICT)));
 
-    AddRuleset(TestRulesetInfo(kId3, "path3", base::ListValue()));
+    AddRuleset(TestRulesetInfo(kId3, "path3", base::Value::List()));
 
     LoadAndExpectError(kErrorListNotPassed, "path2" /* filename */);
 }

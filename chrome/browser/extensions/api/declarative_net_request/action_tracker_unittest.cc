@@ -57,7 +57,7 @@ class ActionTrackerTest : public DNRTestBase {
     ASSERT_TRUE(base::CreateDirectory(extension_dir));
     constexpr char kRulesetID[] = "id";
     constexpr char kJSONRulesFilename[] = "rules_file.json";
-    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, base::ListValue());
+    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, base::Value::List());
     WriteManifestAndRuleset(
         extension_dir, info,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}), flags);

@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative_net_request/filter_list_converter/converter.h"
 
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -468,7 +469,6 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
                           filter_list_converter::WriteType type,
                           bool noisy)
       : rule_id_(kMinValidID),
-        output_rules_list_(base::Value::Type::LIST),
         output_path_(output_path),
         write_type_(type),
         noisy_(noisy) {}
@@ -508,7 +508,7 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
     switch (write_type_) {
       case filter_list_converter::kExtension: {
         TestRulesetInfo info(kRulesetID, kJSONRulesFilename,
-                             output_rules_list_);
+                             output_rules_list_.Clone());
         WriteManifestAndRuleset(output_path_, info, {} /* hosts */);
         break;
       }
@@ -522,7 +522,7 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
 
  private:
   int rule_id_ = kMinValidID;
-  base::Value output_rules_list_;
+  base::Value::List output_rules_list_;
   const base::FilePath output_path_;
   const filter_list_converter::WriteType write_type_;
   const bool noisy_;
