@@ -143,14 +143,12 @@
   self.mediator.allowIncognitoActions =
       IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
-  if (IsOmniboxActionsEnabled()) {
-    OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-    annotator.pedalsEndpoint = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    annotator.omniboxCommandHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), OmniboxCommands);
-    self.mediator.pedalAnnotator = annotator;
-  }
+  OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
+  annotator.pedalsEndpoint = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  annotator.omniboxCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  self.mediator.pedalAnnotator = annotator;
 
   self.mediator.incognito = isIncognito;
   SceneState* sceneState =

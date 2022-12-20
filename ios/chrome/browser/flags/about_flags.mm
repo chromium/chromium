@@ -256,28 +256,6 @@ const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Compact", kDiscoverFeedTopSyncPromoCompact,
      std::size(kDiscoverFeedTopSyncPromoCompact), nullptr}};
 
-const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion1[] = {
-    {kIOSOmniboxUpdatedPopupUIVariationName,
-     kIOSOmniboxUpdatedPopupUIVariation1}};
-const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion2[] = {
-    {kIOSOmniboxUpdatedPopupUIVariationName,
-     kIOSOmniboxUpdatedPopupUIVariation2}};
-const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion3[] = {
-    {kIOSOmniboxUpdatedPopupUIVariationName,
-     kIOSOmniboxUpdatedPopupUIVariation1UIKit}};
-const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion4[] = {
-    {kIOSOmniboxUpdatedPopupUIVariationName,
-     kIOSOmniboxUpdatedPopupUIVariation2UIKit}};
-const FeatureEntry::FeatureVariation kiOSOmniboxUpdatedPopupUIVariations[] = {
-    {"Version 1 - SwiftUI", kiOSOmniboxUpdatedPopupUIVersion1,
-     std::size(kiOSOmniboxUpdatedPopupUIVersion1), nullptr},
-    {"Version 2 - SwiftUI", kiOSOmniboxUpdatedPopupUIVersion2,
-     std::size(kiOSOmniboxUpdatedPopupUIVersion2), nullptr},
-    {"Version 1 - UIKit", kiOSOmniboxUpdatedPopupUIVersion3,
-     std::size(kiOSOmniboxUpdatedPopupUIVersion3), nullptr},
-    {"Version 2 - UIKit", kiOSOmniboxUpdatedPopupUIVersion4,
-     std::size(kiOSOmniboxUpdatedPopupUIVersion4), nullptr}};
-
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
@@ -799,11 +777,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
-    {"omnibox-new-popup-ui", flag_descriptions::kIOSOmniboxUpdatedPopupUIName,
-     flag_descriptions::kIOSOmniboxUpdatedPopupUIDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSOmniboxUpdatedPopupUI,
-                                    kiOSOmniboxUpdatedPopupUIVariations,
-                                    "IOSOmniboxUpdatedPopupUI")},
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,

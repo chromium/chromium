@@ -59,7 +59,7 @@ extern const CGFloat kExpandedLocationBarHorizontalMargin;
 extern const CGFloat kContractedLocationBarHorizontalMargin;
 // Location bar leading margin with kIOSOmniboxUpdatedPopupUI flag. Should be
 // used instead of kExpandedLocationBarHorizontalMargin.
-extern const CGFloat kExpandedLocationBarLeadingMarginRefreshedPopup;
+extern const CGFloat kExpandedLocationBarLeadingMargin;
 
 // Adaptive Location bar constants.
 extern const CGFloat kAdaptiveLocationBarBackgroundAlpha;

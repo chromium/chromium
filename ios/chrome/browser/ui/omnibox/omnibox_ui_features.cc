@@ -32,18 +32,6 @@ BASE_FEATURE(kOmniboxCarouselDynamicSpacing,
              "OmniboxCarouselDynamicSpacing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsOmniboxActionsEnabled() {
-  return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
-}
-
-bool IsOmniboxActionsVisualTreatment1() {
-  return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
-}
-
-bool IsOmniboxActionsVisualTreatment2() {
-  return false;
-}
-
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

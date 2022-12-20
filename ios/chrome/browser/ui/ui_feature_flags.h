@@ -61,28 +61,8 @@ BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);
 // Feature flag that swaps the omnibox textfield implementation.
 BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 
-// Feature flag that toggles the SwiftUI omnibox popup implementation.
-BASE_DECLARE_FEATURE(kIOSOmniboxUpdatedPopupUI);
-
 // Feature flag that removes the crash infobar.
 BASE_DECLARE_FEATURE(kRemoveCrashInfobar);
-
-// Parameter name for the parameter controlling which UI variation to use for
-// the SwiftUI omnibox popup.
-extern const char kIOSOmniboxUpdatedPopupUIVariationName[];
-
-// Variation 1 for the parameter controlling which UI variation to use for
-// the SwiftUI omnibox popup.
-extern const char kIOSOmniboxUpdatedPopupUIVariation1[];
-// Variation 2 for the parameter controlling which UI variation to use for
-// the SwiftUI omnibox popup.
-extern const char kIOSOmniboxUpdatedPopupUIVariation2[];
-// Variation 3 for the parameter controlling the UI variation of the
-// SwiftUI/UIKit pedals popup.
-extern const char kIOSOmniboxUpdatedPopupUIVariation1UIKit[];
-// Variation 4 for the parameter controlling the UI variation of the
-// SwiftUI/UIKit pedals popup.
-extern const char kIOSOmniboxUpdatedPopupUIVariation2UIKit[];
 
 // Feature flag to enable removing any entry points to the history UI from
 // Incognito mode.

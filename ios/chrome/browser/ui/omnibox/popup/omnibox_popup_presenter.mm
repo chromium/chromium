@@ -24,7 +24,6 @@
 
 namespace {
 const CGFloat kVerticalOffset = 6;
-const CGFloat kPopoutOmniboxSideInsets = -8;
 const CGFloat kPopupBottomPaddingTablet = 80;
 }  // namespace
 
@@ -81,25 +80,13 @@ const CGFloat kPopupBottomPaddingTablet = 80;
       _popupContainerView.clipsToBounds = YES;
       _popupContainerView.layer.cornerRadius = 11.0f;
 
-      if (IsOmniboxActionsVisualTreatment1()) {
-        UIColor* borderColor =
-            incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                      : [UIColor.blackColor colorWithAlphaComponent:0.12];
+      UIColor* borderColor =
+          incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
+                    : [UIColor.blackColor colorWithAlphaComponent:0.12];
 
-        _popupContainerView.layer.borderColor = borderColor.CGColor;
-        _popupContainerView.layer.borderWidth = 2.0f;
-        AddSameConstraints(viewController.view, _popupContainerView);
-
-      } else {
-        // Treatment 2.
-        // Popup's outer edges align with the omnibox, top edge overlaps the
-        // toolbar by 1pt.
-        AddSameConstraintsWithInsets(
-            viewController.view, _popupContainerView,
-            NSDirectionalEdgeInsetsMake(0, kPopoutOmniboxSideInsets, 0,
-                                        kPopoutOmniboxSideInsets));
-        _popupContainerView.backgroundColor = UIColor.redColor;
-      }
+      _popupContainerView.layer.borderColor = borderColor.CGColor;
+      _popupContainerView.layer.borderWidth = 2.0f;
+      AddSameConstraints(viewController.view, _popupContainerView);
     } else {
       AddSameConstraints(viewController.view, _popupContainerView);
     }

@@ -1099,7 +1099,7 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (BOOL)isNewOmniboxPopupEnabled {
-  return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
+  return true;
 }
 
 + (BOOL)isExperimentalOmniboxEnabled {

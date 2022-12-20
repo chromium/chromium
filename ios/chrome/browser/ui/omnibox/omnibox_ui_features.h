@@ -32,13 +32,6 @@ BASE_DECLARE_FEATURE(kOmniboxCarouselDynamicSpacing);
 // Feature flag to enable paste button on the omnibox keyboard accessories.
 BASE_DECLARE_FEATURE(kOmniboxKeyboardPasteButton);
 
-// Simply returns if kIOSOmniboxUpdatedPopupUI is enabled.
-bool IsOmniboxActionsEnabled();
-// Returns true when kIOSOmniboxUpdatedPopupUI is set to "version 1" either in
-// UIKit or SwiftUI.
-bool IsOmniboxActionsVisualTreatment1();
-// Same as above, but for "version 2".
-bool IsOmniboxActionsVisualTreatment2();
 // Returns if kEnablePopoutOmniboxIpad feature is enabled.
 bool IsIpadPopoutOmniboxEnabled();
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

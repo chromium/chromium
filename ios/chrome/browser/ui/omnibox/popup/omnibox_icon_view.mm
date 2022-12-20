@@ -166,10 +166,8 @@
   self.mainImageView.highlighted = highlighted;
   self.overlayImageView.highlighted = highlighted;
 
-  if (IsOmniboxActionsEnabled()) {
-    self.mainImageView.tintColor =
-        highlighted ? UIColor.whiteColor : self.omniboxIcon.iconImageTintColor;
-  }
+  self.mainImageView.tintColor =
+      highlighted ? UIColor.whiteColor : self.omniboxIcon.iconImageTintColor;
 }
 
 @end

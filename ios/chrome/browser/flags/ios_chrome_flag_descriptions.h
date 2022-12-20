@@ -569,11 +569,6 @@ extern const char kOmniboxZeroSuggestInMemoryCachingDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-// Title and description for the flag to enable ChromeActions (and optionally
-// SwiftUI omnibox popup implementation).
-extern const char kIOSOmniboxUpdatedPopupUIName[];
-extern const char kIOSOmniboxUpdatedPopupUIDescription[];
-
 // Title and description for the flag to enable Optimization Guide debug logs.
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];

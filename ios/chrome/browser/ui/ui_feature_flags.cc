@@ -59,22 +59,9 @@ BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSOmniboxUpdatedPopupUI,
-             "IOSOmniboxUpdatedPopupUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRemoveCrashInfobar,
              "RemoveCrashInfobar",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kIOSOmniboxUpdatedPopupUIVariationName[] = "PopupUIVariant";
-
-extern const char kIOSOmniboxUpdatedPopupUIVariation1[] = "variant-one";
-extern const char kIOSOmniboxUpdatedPopupUIVariation2[] = "variant-two";
-extern const char kIOSOmniboxUpdatedPopupUIVariation1UIKit[] =
-    "variant-one-UIKit";
-extern const char kIOSOmniboxUpdatedPopupUIVariation2UIKit[] =
-    "variant-two-UIKit";
 
 BASE_FEATURE(kIOSLocationBarUseNativeContextMenu,
              "IOSLocationBarUseNativeContextMenu",

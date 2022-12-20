@@ -55,8 +55,7 @@ UIStackView* CarouselStackView() {
   return stackView;
 }
 
-/// CAGradientLayer used in OmniboxPopupCarouselCell with PopupVariation1 on
-/// iPad.
+/// CAGradientLayer used in OmniboxPopupCarouselCell on iPad.
 CAGradientLayer* CarouselGradientLayer() {
   CAGradientLayer* maskLayer = [CAGradientLayer layer];
   UIColor* opaqueColor = [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
@@ -173,8 +172,7 @@ CAGradientLayer* CarouselGradientLayer() {
 - (BOOL)shouldApplyLayoutMarginsGuide {
   // Apply layoutMarginsGuide in Visual Treatment 1 only on Tablet because there
   // is a minimum layoutMargin of 8 that we don't want on phones.
-  return IsOmniboxActionsVisualTreatment1() &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 #pragma mark - Accessibility

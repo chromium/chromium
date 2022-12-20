@@ -340,9 +340,7 @@
                        constant:kContractedLocationBarHorizontalMargin],
   ]];
 
-  CGFloat leadingMargin = IsOmniboxActionsEnabled()
-                              ? kExpandedLocationBarLeadingMarginRefreshedPopup
-                              : kExpandedLocationBarHorizontalMargin;
+  CGFloat leadingMargin = kExpandedLocationBarLeadingMargin;
 
   // Constraints for contractedNoMarginConstraints.
   [self.contractedNoMarginConstraints addObjectsFromArray:@[

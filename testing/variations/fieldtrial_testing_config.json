@@ -7430,33 +7430,6 @@
             ]
         }
     ],
-    "OmniboxPedalsActionsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Variation1_V2",
-                    "params": {
-                        "PopupUIVariant": "variant-one-UIKit"
-                    },
-                    "enable_features": [
-                        "IOSOmniboxUpdatedPopupUI"
-                    ]
-                },
-                {
-                    "name": "Enabled_Variation2_V2",
-                    "params": {
-                        "PopupUIVariant": "variant-two-UIKit"
-                    },
-                    "enable_features": [
-                        "IOSOmniboxUpdatedPopupUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPrerender": [
         {
             "platforms": [

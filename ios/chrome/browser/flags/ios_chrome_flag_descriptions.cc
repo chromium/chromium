@@ -638,10 +638,6 @@ const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
-const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
-const char kIOSOmniboxUpdatedPopupUIDescription[] =
-    "Enable the new Popup implementation with Actions";
-
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

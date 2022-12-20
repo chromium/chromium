@@ -273,18 +273,9 @@
 
   self.view.collapsedToolbarButton.hidden = progress > 0.05;
 
-  // When this method is called when the toolbar is expanded, prevent the
-  // color from changing, if necessary.
-  BOOL isToolbarExpanded = self.view.expandedConstraints.firstObject.active;
-  if (IsOmniboxActionsVisualTreatment2() && isToolbarExpanded) {
-    self.view.locationBarContainer.backgroundColor =
-        self.buttonFactory.toolbarConfiguration
-            .focusedLocationBarBackgroundColor;
-  } else {
-    self.view.locationBarContainer.backgroundColor =
-        [self.buttonFactory.toolbarConfiguration
-            locationBarBackgroundColorWithVisibility:alphaValue];
-  }
+  self.view.locationBarContainer.backgroundColor =
+      [self.buttonFactory.toolbarConfiguration
+          locationBarBackgroundColorWithVisibility:alphaValue];
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
@@ -309,14 +300,6 @@
   [self deactivateViewLocationBarConstraints];
   [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
   [self.view layoutIfNeeded];
-
-  if (IsOmniboxActionsVisualTreatment2()) {
-    self.view.backgroundColor =
-        self.buttonFactory.toolbarConfiguration.focusedBackgroundColor;
-    self.view.locationBarContainer.backgroundColor =
-        self.buttonFactory.toolbarConfiguration
-            .focusedLocationBarBackgroundColor;
-  }
 }
 
 - (void)contractLocationBar {
@@ -328,14 +311,6 @@
     [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
   }
   [self.view layoutIfNeeded];
-
-  if (IsOmniboxActionsVisualTreatment2()) {
-    self.view.backgroundColor =
-        self.buttonFactory.toolbarConfiguration.backgroundColor;
-    self.view.locationBarContainer.backgroundColor =
-        [self.buttonFactory.toolbarConfiguration
-            locationBarBackgroundColorWithVisibility:1.0];
-  }
 }
 
 - (void)showCancelButton {

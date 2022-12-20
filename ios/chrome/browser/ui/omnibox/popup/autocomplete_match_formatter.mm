@@ -122,8 +122,7 @@ UIColor* DimColorIncognito() {
     // suggestions. For non-search suggestions (URLs), a highlight color is used
     // instead.
     UIColor* suggestionDetailTextColor = nil;
-    if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-        IsOmniboxActionsVisualTreatment2()) {
+    if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       suggestionDetailTextColor = SuggestionDetailTextColor();
     } else {
       suggestionDetailTextColor = SuggestionTextColor();

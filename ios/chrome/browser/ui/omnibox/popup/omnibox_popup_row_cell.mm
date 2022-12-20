@@ -32,14 +32,10 @@ const CGFloat kTextTopMargin = 6;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
 const CGFloat kTopGradientColorOpacity = 0.85;
-const CGFloat kTextSpacingActionsEnabled = 2.0f;
+const CGFloat kTextSpacing = 2.0f;
 /// In Variation 2, the images and the text in the popup don't align with the
 /// omnibox image. If Variation 2 becomes default, probably we don't need the
 /// fancy layout guide setup and can get away with simple margins.
-const CGFloat kImageOffsetVariation2 = 8.0f;
-const CGFloat kImageAdditionalOffsetVariation2PopoutOmnibox = 10.0f;
-const CGFloat kAdditionalTextOffsetVariation2 = 8.0f;
-const CGFloat kTextOffsetVariation2 = 8.0f;
 const CGFloat kTrailingButtonPointSize = 17.0f;
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
@@ -86,19 +82,13 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   if (self) {
     _incognito = NO;
 
-    if (IsOmniboxActionsEnabled()) {
-      self.selectedBackgroundView = [[GradientView alloc]
-          initWithTopColor:
-              [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
-                  colorWithAlphaComponent:kTopGradientColorOpacity]
-               bottomColor:
-                   [UIColor
-                       colorNamed:@"omnibox_suggestion_row_highlight_color"]];
-    } else {
-      self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-      self.selectedBackgroundView.backgroundColor =
-          [UIColor colorNamed:kTableViewRowHighlightColor];
-    }
+    self.selectedBackgroundView = [[GradientView alloc]
+        initWithTopColor:
+            [[UIColor colorNamed:@"omnibox_suggestion_row_highlight_color"]
+                colorWithAlphaComponent:kTopGradientColorOpacity]
+             bottomColor:
+                 [UIColor
+                     colorNamed:@"omnibox_suggestion_row_highlight_color"]];
 
     _textTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -112,9 +102,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _textStackView.axis = UILayoutConstraintAxisVertical;
     _textStackView.alignment = UIStackViewAlignmentLeading;
-    if (IsOmniboxActionsEnabled()) {
-      _textStackView.spacing = kTextSpacingActionsEnabled;
-    }
+    _textStackView.spacing = kTextSpacing;
 
     _detailTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -141,10 +129,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
 
-    self.backgroundColor =
-        IsOmniboxActionsVisualTreatment2()
-            ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-            : UIColor.clearColor;
+    self.backgroundColor = UIColor.clearColor;
 
     [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
@@ -188,10 +173,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
   [super setHighlighted:highlighted animated:animated];
-
-  if (!IsOmniboxActionsEnabled()) {
-    return;
-  }
 
   UIColor* textColor = highlighted ? [UIColor whiteColor] : nil;
   self.textTruncatingLabel.textColor = textColor;
@@ -333,10 +314,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   NSLayoutConstraint* stackViewToLayoutGuideLeading =
       [self.textStackView.leadingAnchor
-          constraintEqualToAnchor:textLayoutGuide.leadingAnchor
-                         constant:IsOmniboxActionsVisualTreatment2()
-                                      ? kTextOffsetVariation2
-                                      : 0];
+          constraintEqualToAnchor:textLayoutGuide.leadingAnchor];
   NSLayoutConstraint* stackViewToLayoutGuideTrailing =
       [self.textStackView.trailingAnchor
           constraintEqualToAnchor:textLayoutGuide.trailingAnchor];
@@ -353,29 +331,11 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
-
-  CGFloat iconXOffset = 0;
-  BOOL isRTL = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
-                           self.omniboxSemanticContentAttribute] ==
-               UIUserInterfaceLayoutDirectionRightToLeft;
-
-  if (IsOmniboxActionsVisualTreatment2() && !IsRegularXRegularSizeClass(self)) {
-    // Inset the icons in variation 2, except in reg x reg size class where the
-    // alignment works well already. Flip the inset on RTL as it's not flipped
-    // automatically.
-    iconXOffset = isRTL ? -kImageOffsetVariation2 : kImageOffsetVariation2;
-  }
-
-  if (IsIpadPopoutOmniboxEnabled() && IsOmniboxActionsVisualTreatment2()) {
-    iconXOffset += kImageAdditionalOffsetVariation2PopoutOmnibox;
-  }
-
   [NSLayoutConstraint
       deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
   self.nonDeletingLayoutGuideConstraints = @[
     [self.leadingIconView.centerXAnchor
-        constraintEqualToAnchor:imageLayoutGuide.centerXAnchor
-                       constant:iconXOffset],
+        constraintEqualToAnchor:imageLayoutGuide.centerXAnchor],
     [self.leadingIconView.widthAnchor
         constraintEqualToAnchor:imageLayoutGuide.widthAnchor],
     stackViewToLayoutGuideLeading,
@@ -433,13 +393,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
                                    layoutGuideFrame.origin.x -
                                    layoutGuideFrame.size.width
                              : layoutGuideFrame.origin.x;
-
-  if (IsIpadPopoutOmniboxEnabled() && IsOmniboxActionsVisualTreatment2()) {
-    leadingSpace += self.omniboxSemanticContentAttribute ==
-                            UISemanticContentAttributeForceRightToLeft
-                        ? -kAdditionalTextOffsetVariation2
-                        : kAdditionalTextOffsetVariation2;
-  }
 
   return leadingSpace;
 }
@@ -499,9 +452,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 /// highlighting is enabled in pedals. Returns the original string otherwise.
 - (NSAttributedString*)highlightedAttributedStringWithString:
     (NSAttributedString*)string {
-  if (!IsOmniboxActionsEnabled()) {
-    return string;
-  }
   NSMutableAttributedString* mutableString =
       [[NSMutableAttributedString alloc] initWithAttributedString:string];
   [mutableString addAttribute:NSForegroundColorAttributeName
@@ -543,12 +493,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     [self setupTrailingButton];
   }
 
-  if (IsOmniboxActionsEnabled()) {
-    self.leadingIconView.highlighted = self.highlighted;
-    self.trailingButton.tintColor = self.highlighted
-                                        ? [UIColor whiteColor]
-                                        : [UIColor colorNamed:kBlueColor];
-  }
+  self.leadingIconView.highlighted = self.highlighted;
+  self.trailingButton.tintColor =
+      self.highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
 }
 
 /// Setup the trailing button. This includes both setting up the button's layout
@@ -573,7 +520,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   self.accessibilityCustomActions = @[ trailingButtonAction ];
 
   UIImage* trailingButtonImage = nil;
-  if (IsOmniboxActionsVisualTreatment2()) {
+
+  if (UseSymbolsInOmnibox()) {
     trailingButtonImage =
         self.suggestion.isTabMatch
             ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
@@ -583,28 +531,18 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     trailingButtonImage =
         trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
   } else {
-    if (UseSymbolsInOmnibox()) {
-      trailingButtonImage =
-          self.suggestion.isTabMatch
-              ? DefaultSymbolWithPointSize(kNavigateToTabSymbol,
-                                           kTrailingButtonPointSize)
-              : DefaultSymbolWithPointSize(kRefineQuerySymbol,
-                                           kTrailingButtonPointSize);
+    if (self.suggestion.isTabMatch) {
+      trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
       trailingButtonImage =
           trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
     } else {
-      if (self.suggestion.isTabMatch) {
-        trailingButtonImage = [UIImage imageNamed:@"omnibox_popup_tab_match"];
-        trailingButtonImage =
-            trailingButtonImage.imageFlippedForRightToLeftLayoutDirection;
-      } else {
-        int trailingButtonResourceID = 0;
-        trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-        trailingButtonImage =
-            NativeReversableImage(trailingButtonResourceID, YES);
-      }
+      int trailingButtonResourceID = 0;
+      trailingButtonResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
+      trailingButtonImage =
+          NativeReversableImage(trailingButtonResourceID, YES);
     }
   }
+
   trailingButtonImage = [trailingButtonImage
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
