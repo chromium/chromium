@@ -6,7 +6,6 @@
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
-#include <android/native_window_jni.h>
 
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
@@ -324,9 +323,9 @@ void ContextManagerGL::DoCreateContext(JNIEnv* env, int width, int height) {
   {
     std::vector<EGLint> egl_window_attributes;
     egl_window_attributes.push_back(EGL_NONE);
-    gl_surface_ =
-        eglCreateWindowSurfaceFn(GetDisplay(), GetConfig(&use_es3),
-                                 native_window_, &egl_window_attributes[0]);
+    gl_surface_ = eglCreateWindowSurfaceFn(GetDisplay(), GetConfig(&use_es3),
+                                           native_window_.a_native_window(),
+                                           &egl_window_attributes[0]);
     CHECK(gl_surface_);
   }
 
@@ -346,8 +345,9 @@ void ContextManagerGL::DoCreateContext(JNIEnv* env, int width, int height) {
 }
 
 void ContextManagerGL::DestroyContext() {
-  if (java_surface_.is_null())
+  if (java_surface_.IsEmpty()) {
     return;
+  }
 
   if (current_functor_) {
     MakeCurrent();
@@ -364,9 +364,8 @@ void ContextManagerGL::DestroyContext() {
   CHECK(eglDestroySurfaceFn(GetDisplay(), gl_surface_));
   gl_surface_ = nullptr;
 
-  ANativeWindow_release(native_window_);
   native_window_ = nullptr;
-  java_surface_.Reset();
+  java_surface_ = nullptr;
 }
 
 void ContextManagerGL::MakeCurrent() {
@@ -640,7 +639,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
                             : nullptr;
 }
 void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
-  vulkan_surface_ = vulkan_implementation_->CreateViewSurface(native_window_);
+  vulkan_surface_ = vulkan_implementation_->CreateViewSurface(
+      native_window_.a_native_window());
   CHECK(vulkan_surface_);
   CHECK(vulkan_surface_->Initialize(device_queue_.get(),
                                     gpu::VulkanSurface::FORMAT_RGBA_32));
@@ -694,8 +694,9 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
 }
 
 void ContextManagerVulkan::DestroyContext() {
-  if (java_surface_.is_null())
+  if (java_surface_.IsEmpty()) {
     return;
+  }
 
   if (current_functor_) {
     FunctorData& data = Allocator::Get()->get(current_functor_);
@@ -707,9 +708,8 @@ void ContextManagerVulkan::DestroyContext() {
   vulkan_surface_->Destroy();
   vulkan_surface_.reset();
 
-  ANativeWindow_release(native_window_);
   native_window_ = nullptr;
-  java_surface_.Reset();
+  java_surface_ = nullptr;
 }
 
 void ContextManagerVulkan::CurrentFunctorChanged() {
@@ -760,7 +760,7 @@ void ContextManager::SetSurface(JNIEnv* env,
                                 const base::android::JavaRef<jobject>& surface,
                                 int width,
                                 int height) {
-  if (!java_surface_.is_null()) {
+  if (!java_surface_.IsEmpty()) {
     DestroyContext();
   }
   if (!surface.is_null()) {
@@ -797,11 +797,12 @@ void ContextManager::CreateContext(
     const base::android::JavaRef<jobject>& surface,
     int width,
     int height) {
-  java_surface_.Reset(surface);
-  if (java_surface_.is_null())
+  java_surface_ = gl::ScopedJavaSurface(surface, /*auto_release=*/false);
+  if (!java_surface_.IsValid()) {
     return;
+  }
 
-  native_window_ = ANativeWindow_fromSurface(env, surface.obj());
+  native_window_ = gl::ScopedANativeWindow(java_surface_);
   CHECK(native_window_);
 
   DoCreateContext(env, width, height);

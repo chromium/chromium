@@ -32,8 +32,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/android/surface_texture.h"
 
-#include <android/native_window_jni.h>
-
 #define VOID_OFFSET(x) reinterpret_cast<void*>(x)
 #define SHADER(Src) #Src
 
@@ -216,16 +214,12 @@ void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
 
 void MailboxToSurfaceBridgeImpl::CreateSurface(
     gl::SurfaceTexture* surface_texture) {
-  ANativeWindow* window = surface_texture->CreateSurface();
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  ANativeWindow_acquire(window);
-  // Skip ANativeWindow_setBuffersGeometry, the default size appears to work.
   surface_handle_ =
       tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
           gl::ScopedJavaSurface(surface_texture),
           false /* can_be_used_with_surface_control */));
   // Unregistering happens in the destructor.
-  ANativeWindow_release(window);
 }
 
 void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(

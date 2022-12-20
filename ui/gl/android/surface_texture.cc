@@ -4,12 +4,12 @@
 
 #include "ui/gl/android/surface_texture.h"
 
-#include <android/native_window_jni.h>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture_listener.h"
 #include "ui/gl/gl_bindings.h"
@@ -124,16 +124,9 @@ void SurfaceTexture::DetachFromGLContext() {
                                                          j_surface_texture_);
 }
 
-ANativeWindow* SurfaceTexture::CreateSurface() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+ScopedANativeWindow SurfaceTexture::CreateSurface() {
   ScopedJavaSurface surface(this);
-  // Note: This ensures that any local references used by
-  // ANativeWindow_fromSurface are released immediately. This is needed as a
-  // workaround for https://code.google.com/p/android/issues/detail?id=68174
-  base::android::ScopedJavaLocalFrame scoped_local_reference_frame(env);
-  ANativeWindow* native_window =
-      ANativeWindow_fromSurface(env, surface.j_surface().obj());
-  return native_window;
+  return ScopedANativeWindow(surface);
 }
 
 void SurfaceTexture::ReleaseBackBuffers() {

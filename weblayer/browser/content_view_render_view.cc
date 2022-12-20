@@ -5,7 +5,6 @@
 #include "weblayer/browser/content_view_render_view.h"
 
 #include <android/bitmap.h>
-#include <android/native_window_jni.h>
 
 #include <memory>
 #include <utility>

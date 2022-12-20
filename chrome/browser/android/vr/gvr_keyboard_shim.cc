@@ -4,7 +4,6 @@
 
 #include "third_party/gvr-android-keyboard/src/libraries/headers/vr/gvr/capi/include/gvr_keyboard.h"
 
-#include <android/native_window_jni.h>
 #include <dlfcn.h>
 #include <jni.h>
 #include <cmath>

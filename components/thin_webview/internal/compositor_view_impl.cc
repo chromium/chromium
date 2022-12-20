@@ -4,8 +4,6 @@
 
 #include "components/thin_webview/internal/compositor_view_impl.h"
 
-#include <android/native_window_jni.h>
-
 #include <memory>
 
 #include "base/android/jni_android.h"

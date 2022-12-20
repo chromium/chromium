@@ -5,12 +5,12 @@
 #ifndef ANDROID_WEBVIEW_TEST_SHELL_SRC_DRAW_FN_OVERLAYS_MANAGER_H_
 #define ANDROID_WEBVIEW_TEST_SHELL_SRC_DRAW_FN_OVERLAYS_MANAGER_H_
 
-#include <android/native_window.h>
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gl/android/scoped_a_native_window.h"
+#include "ui/gl/android/scoped_java_surface.h"
 
 struct AwDrawFn_DrawGLParams;
 struct AwDrawFn_DrawVkParams;
@@ -45,8 +45,8 @@ class OverlaysManager {
                   const base::android::JavaRef<jobject>& surface);
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> java_surface_;
-  raw_ptr<ANativeWindow> native_window_ = nullptr;
+  gl::ScopedJavaSurface java_surface_;
+  gl::ScopedANativeWindow native_window_;
 };
 
 }  // namespace draw_fn

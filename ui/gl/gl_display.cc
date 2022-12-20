@@ -32,7 +32,6 @@
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_ANDROID)
-#include <android/native_window_jni.h>
 #include "base/android/build_info.h"
 #endif
 

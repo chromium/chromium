@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/compositor_impl_android.h"
 
 #include <android/bitmap.h>
-#include <android/native_window_jni.h>
 #include <stdint.h>
 
 #include <string>

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/android/vr/vr_shell.h"
 
-#include <android/native_window_jni.h>
-
 #include <algorithm>
 #include <string>
 #include <utility>
@@ -75,6 +73,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
 #include "url/gurl.h"
 
@@ -430,9 +429,8 @@ void VrShell::SetSurface(JNIEnv* env,
                          const JavaParamRef<jobject>& surface) {
   DCHECK(!reprojected_rendering_);
   DCHECK(!surface.is_null());
-  gfx::AcceleratedWidget window =
-      ANativeWindow_fromSurface(base::android::AttachCurrentThread(), surface);
-  surface_window_ = window;
+  surface_window_ = gl::ScopedANativeWindow(
+      gl::ScopedJavaSurface(surface, /*auto_release=*/false));
   gl_surface_created_event_.Signal();
 }
 
@@ -1177,7 +1175,7 @@ std::unique_ptr<PageInfo> VrShell::CreatePageInfo() {
 }
 
 gfx::AcceleratedWidget VrShell::GetRenderSurface() {
-  return surface_window_;
+  return surface_window_.a_native_window();
 }
 
 // ----------------------------------------------------------------------------

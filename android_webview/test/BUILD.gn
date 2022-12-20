@@ -220,6 +220,7 @@ shared_library("libstandalonelibwebviewchromium") {
     "//gpu/vulkan",
     "//gpu/vulkan/init",
     "//gpu/vulkan/init:skia",
+    "//ui/gl",
   ]
   libs = [ "android" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

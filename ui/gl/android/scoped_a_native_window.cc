@@ -16,9 +16,6 @@ ScopedANativeWindow ScopedANativeWindow::Wrap(ANativeWindow* a_native_window) {
   return ScopedANativeWindow(a_native_window);
 }
 
-ScopedANativeWindow::ScopedANativeWindow() = default;
-ScopedANativeWindow::ScopedANativeWindow(std::nullptr_t) {}
-
 ScopedANativeWindow::ScopedANativeWindow(const ScopedJavaSurface& surface) {
   if (!surface.j_surface()) {
     return;

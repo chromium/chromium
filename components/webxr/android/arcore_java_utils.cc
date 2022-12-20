@@ -13,6 +13,7 @@
 #include "device/vr/android/arcore/arcore_shim.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "ui/android/window_android.h"
+#include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
 
 using base::android::AttachCurrentThread;
@@ -76,19 +77,19 @@ void ArCoreJavaUtils::OnDrawingSurfaceReady(
     int height) {
   DVLOG(1) << __func__ << ": width=" << width << " height=" << height
            << " rotation=" << rotation;
-  gfx::AcceleratedWidget window =
-      ANativeWindow_fromSurface(base::android::AttachCurrentThread(), surface);
+  gl::ScopedJavaSurface scoped_surface(surface, /*auto_release=*/false);
+  gl::ScopedANativeWindow window(scoped_surface);
   gpu::SurfaceHandle surface_handle =
       gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
           gpu::GpuSurfaceTracker::SurfaceRecord(
-              gl::ScopedJavaSurface(surface, /*auto_release=*/false),
+              std::move(scoped_surface),
               /*can_be_used_with_surface_control=*/false));
   ui::WindowAndroid* root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(java_root_window);
   display::Display::Rotation display_rotation =
       static_cast<display::Display::Rotation>(rotation);
-  surface_ready_callback_.Run(window, surface_handle, root_window,
-                              display_rotation, {width, height});
+  surface_ready_callback_.Run(window.a_native_window(), surface_handle,
+                              root_window, display_rotation, {width, height});
 }
 
 void ArCoreJavaUtils::OnDrawingSurfaceTouch(

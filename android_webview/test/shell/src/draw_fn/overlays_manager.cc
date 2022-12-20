@@ -4,8 +4,6 @@
 
 #include "android_webview/test/shell/src/draw_fn/overlays_manager.h"
 
-#include <android/native_window_jni.h>
-
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/build_info.h"
@@ -88,18 +86,18 @@ void SetDrawParams(T& params, bool has_window) {
 OverlaysManager::ScopedDraw::ScopedDraw(OverlaysManager& manager,
                                         FunctorData& functor,
                                         AwDrawFn_DrawGLParams& params)
-    : scoped_functor_call_(
-          std::make_unique<ScopedCurrentFunctorCall>(functor,
-                                                     manager.native_window_)) {
+    : scoped_functor_call_(std::make_unique<ScopedCurrentFunctorCall>(
+          functor,
+          manager.native_window_.a_native_window())) {
   SetDrawParams(params, !!manager.native_window_);
 }
 
 OverlaysManager::ScopedDraw::ScopedDraw(OverlaysManager& manager,
                                         FunctorData& functor,
                                         AwDrawFn_DrawVkParams& params)
-    : scoped_functor_call_(
-          std::make_unique<ScopedCurrentFunctorCall>(functor,
-                                                     manager.native_window_)) {
+    : scoped_functor_call_(std::make_unique<ScopedCurrentFunctorCall>(
+          functor,
+          manager.native_window_.a_native_window())) {
   SetDrawParams(params, !!manager.native_window_);
 }
 
@@ -124,19 +122,19 @@ void OverlaysManager::SetSurface(
     int current_functor,
     JNIEnv* env,
     const base::android::JavaRef<jobject>& surface) {
-  if (java_surface_.obj() == surface.obj())
+  if (java_surface_.j_surface().obj() == surface.obj()) {
     return;
+  }
 
   if (native_window_) {
     if (current_functor)
       RemoveOverlays(Allocator::Get()->get(current_functor));
-    ANativeWindow_release(native_window_);
     native_window_ = nullptr;
   }
 
-  java_surface_.Reset(surface);
-  if (java_surface_) {
-    native_window_ = ANativeWindow_fromSurface(env, java_surface_.obj());
+  java_surface_ = gl::ScopedJavaSurface(surface, /*auto_release=*/false);
+  if (java_surface_.IsValid()) {
+    native_window_ = gl::ScopedANativeWindow(java_surface_);
   }
 }
 }  // namespace draw_fn

@@ -18,8 +18,8 @@ class ScopedJavaSurface;
 class GL_EXPORT ScopedANativeWindow {
  public:
   static ScopedANativeWindow Wrap(ANativeWindow* a_native_window);
-  ScopedANativeWindow();
-  ScopedANativeWindow(std::nullptr_t);
+  constexpr ScopedANativeWindow() = default;
+  constexpr ScopedANativeWindow(std::nullptr_t) {}
   explicit ScopedANativeWindow(const ScopedJavaSurface& surface);
   ~ScopedANativeWindow();
 

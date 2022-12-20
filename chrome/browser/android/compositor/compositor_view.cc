@@ -5,7 +5,6 @@
 #include "chrome/browser/android/compositor/compositor_view.h"
 
 #include <android/bitmap.h>
-#include <android/native_window_jni.h>
 
 #include <memory>
 #include <vector>

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <android/native_window_jni.h>
 #include <cpu-features.h>
 
 #include "base/android/jni_array.h"

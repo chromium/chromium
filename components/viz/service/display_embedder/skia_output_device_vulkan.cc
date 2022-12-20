@@ -26,7 +26,6 @@
 #include "ui/gfx/presentation_feedback.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include <android/native_window_jni.h>
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"

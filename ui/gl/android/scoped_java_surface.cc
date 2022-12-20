@@ -58,6 +58,9 @@ void ScopedJavaSurface::ReleaseSurfaceIfNeeded() {
 }
 
 void ScopedJavaSurface::MoveFrom(ScopedJavaSurface& other) {
+  if (this == &other) {
+    return;
+  }
   ReleaseSurfaceIfNeeded();
   j_surface_ = std::move(other.j_surface_);
   auto_release_ = other.auto_release_;
