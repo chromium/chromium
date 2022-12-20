@@ -163,7 +163,11 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
     return DocumentId();
   }
 
-  return base::UnguessableToken::Deserialize(high, low);
+  base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
+  if (token.is_empty()) {
+    return DocumentId();
+  }
+  return token;
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
