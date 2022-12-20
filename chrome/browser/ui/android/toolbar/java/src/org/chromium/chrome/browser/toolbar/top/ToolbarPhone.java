@@ -976,8 +976,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 Math.max(Math.max(mNtpSearchBoxScrollFraction, mStartSurfaceScrollFraction),
                         mUrlFocusChangeFraction);
         for (UrlExpansionObserver observer : mUrlExpansionObservers) {
-            observer.onUrlExpansionProgressChanged(
-                    mUrlExpansionFraction, mUrlFocusChangeInProgress);
+            observer.onUrlExpansionProgressChanged(mUrlExpansionFraction);
         }
         assert mUrlExpansionFraction >= 0;
         assert mUrlExpansionFraction <= 1;
