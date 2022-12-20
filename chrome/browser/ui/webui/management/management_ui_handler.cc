@@ -29,6 +29,7 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -193,6 +194,8 @@ const char kManagementReportLoginLogout[] = "managementReportLoginLogout";
 const char kManagementReportCRDSessions[] = "managementReportCRDSessions";
 const char kManagementReportDlpEvents[] = "managementReportDlpEvents";
 const char kManagementOnFileTransferEvent[] = "managementOnFileTransferEvent";
+const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
+const char kManagementScreenCaptureData[] = "managementScreenCaptureData";
 const char kManagementOnFileTransferVisibleData[] =
     "managementOnFileTransferVisibleData";
 const char kManagementPrinting[] = "managementPrinting";
@@ -959,6 +962,13 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
     AddThreatProtectionPermission(kManagementOnPageVisitedEvent,
                                   kManagementOnPageVisitedVisibleData, &info);
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (capture_policy::IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite()) {
+    AddThreatProtectionPermission(kManagementScreenCaptureEvent,
+                                  kManagementScreenCaptureData, &info);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::string enterprise_manager =
       connectors_service->GetManagementDomain();

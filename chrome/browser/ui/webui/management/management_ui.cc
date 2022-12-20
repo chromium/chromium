@@ -91,6 +91,8 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementOnFileTransferEvent, IDS_MANAGEMENT_FILE_TRANSFER_EVENT},
     {kManagementOnFileTransferVisibleData,
      IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA},
+    {kManagementScreenCaptureEvent, IDS_MANAGEMENT_SCREEN_CAPTURE_EVENT},
+    {kManagementScreenCaptureData, IDS_MANAGEMENT_SCREEN_CAPTURE_DATA},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     {"browserReporting", IDS_MANAGEMENT_BROWSER_REPORTING},
     {"browserReportingExplanation",

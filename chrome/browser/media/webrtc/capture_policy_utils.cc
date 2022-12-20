@@ -104,6 +104,12 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   return AllowedScreenCaptureLevel::kDisallowed;
 }
 
+bool IsGetDisplaymediaSetSelectAllScreensAllowedForAnySite() {
+  // TODO(crbug.com/1399866): Implement the check whether multi screen capture
+  // is allowed on any site.
+  return false;
+}
+
 bool IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const GURL& url) {
