@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -47,6 +50,35 @@ TEST_F(DriveIntegrationServiceTest, DISABLED_ServiceInstanceIdentity) {
   TestingProfile* user2 = profile_manager_.CreateTestingProfile("user2");
   EXPECT_NE(DriveIntegrationServiceFactory::GetForProfile(user1),
             DriveIntegrationServiceFactory::GetForProfile(user2));
+}
+
+TEST_F(DriveIntegrationServiceTest, EnsureDirectoryExists) {
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+
+  const base::FilePath data_dir = tmp_dir.GetPath().Append("a/b/c");
+  EXPECT_FALSE(base::DirectoryExists(data_dir));
+
+  // First time, the data dir should be created.
+  EXPECT_EQ(DriveIntegrationService::EnsureDirectoryExists(data_dir),
+            DriveIntegrationService::DirResult::kCreated);
+  EXPECT_TRUE(base::DirectoryExists(data_dir));
+
+  // Second time, the data dir should already exist.
+  EXPECT_EQ(DriveIntegrationService::EnsureDirectoryExists(data_dir),
+            DriveIntegrationService::DirResult::kExisting);
+  EXPECT_TRUE(base::DirectoryExists(data_dir));
+
+  // Remove the data dir, and replace it with a file.
+  EXPECT_TRUE(base::DeleteFile(data_dir));
+  EXPECT_FALSE(base::DirectoryExists(data_dir));
+  EXPECT_TRUE(base::WriteFile(data_dir, "Whatever"));
+
+  // Trying to create the data dir should now fail.
+  EXPECT_FALSE(base::DirectoryExists(data_dir));
+  EXPECT_EQ(DriveIntegrationService::EnsureDirectoryExists(data_dir),
+            DriveIntegrationService::DirResult::kError);
+  EXPECT_FALSE(base::DirectoryExists(data_dir));
 }
 
 }  // namespace drive

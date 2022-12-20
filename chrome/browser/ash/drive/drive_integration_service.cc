@@ -29,6 +29,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -36,6 +37,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -290,10 +293,6 @@ DriveMountStatus ConvertMountFailure(
       return DriveMountStatus::kUnknownFailure;
   }
   NOTREACHED();
-}
-
-bool EnsureDirectoryExists(const base::FilePath& path) {
-  return base::DirectoryExists(path) || base::CreateDirectory(path);
 }
 
 void UmaEmitMountStatus(DriveMountStatus status) {
@@ -892,6 +891,22 @@ void DriveIntegrationService::AddBackDriveMountPoint(
   std::move(callback).Run(true);
 }
 
+DriveIntegrationService::DirResult
+DriveIntegrationService::EnsureDirectoryExists(const base::FilePath& data_dir) {
+  if (base::DirectoryExists(data_dir)) {
+    VLOG(1) << "DriveFS data directory '" << data_dir << "' already exists";
+    return DirResult::kExisting;
+  }
+
+  if (base::CreateDirectory(data_dir)) {
+    VLOG(1) << "Created DriveFS data directory '" << data_dir << "'";
+    return DirResult::kCreated;
+  }
+
+  PLOG(ERROR) << "Cannot create DriveFS data directory '" << data_dir << "'";
+  return DirResult::kError;
+}
+
 void DriveIntegrationService::AddDriveMountPoint() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(INITIALIZED, state_);
@@ -899,29 +914,53 @@ void DriveIntegrationService::AddDriveMountPoint() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (!GetDriveFsHost()->IsMounted()) {
-    PrefService* prefs = profile_->GetPrefs();
-    bool was_ever_mounted =
-        prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
-    if (mount_start_.is_null() || was_ever_mounted) {
-      mount_start_ = base::TimeTicks::Now();
-    }
-    blocking_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&EnsureDirectoryExists, GetDriveFsHost()->GetDataPath()),
-        base::BindOnce(&DriveIntegrationService::MaybeMountDrive,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
+  if (GetDriveFsHost()->IsMounted()) {
     AddDriveMountPointAfterMounted();
+    return;
   }
+
+  const bool was_ever_mounted =
+      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
+
+  if (mount_start_.is_null() || was_ever_mounted) {
+    mount_start_ = base::TimeTicks::Now();
+  }
+
+  const base::FilePath data_dir = GetDriveFsHost()->GetDataPath();
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&EnsureDirectoryExists, data_dir),
+      base::BindOnce(&DriveIntegrationService::MaybeMountDrive,
+                     weak_ptr_factory_.GetWeakPtr(), data_dir));
 }
 
-void DriveIntegrationService::MaybeMountDrive(bool data_directory_exists) {
-  if (!data_directory_exists) {
-    LOG(ERROR) << "Could not create DriveFS data directory";
-  } else {
-    GetDriveFsHost()->Mount();
+void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
+                                              const DirResult data_dir_result) {
+  if (data_dir_result == DirResult::kError) {
+    return;
   }
+
+  // Check if the data dir was missing (probably because it got removed while
+  // the user was logged out).
+  if (data_dir_result == DirResult::kCreated &&
+      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
+    LOG(WARNING) << "DriveFS data directory '" << data_dir
+                 << "' was missing and got created again";
+
+    // TODO(b/263185253) Remove this IsDriveFsBulkPinningEnabled() condition.
+    if (ash::features::IsDriveFsBulkPinningEnabled()) {
+      // Show system notification.
+      file_manager::SystemNotificationManager snm(profile_);
+      const std::unique_ptr<const message_center::Notification> notification =
+          snm.CreateNotification("drive_data_dir_missing",
+                                 IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
+                                 IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING);
+      DCHECK(notification);
+      snm.GetNotificationDisplayService()->Display(
+          NotificationHandler::Type::TRANSIENT, *notification, nullptr);
+    }
+  }
+
+  GetDriveFsHost()->Mount();
 }
 
 bool DriveIntegrationService::AddDriveMountPointAfterMounted() {

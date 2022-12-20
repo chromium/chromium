@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -304,13 +305,17 @@ class DriveIntegrationService : public KeyedService,
   // Must be called on UI thread.
   bool IsDriveEnabled();
 
+  enum class DirResult { kError, kExisting, kCreated };
+  static DirResult EnsureDirectoryExists(const base::FilePath& data_dir);
+
   // Registers remote file system for drive mount point. If DriveFS is enabled,
   // but not yet mounted, this will start it mounting and wait for it to
   // complete before adding the mount point.
   void AddDriveMountPoint();
 
   // Mounts Drive if the directory exists.
-  void MaybeMountDrive(bool data_directory_exists);
+  void MaybeMountDrive(const base::FilePath& data_dir,
+                       DirResult data_dir_result);
 
   // Registers remote file system for drive mount point.
   bool AddDriveMountPointAfterMounted();
@@ -416,6 +421,8 @@ class DriveIntegrationService : public KeyedService,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveIntegrationService> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(DriveIntegrationServiceTest, EnsureDirectoryExists);
 };
 
 // Singleton that owns all instances of DriveIntegrationService and

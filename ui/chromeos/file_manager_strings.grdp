@@ -428,7 +428,7 @@
     An error occured during installation of your Linux application.
   </message>
 
-  <message name="IDS_FILE_BROWSER_RECOVERED_FILES_FROM_GOOGLE_DRIVE_DIRECTORY_NAME" desc="The name of the direcotry which stores files recovered from Google Drive directory when the locally stored Google Drive data is found to be broken.">
+  <message name="IDS_FILE_BROWSER_RECOVERED_FILES_FROM_GOOGLE_DRIVE_DIRECTORY_NAME" desc="The name of the directory which stores files recovered from Google Drive directory when the locally stored Google Drive data is found to be broken.">
     Recovered files from Google Drive
   </message>
 
@@ -710,6 +710,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION" desc="File Manager status message shown when the drive sync is failed because the user's organization runs out the space in Google Drive server.">
     Your organization requires more storage to complete the upload.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING" desc="Don't translate yet; this message is not final. System notification displayed when the Google Drive cache file were removed while the user was logged out.">
+    Your Google Drive cache was cleared.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL" desc="File Manager menu storage meter message indicating the user's organization has run out of quota.">
     Org storage full
