@@ -273,7 +273,7 @@ Manifest::Manifest(ManifestLocation location,
       manifest_version_(GetManifestVersion(value_, type_)) {
   DCHECK(!extension_id_.empty());
 
-  available_values_ = base::Value(AvailableValuesFilter::Filter(*this));
+  available_values_ = AvailableValuesFilter::Filter(*this);
 }
 
 Manifest::~Manifest() = default;
@@ -319,50 +319,39 @@ bool Manifest::ValidateManifest(
 }
 
 const base::Value* Manifest::FindKey(base::StringPiece key) const {
-  return available_values_.GetDict().Find(key);
+  return available_values_.Find(key);
 }
 
 const base::Value* Manifest::FindPath(base::StringPiece path) const {
-  return available_values_.GetDict().FindByDottedPath(path);
+  return available_values_.FindByDottedPath(path);
 }
 
 absl::optional<bool> Manifest::FindBoolPath(base::StringPiece path) const {
-  return available_values_.GetDict().FindBoolByDottedPath(path);
+  return available_values_.FindBoolByDottedPath(path);
 }
 
 absl::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
-  return available_values_.GetDict().FindIntByDottedPath(path);
+  return available_values_.FindIntByDottedPath(path);
 }
 
 const std::string* Manifest::FindStringPath(base::StringPiece path) const {
-  return available_values_.GetDict().FindStringByDottedPath(path);
+  return available_values_.FindStringByDottedPath(path);
 }
 
 const base::Value::Dict* Manifest::FindDictPath(base::StringPiece path) const {
-  return available_values_.GetDict().FindDictByDottedPath(path);
+  return available_values_.FindDictByDottedPath(path);
 }
 
 const base::Value* Manifest::FindDictPathAsValue(base::StringPiece path) const {
-  const base::Value* result =
-      available_values_.GetDict().FindByDottedPath(path);
+  const base::Value* result = available_values_.FindByDottedPath(path);
   if (result && result->is_dict())
     return result;
   return nullptr;
 }
 
-bool Manifest::GetDictionary(
-    const std::string& path, const base::DictionaryValue** out_value) const {
-  const base::Value* value;
-  if (!GetDictionary(path, &value)) {
-    return false;
-  }
-  *out_value = &base::Value::AsDictionaryValue(*value);
-  return true;
-}
-
 bool Manifest::GetDictionary(const std::string& path,
                              const base::Value** out_value) const {
-  const base::Value* value = available_values_.GetDict().FindByDottedPath(path);
+  const base::Value* value = available_values_.FindByDottedPath(path);
   if (!value || !value->is_dict())
     return false;
   *out_value = value;
@@ -371,7 +360,7 @@ bool Manifest::GetDictionary(const std::string& path,
 
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
-  const base::Value* value = available_values_.GetDict().FindByDottedPath(path);
+  const base::Value* value = available_values_.FindByDottedPath(path);
   if (!value || !value->is_list())
     return false;
   *out_value = value;

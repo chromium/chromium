@@ -116,7 +116,7 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<WebviewInfo> info(new WebviewInfo(extension->id()));
 
   const base::Value::Dict* dict =
-      extension->manifest()->available_values_dict().FindDict(keys::kWebview);
+      extension->manifest()->available_values().FindDict(keys::kWebview);
   if (!dict) {
     *error = errors::kInvalidWebview;
     return false;

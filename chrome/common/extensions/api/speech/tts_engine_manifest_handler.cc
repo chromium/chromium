@@ -140,7 +140,7 @@ bool TtsEngineManifestHandler::Parse(Extension* extension,
                                      std::u16string* error) {
   auto info = std::make_unique<TtsVoices>();
   const base::Value::Dict* tts_dict =
-      extension->manifest()->available_values_dict().FindDict(keys::kTtsEngine);
+      extension->manifest()->available_values().FindDict(keys::kTtsEngine);
   if (!tts_dict) {
     *error = errors::kInvalidTts;
     return false;

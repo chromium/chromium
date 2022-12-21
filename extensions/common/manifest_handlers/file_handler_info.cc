@@ -180,8 +180,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
 
   std::unique_ptr<FileHandlers> info(new FileHandlers);
   const base::Value::Dict* all_handlers =
-      extension->manifest()->available_values_dict().FindDict(
-          keys::kFileHandlers);
+      extension->manifest()->available_values().FindDict(keys::kFileHandlers);
   if (!all_handlers) {
     *error = errors::kInvalidFileHandlers;
     return false;

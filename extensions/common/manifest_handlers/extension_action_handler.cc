@@ -82,7 +82,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
 
   if (key) {
     const base::Value::Dict* dict =
-        extension->manifest()->available_values_dict().FindDict(key);
+        extension->manifest()->available_values().FindDict(key);
     if (!dict) {
       *error = base::ASCIIToUTF16(error_key);
       return false;

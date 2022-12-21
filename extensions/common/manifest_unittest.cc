@@ -80,7 +80,7 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   EXPECT_EQ(0uL, warnings.size());
 }
 
-// Tests `Manifest::available_values_dict()` and whether it correctly filters
+// Tests `Manifest::available_values()` and whether it correctly filters
 // keys not available to the manifest.
 TEST(ManifestTest, AvailableValues) {
   struct {
@@ -150,7 +150,7 @@ TEST(ManifestTest, AvailableValues) {
         base::JSONReader::Read(test_case.expected_available_manifest);
     ASSERT_TRUE(expected_value) << test_case.expected_available_manifest;
     ASSERT_TRUE(expected_value->is_dict());
-    EXPECT_EQ(expected_value->GetDict(), manifest.available_values_dict());
+    EXPECT_EQ(expected_value->GetDict(), manifest.available_values());
   }
 }
 

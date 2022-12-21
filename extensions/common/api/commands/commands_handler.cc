@@ -70,7 +70,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   const base::Value::Dict* dict =
-      extension->manifest()->available_values_dict().FindDict(keys::kCommands);
+      extension->manifest()->available_values().FindDict(keys::kCommands);
   if (!dict) {
     *error = manifest_errors::kInvalidCommandsKey;
     return false;

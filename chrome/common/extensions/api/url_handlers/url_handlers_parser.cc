@@ -156,8 +156,7 @@ bool ParseUrlHandler(const std::string& handler_id,
 bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<UrlHandlers> info(new UrlHandlers);
   const base::Value::Dict* all_handlers =
-      extension->manifest()->available_values_dict().FindDict(
-          mkeys::kUrlHandlers);
+      extension->manifest()->available_values().FindDict(mkeys::kUrlHandlers);
   if (!all_handlers) {
     *error = merrors::kInvalidURLHandlers;
     return false;

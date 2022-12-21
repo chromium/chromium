@@ -22,8 +22,7 @@ std::unique_ptr<FileHandlersMV3> ParseFromList(const Extension& extension,
                                                std::u16string* error) {
   FileHandlersManifestKeys manifest_keys;
   if (!FileHandlersManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values_dict(), &manifest_keys,
-          error)) {
+          extension.manifest()->available_values(), &manifest_keys, error)) {
     return nullptr;
   }
 

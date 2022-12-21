@@ -61,7 +61,7 @@ IconsHandler::~IconsHandler() {
 bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconsInfo> icons_info(new IconsInfo);
   const base::Value::Dict* icons_dict =
-      extension->manifest()->available_values_dict().FindDict(keys::kIcons);
+      extension->manifest()->available_values().FindDict(keys::kIcons);
   if (!icons_dict) {
     *error = manifest_errors::kInvalidIcons;
     return false;

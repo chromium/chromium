@@ -50,7 +50,7 @@ const ExtensionIconSet* SystemIndicatorHandler::GetSystemIndicatorIcon(
 bool SystemIndicatorHandler::Parse(Extension* extension,
                                    std::u16string* error) {
   const base::Value::Dict* system_indicator_dict =
-      extension->manifest()->available_values_dict().FindDict(
+      extension->manifest()->available_values().FindDict(
           manifest_keys::kSystemIndicator);
   if (!system_indicator_dict) {
     *error = manifest_errors::kInvalidSystemIndicator;
