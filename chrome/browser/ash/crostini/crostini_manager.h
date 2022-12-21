@@ -894,7 +894,7 @@ class CrostiniManager : public KeyedService,
 
   // Callbacks to run after LXD is started, keyed by vm_name. Used if StartLxd
   // completes but we need to wait for LXD to start.
-  std::map<std::string, CrostiniResultCallback> start_lxd_callbacks_;
+  std::multimap<std::string, CrostiniResultCallback> start_lxd_callbacks_;
 
   std::map<std::string, VmInfo> running_vms_;
 

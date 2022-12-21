@@ -1256,6 +1256,41 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
   ExpectRestarterUmaCount(1);
 }
 
+TEST_F(CrostiniManagerRestartTest, SameVmDifferentContainerStartsLxdCorrectly) {
+  vm_tools::cicerone::StartLxdResponse response;
+  response.set_status(vm_tools::cicerone::StartLxdResponse::STARTING);
+  fake_cicerone_client_->set_start_lxd_response(response);
+
+  auto barrier_closure = base::BarrierClosure(2, run_loop()->QuitClosure());
+
+  crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), barrier_closure),
+      this);
+
+  auto container_id_2 =
+      guest_os::GuestId(kCrostiniDefaultVmType, kVmName, "other-container");
+  crostini_manager()->RestartCrostini(
+      container_id_2,
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), barrier_closure),
+      this);
+
+  base::RunLoop().RunUntilIdle();
+
+  vm_tools::cicerone::StartLxdProgressSignal signal;
+  signal.set_owner_id(CryptohomeIdForProfile(profile()));
+  signal.set_vm_name(kVmName);
+  signal.set_status(vm_tools::cicerone::StartLxdProgressSignal::STARTED);
+  crostini_manager()->OnStartLxdProgress(signal);
+
+  run_loop()->Run();
+
+  EXPECT_EQ(2, restart_crostini_callback_count_);
+  EXPECT_EQ(CrostiniResult::SUCCESS, last_crostini_callback_result_);
+}
+
 TEST_F(CrostiniManagerRestartTest, CancelOnContainerCreated) {
   cancel_on_container_created_ = true;
   restart_id_ = crostini_manager()->RestartCrostini(
