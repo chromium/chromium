@@ -321,6 +321,10 @@ double ComputeSSIM(const VideoFrame& frame1, const VideoFrame& frame2) {
 
 double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
                                  scoped_refptr<const VideoFrame> test_frame) {
+  ASSERT_TRUE_OR_RETURN(
+      golden_frame->visible_rect().size() == test_frame->visible_rect().size(),
+      0.0);
+
   if (golden_frame->format() != PIXEL_FORMAT_ARGB) {
     golden_frame = ConvertVideoFrame(golden_frame.get(), PIXEL_FORMAT_ARGB);
   }

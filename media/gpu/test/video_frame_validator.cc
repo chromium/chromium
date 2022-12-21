@@ -622,6 +622,11 @@ LogLikelihoodRatioVideoFrameValidator::Validate(
   auto model_frame = get_model_frame_cb_.Run(frame_index);
 
   CHECK(model_frame);
+
+  if (ShouldCrop()) {
+    model_frame = CloneAndCropFrame(std::move(model_frame));
+  }
+
   double ratio = ComputeLogLikelihoodRatio(model_frame, frame);
   DVLOGF(4) << "frame_index: " << frame_index
             << ", log likelihood ratio: " << ratio;
