@@ -3024,13 +3024,6 @@ const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
     {"15", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam kLensStandaloneWithSidePanel[] = {
-    {"enable-side-panel", "true"}};
-constexpr FeatureEntry::FeatureVariation kLensStandaloneVariations[] = {
-    {"With Side Panel", kLensStandaloneWithSidePanel,
-     std::size(kLensStandaloneWithSidePanel), nullptr},
-};
-
 constexpr FeatureEntry::FeatureParam kLensFormatOptimizationJPEG[] = {
     {"use-webp-image-search", "false"},
     {"use-webp-region-search", "false"},
@@ -8081,9 +8074,7 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensStandalone,
-                                    kLensStandaloneVariations,
-                                    "GoogleLensDesktopContextMenuSearch")},
+     FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},
 
     {"enable-lens-region-search-static-page",
      flag_descriptions::kLensRegionSearchStaticPageName,
