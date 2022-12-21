@@ -6316,9 +6316,6 @@ crbug.com/1361956 [ Linux ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Pa
 # Investigate timeouts on bots
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-track-untrack.js [ Failure Pass ]
 
-crbug.com/1394227 [ Linux ] external/wpt/element-timing/image-src-change.html [ Failure Pass ]
-crbug.com/1394227 [ Mac ] external/wpt/element-timing/image-src-change.html [ Failure Pass ]
-
 crbug.com/1367113 fast/dom/shadow/event-path-load.html [ Crash Failure Pass Timeout ]
 crbug.com/1367113 http/tests/security/cors-check-for-cached-image.html [ Crash Failure Pass Timeout ]
 crbug.com/1367113 paint/images/animated-gif-last-frame-crash.html [ Crash Failure Pass Timeout ]
