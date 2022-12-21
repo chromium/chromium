@@ -248,17 +248,20 @@ bool AutofillClientImpl::IsFastCheckoutSupported() {
   return false;
 }
 
-bool AutofillClientImpl::TryToShowFastCheckout(
+bool AutofillClientImpl::IsFastCheckoutTriggerForm(
     const autofill::FormData& form,
-    const autofill::FormFieldData& field,
-    autofill::AutofillDriver* driver) {
+    const autofill::FormFieldData& field) {
   return false;
 }
 
-void AutofillClientImpl::HideFastCheckout(bool allow_further_runs) {}
-
-bool AutofillClientImpl::IsShowingFastCheckoutUI() {
+bool AutofillClientImpl::ShowFastCheckout(
+    base::WeakPtr<autofill::FastCheckoutDelegate> delegate) {
+  NOTREACHED();
   return false;
+}
+
+void AutofillClientImpl::HideFastCheckout() {
+  NOTREACHED();
 }
 
 bool AutofillClientImpl::IsTouchToFillCreditCardSupported() {
