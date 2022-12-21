@@ -283,3 +283,4 @@ EGLBoolean eglWaitGLFn(void) override;
 EGLBoolean eglWaitNativeFn(EGLint engine) override;
 EGLint eglWaitSyncFn(EGLDisplay dpy, EGLSync sync, EGLint flags) override;
 EGLint eglWaitSyncKHRFn(EGLDisplay dpy, EGLSyncKHR sync, EGLint flags) override;
+void eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) override;

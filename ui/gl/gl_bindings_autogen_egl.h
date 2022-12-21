@@ -349,6 +349,8 @@ typedef EGLint(GL_BINDING_CALL* eglWaitSyncProc)(EGLDisplay dpy,
 typedef EGLint(GL_BINDING_CALL* eglWaitSyncKHRProc)(EGLDisplay dpy,
                                                     EGLSyncKHR sync,
                                                     EGLint flags);
+typedef void(GL_BINDING_CALL* eglWaitUntilWorkScheduledANGLEProc)(
+    EGLDisplay dpy);
 
 struct GL_EXPORT ClientExtensionsEGL {
   bool b_EGL_ANGLE_display_power_preference;
@@ -401,6 +403,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANGLE_surface_orientation;
   bool b_EGL_ANGLE_sync_control_rate;
   bool b_EGL_ANGLE_vulkan_image;
+  bool b_EGL_ANGLE_wait_until_work_scheduled;
   bool b_EGL_ANGLE_window_fixed_size;
   bool b_EGL_ARM_implicit_external_sync;
   bool b_EGL_CHROMIUM_create_context_bind_generates_resource;
@@ -539,6 +542,7 @@ struct ProcsEGL {
   eglWaitNativeProc eglWaitNativeFn;
   eglWaitSyncProc eglWaitSyncFn;
   eglWaitSyncKHRProc eglWaitSyncKHRFn;
+  eglWaitUntilWorkScheduledANGLEProc eglWaitUntilWorkScheduledANGLEFn;
 };
 
 class GL_EXPORT EGLApi {
@@ -834,6 +838,7 @@ class GL_EXPORT EGLApi {
   virtual EGLint eglWaitSyncKHRFn(EGLDisplay dpy,
                                   EGLSyncKHR sync,
                                   EGLint flags) = 0;
+  virtual void eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) = 0;
 };
 
 }  // namespace gl
@@ -971,5 +976,7 @@ class GL_EXPORT EGLApi {
 #define eglWaitNative ::gl::g_current_egl_context->eglWaitNativeFn
 #define eglWaitSync ::gl::g_current_egl_context->eglWaitSyncFn
 #define eglWaitSyncKHR ::gl::g_current_egl_context->eglWaitSyncKHRFn
+#define eglWaitUntilWorkScheduledANGLE \
+  ::gl::g_current_egl_context->eglWaitUntilWorkScheduledANGLEFn
 
 #endif  // UI_GL_GL_BINDINGS_AUTOGEN_EGL_H_

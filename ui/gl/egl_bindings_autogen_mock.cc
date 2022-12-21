@@ -774,6 +774,12 @@ EGLint GL_BINDING_CALL MockEGLInterface::Mock_eglWaitSyncKHR(EGLDisplay dpy,
   return interface_->WaitSyncKHR(dpy, sync, flags);
 }
 
+void GL_BINDING_CALL
+MockEGLInterface::Mock_eglWaitUntilWorkScheduledANGLE(EGLDisplay dpy) {
+  MakeEglMockFunctionUnique("eglWaitUntilWorkScheduledANGLE");
+  interface_->WaitUntilWorkScheduledANGLE(dpy);
+}
+
 static void MockEglInvalidFunction() {
   NOTREACHED();
 }
@@ -1003,6 +1009,10 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSync);
   if (strcmp(name, "eglWaitSyncKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSyncKHR);
+  if (strcmp(name, "eglWaitUntilWorkScheduledANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglWaitUntilWorkScheduledANGLE);
+  }
   return reinterpret_cast<GLFunctionPointerType>(&MockEglInvalidFunction);
 }
 

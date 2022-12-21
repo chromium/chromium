@@ -263,6 +263,11 @@ OverlayIOSurfaceRepresentation::~OverlayIOSurfaceRepresentation() = default;
 
 bool OverlayIOSurfaceRepresentation::BeginReadAccess(
     gfx::GpuFenceHandle& acquire_fence) {
+  gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
+  if (display) {
+    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
+  }
+
   auto* gl_backing = static_cast<IOSurfaceImageBacking*>(backing());
   std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
   if (fence)

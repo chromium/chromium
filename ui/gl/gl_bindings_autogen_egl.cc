@@ -247,6 +247,9 @@ void DriverEGL::InitializeStaticBindings() {
       reinterpret_cast<eglWaitSyncProc>(GetGLProcAddress("eglWaitSync"));
   fn.eglWaitSyncKHRFn =
       reinterpret_cast<eglWaitSyncKHRProc>(GetGLProcAddress("eglWaitSyncKHR"));
+  fn.eglWaitUntilWorkScheduledANGLEFn =
+      reinterpret_cast<eglWaitUntilWorkScheduledANGLEProc>(
+          GetGLProcAddress("eglWaitUntilWorkScheduledANGLE"));
 }
 
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
@@ -343,6 +346,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       gfx::HasExtension(extensions, "EGL_ANGLE_sync_control_rate");
   b_EGL_ANGLE_vulkan_image =
       gfx::HasExtension(extensions, "EGL_ANGLE_vulkan_image");
+  b_EGL_ANGLE_wait_until_work_scheduled =
+      gfx::HasExtension(extensions, "EGL_ANGLE_wait_until_work_scheduled");
   b_EGL_ANGLE_window_fixed_size =
       gfx::HasExtension(extensions, "EGL_ANGLE_window_fixed_size");
   b_EGL_ARM_implicit_external_sync =
@@ -987,6 +992,10 @@ EGLint EGLApiBase::eglWaitSyncKHRFn(EGLDisplay dpy,
                                     EGLSyncKHR sync,
                                     EGLint flags) {
   return driver_->fn.eglWaitSyncKHRFn(dpy, sync, flags);
+}
+
+void EGLApiBase::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglWaitUntilWorkScheduledANGLEFn(dpy);
 }
 
 EGLBoolean TraceEGLApi::eglBindAPIFn(EGLenum api) {
@@ -1692,6 +1701,12 @@ EGLint TraceEGLApi::eglWaitSyncKHRFn(EGLDisplay dpy,
                                      EGLint flags) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglWaitSyncKHR");
   return egl_api_->eglWaitSyncKHRFn(dpy, sync, flags);
+}
+
+void TraceEGLApi::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglWaitUntilWorkScheduledANGLE");
+  egl_api_->eglWaitUntilWorkScheduledANGLEFn(dpy);
 }
 
 EGLBoolean LogEGLApi::eglBindAPIFn(EGLenum api) {
@@ -2752,6 +2767,12 @@ EGLint LogEGLApi::eglWaitSyncKHRFn(EGLDisplay dpy,
   EGLint result = egl_api_->eglWaitSyncKHRFn(dpy, sync, flags);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
+}
+
+void LogEGLApi::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglWaitUntilWorkScheduledANGLE"
+                 << "(" << dpy << ")");
+  egl_api_->eglWaitUntilWorkScheduledANGLEFn(dpy);
 }
 
 }  // namespace gl

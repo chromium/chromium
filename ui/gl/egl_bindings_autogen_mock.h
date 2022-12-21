@@ -330,3 +330,4 @@ static EGLint GL_BINDING_CALL Mock_eglWaitSync(EGLDisplay dpy,
 static EGLint GL_BINDING_CALL Mock_eglWaitSyncKHR(EGLDisplay dpy,
                                                   EGLSyncKHR sync,
                                                   EGLint flags);
+static void GL_BINDING_CALL Mock_eglWaitUntilWorkScheduledANGLE(EGLDisplay dpy);

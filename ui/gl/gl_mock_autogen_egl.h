@@ -313,3 +313,4 @@ MOCK_METHOD1(WaitNative, EGLBoolean(EGLint engine));
 MOCK_METHOD3(WaitSync, EGLint(EGLDisplay dpy, EGLSync sync, EGLint flags));
 MOCK_METHOD3(WaitSyncKHR,
              EGLint(EGLDisplay dpy, EGLSyncKHR sync, EGLint flags));
+MOCK_METHOD1(WaitUntilWorkScheduledANGLE, void(EGLDisplay dpy));

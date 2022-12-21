@@ -2824,6 +2824,10 @@ EGL_FUNCTIONS = [
   'versions': [{ 'name': 'eglWaitSyncKHR',
                  'extensions': ['EGL_KHR_wait_sync'] }],
   'arguments': 'EGLDisplay dpy, EGLSyncKHR sync, EGLint flags' },
+{ 'return_type': 'void',
+  'versions': [{ 'name': 'eglWaitUntilWorkScheduledANGLE',
+                 'extensions': ['EGL_ANGLE_wait_until_work_scheduled'] }],
+  'arguments': 'EGLDisplay dpy' },
 ]
 
 # EGL client extensions that may not add a function but are still queried.
