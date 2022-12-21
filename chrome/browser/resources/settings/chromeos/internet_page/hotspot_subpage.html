@@ -34,7 +34,7 @@
     <div id="hotspotSSIDLabel" class="settings-box-text">
         $i18n{hotspotNameLabel}
       <div id="hotspotSSID" class="secondary">
-          [[getHotspotConfigSSID_(hotspotInfo)]]
+          [[getHotspotConfigSsid_(hotspotInfo.config.ssid)]]
       </div>
     </div>
   </div>
@@ -47,7 +47,8 @@
   <settings-toggle-button id="hotspotAutoDisableToggle" class="hr"
       label="$i18n{hotspotAutoDisableLabel}"
       sub-label="$i18n{hotspotAutoDisableSublabel}"
-      pref="{{autoDisableVirtualPref_}}" on-change="onAutoDisableChange_">
+      pref="{{autoDisableVirtualPref_}}"
+      on-change="onAutoDisableChange_">
   </settings-toggle-button>
 </template>
 <div id="connectedDeviceCountRow"

@@ -12,35 +12,29 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverReceiver, HotspotAllowStatus, HotspotControlResult, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {HotspotAllowStatus, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const HotspotSummaryItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {getTemplate} from './hotspot_summary_item.html.js';
 
-/** @polymer */
+const HotspotSummaryItemElementBase = I18nMixin(PolymerElement);
+
 class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   static get is() {
-    return 'hotspot-summary-item';
+    return 'hotspot-summary-item' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @public {!HotspotInfo|undefined} */
       hotspotInfo: {
         type: Object,
         observer: 'onHotspotInfoChanged_',
@@ -50,7 +44,6 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
        * Reflects the current state of the toggle button. This will be set when
        * the |HotspotInfo| state changes or when the user presses the
        * toggle.
-       * @private
        */
       isHotspotToggleOn_: {
         type: Boolean,
@@ -59,33 +52,31 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     };
   }
 
-  /** @private */
-  onHotspotInfoChanged_() {
-    this.isHotspotToggleOn_ =
-        this.hotspotInfo.state === HotspotState.kEnabled ||
-        this.hotspotInfo.state === HotspotState.kEnabling;
+  hotspotInfo: HotspotInfo|undefined;
+  private isHotspotToggleOn_: boolean;
+
+  private onHotspotInfoChanged_(
+      newValue: HotspotInfo, _oldValue: HotspotInfo|undefined): void {
+    this.isHotspotToggleOn_ = newValue.state === HotspotState.kEnabled ||
+        newValue.state === HotspotState.kEnabling;
   }
 
 
-  /** @private */
-  navigateToDetailPage_() {
+  private navigateToDetailPage_(): void {
     Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
   }
 
-  /** @private */
-  getSecondaryLabel_() {
-    return this.isHotspotToggleOn_ ? this.i18n('hotspotSummaryStateOn') :
-                                     this.i18n('hotspotSummaryStateOff');
+  private getSecondaryLabel_(isHotspotToggleOn: boolean): string {
+    return isHotspotToggleOn ? this.i18n('hotspotSummaryStateOn') :
+                               this.i18n('hotspotSummaryStateOff');
   }
 
   /**
    * Observer for isHotspotToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the HotspotInfo state.
-   * @param {boolean} newValue
-   * @param {boolean|undefined} oldValue
-   * @private
    */
-  onHotspotToggleChanged_(newValue, oldValue) {
+  private onHotspotToggleChanged_(
+      newValue: boolean, oldValue: boolean|undefined): void {
     if (oldValue === undefined) {
       return;
     }
@@ -96,15 +87,10 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
       return;
     }
 
-    this.setHotspotEnabledState_(this.isHotspotToggleOn_);
+    this.setHotspotEnabledState_(newValue);
   }
 
-  /**
-   * Enables or disables hotspot.
-   * @param {boolean} enabled
-   * @private
-   */
-  setHotspotEnabledState_(enabled) {
+  private setHotspotEnabledState_(enabled: boolean): void {
     if (enabled) {
       getHotspotConfig().enableHotspot();
       return;
@@ -112,11 +98,7 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     getHotspotConfig().disableHotspot();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isToggleDisabled_() {
+  private isToggleDisabled_(): boolean {
     if (!this.hotspotInfo) {
       return true;
     }
@@ -128,23 +110,23 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
         this.hotspotInfo.state === HotspotState.kDisabling;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getIconClass_() {
-    if (!this.isHotspotToggleOn_) {
-      return 'os-settings:hotspot-disabled';
+  private getIconClass_(isHotspotToggleOn: boolean): string {
+    if (isHotspotToggleOn) {
+      return 'os-settings:hotspot-enabled';
     }
-
-    return 'os-settings:hotspot-enabled';
+    return 'os-settings:hotspot-disabled';
   }
 
-  /** @private */
-  announceHotspotToggleChange_() {
+  private announceHotspotToggleChange_(): void {
     getAnnouncerInstance().announce(
         this.isHotspotToggleOn_ ? this.i18n('hotspotEnabledA11yLabel') :
                                   this.i18n('hotspotDisabledA11yLabel'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [HotspotSummaryItemElement.is]: HotspotSummaryItemElement;
   }
 }
 

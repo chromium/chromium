@@ -11,34 +11,29 @@ import '../../settings_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {HotspotAllowStatus, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsHotspotSubpageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {castExists} from '../assert_extras.js';
 
-/** @polymer */
+import {getTemplate} from './hotspot_subpage.html.js';
+
+const SettingsHotspotSubpageElementBase = I18nMixin(PolymerElement);
+
 class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
   static get is() {
-    return 'settings-hotspot-subpage';
+    return 'settings-hotspot-subpage' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!HotspotInfo|undefined} */
       hotspotInfo: {
         type: Object,
         observer: 'onHotspotInfoChanged_',
@@ -47,7 +42,6 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
       /**
        * Reflects the current state of the toggle button. This will be set when
        * the |HotspotInfo| state changes or when the user presses the toggle.
-       * @private
        */
       isHotspotToggleOn_: {
         type: Boolean,
@@ -56,7 +50,6 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
 
       /**
        * Hotspot auto disabled state.
-       * @private {!chrome.settingsPrivate.PrefObject}
        */
       autoDisableVirtualPref_: {
         type: Object,
@@ -71,24 +64,23 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     };
   }
 
-  /** @private */
-  onHotspotInfoChanged_() {
-    assert(this.hotspotInfo);
+  hotspotInfo: HotspotInfo|undefined;
+  private isHotspotToggleOn_: boolean;
+  private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
-    this.isHotspotToggleOn_ =
-        this.hotspotInfo.state === HotspotState.kEnabled ||
-        this.hotspotInfo.state === HotspotState.kEnabling;
+  private onHotspotInfoChanged_(
+      newValue: HotspotInfo, _oldValue: HotspotInfo|undefined): void {
+    this.isHotspotToggleOn_ = newValue.state === HotspotState.kEnabled ||
+        newValue.state === HotspotState.kEnabling;
     this.updateAutoDisablePref_();
   }
 
   /**
    * Observer for isHotspotToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the HotspotInfo state.
-   * @param {boolean} newValue
-   * @param {boolean|undefined} oldValue
-   * @private
    */
-  onHotspotToggleChanged_(newValue, oldValue) {
+  private onHotspotToggleChanged_(
+      newValue: boolean, oldValue: boolean|undefined): void {
     if (oldValue === undefined) {
       return;
     }
@@ -99,17 +91,14 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
       return;
     }
 
-    this.setHotspotEnabledState_(this.isHotspotToggleOn_);
+    this.setHotspotEnabledState_(newValue);
   }
 
-  /**
-   * @private
-   */
-  updateAutoDisablePref_() {
-    if (!this.hotspotInfo || !this.hotspotInfo.config) {
+  private updateAutoDisablePref_(): void {
+    if (!this.hotspotInfo?.config) {
       return;
     }
-    const newPrefValue = {
+    const newPrefValue: chrome.settingsPrivate.PrefObject<boolean> = {
       key: 'fakeAutoDisablePref',
       value: this.hotspotInfo.config.autoDisable,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -117,11 +106,7 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     this.autoDisableVirtualPref_ = newPrefValue;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isToggleDisabled_() {
+  private isToggleDisabled_(): boolean {
     if (!this.hotspotInfo) {
       return true;
     }
@@ -132,21 +117,12 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
         this.hotspotInfo.state === HotspotState.kDisabling;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getOnOffString_() {
-    return this.isHotspotToggleOn_ ? this.i18n('hotspotSummaryStateOn') :
-                                     this.i18n('hotspotSummaryStateOff');
+  private getOnOffString_(isHotspotToggleOn: boolean): string {
+    return isHotspotToggleOn ? this.i18n('hotspotSummaryStateOn') :
+                               this.i18n('hotspotSummaryStateOff');
   }
 
-  /**
-   * Enables or disables hotspot.
-   * @param {boolean} enabled
-   * @private
-   */
-  setHotspotEnabledState_(enabled) {
+  private setHotspotEnabledState_(enabled: boolean): void {
     if (enabled) {
       getHotspotConfig().enableHotspot();
       return;
@@ -154,54 +130,45 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     getHotspotConfig().disableHotspot();
   }
 
-  /** @private */
-  announceHotspotToggleChange_() {
+  private announceHotspotToggleChange_(): void {
     getAnnouncerInstance().announce(
         this.isHotspotToggleOn_ ? this.i18n('hotspotEnabledA11yLabel') :
                                   this.i18n('hotspotDisabledA11yLabel'));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getHotspotConfigSSID_() {
-    return this.hotspotInfo?.config?.ssid || '';
+  private getHotspotConfigSsid_(ssid: string|undefined): string {
+    return ssid || '';
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  getHotspotConnectedDeviceCount_() {
-    return this.hotspotInfo?.clientCount || 0;
+  private getHotspotConnectedDeviceCount_(clientCount: number|
+                                          undefined): number {
+    return clientCount || 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showHotspotAutoDisableToggle_() {
-    return !!this.hotspotInfo?.config;
+  private showHotspotAutoDisableToggle_(hotspotInfo: HotspotInfo|
+                                        undefined): boolean {
+    return !!hotspotInfo?.config;
   }
 
-  /**
-   * @private
-   */
-  async onAutoDisableChange_() {
-    assert(this.hotspotInfo.config);
-    const configToSet = this.hotspotInfo.config;
-    configToSet.autoDisable = !!this.autoDisableVirtualPref_.value;
+  private async onAutoDisableChange_(): Promise<void> {
+    const configToSet = castExists(this.hotspotInfo!.config);
+    configToSet.autoDisable = this.autoDisableVirtualPref_.value;
     const response = await getHotspotConfig().setHotspotConfig(configToSet);
     if (response.result !== SetHotspotConfigResult.kSuccess) {
       // Flip back the toggle if not set successfully.
-      const newPrefValue = {
+      const newPrefValue: chrome.settingsPrivate.PrefObject<boolean> = {
         key: 'fakeEnabledPref',
         value: !configToSet.autoDisable,
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
       };
       this.autoDisableVirtualPref_ = newPrefValue;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsHotspotSubpageElement.is]: SettingsHotspotSubpageElement;
   }
 }
 

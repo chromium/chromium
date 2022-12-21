@@ -12,8 +12,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":apn_subpage",
-    ":hotspot_subpage",
-    ":hotspot_summary_item",
     ":internet_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
@@ -36,17 +34,6 @@ js_library("apn_subpage") {
   ]
 
   externs_list = []
-}
-
-js_library("hotspot_summary_item") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
 }
 
 js_library("internet_page") {
@@ -109,20 +96,9 @@ js_library("internet_subpage") {
   ]
 }
 
-js_library("hotspot_subpage") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "apn_subpage.js",
-    "hotspot_subpage.js",
-    "hotspot_summary_item.js",
     "internet_page.js",
     "internet_subpage.js",
   ]
