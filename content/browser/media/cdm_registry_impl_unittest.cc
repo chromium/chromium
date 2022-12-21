@@ -236,6 +236,10 @@ class CdmRegistryImplTest : public testing::Test {
 #endif
   }
 
+  void ClearCapabilityTestOverride() {
+    cdm_registry_.SetCapabilityCBForTesting(base::NullCallback());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
@@ -819,5 +823,22 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DirectCompositionDisabled) {
   ASSERT_FALSE(cdm_info->capability);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
+  // kTestKeySystem doesn't exist on any platform, but this should at least
+  // exercise a bit more of the code (and leave the capabilities as nullptr).
+  RegisterForLazySoftwareSecureInitialization();
+
+  // Don't use the testing callback.
+  ClearCapabilityTestOverride();
+  EXPECT_CALL(capability_cb_, Run(_, _, _)).Times(0);
+
+  GetKeySystemCapabilities();
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(key_system_capabilities.size(), 0u);
+}
 
 }  // namespace content

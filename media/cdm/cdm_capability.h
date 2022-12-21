@@ -7,12 +7,14 @@
 
 #include <map>
 
+#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -69,6 +71,10 @@ struct MEDIA_EXPORT CdmCapability {
 
 bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
                              const CdmCapability& rhs);
+
+// Callback for when a capability is initialized if lazy initialization
+// required.
+using CdmCapabilityCB = base::OnceCallback<void(absl::optional<CdmCapability>)>;
 
 }  // namespace media
 

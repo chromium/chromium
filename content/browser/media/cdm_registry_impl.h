@@ -93,17 +93,12 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   void AttemptToFinalizeKeySystemCapability(const std::string& key_system,
                                             CdmInfo::Robustness robustness);
 
-  // Callback for when a key system is initialized if lazy initialization
-  // required.
-  using CdmCapabilityCB =
-      base::OnceCallback<void(absl::optional<media::CdmCapability>)>;
-
   // Lazily initialize `key_system` with robustness `robustness`, calling
   // `cdm_capability_cb`. Callback may be called synchronously
   // or asynchronously.
   void LazyInitializeCapability(const std::string& key_system,
                                 CdmInfo::Robustness robustness,
-                                CdmCapabilityCB cdm_capability_cb);
+                                media::CdmCapabilityCB cdm_capability_cb);
 
   // Called when initialization of `key_system` with robustness `robustness`
   // is complete. `cdm_capability` will be absl::nullopt if the key system
@@ -138,7 +133,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   using CapabilityCB =
       base::RepeatingCallback<void(const std::string&,
                                    const CdmInfo::Robustness robustness,
-                                   CdmCapabilityCB)>;
+                                   media::CdmCapabilityCB)>;
   void SetCapabilityCBForTesting(CapabilityCB cb);
 
   std::vector<CdmInfo> cdms_ GUARDED_BY_CONTEXT(sequence_checker_);
