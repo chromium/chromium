@@ -70,6 +70,7 @@ found in the LICENSE file.
         app:menuVerticalOverlapAnchor="false"
         android:visibility="gone"
         android:contentDescription="@null"
+        android:accessibilityTraversalAfter="@id/message_primary_button"
         android:background="?actionBarItemBackground"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size" />
