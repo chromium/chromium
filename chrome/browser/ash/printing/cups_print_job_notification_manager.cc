@@ -88,20 +88,8 @@ void CupsPrintJobNotificationManager::UpdateNotification(
     base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
-  auto it = notification_map_.find(job.get());
-  if (it == notification_map_.end())
-    return;
-  it->second->OnPrintJobStatusUpdated();
-}
-
-absl::optional<CupsPrintJobNotification*>
-CupsPrintJobNotificationManager::GetNotificationForTesting(CupsPrintJob* job) {
-  auto it = notification_map_.find(job);
-  if (it != notification_map_.end()) {
-    return it->second.get();
-  }
-
-  return absl::nullopt;
+  DCHECK(base::Contains(notification_map_, job.get()));
+  notification_map_[job.get()]->OnPrintJobStatusUpdated();
 }
 
 }  // namespace ash
