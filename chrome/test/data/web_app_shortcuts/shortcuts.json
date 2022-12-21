@@ -23,7 +23,7 @@
       {"src":"ltgray-128.png","type":"image/png","sizes":"128x128","purpose":"monochrome"}
     ]},
     {"name":"Four","url":"shortcuts.html#four","icons":[
-      {"src":"cyan-96.png","type":"image/png","sizes":"96x96","purpose":"any maskable"},
+      {"src":"cyan-96.webp","type":"image/webp","sizes":"96x96","purpose":"any maskable"},
       {"src":"white-192.png","type":"image/png","sizes":"192x192","purpose":"monochrome"}
     ]},
     {"name":"Five","url":"shortcuts.html#five","icons":[

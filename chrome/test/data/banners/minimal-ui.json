@@ -2,9 +2,9 @@
   "name": "Manifest test app with minimal-ui",
   "icons": [
     {
-      "src": "launcher-icon-4x.png",
+      "src": "lime.webp",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/webp"
     }
   ],
   "start_url": "manifest_test_page.html",
