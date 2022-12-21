@@ -335,7 +335,6 @@ export class XfTreeItem extends XfBase {
   }
 
   private onEditingChanged_() {
-    this.draggable = !this.editing;
     if (this.editing) {
       this.$renameInput_?.focus();
       this.$renameInput_?.select();
@@ -457,6 +456,14 @@ function getCSS() {
       pointer-events: none;
     }
 
+    :host-context(.pointer-active) .tree-row:not(:active) {
+      cursor: default;
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing])) li:not(:focus-visible) .tree-row:not(:active):hover {
+      background-color: unset;
+    }
+
     .expand-icon {
       -webkit-mask-image: url(../foreground/images/files/ui/sort_desc.svg);
       -webkit-mask-position: center;
@@ -541,7 +548,8 @@ function getCSS() {
       border-radius: 20px 0 0 20px;
     }
 
-    :host(:not([selected]):not([disabled]):not([editing])) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:hover {
       background-color: var(--cros-ripple-color);
     }
 
@@ -552,6 +560,11 @@ function getCSS() {
 
     :host([disabled]) .tree-row {
       opacity: var(--cros-disabled-opacity);
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:hover):active {
+      background-color: var(--cros-ripple-color);
     }
 
     li:focus-visible .tree-row {
@@ -598,7 +611,8 @@ function getCSS() {
       margin: 8px 0;
     }
 
-    :host(:not([selected]):not([disabled]):not([editing])) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:hover {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -614,6 +628,11 @@ function getCSS() {
     li:focus-visible .tree-row {
       outline: 2px solid var(--cros-sys-focus_ring);
       outline-offset: 2px;
+    }
+
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+        li:not(:focus-visible) .tree-row:not(:hover):active {
+      background-color: var(--cros-sys-hover_on_subtle);
     }
 
     .expand-icon {
@@ -654,6 +673,7 @@ function getCSS() {
     }
 
     paper-ripple {
+      border-radius: 20px;
       color: var(--cros-sys-ripple_primary);
     }
   `;
