@@ -37,12 +37,14 @@ found in the LICENSE file.
         android:key="fledge_all_sites"
         android:title="@string/settings_fledge_page_see_all_sites_label"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.FledgeAllSitesFragmentV4"
+        app:userAction="Settings.PrivacySandbox.Fledge.AllSitesOpened"
         app:isPreferenceVisible="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_blocked_sites"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.FledgeBlockedSitesFragmentV4"
-        android:title="@string/settings_fledge_page_blocked_sites_heading" />
+        android:title="@string/settings_fledge_page_blocked_sites_heading"
+        app:userAction="Settings.PrivacySandbox.Fledge.BlockedSitesOpened" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_page_footer"

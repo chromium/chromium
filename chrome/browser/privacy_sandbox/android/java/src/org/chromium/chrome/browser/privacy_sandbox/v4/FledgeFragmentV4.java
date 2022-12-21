@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.FledgePreference;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
@@ -122,7 +123,10 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(FLEDGE_TOGGLE_PREFERENCE)) {
-            setFledgePrefEnabled((boolean) value);
+            boolean enabled = (boolean) value;
+            RecordUserAction.record(enabled ? "Settings.PrivacySandbox.Fledge.Enabled"
+                                            : "Settings.PrivacySandbox.Fledge.Disabled");
+            setFledgePrefEnabled(enabled);
             updatePreferenceVisibility();
             return true;
         }
@@ -140,6 +144,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
             showSnackbar(R.string.privacy_sandbox_remove_site_snackbar, null, Snackbar.TYPE_ACTION,
                     Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
+            RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
             return true;
         }
 

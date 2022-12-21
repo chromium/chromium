@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
@@ -106,7 +107,10 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(TOPICS_TOGGLE_PREFERENCE)) {
-            setTopicsPrefEnabled((boolean) value);
+            boolean enabled = (boolean) value;
+            RecordUserAction.record(enabled ? "Settings.PrivacySandbox.Topics.Enabled"
+                                            : "Settings.PrivacySandbox.Topics.Disabled");
+            setTopicsPrefEnabled(enabled);
             updatePreferenceVisibility();
             return true;
         }
@@ -123,6 +127,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
             showSnackbar(R.string.privacy_sandbox_remove_interest_snackbar, null,
                     Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
+            RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicRemoved");
             return true;
         }
 

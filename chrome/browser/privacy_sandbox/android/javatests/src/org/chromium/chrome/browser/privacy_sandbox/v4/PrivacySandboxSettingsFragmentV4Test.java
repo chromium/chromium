@@ -4,9 +4,13 @@
 package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.hasItems;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.chrome.browser.privacy_sandbox.v4.AdMeasurementFragmentV4.setAdMeasurementPrefEnabled;
@@ -20,6 +24,7 @@ import android.os.Bundle;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -66,6 +72,13 @@ public final class PrivacySandboxSettingsFragmentV4Test {
     public SettingsActivityTestRule<PrivacySandboxSettingsFragmentV4> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySandboxSettingsFragmentV4.class);
 
+    public UserActionTester mUserActionTester;
+
+    @Before
+    public void setUp() {
+        mUserActionTester = new UserActionTester();
+    }
+
     @After
     public void tearDown() {
         runOnUiThreadBlocking(() -> {
@@ -74,6 +87,8 @@ public final class PrivacySandboxSettingsFragmentV4Test {
             prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
             prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
         });
+
+        mUserActionTester.tearDown();
     }
 
     private void startPrivacySandboxSettingsV4() {
@@ -151,5 +166,38 @@ public final class PrivacySandboxSettingsFragmentV4Test {
 
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigateToTopicsPage() {
+        startPrivacySandboxSettingsV4();
+        onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
+
+        onViewWaiting(withText(R.string.settings_topics_page_title));
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigateToFledgePage() {
+        startPrivacySandboxSettingsV4();
+        onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());
+
+        onViewWaiting(withText(R.string.settings_fledge_page_title));
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Fledge.Opened"));
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigateToAdMeasurementPage() {
+        startPrivacySandboxSettingsV4();
+        onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_label)).perform(click());
+
+        onViewWaiting(withText(R.string.settings_ad_measurement_page_title));
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.AdMeasurement.Opened"));
     }
 }

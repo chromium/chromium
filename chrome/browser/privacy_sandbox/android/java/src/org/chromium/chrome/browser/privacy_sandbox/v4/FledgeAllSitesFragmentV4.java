@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.privacy_sandbox.FledgePreference;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
@@ -71,6 +72,7 @@ public class FledgeAllSitesFragmentV4
 
             showSnackbar(R.string.privacy_sandbox_remove_site_snackbar, null, Snackbar.TYPE_ACTION,
                     Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
+            RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
             return true;
         }
 

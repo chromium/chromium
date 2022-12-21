@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
@@ -57,7 +58,10 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(TOGGLE_PREFERENCE)) {
-            setAdMeasurementPrefEnabled((boolean) value);
+            boolean enabled = (boolean) value;
+            RecordUserAction.record(enabled ? "Settings.PrivacySandbox.AdMeasurement.Enabled"
+                                            : "Settings.PrivacySandbox.AdMeasurement.Disabled");
+            setAdMeasurementPrefEnabled(enabled);
             return true;
         }
         return false;

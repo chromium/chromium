@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
@@ -64,6 +65,7 @@ public class TopicsBlockedFragmentV4
 
             showSnackbar(R.string.privacy_sandbox_add_interest_snackbar, null, Snackbar.TYPE_ACTION,
                     Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
+            RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
             return true;
         }
         return false;

@@ -9,6 +9,7 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -18,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -89,11 +92,14 @@ public final class TopicsFragmentV4Test {
     public JniMocker mocker = new JniMocker();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+
+        mUserActionTester = new UserActionTester();
     }
 
     @After
@@ -102,6 +108,8 @@ public final class TopicsFragmentV4Test {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
         });
+
+        mUserActionTester.tearDown();
     }
 
     private void startTopicsSettings() {
@@ -225,6 +233,9 @@ public final class TopicsFragmentV4Test {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.settings_topics_page_current_topics_description_disabled))
                 .check(doesNotExist());
+
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Enabled"));
     }
 
     @Test
@@ -244,6 +255,10 @@ public final class TopicsFragmentV4Test {
         // Check that the Topics list is displayed when Topics are enabled.
         onViewWaiting(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        // Check that actions are reported
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Enabled"));
     }
 
     @Test
@@ -258,6 +273,9 @@ public final class TopicsFragmentV4Test {
                 .check(matches(isDisplayed()));
         onView(withText(R.string.settings_topics_page_current_topics_description_empty))
                 .check(doesNotExist());
+
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.Disabled"));
     }
 
     @Test
@@ -282,6 +300,9 @@ public final class TopicsFragmentV4Test {
         onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description));
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened"));
     }
 
     @Test
@@ -295,6 +316,9 @@ public final class TopicsFragmentV4Test {
         onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description));
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened"));
     }
 
     @Test
@@ -327,6 +351,11 @@ public final class TopicsFragmentV4Test {
         // Verify that the topics are blocked
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        // Verify that actions are reported
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened",
+                        "Settings.PrivacySandbox.Topics.TopicRemoved"));
     }
 
     @Test
@@ -363,6 +392,11 @@ public final class TopicsFragmentV4Test {
         // Verify that the Topics are unblocked
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
+
+        // Verify that actions are sent
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened",
+                        "Settings.PrivacySandbox.Topics.TopicAdded"));
     }
     // TODO(http://b/261822498): Add Managed state tests when the Privacy Sandbox policy is
     // implemented.

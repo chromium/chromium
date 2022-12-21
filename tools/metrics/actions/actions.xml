@@ -28157,6 +28157,24 @@ should be able to be added at any place in this file.
   <description>User starts the Privacy guide via the promo.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.AdMeasurement.Disabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User disables the privacy sandbox Ad Measurement API in the Ad Measurement
+    setting page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.AdMeasurement.Enabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User enables the privacy sandbox Ad Measurement API in the Ad Measurement
+    setting page.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.AdMeasurement.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -28263,6 +28281,64 @@ should be able to be added at any place in this file.
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <description>User is shown the Privacy Sandbox consent.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened the all sites subpage, by clicking on the pref in the Fledge
+    settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.BlockedSitesOpened">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened the blocked sites subpage, by clicking on the pref in the Fledge
+    settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.Disabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User disables the privacy sandbox Fledge API in the Fledge settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.Enabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User enables the privacy sandbox Fledge API in the Fledge settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.Opened">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened Fledge subpage from main sandbox settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.SiteAdded">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User added back a site that was previously in their removed sites list.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Fledge.SiteRemoved">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User removed a site that was previously in their allowed sites list.
+  </description>
 </action>
 
 <action name="Settings.PrivacySandbox.FlocSubpageOpened">
@@ -28392,6 +28468,55 @@ should be able to be added at any place in this file.
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
   <description>User opened Fraud prevention subpage.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.BlockedTopicsOpened">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened the blocked Topics subpage, by clicking on the pref in the
+    Topics settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Disabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User disables the privacy sandbox Topics API in the Topics setting page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Enabled">
+  <owner>rubindl@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User enables the privacy sandbox Topics API in the Topics settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Opened">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User opened Topics subpage from main sandbox settings page.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.TopicAdded">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User added back a topic that was previously in their removed topics list.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.TopicRemoved">
+  <owner>rubindl@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User removed a topic that was previously in their allowed topics list.
+  </description>
 </action>
 
 <action name="Settings.SafetyCheck.ChromeCleanerCaretNavigation">

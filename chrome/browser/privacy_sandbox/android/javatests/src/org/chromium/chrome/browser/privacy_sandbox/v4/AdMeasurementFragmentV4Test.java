@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -14,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +27,7 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +36,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -71,12 +75,21 @@ public final class AdMeasurementFragmentV4Test {
     public SettingsActivityTestRule<AdMeasurementFragmentV4> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AdMeasurementFragmentV4.class);
 
+    private UserActionTester mUserActionTester;
+
+    @Before
+    public void setUp() {
+        mUserActionTester = new UserActionTester();
+    }
+
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
         });
+
+        mUserActionTester.tearDown();
     }
 
     private void startAdMeasuremenSettings() {
@@ -141,6 +154,8 @@ public final class AdMeasurementFragmentV4Test {
         onView(getAdMeasurementToggleMatcher()).perform(click());
 
         assertTrue(isAdMeasurementPrefEnabled());
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.AdMeasurement.Enabled"));
     }
 
     @Test
@@ -151,6 +166,8 @@ public final class AdMeasurementFragmentV4Test {
         onView(getAdMeasurementToggleMatcher()).perform(click());
 
         assertFalse(isAdMeasurementPrefEnabled());
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.AdMeasurement.Disabled"));
     }
     // TODO(http://b/261439615): Add Managed state tests when the Privacy Sandbox policy is
     // implemented.
