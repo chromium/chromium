@@ -141,7 +141,8 @@ source_set("fetcher") {
     "//components/signin/internal/identity_manager",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/browser_state",
-    "//ios/public/provider/chrome/browser/signin:signin",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
     "//third_party/abseil-cpp:absl",
   ]
 }

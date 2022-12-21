@@ -7,9 +7,7 @@
 
 #import "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 namespace ios {
 
@@ -19,7 +17,6 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
   AccountCapabilitiesFetcherIOS(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback,
-      ios::ChromeIdentityService* chrome_identity_service_,
       id<SystemIdentity> system_identity);
   ~AccountCapabilitiesFetcherIOS() override;
 
@@ -32,9 +29,6 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
   void StartImpl() override;
 
  private:
-  void OnCapabilitiesFetched(CapabilitiesDict* capabilities, NSError* error);
-
-  ios::ChromeIdentityService* chrome_identity_service_ = nullptr;
   __strong id<SystemIdentity> const system_identity_ = nil;
   base::WeakPtrFactory<AccountCapabilitiesFetcherIOS> weak_ptr_factory_{this};
 };
