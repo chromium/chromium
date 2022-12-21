@@ -15,33 +15,26 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/ash/common/focus_row_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
 import {DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './os_paired_bluetooth_list_item.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {FocusRowBehaviorInterface}
- */
 const SettingsPairedBluetoothListItemElementBase =
-    mixinBehaviors([I18nBehavior, FocusRowBehavior], PolymerElement);
+    FocusRowMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 class SettingsPairedBluetoothListItemElement extends
     SettingsPairedBluetoothListItemElementBase {
   static get is() {
-    return 'os-settings-paired-bluetooth-list-item';
+    return 'os-settings-paired-bluetooth-list-item' as const;
   }
 
   static get template() {
@@ -50,9 +43,6 @@ class SettingsPairedBluetoothListItemElement extends
 
   static get properties() {
     return {
-      /**
-       * @private {!PairedBluetoothDeviceProperties}
-       */
       device: {
         type: Object,
         observer: 'onDeviceChanged_',
@@ -69,16 +59,18 @@ class SettingsPairedBluetoothListItemElement extends
     };
   }
 
-  /** @override */
-  disconnectedCallback() {
+  device: PairedBluetoothDeviceProperties;
+  itemIndex: number;
+  listSize: number;
+
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     // Fire an event in case the tooltip was previously showing for the managed
     // icon in this item and this item is being removed.
     this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
   }
 
-  /** @private */
-  onDeviceChanged_() {
+  private onDeviceChanged_(): void {
     if (!this.device) {
       return;
     }
@@ -90,11 +82,7 @@ class SettingsPairedBluetoothListItemElement extends
     }
   }
 
-  /**
-   * @param {!KeyboardEvent} event
-   * @private
-   */
-  onKeydown_(event) {
+  private onKeydown_(event: KeyboardEvent): void {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
@@ -103,51 +91,30 @@ class SettingsPairedBluetoothListItemElement extends
     event.stopPropagation();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelected_(event) {
+  private onSelected_(event: Event): void {
     this.navigateToDetailPage_();
     event.stopPropagation();
   }
 
-  /** @private */
-  navigateToDetailPage_() {
+  private navigateToDetailPage_(): void {
     const params = new URLSearchParams();
     params.append('id', this.device.deviceProperties.id);
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getDeviceName_(device) {
+  private getDeviceName_(device: PairedBluetoothDeviceProperties): string {
     return getDeviceName(device);
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @private
-   */
-  shouldShowBatteryInfo_(device) {
+  private shouldShowBatteryInfo_(device: PairedBluetoothDeviceProperties):
+      boolean {
     return getBatteryPercentage(
                device.deviceProperties, BatteryType.DEFAULT) !== undefined ||
         hasAnyDetailedBatteryInfo(device.deviceProperties);
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getMultipleBatteryPercentageString_(device) {
+  private getMultipleBatteryPercentageString_(
+      device: PairedBluetoothDeviceProperties): string {
     let label = '';
     const leftBudBatteryPercentage =
         getBatteryPercentage(device.deviceProperties, BatteryType.LEFT_BUD);
@@ -178,13 +145,8 @@ class SettingsPairedBluetoothListItemElement extends
     return label;
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @private
-   */
-  isDeviceConnecting_(device) {
+  private isDeviceConnecting_(device: PairedBluetoothDeviceProperties):
+      boolean {
     return device.deviceProperties.connectionState ===
         DeviceConnectionState.kConnecting;
   }
@@ -195,7 +157,7 @@ class SettingsPairedBluetoothListItemElement extends
    * @return {string}
    * @private
    */
-  getAriaLabel_(device) {
+  private getAriaLabel_(device: PairedBluetoothDeviceProperties): string {
     // Start with the base information of the device name and location within
     // the list of devices with the same connection state.
     let a11yLabel = this.i18n(
@@ -222,13 +184,8 @@ class SettingsPairedBluetoothListItemElement extends
     return a11yLabel;
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getA11yDeviceConnectionStatusTextName_(device) {
+  private getA11yDeviceConnectionStatusTextName_(
+      device: PairedBluetoothDeviceProperties): string {
     const connectionState = DeviceConnectionState;
     switch (device.deviceProperties.connectionState) {
       case connectionState.kConnected:
@@ -242,13 +199,8 @@ class SettingsPairedBluetoothListItemElement extends
     }
   }
 
-  /**
-   * @param {!PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getA11yDeviceTypeTextName_(device) {
+  private getA11yDeviceTypeTextName_(device: PairedBluetoothDeviceProperties):
+      string {
     switch (device.deviceProperties.deviceType) {
       case DeviceType.kUnknown:
         return 'bluetoothA11yDeviceTypeUnknown';
@@ -275,25 +227,28 @@ class SettingsPairedBluetoothListItemElement extends
     }
   }
 
-  /** @private */
-  onShowTooltip_() {
+  private onShowTooltip_(): void {
     this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
   }
 
-  /**
-   * @param {boolean} showTooltip
-   */
-  fireTooltipStateChangeEvent_(showTooltip) {
+  private fireTooltipStateChangeEvent_(showTooltip: boolean): void {
     this.dispatchEvent(new CustomEvent('managed-tooltip-state-change', {
       bubbles: true,
       composed: true,
       detail: {
         address: this.device.deviceProperties.address,
         show: showTooltip,
-        element: showTooltip ? this.shadowRoot.getElementById('managedIcon') :
+        element: showTooltip ? this.shadowRoot!.getElementById('managedIcon') :
                                undefined,
       },
     }));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsPairedBluetoothListItemElement.is]:
+        SettingsPairedBluetoothListItemElement;
   }
 }
 

@@ -10,41 +10,29 @@
 import '../../settings_shared.css.js';
 import './os_saved_devices_list.js';
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {Route, Router} from '../router.js';
+import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_saved_devices_subpage.html.js';
 import {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './settings_fast_pair_constants.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsBluetoothSavedDevicesSubpageElementBase = mixinBehaviors(
-    [
-      I18nBehavior,
-      WebUIListenerBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+const SettingsBluetoothSavedDevicesSubpageElementBase =
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-/** @polymer */
 class SettingsBluetoothSavedDevicesSubpageElement extends
     SettingsBluetoothSavedDevicesSubpageElementBase {
   static get is() {
-    return 'os-settings-bluetooth-saved-devices-subpage';
+    return 'os-settings-bluetooth-saved-devices-subpage' as const;
   }
 
   static get template() {
@@ -53,34 +41,27 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * @protected {!Array<!FastPairSavedDevice>}
-       */
       savedDevices_: {
         type: Array,
         value: [],
       },
 
-      /** @protected */
       showSavedDevicesErrorLabel_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       showSavedDevicesLoadingLabel_: {
         type: Boolean,
         notify: true,
         value: true,
       },
 
-      /** @protected */
       shouldShowDeviceList_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       shouldShowNoDevicesLabel_: {
         type: Boolean,
         value: false,
@@ -94,30 +75,32 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
     ];
   }
 
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
+  private savedDevices_: FastPairSavedDevice[];
+  private shouldShowDeviceList_: boolean;
+  private shouldShowNoDevicesLabel_: boolean;
+  private showSavedDevicesErrorLabel_: boolean;
+  private showSavedDevicesLoadingLabel_: boolean;
+
   constructor() {
     super();
-    /** @private {?OsBluetoothDevicesSubpageBrowserProxy} */
+
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'fast-pair-saved-devices-list', this.getSavedDevices_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'fast-pair-saved-devices-opt-in-status',
         this.getOptInStatus_.bind(this));
     recordSavedDevicesUiEventMetrics(
         FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_SUBPAGE_SHOWN);
   }
 
-  /**
-   * @param {!Array<!FastPairSavedDevice>} devices
-   * @private
-   */
-  getSavedDevices_(devices) {
+  private getSavedDevices_(devices: FastPairSavedDevice[]): void {
     this.savedDevices_ = devices.slice(0);
 
     if (this.savedDevices_.length > 0) {
@@ -126,10 +109,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
     }
   }
 
-  /**
-   * @private
-   */
-  getOptInStatus_(optInStatus) {
+  private getOptInStatus_(optInStatus: FastPairSavedDevicesOptInStatus): void {
     if (optInStatus ===
         FastPairSavedDevicesOptInStatus
             .STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER) {
@@ -140,31 +120,26 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
 
   /**
    * RouteObserverBehaviorInterface override
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
    */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     // If we're navigating to the Saved Devices page, fetch the devices.
     if (route === routes.BLUETOOTH_SAVED_DEVICES) {
       this.showSavedDevicesErrorLabel_ = false;
       this.showSavedDevicesLoadingLabel_ = true;
-      this.parentNode.pageTitle =
+      (this.parentNode as OsSettingsSubpageElement).pageTitle =
           loadTimeData.getString('savedDevicesPageName');
       this.browserProxy_.requestFastPairSavedDevices();
-      return;
     }
   }
 
-  /** @private */
-  evaluateLabels_() {
+  private evaluateLabels_(): void {
     this.shouldShowDeviceList_ =
         !this.showSavedDevicesLoadingLabel_ && this.savedDevices_.length > 0;
     this.shouldShowNoDevicesLabel_ = !this.showSavedDevicesLoadingLabel_ &&
         !this.showSavedDevicesErrorLabel_ && this.savedDevices_.length === 0;
   }
 
-  /** @private */
-  computeSavedDevicesSublabel_() {
+  private computeSavedDevicesSublabel_(): string {
     this.evaluateLabels_();
     if (this.shouldShowDeviceList_) {
       return loadTimeData.getString('sublabelWithEmail');
@@ -179,6 +154,13 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
       return loadTimeData.getString('savedDevicesErrorWithEmail');
     }
     assertNotReached();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothSavedDevicesSubpageElement.is]:
+        SettingsBluetoothSavedDevicesSubpageElement;
   }
 }
 

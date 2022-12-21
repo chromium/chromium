@@ -105,11 +105,13 @@ suite('OsSavedDevicesSubpageTest', function() {
 
     const ironResizePromise = eventToPromise('iron-resize', list);
 
-    listItem.$$('#dotsMenu').click();
+    listItem.shadowRoot.querySelector('#dotsMenu').click();
     await flushTasks();
-    listItem.$$('#removeButton').click();
+    listItem.shadowRoot.querySelector('#removeButton').click();
     await flushTasks();
-    listItem.$$('#removeDeviceDialog').$$('#remove').click();
+    const removeDialog =
+        listItem.shadowRoot.querySelector('#removeDeviceDialog');
+    removeDialog.shadowRoot.querySelector('#remove').click();
 
     await ironResizePromise;
     await flushTasks();

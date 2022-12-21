@@ -63,11 +63,13 @@ suite('OsSavedDevicesListTest', function() {
     const ironResizePromise = eventToPromise('iron-resize', savedDevicesList);
 
     const listItem = getListItems()[1];
-    listItem.$$('#dotsMenu').click();
+    listItem.shadowRoot.querySelector('#dotsMenu').click();
     await flushAsync();
-    listItem.$$('#removeButton').click();
+    listItem.shadowRoot.querySelector('#removeButton').click();
     await flushAsync();
-    listItem.$$('#removeDeviceDialog').$$('#remove').click();
+    const removeDialog =
+        listItem.shadowRoot.querySelector('#removeDeviceDialog');
+    removeDialog.shadowRoot.querySelector('#remove').click();
 
     await ironResizePromise;
     await flushAsync();
@@ -141,9 +143,13 @@ suite('OsSavedDevicesListTest', function() {
     savedDevicesList.devices = [device0, device1];
     await flushAsync();
 
-    assertTrue(isVisible(getListItems()[0].$$('#noDeviceImage')));
-    assertFalse(isVisible(getListItems()[0].$$('#deviceImage')));
-    assertFalse(isVisible(getListItems()[1].$$('#noDeviceImage')));
-    assertTrue(isVisible(getListItems()[1].$$('#deviceImage')));
+    assertTrue(isVisible(
+        getListItems()[0].shadowRoot.querySelector('#noDeviceImage')));
+    assertFalse(
+        isVisible(getListItems()[0].shadowRoot.querySelector('#deviceImage')));
+    assertFalse(isVisible(
+        getListItems()[1].shadowRoot.querySelector('#noDeviceImage')));
+    assertTrue(
+        isVisible(getListItems()[1].shadowRoot.querySelector('#deviceImage')));
   });
 });

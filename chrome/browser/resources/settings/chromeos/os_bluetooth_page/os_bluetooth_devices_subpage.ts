@@ -13,44 +13,39 @@ import './settings_fast_pair_toggle.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_devices_subpage.html.js';
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsBluetoothDevicesSubpageElementBase = mixinBehaviors(
-    [
-      I18nBehavior,
-      RouteObserverBehavior,
-      DeepLinkingBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsBluetoothDevicesSubpageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        PrefsMixin(RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          PrefsMixinInterface & DeepLinkingBehaviorInterface,
+    };
 
-/** @polymer */
 class SettingsBluetoothDevicesSubpageElement extends
     SettingsBluetoothDevicesSubpageElementBase {
   static get is() {
-    return 'os-settings-bluetooth-devices-subpage';
+    return 'os-settings-bluetooth-devices-subpage' as const;
   }
 
   static get template() {
@@ -59,15 +54,6 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
-       * @type {!BluetoothSystemProperties}
-       */
       systemProperties: {
         type: Object,
         observer: 'onSystemPropertiesChanged_',
@@ -75,18 +61,17 @@ class SettingsBluetoothDevicesSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kBluetoothOnOff, Setting.kFastPairOnOff]),
+        value: () =>
+            new Set<Setting>([Setting.kBluetoothOnOff, Setting.kFastPairOnOff]),
       },
 
       /**
        * Reflects the current state of the toggle button. This will be set when
        * the |systemProperties| state changes or when the user presses the
        * toggle.
-       * @private
        */
       isBluetoothToggleOn_: {
         type: Boolean,
@@ -95,24 +80,17 @@ class SettingsBluetoothDevicesSubpageElement extends
 
       /**
        * Whether or not this device has the requirements to support fast pair.
-       * @private {boolean}
        */
       isFastPairSupportedByDevice_: {
         type: Boolean,
         value: true,
       },
 
-      /**
-       * @private {!Array<!PairedBluetoothDeviceProperties>}
-       */
       connectedDevices_: {
         type: Array,
         value: [],
       },
 
-      /**
-       * @private
-       */
       savedDevicesSublabel_: {
         type: String,
         value() {
@@ -120,9 +98,6 @@ class SettingsBluetoothDevicesSubpageElement extends
         },
       },
 
-      /**
-       * @private {!Array<!PairedBluetoothDeviceProperties>}
-       */
       unconnectedDevices_: {
         type: Array,
         value: [],
@@ -130,26 +105,33 @@ class SettingsBluetoothDevicesSubpageElement extends
     };
   }
 
+  systemProperties: BluetoothSystemProperties;
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
+  private connectedDevices_: PairedBluetoothDeviceProperties[];
+  private isBluetoothToggleOn_: boolean;
+  private isFastPairSupportedByDevice_: boolean;
+  private lastSelectedDeviceId_: string|null;
+  private savedDevicesSublabel_: string;
+  private unconnectedDevices_: PairedBluetoothDeviceProperties[];
+
   constructor() {
     super();
 
     /**
      * The id of the last device that was selected to view its detail page.
-     * @private {?string}
      */
     this.lastSelectedDeviceId_ = null;
 
-    /** @private {?OsBluetoothDevicesSubpageBrowserProxy} */
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
+
     if (loadTimeData.getBoolean('enableFastPairFlag')) {
-      this.addWebUIListener(
-          'fast-pair-device-supported-status', (isSupported) => {
+      this.addWebUiListener(
+          'fast-pair-device-supported-status', (isSupported: boolean) => {
             this.isFastPairSupportedByDevice_ = isSupported;
           });
       this.browserProxy_.requestFastPairDeviceSupport();
@@ -158,10 +140,8 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   /**
    * RouteObserverBehaviorInterface override
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
    */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route, oldRoute?: Route) {
     // If we're navigating to a device's detail page, save the id of the device.
     if (route === routes.BLUETOOTH_DEVICE_DETAIL &&
         oldRoute === routes.BLUETOOTH_DEVICES) {
@@ -193,8 +173,7 @@ class SettingsBluetoothDevicesSubpageElement extends
     this.focusLastSelectedDeviceItem_();
   }
 
-  /** @private */
-  onSystemPropertiesChanged_() {
+  private onSystemPropertiesChanged_(): void {
     this.isBluetoothToggleOn_ =
         this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
         this.systemProperties.systemState === BluetoothSystemState.kEnabling;
@@ -207,11 +186,11 @@ class SettingsBluetoothDevicesSubpageElement extends
             DeviceConnectionState.kConnected);
   }
 
-  /** @private */
-  focusLastSelectedDeviceItem_() {
-    const focusItem = (deviceListSelector, index) => {
-      const deviceList = this.shadowRoot.querySelector(deviceListSelector);
-      const items = deviceList.shadowRoot.querySelectorAll(
+  private focusLastSelectedDeviceItem_(): void {
+    const focusItem = (deviceListSelector: string, index: number) => {
+      const deviceList =
+          this.shadowRoot!.querySelector<HTMLElement>(deviceListSelector);
+      const items = deviceList!.shadowRoot!.querySelectorAll(
           'os-settings-paired-bluetooth-list-item');
       if (index >= items.length) {
         return;
@@ -240,11 +219,8 @@ class SettingsBluetoothDevicesSubpageElement extends
   /**
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
-   * @param {boolean} newValue
-   * @param {boolean} oldValue
-   * @private
    */
-  onBluetoothToggleChanged_(newValue, oldValue) {
+  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean) {
     if (oldValue === undefined) {
       return;
     }
@@ -257,58 +233,35 @@ class SettingsBluetoothDevicesSubpageElement extends
     this.announceBluetoothStateChange_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isToggleDisabled_() {
+  private isToggleDisabled_(): boolean {
     // TODO(crbug.com/1010321): Add check for modification state when variable
     // is available.
     return this.systemProperties.systemState ===
         BluetoothSystemState.kUnavailable;
   }
 
-  /**
-   * @param {boolean} isBluetoothToggleOn
-   * @param {string} onString
-   * @param {string} offString
-   * @return {string}
-   * @private
-   */
-  getOnOffString_(isBluetoothToggleOn, onString, offString) {
+  private getOnOffString_(
+      isBluetoothToggleOn: boolean, onString: string,
+      offString: string): string {
     return isBluetoothToggleOn ? onString : offString;
   }
 
-  /**
-   * @param {!Array<!PairedBluetoothDeviceProperties>}
-   *     devices
-   * @return boolean
-   * @private
-   */
-  shouldShowDeviceList_(devices) {
+  private shouldShowDeviceList_(devices: PairedBluetoothDeviceProperties[]):
+      boolean {
     return devices.length > 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowNoDevicesFound_() {
+  private shouldShowNoDevicesFound_(): boolean {
     return !this.connectedDevices_.length && !this.unconnectedDevices_.length;
   }
 
-  /** @private */
-  announceBluetoothStateChange_() {
+  private announceBluetoothStateChange_(): void {
     getAnnouncerInstance().announce(
         this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
                                     this.i18n('bluetoothDisabledA11YLabel'));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isFastPairToggleVisible_() {
+  private isFastPairToggleVisible_(): boolean {
     return this.isFastPairSupportedByDevice_ &&
         loadTimeData.getBoolean('enableFastPairFlag');
   }
@@ -319,22 +272,23 @@ class SettingsBluetoothDevicesSubpageElement extends
    * could be saved to the user's account from a different device but managed on
    * this device. However Fast Pair must be enabled to confirm we have all Fast
    * Pair (and Saved Device) related code working on the device.
-   * @return {boolean}
-   * @private
    */
-  isFastPairSavedDevicesRowVisible_() {
+  private isFastPairSavedDevicesRowVisible_(): boolean {
     return loadTimeData.getBoolean('enableFastPairFlag') &&
         loadTimeData.getBoolean('enableSavedDevicesFlag') &&
         !loadTimeData.getBoolean('isGuest');
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onClicked_(event) {
+  private onClicked_(event: Event): void {
     Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
     event.stopPropagation();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothDevicesSubpageElement.is]:
+        SettingsBluetoothDevicesSubpageElement;
   }
 }
 

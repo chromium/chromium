@@ -11,24 +11,26 @@ import '../../settings_shared.css.js';
 import './os_paired_bluetooth_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_paired_bluetooth_list.html.js';
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- */
-const SettingsPairedBluetoothListElementBase =
-    mixinBehaviors([CrScrollableBehavior], PolymerElement);
 
-/** @polymer */
+interface SettingsPairedBluetoothListElement {
+  $: {
+    tooltip: PaperTooltipElement,
+  };
+}
+
+const SettingsPairedBluetoothListElementBase =
+    CrScrollableMixin(PolymerElement);
+
 class SettingsPairedBluetoothListElement extends
     SettingsPairedBluetoothListElementBase {
   static get is() {
-    return 'os-settings-paired-bluetooth-list';
+    return 'os-settings-paired-bluetooth-list' as const;
   }
 
   static get template() {
@@ -37,9 +39,6 @@ class SettingsPairedBluetoothListElement extends
 
   static get properties() {
     return {
-      /**
-       * @private {!Array<!PairedBluetoothDeviceProperties>}
-       */
       devices: {
         type: Array,
         observer: 'onDevicesChanged_',
@@ -47,26 +46,28 @@ class SettingsPairedBluetoothListElement extends
       },
 
       /**
-       * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
+       * Used by FocusRowMixin in <os-settings-paired-bluetooth-list-item>
+       * to track the last focused element on a row.
        */
       lastFocused_: Object,
     };
   }
 
+  devices: PairedBluetoothDeviceProperties[];
+  private currentTooltipDeviceAddress_: string|undefined;
+  private lastFocused_: HTMLElement;
+
   constructor() {
     super();
+
     /**
      * The address of the device corresponding to the tooltip if it is currently
      * showing. If undefined, the tooltip is not showing.
-     * @type {string|undefined}
-     * @private
      */
     this.currentTooltipDeviceAddress_;
   }
 
-  /** @private */
-  onDevicesChanged_() {
+  private onDevicesChanged_(): void {
     // CrScrollableBehaviorInterface method required for list items to be
     // properly rendered when devices updates.
     this.updateScrollableContents();
@@ -83,14 +84,13 @@ class SettingsPairedBluetoothListElement extends
    * In both cases, address will be the item's device address.
    * We need to use a common tooltip since a tooltip within the item gets cut
    * off from the iron-list.
-   * @param {!{detail: {address: string, show: boolean, element: ?HTMLElement}}}
-   *     e
-   * @private
    */
-  onManagedTooltipStateChange_(e) {
+  private onManagedTooltipStateChange_(
+      e: CustomEvent<
+          {address: string, show: boolean, element: HTMLElement|null}>) {
     const target = e.detail.element;
     const hide = () => {
-      /** @type {{hide: Function}} */ (this.$.tooltip).hide();
+      this.$.tooltip.hide();
       this.$.tooltip.removeEventListener('mouseenter', hide);
       this.currentTooltipDeviceAddress_ = undefined;
       if (target) {
@@ -108,19 +108,20 @@ class SettingsPairedBluetoothListElement extends
       return;
     }
 
-    // paper-tooltip normally determines the target from the |for| property,
-    // which is a selector. Here paper-tooltip is being reused by multiple
-    // potential targets. Since paper-tooltip does not expose a public property
-    // or method to update the target, the private property |_target| is
-    // updated directly.
-    this.$.tooltip._target = target;
-    /** @type {{updatePosition: Function}} */ (this.$.tooltip).updatePosition();
-    target.addEventListener('mouseleave', hide);
-    target.addEventListener('blur', hide);
-    target.addEventListener('tap', hide);
+    this.$.tooltip.target = target;
+    this.$.tooltip.updatePosition();
+    target!.addEventListener('mouseleave', hide);
+    target!.addEventListener('blur', hide);
+    target!.addEventListener('tap', hide);
     this.$.tooltip.addEventListener('mouseenter', hide);
     this.$.tooltip.show();
     this.currentTooltipDeviceAddress_ = e.detail.address;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsPairedBluetoothListElement.is]: SettingsPairedBluetoothListElement;
   }
 }
 

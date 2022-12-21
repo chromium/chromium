@@ -14,29 +14,28 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/ash/common/focus_row_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_saved_devices_list_item.html.js';
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {FocusRowBehaviorInterface}
- */
-const SettingsSavedDevicesListItemElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior, FocusRowBehavior], PolymerElement);
+interface SettingsSavedDevicesListItemElement {
+  $: {
+    dotsMenu: CrActionMenuElement,
+  };
+}
 
-/** @polymer */
+const SettingsSavedDevicesListItemElementBase =
+    FocusRowMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+
 class SettingsSavedDevicesListItemElement extends
     SettingsSavedDevicesListItemElementBase {
   static get is() {
-    return 'os-settings-saved-devices-list-item';
+    return 'os-settings-saved-devices-list-item' as const;
   }
 
   static get template() {
@@ -45,9 +44,6 @@ class SettingsSavedDevicesListItemElement extends
 
   static get properties() {
     return {
-      /**
-       * @protected {!FastPairSavedDevice}
-       */
       device: {
         type: Object,
       },
@@ -61,7 +57,6 @@ class SettingsSavedDevicesListItemElement extends
        */
       listSize: Number,
 
-      /** @protected */
       shouldShowRemoveSavedDeviceDialog_: {
         type: Boolean,
         value: false,
@@ -69,65 +64,53 @@ class SettingsSavedDevicesListItemElement extends
     };
   }
 
-  /**
-   * @param {!FastPairSavedDevice} device
-   * @private
-   */
-  getDeviceName_(device) {
+  device: FastPairSavedDevice;
+  itemIndex: number;
+  listSize: number;
+  private shouldShowRemoveSavedDeviceDialog_: boolean;
+
+  private getDeviceName_(device: FastPairSavedDevice): string {
     return device.name;
   }
 
-  /**
-   * @param {!FastPairSavedDevice} device
-   * @private
-   */
-  getImageSrc_(device) {
+  private getImageSrc_(device: FastPairSavedDevice): string {
     return device.imageUrl;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onMenuButtonTap_(event) {
-    const button = event.target;
-    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu)
-        .showAt(/** @type {!HTMLElement} */ (button));
+  private onMenuButtonTap_(event: Event): void {
+    const button = event.target as HTMLElement;
+    this.$.dotsMenu.showAt(button);
     event.stopPropagation();
   }
 
-  /** @private */
-  onRemoveClick_() {
+  private onRemoveClick_(): void {
     recordSavedDevicesUiEventMetrics(
         FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_REMOVE_DIALOG);
     this.shouldShowRemoveSavedDeviceDialog_ = true;
     this.$.dotsMenu.close();
   }
 
-  /** @private */
-  onCloseRemoveDeviceDialog_() {
+  private onCloseRemoveDeviceDialog_(): void {
     this.shouldShowRemoveSavedDeviceDialog_ = false;
   }
 
-  /**
-   * @param {!FastPairSavedDevice} device
-   * @return {string}
-   * @private
-   */
-  getAriaLabel_(device) {
+  private getAriaLabel_(device: FastPairSavedDevice): string {
     const deviceName = this.getDeviceName_(device);
     return this.i18n(
         'savedDeviceItemA11yLabel', this.itemIndex + 1, this.listSize,
         deviceName);
   }
-  /**
-   * @param {!FastPairSavedDevice} device
-   * @return {string}
-   * @private
-   */
-  getSubpageButtonA11yLabel_(device) {
+
+  private getSubpageButtonA11yLabel_(device: FastPairSavedDevice): string {
     const deviceName = this.getDeviceName_(device);
     return this.i18n('savedDeviceItemButtonA11yLabel', deviceName);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsSavedDevicesListItemElement.is]:
+        SettingsSavedDevicesListItemElement;
   }
 }
 

@@ -11,31 +11,28 @@ import '../../settings_shared.css.js';
 import './os_saved_devices_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_saved_devices_list.html.js';
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsSavedDevicesListElementBase = mixinBehaviors(
-    [CrScrollableBehavior, WebUIListenerBehavior, I18nBehavior],
-    PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'remove-saved-device': CustomEvent<{key: string}>;
+  }
+}
 
-/** @polymer */
+const SettingsSavedDevicesListElementBase =
+    CrScrollableMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+
 class SettingsSavedDevicesListElement extends
     SettingsSavedDevicesListElementBase {
   static get is() {
-    return 'os-settings-saved-devices-list';
+    return 'os-settings-saved-devices-list' as const;
   }
 
   static get template() {
@@ -44,36 +41,38 @@ class SettingsSavedDevicesListElement extends
 
   static get properties() {
     return {
-      /**
-       * @public {Array<!FastPairSavedDevice>}
-       */
       devices: {
         type: Array,
         observer: 'onDevicesChanged_',
         value: [],
       },
+
+      /**
+       * Used by FocusRowMixin in <os-settings-saved-devices-list-item>
+       * to track the last focused element on a row.
+       */
+      lastFocused_: Object,
     };
   }
 
-  /** @override */
-  ready() {
+  devices: FastPairSavedDevice[];
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
+  private lastFocused_: HTMLElement;
+
+  constructor() {
+    super();
+
+    this.browserProxy_ =
+        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
+  }
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener('remove-saved-device', this.removeSavedDevice_);
   }
 
-  constructor() {
-    super();
-    /** @private {?OsBluetoothDevicesSubpageBrowserProxy} */
-    this.browserProxy_ =
-        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
-  }
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  removeSavedDevice_(/** @type {CustomEvent} */ event) {
+  private removeSavedDevice_(event: CustomEvent<{key: string}>): void {
     this.browserProxy_.deleteFastPairSavedDevice(event.detail.key);
     for (let i = 0; i < this.devices.length; i++) {
       if (this.devices[i].accountKey === event.detail.key) {
@@ -84,11 +83,16 @@ class SettingsSavedDevicesListElement extends
     this.updateScrollableContents();
   }
 
-  /** @private */
-  onDevicesChanged_() {
-    // CrScrollableBehaviorInterface method required for list items to be
+  private onDevicesChanged_(): void {
+    // CrScrollableMixin method required for list items to be
     // properly rendered when devices updates.
     this.updateScrollableContents();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsSavedDevicesListElement.is]: SettingsSavedDevicesListElement;
   }
 }
 

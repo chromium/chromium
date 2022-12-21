@@ -11,33 +11,31 @@ import '../../controls/settings_toggle_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+
 import {getTemplate} from './settings_fast_pair_toggle.html.js';
 
-/** @polymer */
-class SettingsFastPairToggleElement extends PolymerElement {
+const SettingsFastPairToggleElementBase = PrefsMixin(PolymerElement);
+
+class SettingsFastPairToggleElement extends SettingsFastPairToggleElementBase {
   static get is() {
-    return 'settings-fast-pair-toggle';
+    return 'settings-fast-pair-toggle' as const;
   }
 
   static get template() {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-    };
+  override focus(): void {
+    this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                        '#toggle')!.focus();
   }
+}
 
-  /** @override */
-  focus() {
-    this.shadowRoot.querySelector('#toggle').focus();
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsFastPairToggleElement.is]: SettingsFastPairToggleElement;
   }
 }
 
