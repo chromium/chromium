@@ -151,14 +151,6 @@ const WebAppRegistrar& WebAppProvider::registrar_unsafe() const {
   return *registrar_;
 }
 
-WebAppRegistrar& WebAppProvider::registrar() {
-  return registrar_unsafe();
-}
-
-const WebAppRegistrar& WebAppProvider::registrar() const {
-  return registrar_unsafe();
-}
-
 WebAppSyncBridge& WebAppProvider::sync_bridge_unsafe() {
   CheckIsConnected();
   return *sync_bridge_;

@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_.id)
                 .app_id());
   const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  ASSERT_TRUE(provider->registrar().IsInstalled(id));
+  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(id));
 }
 
 }  // namespace web_app

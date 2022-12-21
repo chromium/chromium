@@ -139,10 +139,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest, Install) {
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 
@@ -174,10 +174,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 
@@ -215,10 +215,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   EXPECT_TRUE(future_first.Wait());
   EXPECT_TRUE(future_second.Wait());
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 
@@ -251,10 +251,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
 
@@ -292,10 +292,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
   EXPECT_TRUE(future_first.Wait());
   EXPECT_TRUE(future_second.Wait());
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
 
@@ -338,10 +338,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
         future.GetCallback());
     EXPECT_TRUE(future.Wait());
   }
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
 
@@ -383,10 +383,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
         future.GetCallback());
     EXPECT_TRUE(future.Wait());
   }
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsTrue());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 
@@ -430,10 +430,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
     EXPECT_TRUE(future.Wait());
   }
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 
@@ -479,10 +479,10 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
     EXPECT_TRUE(future.Wait());
   }
 
-  EXPECT_THAT(provider().registrar().IsAllowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsAllowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
-  EXPECT_THAT(provider().registrar().IsDisallowedLaunchProtocol(
+  EXPECT_THAT(provider().registrar_unsafe().IsDisallowedLaunchProtocol(
                   app_id, protocol_handler.protocol),
               testing::IsFalse());
 

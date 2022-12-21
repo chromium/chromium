@@ -119,10 +119,6 @@ class WebAppProvider : public KeyedService {
   // chrome/browser/web_applications/locks/ for more info).
   WebAppRegistrar& registrar_unsafe();
   const WebAppRegistrar& registrar_unsafe() const;
-  // Deprecated use registrar_unsafe instead.
-  // TODO(b/260863458): Remove registrar accessor.
-  WebAppRegistrar& registrar();
-  const WebAppRegistrar& registrar() const;
   // Unsafe access to the app registry controller. For safe access use locks
   // (see chrome/browser/web_applications/locks/ for more info).
   WebAppSyncBridge& sync_bridge_unsafe();

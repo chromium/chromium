@@ -133,7 +133,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, SynchronizeWorks) {
   const AppId& app_id = InstallAppWithProtocolHandlers({protocol_handler});
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
-      provider()->registrar().GetAppCurrentOsIntegrationState(app_id);
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_FALSE(current_states.has_value());
 
   // OS Integration should be triggered now.
@@ -143,7 +143,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, SynchronizeWorks) {
   EXPECT_TRUE(synchronize_future.Wait());
 
   absl::optional<proto::WebAppOsIntegrationState> updated_states =
-      provider()->registrar().GetAppCurrentOsIntegrationState(app_id);
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   if (base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers)) {
     ASSERT_TRUE(updated_states.has_value());
     const proto::WebAppOsIntegrationState& os_integration_state =

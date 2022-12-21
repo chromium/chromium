@@ -147,7 +147,8 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureOnlyProtocolHandler) {
 
   const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  auto state = provider().registrar().GetAppCurrentOsIntegrationState(app_id);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   if (EnableOsIntegrationSubManager()) {
     ASSERT_TRUE(state.has_value());
     const proto::WebAppOsIntegrationState& os_integration_state = state.value();
@@ -178,7 +179,8 @@ TEST_P(ProtocolHandlingSubManagerTest, UninstalledAppDoesNotConfigure) {
   const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
   UninstallWebApp(app_id);
 
-  auto state = provider().registrar().GetAppCurrentOsIntegrationState(app_id);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_FALSE(state.has_value());
 }
 
@@ -205,7 +207,8 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureProtocolHandlerDisallowed) {
     EXPECT_TRUE(disallowed_future.Wait());
   }
 
-  auto state = provider().registrar().GetAppCurrentOsIntegrationState(app_id);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   if (EnableOsIntegrationSubManager()) {
     ASSERT_TRUE(state.has_value());
     const proto::WebAppOsIntegrationState& os_integration_state = state.value();

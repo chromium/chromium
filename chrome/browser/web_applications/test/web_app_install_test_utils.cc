@@ -140,9 +140,9 @@ bool UninstallAllWebApps(Profile* profile) {
   auto* provider = WebAppProvider::GetForTest(profile);
   if (!provider)
     return false;
-  std::vector<AppId> app_ids = provider->registrar().GetAppIds();
+  std::vector<AppId> app_ids = provider->registrar_unsafe().GetAppIds();
   for (auto& app_id : app_ids) {
-    const WebApp* app = provider->registrar().GetAppById(app_id);
+    const WebApp* app = provider->registrar_unsafe().GetAppById(app_id);
     WebAppSourcesSet sources =
         WebAppSourcesSet::FromEnumBitmask(app->GetSources().to_ullong());
 

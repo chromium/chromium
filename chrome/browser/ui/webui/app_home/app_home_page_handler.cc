@@ -133,14 +133,15 @@ void AppHomePageHandler::InstallOsHooks(const web_app::AppId& app_id,
   options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
   options.os_hooks[web_app::OsHookType::kProtocolHandlers] = true;
   options.os_hooks[web_app::OsHookType::kRunOnOsLogin] =
-      web_app_provider_->registrar().GetAppRunOnOsLoginMode(app_id).value ==
-      web_app::RunOnOsLoginMode::kWindowed;
+      web_app_provider_->registrar_unsafe()
+          .GetAppRunOnOsLoginMode(app_id)
+          .value == web_app::RunOnOsLoginMode::kWindowed;
 
   // Installed WebApp here is user uninstallable app, but it needs to check user
   // uninstall-ability if there are apps with different source types.
   // WebApp::CanUserUninstallApp will handles it.
   const web_app::WebApp* web_app =
-      web_app_provider_->registrar().GetAppById(app_id);
+      web_app_provider_->registrar_unsafe().GetAppById(app_id);
   options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] =
       web_app->CanUserUninstallWebApp();
 
