@@ -81,10 +81,6 @@ class TabContentManager : public ThumbnailCacheObserver {
                  const base::android::JavaParamRef<jobject>& obj,
                  const base::android::JavaParamRef<jobject>& jtab,
                  jint tab_id);
-  jboolean HasFullCachedThumbnail(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint tab_id);
   void CaptureThumbnail(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jobject>& tab,

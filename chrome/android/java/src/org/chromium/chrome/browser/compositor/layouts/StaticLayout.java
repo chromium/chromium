@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -435,14 +434,6 @@ public class StaticLayout extends Layout {
         super.updateSceneLayer(
                 viewport, contentViewport, tabContentManager, resourceManager, browserControls);
         assert mSceneLayer != null;
-
-        // TODO(dtrainor, crbug.com/1070281): Find the best way to properly track this metric for
-        //  cold starts. We should probably erase the thumbnail when we select a tab that we need to
-        //  restore. Potentially move to show().
-        if (tabContentManager != null
-                && tabContentManager.hasFullCachedThumbnail(mModel.get(LayoutTab.TAB_ID))) {
-            TabSwitchMetrics.logPerceivedTabSwitchLatencyMetric();
-        }
     }
 
     @Override

@@ -329,17 +329,6 @@ public class TabContentManager {
     }
 
     /**
-     * @param tabId The id of the {@link Tab} to check for a full sized thumbnail of.
-     * @return      Whether or not there is a full sized cached thumbnail for the {@link Tab}
-     *              identified by {@code tabId}.
-     */
-    public boolean hasFullCachedThumbnail(int tabId) {
-        if (mNativeTabContentManager == 0) return false;
-        return TabContentManagerJni.get().hasFullCachedThumbnail(
-                mNativeTabContentManager, TabContentManager.this, tabId);
-    }
-
-    /**
      * Call to get a thumbnail for a given tab through a {@link Callback}. If there is
      * no up-to-date thumbnail on disk for the given tab, callback returns null.
      * @param tabId The ID of the tab to get the thumbnail for.
@@ -703,8 +692,6 @@ public class TabContentManager {
 
         void attachTab(long nativeTabContentManager, TabContentManager caller, Tab tab, int tabId);
         void detachTab(long nativeTabContentManager, TabContentManager caller, Tab tab, int tabId);
-        boolean hasFullCachedThumbnail(
-                long nativeTabContentManager, TabContentManager caller, int tabId);
         void captureThumbnail(long nativeTabContentManager, TabContentManager caller, Object tab,
                 float thumbnailScale, boolean writeToCache, double aspectRatio,
                 Callback<Bitmap> callback);

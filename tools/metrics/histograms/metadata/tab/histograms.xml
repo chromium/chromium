@@ -70,11 +70,6 @@ chromium-metrics-reviews@google.com.
                on the screen after the user selects a tab. This doesn not
                include fake snapshots or other tricks, but the actual time to
                get real interactable content displayed."/>
-  <variant name="_Perceived"
-      summary="The time it takes to show something on the screen after the
-               user selects a tab. This might be a fake snapshot or it might
-               just be the time it takes to show the real content if no
-               snapshot was available."/>
 </variants>
 
 <variants name="Tabs_TabUsageIntervalLength">

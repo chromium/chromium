@@ -19,7 +19,6 @@ public class TabSwitchMetrics {
     private static long sTabSwitchStartTime;
     private static @TabSelectionType int sTabSelectionType;
     private static boolean sTabSwitchLatencyMetricRequired;
-    private static boolean sPerceivedTabSwitchLatencyMetricLogged;
 
     /**
      * Register the start of tab switch latency timing. Called when setIndex() indicates a tab
@@ -30,7 +29,6 @@ public class TabSwitchMetrics {
         sTabSwitchStartTime = SystemClock.uptimeMillis();
         sTabSelectionType = type;
         sTabSwitchLatencyMetricRequired = false;
-        sPerceivedTabSwitchLatencyMetricLogged = false;
     }
 
     /**
@@ -44,29 +42,17 @@ public class TabSwitchMetrics {
     }
 
     /**
-     * Logs the perceived tab switching latency metric.  This will automatically be logged if
-     * the actual metric is set and flushed.
-     */
-    public static void logPerceivedTabSwitchLatencyMetric() {
-        if (sTabSwitchStartTime <= 0 || sPerceivedTabSwitchLatencyMetricLogged) return;
-
-        flushTabSwitchLatencyMetric(true);
-        sPerceivedTabSwitchLatencyMetricLogged = true;
-    }
-
-    /**
      * Flush the latency metric if called after the indication that a frame is ready.
      */
     public static void flushActualTabSwitchLatencyMetric() {
         if (sTabSwitchStartTime <= 0 || !sTabSwitchLatencyMetricRequired) return;
-        logPerceivedTabSwitchLatencyMetric();
-        flushTabSwitchLatencyMetric(false);
+        flushTabSwitchLatencyMetric();
 
         sTabSwitchStartTime = 0;
         sTabSwitchLatencyMetricRequired = false;
     }
 
-    private static void flushTabSwitchLatencyMetric(boolean perceived) {
+    private static void flushTabSwitchLatencyMetric() {
         if (sTabSwitchStartTime <= 0) return;
         final long ms = SystemClock.uptimeMillis() - sTabSwitchStartTime;
         String baseHistogram;
@@ -86,7 +72,6 @@ public class TabSwitchMetrics {
             default:
                 return;
         }
-        String histogramSuffix = perceived ? "_Perceived" : "_Actual";
-        RecordHistogram.recordTimesHistogram(baseHistogram + histogramSuffix, ms);
+        RecordHistogram.recordTimesHistogram(baseHistogram + "_Actual", ms);
     }
 }
