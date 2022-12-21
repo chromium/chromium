@@ -10,16 +10,11 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-namespace infobars {
-class ContentInfoBarManager;
-}
-
 // An infobar for Chrome for Testing, which displays a message saying that this
 // flavor of chrome is unsupported and does not auto-update.
 class ChromeForTestingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static void Create();
-  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
   ChromeForTestingInfoBarDelegate(const ChromeForTestingInfoBarDelegate&) =
       delete;

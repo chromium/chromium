@@ -87,14 +87,10 @@ void AddInfoBarsIfNecessary(Browser* browser,
       browser->tab_strip_model()->GetActiveWebContents();
   DCHECK(web_contents);
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-
   if (show_bad_flags_security_warnings) {
 #if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-    // TODO(crbug.com/1336611): Switch to a global infobar.
     if (!IsGpuTest()) {
-      ChromeForTestingInfoBarDelegate::Create(infobar_manager);
+      ChromeForTestingInfoBarDelegate::Create();
     }
 #endif
 
@@ -133,6 +129,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
 
     if (show_bad_flags_security_warnings)
       chrome::ShowBadFlagsPrompt(web_contents);
+
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
     if (!google_apis::HasAPIKeyConfigured())
       GoogleApiKeysInfoBarDelegate::Create(infobar_manager);

@@ -12,7 +12,6 @@
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,16 +19,8 @@
 
 // static
 void ChromeForTestingInfoBarDelegate::Create() {
-  std::unique_ptr<ConfirmInfoBarDelegate> delegate(
-      new ChromeForTestingInfoBarDelegate());
-  GlobalConfirmInfoBar::Show(std::move(delegate));
-}
-
-// static
-void ChromeForTestingInfoBarDelegate::Create(
-    infobars::ContentInfoBarManager* infobar_manager) {
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
-      std::make_unique<ChromeForTestingInfoBarDelegate>()));
+  GlobalConfirmInfoBar::Show(
+      std::make_unique<ChromeForTestingInfoBarDelegate>());
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
