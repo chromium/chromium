@@ -35,11 +35,7 @@ public class AwGLFunctor implements AwFunctor {
         mNativeAwGLFunctor = AwGLFunctorJni.get().create(this);
         mNativeDrawGLFunctor = nativeDrawFunctorFactory.createGLFunctor(mNativeAwGLFunctor);
         mContainerView = containerView;
-        if (mNativeDrawGLFunctor.supportsDrawGLFunctorReleasedCallback()) {
-            mFunctorReleasedCallback = () -> removeReference();
-        } else {
-            mFunctorReleasedCallback = null;
-        }
+        mFunctorReleasedCallback = () -> removeReference();
         addReference();
     }
 

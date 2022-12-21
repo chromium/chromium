@@ -35,8 +35,7 @@ public class ServiceHelper {
             // If we're running in a BroadcastReceiver Context then we cannot bind to Services.
             return false;
         } catch (SecurityException e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                    && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 // There's a known issue on Android N where a secondary user account may not have
                 // permission to view the system WebView provider app (most likely, this is
                 // Monochrome). In this case, we cannot bind to services so we just log the

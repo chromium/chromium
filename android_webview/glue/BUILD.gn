@@ -41,7 +41,6 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/DrawFunctor.java",
     "java/src/com/android/webview/chromium/DrawGLFunctor.java",
     "java/src/com/android/webview/chromium/GeolocationPermissionsAdapter.java",
-    "java/src/com/android/webview/chromium/GlueApiHelperForN.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForO.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForOMR1.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForP.java",

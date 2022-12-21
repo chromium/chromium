@@ -78,7 +78,6 @@ import org.chromium.url.GURL;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -2776,18 +2775,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
         @Override
         public void super_startActivityForResult(Intent intent, int requestCode) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                GlueApiHelperForN.super_startActivityForResult(
-                        mWebViewPrivate, intent, requestCode);
-            } else {
-                try {
-                    Method startActivityForResultMethod =
-                            View.class.getMethod("startActivityForResult", Intent.class, int.class);
-                    startActivityForResultMethod.invoke(mWebView, intent, requestCode);
-                } catch (Exception e) {
-                    throw new RuntimeException("Invalid reflection", e);
-                }
-            }
+            mWebViewPrivate.super_startActivityForResult(intent, requestCode);
         }
 
         @Override

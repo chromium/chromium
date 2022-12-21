@@ -15,6 +15,7 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
+import android.os.UserManager;
 import android.provider.Settings;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -117,15 +118,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final int SHARED_LIBRARY_MAX_ID = 36;
 
     /**
-     * This holds objects of classes that are defined in N and above to ensure that run-time class
-     * verification does not occur until it is actually used for N and above.
-     */
-    @RequiresApi(Build.VERSION_CODES.N)
-    private static class ObjectHolderForN {
-        public ServiceWorkerController mServiceWorkerController;
-    }
-
-    /**
      * This holds objects of classes that are defined in P and above to ensure that run-time class
      * verification does not occur until it is actually used for P and above.
      */
@@ -177,9 +169,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private boolean mIsSafeModeEnabled;
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private ObjectHolderForN mObjectHolderForN =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? new ObjectHolderForN() : null;
+    private ServiceWorkerController mServiceWorkerController;
 
     @RequiresApi(Build.VERSION_CODES.P)
     private ObjectHolderForP mObjectHolderForP =
@@ -319,14 +309,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                          "WebViewChromiumFactoryProvider.checkStorage")) {
                 checkStorageIsNotDeviceProtected(application);
             } catch (IllegalArgumentException e) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    if (!GlueApiHelperForN.isUserUnlocked(ctx)) {
-                        throw e;
-                    }
-                    ctx = GlueApiHelperForN.createCredentialProtectedStorageContext(ctx);
-                } else {
-                    assert false;
+                if (!ctx.getSystemService(UserManager.class).isUserUnlocked()) {
+                    throw e;
                 }
+                ctx = ctx.createCredentialProtectedStorageContext();
             }
 
             // WebView needs to make sure to always use the wrapped application context.
@@ -372,7 +358,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Ask the system if multiprocess should be enabled on O+.
                 multiProcess = GlueApiHelperForO.isMultiProcessEnabled(webViewDelegate);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            } else {
                 // Check the multiprocess developer setting directly on N.
                 multiProcess = Settings.Global.getInt(ctx.getContentResolver(),
                                        Settings.Global.WEBVIEW_MULTIPROCESS, 0)
@@ -519,8 +505,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && GlueApiHelperForN.isDeviceProtectedStorage(context)) {
+        if (context.isDeviceProtectedStorage()) {
             throw new IllegalArgumentException(
                     "WebView cannot be used with device protected storage");
         }
@@ -718,16 +703,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mAwInit.getCookieManager();
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     @Override
     public ServiceWorkerController getServiceWorkerController() {
         synchronized (mAwInit.getLock()) {
-            if (mObjectHolderForN.mServiceWorkerController == null) {
-                mObjectHolderForN.mServiceWorkerController =
-                        GlueApiHelperForN.createServiceWorkerControllerAdapter(mAwInit);
+            if (mServiceWorkerController == null) {
+                mServiceWorkerController =
+                        new ServiceWorkerControllerAdapter(mAwInit.getServiceWorkerController());
             }
         }
-        return mObjectHolderForN.mServiceWorkerController;
+        return mServiceWorkerController;
     }
 
     @Override

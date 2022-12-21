@@ -156,10 +156,7 @@ public class ManifestMetadataUtil {
      * @param context Application context
      */
     private static Bundle getMetadataHolderServiceBundle(final Context context) {
-        int flags = PackageManager.GET_META_DATA;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            flags |= PackageManager.MATCH_DISABLED_COMPONENTS;
-        }
+        int flags = PackageManager.GET_META_DATA | PackageManager.MATCH_DISABLED_COMPONENTS;
         try {
             return context.getPackageManager()
                     .getServiceInfo(new ComponentName(context, METADATA_HOLDER_SERVICE_NAME), flags)

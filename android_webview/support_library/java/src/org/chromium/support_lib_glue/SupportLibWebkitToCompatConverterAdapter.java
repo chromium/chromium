@@ -53,7 +53,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
 
     // ServiceWorkerWebSettingsBoundaryInterface
     @Override
-    @RequiresApi(Build.VERSION_CODES.N)
     public InvocationHandler convertServiceWorkerSettings(
             /* ServiceWorkerWebSettings */ Object serviceWorkerWebSettings) {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -63,7 +62,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.N)
     public /* ServiceWorkerWebSettings */ Object convertServiceWorkerSettings(
             /* SupportLibServiceWorkerSettings */ InvocationHandler serviceWorkerSettings) {
         SupportLibServiceWorkerSettingsAdapter supportLibWebSettings =

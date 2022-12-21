@@ -34,14 +34,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
 
@@ -190,7 +188,6 @@ public class ActionModeTest {
     @UseLayout("edittext_webview")
     public void testAssist() {
         // The assist option is only available on N
-        assumeTrue(Build.VERSION.SDK_INT == Build.VERSION_CODES.N);
         longClickOnLastWord(R.id.webview);
         clickPopupAction(ASSIST_ACTION);
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());

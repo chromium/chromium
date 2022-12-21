@@ -300,8 +300,7 @@ public class AwContents implements SmartClipProvider {
          * Requests a callback on the native DrawGL method (see getAwDrawGLFunction).
          *
          * If called from within onDraw, |canvas| should be non-null and must be hardware
-         * accelerated. |releasedCallback| should be null if |canvas| is null, or if
-         * supportsDrawGLFunctorReleasedCallback returns false.
+         * accelerated. |releasedCallback| should be null if |canvas| is null.
          *
          * @return false indicates the GL draw request was not accepted, and the caller
          *         should fallback to the SW path.
@@ -315,15 +314,6 @@ public class AwContents implements SmartClipProvider {
          * will not return until functor has returned.
          */
         boolean requestInvokeGL(View containerView, boolean waitForCompletion);
-
-        /**
-         * Test whether the Android framework supports notifying when a functor is free
-         * to be destroyed via the callback mechanism provided to the functor factory.
-         *
-         * @return true if destruction needs to wait on a framework callback, or false
-         *         if it can occur immediately.
-         */
-        boolean supportsDrawGLFunctorReleasedCallback();
 
         /**
          * Detaches the GLFunctor from the view tree.
@@ -4018,8 +4008,7 @@ public class AwContents implements SmartClipProvider {
 
             // Workaround for bug in libhwui on N that does not swap if inserting functor is the
             // only operation in a canvas. See crbug.com/704212.
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                    || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 if (mPaintForNWorkaround == null) {
                     mPaintForNWorkaround = new Paint();
                     // Note a completely transparent color will get optimized out. So draw almost

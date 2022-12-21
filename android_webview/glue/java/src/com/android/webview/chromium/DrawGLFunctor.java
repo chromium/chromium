@@ -5,7 +5,6 @@
 package com.android.webview.chromium;
 
 import android.graphics.Canvas;
-import android.os.Build;
 import android.view.View;
 import android.webkit.WebViewDelegate;
 
@@ -39,24 +38,14 @@ class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
         mWebViewDelegate.detachDrawGlFunctor(containerView, mNativeDrawGLFunctor);
     }
 
-    private static final boolean sSupportFunctorReleasedCallback =
-            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-
     @Override
     public boolean requestDrawGL(Canvas canvas, Runnable releasedCallback) {
         if (mNativeDrawGLFunctor == 0) {
             throw new RuntimeException("requestDrawGL on already destroyed DrawGLFunctor");
         }
         assert canvas != null;
-        if (sSupportFunctorReleasedCallback) {
-            assert releasedCallback != null;
-            GlueApiHelperForN.callDrawGlFunction(
-                    mWebViewDelegate, canvas, mNativeDrawGLFunctor, releasedCallback);
-
-        } else {
-            assert releasedCallback == null;
-            mWebViewDelegate.callDrawGlFunction(canvas, mNativeDrawGLFunctor);
-        }
+        assert releasedCallback != null;
+        mWebViewDelegate.callDrawGlFunction(canvas, mNativeDrawGLFunctor, releasedCallback);
         return true;
     }
 
@@ -65,19 +54,9 @@ class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
         if (mNativeDrawGLFunctor == 0) {
             throw new RuntimeException("requestInvokeGL on already destroyed DrawGLFunctor");
         }
-        if (!sSupportFunctorReleasedCallback
-                && !mWebViewDelegate.canInvokeDrawGlFunctor(containerView)) {
-            return false;
-        }
-
         mWebViewDelegate.invokeDrawGlFunctor(
                 containerView, mNativeDrawGLFunctor, waitForCompletion);
         return true;
-    }
-
-    @Override
-    public boolean supportsDrawGLFunctorReleasedCallback() {
-        return sSupportFunctorReleasedCallback;
     }
 
     @Override
