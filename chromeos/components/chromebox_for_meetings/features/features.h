@@ -26,6 +26,10 @@ extern const base::Feature kCloudLogger;
 COMPONENT_EXPORT(CFM_FEATURES)
 extern const base::Feature kMojoServices;
 
+// Enables or disables the ability to use Meet XU controls.
+COMPONENT_EXPORT(CFM_FEATURES)
+extern const base::Feature kXuControls;
+
 }  // namespace features
 }  // namespace cfm
 }  // namespace chromeos
@@ -34,6 +38,8 @@ extern const base::Feature kMojoServices;
 namespace ash::cfm::features {
 using ::chromeos::cfm::features::kCloudLogger;
 using ::chromeos::cfm::features::kMojoServices;
+using ::chromeos::cfm::features::kXuControls;
+
 }  // namespace ash::cfm::features
 
 #endif  // CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
