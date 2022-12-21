@@ -66,6 +66,7 @@ if (include_js_tests) {
     sources = [
       "cr_components/cr_components_mojo_interactive_test.js",
       "new_tab_page/new_tab_page_interactive_test.js",
+      "side_panel/customize_chrome/side_panel_customize_chrome_interactive_ui_test.js",
       "side_panel/side_panel_interactive_ui_tests.js",
     ]
 

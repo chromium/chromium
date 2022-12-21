@@ -157,16 +157,6 @@ suite('ColorsTest', () => {
     assertEquals(3, handler.getArgs('setSeedColor')[0].value);
   });
 
-  test('opens color picker', () => {
-    const focus = capture(colorsElement.$.colorPicker, 'focus');
-    const click = capture(colorsElement.$.colorPicker, 'click');
-
-    colorsElement.$.customColor.click();
-
-    assertTrue(focus.received);
-    assertTrue(click.received);
-  });
-
   test('sets custom color', () => {
     colorsElement.$.colorPicker.value = '#ff0000';
     colorsElement.$.colorPicker.dispatchEvent(new Event('change'));
@@ -362,7 +352,6 @@ suite('ColorsTest', () => {
       callbackRouter.setTheme(theme);
       await callbackRouter.$.flushForTesting();
       await waitAfterNextRender(colorsElement);
-      const focus = capture(colorsElement.$.colorPicker, 'focus');
       const click = capture(colorsElement.$.colorPicker, 'click');
 
       $$<HTMLElement>(colorsElement, selector)!.click();
@@ -374,7 +363,6 @@ suite('ColorsTest', () => {
       assertTrue(managedDialog.$.dialog.open);
       assertEquals(0, handler.getCallCount('setDefaultColor'));
       assertEquals(0, handler.getCallCount('setSeedColor'));
-      assertFalse(focus.received);
       assertFalse(click.received);
     });
   });
