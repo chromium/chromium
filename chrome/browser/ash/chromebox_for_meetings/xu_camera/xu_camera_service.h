@@ -90,10 +90,10 @@ class XuCameraService : public CfmObserver,
                          uint8_t query_request,
                          uint16_t size);
   std::string GetDevicePath(const std::string& device_id);
-  uint8_t GetCtrlThroughQuery(int file_descriptor,
-                              const mojom::ControlQueryPtr& query,
-                              std::vector<uint8_t>& data,
-                              const mojom::GetFn& fn);
+  uint8_t CtrlThroughQuery(int file_descriptor,
+                           const mojom::ControlQueryPtr& query,
+                           std::vector<uint8_t>& data,
+                           unsigned int request);
 
   Delegate* delegate_;
   ServiceAdaptor service_adaptor_;
