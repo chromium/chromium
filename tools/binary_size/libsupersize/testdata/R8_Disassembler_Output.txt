@@ -3,11 +3,12 @@
 
 
 #
-# Method: '<init>':
+# Method: 'void org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory$$Lambda$5.<init>()':
 # public
+# Residual: 'void Xa0.<init>()'
 #
 
-void Xa0.<init>()
+void org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory$$Lambda$5.<init>()
 registers: 1, inputs: 1, outputs: 1
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
@@ -16,11 +17,12 @@ inst#  offset  instruction         arguments
     1:   0x03: ReturnVoid
 
 #
-# Method: 'get':
+# Method: 'java.lang.Object org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory$$Lambda$5.get()':
 # public
+# Residual: 'java.lang.Object Xa0.get()'
 #
 
-java.lang.Object Xa0.get()
+java.lang.Object org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory$$Lambda$5.get()
 registers: 2, inputs: 1, outputs: 0
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
@@ -37,11 +39,12 @@ inst#  offset  instruction         arguments
 
 
 #
-# Method: '<init>':
+# Method: 'void com.youtube.elements.fbs.AnimatedVectorType.<init>()':
 # public
+# Residual: 'void Xa.<init>()'
 #
 
-void Xa.<init>()
+void com.youtube.elements.fbs.AnimatedVectorType.<init>()
 registers: 1, inputs: 1, outputs: 1
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
@@ -51,11 +54,12 @@ inst#  offset  instruction         arguments
     1:   0x03: ReturnVoid
 
 #
-# Method: 'animation':
+# Method: 'bb com.youtube.elements.fbs.AnimatedVectorType.animation()':
 # public
+# Residual: 'bb Xa.h()'
 #
 
-bb Xa.h()
+bb com.youtube.elements.fbs.AnimatedVectorType.animation()
 registers: 4, inputs: 1, outputs: 3
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
@@ -80,11 +84,12 @@ inst#  offset  instruction         arguments
    14:   0x1a: ReturnObject        v0
 
 #
-# Method: 'frameState':
+# Method: 'Va com.youtube.elements.fbs.AnimatedVectorType.frameState(java.lang.Object, int, byte[])':
 # public
+# Residual: 'Va Xa.i(java.lang.Object, int, byte[])'
 #
 
-Va Xa.i(java.lang.Object, int, byte[])
+Va com.youtube.elements.fbs.AnimatedVectorType.frameState(java.lang.Object, int, byte[])
 registers: 4, inputs: 1, outputs: 3
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
@@ -109,11 +114,12 @@ inst#  offset  instruction         arguments
    14:   0x1b: ReturnObject        v0
 
 #
-# Method: 'progressState':
+# Method: 'Wa com.youtube.elements.fbs.AnimatedVectorType.progressState(java.lang.Object)':
 # public
+# Residual: 'Wa Xa.j(java.lang.Object)'
 #
 
-Wa Xa.j(java.lang.Object)
+Wa com.youtube.elements.fbs.AnimatedVectorType.progressState(java.lang.Object)
 registers: 4, inputs: 1, outputs: 3
 ------------------------------------------------------------
 inst#  offset  instruction         arguments
