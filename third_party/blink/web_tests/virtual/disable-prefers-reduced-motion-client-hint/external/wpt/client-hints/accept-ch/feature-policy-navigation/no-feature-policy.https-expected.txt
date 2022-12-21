@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Client hints not loaded on cross-origin iframe request with no feature policy.
-FAIL Client hints loaded on same-origin iframe request with no feature policy. promise_test: Unhandled rejection with value: "FAIL sec-ch-prefers-reduced-motion True None"
-PASS Client hints loaded on cross-origin iframe request with allow list.
-FAIL Client hints loaded on same-origin iframe request with allow list. promise_test: Unhandled rejection with value: "FAIL sec-ch-prefers-reduced-motion True None"
-Harness: the test ran to completion.
-
