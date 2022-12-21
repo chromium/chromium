@@ -248,32 +248,35 @@ public interface ITabGroup {
 
 
 
-        TabState state = null;
-        if (ArkWebContents.get(page.getId()) == null) {
-            state = ArkTabDao.restorePageState(page.getId());
-        }
+//        TabState state = null;
+//        if (ArkWebContents.get(page.getId()) == null) {
+//            state = ArkTabDao.restorePageState(page.getId());
+//        }
 
         ArkTabImpl tab = (ArkTabImpl) PageCacheManager.getInstance().findTab(iTab.getId());
 
         if (tab == null) {
-            if (state == null) {
-                tab = (ArkTabImpl) PageCacheManager.getInstance()
-                        .createLivePage(iTab, page);
-            } else {
-                tab = (ArkTabImpl) PageCacheManager.getInstance()
-                        .createFrozenPageFromState(iTab, state);
-            }
+            tab = (ArkTabImpl) PageCacheManager.getInstance()
+                    .createLivePage(iTab, page);
+//            if (state == null) {
+//                tab = (ArkTabImpl) PageCacheManager.getInstance()
+//                        .createLivePage(iTab, page);
+//            } else {
+//                tab = (ArkTabImpl) PageCacheManager.getInstance()
+//                        .createFrozenPageFromState(iTab, state);
+//            }
         }
 
         onIndexChanged(indexOf(iTab));
         iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
 //        iTab.selectPage(page);
 
-        if (state == null) {
-            iTab.selectPage(page);
-        } else {
-            tab.selectPage(page);
-        }
+        tab.selectPage(page);
+//        if (state == null) {
+//            tab.selectPage(page);
+//        } else {
+//            iTab.selectPage(page);
+//        }
 
 
 

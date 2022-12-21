@@ -102,6 +102,11 @@ public class ArkWebContents {
         return mWebContents;
     }
 
+    public void loadUrl(LoadUrlParams params) {
+        mPageInfo.setUrl(params.getUrl());
+        mWebContents.getNavigationController().loadUrl(params);
+    }
+
     public boolean canGoBack() {
         return mWebContents.getNavigationController().canGoBack();
     }
@@ -287,8 +292,7 @@ public class ArkWebContents {
         params.setUrl(fixedUrl.getSpec());
         ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
 
-        mPageInfo.setUrl(params.getUrl());
-        mWebContents.getNavigationController().loadUrl(params);
+        loadUrl(params);
         return Tab.TabLoadStatus.DEFAULT_PAGE_LOAD;
     }
 

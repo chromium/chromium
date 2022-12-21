@@ -443,19 +443,33 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
         params.setUrl(fixedUrl.getSpec());
         ContentUtils.setUserAgentOverride(arkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(fixedUrl));
-        arkWeb.getWebContents().getNavigationController().loadUrl(params);
+        arkWeb.loadUrl(params);
     }
 
     public void selectPage(IPage page) {
-        boolean hastWeb = ArkWebContents.get(page.getId()) != null;
-        ArkLogger.e(TAG, "selectPage page=" + page.getId() + " hastWeb=" + hastWeb);
+        ArkLogger.e(TAG, "selectPage oldPage=" + getPageInfo() + " page=" + page.getPageInfo());
+        boolean createWeb = ArkWebContents.get(page.getId()) == null;
+
+        TabState tabState = null;
+        if (createWeb) {
+            tabState = ArkTabDao.restorePageState(page.getId());
+            if (tabState != null) {
+                restoreFieldsFromState(tabState);
+                mTab.selectPage(page);
+                loadIfNeeded();
+                return;
+            }
+        }
+
+        ArkLogger.e(TAG, "selectPage page=" + page.getPageInfo() + " createWeb=" + createWeb);
         ArkWebContents arkWeb = new ArkWebContents.Builder(page)
                 .setInitiallyHidden(isHidden())
+                .setTabState(tabState)
                 .build();
         swapWebContents(arkWeb, arkWeb.isStartLoad(), arkWeb.isFinishLoad());
 
         mTab.selectPage(page);
-        if (!hastWeb) {
+        if (createWeb) {
             LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
             params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
             loadUrl(params);
@@ -724,6 +738,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             } else {
                 result = mArkWeb.loadUrlInternal(params);
             }
+            ArkLogger.e(TAG, "loadUrl result=" + result + " url=" + params.getUrl());
 
             for (TabObserver observer : mObservers) {
                 observer.onLoadUrl(this, params, result);
@@ -1432,12 +1447,15 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) {
             observer.webContentsWillSwap(this);
         }
-        if (hasWebContents) mArkWeb.getWebContents().onHide();
+        if (hasWebContents) {
+            mArkWeb.getWebContents().onHide();
+            mArkWeb.getWebContents().setFocus(false);
+        }
         Context appContext = ContextUtils.getApplicationContext();
         Rect bounds = original.isEmpty() ? TabUtils.estimateContentSize(appContext) : null;
         if (bounds != null) original.set(bounds);
 
-        mArkWeb.getWebContents().setFocus(false);
+
 //        mTestWebContents = mArkWeb;
         destroyWebContents(false /* do not delete native web contents */);
         hideNativePage(false, () -> {
@@ -1650,7 +1668,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * history load are used.
      */
     private void restoreIfNeeded(ArkWindowAndroid windowAndroid) {
-
+        ArkLogger.e(TAG, "restoreIfNeeded");
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             // Restore is needed for a tab that is loaded for the first time. WebContents will
@@ -1658,9 +1676,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             if ((isFrozen() && CriticalPersistedTabData.from(this).getWebContentsState() != null
                     && !unfreezeContents(windowAndroid))
                     || !needsReload()) {
+                ArkLogger.e(TAG, "restoreIfNeeded return");
                 return;
             }
 
+            ArkLogger.e(TAG, "restoreIfNeeded loadIfNecessary");
             if (mArkWeb != null) {
                 mArkWeb.loadIfNecessary();
             }
