@@ -86,8 +86,25 @@ message Predictor {
   }
 }
 
+// TTL for the result.
+message PredictedResultTTL {
+  // TTL for the predicted result can be optionally configured based on the top
+  // result. For example, for a ClassificationResult with `ordered_labels` B, A,
+  // C, the TTL value of B in `top_label_to_ttl_map` will be used as the result
+  // TTL. This field is only valid for Classifier predictor (binary, multi class
+  // and binned).
+  map<string, int64> top_label_to_ttl_map = 1;
+
+  // TTL when no other TTL is specified for a particular label.
+  optional int64 default_ttl = 2;
+}
+
 // Specified by client in the metadata on how to interpret the model results.
 message OutputConfig {
   // A post-processor associated with the model.
   optional Predictor predictor = 1;
+
+  // TTL associated with the PredictionResult. Config defines when to refresh
+  // results.
+  optional PredictedResultTTL predicted_result_ttl = 2;
 }
