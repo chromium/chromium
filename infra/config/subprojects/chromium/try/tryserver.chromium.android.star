@@ -613,7 +613,7 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = not settings.is_main,
-    cores = "16|32",
+    cores = 32 if settings.is_main else 8,
     main_list_view = "try",
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
