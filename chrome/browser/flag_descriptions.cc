@@ -6022,12 +6022,6 @@ const char kWifiConnectMacAddressRandomizationDescription[] =
     "Randomize MAC address when connecting to unmanaged (non-enterprise) "
     "WiFi networks.";
 
-const char kWifiSyncAllowDeletesName[] =
-    "Sync removal of Wi-Fi network configurations";
-const char kWifiSyncAllowDeletesDescription[] =
-    "Enables the option to sync deletions of Wi-Fi networks to other ChromeOS "
-    "devices when Wi-Fi Sync is enabled.";
-
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";

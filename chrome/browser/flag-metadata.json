@@ -7187,11 +7187,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "wifi-sync-allow-deletes",
-    "owners": [ "jonmann", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "win-10-tab-search-caption-button",
     "owners": [ "tluk@google.com", "chrome-cros@google.com" ],
     "expiry_milestone": 99

@@ -6707,10 +6707,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMeteredShowToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kMeteredShowToggle)},
 
-    {"wifi-sync-allow-deletes", flag_descriptions::kWifiSyncAllowDeletesName,
-     flag_descriptions::kWifiSyncAllowDeletesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWifiSyncAllowDeletes)},
-
     {"display-alignment-assistance",
      flag_descriptions::kDisplayAlignmentAssistanceName,
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
