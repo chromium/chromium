@@ -138,17 +138,23 @@ export function shouldMoveToTrash(
     }
   }
   return entries.every(e => {
+    let onAllowedVolume = false;
     for (const {volume, volumeAndTrashPath} of urls) {
-      const entryURL = e.toURL();
-      if (!entryURL.startsWith(volume)) {
-        continue;
+      // All trash directories in configuration have a trailing slash, so if the
+      // entry URL is a directory and doesn't have a trailing slash, add one to
+      // ensure a .Trash directory doesn't show a "Move to trash" button.
+      let entryURL = e.toURL();
+      if (e.isDirectory && !entryURL.endsWith('/')) {
+        entryURL = entryURL + '/';
       }
       if (entryURL.startsWith(volumeAndTrashPath)) {
         return false;
       }
-      return true;
+      if (entryURL.startsWith(volume)) {
+        onAllowedVolume = true;
+      }
     }
-    return false;
+    return onAllowedVolume;
   });
 }
 

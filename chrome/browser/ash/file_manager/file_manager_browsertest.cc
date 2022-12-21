@@ -1770,6 +1770,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashEmptyTrash").EnableTrash(),
         TestCase("trashEmptyTrashShortcut").EnableTrash(),
         TestCase("trashDeleteFromTrash").EnableTrash(),
+        TestCase("trashDeleteFromTrashOriginallyFromMyFiles").EnableTrash(),
         TestCase("trashNoTasksInTrashRoot").EnableTrash(),
         TestCase("trashDoubleClickOnFileInTrashRootShowsDialog").EnableTrash(),
         TestCase("trashDragDropRootAcceptsEntries").EnableTrash(),
