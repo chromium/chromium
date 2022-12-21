@@ -81,6 +81,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             }
             onBackPressedChanged();
         }
+
+        @Override
+        public void onUrlUpdated(Tab tab) {
+            onBackPressedChanged();
+        }
     };
 
     /**
