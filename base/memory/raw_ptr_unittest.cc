@@ -904,9 +904,11 @@ TEST_F(RawPtrTest, PostIncrementOperator) {
 TEST_F(RawPtrTest, PostDecrementOperator) {
   std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
-  for (int i = 3; i >= 0; --i) {
+  // Avoid decrementing out of the slot holding the vector's backing store.
+  for (int i = 3; i > 0; --i) {
     ASSERT_EQ(*ptr--, 42 + i);
   }
+  ASSERT_EQ(*ptr, 42);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .get_for_dereference_cnt = 4,
                   .get_for_extraction_cnt = 0,
@@ -932,9 +934,11 @@ TEST_F(RawPtrTest, PreIncrementOperator) {
 TEST_F(RawPtrTest, PreDecrementOperator) {
   std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
-  for (int i = 3; i >= 0; --i, --ptr) {
+  // Avoid decrementing out of the slot holding the vector's backing store.
+  for (int i = 3; i > 0; --i, --ptr) {
     ASSERT_EQ(*ptr, 42 + i);
   }
+  ASSERT_EQ(*ptr, 42);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .get_for_dereference_cnt = 4,
                   .get_for_extraction_cnt = 0,
@@ -974,9 +978,9 @@ TEST_F(RawPtrTest, PlusEqualOperatorTypes) {
 TEST_F(RawPtrTest, MinusEqualOperator) {
   std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
-  for (int i = 3; i >= 0; i -= 2, ptr -= 2) {
-    ASSERT_EQ(*ptr, 42 + i);
-  }
+  ASSERT_EQ(*ptr, 45);
+  ptr -= 2;
+  ASSERT_EQ(*ptr, 43);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .get_for_dereference_cnt = 2,
                   .get_for_extraction_cnt = 0,
