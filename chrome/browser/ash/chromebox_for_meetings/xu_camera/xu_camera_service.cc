@@ -29,7 +29,7 @@ class RealDelegate : public XuCameraService::Delegate {
   RealDelegate(const RealDelegate&) = delete;
   RealDelegate& operator=(const RealDelegate&) = delete;
 
-  int Ioctl(int fd, int request, uvc_xu_control_query* query) override {
+  int Ioctl(int fd, unsigned int request, void* query) override {
     return HANDLE_EINTR(ioctl(fd, request, query));
   }
 
@@ -144,8 +144,46 @@ void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
 void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,
                               const mojom::ControlMappingPtr mapping_ctrl,
                               MapCtrlCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(ENOSYS);
+  uint8_t error_code = 0;
+  std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
+                                            : id->get_dev_path();
+  int file_descriptor = delegate_->OpenFile(dev_path);
+  if (file_descriptor < 0) {
+    LOG(ERROR) << __func__ << ": File is invalid";
+    std::move(callback).Run(ENOENT);
+  }
+
+  struct uvc_menu_info uvc_menus[mapping_ctrl->menu_entries->menu_info.size()];
+
+  int index = 0;
+  for (auto menu_info = mapping_ctrl->menu_entries->menu_info.begin();
+       menu_info < mapping_ctrl->menu_entries->menu_info.end(); menu_info++) {
+    const struct uvc_menu_info info = {
+        .value = (*menu_info)->value,
+        .name = {*((*menu_info)->name.data())},
+    };
+    uvc_menus[index] = info;
+    index++;
+  }
+
+  struct uvc_xu_control_mapping control_mapping = {
+      .id = mapping_ctrl->id,
+      .name = {*(mapping_ctrl->name.data())},
+      .entity = {*(mapping_ctrl->guid.data())},
+      .selector = mapping_ctrl->selector,
+      .size = mapping_ctrl->size,
+      .offset = mapping_ctrl->offset,
+      .v4l2_type = mapping_ctrl->v4l2_type,
+      .data_type = mapping_ctrl->data_type,
+      .menu_info = uvc_menus,
+      .menu_count = static_cast<uint32_t>(index),
+  };
+
+  // Map the controls to v4l2
+  error_code =
+      delegate_->Ioctl(file_descriptor, UVCIOC_CTRL_MAP, &control_mapping);
+
+  std::move(callback).Run(error_code);
 }
 
 void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,

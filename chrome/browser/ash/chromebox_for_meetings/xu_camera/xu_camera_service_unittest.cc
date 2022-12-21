@@ -41,13 +41,20 @@ const std::vector<uint8_t> kLen = {0x02, 0x00};  // little-endian uint16
 
 class TestDelegate : public XuCameraService::Delegate {
  public:
-  int Ioctl(int fd, int request, uvc_xu_control_query* query) override {
-    if (UVC_GET_LEN == query->query) {
-      query->data[0] = kLen[0];
-      query->data[1] = kLen[1];
-    } else if (UVC_GET_CUR == query->query) {
-      query->data[0] = kData[0];
-      query->data[1] = kData[1];
+  int Ioctl(int fd, unsigned int request, void* query) override {
+    if (VIDIOC_G_CTRL == request) {
+      struct v4l2_control* control = static_cast<v4l2_control*>(query);
+      control->value = {'fake'};
+    } else if (UVCIOC_CTRL_QUERY == request) {
+      uvc_xu_control_query* control_query =
+          static_cast<uvc_xu_control_query*>(query);
+      if (UVC_GET_LEN == control_query->query) {
+        control_query->data[0] = kLen[0];
+        control_query->data[1] = kLen[1];
+      } else if (UVC_GET_CUR == control_query->query) {
+        control_query->data[0] = kData[0];
+        control_query->data[1] = kData[1];
+      }
     }
     return 0;
   }
@@ -190,7 +197,7 @@ TEST_F(XuCameraServiceTest, GetXuCameraMapCtrl) {
   GetXuCameraRemote()->MapCtrl(
       /* id= */ std::move(devPath), /* mapping_ctrl= */ std::move(mapping),
       base::BindLambdaForTesting([&](const uint8_t error_code) {
-        EXPECT_EQ(error_code, ENOSYS);
+        EXPECT_EQ(error_code, 0);
         run_loop.Quit();
       }));
   run_loop.Run();
