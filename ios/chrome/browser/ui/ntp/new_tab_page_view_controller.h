@@ -13,9 +13,9 @@
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
+@class FeedHeaderViewController;
 @class FeedMetricsRecorder;
 @class FeedWrapperViewController;
-@class FeedHeaderViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
 @class ViewRevealingVerticalPanHandler;
