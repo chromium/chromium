@@ -389,6 +389,19 @@ TEST_F(KioskLaunchControllerTest, KioskProfileLoadErrorShouldBeStored) {
               Eq(static_cast<int>(KioskAppLaunchError::Error::kUnableToMount)));
 }
 
+TEST_F(KioskLaunchControllerTest,
+       LaunchShouldCompleteAfterNetworkRequiredDuringAppLaunch) {
+  RunUntilAppPrepared();
+  FireSplashScreenTimer();
+
+  launch_controls().InitializeNetwork();
+  EXPECT_THAT(controller(),
+              HasState(AppState::kInitNetwork, NetworkUIState::kNotShowing));
+
+  EXPECT_CALL(launcher(), LaunchApp()).Times(1);
+  launch_controls().OnAppPrepared();
+}
+
 class KioskLaunchControllerWithExtensionTest
     : public KioskLaunchControllerTest {
  public:
