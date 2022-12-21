@@ -177,10 +177,6 @@ std::string GetServerProof(
              : std::string();
 }
 
-void RecordFetchValidHistogram(bool valid) {
-  LOCAL_HISTOGRAM_BOOLEAN("NetworkTimeTracker.UpdateTimeFetchValid", valid);
-}
-
 void UmaHistogramCustomTimesClockSkew(const char* name,
                                       base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
@@ -372,9 +368,6 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
   base::TimeDelta time_delta = clock_->Now() - time_at_last_measurement_;
   if (time_delta.InMilliseconds() < 0) {  // Has wall clock run backward?
     DVLOG(1) << "Discarding network time due to wall clock running backward";
-    LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.WallClockRanBackwards",
-                                 time_delta.magnitude(), base::Seconds(1),
-                                 base::Days(7), 50);
     network_time_at_last_measurement_ = base::Time();
     return NETWORK_TIME_SYNC_LOST;
   }
@@ -385,19 +378,6 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
     // reset.
     DVLOG(1) << "Discarding network time due to clocks diverging";
 
-    // The below histograms do not use |kClockDivergenceSeconds| as the
-    // lower-bound, so that |kClockDivergenceSeconds| can be changed
-    // without causing the buckets to change and making data from
-    // old/new clients incompatible.
-    if (divergence.InMilliseconds() < 0) {
-      LOCAL_HISTOGRAM_CUSTOM_TIMES(
-          "NetworkTimeTracker.ClockDivergence.Negative", divergence.magnitude(),
-          base::Seconds(60), base::Days(7), 50);
-    } else {
-      LOCAL_HISTOGRAM_CUSTOM_TIMES(
-          "NetworkTimeTracker.ClockDivergence.Positive", divergence.magnitude(),
-          base::Seconds(60), base::Days(7), 50);
-    }
     network_time_at_last_measurement_ = base::Time();
     return NETWORK_TIME_SYNC_LOST;
   }
@@ -516,12 +496,6 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   if (response_code != 200 || !response_body) {
     time_query_completed_ = true;
     DVLOG(1) << "fetch failed code=" << response_code;
-    // The error code is negated because net errors are negative, but
-    // the corresponding histogram enum is positive.
-    const int kPositiveError = -time_fetcher_->NetError();
-    DCHECK_LE(kPositiveError, 10000);
-    LOCAL_HISTOGRAM_COUNTS_10000("NetworkTimeTracker.UpdateTimeFetchFailed",
-                                 kPositiveError);
     return false;
   }
 
@@ -531,30 +505,24 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   if (!query_signer_->ValidateResponse(
           response, GetServerProof(time_fetcher_->ResponseInfo()->headers))) {
     DVLOG(1) << "invalid signature";
-    RecordFetchValidHistogram(false);
     return false;
   }
   response.remove_prefix(5);  // Skips leading )]}'\n
   absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value) {
     DVLOG(1) << "bad JSON";
-    RecordFetchValidHistogram(false);
     return false;
   }
   if (!value->is_dict()) {
     DVLOG(1) << "not a dictionary";
-    RecordFetchValidHistogram(false);
     return false;
   }
   absl::optional<double> current_time_millis =
       value->GetDict().FindDouble("current_time_millis");
   if (!current_time_millis) {
     DVLOG(1) << "no current_time_millis";
-    RecordFetchValidHistogram(false);
     return false;
   }
-
-  RecordFetchValidHistogram(true);
 
   // There is a "server_nonce" key here too, but it serves no purpose other than
   // to make the server's response unpredictable.
@@ -567,13 +535,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   base::TimeDelta latency =
       time_fetcher_->ResponseInfo()->load_timing.receive_headers_start -
       time_fetcher_->ResponseInfo()->load_timing.send_end;
-  LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
 
-  if (!last_fetched_time_.is_null()) {
-    LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
-                                 current_time - last_fetched_time_,
-                                 base::Hours(1), base::Days(7), 50);
-  }
   last_fetched_time_ = current_time;
 
   if (check_type == CheckTimeType::BACKGROUND) {
