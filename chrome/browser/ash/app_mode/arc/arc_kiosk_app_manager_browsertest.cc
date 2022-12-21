@@ -126,7 +126,7 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
   }
 
   void CleanApps() {
-    base::ListValue device_local_accounts;
+    base::Value device_local_accounts(base::Value::Type::LIST);
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
                                  device_local_accounts);
   }

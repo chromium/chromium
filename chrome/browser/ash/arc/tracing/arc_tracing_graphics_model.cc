@@ -1409,7 +1409,7 @@ void GetAndroidTopEvents(const ArcTracingModel& common_model,
   SortBufferEventsByTimestamp(&result->global_events());
 }
 
-// Helper that serializes events |events| to the |base::ListValue|.
+// Helper that serializes events |events| to the |base::Value::List|.
 base::Value::List SerializeEvents(
     const ArcTracingGraphicsModel::BufferEvents& events) {
   base::Value::List list;

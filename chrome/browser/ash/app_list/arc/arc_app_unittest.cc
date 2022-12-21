@@ -2492,11 +2492,10 @@ TEST_P(ArcPlayStoreAppTest,
 
   // Fast App Reinstall is not expected to start when the user finishes
   // selection without the Play Store.
-  base::ListValue package_list;
+  base::Value::List package_list;
   package_list.Append("fake_package_name");
-  const base::ListValue* selected_packages(&package_list);
-  profile_.get()->GetTestingPrefService()->Set(
-      arc::prefs::kArcFastAppReinstallPackages, *selected_packages);
+  profile_.get()->GetTestingPrefService()->SetList(
+      arc::prefs::kArcFastAppReinstallPackages, std::move(package_list));
   starter1.OnAppsSelectionFinished();
   EXPECT_FALSE(starter1.started());
   EXPECT_EQ(0, app_instance()->start_fast_app_reinstall_request_count());
@@ -2543,11 +2542,10 @@ TEST_P(ArcPlayStoreAppTest,
   EXPECT_FALSE(starter1.started());
   EXPECT_EQ(0, app_instance()->start_fast_app_reinstall_request_count());
 
-  base::ListValue package_list;
+  base::Value::List package_list;
   package_list.Append("fake_package_name");
-  const base::ListValue* selected_packages(&package_list);
-  profile_.get()->GetTestingPrefService()->Set(
-      arc::prefs::kArcFastAppReinstallPackages, *selected_packages);
+  profile_.get()->GetTestingPrefService()->SetList(
+      arc::prefs::kArcFastAppReinstallPackages, std::move(package_list));
   starter1.OnAppsSelectionFinished();
   // Fast App Reinstall is expected to start right after user finishes selection
   // after Play Store is ready.
