@@ -55,87 +55,87 @@ export class ShortcutCustomizationAppElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      dialogShortcutTitle_: {
+      dialogShortcutTitle: {
         type: String,
         value: '',
       },
 
-      dialogAccelerators_: {
+      dialogAccelerators: {
         type: Array,
         value: () => [],
       },
 
-      dialogAction_: {
+      dialogAction: {
         type: Number,
         value: 0,
       },
 
-      dialogSource_: {
+      dialogSource: {
         type: Number,
         value: 0,
       },
 
-      showEditDialog_: {
+      showEditDialog: {
         type: Boolean,
         value: false,
       },
 
-      showRestoreAllDialog_: {
+      showRestoreAllDialog: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  protected showRestoreAllDialog_: boolean;
-  protected dialogShortcutTitle_: string;
-  protected dialogAccelerators_: AcceleratorInfo[];
-  protected dialogAction_: number;
-  protected dialogSource_: AcceleratorSource;
-  protected showEditDialog_: boolean;
-  private shortcutProvider_: ShortcutProviderInterface = getShortcutProvider();
-  private acceleratorLookupManager_: AcceleratorLookupManager =
+  protected showRestoreAllDialog: boolean;
+  protected dialogShortcutTitle: string;
+  protected dialogAccelerators: AcceleratorInfo[];
+  protected dialogAction: number;
+  protected dialogSource: AcceleratorSource;
+  protected showEditDialog: boolean;
+  private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
+  private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.fetchAccelerators_();
-    this.addEventListener('show-edit-dialog', this.showDialog_);
-    this.addEventListener('edit-dialog-closed', this.onDialogClosed_);
+    this.fetchAccelerators();
+    this.addEventListener('show-edit-dialog', this.showDialog);
+    this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
-        'request-update-accelerator', this.onRequestUpdateAccelerators_);
+        'request-update-accelerator', this.onRequestUpdateAccelerators);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.removeEventListener('show-edit-dialog', this.showDialog_);
-    this.removeEventListener('edit-dialog-closed', this.onDialogClosed_);
+    this.removeEventListener('show-edit-dialog', this.showDialog);
+    this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
     this.removeEventListener(
-        'request-update-accelerator', this.onRequestUpdateAccelerators_);
+        'request-update-accelerator', this.onRequestUpdateAccelerators);
   }
 
-  private fetchAccelerators_(): void {
+  private fetchAccelerators(): void {
     // Kickoff fetching accelerators by first fetching the accelerator configs.
-    this.shortcutProvider_.getAccelerators().then(
-        ({config}) => this.onAcceleratorConfigFetched_(config));
+    this.shortcutProvider.getAccelerators().then(
+        ({config}) => this.onAcceleratorConfigFetched(config));
   }
 
-  private onAcceleratorConfigFetched_(config: MojoAcceleratorConfig): void {
-    this.acceleratorLookupManager_.setAcceleratorLookup(config);
+  private onAcceleratorConfigFetched(config: MojoAcceleratorConfig): void {
+    this.acceleratorlookupManager.setAcceleratorLookup(config);
     // After fetching the config infos, fetch the layout infos next.
-    this.shortcutProvider_.getAcceleratorLayoutInfos().then(
-        ({layoutInfos}) => this.onLayoutInfosFetched_(layoutInfos));
+    this.shortcutProvider.getAcceleratorLayoutInfos().then(
+        ({layoutInfos}) => this.onLayoutInfosFetched(layoutInfos));
   }
 
-  private onLayoutInfosFetched_(layoutInfos: MojoLayoutInfo[]): void {
-    this.addNavigationSelectors_(layoutInfos);
-    this.acceleratorLookupManager_.setAcceleratorLayoutLookup(layoutInfos);
+  private onLayoutInfosFetched(layoutInfos: MojoLayoutInfo[]): void {
+    this.addNavigationSelectors(layoutInfos);
+    this.acceleratorlookupManager.setAcceleratorLayoutLookup(layoutInfos);
     // Notify pages to update their accelerators.
     this.$.navigationPanel.notifyEvent('updateAccelerators');
   }
 
-  private addNavigationSelectors_(layoutInfos: MojoLayoutInfo[]): void {
+  private addNavigationSelectors(layoutInfos: MojoLayoutInfo[]): void {
     // A Set is used here to remove duplicates from the array of categories.
     const uniqueCategoriesInOrder =
         new Set(layoutInfos.map(layoutInfo => layoutInfo.category));
@@ -149,24 +149,24 @@ export class ShortcutCustomizationAppElement extends
     this.$.navigationPanel.addSelectors(pages);
   }
 
-  private showDialog_(e: ShowEditDialogEvent): void {
-    this.dialogShortcutTitle_ = e.detail.description;
-    this.dialogAccelerators_ = e.detail.accelerators;
-    this.dialogAction_ = e.detail.action;
-    this.dialogSource_ = e.detail.source;
-    this.showEditDialog_ = true;
+  private showDialog(e: ShowEditDialogEvent): void {
+    this.dialogShortcutTitle = e.detail.description;
+    this.dialogAccelerators = e.detail.accelerators;
+    this.dialogAction = e.detail.action;
+    this.dialogSource = e.detail.source;
+    this.showEditDialog = true;
   }
 
-  private onDialogClosed_(): void {
-    this.showEditDialog_ = false;
-    this.dialogShortcutTitle_ = '';
-    this.dialogAccelerators_ = [];
+  private onDialogClosed(): void {
+    this.showEditDialog = false;
+    this.dialogShortcutTitle = '';
+    this.dialogAccelerators = [];
   }
 
-  private onRequestUpdateAccelerators_(e: RequestUpdateAcceleratorEvent): void {
+  private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
-        this.acceleratorLookupManager_
+        this.acceleratorlookupManager
             .getAcceleratorInfos(e.detail.source, e.detail.action)
             ?.filter((accel) => {
               // Hide accelerators that are default and disabled.
@@ -179,23 +179,23 @@ export class ShortcutCustomizationAppElement extends
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
   }
 
-  protected onRestoreAllDefaultClicked_(): void {
-    this.showRestoreAllDialog_ = true;
+  protected onRestoreAllDefaultClicked(): void {
+    this.showRestoreAllDialog = true;
   }
 
-  protected onCancelRestoreButtonClicked_(): void {
-    this.closeRestoreAllDialog_();
+  protected onCancelRestoreButtonClicked(): void {
+    this.closeRestoreAllDialog();
   }
 
-  protected onConfirmRestoreButtonClicked_(): void {
+  protected onConfirmRestoreButtonClicked(): void {
     // TODO(jimmyxgong): Implement this function.
   }
 
-  protected closeRestoreAllDialog_(): void {
-    this.showRestoreAllDialog_ = false;
+  protected closeRestoreAllDialog(): void {
+    this.showRestoreAllDialog = false;
   }
 
-  protected shouldHideRestoreAllButton_(): boolean {
+  protected shouldHideRestoreAllButton(): boolean {
     return isCustomizationDisabled();
   }
 

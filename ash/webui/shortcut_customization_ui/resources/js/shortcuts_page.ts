@@ -37,7 +37,7 @@ export class ShortcutsPageElement extends PolymerElement {
         type: Object,
       },
 
-      subcategories_: {
+      subcategories: {
         type: Array,
         value: [],
       },
@@ -45,8 +45,8 @@ export class ShortcutsPageElement extends PolymerElement {
   }
 
   initialData: {category: AcceleratorCategory};
-  private subcategories_: AcceleratorSubcategory[];
-  private lookupManager_: AcceleratorLookupManager =
+  private subcategories: AcceleratorSubcategory[];
+  private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
   override connectedCallback(): void {
@@ -56,7 +56,7 @@ export class ShortcutsPageElement extends PolymerElement {
 
   updateAccelerators(): void {
     const subcatMap =
-        this.lookupManager_.getSubcategories(this.initialData.category);
+        this.lookupManager.getSubcategories(this.initialData.category);
     if (subcatMap === undefined) {
       return;
     }
@@ -65,10 +65,10 @@ export class ShortcutsPageElement extends PolymerElement {
     for (const key of subcatMap.keys()) {
       subcategories.push(key);
     }
-    this.subcategories_ = subcategories;
+    this.subcategories = subcategories;
   }
 
-  private getAllSubsections_(): NodeListOf<AcceleratorSubsectionElement> {
+  private getAllSubsections(): NodeListOf<AcceleratorSubsectionElement> {
     const subsections =
         this.shadowRoot!.querySelectorAll('accelerator-subsection');
     assert(subsections);
@@ -76,7 +76,7 @@ export class ShortcutsPageElement extends PolymerElement {
   }
 
   updateSubsections(): void {
-    for (const subsection of this.getAllSubsections_()) {
+    for (const subsection of this.getAllSubsections()) {
       subsection.updateSubsection();
     }
   }

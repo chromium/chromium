@@ -21,7 +21,7 @@ module.exports = {
       'plugins': ['@typescript-eslint'],
       'rules': {
         '@typescript-eslint/naming-convention':
-          ['warn',
+          ['error',
             {
               selector: ['classMethod', 'classProperty'],
               format: ['camelCase'],

@@ -41,8 +41,8 @@
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
-    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_" 
-      hidden="[[shouldHideRestoreAllButton_()]]">
+    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
+      hidden="[[shouldHideRestoreAllButton()]]">
       [[i18n('resetAllShortcuts')]]
     </cr-button>
     <div id="keyboardSettingsLinkContainer">
@@ -54,27 +54,27 @@
   </div>
 </navigation-view-panel>
 
-<template is="dom-if" if="[[showEditDialog_]]" restamp>
+<template is="dom-if" if="[[showEditDialog]]" restamp>
   <accelerator-edit-dialog id="editDialog"
-      description="[[dialogShortcutTitle_]]"
-      accelerator-infos="[[dialogAccelerators_]]"
-      action="[[dialogAction_]]"
-      source="[[dialogSource_]]">
+      description="[[dialogShortcutTitle]]"
+      accelerator-infos="[[dialogAccelerators]]"
+      action="[[dialogAction]]"
+      source="[[dialogSource]]">
   </accelerator-edit-dialog>
 </template>
 
-<template is="dom-if" if="[[showRestoreAllDialog_]]" restamp>
+<template is="dom-if" if="[[showRestoreAllDialog]]" restamp>
   <cr-dialog id="restoreDialog" show-on-attach
-      on-close="closeRestoreAllDialog_">
+      on-close="closeRestoreAllDialog">
     <div slot="body">
       [[i18n('confirmResetAllShortcutsTitle')]]
     </div>
     <div slot="button-container">
-      <cr-button id="cancelButton" on-click="onCancelRestoreButtonClicked_">
+      <cr-button id="cancelButton" on-click="onCancelRestoreButtonClicked">
         [[i18n('cancel')]]
       </cr-button>
       <cr-button class="action-button"
-          on-click="onConfirmRestoreButtonClicked_">
+          on-click="onConfirmRestoreButtonClicked">
         [[i18n('confirmResetAllShortcutsButton')]]
       </cr-button>
     </div>

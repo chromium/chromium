@@ -16,8 +16,8 @@
 </style>
 
 <div id="container" class="flex-row" tabindex="0">
-  <template is="dom-if" if="[[!showEditView_(viewState)]]">
-    <template is="dom-repeat" items=[[modifiers_]]>
+  <template is="dom-if" if="[[!showEditView(viewState)]]">
+    <template is="dom-repeat" items=[[modifiers]]>
       <input-key key=[[item]] key-state="modifier-selected"></input-key>
     </template>
     <input-key
@@ -25,26 +25,26 @@
         key-state="alpha-numeric-selected">
     </input-key>
   </template>
-  <template is="dom-if" if="[[showEditView_(viewState)]]">
+  <template is="dom-if" if="[[showEditView(viewState)]]">
     <div id="editContainer" class="flex-row">
       <input-key id="ctrlKey" key="ctrl"
-          key-state="[[getCtrlState_(
-            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.accelerator.*
+          key-state="[[getCtrlState(
+            pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator.*
             )]]">
       </input-key>
       <input-key id="altKey" key="alt"
-          key-state="[[getAltState_(
-            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
+          key-state="[[getAltState(
+            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]">
       </input-key>
       <input-key id="shiftKey" key="shift"
-          key-state="[[getShiftState_(
-            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
+          key-state="[[getShiftState(
+            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]">
       </input-key>
       <input-key id="searchKey" key="search"
-          key-state="[[getSearchState_(
-            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
+          key-state="[[getSearchState(
+            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]"
       >
       </input-key>
@@ -52,12 +52,12 @@
            shortcut's layout info. -->
       <div id="acceleratorSeparator"> + </div>
       <input-key id="pendingKey"
-          key="[[getPendingKey_(
-            pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
+          key="[[getPendingKey(
+            pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]"
           key-state=
-              "[[getPendingKeyState_(
-                pendingAcceleratorInfo_.layoutProperties.standardAccelerator.*
+              "[[getPendingKeyState(
+                pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
                 )]]">
       </input-key>
     </div>

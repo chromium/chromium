@@ -13,34 +13,34 @@ import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoL
  */
 
 export class FakeShortcutProvider implements ShortcutProviderInterface {
-  private methods_: FakeMethodResolver;
+  private methods: FakeMethodResolver;
 
   constructor() {
-    this.methods_ = new FakeMethodResolver();
+    this.methods = new FakeMethodResolver();
 
     // Setup method resolvers.
-    this.methods_.register('getAccelerators');
-    this.methods_.register('getAcceleratorLayoutInfos');
-    this.methods_.register('isMutable');
-    this.methods_.register('addUserAccelerator');
-    this.methods_.register('replaceAccelerator');
-    this.methods_.register('removeAccelerator');
-    this.methods_.register('restoreAllDefaults');
-    this.methods_.register('restoreActionDefaults');
+    this.methods.register('getAccelerators');
+    this.methods.register('getAcceleratorLayoutInfos');
+    this.methods.register('isMutable');
+    this.methods.register('addUserAccelerator');
+    this.methods.register('replaceAccelerator');
+    this.methods.register('removeAccelerator');
+    this.methods.register('restoreAllDefaults');
+    this.methods.register('restoreActionDefaults');
   }
 
   getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}> {
-    return this.methods_.resolveMethod('getAcceleratorLayoutInfos');
+    return this.methods.resolveMethod('getAcceleratorLayoutInfos');
   }
 
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}> {
-    return this.methods_.resolveMethod('getAccelerators');
+    return this.methods.resolveMethod('getAccelerators');
   }
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
-    this.methods_.setResult(
+    this.methods.setResult(
         'isMutable', {isMutable: source !== AcceleratorSource.kBrowser});
-    return this.methods_.resolveMethod('isMutable');
+    return this.methods.resolveMethod('isMutable');
   }
 
   // Return nothing because this method has a void return type.
@@ -48,37 +48,37 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   addUserAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
-    this.methods_.setResult(
+    this.methods.setResult(
         'addUserAccelerator', AcceleratorConfigResult.SUCCESS);
-    return this.methods_.resolveMethod('addUserAccelerator');
+    return this.methods.resolveMethod('addUserAccelerator');
   }
 
   replaceAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
-    this.methods_.setResult(
+    this.methods.setResult(
         'replaceAccelerator', AcceleratorConfigResult.SUCCESS);
-    return this.methods_.resolveMethod('replaceAccelerator');
+    return this.methods.resolveMethod('replaceAccelerator');
   }
 
   removeAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
-    this.methods_.setResult(
+    this.methods.setResult(
         'removeAccelerator', AcceleratorConfigResult.SUCCESS);
-    return this.methods_.resolveMethod('removeAccelerator');
+    return this.methods.resolveMethod('removeAccelerator');
   }
 
   restoreAllDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
-    this.methods_.setResult(
+    this.methods.setResult(
         'restoreAllDefaults', AcceleratorConfigResult.SUCCESS);
-    return this.methods_.resolveMethod('restoreAllDefaults');
+    return this.methods.resolveMethod('restoreAllDefaults');
   }
 
   restoreActionDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
-    this.methods_.setResult(
+    this.methods.setResult(
         'restoreActionDefaults', AcceleratorConfigResult.SUCCESS);
-    return this.methods_.resolveMethod('restoreActionDefaults');
+    return this.methods.resolveMethod('restoreActionDefaults');
   }
 
   /**
@@ -86,7 +86,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    * getAccelerators().
    */
   setFakeAcceleratorConfig(config: MojoAcceleratorConfig): void {
-    this.methods_.setResult('getAccelerators', {config});
+    this.methods.setResult('getAccelerators', {config});
   }
 
   /**
@@ -94,6 +94,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    * getAcceleratorLayoutInfos().
    */
   setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
-    this.methods_.setResult('getAcceleratorLayoutInfos', {layoutInfos});
+    this.methods.setResult('getAcceleratorLayoutInfos', {layoutInfos});
   }
 }

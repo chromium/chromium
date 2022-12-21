@@ -61,7 +61,7 @@ export class AcceleratorEditDialogElement extends
         value: () => [],
       },
 
-      pendingNewAcceleratorState_: {
+      pendingNewAcceleratorState: {
         type: Number,
         value: ViewState.VIEW,
       },
@@ -76,7 +76,7 @@ export class AcceleratorEditDialogElement extends
         value: 0,
       },
 
-      isAcceleratorCapturing_: {
+      isAcceleratorCapturing: {
         type: Boolean,
         value: false,
       },
@@ -87,12 +87,12 @@ export class AcceleratorEditDialogElement extends
   acceleratorInfos: AcceleratorInfo[];
   action: number;
   source: AcceleratorSource;
-  protected isAcceleratorCapturing_: boolean;
-  private pendingNewAcceleratorState_: number;
-  private acceleratorCapturingStartedListener_ = (): void =>
-      this.onAcceleratorCapturingStarted_();
-  private acceleratorCapturingEndedListener_ = (): void =>
-      this.onAcceleratorCapturingEnded_();
+  protected isAcceleratorCapturing: boolean;
+  private pendingNewAcceleratorState: number;
+  private acceleratorCapturingStartedListener = (): void =>
+      this.onAcceleratorCapturingStarted();
+  private acceleratorCapturingEndedListener = (): void =>
+      this.onAcceleratorCapturingEnded();
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -100,21 +100,21 @@ export class AcceleratorEditDialogElement extends
 
     window.addEventListener(
         'accelerator-capturing-started',
-        this.acceleratorCapturingStartedListener_);
+        this.acceleratorCapturingStartedListener);
     window.addEventListener(
-        'accelerator-capturing-ended', this.acceleratorCapturingEndedListener_);
+        'accelerator-capturing-ended', this.acceleratorCapturingEndedListener);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener(
         'accelerator-capturing-started',
-        this.acceleratorCapturingStartedListener_);
+        this.acceleratorCapturingStartedListener);
     window.removeEventListener(
-        'accelerator-capturing-ended', this.acceleratorCapturingEndedListener_);
+        'accelerator-capturing-ended', this.acceleratorCapturingEndedListener);
   }
 
-  private getViewList_(): DomRepeat {
+  private getViewList(): DomRepeat {
     const viewList = this.shadowRoot!.querySelector('#viewList') as DomRepeat;
     assert(viewList);
     return viewList;
@@ -122,28 +122,28 @@ export class AcceleratorEditDialogElement extends
 
   updateDialogAccelerators(updatedAccels: AcceleratorInfo[]): void {
     this.set('acceleratorInfos', []);
-    this.getViewList_().render();
+    this.getViewList().render();
     this.acceleratorInfos = updatedAccels;
   }
 
-  protected onDoneButtonClicked_(): void {
+  protected onDoneButtonClicked(): void {
     this.$.editDialog.close();
   }
 
-  protected onDialogClose_(): void {
+  protected onDialogClose(): void {
     this.dispatchEvent(
         new CustomEvent('edit-dialog-closed', {bubbles: true, composed: true}));
   }
 
-  private onAcceleratorCapturingStarted_(): void {
-    this.isAcceleratorCapturing_ = true;
+  private onAcceleratorCapturingStarted(): void {
+    this.isAcceleratorCapturing = true;
   }
 
-  private onAcceleratorCapturingEnded_(): void {
-    this.isAcceleratorCapturing_ = false;
+  private onAcceleratorCapturingEnded(): void {
+    this.isAcceleratorCapturing = false;
   }
 
-  private focusAcceleratorItemContainer_(): void {
+  private focusAcceleratorItemContainer(): void {
     const editView = this.$.editDialog.querySelector('#pendingAccelerator');
     assert(editView);
     const accelItem = editView.shadowRoot!.querySelector('#acceleratorItem');
@@ -154,20 +154,20 @@ export class AcceleratorEditDialogElement extends
     container!.focus();
   }
 
-  protected onAddAcceleratorClicked_(): void {
-    this.pendingNewAcceleratorState_ = ViewState.ADD;
+  protected onAddAcceleratorClicked(): void {
+    this.pendingNewAcceleratorState = ViewState.ADD;
 
     // Flush the dom so that the AcceleratorEditView is ready to be focused.
     flush();
-    this.focusAcceleratorItemContainer_();
+    this.focusAcceleratorItemContainer();
   }
 
-  protected showAddButton_(): boolean {
+  protected showAddButton(): boolean {
     // If the state is VIEW, no new pending accelerators are being added.
-    return this.pendingNewAcceleratorState_ === ViewState.VIEW;
+    return this.pendingNewAcceleratorState === ViewState.VIEW;
   }
 
-  protected onRestoreDefaultButtonClicked_(): void {
+  protected onRestoreDefaultButtonClicked(): void {
     // TODO(jimmyxgong): Implement this function.
   }
 }

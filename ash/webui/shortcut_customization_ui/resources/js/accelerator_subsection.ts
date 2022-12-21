@@ -55,7 +55,7 @@ export class AcceleratorSubsectionElement extends
       subcategory: {
         type: Number,
         value: null,
-        observer: 'onCategoryUpdated_',
+        observer: 'onCategoryUpdated',
       },
 
       /**
@@ -74,7 +74,7 @@ export class AcceleratorSubsectionElement extends
   category: AcceleratorCategory;
   subcategory: AcceleratorSubcategory;
   accelRowDataArray: AcceleratorRowData[];
-  private lookupManager_: AcceleratorLookupManager =
+  private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
   updateSubsection(): void {
@@ -83,17 +83,17 @@ export class AcceleratorSubsectionElement extends
     // array of objects.
     this.set('acceleratorContainer', []);
     this.$.list.render();
-    this.onCategoryUpdated_();
+    this.onCategoryUpdated();
   }
 
-  protected onCategoryUpdated_(): void {
+  protected onCategoryUpdated(): void {
     if (this.subcategory === null) {
       return;
     }
 
     // Fetch the layout infos based off of the subsection's category and
     // subcategory.
-    const layoutInfos = this.lookupManager_.getAcceleratorLayout(
+    const layoutInfos = this.lookupManager.getAcceleratorLayout(
         this.category, this.subcategory);
 
     this.title = this.i18n(getSubcategoryNameStringId(this.subcategory));
@@ -105,7 +105,7 @@ export class AcceleratorSubsectionElement extends
     // subsection's accelerators are kept distinct from each other.
     const tempAccelRowData: AcceleratorRowData[] = [];
     layoutInfos!.forEach((layoutInfo) => {
-      const acceleratorInfos = this.lookupManager_.getAcceleratorInfos(
+      const acceleratorInfos = this.lookupManager.getAcceleratorInfos(
           layoutInfo.source, layoutInfo.action);
       acceleratorInfos.filter((accel) => {
         // Hide accelerators that are default and disabled.

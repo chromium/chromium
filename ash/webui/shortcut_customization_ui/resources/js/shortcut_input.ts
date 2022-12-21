@@ -48,92 +48,92 @@ export class ShortcutInputElement extends PolymerElement {
 
   static get properties(): PolymerElementProperties {
     return {
-      shortcut_: {
+      shortcut: {
         type: String,
         value: '',
       },
 
-      pendingShortcut_: {
+      pendingShortcut: {
         type: String,
         value: '',
       },
 
-      capturing_: {
+      capturing: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  private shortcut_: string;
-  private pendingShortcut_: string;
-  private capturing_: boolean;
+  private shortcut: string;
+  private pendingShortcut: string;
+  private capturing: boolean;
 
   override ready(): void {
     super.ready();
-    this.addEventListener('keydown', (e) => this.onKeyDown_(e));
-    this.addEventListener('keyup', (e) => this.onKeyUp_(e));
-    this.addEventListener('focus', () => this.startCapture_());
-    this.addEventListener('mouseup', () => this.startCapture_());
-    this.addEventListener('blur', () => this.endCapture_());
+    this.addEventListener('keydown', (e) => this.onKeyDown(e));
+    this.addEventListener('keyup', (e) => this.onKeyUp(e));
+    this.addEventListener('focus', () => this.startCapture());
+    this.addEventListener('mouseup', () => this.startCapture());
+    this.addEventListener('blur', () => this.endCapture());
   }
 
-  private startCapture_(): void {
-    if (this.capturing_) {
+  private startCapture(): void {
+    if (this.capturing) {
       return;
     }
-    this.pendingShortcut_ = '';
-    this.shortcut_ = '';
-    this.capturing_ = true;
+    this.pendingShortcut = '';
+    this.shortcut = '';
+    this.capturing = true;
   }
 
-  private endCapture_(): void {
-    if (!this.capturing_) {
+  private endCapture(): void {
+    if (!this.capturing) {
       return;
     }
 
-    this.capturing_ = false;
-    this.pendingShortcut_ = '';
+    this.capturing = false;
+    this.pendingShortcut = '';
     this.$.input.blur();
   }
 
-  private onKeyDown_(e: KeyboardEvent): void {
-    this.handleKey_(e);
+  private onKeyDown(e: KeyboardEvent): void {
+    this.handleKey(e);
   }
 
-  private onKeyUp_(e: KeyboardEvent): void {
+  private onKeyUp(e: KeyboardEvent): void {
     e.preventDefault();
     e.stopPropagation();
 
-    this.endCapture_();
+    this.endCapture();
   }
 
-  private computeText_(): string {
+  private computeText(): string {
     const shortcutString =
-        this.capturing_ ? this.pendingShortcut_ : this.shortcut_;
+        this.capturing ? this.pendingShortcut : this.shortcut;
     return shortcutString.split('+').join(' + ');
   }
 
-  private handleKey_(e: KeyboardEvent): void {
+  private handleKey(e: KeyboardEvent): void {
     // While capturing, we prevent all events from bubbling, to prevent
     // shortcuts from executing and interrupting the input capture.
     e.preventDefault();
     e.stopPropagation();
 
-    if (!this.hasValidModifiers_(e)) {
-      this.pendingShortcut_ = '';
+    if (!this.hasValidModifiers(e)) {
+      this.pendingShortcut = '';
       return;
     }
-    this.pendingShortcut_ = this.keystrokeToString_(e);
+    this.pendingShortcut = this.keystrokeToString(e);
 
-    this.shortcut_ = this.pendingShortcut_;
+    this.shortcut = this.pendingShortcut;
   }
 
   /**
    * Converts a keystroke event to string form.
    * Returns the keystroke as a string.
    */
-  private keystrokeToString_(e: KeyboardEvent): string {
+  private keystrokeToString(e: KeyboardEvent): string {
     const output: string[] = [];
     if (e.metaKey) {
       output.push('Search');
@@ -150,7 +150,7 @@ export class ShortcutInputElement extends PolymerElement {
 
     // Only add non-modifier keys, otherwise we will double capture the modifier
     // keys.
-    if (!this.isModifierKey_(e)) {
+    if (!this.isModifierKey(e)) {
       // TODO(jimmyxgong): update this to show only the DomKey.
       // Displays in the format: (DomKey)(V-Key)(DomCode), e.g.
       // ([)(219)(BracketLeft).
@@ -164,13 +164,13 @@ export class ShortcutInputElement extends PolymerElement {
   }
 
   /** Returns true if the event has valid modifiers. */
-  private hasValidModifiers_(e: KeyboardEvent): boolean {
+  private hasValidModifiers(e: KeyboardEvent): boolean {
     // Although Shift is a modifier, it cannot be a standalone modifier for a
     // shortcut.
     return e.ctrlKey || e.altKey || e.metaKey;
   }
 
-  private isModifierKey_(e: KeyboardEvent): boolean {
+  private isModifierKey(e: KeyboardEvent): boolean {
     return ModifierKeyCodes.includes(e.keyCode);
   }
 }

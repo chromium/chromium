@@ -72,7 +72,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
 
       isEditView: {
         type: Boolean,
-        computed: 'showEditView_(viewState)',
+        computed: 'showEditView(viewState)',
         reflectToAttribute: true,
       },
 
@@ -85,7 +85,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
       statusMessage: {
         type: String,
         value: '',
-        observer: 'onStatusMessageChanged_',
+        observer: 'onStatusMessageChanged',
       },
 
       hasError: {
@@ -113,34 +113,34 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   action: number;
   source: AcceleratorSource;
   protected statusMessage: string;
-  private shortcutProvider_: ShortcutProviderInterface;
-  private lookupManager_: AcceleratorLookupManager;
+  private shortcutProvider: ShortcutProviderInterface;
+  private lookupManager: AcceleratorLookupManager;
 
   constructor() {
     super();
 
-    this.shortcutProvider_ = getShortcutProvider();
+    this.shortcutProvider = getShortcutProvider();
 
-    this.lookupManager_ = AcceleratorLookupManager.getInstance();
+    this.lookupManager = AcceleratorLookupManager.getInstance();
   }
 
-  protected onStatusMessageChanged_(): void {
+  protected onStatusMessageChanged(): void {
     if (this.statusMessage === '') {
       this.statusMessage = this.i18n('editViewStatusMessage');
     }
   }
 
-  protected onEditButtonClicked_(): void {
+  protected onEditButtonClicked(): void {
     this.viewState = ViewState.EDIT;
   }
 
-  protected onDeleteButtonClicked_(): void {
-    this.shortcutProvider_
+  protected onDeleteButtonClicked(): void {
+    this.shortcutProvider
         .removeAccelerator(
             this.source, this.action, getAccelerator(this.acceleratorInfo))
         .then((result: AcceleratorConfigResult) => {
           if (result === AcceleratorConfigResult.SUCCESS) {
-            this.lookupManager_.removeAccelerator(
+            this.lookupManager.removeAccelerator(
                 this.source, this.action, getAccelerator(this.acceleratorInfo));
 
             this.dispatchEvent(new CustomEvent('request-update-accelerator', {
@@ -152,12 +152,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         });
   }
 
-  protected onCancelButtonClicked_(): void {
+  protected onCancelButtonClicked(): void {
     this.statusMessage = '';
     this.viewState = ViewState.VIEW;
   }
 
-  protected showEditView_(): boolean {
+  protected showEditView(): boolean {
     return this.viewState !== ViewState.VIEW;
   }
 }

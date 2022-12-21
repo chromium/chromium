@@ -62,7 +62,7 @@ export class AcceleratorRowElement extends PolymerElement {
         type: Object,
       },
 
-      isLocked_: {
+      isLocked: {
         type: Boolean,
         value: false,
       },
@@ -75,7 +75,7 @@ export class AcceleratorRowElement extends PolymerElement {
       source: {
         type: Number,
         value: 0,
-        observer: 'onSourceChanged_',
+        observer: 'onSourceChanged',
       },
     };
   }
@@ -87,23 +87,23 @@ export class AcceleratorRowElement extends PolymerElement {
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
-  private isLocked_: boolean;
-  private shortcutInterfaceProvider_: ShortcutProviderInterface =
+  private isLocked: boolean;
+  private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (!this.isLocked_) {
-      this.removeEventListener('click', () => this.showDialog_());
+    if (!this.isLocked) {
+      this.removeEventListener('click', () => this.showDialog());
     }
   }
 
-  protected onSourceChanged_(): void {
-    this.shortcutInterfaceProvider_.isMutable(this.source)
+  protected onSourceChanged(): void {
+    this.shortcutInterfaceProvider.isMutable(this.source)
         .then(({isMutable}) => {
-          this.isLocked_ = !isMutable;
-          if (!this.isLocked_) {
-            this.addEventListener('click', () => this.showDialog_());
+          this.isLocked = !isMutable;
+          if (!this.isLocked) {
+            this.addEventListener('click', () => this.showDialog());
           }
         });
   }
@@ -116,15 +116,15 @@ export class AcceleratorRowElement extends PolymerElement {
     return this.layoutStyle === LayoutStyle.kText;
   }
 
-  private shouldShowLockIcon_(): boolean {
+  private shouldShowLockIcon(): boolean {
     if (isCustomizationDisabled()) {
       return false;
     }
 
-    return this.isLocked_;
+    return this.isLocked;
   }
 
-  private showDialog_(): void {
+  private showDialog(): void {
     if (isCustomizationDisabled()) {
       return;
     }

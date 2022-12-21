@@ -43,7 +43,7 @@
   }
 </style>
 
-<cr-dialog id="editDialog" on-close="onDialogClose_">
+<cr-dialog id="editDialog" on-close="onDialogClose">
   <div id="dialogTitle" slot="title">
     [[description]]
   </div>
@@ -58,16 +58,16 @@
       </template>
     </div>
     <template id="newAccelerator" is="dom-if"
-        if="[[!showAddButton_(pendingNewAcceleratorState_)]]" restamp>
+        if="[[!showAddButton(pendingNewAcceleratorState)]]" restamp>
       <accelerator-edit-view id="pendingAccelerator"
-          view-state="{{pendingNewAcceleratorState_}}"
+          view-state="{{pendingNewAcceleratorState}}"
           action=[[action]]
           source=[[source]]>
       </accelerator-edit-view>
     </template>
     <div id="addAcceleratorContainer"
-        hidden="[[!showAddButton_(pendingNewAcceleratorState_)]]">
-      <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
+        hidden="[[!showAddButton(pendingNewAcceleratorState)]]">
+      <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>
         [[i18n('addShortcut')]]
@@ -77,14 +77,14 @@
   </div>
   <div slot="button-container">
     <div>
-      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_"
-          hidden$="[[isAcceleratorCapturing_]]">
+      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked"
+          hidden$="[[isAcceleratorCapturing]]">
         [[i18n('restoreDefaults')]]
       </cr-button>
     </div>
     <div>
-      <cr-button id="doneButton" on-click="onDoneButtonClicked_"
-          disabled="[[isAcceleratorCapturing_]]">
+      <cr-button id="doneButton" on-click="onDoneButtonClicked"
+          disabled="[[isAcceleratorCapturing]]">
         [[i18n('editDialogDone')]]
       </cr-button>
     </div>
